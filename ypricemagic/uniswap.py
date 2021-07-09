@@ -43,9 +43,9 @@ def get_price_v1(asset, block=None):
     factory = Contract("0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95")
     try:
         asset = Contract(asset)
-        exchange = interface.UniswapV1Exchange(factory.getExchange(asset))
+        exchange = Contract(factory.getExchange(asset))
         eth_bought = exchange.getTokenToEthInputPrice(10 ** asset.decimals(), block_identifier=block)
-        exchange = interface.UniswapV1Exchange(factory.getExchange(usdc))
+        exchange = Contract(factory.getExchange(usdc))
         usdc_bought = exchange.getEthToTokenInputPrice(eth_bought, block_identifier=block) / 1e6
         fees = 0.997 ** 2
         return usdc_bought / fees
