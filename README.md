@@ -22,7 +22,7 @@ get_price(token,block)
 You can also import protocol specific modules. For example:
 ```
 from ypricemagic import uniswap
-uniswap.get_price
+uniswap.get_price(token, block)
 ```
 ```
 from ypricemagic.compound import get_price
