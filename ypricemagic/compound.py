@@ -25,12 +25,22 @@ def is_compound_market(token):
 
 def get_price(token, block=None):
     token = Contract(token)
-    underlying, exchange_rate, decimals = fetch_multicall(
-        [token, 'underlying'],
-        [token, 'exchangeRateCurrent'],
-        [token, 'decimals'],
-        block=block
-    )
-    exchange_rate /= 1e18
-    under_decimals = Contract(underlying).decimals()
-    return [exchange_rate * 10 ** (decimals - under_decimals), underlying]
+    try:
+        underlying, exchange_rate, decimals = fetch_multicall(
+            [token, 'underlying'],
+            [token, 'exchangeRateCurrent'],
+            [token, 'decimals'],
+            block=block
+        )
+        exchange_rate /= 1e18
+        under_decimals = Contract(underlying).decimals()
+        return [exchange_rate * 10 ** (decimals - under_decimals), underlying]
+    except AttributeError:
+        exchange_rate, decimals = fetch_multicall(
+            [token, 'exchangeRateCurrent'],
+            [token, 'decimals'],
+            block=block
+        )
+        exchange_rate /= 1e18
+        under_decimals = 18
+        return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
