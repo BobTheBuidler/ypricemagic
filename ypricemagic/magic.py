@@ -29,6 +29,14 @@ def get_price(token, block=None):
         price = chainlink.get_price(token, block=block)
         logger.debug("chainlink -> %s", price)
 
+    elif aave.is_atoken(token):
+        price = aave.get_price(token, block=block)
+        logger.debug("atoken -> %s", price)
+
+    elif cream.is_creth(token):
+        price = cream.get_price_creth(token, block)
+        logger.debug("atoken -> %s", price)
+
     elif yearn.is_yearn_vault(token):
         price = yearn.get_price(token, block=block)
         logger.debug("yearn -> %s", price)
