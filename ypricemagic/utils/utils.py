@@ -1,6 +1,11 @@
-import logging, datetime
-from brownie import chain, web3
+import datetime
+import logging
+
+from brownie import Contract, chain, web3
 from cachetools.func import lru_cache
+
+from .events import decode_logs, get_logs_asap
+from ..constants import PROXIES
 from .cache import memory
 
 logger = logging.getLogger(__name__)
@@ -88,3 +93,56 @@ def _contract_creation_block_bigquery(address):
     query_job = client.query(query, job_config=job_config)
     for row in query_job:
         return row["block_number"]
+
+@lru_cache
+def get_decimals_with_override(address, block=None):
+    try:
+        return DECIMAL_OVERRIDES[str(address)]
+    except KeyError:
+        try:
+            return Contract(address).decimals()
+        except (AttributeError, ValueError):
+            try:
+                return Contract(address).DECIMALS()
+            except (AttributeError, ValueError): # NOTE: if AttributeError, 'address' is a proxy and we need to look at the implementation
+                if is_AdminUpgradeabilityProxy(address):
+                    topics = [web3.keccak(text='Upgraded(address)').hex()]
+                    upgrade_events = get_logs_asap(address, topics, to_block=block)
+                    try: # NOTE: for debugging purposes only
+                        current = max(event.blockNumber for event in upgrade_events)
+                    except:
+                        raise
+                    event = [event for event in upgrade_events if event.blockNumber == current]
+                    implementation = decode_logs(event)['Upgraded']['implementation']
+                    return Contract(implementation).decimals()
+                elif is_PProxy(address):
+                    return Contract(Contract(address).getImplementation()).decimals()
+                else: # NOTE: This will throw
+                    return Contract(address).decimals()        
+
+def PROXIES_reverse_lookup(token):
+    try:
+        return [key for key, value in PROXIES.items() if value == token][0]
+    except IndexError:
+        return token
+
+def is_AdminUpgradeabilityProxy(address):
+    required = {"upgradeTo", "upgradeToAndCall", "implementation", "changeAdmin", "admin"}
+    return set(Contract(address).__dict__) & required == required
+
+def is_PProxy(address):
+    required = {"getImplementation"}
+    return set(Contract(address).__dict__) & required == required
+
+DECIMAL_OVERRIDES = {
+    '0x88df592f8eb5d7bd38bfef7deb0fbc02cf3778a0': 18
+    ,'0x78F225869c08d478c34e5f645d07A87d3fe8eb78': 18
+    ,'0x17525E4f4Af59fbc29551bC4eCe6AB60Ed49CE31': 18
+    ,'0x79A91cCaaa6069A571f0a3FA6eD257796Ddd0eB4': 18
+    ,'0x043942281890d4876D26BD98E2BB3F662635DFfb': 10
+    ,'0x33e18a092a93ff21aD04746c7Da12e35D34DC7C4': 18
+    ,'0x0Ba45A8b5d5575935B8158a88C631E9F9C95a2e5': 18
+    ,'0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A': 9
+    ,'0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e': 18
+}
+
