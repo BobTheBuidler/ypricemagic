@@ -57,6 +57,11 @@ def get_price(token, block=None):
         price = balancer.get_price(token, block=block)
         logger.debug("balancer pool -> %s", price)
 
+    elif tokensets.is_token_set(token):
+        price = tokensets.get_price(token, block=block)
+        logger.debug("token set -> %s", price)
+
+    
     # peel a layer from [multiplier, underlying]
     if isinstance(price, list):
         price, underlying = price
