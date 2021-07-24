@@ -15,6 +15,7 @@ feeds = {
     # NOTE: These coins don't have oracles but we can use the oracle for the base token
     "0x9AFb950948c2370975fb91a441F36FDC02737cD4": Contract("0x1A31D42149e82Eb99777f903C08A2E41A00085d3"),  # hfil
     "0x5CAF29fD8efbe4ED0cfc43A8a211B276E9889583": Contract("0x1A31D42149e82Eb99777f903C08A2E41A00085d3"),  # renfil
+    "0xC581b735A1688071A1746c968e0798D642EDE491": Contract("0xb49f677943BC038e9857d61E7d053CaA2C1734C1"),  # eurt
 
 }
 
