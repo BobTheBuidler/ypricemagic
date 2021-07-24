@@ -1,9 +1,16 @@
+import token
+from tokenize import tokenize
 from brownie import Contract
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from .utils.cache import memory
 from .utils.multicall2 import fetch_multicall
-from .constants import weth, usdc
+from .utils.utils import get_decimals_with_override, Contract_with_erc20_fallback
+from .constants import STABLECOINS, dai, usdc, usdt, wbtc, weth, sushi
+from .interfaces.ERC20 import ERC20ABI
+import ypricemagic.magic
+import logging
+
 
 #project.load()
 
@@ -17,34 +24,68 @@ ROUTERS = {
 }
 FACTORY_TO_ROUTER = {FACTORIES[name]: ROUTERS[name] for name in FACTORIES}
 
+FACTORY_TO_PROTOCOL = {FACTORIES[name]: name for name in FACTORIES}
+
+SPECIAL_PATHS = {
+    "sushiswap": {
+        "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": ["0xEF69B5697f2Fb0345cC680210fD39b593a2f9684","0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",weth,usdc]
+        ,"0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e": ["0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e","0xC28E27870558cF22ADD83540d2126da2e4b464c2",weth,usdc]
+        ,"0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2": ["0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2","0x4954Db6391F4feB5468b6B943D4935353596aEC9",usdc]
+        ,"0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6": ["0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6","0x87F5F9eBE40786D49D35E1B5997b07cCAA8ADbFF",weth,usdc]
+        ,"0x4954Db6391F4feB5468b6B943D4935353596aEC9": ["0x4954Db6391F4feB5468b6B943D4935353596aEC9",usdc]
+        ,"0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0": ["0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0","0xEF69B5697f2Fb0345cC680210fD39b593a2f9684","0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",weth,usdc]
+        ,"0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d": ["0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d","0xba100000625a3754423978a60c9317c58a424e3D",weth,usdc]
+        ,"0xBA50933C268F567BDC86E1aC131BE072C6B0b71a": ["0xBA50933C268F567BDC86E1aC131BE072C6B0b71a",weth,usdc]
+        ,"0x6102407f07029892eB5Ff02164ADFaFb85f4d222": ["0x6102407f07029892eB5Ff02164ADFaFb85f4d222",usdt]
+        ,"0x85034b3b2e292493D029443455Cc62ab669573B3": ["0x85034b3b2e292493D029443455Cc62ab669573B3","0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",weth,usdc]
+        ,"0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8": ["0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8", usdc]
+        ,"0x383518188C0C6d7730D91b2c03a03C837814a899": ["0x383518188C0C6d7730D91b2c03a03C837814a899",dai]
+        ,"0xafcE9B78D409bF74980CACF610AFB851BF02F257": ["0xafcE9B78D409bF74980CACF610AFB851BF02F257",wbtc,weth,usdc]
+    },
+    "uniswap": {
+    }
+}
+
 
 @ttl_cache(ttl=600)
-def get_price(token_in, token_out=usdc, router="uniswap", block=None):
+def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_against=weth):
     """
     Calculate a price based on Uniswap Router quote for selling one `token_in`.
-    Always uses intermediate WETH pair.
+    Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
     """
-    tokens = [Contract(str(token)) for token in [token_in, token_out]]
-    amount_in = 10 ** tokens[0].decimals()
-    path = [token_in, token_out] if weth in (token_in, token_out) else [token_in, weth, token_out]
+    tokens = [str(token) for token in [token_in, token_out]]
+    amount_in = 10 ** get_decimals_with_override(tokens[0])
+    
+    if str(token_in) in STABLECOINS:
+        return 1
+    elif str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:
+        path = [token_in, paired_against]
+    elif weth in (token_in, token_out):
+        path = [token_in, token_out]
+    elif paired_against == sushi and token_out != sushi:
+        path = [token_in,sushi,weth,token_out]
+    elif str(token_in) in SPECIAL_PATHS[router].keys() and str(token_out) in STABLECOINS:
+        path = SPECIAL_PATHS[router][str(token_in)]
+        logging.info(f"special path used: {path}")
+    else:
+        path = [token_in, weth, token_out]
     fees = 0.997 ** (len(path) - 1)
     if router in ROUTERS:
         router = ROUTERS[router]
     try:
         quote = router.getAmountsOut(amount_in, path, block_identifier=block)
-        amount_out = quote[-1] / 10 ** tokens[1].decimals()
+        amount_out = quote[-1] / 10 ** get_decimals_with_override(str(path[-1]))
         return amount_out / fees
-    except ValueError:
-        pass
+    except ValueError as e:
+        return
 
 
 @ttl_cache(ttl=600)
 def get_price_v1(asset, block=None):
     factory = Contract("0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95")
     try:
-        asset = Contract(asset)
         exchange = Contract(factory.getExchange(asset))
-        eth_bought = exchange.getTokenToEthInputPrice(10 ** asset.decimals(), block_identifier=block)
+        eth_bought = exchange.getTokenToEthInputPrice(10 ** get_decimals_with_override(asset), block_identifier=block)
         exchange = Contract(factory.getExchange(usdc))
         usdc_bought = exchange.getEthToTokenInputPrice(eth_bought, block_identifier=block) / 1e6
         fees = 0.997 ** 2
@@ -65,6 +106,25 @@ def is_uniswap_pool(address):
 @ttl_cache(ttl=600)
 def lp_price(address, block=None):
     """ Get Uniswap/Sushiswap LP token price. """
+
+    def extrapolate_balance_if_needed():
+        nonlocal balances
+        if balances[0] and not balances[1]:
+            balances[1] = balances[0]
+            logging.critical(f'extrapolated balance: {balances[0]}')
+            try:
+                logging.critical(f"coin: {Contract(token1).symbol()} {token1}")
+            except AttributeError:
+                logging.critical(f"coin: {Contract(token1).__dict__['_build']['contractName']} {token1}")
+        if balances[1] and not balances[0]:
+            balances[0] = balances[1]
+            logging.critical(f'extrapolated balance: {balances[0]}')
+            try:
+                logging.critical(f"coin: {Contract(token0).symbol()} {token0}")
+            except AttributeError:
+                logging.critical(f"coin: {Contract(token0).__dict__['_build']['contractName']} {token0}")
+        return balances
+
     pair = Contract(address)
     factory, token0, token1, supply, reserves = fetch_multicall(
         [pair, "factory"],
@@ -74,10 +134,39 @@ def lp_price(address, block=None):
         [pair, "getReserves"],
         block=block
     )
-    router = FACTORY_TO_ROUTER[factory]
-    tokens = [Contract(token) for token in [token0, token1]]
-    scales = [10 ** token.decimals() for token in tokens]
-    prices = [get_price(token, router=router, block=block) for token in tokens]
+    router = FACTORY_TO_PROTOCOL[factory]
+    tokens = [Contract_with_erc20_fallback(token) for token in [token0, token1]]
+    price0 = get_price(tokens[0], paired_against=tokens[1], router=router, block=block)
+    price1 = get_price(tokens[1], paired_against=tokens[0], router=router, block=block)
+    prices = [price0,price1]
+    scales = [10 ** get_decimals_with_override(str(token)) for token in tokens]
     supply = supply / 1e18
-    balances = [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
-    return sum(balances) / supply
+    try:
+        balances = [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
+    except TypeError as e: # If can't get price via router, try to get from elsewhere
+        logging.critical(str(e))
+        logging.critical(f"Block: {block}")
+        logging.critical(f"Pool: {address}")
+        logging.critical(f"Tokens: {tokens}")
+        if not price0:
+            try:
+                logging.critical('pulling from elsewhere')
+                price0 = ypricemagic.magic.get_price(tokens[0], block)
+            except ypricemagic.magic.PriceError:
+                price0 is None
+        if not price1:
+            try:
+                price1 = ypricemagic.magic.get_price(tokens[1], block)
+            except ypricemagic.magic.PriceError:
+                price1 is None
+        prices = [price0,price1]
+        balances = [None,None] # [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
+        if price0:
+            balances[0] = reserves[0] / scales[0] * price0
+        if price1:
+            balances[1] = reserves[1] / scales[1] * price1
+    balances = extrapolate_balance_if_needed()
+    try:
+        return sum(balances) / supply
+    except TypeError:
+        return
