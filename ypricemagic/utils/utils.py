@@ -7,6 +7,7 @@ from cachetools.func import lru_cache
 from .events import decode_logs, get_logs_asap
 from ..constants import PROXIES
 from .cache import memory
+from ..interfaces.ERC20 import ERC20ABI
 
 logger = logging.getLogger(__name__)
 
@@ -146,3 +147,9 @@ DECIMAL_OVERRIDES = {
     ,'0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e': 18
 }
 
+def Contract_with_erc20_fallback(address):
+    try:
+        contract = Contract(address)
+    except (AttributeError, ValueError, IndexError):
+        contract = Contract.from_abi('ERC20',address,ERC20ABI)
+    return contract
