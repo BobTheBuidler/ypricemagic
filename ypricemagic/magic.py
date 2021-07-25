@@ -2,7 +2,7 @@ import logging
 
 from cachetools.func import ttl_cache
 
-from . import balancer, chainlink, compound, constants, curve, uniswap, yearn
+from . import aave, balancer, chainlink, compound, constants, cream, curve, piedao, tokensets, uniswap, yearn
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +60,10 @@ def get_price(token, block=None):
     elif tokensets.is_token_set(token):
         price = tokensets.get_price(token, block=block)
         logger.debug("token set -> %s", price)
+
+    elif piedao.is_pie(token):
+        price = piedao.get_price(token, block=block)
+        logger.debug("piedeo -> %s", price)
 
     
     # peel a layer from [multiplier, underlying]
