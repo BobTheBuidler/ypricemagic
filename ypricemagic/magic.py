@@ -1,8 +1,8 @@
 import logging
 
-from cachetools.func import ttl_cache
-
-from . import aave, balancer, chainlink, compound, constants, cream, curve, piedao, tokensets, uniswap, yearn
+from .utils.cache import memory
+from brownie import chain
+from . import uniswap
 
 logger = logging.getLogger(__name__)
 
