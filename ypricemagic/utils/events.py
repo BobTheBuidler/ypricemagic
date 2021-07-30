@@ -9,7 +9,7 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 
 from .middleware import BATCH_SIZE
-from .utils import contract_creation_block
+import ypricemagic.utils.utils
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +32,9 @@ def create_filter(address, topics=None):
     Set fromBlock as the earliest creation block.
     """
     if isinstance(address, list):
-        start_block = min(map(contract_creation_block, address))
+        start_block = min(map(ypricemagic.utils.utils.contract_creation_block, address))
     else:
-        start_block = contract_creation_block(address)
+        start_block = ypricemagic.utils.utils.contract_creation_block(address)
 
     return web3.eth.filter({"address": address, "fromBlock": start_block, "topics": topics})
 
@@ -43,7 +43,7 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     logs = []
 
     if from_block is None:
-        from_block = contract_creation_block(address)
+        from_block = ypricemagic.utils.utils.contract_creation_block(address)
     if to_block is None:
         to_block = chain.height
 
