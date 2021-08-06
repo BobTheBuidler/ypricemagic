@@ -4,7 +4,8 @@ from .utils.multicall2 import fetch_multicall
 
 def is_yearn_vault(token):
     vault = Contract(token)
-    return hasattr(vault, 'pricePerShare') or hasattr(vault, 'getPricePerFullShare')
+    return hasattr(vault, 'pricePerShare') or hasattr(vault, 'getPricePerFullShare')\
+        or hasattr(vault, 'getPricePerShare') # Yearn-like contracts can use this format
 
 
 def get_price(token, block=None):
@@ -26,3 +27,11 @@ def get_price(token, block=None):
             block=block
         )
         return [share_price / 1e18, underlying]
+    if hasattr(vault, 'getPricePerShare'):
+        share_price, underlying, decimals = fetch_multicall(
+            [vault, 'getPricePerShare'],
+            [vault, 'token'],
+            [vault, 'decimals'],
+            block=block
+        )
+        return [share_price / 10 ** decimals, underlying]
