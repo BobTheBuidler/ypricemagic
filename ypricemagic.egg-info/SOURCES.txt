@@ -2,12 +2,16 @@ README.md
 setup.cfg
 setup.py
 ypricemagic/__init__.py
+ypricemagic/aave.py
 ypricemagic/balancer.py
 ypricemagic/chainlink.py
 ypricemagic/compound.py
 ypricemagic/constants.py
+ypricemagic/cream.py
 ypricemagic/curve.py
 ypricemagic/magic.py
+ypricemagic/piedao.py
+ypricemagic/tokensets.py
 ypricemagic/uniswap.py
 ypricemagic/yearn.py
 ypricemagic.egg-info/PKG-INFO
@@ -15,6 +19,8 @@ ypricemagic.egg-info/SOURCES.txt
 ypricemagic.egg-info/dependency_links.txt
 ypricemagic.egg-info/requires.txt
 ypricemagic.egg-info/top_level.txt
+ypricemagic/interfaces/ERC20.py
+ypricemagic/interfaces/StablePool.py
 ypricemagic/interfaces/__init__.py
 ypricemagic/interfaces/balancer/WeightedPool.py
 ypricemagic/interfaces/balancer/__init__.py

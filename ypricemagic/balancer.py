@@ -1,4 +1,5 @@
-from brownie import Contract
+from functools import lru_cache
+from brownie import Contract, convert
 from cachetools.func import ttl_cache
 
 from . import magic
@@ -27,7 +28,7 @@ def list_pools_v2(block):
     return pools
 
 
-@ttl_cache(ttl=600)
+@ttl_cache(ttl=1800)
 def list_pools_for_token_v2(token, block):
     def query_pools(pool, block):
         for pooltoken in bal_vault_v2.getPoolTokens(pool[1], block_identifier = block)[0]:
