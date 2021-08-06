@@ -10,7 +10,8 @@ import ypricemagic.magic
 import ypricemagic.utils.utils
 from .constants import STABLECOINS, dai, usdc, usdt, wbtc, weth, sushi
     
-
+# NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.
+#       Please add a viable swap path below to fetch price data successfully.
 
 #project.load()
 
@@ -45,13 +46,30 @@ if chain.id == 1:
     }
 elif chain.id == 56:
     ROUTERS = {
-        "pancakeswap": Contract("0x10ED43C718714eb63d5aA57B78B54704E256024E"),
+        "pancakeswapv2": Contract("0x10ED43C718714eb63d5aA57B78B54704E256024E"),
+        "pancakeswapv1": Contract("0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F")
     }
     FACTORIES = {
-        "pancakeswap": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+        "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
+        "pancakeswapv1": "0xBCfCcbde45cE874adCB698cC183deBcF17952812"
     }
     SPECIAL_PATHS = {
-        "pancakeswap": {
+        "pancakeswapv2": {
+
+        },
+        "pancakeswapv1": {
+
+        }
+    }
+elif chain.id == 137:
+    ROUTERS = {
+        "quickswap": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff")
+    }
+    FACTORIES = {
+        "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+    }
+    SPECIAL_PATHS = {
+        "quickswap": {
 
         }
     }
@@ -61,18 +79,17 @@ FACTORY_TO_ROUTER = {FACTORIES[name]: ROUTERS[name] for name in FACTORIES}
 FACTORY_TO_PROTOCOL = {FACTORIES[name]: name for name in FACTORIES}
 
 
-@ttl_cache(ttl=600)
+@ttl_cache(ttl=36000)
 def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_against=weth):
     """
     Calculate a price based on Uniswap Router quote for selling one `token_in`.
     Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
     """
-    if chain.id == 56:
+    if chain.id == 56 and token_out == usdc:
         busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
         token_out = busd
     tokens = [str(token) for token in [token_in, token_out]]
     amount_in = 10 ** ypricemagic.utils.utils.get_decimals_with_override(tokens[0])
-    
     if str(token_in) in STABLECOINS:
         return 1
     elif str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:
@@ -84,17 +101,21 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
     elif str(token_in) in SPECIAL_PATHS[router].keys() and str(token_out) in STABLECOINS:
         path = SPECIAL_PATHS[router][str(token_in)]
     elif chain.id == 56: #bsc
-        wbnb = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
-        cake = Contract("0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82")
+        from .constants import cake, wbnb
         if wbnb in (token_in, token_out):
             path = [token_in, token_out]
         elif cake in (token_in, token_out):
             path = [token_in, token_out]
         else:
             path = [token_in,wbnb,token_out]
+    elif chain.id == 137: #bsc
+        from .constants import wmatic
+        if wmatic in (token_in, token_out):
+            path = [token_in, token_out]
+        else:
+            path = [token_in,wmatic,token_out]
     else:
         path = [token_in, weth, token_out]
-    #print(path)
     fees = 0.997 ** (len(path) - 1)
     if router in ROUTERS:
         router = ROUTERS[router]
@@ -142,7 +163,7 @@ def lp_price(address, block=None):
         return balances
 
     pair = Contract(address)
-    if chain.id not in [56]: # No multicall2 on bsc
+    if chain.id not in [56, 137]: # No multicall2 on bsc or poly
         factory, token0, token1, supply, reserves = fetch_multicall(
             [pair, "factory"],
             [pair, "token0"],
@@ -161,8 +182,6 @@ def lp_price(address, block=None):
     tokens = [ypricemagic.utils.utils.Contract_with_erc20_fallback(token) for token in [token0, token1]]
     price0 = get_price(tokens[0], paired_against=tokens[1], router=router, block=block)
     price1 = get_price(tokens[1], paired_against=tokens[0], router=router, block=block)
-    print(tokens)
-    print(reserves)
     prices = [price0,price1]
     scales = [10 ** ypricemagic.utils.utils.get_decimals_with_override(str(token)) for token in tokens]
     supply = supply / 1e18

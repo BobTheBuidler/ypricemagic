@@ -2,7 +2,7 @@ import logging
 
 from .utils.cache import memory
 from brownie import chain
-from . import uniswap
+from . import compound, constants, uniswap
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class PriceError(Exception):
 @memory.cache()
 def get_price(token, block=None):
     token = str(token)
-
+    print(f"chainid: {chain.id}")
     #    # NOTE: Special handling required for some proxy tokens
     #    if token in constants.PROXIES: # snx
     #        logger.info('Replacing proxy address with implementation address')
@@ -23,12 +23,12 @@ def get_price(token, block=None):
     logger.debug("unwrapping %s", token)
     price = None
 
+    if token in constants.STABLECOINS:
+        logger.debug("stablecoin -> %s", 1)
+        return 1
+
     if chain.id == 1: # eth mainnet
-        from . import aave, balancer, chainlink, compound, constants, cream, curve, piedao, tokensets, yearn
-        
-        if token in constants.STABLECOINS:
-            logger.debug("stablecoin -> %s", 1)
-            return 1
+        from . import aave, balancer, chainlink, cream, curve, piedao, tokensets, yearn
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.weth)
@@ -110,12 +110,57 @@ def get_price(token, block=None):
 
     if chain.id == 56: # binance smart chain
         print(token)
-        if uniswap.is_uniswap_pool(token):
+
+        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
+            token = str(constants.wbnb)
+
+        # we can exit early with known tokens
+        if compound.is_compound_market(token):
+            price = compound.get_price(token, block=block)
+            logger.debug("compound -> %s", price)
+
+        elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block=block)
             logger.debug("uniswap pool -> %s", price)
+
+        # peel a layer from [multiplier, underlying]
+        if isinstance(price, list):
+            price, underlying = price
+            logger.debug("peel %s %s", price, underlying)
+            return price * get_price(underlying, block=block)
         
         if price is None:
-            price = uniswap.get_price(token, router="pancakeswap", block=block)
+            price = uniswap.get_price(token, router="pancakeswapv2", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="pancakeswapv1", block=block)
+            logger.debug("uniswap -> %s", price)
+
+    if chain.id == 137: # polygon
+        print(token)
+
+        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
+            token = str(constants.wmatic)
+
+        # we can exit early with known tokens
+        if compound.is_compound_market(token):
+            price = compound.get_price(token, block=block)
+            logger.debug("compound -> %s", price)
+
+        elif uniswap.is_uniswap_pool(token):
+            price = uniswap.lp_price(token, block=block)
+            logger.debug("uniswap pool -> %s", price)
+
+        # peel a layer from [multiplier, underlying]
+        if isinstance(price, list):
+            price, underlying = price
+            logger.debug("peel %s %s", price, underlying)
+            return price * get_price(underlying, block=block)
+        
+        if price is None:
+            print('test')
+            price = uniswap.get_price(token, router="quickswap", block=block)
             logger.debug("uniswap -> %s", price)
 
     return price

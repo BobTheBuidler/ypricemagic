@@ -1,5 +1,7 @@
 from brownie import Contract, chain
 
+sushi = None
+
 if chain.id == 1:
     weth = Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
     usdc = Contract("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
@@ -34,7 +36,8 @@ elif chain.id == 56:
     dai = Contract("0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3")
     wbtc = Contract("0x2ccb7c8c51e55c2364b555ff6e6e3f7246499e16")
     usdt = Contract("0x55d398326f99059ff775485246999027b3197955")
-    sushi = Contract("0x947950bcc74888a40ffa2593c5798f11fc9124c4")
+    wbnb = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
+    cake = Contract("0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82")
 
     STABLECOINS = {
         "0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d": "usdc",
@@ -42,5 +45,20 @@ elif chain.id == 56:
         "0x55d398326f99059ff775485246999027b3197955": "usdt",
         "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56": "busd",
         "0x23396cF899Ca06c4472205fC903bDB4de249D6fC": "wust"
+    }
+    PROXIES = {}
+elif chain.id == 137: #poly
+    weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
+    usdc = Contract("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")
+    dai = Contract("0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063")
+    wbtc = Contract("0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6")
+    usdt = Contract("0xc2132D05D31c914a87C6611C10748AEb04B58e8F")
+    wmatic = Contract("0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270")
+    
+    STABLECOINS = {
+        "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": "usdc",
+        "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063": "dai",
+        "0xc2132D05D31c914a87C6611C10748AEb04B58e8F": "usdt",
+
     }
     PROXIES = {}
