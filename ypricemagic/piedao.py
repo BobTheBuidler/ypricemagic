@@ -1,6 +1,7 @@
 from ypricemagic.utils.utils import Contract_with_erc20_fallback
 from brownie import Contract
 from . import magic
+import logging
 
 # NOTE: If this module is not working with you, try to reinitialize your contract with 
 # Contract.from_abi(). Get the proper abi from etherscan. For some reason, Contract()
@@ -15,7 +16,7 @@ def get_price(token, block=None):
     token = Contract(token)
     ten_tokens = 10 ** (token.decimals() + 1)
     balances = token.calcTokensForAmount(ten_tokens, block_identifier = block)
-    print(balances)
+    logging.debug(f"pie balances: {balances}")
     total = sum(
         balance / 10 ** Contract(token).decimals() * magic.get_price(token, block=block)
         for token, balance in zip(balances[0], balances[1])
