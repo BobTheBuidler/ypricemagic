@@ -21,7 +21,7 @@ def get_ethereum_client():
         return 'erigon'
     if client.lower().startswith('geth'):
         return 'geth'
-    print(client)
+    logging.debug(f"client: {client}")
     return client
 
 

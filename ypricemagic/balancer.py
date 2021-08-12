@@ -86,7 +86,7 @@ def get_price(token, block=None):
                 pairedTokenBal = balance
                 pairedTokenWeight = weight
                 pairedToken = pooltoken
-                
+
         if usdcBal:
             usdcValueUSD = (usdcBal / 10 ** 6) * magic.get_price(usdc, block)
             tokenValueUSD = usdcValueUSD / usdcWeight * tokenWeight
@@ -103,7 +103,6 @@ def get_price(token, block=None):
         nonlocal priceSum, priceCt
         priceSum += tokenPrice
         priceCt += 1
-    
     priceSum, priceCt = 0, 0
     Parallel(4,'threading')(delayed(query_pool_price)(pooladdress, poolid) for pooladdress, poolid in list_pools_for_token_v2(token, block))
     if priceCt > 0:
