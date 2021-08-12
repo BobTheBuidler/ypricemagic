@@ -86,11 +86,12 @@ def contract_creation_block(address) -> int:
     Determine the block when a contract was created.
     """
     logger.info("contract creation block %s", address)
-    client = get_ethereum_client()
-    if client in ['tg', 'erigon', 'geth']:
-        return _contract_creation_block_binary_search(address)
-    else:
-        return _contract_creation_block_bigquery(address)
+    # NOTE: Testing to see if we even need this, will likely remove later
+    #client = get_ethereum_client()
+    #if client in ['tg', 'erigon', 'geth']:
+    return _contract_creation_block_binary_search(address)
+    #else:
+    #    return _contract_creation_block_bigquery(address)
 
 
 def _contract_creation_block_binary_search(address):
