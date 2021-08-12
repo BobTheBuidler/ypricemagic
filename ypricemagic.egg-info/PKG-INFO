@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: ypricemagic
-Version: 0.2.6
+Version: 0.2.7
 Summary: Use this tool to extract historical on-chain price data from an archive node. Shoutout to @bantg and @nymmrx for their awesome work on yearn-exporter that made this library possible.
 Home-page: https://github.com/BobTheBuidler/ypricemagic
 Author: BobTheBuidler
