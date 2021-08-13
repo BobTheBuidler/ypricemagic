@@ -2,7 +2,7 @@ import logging
 
 from .utils.cache import memory
 from brownie import chain
-from . import compound, constants, uniswap
+from . import aave, compound, constants, uniswap
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def get_price(token, block=None):
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import aave, balancer, chainlink, cream, curve, piedao, tokensets, yearn
+        from . import balancer, chainlink, cream, curve, piedao, tokensets, yearn
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.weth)
