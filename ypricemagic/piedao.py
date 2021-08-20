@@ -1,7 +1,7 @@
 from ypricemagic.utils.utils import Contract_with_erc20_fallback
 from brownie import Contract
 from . import magic
-from ..utils import get_decimals_with_override
+from .utils.utils import get_decimals_with_override
 import logging
 
 # NOTE: If this module is not working with you, try to reinitialize your contract with 
