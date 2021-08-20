@@ -12,13 +12,17 @@ def is_pie(address):
     required = {"getCap", "getPublicSwapSetter", "getTokenBinder"}
     return set(pool.__dict__) & required == required
 
+def value(token, block, balance):
+    logging.debug(f'token: {token}')
+    return balance / 10 ** Contract(token).decimals() * magic.get_price(token, block=block)
+
 def get_price(token, block=None):
     token = Contract(token)
     ten_tokens = 10 ** (token.decimals() + 1)
     balances = token.calcTokensForAmount(ten_tokens, block_identifier = block)
     logging.debug(f"pie balances: {balances}")
     total = sum(
-        balance / 10 ** Contract(token).decimals() * magic.get_price(token, block=block)
+        value(token, block, balance)
         for token, balance in zip(balances[0], balances[1])
     )
     return total/10
