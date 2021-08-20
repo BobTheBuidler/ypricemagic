@@ -1,6 +1,7 @@
 from ypricemagic.utils.utils import Contract_with_erc20_fallback
 from brownie import Contract
 from . import magic
+from ..utils import get_decimals_with_override
 import logging
 
 # NOTE: If this module is not working with you, try to reinitialize your contract with 
@@ -14,7 +15,7 @@ def is_pie(address):
 
 def value(token, block, balance):
     logging.debug(f'token: {token}')
-    return balance / 10 ** Contract(token).decimals() * magic.get_price(token, block=block)
+    return balance / 10 ** get_decimals_with_override(token) * magic.get_price(token, block=block)
 
 def get_price(token, block=None):
     token = Contract(token)
