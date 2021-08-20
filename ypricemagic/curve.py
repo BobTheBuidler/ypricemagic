@@ -43,8 +43,11 @@ def get_pool(token):
         return OVERRIDES[token]['pool']
     if token in CRYPTOPOOLS:
         return CRYPTOPOOLS[token]['pool']
-    if set(metapool_factory.get_underlying_coins(token)) != {ZERO_ADDRESS}:
-        return token
+    try:
+        if set(metapool_factory.get_underlying_coins(token)) != {ZERO_ADDRESS}:
+            return token
+    except:
+        pass
     return curve_registry.get_pool_from_lp_token(token)
 
 
