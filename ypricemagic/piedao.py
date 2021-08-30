@@ -15,6 +15,9 @@ def is_pie(address):
 
 def value(token, block, balance):
     logging.debug(f'token: {token}')
+    if token == '0xf037f37f58110933834CA64545E4ffD169736561': # wrapped ATRI
+        newtoken = '0xdacD69347dE42baBfAEcD09dC88958378780FB62' # ATRI
+        return balance / 10 ** get_decimals_with_override(token) * magic.get_price(newtoken, block=block)
     return balance / 10 ** get_decimals_with_override(token) * magic.get_price(token, block=block)
 
 def get_price(token, block=None):
