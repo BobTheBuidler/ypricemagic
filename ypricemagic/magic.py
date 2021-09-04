@@ -20,7 +20,7 @@ def get_price(token, block=None):
     #    if token in constants.PROXIES: # snx
     #        logger.info('Replacing proxy address with implementation address')
     #        token = constants.PROXIES[token]
-    
+
     logger.debug("unwrapping %s", token)
     price = None
 
@@ -34,8 +34,11 @@ def get_price(token, block=None):
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.weth)
 
+        if token == "0x9d409a0A012CFbA9B15F6D4B36Ac57A46966Ab9a":
+            price = uniswap.get_price(token, router="sushiswap", block=block)
+
         # we can exit early with known tokens
-        if token in chainlink.feeds:
+        elif token in chainlink.feeds:
             price = chainlink.get_price(token, block=block)
             logger.debug("chainlink -> %s", price)
 
@@ -75,7 +78,7 @@ def get_price(token, block=None):
             price = piedao.get_price(token, block=block)
             logger.debug("piedeo -> %s", price)
 
-        
+
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
             price, underlying = price
@@ -86,11 +89,11 @@ def get_price(token, block=None):
         if price is None: # NOTE: 'if not price' returns True if price == 0 but we actually only want to proceed if price == None
             price = uniswap.get_price(token, router="sushiswap", block=block)
             logger.debug("sushiswap -> %s", price)
-        
+
         if price is None:
             price = uniswap.get_price(token, router="uniswap", block=block)
             logger.debug("uniswap -> %s", price)
-        
+
         if price is None:
             price = uniswap.get_price_v1(token, block=block)
             logger.debug("uniswap v1 -> %s", price)
@@ -128,7 +131,7 @@ def get_price(token, block=None):
             price, underlying = price
             logger.debug("peel %s %s", price, underlying)
             return price * get_price(underlying, block=block)
-        
+
         if price is None:
             price = uniswap.get_price(token, router="pancakeswapv2", block=block)
             logger.debug("uniswap -> %s", price)
@@ -160,7 +163,7 @@ def get_price(token, block=None):
             price, underlying = price
             logger.debug("peel %s %s", price, underlying)
             return price * get_price(underlying, block=block)
-        
+
         if price is None:
             price = uniswap.get_price(token, router="quickswap", block=block)
             logger.debug("uniswap -> %s", price)
