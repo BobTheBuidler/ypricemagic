@@ -93,9 +93,8 @@ def cryptopool_lp_price(token, block=None):
     scale = sum(balance * price for balance, price in zip(balances, prices)) / supply
     return [scale, str(tokens[0])]
 
-
 @ttl_cache(ttl=600)
-def get_price(token, block=None):
+def get_pool_price(token, block=None):
     if token in CRYPTOPOOLS:
         return cryptopool_lp_price(token, block)
 
