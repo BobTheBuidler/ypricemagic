@@ -63,7 +63,10 @@ def get_underlying_coins(token):
     pool = get_pool(token)
     coins = curve_registry.get_underlying_coins(pool)
     if set(coins) == {ZERO_ADDRESS}:
-        coins = metapool_factory.get_underlying_coins(token)
+        try:
+            coins = metapool_factory.get_underlying_coins(token)
+        except ValueError:
+            coins = metapool_factory.get_coins(token)
     return [coin for coin in coins if coin != ZERO_ADDRESS]
 
 
