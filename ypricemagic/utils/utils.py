@@ -21,7 +21,7 @@ def get_ethereum_client():
         return 'erigon'
     if client.lower().startswith('geth'):
         return 'geth'
-    print(client)
+    logging.debug(f"client: {client}")
     return client
 
 
@@ -86,11 +86,12 @@ def contract_creation_block(address) -> int:
     Determine the block when a contract was created.
     """
     logger.info("contract creation block %s", address)
-    client = get_ethereum_client()
-    if client in ['tg', 'erigon', 'geth']:
-        return _contract_creation_block_binary_search(address)
-    else:
-        return _contract_creation_block_bigquery(address)
+    # NOTE: Testing to see if we even need this, will likely remove later
+    #client = get_ethereum_client()
+    #if client in ['tg', 'erigon', 'geth']:
+    return _contract_creation_block_binary_search(address)
+    #else:
+    #    return _contract_creation_block_bigquery(address)
 
 
 def _contract_creation_block_binary_search(address):
@@ -177,6 +178,7 @@ if chain.id == 1:
         ,'0x0Ba45A8b5d5575935B8158a88C631E9F9C95a2e5': 18
         ,'0xE0B7927c4aF23765Cb51314A0E0521A9645F0E2A': 9
         ,'0x9A48BD0EC040ea4f1D3147C025cd4076A2e71e3e': 18
+        ,'0x57Ab1E02fEE23774580C119740129eAC7081e9D3': 18
     }
 elif chain.id == 56: # bsc
     DECIMAL_OVERRIDES = {

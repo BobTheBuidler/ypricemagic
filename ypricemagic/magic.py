@@ -2,7 +2,7 @@ import logging
 
 from .utils.cache import memory
 from brownie import chain
-from . import compound, constants, uniswap
+from . import aave, compound, constants, uniswap
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,8 @@ class PriceError(Exception):
 @memory.cache()
 def get_price(token, block=None):
     token = str(token)
-    print(f"chainid: {chain.id}")
+    logging.debug(f"token: {token}")
+    logging.debug(f"chainid: {chain.id}")
     #    # NOTE: Special handling required for some proxy tokens
     #    if token in constants.PROXIES: # snx
     #        logger.info('Replacing proxy address with implementation address')
@@ -28,7 +29,7 @@ def get_price(token, block=None):
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import aave, balancer, chainlink, cream, curve, piedao, tokensets, yearn
+        from . import balancer, chainlink, cream, curve, piedao, tokensets, yearn
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.weth)
@@ -109,7 +110,6 @@ def get_price(token, block=None):
             raise PriceError(f'could not fetch price for {token}')
 
     if chain.id == 56: # binance smart chain
-        print(token)
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wbnb)
@@ -138,12 +138,15 @@ def get_price(token, block=None):
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 137: # polygon
-        print(token)
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wmatic)
 
         # we can exit early with known tokens
+        if aave.is_atoken(token):
+            price = aave.get_price(token, block=block)
+            logger.debug("atoken -> %s", price)
+
         if compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
             logger.debug("compound -> %s", price)
@@ -159,7 +162,6 @@ def get_price(token, block=None):
             return price * get_price(underlying, block=block)
         
         if price is None:
-            print('test')
             price = uniswap.get_price(token, router="quickswap", block=block)
             logger.debug("uniswap -> %s", price)
 

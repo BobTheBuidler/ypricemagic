@@ -1,6 +1,7 @@
 from brownie import Contract
 from . import magic
 from .constants import usdc
+import logging
 
 def is_token_set(address):
     pool = Contract(address)
@@ -16,5 +17,5 @@ def get_price(token, block=None):
         set = Contract(token)
         components = set.getComponents(block_identifier = block)
         balances = zip(components,set.getUnits(block_identifier = block))
-        print(balances)
+        logging.debug(f"set balances: {balances}")
         return None

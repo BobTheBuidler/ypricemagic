@@ -43,8 +43,11 @@ def get_pool(token):
         return OVERRIDES[token]['pool']
     if token in CRYPTOPOOLS:
         return CRYPTOPOOLS[token]['pool']
-    if set(metapool_factory.get_underlying_coins(token)) != {ZERO_ADDRESS}:
-        return token
+    try:
+        if set(metapool_factory.get_underlying_coins(token)) != {ZERO_ADDRESS}:
+            return token
+    except:
+        pass
     return curve_registry.get_pool_from_lp_token(token)
 
 
@@ -60,7 +63,10 @@ def get_underlying_coins(token):
     pool = get_pool(token)
     coins = curve_registry.get_underlying_coins(pool)
     if set(coins) == {ZERO_ADDRESS}:
-        coins = metapool_factory.get_underlying_coins(token)
+        try:
+            coins = metapool_factory.get_underlying_coins(token)
+        except ValueError:
+            coins = metapool_factory.get_coins(token)
     return [coin for coin in coins if coin != ZERO_ADDRESS]
 
 
@@ -87,9 +93,8 @@ def cryptopool_lp_price(token, block=None):
     scale = sum(balance * price for balance, price in zip(balances, prices)) / supply
     return [scale, str(tokens[0])]
 
-
 @ttl_cache(ttl=600)
-def get_price(token, block=None):
+def get_pool_price(token, block=None):
     if token in CRYPTOPOOLS:
         return cryptopool_lp_price(token, block)
 
