@@ -20,7 +20,6 @@ ypricemagic.egg-info/dependency_links.txt
 ypricemagic.egg-info/requires.txt
 ypricemagic.egg-info/top_level.txt
 ypricemagic/interfaces/ERC20.py
-ypricemagic/interfaces/StablePool.py
 ypricemagic/interfaces/__init__.py
 ypricemagic/interfaces/balancer/WeightedPool.py
 ypricemagic/interfaces/balancer/__init__.py
