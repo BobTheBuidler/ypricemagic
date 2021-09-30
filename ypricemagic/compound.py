@@ -33,7 +33,12 @@ def get_markets():
 @memory.cache()
 def is_compound_market(token):
     markets = get_markets()
-    return any(token in market for market in markets.values())
+    if any(token in market for market in markets.values()):
+        return True
+    # NOTE: Workaround for pools that have since been revoked
+    token_contract = Contract(token)
+    required = {"isCToken", "comptroller", "underlying"} 
+    return set(token_contract.__dict__) & required == required
 
 
 def get_price(token, block=None):
