@@ -47,7 +47,8 @@ def get_pool(token):
         if set(metapool_factory.get_underlying_coins(token)) != {ZERO_ADDRESS}:
             return token
     except:
-        pass
+        if set(metapool_factory.get_coins(token)) != {ZERO_ADDRESS}:
+            return token
     return curve_registry.get_pool_from_lp_token(token)
 
 
