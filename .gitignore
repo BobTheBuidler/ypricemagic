@@ -4,5 +4,6 @@
 .hypothesis
 ypricemagic/old
 /ypricemagic.egg-info
-/__pycache__
 /.eggs
+/cache
+__pycache__/

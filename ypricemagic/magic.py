@@ -147,11 +147,15 @@ def get_price(token, block=None):
             token = str(constants.wmatic)
 
         # we can exit early with known tokens
-        if aave.is_atoken(token):
+        if token in chainlink.feeds:
+            price = chainlink.get_price(token, block=block)
+            logger.debug("chainlink -> %s", price)
+
+        elif aave.is_atoken(token):
             price = aave.get_price(token, block=block)
             logger.debug("atoken -> %s", price)
 
-        if compound.is_compound_market(token):
+        elif compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
             logger.debug("compound -> %s", price)
 
