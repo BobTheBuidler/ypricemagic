@@ -52,7 +52,7 @@ def get_price(token, block=None):
             logger.debug("yearn -> %s", price)
 
         elif curve.is_curve_lp_token(token):
-            price = curve.get_price(token, block=block)
+            price = curve.get_pool_price(token, block=block)
             logger.debug("curve lp -> %s", price)
 
         elif compound.is_compound_market(token):
