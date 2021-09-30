@@ -1,3 +1,4 @@
+from typing import Type
 from brownie import Contract
 from .utils.multicall2 import fetch_multicall
 
@@ -19,14 +20,13 @@ def get_price(token, block=None):
             [vault, 'decimals'],
             block=block
         )
-        return [share_price / 10 ** decimals, underlying]
     if hasattr(vault, 'getPricePerFullShare'):
         share_price, underlying = fetch_multicall(
             [vault, 'getPricePerFullShare'],
             [vault, 'token'],
             block=block
         )
-        return [share_price / 1e18, underlying]
+        decimals = 18
     if hasattr(vault, 'getPricePerShare'):
         share_price, underlying, decimals = fetch_multicall(
             [vault, 'getPricePerShare'],
@@ -34,4 +34,8 @@ def get_price(token, block=None):
             [vault, 'decimals'],
             block=block
         )
+
+    try:
         return [share_price / 10 ** decimals, underlying]
+    except TypeError: # when getPricePerShare() reverts due to divide by zero
+        return [0, underlying]
