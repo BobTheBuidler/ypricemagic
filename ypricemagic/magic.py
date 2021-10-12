@@ -1,7 +1,7 @@
 import logging
 
 from .utils.cache import memory
-from brownie import chain
+from brownie import chain, multicall
 from . import aave, chainlink, compound, constants, uniswap
 
 logger = logging.getLogger(__name__)
@@ -29,7 +29,8 @@ def get_price(token, block=None):
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import balancer, cream, curve, piedao, tokensets, yearn
+        from . import balancer, cream, curve, gelato, piedao, tokensets, yearn
+        multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.weth)
@@ -75,6 +76,9 @@ def get_price(token, block=None):
             price = piedao.get_price(token, block=block)
             logger.debug("piedeo -> %s", price)
 
+        elif gelato.is_gelato_pool(token):
+            price = gelato.get_price(token, block=block)
+            logger.debug("gelato -> %s", price)
         
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
