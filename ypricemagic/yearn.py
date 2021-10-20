@@ -1,5 +1,4 @@
-from typing import Type
-from brownie import Contract
+from brownie import Contract, chain
 from .utils.multicall2 import fetch_multicall
 
 
@@ -13,34 +12,52 @@ def get_price(token, block=None):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     vault = Contract(token)
-    if hasattr(vault, 'pricePerShare'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'pricePerShare'],
-            [vault, 'token'],
-            [vault, 'decimals'],
-            block=block
-        )
-    if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
-        share_price, underlying = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'token'],
-            block=block
-        )
-        decimals = 18
-    if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'underlying'],
-            [vault, 'decimals'],
-            block=block
-        )
-    if hasattr(vault, 'getPricePerShare'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerShare'],
-            [vault, 'token'],
-            [vault, 'decimals'],
-            block=block
-        )
+    if chain.id == 1:
+        if hasattr(vault, 'pricePerShare'):
+            share_price, underlying, decimals = fetch_multicall(
+                [vault, 'pricePerShare'],
+                [vault, 'token'],
+                [vault, 'decimals'],
+                block=block
+            )
+        if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
+            share_price, underlying = fetch_multicall(
+                [vault, 'getPricePerFullShare'],
+                [vault, 'token'],
+                block=block
+            )
+            decimals = 18
+        if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
+            share_price, underlying, decimals = fetch_multicall(
+                [vault, 'getPricePerFullShare'],
+                [vault, 'underlying'],
+                [vault, 'decimals'],
+                block=block
+            )
+        if hasattr(vault, 'getPricePerShare'):
+            share_price, underlying, decimals = fetch_multicall(
+                [vault, 'getPricePerShare'],
+                [vault, 'token'],
+                [vault, 'decimals'],
+                block=block
+            )
+    else:
+        if hasattr(vault, 'pricePerShare'):
+            share_price = vault.pricePerShare(block_identifier = block)
+            underlying = vault.token(block_identifier = block)
+            decimals = vault.decimals(block_identifier = block)
+        if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
+            share_price = vault.getPricePerFullShare(block_identifier = block)
+            underlying = vault.token(block_identifier = block)
+            decimals = 18
+        if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
+            share_price = vault.getPricePerFullShare(block_identifier = block)
+            underlying = vault.underlying(block_identifier = block)
+            decimals = vault.decimals(block_identifier = block)
+        if hasattr(vault, 'getPricePerShare'):
+            share_price = vault.getPricePerShare(block_identifier = block)
+            underlying = vault.token(block_identifier = block)
+            decimals = vault.decimals(block_identifier = block)
 
     try:
         return [share_price / 10 ** decimals, underlying]
