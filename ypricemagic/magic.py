@@ -29,7 +29,7 @@ def get_price(token, block=None):
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import balancer, cream, curve, gelato, piedao, tokensets
+        from . import balancer, cream, curve, gelato, mooniswap, piedao, tokensets
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
@@ -63,6 +63,9 @@ def get_price(token, block=None):
         elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block=block)
             logger.debug("uniswap pool -> %s", price)
+
+        elif mooniswap.is_mooniswap_pool(token):
+            price = mooniswap.get_pool_price(token, block=block)
 
         elif balancer.is_balancer_pool(token):
             price = balancer.get_price(token, block=block)
