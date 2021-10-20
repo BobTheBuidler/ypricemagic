@@ -20,13 +20,20 @@ def get_price(token, block=None):
             [vault, 'decimals'],
             block=block
         )
-    if hasattr(vault, 'getPricePerFullShare'):
+    if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
         share_price, underlying = fetch_multicall(
             [vault, 'getPricePerFullShare'],
             [vault, 'token'],
             block=block
         )
         decimals = 18
+    if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
+        share_price, underlying, decimals = fetch_multicall(
+            [vault, 'getPricePerFullShare'],
+            [vault, 'underlying'],
+            [vault, 'decimals'],
+            block=block
+        )
     if hasattr(vault, 'getPricePerShare'):
         share_price, underlying, decimals = fetch_multicall(
             [vault, 'getPricePerShare'],
@@ -38,4 +45,4 @@ def get_price(token, block=None):
     try:
         return [share_price / 10 ** decimals, underlying]
     except TypeError: # when getPricePerShare() reverts due to divide by zero
-        return [0, underlying]
+        return [1, underlying]
