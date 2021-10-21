@@ -117,7 +117,7 @@ def get_price(token, block=None):
             raise PriceError(f'could not fetch price for {token}')
 
     if chain.id == 56: # binance smart chain
-        from . import ellipsis
+        from . import ellipsis, mooniswap
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wbnb)
@@ -137,6 +137,9 @@ def get_price(token, block=None):
 
         elif ellipsis.is_eps_rewards_pool(token):
             price = ellipsis.get_price(token, block=block)
+
+        elif mooniswap.is_mooniswap_pool(token):
+            price = mooniswap.get_pool_price(token, block=block)
 
         elif yearn.is_yearn_vault(token):
             price = yearn.get_price(token, block=block)
