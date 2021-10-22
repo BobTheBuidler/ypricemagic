@@ -17,10 +17,20 @@ from .utils.utils import get_decimals_with_override
 
 
 @memory.cache()
-def is_balancer_pool(address):
+def is_balancer_pool_v1(address):
     pool = Contract(address)
     required = {"getCurrentTokens", "getBalance", "totalSupply"}
     return set(pool.__dict__) & required == required
+
+@memory.cache()
+def is_balancer_pool_v2(address):
+    pool = Contract(address)
+    required = {'getPoolId','getInvariant','getSwapFeePercentage'}
+    return set(pool.__dict__) & required == required
+
+@memory.cache()
+def is_balancer_pool(address):
+    return is_balancer_pool_v1(address) or is_balancer_pool_v2(address)
 
 
 @ttl_cache(ttl=600)
@@ -61,6 +71,20 @@ def get_pool_price_v1(token, block=None):
     logging.debug(f'balancer pool balances: {balances}')
     total = sum([balance * magic.get_price(token, block=block) for balance, token in zip(balances, tokens)])
     return total / supply
+
+def get_pool_price_v2(pool, block=None):
+    pool = Contract(pool)
+    poolId, vault, totalSupply, decimals = fetch_multicall([pool, "getPoolId"], [pool, "getVault"], [pool, 'totalSupply'], [pool, 'decimals'], block=block)
+    vault = Contract(vault)
+    totalSupply = totalSupply / 10 ** decimals
+    tokens, balances, lastChangedBlock = vault.getPoolTokens(poolId, block_identifier = block)
+    token_decimals = fetch_multicall(*[[Contract(token),'decimals'] for token in tokens], block=block)
+    balances = (balance / 10 ** decimal for balance, decimal in zip(balances, token_decimals))
+    prices = Parallel(4,'threading')(delayed(magic.get_price)(_token, block) for _token in tokens)
+    tvl = sum(balance * price for balance, price in zip(balances, prices))
+    price = tvl / totalSupply
+    return price
+    
 
 def get_token_price_v2(token, block=None):
     def query_pool_price(pooladdress, poolid):
@@ -168,8 +192,10 @@ def get_token_price_v1(token, block=None):
 
 @ttl_cache(ttl=600)
 def get_price(token, block=None):
-    if is_balancer_pool(token):
+    if is_balancer_pool_v1(token):
         return get_pool_price_v1(token, block)
+    if is_balancer_pool_v2(token):
+        return get_pool_price_v2(token, block)
     # NOTE: If token is not BPTv1, continue  (or BPTv2, but this isn't implemented yet...)
     
     # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
