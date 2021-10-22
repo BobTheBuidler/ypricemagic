@@ -1,3 +1,4 @@
+from inspect import Attribute
 import logging
 
 from brownie import Contract
@@ -41,35 +42,48 @@ def list_pools_v2(block):
 
 
 @ttl_cache(ttl=1800)
-def list_pools_for_token_v2(token, block):
-    def query_pools(pool, block):
-        for pooltoken in bal_vault_v2.getPoolTokens(pool[1], block_identifier = block)[0]:
-            if pooltoken == token:
-                pools.append(pool)
-    
-    pools, bal_vault_v2 = [], Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')
-    Parallel(4,'threading')(delayed(query_pools)(pool, block) for pool in list_pools_v2(block))
-    return pools
+def deepest_pool_for_token_v2(token, block):    
+    bal_vault_v2 = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')
+    pools = list_pools_v2(block)
+    pools_info = fetch_multicall(*[[bal_vault_v2,'getPoolTokens',poolId] for poolAddress, poolId in pools])
+    pools = [poolAddress for poolAddress, poolId in pools]
+    pools = zip(pools,pools_info)
+    deepest_pool = {'pool': None, 'balance': 0}
+    for pool, info in pools:
+        if str(info) != "((), (), 0)":
+            for i in range(len(info[0])):
+                _token, balance = info[0][i], info[1][i]
+                try: 
+                    name = Contract(pool).__dict__['_build']['contractName']
+                except:
+                    name = 'proceed'
+                if _token == token and balance > deepest_pool['balance'] and name != 'ConvergentCurvePool':
+                    deepest_pool = {'pool': pool, 'balance': balance}
+    return deepest_pool['pool']
+
+
+def _magic_get_price(token, block=None):
+    try:
+        return magic.get_price(token, block)
+    except magic.PriceError:
+        return 0
 
 
 def get_pool_price_v1(token, block=None):
     pool = Contract(token)
     tokens, supply = fetch_multicall([pool, "getCurrentTokens"], [pool, "totalSupply"], block=block)
     tokens = list(tokens)
-    for position, token in enumerate(tokens):
-        if token in PROXIES:
-            tokens[position] = PROXIES[token]
     logging.debug(f'pool tokens: {tokens}')
-    supply = supply / 1e18
     if supply == 0:
-        return None
+        return 0
+    supply = supply / 1e18
     balances = list(fetch_multicall(*[[pool, "getBalance", token] for token in tokens], block=block))
     for position, balance in enumerate(balances):
         if balance is None:
             balances[position] = 0
     balances = [balance / 10 ** get_decimals_with_override(token, block) for balance, token in zip(balances, tokens)]
     logging.debug(f'balancer pool balances: {balances}')
-    total = sum([balance * magic.get_price(token, block=block) for balance, token in zip(balances, tokens)])
+    total = sum([balance * _magic_get_price(token, block=block) for balance, token in zip(balances, tokens)])
     return total / supply
 
 def get_pool_price_v2(pool, block=None):
@@ -88,13 +102,8 @@ def get_pool_price_v2(pool, block=None):
 
 def get_token_price_v2(token, block=None):
     def query_pool_price(pooladdress, poolid):
+        poolcontract = Contract(pooladdress)
         pooltokens = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8').getPoolTokens(poolid, block_identifier = block)
-
-        try:
-            poolcontract = Contract(pooladdress)
-        except:
-            poolcontract = Contract.from_abi("Balancer Pool V2", pooladdress, WeightedPoolABI)
-
         try:
             weights = poolcontract.getNormalizedWeights(block_identifier = block)
         except ValueError:
@@ -116,6 +125,7 @@ def get_token_price_v2(token, block=None):
                 pairedTokenWeight = weight
                 pairedToken = pooltoken
 
+        tokenPrice = None
         if usdcBal:
             usdcValueUSD = (usdcBal / 10 ** 6) * magic.get_price(usdc, block)
             tokenValueUSD = usdcValueUSD / usdcWeight * tokenWeight
@@ -128,15 +138,17 @@ def get_token_price_v2(token, block=None):
             pairedTokenValueUSD = (pairedTokenBal / 10 ** Contract(pairedToken).decimals(block_identifier = block)) * magic.get_price(pairedToken, block)
             tokenValueUSD = pairedTokenValueUSD / pairedTokenWeight * tokenWeight
             tokenPrice = tokenValueUSD / (tokenBal / 10 ** Contract(token).decimals(block_identifier = block))
-
-        nonlocal priceSum, priceCt
-        priceSum += tokenPrice
-        priceCt += 1
-    priceSum, priceCt = 0, 0
-    Parallel(4,'threading')(delayed(query_pool_price)(pooladdress, poolid) for pooladdress, poolid in list_pools_for_token_v2(token, block))
-    if priceCt > 0:
-        return priceSum/priceCt
-    return None
+        return tokenPrice
+    
+    deepest_pool = deepest_pool_for_token_v2(token, block)
+    if not deepest_pool:
+        return
+    try:
+        deepest_pool = Contract(deepest_pool)
+    except:
+        deepest_pool = Contract.from_abi("Balancer Pool V2", deepest_pool, WeightedPoolABI)
+    poolId = deepest_pool.getPoolId(block_identifier = block)
+    return query_pool_price(deepest_pool.address, poolId)
 
 def get_token_price_v1(token, block=None):
     def get_output(scale=1):
@@ -174,40 +186,42 @@ def get_token_price_v1(token, block=None):
     out, totalOutput = get_output()
     if out:
         price = (totalOutput / 10 ** Contract(out).decimals()) * magic.get_price(out, block)
-    if not price: # Can we get an output if we try smaller size?
-        scale = 0.5
-        out, totalOutput = get_output(scale) 
+        logging.debug('price found via balancer v1')
+        return price
+    # Can we get an output if we try smaller size?
+    scale = 0.5
+    out, totalOutput = get_output(scale) 
     if out:
         price = (totalOutput / 10 ** Contract(out).decimals()) * magic.get_price(out, block) / scale
-    if not price: # How about now? 
-        scale = 0.1
-        out, totalOutput = get_output(scale)
+        logging.debug('price found via balancer v1')
+        return price
+    # How about now? 
+    scale = 0.1
+    out, totalOutput = get_output(scale)
     if out:
         price = (totalOutput / 10 ** Contract(out).decimals()) * magic.get_price(out, block) / scale
-    if not price:
+        logging.debug('price found via balancer v1')
+        return price
+    else:
         return
-    logging.debug('price found via balancer v1')
-    return price
         
 
 @ttl_cache(ttl=600)
 def get_price(token, block=None):
     if is_balancer_pool_v1(token):
         return get_pool_price_v1(token, block)
+
     if is_balancer_pool_v2(token):
         return get_pool_price_v2(token, block)
-    # NOTE: If token is not BPTv1, continue  (or BPTv2, but this isn't implemented yet...)
-    
-    # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
-    #       (to let v2 gain some liquidity before we query prices from there, we still have v1 available)
-    
-    # NOTE Gotta troubleshoot brownie Contract db
-    # if not block or block > 12272146: #+ 100000: 
-    #    return get_token_price_v2(token, block)
 
-    if not block or block > 10730576:   # v1 registry deploy block
-        return get_token_price_v1(token, block)
-    return
+    price = None    
+    # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
+    if not block or block > 12272146 + 100000: # lets get some liquidity before we use this as price source
+        price = get_token_price_v2(token, block)
+    if not price:      
+        if not block or block > 10730576:   # v1 registry deploy block
+            price = get_token_price_v1(token, block)
+    return price
 
 
 
