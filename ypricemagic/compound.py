@@ -25,8 +25,12 @@ def get_markets():
         return dict(zip(names, results))
     elif chain.id == 137: # poly mainnet
         easytroller = Contract("0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8")
-        easytroller = Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", Contract(easytroller.comptrollerImplementation()).abi)
-        results = [easytroller.getAllMarkets()]
+        try:
+            results = [easytroller.getAllMarkets()]
+        except:
+            from .interfaces.compound.unitroller  import UNITROLLER_ABI
+            easytroller = Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
+            results = [easytroller.getAllMarkets()]
         names = ['easyfi']
         return dict(zip(names, results))
 
