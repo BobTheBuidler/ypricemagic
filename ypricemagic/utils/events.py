@@ -43,7 +43,7 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     logs = []
 
     if from_block is None:
-        from_block = ypricemagic.utils.utils.contract_creation_block(address)
+        from_block = 0 if address is None else ypricemagic.utils.utils.contract_creation_block(address)
     if to_block is None:
         to_block = chain.height
 
@@ -51,10 +51,16 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     if verbose > 0:
         logger.info('fetching %d batches', len(ranges))
 
-    batches = Parallel(8, "threading", verbose=verbose)(
-        delayed(web3.eth.get_logs)({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
-        for start, end in ranges
-    )
+    if address is None:
+        batches = Parallel(8, "threading", verbose=verbose)(
+            delayed(web3.eth.get_logs)({"topics": topics, "fromBlock": start, "toBlock": end})
+            for start, end in ranges
+        )
+    else:
+        batches = Parallel(8, "threading", verbose=verbose)(
+            delayed(web3.eth.get_logs)({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+            for start, end in ranges
+        )
     for batch in batches:
         logs.extend(batch)
 
