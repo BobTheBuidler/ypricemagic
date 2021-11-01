@@ -12,7 +12,7 @@ class PriceError(Exception):
 
 
 @memory.cache()
-def get_price(token, block=None):
+def get_price(token, block=None, silent=False):
     token = str(token)
     logging.debug(f"token: {token}")
     logging.debug(f"chainid: {chain.id}")
@@ -110,11 +110,6 @@ def get_price(token, block=None):
             price = balancer.get_price(token, block=block)
             logger.debug("balancer -> %s", price)
 
-        if price is None:
-            logger.error("failed to get price for %s", token)
-
-        if price is None:
-            raise PriceError(f'could not fetch price for {token}')
 
     if chain.id == 56: # binance smart chain
         from . import ellipsis, mooniswap
@@ -194,5 +189,11 @@ def get_price(token, block=None):
         if price is None:
             price = uniswap.get_price(token, router="quickswap", block=block)
             logger.debug("uniswap -> %s", price)
+
+    if price is None and silent is False:
+        logger.error("failed to get price for %s", token)
+
+    if price is None:
+        raise PriceError(f'could not fetch price for {token}')
 
     return price
