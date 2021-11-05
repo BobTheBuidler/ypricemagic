@@ -29,14 +29,18 @@ def get_price(token, block=None, silent=False):
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import balancer, cream, curve, gelato, mooniswap, piedao, tokensets
+        from . import balancer, cream, curve, gelato, mooniswap, piedao, tokensets, wsteth
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.weth)
 
         # we can exit early with known tokens
-        if token in chainlink.feeds:
+        if wsteth.is_wsteth(token):
+            price = wsteth.get_price(token, block=block)
+            logger.debug("wsteth -> %s", price)
+
+        elif token in chainlink.feeds:
             price = chainlink.get_price(token, block=block)
             logger.debug("chainlink -> %s", price)
 
