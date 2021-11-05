@@ -12,9 +12,11 @@ multicall, multicall2 = None, None
 if chain.id == 1:
     multicall2 = Contract("0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696")
 if chain.id == 56:
-    multicall = Contract("0x41263cba59eb80dc200f3e2544eda4ed6a90e76c")
+    multicall2 = Contract("0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B")
 if chain.id == 137:
-    multicall = Contract("0x11ce4B23bD875D7F5C6a31084f55fDe1e9A87507")
+    multicall2 = Contract("0xc8E51042792d7405184DfCa245F2d27B94D013b6")
+if chain.id == 250:
+    multicall2 = Contract("0xBAD2B082e2212DE4B065F636CA4e5e0717623d18")
 
 
 def fetch_multicall(*calls, block=None):
