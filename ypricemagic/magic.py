@@ -112,7 +112,7 @@ def get_price(token, block=None, silent=False):
 
 
     if chain.id == 56: # binance smart chain
-        from . import ellipsis, mooniswap
+        from . import ellipsis, ib, mooniswap
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wbnb)
@@ -130,11 +130,17 @@ def get_price(token, block=None, silent=False):
             price = uniswap.lp_price(token, block=block)
             logger.debug("uniswap pool -> %s", price)
 
+        elif ib.is_ib_token(token):
+            price = ib.get_price(token,block=block)
+            logger.debug("ib token -> %s", price)
+
         elif ellipsis.is_eps_rewards_pool(token):
             price = ellipsis.get_price(token, block=block)
+            logger.debug("ellipsis pool -> %s", price)
 
         elif mooniswap.is_mooniswap_pool(token):
             price = mooniswap.get_pool_price(token, block=block)
+            logger.debug("mooniswap pool -> %s", price)
 
         elif yearn.is_yearn_vault(token):
             price = yearn.get_price(token, block=block)

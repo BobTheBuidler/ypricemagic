@@ -1,6 +1,8 @@
 from brownie import Contract
 from ypricemagic import magic
+from .utils.cache import memory
 
+@memory.cache()
 def is_eps_rewards_pool(token):
     token = Contract(token)
     return hasattr(token, 'lpStaker') and hasattr(token, 'rewardTokens')\
