@@ -57,7 +57,7 @@ def deepest_pool_for_token_v2(token, block):
                     name = Contract(pool).__dict__['_build']['contractName']
                 except:
                     name = 'proceed'
-                if _token == token and balance > deepest_pool['balance'] and name != 'ConvergentCurvePool':
+                if _token == token and balance > deepest_pool['balance'] and name not in ['ConvergentCurvePool','MetaStablePool']:
                     deepest_pool = {'pool': pool, 'balance': balance}
     return deepest_pool['pool']
 
