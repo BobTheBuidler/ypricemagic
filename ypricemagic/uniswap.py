@@ -46,6 +46,9 @@ if chain.id == 1:
         "uniswap": {
 
         }
+        "shibaswap": {
+            
+        }
     }
 elif chain.id == 56:
     ROUTERS = {
