@@ -105,6 +105,10 @@ def get_price(token, block=None, silent=False):
         if price is None:
             price = uniswap.get_price_v1(token, block=block)
             logger.debug("uniswap v1 -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="shibaswap", block=block)
+            
         # NOTE let's improve before we use
         #if price is None and (not block or block >= 11153725): # NOTE: First block of curve registry
         #    price = curve.get_token_price(token, block=block)
