@@ -77,7 +77,7 @@ elif chain.id == 137:
         "quickswap": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
         "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
         "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),
-        "cometh": Contract("0x28E73C83C0f85784543300B96A1A3c2e900F7a35")
+        "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi)
     }
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
