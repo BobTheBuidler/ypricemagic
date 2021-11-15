@@ -190,6 +190,10 @@ elif chain.id == 137: # poly
         ,'0x2a93172c8DCCbfBC60a39d56183B7279a2F647b4': 18
         ,'0x9f5755D47fB80100E7ee65Bf7e136FCA85Dd9334': 18
     }
+elif chain.id == 250:
+    DECIMAL_OVERRIDES = {
+        
+    }
 
 def Contract_with_erc20_fallback(address):
     try:
