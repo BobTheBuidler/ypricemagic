@@ -118,7 +118,6 @@ def get_price(token, block=None, silent=False):
             price = balancer.get_price(token, block=block)
             logger.debug("balancer -> %s", price)
 
-
     if chain.id == 56: # binance smart chain
         from . import belt, ellipsis, ib, mooniswap
 
@@ -206,6 +205,23 @@ def get_price(token, block=None, silent=False):
         
         if price is None:
             price = uniswap.get_price(token, router="quickswap", block=block)
+            logger.debug("uniswap -> %s", price)
+
+    if chain.id == 250: # fantom
+
+        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
+            token = str(constants.wftm)
+
+        if uniswap.is_uniswap_pool(token):
+            price = uniswap.get_price(token, block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="spookyswap", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="spiritswap", block=block)
             logger.debug("uniswap -> %s", price)
 
     if price is None and silent is False:
