@@ -53,11 +53,13 @@ if chain.id == 1:
 elif chain.id == 56:
     ROUTERS = {
         "pancakeswapv2": Contract("0x10ED43C718714eb63d5aA57B78B54704E256024E"),
-        "pancakeswapv1": Contract("0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F")
+        "pancakeswapv1": Contract("0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F"),
+        "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
-        "pancakeswapv1": "0xBCfCcbde45cE874adCB698cC183deBcF17952812"
+        "pancakeswapv1": "0xBCfCcbde45cE874adCB698cC183deBcF17952812",
+        "wault": "0xB42E3FE71b7E0673335b3331B3e1053BD9822570",
     }
     SPECIAL_PATHS = {
         "pancakeswapv2": {
@@ -65,19 +67,37 @@ elif chain.id == 56:
         },
         "pancakeswapv1": {
 
+        },
+        "wault": {
+
         }
     }
 elif chain.id == 137:
     ROUTERS = {
-        "quickswap": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff")
+        "quickswap": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
+        "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
+        "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),
+        "cometh": Contract("0x28E73C83C0f85784543300B96A1A3c2e900F7a35")
     }
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+        "dfyn": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+        "wault": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef",
+        "cometh": "0x800b052609c355cA8103E06F022aA30647eAd60a",
     }
     SPECIAL_PATHS = {
         "quickswap": {
 
-        }
+        },
+        "dfyn": {
+
+        },
+        "wault": {
+
+        },
+        "cometh": {
+
+        },
     }
 elif chain.id == 250:
     ROUTERS = {
@@ -131,7 +151,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
             path = [token_in, token_out]
         else:
             path = [token_in,wbnb,token_out]
-    elif chain.id == 137: #bsc
+    elif chain.id == 137: # polygon
         from .constants import wmatic
         if wmatic in (token_in, token_out):
             path = [token_in, token_out]

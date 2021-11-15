@@ -171,6 +171,10 @@ def get_price(token, block=None, silent=False):
             price = uniswap.get_price(token, router="pancakeswapv1", block=block)
             logger.debug("uniswap -> %s", price)
 
+        if price is None:
+            price = uniswap.get_price(token, router="wault", block=block)
+            logger.debug("uniswap -> %s", price)
+
     if chain.id == 137: # polygon
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
@@ -205,6 +209,18 @@ def get_price(token, block=None, silent=False):
         
         if price is None:
             price = uniswap.get_price(token, router="quickswap", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="dfyn", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="wault", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="cometh", block=block)
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 250: # fantom
