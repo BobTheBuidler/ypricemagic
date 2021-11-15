@@ -108,7 +108,7 @@ def get_price(token, block=None, silent=False):
 
         if price is None:
             price = uniswap.get_price(token, router="shibaswap", block=block)
-            
+
         # NOTE let's improve before we use
         #if price is None and (not block or block >= 11153725): # NOTE: First block of curve registry
         #    price = curve.get_token_price(token, block=block)
@@ -120,7 +120,7 @@ def get_price(token, block=None, silent=False):
 
 
     if chain.id == 56: # binance smart chain
-        from . import ellipsis, ib, mooniswap
+        from . import belt, ellipsis, ib, mooniswap
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wbnb)
@@ -129,6 +129,10 @@ def get_price(token, block=None, silent=False):
         if token in chainlink.feeds:
             price = chainlink.get_price(token, block=block)
             logger.debug("chainlink -> %s", price)
+
+        elif belt.is_belt_lp(token):
+            price = belt.get_price(token,block=block)
+            logger.debug("belt -> %s", price)
 
         elif compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
