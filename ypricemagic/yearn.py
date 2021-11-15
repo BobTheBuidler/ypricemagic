@@ -1,6 +1,7 @@
 from brownie import Contract, chain
 from .utils.multicall2 import fetch_multicall
 
+# NOTE: Yearn and Yearn-like
 
 def is_yearn_vault(token):
     vault = Contract(token)
@@ -53,6 +54,10 @@ def get_price(token, block=None):
         if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
             share_price = vault.getPricePerFullShare(block_identifier = block)
             underlying = vault.underlying(block_identifier = block)
+            decimals = vault.decimals(block_identifier = block)
+        if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'want'):
+            share_price = vault.getPricePerFullShare(block_identifier = block)
+            underlying = vault.want(block_identifier = block)
             decimals = vault.decimals(block_identifier = block)
         if hasattr(vault, 'getPricePerShare'):
             share_price = vault.getPricePerShare(block_identifier = block)
