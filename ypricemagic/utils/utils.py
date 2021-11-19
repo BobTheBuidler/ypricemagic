@@ -7,8 +7,7 @@ from cachetools.func import lru_cache
 import ypricemagic.utils.events
 from .cache import memory
 from ..interfaces.ERC20 import ERC20ABI
-if chain.id == 1:
-    from ..constants import PROXIES
+from ..constants import PROXIES
 
 logger = logging.getLogger(__name__)
 
@@ -192,7 +191,7 @@ elif chain.id == 137: # poly
     }
 elif chain.id == 250:
     DECIMAL_OVERRIDES = {
-        
+
     }
 
 def Contract_with_erc20_fallback(address):
