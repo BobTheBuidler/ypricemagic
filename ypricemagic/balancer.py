@@ -43,7 +43,7 @@ def is_balancer_pool(address):
 @ttl_cache(ttl=600)
 def list_pools_v2(block):
     topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
-    events = decode_logs(get_logs_asap(VAULT_V2.address, topics, from_block= 12272146, to_block=block))
+    events = decode_logs(get_logs_asap(VAULT_V2.address, topics, to_block=block))
     return [(event['poolAddress'],event['poolId']) for event in events]
 
 
