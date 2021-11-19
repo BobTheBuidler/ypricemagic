@@ -57,7 +57,7 @@ elif chain.id == 56:
         "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),
         "apeswap": Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7'),
         "swapliquidity": Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),
-        'thugswap': Contract(''),
+        'thugswap': Contract('0x3bc677674df90A9e5D741f28f6CA303357D0E4Ec'),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
