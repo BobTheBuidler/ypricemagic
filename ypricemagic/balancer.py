@@ -221,9 +221,9 @@ def get_price(token, block=None):
 
     price = None    
     # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
-    if (chainid == 1 and not block or block > 12272146 + 100000) or chainid != 1: # lets get some liquidity before we use this as price source
+    if chainid != 1 or (not block or block > 12272146 + 100000): # lets get some liquidity before we use this as price source
         price = get_token_price_v2(token, block)
-    if not price:      
+    if not price and chainid == 1:      
         if not block or block > 10730576:   # v1 registry deploy block
             price = get_token_price_v1(token, block)
     return price
