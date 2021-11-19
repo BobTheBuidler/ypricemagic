@@ -170,9 +170,17 @@ def get_price(token, block=None, silent=False):
         if price is None:
             price = uniswap.get_price(token, router="pancakeswapv1", block=block)
             logger.debug("uniswap -> %s", price)
+        
+        if price is None:
+            price = uniswap.get_price(token, router="apeswap", block=block)
+            logger.debug("uniswap -> %s", price)
 
         if price is None:
             price = uniswap.get_price(token, router="wault", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = uniswap.get_price(token, router="swapliquidity", block=block)
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 137: # polygon
