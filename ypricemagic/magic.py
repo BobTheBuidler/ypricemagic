@@ -236,6 +236,10 @@ def get_price(token, block=None, silent=False):
             price = uniswap.lp_price(token, block)
             logger.debug("uniswap -> %s", price)
 
+        elif balancer.is_balancer_pool(token):
+            price = balancer.get_price(token, block=block)
+            logger.debug("balancer pool -> %s", price)
+
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
             price, underlying = price
@@ -249,6 +253,10 @@ def get_price(token, block=None, silent=False):
         if price is None:
             price = uniswap.get_price(token, router="spiritswap", block=block)
             logger.debug("uniswap -> %s", price)
+
+        if price is None:
+            price = balancer.get_price(token, block=block)
+            logger.debug("balancer -> %s", price)
 
     if price is None and silent is False:
         logger.error("failed to get price for %s", token)

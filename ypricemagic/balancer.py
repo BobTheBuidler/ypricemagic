@@ -1,7 +1,7 @@
 from inspect import Attribute
 import logging
 
-from brownie import Contract
+from brownie import Contract, chain
 from cachetools.func import ttl_cache
 from joblib import Parallel, delayed
 
@@ -16,6 +16,10 @@ from .utils.events import decode_logs, get_logs_asap
 from .utils.multicall2 import fetch_multicall
 from .utils.utils import get_decimals_with_override
 
+if chain.id == 1:
+    VAULT_V2 = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')
+if chain.id == 250:
+    VAULT_V2 = Contract('0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce')
 
 @memory.cache()
 def is_balancer_pool_v1(address):
@@ -37,15 +41,14 @@ def is_balancer_pool(address):
 @ttl_cache(ttl=600)
 def list_pools_v2(block):
     topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
-    events = decode_logs(get_logs_asap('0xBA12222222228d8Ba445958a75a0704d566BF2C8', topics, from_block= 12272146, to_block=block))
+    events = decode_logs(get_logs_asap(VAULT_V2.address, topics, from_block= 12272146, to_block=block))
     return [(event['poolAddress'],event['poolId']) for event in events]
 
 
 @ttl_cache(ttl=1800)
-def deepest_pool_for_token_v2(token, block):    
-    bal_vault_v2 = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')
+def deepest_pool_for_token_v2(token, block):
     pools = list_pools_v2(block)
-    pools_info = fetch_multicall(*[[bal_vault_v2,'getPoolTokens',poolId] for poolAddress, poolId in pools])
+    pools_info = fetch_multicall(*[[VAULT_V2,'getPoolTokens',poolId] for poolAddress, poolId in pools])
     pools = [poolAddress for poolAddress, poolId in pools]
     pools = zip(pools,pools_info)
     deepest_pool = {'pool': None, 'balance': 0}
@@ -103,7 +106,7 @@ def get_pool_price_v2(pool, block=None):
 def get_token_price_v2(token, block=None):
     def query_pool_price(pooladdress, poolid):
         poolcontract = Contract(pooladdress)
-        pooltokens = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8').getPoolTokens(poolid, block_identifier = block)
+        pooltokens = VAULT_V2.getPoolTokens(poolid, block_identifier = block)
         try:
             weights = poolcontract.getNormalizedWeights(block_identifier = block)
         except ValueError:
@@ -174,8 +177,8 @@ def get_token_price_v1(token, block=None):
                         out = None
                         totalOutput = None
         return out, totalOutput
-
-    exchange_proxy = Contract('0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21')
+    if chain.id == 1: # chainid will always be 1, balancer v1 is only on mainnet
+        exchange_proxy = Contract('0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21')
 
     # NOTE: Reverse lookup
     # NOTE: we might not need this when all is said and done
