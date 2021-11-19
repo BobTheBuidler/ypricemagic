@@ -224,6 +224,7 @@ def get_price(token, block=None, silent=False):
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 250: # fantom
+        from . import balancer
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wftm)
