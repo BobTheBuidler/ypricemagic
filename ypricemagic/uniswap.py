@@ -195,7 +195,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
             path = [token_in, wftm, token_out]
     else:
         path = [token_in, weth, token_out]
-    print(path)
+    #print(path)
     fees = 0.997 ** (len(path) - 1)
     if router in ROUTERS:
         router = ROUTERS[router]
