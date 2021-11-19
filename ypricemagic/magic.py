@@ -236,6 +236,12 @@ def get_price(token, block=None, silent=False):
             price = uniswap.lp_price(token, block)
             logger.debug("uniswap -> %s", price)
 
+        # peel a layer from [multiplier, underlying]
+        if isinstance(price, list):
+            price, underlying = price
+            logger.debug("peel %s %s", price, underlying)
+            return price * get_price(underlying, block=block)
+
         if price is None:
             price = uniswap.get_price(token, router="spookyswap", block=block)
             logger.debug("uniswap -> %s", price)
