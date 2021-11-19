@@ -223,7 +223,7 @@ def get_price(token, block=None):
     # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
     if (
         (chainid == 1 and (not block or block > 12272146 + 100000))
-        or (chainid == 250 and (not block or block > 16896080)
+        or (chainid == 250 and (not block or block > 16896080))
         ): # lets get some liquidity before we use this as price source
         price = get_token_price_v2(token, block)
     if not price and chainid == 1:      
