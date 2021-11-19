@@ -228,7 +228,11 @@ def get_price(token, block=None, silent=False):
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wftm)
 
-        if uniswap.is_uniswap_pool(token):
+        if yearn.is_yearn_vault(token):
+            price = yearn.get_price(token, block=block)
+            logger.debug("yearn -> %s", price)
+
+        elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block)
             logger.debug("uniswap -> %s", price)
 
