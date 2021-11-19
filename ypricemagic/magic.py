@@ -229,7 +229,7 @@ def get_price(token, block=None, silent=False):
             token = str(constants.wftm)
 
         if uniswap.is_uniswap_pool(token):
-            price = uniswap.get_price(token, block)
+            price = uniswap.lp_price(token, block)
             logger.debug("uniswap -> %s", price)
 
         if price is None:
