@@ -212,6 +212,10 @@ def get_price(token, block=None, silent=False):
             logger.debug("uniswap -> %s", price)
 
         if price is None:
+            price = uniswap.get_price(token, router="sushi", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
             price = uniswap.get_price(token, router="dfyn", block=block)
             logger.debug("uniswap -> %s", price)
 
