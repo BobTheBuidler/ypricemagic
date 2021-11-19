@@ -246,6 +246,10 @@ def get_price(token, block=None, silent=False):
             price, underlying = price
             logger.debug("peel %s %s", price, underlying)
             return price * get_price(underlying, block=block)
+        
+        if price is None:
+            price = uniswap.get_price(token, router="sushi", block=block)
+            logger.debug("uniswap -> %s", price)
 
         if price is None:
             price = uniswap.get_price(token, router="spookyswap", block=block)

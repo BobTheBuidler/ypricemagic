@@ -101,14 +101,19 @@ elif chain.id == 137:
     }
 elif chain.id == 250:
     ROUTERS = {
+        'sushi': Contract('0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506'),
         'spookyswap': Contract('0xF491e7B69E4244ad4002BC14e878a34207E38c29'),
         'spiritswap': Contract('0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52')
     }
     FACTORIES = {
+        "sushi": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
         "spookyswap": "0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3",
-        "spiritswap": "0xEF45d134b73241eDa7703fa787148D9C9F4950b0"
+        "spiritswap": "0xEF45d134b73241eDa7703fa787148D9C9F4950b0",
     }
     SPECIAL_PATHS = {
+        "sushi": {
+
+        },
         "spookyswap": {
 
         },
