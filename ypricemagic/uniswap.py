@@ -57,6 +57,7 @@ elif chain.id == 56:
         "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),
         "apeswap": Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7'),
         "swapliquidity": Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),
+        'thugswap': Contract(''),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -64,6 +65,7 @@ elif chain.id == 56:
         "wault": "0xB42E3FE71b7E0673335b3331B3e1053BD9822570",
         "apeswap": "0x0841BD0B734E4F5853f0dD8d7Ea041c241fb0Da6",
         "swapliquidity": "0x553990F2CBA90272390f62C5BDb1681fFc899675",
+        "thugswap": "0xaC653cE27E04C6ac565FD87F18128aD33ca03Ba2",
     }
     SPECIAL_PATHS = {
         "pancakeswapv2": {
@@ -79,6 +81,9 @@ elif chain.id == 56:
 
         },
         "swapliquidity": {
+
+        },
+        "thugswap": {
 
         },
     }
