@@ -88,7 +88,7 @@ elif chain.id == 137:
         "sushi": Contract("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"),
         "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
         "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),
-        "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi)
+        "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi),
         "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),
     }
     FACTORIES = {
