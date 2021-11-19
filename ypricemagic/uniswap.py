@@ -89,6 +89,7 @@ elif chain.id == 137:
         "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
         "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),
         "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi)
+        "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),
     }
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
@@ -96,6 +97,7 @@ elif chain.id == 137:
         "dfyn": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
         "wault": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef",
         "cometh": "0x800b052609c355cA8103E06F022aA30647eAd60a",
+        "apeswap": "0xCf083Be4164828f00cAE704EC15a36D711491284",
     }
     SPECIAL_PATHS = {
         "quickswap": {
@@ -111,6 +113,9 @@ elif chain.id == 137:
 
         },
         "cometh": {
+
+        },
+        "apeswap": {
 
         },
     }
@@ -185,6 +190,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
             path = [token_in, wftm, token_out]
     else:
         path = [token_in, weth, token_out]
+    print(path)
     fees = 0.997 ** (len(path) - 1)
     if router in ROUTERS:
         router = ROUTERS[router]
