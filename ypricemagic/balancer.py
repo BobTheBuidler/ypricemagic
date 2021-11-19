@@ -16,9 +16,11 @@ from .utils.events import decode_logs, get_logs_asap
 from .utils.multicall2 import fetch_multicall
 from .utils.utils import get_decimals_with_override
 
-if chain.id == 1:
+chainid = chain.id
+
+if chainid == 1:
     VAULT_V2 = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')
-if chain.id == 250:
+if chainid == 250:
     VAULT_V2 = Contract('0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce')
 
 @memory.cache()
@@ -177,7 +179,7 @@ def get_token_price_v1(token, block=None):
                         out = None
                         totalOutput = None
         return out, totalOutput
-    if chain.id == 1: # chainid will always be 1, balancer v1 is only on mainnet
+    if chainid == 1: # chainid will always be 1, balancer v1 is only on mainnet
         exchange_proxy = Contract('0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21')
 
     # NOTE: Reverse lookup
@@ -219,7 +221,7 @@ def get_price(token, block=None):
 
     price = None    
     # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
-    if not block or block > 12272146 + 100000: # lets get some liquidity before we use this as price source
+    if (chainid == 1 and not block or block > 12272146 + 100000) or chainid != 1: # lets get some liquidity before we use this as price source
         price = get_token_price_v2(token, block)
     if not price:      
         if not block or block > 10730576:   # v1 registry deploy block
