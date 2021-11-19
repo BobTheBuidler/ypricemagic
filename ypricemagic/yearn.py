@@ -35,6 +35,13 @@ def get_price(token, block=None):
                 [vault, 'decimals'],
                 block=block
             )
+        if hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'native'):
+            share_price, underlying, decimals = fetch_multicall(
+                [vault, 'getPricePerFullShare'],
+                [vault, 'native'],
+                [vault, 'decimals'],
+                block=block
+            )
         if hasattr(vault, 'getPricePerShare'):
             share_price, underlying, decimals = fetch_multicall(
                 [vault, 'getPricePerShare'],
