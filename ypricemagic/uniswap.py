@@ -157,6 +157,12 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
             path = [token_in, token_out]
         else:
             path = [token_in,wmatic,token_out]
+    elif chain.id == 250: # fantom
+        from .constants import wftm
+        if wftm in (token_in, token_out):
+            path = [token_in, token_out]
+        else:
+            path = [token_in, wftm, token_out]
     else:
         path = [token_in, weth, token_out]
     fees = 0.997 ** (len(path) - 1)
