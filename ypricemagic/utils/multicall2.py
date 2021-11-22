@@ -1,6 +1,7 @@
 from collections import defaultdict
 from itertools import count, product
 from operator import itemgetter
+from .utils import contract_creation_block
 
 import requests
 from brownie import Contract, web3, chain
@@ -18,6 +19,7 @@ if chain.id == 137:
 if chain.id == 250:
     multicall2 = Contract("0xBAD2B082e2212DE4B065F636CA4e5e0717623d18")
 
+multicall_deploy_block = contract_creation_block(multicall2)
 
 def fetch_multicall(*calls, block=None):
     # https://github.com/makerdao/multicall
@@ -35,7 +37,7 @@ def fetch_multicall(*calls, block=None):
         fn_list.append(fn)
         multicall_input.append((contract, fn.encode_input(*fn_inputs)))
 
-    if isinstance(block, int) and block < 12336033:
+    if isinstance(block, int) and block < multicall_deploy_block:
         # use state override to resurrect the contract prior to deployment
         data = multicall2.tryAggregate.encode_input(False, multicall_input)
         call = web3.eth.call(
