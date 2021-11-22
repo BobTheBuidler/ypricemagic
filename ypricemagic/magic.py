@@ -252,7 +252,7 @@ def get_price(token, block=None, silent=False):
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 250: # fantom
-        from . import balancer
+        from . import balancer, froyo
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wftm)
@@ -268,6 +268,10 @@ def get_price(token, block=None, silent=False):
         elif balancer.is_balancer_pool(token):
             price = balancer.get_price(token, block=block)
             logger.debug("balancer pool -> %s", price)
+
+        elif froyo.is_froyo(token):
+            price = froyo.get_price(token, block=block)
+            logger.debug("froyo -> %s", price)
 
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
