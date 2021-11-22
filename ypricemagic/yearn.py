@@ -56,7 +56,7 @@ def get_price(token, block=None):
             [vault, 'decimals'],
             block=block
         )
-    elif vault.__dict__['_build']['contractName'] == 'BeefyVaultVenusBNB':
+    elif vault.__dict__['_build']['contractName'] == 'BeefyVenusVaultBNB':
         share_price, underlying, decimals = fetch_multicall(
             [vault, 'getPricePerFullShare'],
             [vault, 'wbnb'],
