@@ -19,7 +19,7 @@ if chain.id == 137:
 if chain.id == 250:
     multicall2 = Contract("0xBAD2B082e2212DE4B065F636CA4e5e0717623d18")
 
-multicall_deploy_block = contract_creation_block(multicall2)
+multicall_deploy_block = contract_creation_block(multicall2.address)
 
 def fetch_multicall(*calls, block=None):
     # https://github.com/makerdao/multicall
