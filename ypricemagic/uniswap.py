@@ -159,6 +159,8 @@ elif chain.id == 250:
 
 FACTORY_TO_ROUTER = {FACTORIES[name]: ROUTERS[name] for name in FACTORIES}
 
+ROUTER_TO_FACTORY = {ROUTERS[name].address: FACTORIES[name] for name in FACTORIES}
+
 FACTORY_TO_PROTOCOL = {FACTORIES[name]: name for name in FACTORIES}
 
 
