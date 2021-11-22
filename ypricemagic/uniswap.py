@@ -110,6 +110,7 @@ elif chain.id == 137:
         "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),
         "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi),
         "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),
+        "jetswap": Contract("0x5C6EC38fb0e2609672BDf628B1fD605A523E5923"),
     }
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
@@ -118,6 +119,7 @@ elif chain.id == 137:
         "wault": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef",
         "cometh": "0x800b052609c355cA8103E06F022aA30647eAd60a",
         "apeswap": "0xCf083Be4164828f00cAE704EC15a36D711491284",
+        "jetswap": "0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7",
     }
     SPECIAL_PATHS = {
         "quickswap": {
@@ -136,6 +138,9 @@ elif chain.id == 137:
 
         },
         "apeswap": {
+
+        },
+        "jetswap": {
 
         },
     }

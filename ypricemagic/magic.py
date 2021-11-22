@@ -255,6 +255,10 @@ def get_price(token, block=None, silent=False):
             price = uniswap.get_price(token, router="cometh", block=block)
             logger.debug("uniswap -> %s", price)
 
+        if price is None:
+            price = uniswap.get_price(token, router="jetswap", block=block)
+            logger.debug("uniswap -> %s", price)
+
     if chain.id == 250: # fantom
         from . import balancer, froyo
 
