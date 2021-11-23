@@ -61,7 +61,7 @@ elif chain.id == 56:
         "mdex": Contract('0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8'),
         "bakeryswap": Contract('0xCDe540d7eAFE93aC5fE6233Bee57E1270D3E330F'),
         "nyanswop": Contract('0xc946764369623F560a5962D32c1D16D45F1BD6fa'),
-        "narwhalswap": Contract('0x849B7b4541CDE9cBE41cfd064d9d7fF459b9cEa4'),
+        "narwhalswap": Contract('0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078'),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -229,8 +229,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
         path = [token_in, weth, token_out]
     #print(path)
     fees = 0.997 ** (len(path) - 1)
-    if router in ROUTERS:
-        router = ROUTERS[router]
+    router = ROUTERS[router]
     try:
         quote = router.getAmountsOut(amount_in, path, block_identifier=block)
         amount_out = quote[-1] / 10 ** ypricemagic.utils.utils.get_decimals_with_override(str(path[-1]))
@@ -275,7 +274,7 @@ def lp_price(address, block=None):
         return balances
 
     pair = Contract(address)
-    if chain.id not in [56, 137]: # No multicall2 on bsc or poly
+    if chain.id in [1,56,137,250]: 
         factory, token0, token1, supply, reserves = fetch_multicall(
             [pair, "factory"],
             [pair, "token0"],
