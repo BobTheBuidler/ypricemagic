@@ -211,6 +211,10 @@ def get_price(token, block=None, silent=False):
             price = uniswap.get_price(token, router="jetswap", block=block)
             logger.debug("uniswap -> %s", price)
 
+        if price is None:
+            price = uniswap.get_price(token, router="babyswap", block=block)
+            logger.debug("uniswap -> %s", price)
+
     if chain.id == 137: # polygon
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
