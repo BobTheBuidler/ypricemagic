@@ -111,7 +111,7 @@ def get_token_price_v2(token, block=None):
         pooltokens = VAULT_V2.getPoolTokens(poolid, block_identifier = block)
         try:
             weights = poolcontract.getNormalizedWeights(block_identifier = block)
-        except ValueError:
+        except (AttributeError,ValueError):
             weights = [1 for _ in pooltokens[0]]
         pooltokens = list(zip(pooltokens[0],pooltokens[1], weights))
         wethBal, usdcBal, pairedTokenBal = None, None, None
