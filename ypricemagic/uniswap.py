@@ -68,6 +68,7 @@ elif chain.id == 56:
         "annex": Contract('0x299385325392F537Fc6B4281d2dbe31280833Dcb'),
         "viralata": Contract('0xdb07Ed70aA18FfC8B422bF3D8AF947E937511FDF'),
         "elk": Contract('0xA63B831264183D755756ca9AE5190fF5183d65D6'),
+        "pantherswap": Contract('0x24f7C33ae5f77e2A9ECeed7EA858B4ca2fa1B7eC'),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -86,6 +87,7 @@ elif chain.id == 56:
         "annex": "0x6a616606D9f3BaE02d215db5046b7D1030674622",
         "viralata": "0x12c2B0A1c9C786Bf7AD0E92Ce3f2d1805874e185",
         "elk": "0x31aFfd875e9f68cd6Cd12Cee8943566c9A4bBA13",
+        "pantherswap": "0x670f55c6284c629c23baE99F585e3f17E8b9FC31",
     }
     SPECIAL_PATHS = {
         "pancakeswapv2": {
@@ -134,6 +136,9 @@ elif chain.id == 56:
 
         },
         "elk": {
+
+        },
+        "pantherswap": {
 
         }
     }
