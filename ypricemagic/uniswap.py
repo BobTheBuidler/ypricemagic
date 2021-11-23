@@ -62,6 +62,7 @@ elif chain.id == 56:
         "bakeryswap": Contract('0xCDe540d7eAFE93aC5fE6233Bee57E1270D3E330F'),
         "nyanswop": Contract('0xc946764369623F560a5962D32c1D16D45F1BD6fa'),
         "narwhalswap": Contract('0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078'),
+        "cafeswap": Contract('0x933DAea3a5995Fb94b14A7696a5F3ffD7B1E385A'),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -74,6 +75,7 @@ elif chain.id == 56:
         "bakeryswap": "0x01bF7C66c6BD861915CdaaE475042d3c4BaE16A7",
         "nyanswop": "0xF38D202723a9376C034eD5b8Cecb4EFe8f249836",
         "narwhalswap": "0xB9fA84912FF2383a617d8b433E926Adf0Dd3FEa1",
+        "cafeswap": "0x3e708FdbE3ADA63fc94F8F61811196f1302137AD",
     }
     SPECIAL_PATHS = {
         "pancakeswapv2": {
@@ -104,6 +106,9 @@ elif chain.id == 56:
 
         },
         "narwhalswap": {
+
+        },
+        "cafeswap": {
 
         },
     }
