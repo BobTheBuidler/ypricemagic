@@ -115,7 +115,7 @@ elif chain.id == 56:
         },
         "jetswap": {
 
-        }
+        },
     }
 elif chain.id == 137:
     ROUTERS = {
@@ -127,6 +127,7 @@ elif chain.id == 137:
         "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),
         "jetswap": Contract("0x5C6EC38fb0e2609672BDf628B1fD605A523E5923"),
         "polyzap": Contract("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"),
+        "cafeswap": Contract('0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc'),
     }
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
@@ -137,6 +138,7 @@ elif chain.id == 137:
         "apeswap": "0xCf083Be4164828f00cAE704EC15a36D711491284",
         "jetswap": "0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7",
         "polyzap": "0x34De5ce6c9a395dB5710119419A7a29baa435C88",
+        "cafeswap": "0x5eDe3f4e7203Bf1F12d57aF1810448E5dB20f46C",
     }
     SPECIAL_PATHS = {
         "quickswap": {
@@ -162,7 +164,10 @@ elif chain.id == 137:
         },
         "polyzap": {
 
-        }
+        },
+        "cafeswap": {
+
+        },
     }
 elif chain.id == 250:
     ROUTERS = {
