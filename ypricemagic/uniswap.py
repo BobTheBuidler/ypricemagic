@@ -66,6 +66,7 @@ elif chain.id == 56:
         "jetswap": Contract('0xBe65b8f75B9F20f4C522e0067a3887FADa714800'),
         "babyswap": Contract('0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd'),
         "annex": Contract('0x299385325392F537Fc6B4281d2dbe31280833Dcb'),
+        "viralata": Contract('0xdb07Ed70aA18FfC8B422bF3D8AF947E937511FDF'),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -82,6 +83,7 @@ elif chain.id == 56:
         "jetswap": "0x0eb58E5c8aA63314ff5547289185cC4583DfCBD5",
         "babyswap": "0x86407bEa2078ea5f5EB5A52B2caA963bC1F889Da",
         "annex": "0x6a616606D9f3BaE02d215db5046b7D1030674622",
+        "viralata": "0x12c2B0A1c9C786Bf7AD0E92Ce3f2d1805874e185",
     }
     SPECIAL_PATHS = {
         "pancakeswapv2": {
@@ -124,6 +126,9 @@ elif chain.id == 56:
 
         },
         "annex": {
+
+        },
+        "viralata": {
 
         }
     }
