@@ -132,7 +132,7 @@ elif chain.id == 137:
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
         "sushi": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
-        "dfyn": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
+        "dfyn": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B",
         "wault": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef",
         "cometh": "0x800b052609c355cA8103E06F022aA30647eAd60a",
         "apeswap": "0xCf083Be4164828f00cAE704EC15a36D711491284",
