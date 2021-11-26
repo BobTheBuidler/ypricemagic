@@ -54,8 +54,8 @@ elif chain.id == 56:
     ROUTERS = {
         "pancakeswapv2": Contract("0x10ED43C718714eb63d5aA57B78B54704E256024E"),
         "pancakeswapv1": Contract("0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F"),
-        "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),
-        "apeswap": Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7'),
+        "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),#
+        "apeswap": Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7'),#
         "swapliquidity": Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),
         'thugswap': Contract('0x3bc677674df90A9e5D741f28f6CA303357D0E4Ec'),
         "mdex": Contract('0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8'),
@@ -69,6 +69,7 @@ elif chain.id == 56:
         "viralata": Contract('0xdb07Ed70aA18FfC8B422bF3D8AF947E937511FDF'),
         "elk": Contract('0xA63B831264183D755756ca9AE5190fF5183d65D6'),
         "pantherswap": Contract('0x24f7C33ae5f77e2A9ECeed7EA858B4ca2fa1B7eC'),
+        "complus": Contract('0x07DC75E8bc57A21A183129Ec29bbCC232d79eE56'),
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -88,6 +89,7 @@ elif chain.id == 56:
         "viralata": "0x12c2B0A1c9C786Bf7AD0E92Ce3f2d1805874e185",
         "elk": "0x31aFfd875e9f68cd6Cd12Cee8943566c9A4bBA13",
         "pantherswap": "0x670f55c6284c629c23baE99F585e3f17E8b9FC31",
+        "complus": "0xDf97982Bf70be91df4ACD3d511c551F06a0D19eC",
     }
     SPECIAL_PATHS = {
         "pancakeswapv2": {
@@ -140,6 +142,9 @@ elif chain.id == 56:
         },
         "pantherswap": {
 
+        },
+        "complus": {
+            
         }
     }
 elif chain.id == 137:
