@@ -62,13 +62,13 @@ elif chain.id == 56:
         "bakeryswap": Contract('0xCDe540d7eAFE93aC5fE6233Bee57E1270D3E330F'),#
         "nyanswop": Contract('0xc946764369623F560a5962D32c1D16D45F1BD6fa'),#
         "narwhalswap": Contract('0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078'),#
-        "cafeswap": Contract('0x933DAea3a5995Fb94b14A7696a5F3ffD7B1E385A'),
-        "jetswap": Contract('0xBe65b8f75B9F20f4C522e0067a3887FADa714800'),
-        "babyswap": Contract('0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd'),
-        "annex": Contract('0x299385325392F537Fc6B4281d2dbe31280833Dcb'),
-        "viralata": Contract('0xdb07Ed70aA18FfC8B422bF3D8AF947E937511FDF'),
-        "elk": Contract('0xA63B831264183D755756ca9AE5190fF5183d65D6'),
-        "pantherswap": Contract('0x24f7C33ae5f77e2A9ECeed7EA858B4ca2fa1B7eC'),
+        "cafeswap": Contract('0x933DAea3a5995Fb94b14A7696a5F3ffD7B1E385A'),#
+        "jetswap": Contract('0xBe65b8f75B9F20f4C522e0067a3887FADa714800'),#
+        "babyswap": Contract('0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd'),#
+        "annex": Contract('0x299385325392F537Fc6B4281d2dbe31280833Dcb'),#
+        "viralata": Contract('0xdb07Ed70aA18FfC8B422bF3D8AF947E937511FDF'),#
+        "elk": Contract('0xA63B831264183D755756ca9AE5190fF5183d65D6'),#
+        "pantherswap": Contract('0x24f7C33ae5f77e2A9ECeed7EA858B4ca2fa1B7eC'),#
         "complus": Contract('0x07DC75E8bc57A21A183129Ec29bbCC232d79eE56'),#
     }
     FACTORIES = {
@@ -205,12 +205,14 @@ elif chain.id == 250:
         'spookyswap': Contract('0xF491e7B69E4244ad4002BC14e878a34207E38c29'),
         'spiritswap': Contract('0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52'),
         'paintswap': Contract('0xfD000ddCEa75a2E23059881c3589F6425bFf1AbB'),
+        "jetswap": Contract('0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25'),
     }
     FACTORIES = {
         "sushi": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
         "spookyswap": "0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3",
         "spiritswap": "0xEF45d134b73241eDa7703fa787148D9C9F4950b0",
         "paintswap": "0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5",
+        "jetswap": "0xf6488205957f0b4497053d6422F49e27944eE3Dd",
     }
     SPECIAL_PATHS = {
         "sushi": {
@@ -223,6 +225,9 @@ elif chain.id == 250:
 
         },
         "paintswap": {
+
+        },
+        "jetswap": {
 
         }
     }
