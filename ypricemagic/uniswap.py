@@ -56,12 +56,12 @@ elif chain.id == 56:
         "pancakeswapv1": Contract("0x05fF2B0DB69458A0750badebc4f9e13aDd608C7F"),
         "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),#
         "apeswap": Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7'),#
-        "swapliquidity": Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),
-        'thugswap': Contract('0x3bc677674df90A9e5D741f28f6CA303357D0E4Ec'),
-        "mdex": Contract('0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8'),
-        "bakeryswap": Contract('0xCDe540d7eAFE93aC5fE6233Bee57E1270D3E330F'),
-        "nyanswop": Contract('0xc946764369623F560a5962D32c1D16D45F1BD6fa'),
-        "narwhalswap": Contract('0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078'),
+        "swapliquidity": Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),#
+        'thugswap': Contract('0x3bc677674df90A9e5D741f28f6CA303357D0E4Ec'),#
+        "mdex": Contract('0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8'),##
+        "bakeryswap": Contract('0xCDe540d7eAFE93aC5fE6233Bee57E1270D3E330F'),#
+        "nyanswop": Contract('0xc946764369623F560a5962D32c1D16D45F1BD6fa'),#
+        "narwhalswap": Contract('0xE85C6ab56A3422E7bAfd71e81Eb7d0f290646078'),#
         "cafeswap": Contract('0x933DAea3a5995Fb94b14A7696a5F3ffD7B1E385A'),
         "jetswap": Contract('0xBe65b8f75B9F20f4C522e0067a3887FADa714800'),
         "babyswap": Contract('0x325E343f1dE602396E256B67eFd1F61C3A6B38Bd'),
@@ -69,7 +69,7 @@ elif chain.id == 56:
         "viralata": Contract('0xdb07Ed70aA18FfC8B422bF3D8AF947E937511FDF'),
         "elk": Contract('0xA63B831264183D755756ca9AE5190fF5183d65D6'),
         "pantherswap": Contract('0x24f7C33ae5f77e2A9ECeed7EA858B4ca2fa1B7eC'),
-        "complus": Contract('0x07DC75E8bc57A21A183129Ec29bbCC232d79eE56'),
+        "complus": Contract('0x07DC75E8bc57A21A183129Ec29bbCC232d79eE56'),#
     }
     FACTORIES = {
         "pancakeswapv2": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -144,20 +144,20 @@ elif chain.id == 56:
 
         },
         "complus": {
-            
+
         }
     }
 elif chain.id == 137:
     ROUTERS = {
-        "quickswap": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
-        "sushi": Contract("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"),
-        "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),
-        "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),
-        "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi),
-        "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),
-        "jetswap": Contract("0x5C6EC38fb0e2609672BDf628B1fD605A523E5923"),
-        "polyzap": Contract("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"),
-        "cafeswap": Contract('0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc'),
+        "quickswap": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),#
+        "sushi": Contract("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"),#
+        "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),#
+        "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),#
+        "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi),#
+        "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),#
+        "jetswap": Contract("0x5C6EC38fb0e2609672BDf628B1fD605A523E5923"),#
+        "polyzap": Contract("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"),#
+        "cafeswap": Contract('0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc'),#
     }
     FACTORIES = {
         "quickswap": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
@@ -203,12 +203,14 @@ elif chain.id == 250:
     ROUTERS = {
         'sushi': Contract('0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506'),
         'spookyswap': Contract('0xF491e7B69E4244ad4002BC14e878a34207E38c29'),
-        'spiritswap': Contract('0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52')
+        'spiritswap': Contract('0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52'),
+        'paintswap': Contract('0xfD000ddCEa75a2E23059881c3589F6425bFf1AbB'),
     }
     FACTORIES = {
         "sushi": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
         "spookyswap": "0x152eE697f2E276fA89E96742e9bB9aB1F2E61bE3",
         "spiritswap": "0xEF45d134b73241eDa7703fa787148D9C9F4950b0",
+        "paintswap": "0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5",
     }
     SPECIAL_PATHS = {
         "sushi": {
@@ -218,6 +220,9 @@ elif chain.id == 250:
 
         },
         "spiritswap": {
+
+        },
+        "paintswap": {
 
         }
     }

@@ -344,6 +344,10 @@ def get_price(token, block=None, silent=False):
             logger.debug("uniswap -> %s", price)
 
         if price is None:
+            price = uniswap.get_price(token, router="paintswap", block=block)
+            logger.debug("uniswap -> %s", price)
+
+        if price is None:
             price = balancer.get_price(token, block=block)
             logger.debug("balancer -> %s", price)
 
