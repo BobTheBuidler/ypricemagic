@@ -9,9 +9,12 @@ from .utils.cache import memory
 from .utils.multicall2 import fetch_multicall
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
-address_provider = Contract('0x0000000022D53366457F9d5E68Ec105046FC4383')
-curve_registry = Contract(address_provider.get_address(0))
-metapool_factory = None if address_provider.get_address(3) == ZERO_ADDRESS else Contract(address_provider.get_address(3))
+try: # if curve registry not deployed on a chain, skip this stuff
+    address_provider = Contract('0x0000000022D53366457F9d5E68Ec105046FC4383')
+    curve_registry = Contract(address_provider.get_address(0))
+    metapool_factory = None if address_provider.get_address(3) == ZERO_ADDRESS else Contract(address_provider.get_address(3))
+except:
+    pass
 
 # fold underlying tokens into one of the basic tokens
 
