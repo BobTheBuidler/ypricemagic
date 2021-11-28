@@ -2,7 +2,7 @@ import logging
 
 from .utils.cache import memory
 from brownie import chain, multicall
-from . import aave, chainlink, compound, constants, uniswap, yearn
+from . import aave, chainlink, compound, constants, curve, uniswap, yearn
 
 logger = logging.getLogger(__name__)
 
@@ -29,7 +29,7 @@ def get_price(token, block=None, silent=False):
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import balancer, cream, curve, gelato, mooniswap, piedao, tokensets, wsteth
+        from . import balancer, cream, gelato, mooniswap, piedao, tokensets, wsteth
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
@@ -261,6 +261,10 @@ def get_price(token, block=None, silent=False):
             price = yearn.get_price(token, block=block)
             logger.debug("yearn -> %s", price)
 
+        elif curve.is_curve_lp_token(token):
+            price = curve.get_pool_price(token, block=block)
+            logger.debug("curve lp -> %s", price)
+
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
             price, underlying = price
@@ -312,6 +316,10 @@ def get_price(token, block=None, silent=False):
         if yearn.is_yearn_vault(token):
             price = yearn.get_price(token, block=block)
             logger.debug("yearn -> %s", price)
+
+        elif curve.is_curve_lp_token(token):
+            price = curve.get_pool_price(token, block=block)
+            logger.debug("curve lp -> %s", price)
 
         elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block)

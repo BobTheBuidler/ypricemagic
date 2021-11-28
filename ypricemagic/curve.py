@@ -1,40 +1,99 @@
-from brownie import ZERO_ADDRESS, Contract
+from brownie import ZERO_ADDRESS, Contract, chain
 from cachetools.func import ttl_cache
 from toolz import take
 
+from ypricemagic import magic
+
+from .constants import dai
 from .utils.cache import memory
 from .utils.multicall2 import fetch_multicall
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
 address_provider = Contract('0x0000000022D53366457F9d5E68Ec105046FC4383')
 curve_registry = Contract(address_provider.get_address(0))
-metapool_factory = Contract(address_provider.get_address(3))
+metapool_factory = None if address_provider.get_address(3) == ZERO_ADDRESS else Contract(address_provider.get_address(3))
 
 # fold underlying tokens into one of the basic tokens
-BASIC_TOKENS = {
-    "0x6B175474E89094C44Da98b954EedeAC495271d0F",  # dai
-    "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # weth
-    "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
-    "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # wbtc
-    "0xD71eCFF9342A5Ced620049e616c5035F1dB98620",  # seur
-    "0x514910771AF9Ca656af840dff83E8264EcF986CA",  # link
-}
 
-OVERRIDES = {
-    '0x53a901d48795C58f485cBB38df08FA96a24669D5': {
-        'name': 'reth',
-        'pool': '0xF9440930043eb3997fc70e1339dBb11F341de7A8',
-        'coins': [
-            '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',  # ETH
-            '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593',  # rETH
-        ],
+if chain.id == 1:
+    BASIC_TOKENS = {
+        dai.address,  # dai
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",  # weth
+        "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
+        "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",  # wbtc
+        "0xD71eCFF9342A5Ced620049e616c5035F1dB98620",  # seur
+        "0x514910771AF9Ca656af840dff83E8264EcF986CA",  # link
     }
-}
-CRYPTOPOOLS = {
-    '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF': {
-        'pool': '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
-    },
-}
+    OVERRIDES = {
+        '0x53a901d48795C58f485cBB38df08FA96a24669D5': {
+            'name': 'reth',
+            'pool': '0xF9440930043eb3997fc70e1339dBb11F341de7A8',
+            'coins': [
+                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',  # ETH
+                '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593',  # rETH
+            ],
+        }
+    }
+    CRYPTOPOOLS = {
+        '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF': {
+            'pool': '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
+        },
+    }
+elif chain.id == 137:
+    BASIC_TOKENS = {
+        dai.address, 
+    }
+    OVERRIDES = {}
+    '''
+    OVERRIDES = {
+        '0x53a901d48795C58f485cBB38df08FA96a24669D5': {
+            'name': 'reth',
+            'pool': '0xF9440930043eb3997fc70e1339dBb11F341de7A8',
+            'coins': [
+                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',  # ETH
+                '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593',  # rETH
+            ],
+        }
+    }
+    '''
+    CRYPTOPOOLS = {
+        '0x8096ac61db23291252574D49f036f0f9ed8ab390': {
+            'pool': '0x751B1e21756bDbc307CBcC5085c042a0e9AaEf36',
+        }, # tricrypto
+        '0xbece5d20A8a104c54183CC316C8286E3F00ffC71': {
+            'pool': '0x92577943c7aC4accb35288aB2CC84D75feC330aF',
+        }, # tricrypto2
+        '0xdAD97F7713Ae9437fa9249920eC8507e5FbB23d3': {
+            'pool': '0x92215849c439E1f8612b6646060B4E3E5ef822cC',
+        }, # tricrypto3
+        '0x600743B1d8A96438bD46836fD34977a00293f6Aa': {
+            'pool': '0xB446BF7b8D6D4276d0c75eC0e3ee8dD7Fe15783A',
+        }, # 
+    }
+elif chain.id == 250:
+    BASIC_TOKENS = {
+        dai.address, 
+    }
+    OVERRIDES = {}
+    '''
+    OVERRIDES = {
+        '0x53a901d48795C58f485cBB38df08FA96a24669D5': {
+            'name': 'reth',
+            'pool': '0xF9440930043eb3997fc70e1339dBb11F341de7A8',
+            'coins': [
+                '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',  # ETH
+                '0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593',  # rETH
+            ],
+        }
+    }
+    '''
+    CRYPTOPOOLS = {
+        '0x58e57cA18B7A47112b877E31929798Cd3D703b0f': {
+            'pool': '0x3a1659Ddcf2339Be3aeA159cA010979FB49155FF',
+        },
+    }
+
+
 
 
 @memory.cache()
@@ -47,8 +106,11 @@ def get_pool(token):
         if set(metapool_factory.get_underlying_coins(token)) != {ZERO_ADDRESS}:
             return token
     except:
-        if set(metapool_factory.get_coins(token)) != {ZERO_ADDRESS}:
-            return token
+        try:
+            if set(metapool_factory.get_coins(token)) != {ZERO_ADDRESS}:
+                return token
+        except:
+            pass
     return curve_registry.get_pool_from_lp_token(token)
 
 
@@ -77,22 +139,41 @@ def cryptopool_lp_price(token, block=None):
     result = fetch_multicall(*[[pool, 'coins', i] for i in range(8)])
     tokens = [Contract(token) for token in result if token]
     n = len(tokens)
-    result = iter(
-        fetch_multicall(
-            [token, 'totalSupply'],
-            *[[token, 'decimals'] for token in tokens],
-            *[[pool, 'balances', i] for i in range(n)],
-            *[[pool, 'price_oracle', i] for i in range(n - 1)],
-            block=block
+    try:
+        result = iter(
+            fetch_multicall(
+                [token, 'totalSupply'],
+                *[[token, 'decimals'] for token in tokens],
+                *[[pool, 'balances', i] for i in range(n)],
+                *[[pool, 'price_oracle', i] for i in range(n - 1)],
+                block=block
+            )
         )
-    )
-    supply = next(result) / 1e18
-    scales = [10 ** decimals for decimals in take(n, result)]
-    balances = [balance / scale for balance, scale in zip(take(n, result), scales)]
-    # oracles return price with the first coin as a quote currency
-    prices = [1] + [price / 1e18 for price in take(n - 1, result)]
-    scale = sum(balance * price for balance, price in zip(balances, prices)) / supply
-    return [scale, str(tokens[0])]
+        supply = next(result) / 1e18
+        scales = [10 ** decimals for decimals in take(n, result)]
+        balances = [balance / scale for balance, scale in zip(take(n, result), scales)]
+        # oracles return price with the first coin as a quote currency
+        prices = [1] + [price / 1e18 for price in take(n - 1, result)]
+        scale = sum(balance * price for balance, price in zip(balances, prices)) / supply
+        return [scale, str(tokens[0])]
+    # testing
+    except TypeError as e:
+        if str(e) == "price_oracle requires no arguments":
+            result = iter(
+                fetch_multicall(
+                    [token, 'totalSupply'],
+                    *[[token, 'decimals'] for token in tokens],
+                    *[[pool, 'balances', i] for i in range(n)],
+                    block=block
+                )
+            )
+            supply = next(result) / 1e18
+            scales = [10 ** decimals for decimals in take(n, result)]
+            balances = [balance / scale for balance, scale in zip(take(n, result), scales)]
+            prices = [magic.get_price(token, block) for token in tokens]
+            scale = sum(balance * price for balance, price in zip(balances, prices)) / supply
+            return [scale, str(tokens[0])]
+    
 
 @ttl_cache(ttl=600)
 def get_pool_price(token, block=None):
