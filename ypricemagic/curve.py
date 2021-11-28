@@ -40,7 +40,10 @@ if chain.id == 1:
     CRYPTOPOOLS = {
         '0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF': {
             'pool': '0x80466c64868E1ab14a1Ddf27A676C3fcBE638Fe5',
-        },
+        }, #TriCrypto
+        '0xc4AD29ba4B3c580e6D59105FFf484999997675Ff': {
+            'pool': '0xD51a44d3FaE010294C616388b506AcdA1bfAAE46',
+        }, # 3Crypto
     }
 elif chain.id == 137:
     BASIC_TOKENS = {
