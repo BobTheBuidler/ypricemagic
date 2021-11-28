@@ -2,7 +2,7 @@ from brownie import ZERO_ADDRESS, Contract, chain
 from cachetools.func import ttl_cache
 from toolz import take
 
-from .magic import get_price
+from . import magic
 
 from .constants import dai
 from .utils.cache import memory
@@ -170,7 +170,7 @@ def cryptopool_lp_price(token, block=None):
             supply = next(result) / 1e18
             scales = [10 ** decimals for decimals in take(n, result)]
             balances = [balance / scale for balance, scale in zip(take(n, result), scales)]
-            prices = [get_price(token, block) for token in tokens]
+            prices = [magic.get_price(token, block) for token in tokens]
             scale = sum(balance * price for balance, price in zip(balances, prices)) / supply
             return [scale, str(tokens[0])]
     
