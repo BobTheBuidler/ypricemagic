@@ -32,7 +32,7 @@ def is_balancer_pool_v1(address):
 @memory.cache()
 def is_balancer_pool_v2(address):
     pool = Contract(address)
-    required = {'getPoolId','getInvariant','getSwapFeePercentage'}
+    required = {'getPoolId','getPausedState','getSwapFeePercentage'}
     return set(pool.__dict__) & required == required
 
 @memory.cache()
