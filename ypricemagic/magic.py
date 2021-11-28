@@ -312,8 +312,13 @@ def get_price(token, block=None, silent=False):
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wftm)
+        
+        # we can exit early with known tokens
+        if token in chainlink.feeds:
+            price = chainlink.get_price(token, block=block)
+            logger.debug("chainlink -> %s", price)
 
-        if yearn.is_yearn_vault(token):
+        elif yearn.is_yearn_vault(token):
             price = yearn.get_price(token, block=block)
             logger.debug("yearn -> %s", price)
 

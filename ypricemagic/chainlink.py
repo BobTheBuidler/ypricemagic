@@ -44,7 +44,10 @@ elif chain.id == 137:
         "0x7c7DAAF2dB46fEFd067f002a69FD0BE14AeB159f": Contract("0x1248573D9B62AC86a3ca02aBC6Abe6d403Cd1034"),  # renluna
         "0x7BDF330f423Ea880FF95fC41A280fD5eCFD3D09f": Contract("0x73366Fe0AA0Ded304479862808e02506FE556a98"),  # eurt
     }
-
+elif chain.id == 250:
+    feeds = {
+        "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": Contract("0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4"),  # renbtc
+    }
 
 @ttl_cache(ttl=600)
 def get_price(asset, block=None):
