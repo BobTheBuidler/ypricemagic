@@ -2,7 +2,7 @@ from brownie import ZERO_ADDRESS, Contract, chain
 from cachetools.func import ttl_cache
 from toolz import take
 
-from ypricemagic.magic import get_price
+from .magic import get_price
 
 from .constants import dai
 from .utils.cache import memory
