@@ -1,7 +1,10 @@
 import logging
 
+from eth_typing.evm import Address, BlockNumber
+
 from .utils.cache import memory
-from brownie import chain, multicall, convert
+from typing import Union
+from brownie import chain, multicall, convert, Contract
 from . import aave, chainlink, compound, constants, curve, mstablefeederpool, uniswap, yearn
 
 logger = logging.getLogger(__name__)
@@ -12,7 +15,7 @@ class PriceError(Exception):
 
 
 @memory.cache()
-def get_price(token, block=None, silent=False):
+def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
     token = str(token)
     token = convert.to_address(token)
     logging.debug(f"token: {token}")
