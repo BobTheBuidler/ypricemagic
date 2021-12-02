@@ -1,7 +1,7 @@
 import logging
 
 from .utils.cache import memory
-from brownie import chain, multicall
+from brownie import chain, multicall, convert
 from . import aave, chainlink, compound, constants, curve, mstablefeederpool, uniswap, yearn
 
 logger = logging.getLogger(__name__)
@@ -14,6 +14,7 @@ class PriceError(Exception):
 @memory.cache()
 def get_price(token, block=None, silent=False):
     token = str(token)
+    token = convert.to_address(token)
     logging.debug(f"token: {token}")
     logging.debug(f"chainid: {chain.id}")
     #    # NOTE: Special handling required for some proxy tokens
