@@ -2,7 +2,7 @@ import logging
 
 from .utils.cache import memory
 from brownie import chain, multicall
-from . import aave, chainlink, compound, constants, curve, uniswap, yearn
+from . import aave, chainlink, compound, constants, curve, mstablefeederpool, uniswap, yearn
 
 logger = logging.getLogger(__name__)
 
@@ -70,6 +70,11 @@ def get_price(token, block=None, silent=False):
 
         elif mooniswap.is_mooniswap_pool(token):
             price = mooniswap.get_pool_price(token, block=block)
+            logger.debug("mooniswap pool -> %s", price)
+
+        elif mstablefeederpool.is_mstable_feeder_pool(token):
+            price = mstablefeederpool.get_price(token,block=block)
+            logger.debug("mstable feeder pool -> %s", price)
 
         elif balancer.is_balancer_pool(token):
             price = balancer.get_price(token, block=block)
@@ -252,6 +257,10 @@ def get_price(token, block=None, silent=False):
         elif compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
             logger.debug("compound -> %s", price)
+
+        elif mstablefeederpool.is_mstable_feeder_pool(token):
+            price = mstablefeederpool.get_price(token,block=block)
+            logger.debug("mstable feeder pool -> %s", price)
 
         elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block=block)
