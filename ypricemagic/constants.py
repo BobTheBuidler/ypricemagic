@@ -23,7 +23,8 @@ if chain.id == 1:
         "0x853d955aCEf822Db058eb8505911ED77F175b99e": "frax",
         "0x5f98805A4E8be255a32880FDeC7F6728C6568bA0": "lusd",
         "0xBC6DA0FE9aD5f3b0d58160288917AA56653660E9": "alusd",
-        "0x8e870d67f660d95d5be530380d0ec0bd388289e1": "pax"
+        "0x8e870d67f660d95d5be530380d0ec0bd388289e1": "pax",
+        "0xe2f2a5C287993345a840Db3B0845fbC70f5935a5": "musd"
     }
 
     PROXIES = {
