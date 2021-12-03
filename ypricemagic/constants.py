@@ -78,6 +78,12 @@ elif chain.id == 250:
         "0x049d68029688eAbF473097a2fC38ef61633A3C7A": "fusdt",
     }
     PROXIES = {}
+elif chain.id == 42161:
+    STABLECOINS = {}
+    PROXIES = {}
+elif chain.id == 43114:
+    STABLECOINS = {}
+    PROXIES = {}
 
 
 
