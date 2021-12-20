@@ -195,5 +195,9 @@ def get_pool_price(token, block=None):
     # there is a registry.get_virtual_price_from_lp_token,
     # but we call pool in case the registry was not deployed at the block
     pool = Contract(get_pool(token))
-    virtual_price = pool.get_virtual_price(block_identifier=block) / 1e18
+    try:
+        virtual_price = pool.get_virtual_price(block_identifier=block) / 1e18
+    except:
+        pool = Contract.from_explorer(get_pool(token))
+        virtual_price = pool.get_virtual_price(block_identifier=block) / 1e18
     return [virtual_price, coin]
