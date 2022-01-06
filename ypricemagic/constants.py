@@ -46,7 +46,8 @@ elif chain.id == 56:
         "0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3": "dai",
         "0x55d398326f99059ff775485246999027b3197955": "usdt",
         "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56": "busd",
-        "0x23396cF899Ca06c4472205fC903bDB4de249D6fC": "wust"
+        "0x23396cF899Ca06c4472205fC903bDB4de249D6fC": "wust",
+        "0x14016E85a25aeb13065688cAFB43044C2ef86784": "tusd",
     }
     PROXIES = {}
 elif chain.id == 137: #poly
