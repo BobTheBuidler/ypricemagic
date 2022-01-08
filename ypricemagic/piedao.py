@@ -1,8 +1,10 @@
-from ypricemagic.utils.utils import Contract_with_erc20_fallback
-from brownie import Contract
-from . import magic
-from .utils.utils import get_decimals_with_override
 import logging
+
+from brownie import Contract
+
+from utils.raw_calls import _decimals
+
+from . import magic
 
 # NOTE: If this module is not working with you, try to reinitialize your contract with 
 # Contract.from_abi(). Get the proper abi from etherscan. For some reason, Contract()
@@ -17,13 +19,14 @@ def value(token, block, balance):
     logging.debug(f'token: {token}')
     if token == '0xf037f37f58110933834CA64545E4ffD169736561': # wrapped ATRI
         newtoken = '0xdacD69347dE42baBfAEcD09dC88958378780FB62' # ATRI
-        return balance / 10 ** get_decimals_with_override(token) * magic.get_price(newtoken, block=block)
-    return balance / 10 ** get_decimals_with_override(token) * magic.get_price(token, block=block)
+        return balance / 10 ** _decimals(token) * magic.get_price(newtoken, block=block)
+    return balance / 10 ** _decimals(token) * magic.get_price(token, block=block)
 
-def get_price(token, block=None):
-    token = Contract(token)
-    ten_tokens = 10 ** (token.decimals() + 1)
-    balances = token.calcTokensForAmount(ten_tokens, block_identifier = block)
+def get_price(token_address: str, block=None):
+    token = Contract(token_address)
+    one_token_in_wei = 10 ** _decimals(token_address)
+    ten_tokens_in_wei = one_token_in_wei * 10
+    balances = token.calcTokensForAmount(ten_tokens_in_wei, block_identifier = block)
     logging.debug(f"pie balances: {balances}")
     total = sum(
         value(token, block, balance)

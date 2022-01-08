@@ -1,15 +1,14 @@
-import token
-from tokenize import tokenize
 from brownie import Contract, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
-from .utils.cache import memory
-from .utils.multicall2 import fetch_multicall
-from .interfaces.ERC20 import ERC20ABI
+
 import ypricemagic.magic
 import ypricemagic.utils.utils
-from .constants import STABLECOINS, dai, usdc, usdt, wbtc, weth, sushi
-    
+from constants import STABLECOINS, dai, sushi, usdc, usdt, wbtc, weth
+from utils.cache import memory
+from utils.multicall2 import fetch_multicall
+from utils.raw_calls import _decimals
+
 # NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.
 #       Please add a viable swap path below to fetch price data successfully.
 
@@ -254,7 +253,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
         busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
         token_out = busd
     tokens = [str(token) for token in [token_in, token_out]]
-    amount_in = 10 ** ypricemagic.utils.utils.get_decimals_with_override(tokens[0])
+    amount_in = 10 ** _decimals(tokens[0],block)
     if str(token_in) in STABLECOINS:
         return 1
     elif str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:
@@ -266,7 +265,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
     elif str(token_in) in SPECIAL_PATHS[router].keys() and str(token_out) in STABLECOINS:
         path = SPECIAL_PATHS[router][str(token_in)]
     elif chain.id == 56: #bsc
-        from .constants import cake, wbnb
+        from constants import cake, wbnb
         if wbnb in (token_in, token_out):
             path = [token_in, token_out]
         elif cake in (token_in, token_out):
@@ -274,13 +273,13 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
         else:
             path = [token_in,wbnb,token_out]
     elif chain.id == 137: # polygon
-        from .constants import wmatic
+        from constants import wmatic
         if wmatic in (token_in, token_out):
             path = [token_in, token_out]
         else:
             path = [token_in,wmatic,token_out]
     elif chain.id == 250: # fantom
-        from .constants import wftm
+        from constants import wftm
         if wftm in (token_in, token_out):
             path = [token_in, token_out]
         else:
@@ -292,7 +291,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
     router = ROUTERS[router]
     try:
         quote = router.getAmountsOut(amount_in, path, block_identifier=block)
-        amount_out = quote[-1] / 10 ** ypricemagic.utils.utils.get_decimals_with_override(str(path[-1]))
+        amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
         return amount_out / fees
     except ValueError as e:
         return
@@ -303,7 +302,7 @@ def get_price_v1(asset, block=None):
     factory = Contract("0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95")
     try:
         exchange = Contract(factory.getExchange(asset))
-        eth_bought = exchange.getTokenToEthInputPrice(10 ** ypricemagic.utils.utils.get_decimals_with_override(asset), block_identifier=block)
+        eth_bought = exchange.getTokenToEthInputPrice(10 ** _decimals(asset,block), block_identifier=block)
         exchange = Contract(factory.getExchange(usdc))
         usdc_bought = exchange.getEthToTokenInputPrice(eth_bought, block_identifier=block) / 1e6
         fees = 0.997 ** 2
@@ -322,7 +321,7 @@ def is_uniswap_pool(address):
 
 
 @ttl_cache(ttl=600)
-def lp_price(address, block=None):
+def lp_price(token_address: str, block=None):
     """ Get Uniswap/Sushiswap LP token price. """
 
     def extrapolate_balance_if_needed():
@@ -333,7 +332,7 @@ def lp_price(address, block=None):
             balances[0] = balances[1]
         return balances
 
-    pair = Contract(address)
+    pair = Contract(token_address)
     if chain.id in [1,56,137,250]: 
         factory, token0, token1, supply, reserves = fetch_multicall(
             [pair, "factory"],
@@ -354,7 +353,7 @@ def lp_price(address, block=None):
     price0 = get_price(tokens[0], paired_against=tokens[1], router=router, block=block)
     price1 = get_price(tokens[1], paired_against=tokens[0], router=router, block=block)
     prices = [price0,price1]
-    scales = [10 ** ypricemagic.utils.utils.get_decimals_with_override(str(token)) for token in tokens]
+    scales = [10 ** _decimals(token.address,block) for token in tokens]
     supply = supply / 1e18
     try:
         balances = [res / scale * price for res, scale, price in zip(reserves, scales, prices)]

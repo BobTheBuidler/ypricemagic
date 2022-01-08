@@ -4,10 +4,8 @@ import logging
 from brownie import Contract, chain, web3
 from cachetools.func import lru_cache
 
-import ypricemagic.utils.events
-from .cache import memory
-from ..interfaces.ERC20 import ERC20ABI
-from ..constants import PROXIES
+from utils.cache import memory
+from interfaces.ERC20 import ERC20ABI
 
 logger = logging.getLogger(__name__)
 
@@ -125,38 +123,9 @@ def _contract_creation_block_bigquery(address):
     query_job = client.query(query, job_config=job_config)
     for row in query_job:
         return row["block_number"]
+       
 
-@lru_cache
-def get_decimals_with_override(address, block=None):
-    try:
-        return DECIMAL_OVERRIDES[str(address)]
-    except KeyError:
-        try:
-            return Contract(address).decimals()
-        except (AttributeError, ValueError):
-            try:
-                return Contract(address).DECIMALS()
-            except (AttributeError, ValueError): # NOTE: if AttributeError, 'address' is a proxy and we need to look at the implementation
-                if is_AdminUpgradeabilityProxy(address):
-                    topics = [web3.keccak(text='Upgraded(address)').hex()]
-                    upgrade_events = ypricemagic.utils.events.get_logs_asap(address, topics, to_block=block)
-                    try: # NOTE: for debugging purposes only
-                        current = max(event.blockNumber for event in upgrade_events)
-                    except:
-                        raise
-                    event = [event for event in upgrade_events if event.blockNumber == current]
-                    implementation = ypricemagic.utils.events.decode_logs(event)['Upgraded']['implementation']
-                    return Contract(implementation).decimals()
-                elif is_PProxy(address):
-                    return Contract(Contract(address).getImplementation()).decimals()
-                else: # NOTE: This will throw
-                    return Contract_erc20(address).decimals()        
 
-def PROXIES_reverse_lookup(token):
-    try:
-        return [key for key, value in PROXIES.items() if value == token][0]
-    except IndexError:
-        return token
 
 def is_AdminUpgradeabilityProxy(address):
     required = {"upgradeTo", "upgradeToAndCall", "implementation", "changeAdmin", "admin"}

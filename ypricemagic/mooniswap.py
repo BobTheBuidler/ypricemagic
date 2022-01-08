@@ -1,7 +1,9 @@
-from brownie import ZERO_ADDRESS, chain, Contract, multicall, web3
-from .utils.cache import memory
-from .constants import weth
-from .magic import get_price
+from brownie import ZERO_ADDRESS, Contract, chain, multicall, web3
+
+from constants import weth
+from magic import get_price
+from utils.cache import memory
+from utils.raw_calls import _decimals, _totalSupplyReadable
 
 if chain.id == 1:
     router = Contract("0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643")
@@ -15,41 +17,41 @@ def is_mooniswap_pool(token):
     pools = router.getAllPools()
     return token in pools
 
-def get_pool_price(token, block=None):
-    token = Contract(token)
+def get_pool_price(token_address, block=None):
+    token = Contract(token_address)
     if block >= 12336033 and chain.id == 1:
         with multicall(address=multicall.address, block_identifier = block):
-            token0 = token.token0()
-            token1 = token.token1()
-            totalSupply = token.totalSupply() / 10 ** token.decimals()
-            if token0 == ZERO_ADDRESS:
-                token1 = Contract(token1)
+            token0_address = token.token0()
+            token1_address = token.token1()
+            totalSupply = _totalSupplyReadable(token_address,block)
+            if token0_address == ZERO_ADDRESS:
+                token1 = Contract(token1_address)
                 bal0 = web3.eth.get_balance(token.address) / 10 ** 18
-                bal1 = token1.balanceOf(token) / 10 ** token1.decimals()
-            elif token1 == ZERO_ADDRESS:
-                token0 = Contract(token0)
-                bal0 = token0.balanceOf(token) / 10 ** token0.decimals()
+                bal1 = token1.balanceOf(token) / 10 ** _decimals(token1_address,block)
+            elif token1_address == ZERO_ADDRESS:
+                token0 = Contract(token0_address)
+                bal0 = token0.balanceOf(token) / 10 ** _decimals(token0_address,block)
                 bal1 = web3.eth.get_balance(token.address) / 10 ** 18
             else:
-                token0, token1 = Contract(token0), Contract(token1)
-                bal0 = token0.balanceOf(token) / 10 ** token0.decimals()
-                bal1 = token1.balanceOf(token) / 10 ** token1.decimals()
+                token0, token1 = Contract(token0_address), Contract(token1_address)
+                bal0 = token0.balanceOf(token) / 10 ** _decimals(token0_address,block)
+                bal1 = token1.balanceOf(token) / 10 ** _decimals(token1_address,block)
     else:
-        token0 = token.token0(block_identifier = block)
-        token1 = token.token1(block_identifier = block)
-        totalSupply = token.totalSupply(block_identifier = block) / 10 ** token.decimals(block_identifier = block)
-        if token0 == ZERO_ADDRESS:
-            token1 = Contract(token1)
+        token0_address = token.token0(block_identifier = block)
+        token1_address = token.token1(block_identifier = block)
+        totalSupply = _totalSupplyReadable(token_address,block)
+        if token0_address == ZERO_ADDRESS:
+            token1 = Contract(token1_address)
             bal0 = web3.eth.get_balance(token.address, block_identifier = block) / 10 ** 18
-            bal1 = token1.balanceOf(token, block_identifier = block) / 10 ** token1.decimals(block_identifier = block)
-        elif token1 == ZERO_ADDRESS:
-            token0 = Contract(token0)
-            bal0 = token0.balanceOf(token, block_identifier = block) / 10 ** token0.decimals(block_identifier = block)
+            bal1 = token1.balanceOf(token, block_identifier = block) / 10 ** _decimals(token1_address,block)
+        elif token1_address == ZERO_ADDRESS:
+            token0 = Contract(token0_address)
+            bal0 = token0.balanceOf(token, block_identifier = block) / 10 ** _decimals(token0_address,block)
             bal1 = web3.eth.get_balance(token.address, block_identifier = block) / 10 ** 18
         else:
-            token0, token1 = Contract(token0), Contract(token1)
-            bal0 = token0.balanceOf(token,block_identifier = block) / 10 ** token0.decimals(block_identifier = block)
-            bal1 = token1.balanceOf(token,block_identifier = block) / 10 ** token1.decimals(block_identifier = block)
+            token0, token1 = Contract(token0_address), Contract(token1_address)
+            bal0 = token0.balanceOf(token,block_identifier = block) / 10 ** _decimals(token0_address,block)
+            bal1 = token1.balanceOf(token,block_identifier = block) / 10 ** _decimals(token1_address,block)
 
     if token0 == ZERO_ADDRESS:
         token0 = gas_coin
