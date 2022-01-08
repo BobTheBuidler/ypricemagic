@@ -3,9 +3,7 @@ import logging
 
 from brownie import Contract, chain, web3
 from cachetools.func import lru_cache
-
 from ypricemagic.utils.cache import memory
-from interfaces.ERC20 import ERC20ABI
 
 logger = logging.getLogger(__name__)
 
@@ -163,12 +161,3 @@ elif chain.id == 250:
 
     }
 
-def Contract_with_erc20_fallback(address):
-    try:
-        contract = Contract(address)
-    except (AttributeError, ValueError, IndexError):
-        contract = Contract_erc20(address)
-    return contract
-
-def Contract_erc20(address):
-    return Contract.from_abi('ERC20',address,ERC20ABI)
