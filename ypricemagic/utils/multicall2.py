@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import count, product
 from operator import itemgetter
-from ypricemagic.utils.utils import contract_creation_block
+from ypricemagic.utils.contracts import contract_creation_block
 
 import requests
 from brownie import Contract, web3, chain

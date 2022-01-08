@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from ypricemagic.utils.middleware import BATCH_SIZE
-from ypricemagic.utils.utils import contract_creation_block
+from ypricemagic.utils.contracts import contract_creation_block
 
 logger = logging.getLogger(__name__)
 

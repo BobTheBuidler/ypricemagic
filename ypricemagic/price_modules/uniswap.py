@@ -1,9 +1,11 @@
+import ypricemagic.magic
 from brownie import Contract, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from ypricemagic.constants import (STABLECOINS, dai, sushi, usdc, usdt, wbtc,
                                    weth)
 from ypricemagic.utils.cache import memory
+from ypricemagic.utils.contracts import Contract_with_erc20_fallback
 from ypricemagic.utils.multicall2 import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
 
@@ -347,7 +349,7 @@ def lp_price(token_address: str, block=None):
         supply = pair.totalSupply(block_identifier = block)
         reserves = pair.getReserves(block_identifier = block)
     router = FACTORY_TO_PROTOCOL[factory]
-    tokens = [ypricemagic.utils.utils.Contract_with_erc20_fallback(token) for token in [token0, token1]]
+    tokens = [Contract_with_erc20_fallback(token) for token in [token0, token1]]
     price0 = get_price(tokens[0], paired_against=tokens[1], router=router, block=block)
     price1 = get_price(tokens[1], paired_against=tokens[0], router=router, block=block)
     prices = [price0,price1]
