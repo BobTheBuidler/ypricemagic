@@ -2,10 +2,10 @@ import logging
 
 from eth_typing.evm import Address, BlockNumber
 
-from .utils.cache import memory
-from typing import Union
-from brownie import chain, multicall, convert, Contract
-from . import aave, chainlink, compound, constants, curve, mstablefeederpool, uniswap, yearn
+from ypricemagic.utils.cache import memory
+
+from . import (aave, chainlink, compound, constants, curve, mstablefeederpool,
+               uniswap, yearn)
 
 logger = logging.getLogger(__name__)
 

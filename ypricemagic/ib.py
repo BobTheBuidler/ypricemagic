@@ -1,7 +1,9 @@
 from brownie import Contract
-from .utils.multicall2 import fetch_multicall
-from .utils.cache import memory
+
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.multicall2 import fetch_multicall
 from ypricemagic import magic
+
 
 @memory.cache()
 def is_ib_token(address):

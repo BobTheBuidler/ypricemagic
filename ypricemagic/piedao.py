@@ -2,7 +2,7 @@ import logging
 
 from brownie import Contract
 
-from utils.raw_calls import _decimals
+from ypricemagic.utils.raw_calls import _decimals
 
 from . import magic
 

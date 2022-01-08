@@ -1,7 +1,7 @@
 from brownie import Contract
 
-from utils.cache import memory
-from utils.raw_calls import _decimals, _totalSupplyReadable
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 from ypricemagic import magic
 
 

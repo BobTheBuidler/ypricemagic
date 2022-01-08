@@ -1,5 +1,6 @@
 from brownie import Contract, chain
-from .utils.multicall2 import fetch_multicall
+
+from ypricemagic.utils.multicall2 import fetch_multicall
 
 # NOTE: Yearn and Yearn-like
 
@@ -18,8 +19,8 @@ def is_yearn_vault(token):
 def get_price(token, block=None):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
+    # yearnish clones use all sorts of other things, we gotchu covered
     vault = Contract(token)
-    #if chain.id == 1:
     if hasattr(vault, 'pricePerShare'):
         share_price, underlying, decimals = fetch_multicall(
             [vault, 'pricePerShare'],

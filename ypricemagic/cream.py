@@ -1,6 +1,6 @@
 from brownie import Contract
 
-from utils.raw_calls import _totalSupply
+from ypricemagic.utils.raw_calls import _totalSupply
 from ypricemagic import magic
 from ypricemagic.constants import weth
 

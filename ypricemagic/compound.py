@@ -1,9 +1,9 @@
 from brownie import Contract, chain
 from cachetools.func import ttl_cache
 
-from utils.cache import memory
-from utils.multicall2 import fetch_multicall
-from utils.raw_calls import _decimals
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.raw_calls import _decimals
 
 
 @ttl_cache(ttl=600)

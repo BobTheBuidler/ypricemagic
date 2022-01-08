@@ -6,10 +6,10 @@ from joblib import Parallel, delayed
 
 from constants import dai, usdc, wbtc, weth
 from interfaces.balancer.WeightedPool import WeightedPoolABI
-from utils.cache import memory
-from utils.events import decode_logs, get_logs_asap
-from utils.multicall2 import fetch_multicall
-from utils.raw_calls import _decimals
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.events import decode_logs, get_logs_asap
+from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.raw_calls import _decimals
 
 from . import magic
 

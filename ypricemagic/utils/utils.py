@@ -4,7 +4,7 @@ import logging
 from brownie import Contract, chain, web3
 from cachetools.func import lru_cache
 
-from utils.cache import memory
+from ypricemagic.utils.cache import memory
 from interfaces.ERC20 import ERC20ABI
 
 logger = logging.getLogger(__name__)

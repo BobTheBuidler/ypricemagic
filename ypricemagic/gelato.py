@@ -1,7 +1,7 @@
 from brownie import Contract, multicall
 
 import ypricemagic.magic
-from utils.raw_calls import _decimals, _totalSupplyReadable
+from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 
 
 def is_gelato_pool(token_address: str) -> bool:

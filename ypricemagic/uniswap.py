@@ -5,9 +5,9 @@ from cachetools.func import ttl_cache
 import ypricemagic.magic
 import ypricemagic.utils.utils
 from constants import STABLECOINS, dai, sushi, usdc, usdt, wbtc, weth
-from utils.cache import memory
-from utils.multicall2 import fetch_multicall
-from utils.raw_calls import _decimals
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.raw_calls import _decimals
 
 # NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.
 #       Please add a viable swap path below to fetch price data successfully.
