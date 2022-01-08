@@ -1,11 +1,14 @@
 import logging
+from typing import Union
 
+from brownie import Contract, chain, convert, multicall
 from eth_typing.evm import Address, BlockNumber
 
 from ypricemagic.utils.cache import memory
 
-from . import (aave, chainlink, compound, constants, curve, mstablefeederpool,
+from ypricemagic.price_modules import (aave, chainlink, compound, curve, mstablefeederpool,
                uniswap, yearn)
+from ypricemagic import constants
 
 logger = logging.getLogger(__name__)
 
@@ -16,14 +19,8 @@ class PriceError(Exception):
 
 @memory.cache()
 def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
-    token = str(token)
-    token = convert.to_address(token)
-    logging.debug(f"token: {token}")
-    logging.debug(f"chainid: {chain.id}")
-    #    # NOTE: Special handling required for some proxy tokens
-    #    if token in constants.PROXIES: # snx
-    #        logger.info('Replacing proxy address with implementation address')
-    #        token = constants.PROXIES[token]
+    token = convert.to_address(str(token))
+    logger.debug(f"[chain{chain.id}] token: {token}")
     
     logger.debug("unwrapping %s", token)
     price = None
@@ -33,7 +30,8 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         return 1
 
     if chain.id == 1: # eth mainnet
-        from . import balancer, cream, gelato, mooniswap, piedao, tokensets, wsteth
+        from ypricemagic.price_modules import (balancer, cream, gelato, mooniswap, piedao, tokensets,
+                       wsteth)
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
@@ -128,7 +126,7 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             logger.debug("balancer -> %s", price)
 
     if chain.id == 56: # binance smart chain
-        from . import belt, ellipsis, ib, mooniswap
+        from ypricemagic.price_modules import belt, ellipsis, ib, mooniswap
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wbnb)
@@ -321,7 +319,7 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 250: # fantom
-        from . import balancer, froyo
+        from ypricemagic.price_modules import balancer, froyo
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wftm)
