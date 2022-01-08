@@ -2,14 +2,13 @@ import logging
 from collections import Counter, defaultdict
 from itertools import zip_longest
 
-from brownie import web3, chain
+from brownie import chain, web3
 from brownie.network.event import EventDict, _decode_logs
 from joblib import Parallel, delayed
 from toolz import groupby
 from web3.middleware.filter import block_ranges
-
-from .middleware import BATCH_SIZE
-import ypricemagic.utils.utils
+from ypricemagic.utils.middleware import BATCH_SIZE
+from ypricemagic.utils.utils import contract_creation_block
 
 logger = logging.getLogger(__name__)
 
@@ -32,9 +31,9 @@ def create_filter(address, topics=None):
     Set fromBlock as the earliest creation block.
     """
     if isinstance(address, list):
-        start_block = min(map(ypricemagic.utils.utils.contract_creation_block, address))
+        start_block = min(map(contract_creation_block, address))
     else:
-        start_block = ypricemagic.utils.utils.contract_creation_block(address)
+        start_block = contract_creation_block(address)
 
     return web3.eth.filter({"address": address, "fromBlock": start_block, "topics": topics})
 
@@ -43,7 +42,7 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     logs = []
 
     if from_block is None:
-        from_block = 1 if address is None else ypricemagic.utils.utils.contract_creation_block(address)
+        from_block = 1 if address is None else contract_creation_block(address)
     if to_block is None:
         to_block = chain.height
 
