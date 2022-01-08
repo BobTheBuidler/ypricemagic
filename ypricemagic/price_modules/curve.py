@@ -6,7 +6,7 @@ from constants import dai
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.multicall2 import fetch_multicall
 
-from . import magic
+from ypricemagic import magic
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
 try: # if curve registry not deployed on a chain, skip this stuff

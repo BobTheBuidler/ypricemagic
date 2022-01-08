@@ -4,7 +4,7 @@ from brownie import Contract
 
 from ypricemagic.utils.raw_calls import _decimals
 
-from . import magic
+from ypricemagic import magic
 
 # NOTE: If this module is not working with you, try to reinitialize your contract with 
 # Contract.from_abi(). Get the proper abi from etherscan. For some reason, Contract()

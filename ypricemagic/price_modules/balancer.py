@@ -11,7 +11,7 @@ from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall2 import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
 
-from . import magic
+from ypricemagic import magic
 
 if chain.id == 1:
     VAULT_V2 = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')

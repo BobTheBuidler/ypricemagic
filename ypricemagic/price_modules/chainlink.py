@@ -1,4 +1,4 @@
-from brownie import chain, Contract
+from brownie import Contract, chain
 from cachetools.func import ttl_cache
 
 if chain.id == 1:

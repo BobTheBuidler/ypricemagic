@@ -1,5 +1,7 @@
 from brownie import Contract
-from . import magic
+
+from ypricemagic import magic
+
 
 def is_atoken_v1(address):
     contract = Contract(address)
