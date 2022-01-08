@@ -4,7 +4,7 @@ from brownie import Contract, chain
 from cachetools.func import ttl_cache
 from joblib import Parallel, delayed
 
-from constants import dai, usdc, wbtc, weth
+from ypricemagic.constants import dai, usdc, wbtc, weth
 from interfaces.balancer.WeightedPool import WeightedPoolABI
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.events import decode_logs, get_logs_asap

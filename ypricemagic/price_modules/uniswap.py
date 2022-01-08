@@ -1,10 +1,8 @@
 from brownie import Contract, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
-
-import ypricemagic.magic
-import ypricemagic.utils.utils
-from constants import STABLECOINS, dai, sushi, usdc, usdt, wbtc, weth
+from ypricemagic.constants import (STABLECOINS, dai, sushi, usdc, usdt, wbtc,
+                                   weth)
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.multicall2 import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
@@ -265,7 +263,7 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
     elif str(token_in) in SPECIAL_PATHS[router].keys() and str(token_out) in STABLECOINS:
         path = SPECIAL_PATHS[router][str(token_in)]
     elif chain.id == 56: #bsc
-        from constants import cake, wbnb
+        from ypricemagic.constants import cake, wbnb
         if wbnb in (token_in, token_out):
             path = [token_in, token_out]
         elif cake in (token_in, token_out):
@@ -273,13 +271,13 @@ def get_price(token_in, token_out=usdc, router="uniswap", block=None, paired_aga
         else:
             path = [token_in,wbnb,token_out]
     elif chain.id == 137: # polygon
-        from constants import wmatic
+        from ypricemagic.constants import wmatic
         if wmatic in (token_in, token_out):
             path = [token_in, token_out]
         else:
             path = [token_in,wmatic,token_out]
     elif chain.id == 250: # fantom
-        from constants import wftm
+        from ypricemagic.constants import wftm
         if wftm in (token_in, token_out):
             path = [token_in, token_out]
         else:

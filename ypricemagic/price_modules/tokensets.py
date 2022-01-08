@@ -1,8 +1,7 @@
 import logging
 
 from brownie import Contract
-
-from constants import usdc
+from ypricemagic.constants import usdc
 
 
 def is_token_set(address):
