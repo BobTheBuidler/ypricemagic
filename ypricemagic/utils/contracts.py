@@ -1,7 +1,7 @@
 import logging
 
 from brownie import Contract, chain, web3
-from interfaces.ERC20 import ERC20ABI
+from ypricemagic.interfaces.ERC20 import ERC20ABI
 from ypricemagic.utils.cache import memory
 
 logger = logging.getLogger(__name__)

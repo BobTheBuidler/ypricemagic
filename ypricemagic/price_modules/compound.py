@@ -30,7 +30,7 @@ def get_markets():
         try:
             results = [easytroller.getAllMarkets()]
         except:
-            from interfaces.compound.unitroller import UNITROLLER_ABI
+            from ypricemagic.interfaces.compound.unitroller import UNITROLLER_ABI
             easytroller = Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
             results = [easytroller.getAllMarkets()]
         names = ['easyfi']

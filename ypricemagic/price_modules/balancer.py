@@ -5,7 +5,7 @@ from cachetools.func import ttl_cache
 from joblib import Parallel, delayed
 
 from ypricemagic.constants import dai, usdc, wbtc, weth
-from interfaces.balancer.WeightedPool import WeightedPoolABI
+from ypricemagic.interfaces.balancer.WeightedPool import WeightedPoolABI
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall2 import fetch_multicall
