@@ -1,6 +1,6 @@
 from brownie import ZERO_ADDRESS, Contract, chain, multicall, web3
-from magic import get_price
 from ypricemagic.constants import weth
+from ypricemagic.magic import get_price
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 
