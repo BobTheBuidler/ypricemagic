@@ -1,7 +1,8 @@
-from brownie import Contract
-from . import magic
-from .constants import usdc
 import logging
+
+from brownie import Contract
+from ypricemagic.constants import usdc
+
 
 def is_token_set(address):
     pool = Contract(address)

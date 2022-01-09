@@ -1,7 +1,9 @@
 from brownie import Contract, chain
 from cachetools.func import ttl_cache
-from .utils.multicall2 import fetch_multicall
-from .utils.cache import memory
+
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.raw_calls import _decimals
 
 
 @ttl_cache(ttl=600)
@@ -28,7 +30,7 @@ def get_markets():
         try:
             results = [easytroller.getAllMarkets()]
         except:
-            from .interfaces.compound.unitroller  import UNITROLLER_ABI
+            from ypricemagic.interfaces.compound.unitroller import UNITROLLER_ABI
             easytroller = Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
             results = [easytroller.getAllMarkets()]
         names = ['easyfi']
@@ -46,9 +48,9 @@ def is_compound_market(token):
     return set(token_contract.__dict__) & required == required
 
 
-def get_price(token, block=None):
-    token = Contract(token)
-    if chain.id in [1]:
+def get_price(token_address: str, block=None):
+    token = Contract(token_address)
+    if chain.id in [1,56,137]:
         try:
             underlying, exchange_rate, decimals = fetch_multicall(
                 [token, 'underlying'],
@@ -57,7 +59,7 @@ def get_price(token, block=None):
                 block=block
             )
             exchange_rate /= 1e18
-            under_decimals = Contract(underlying).decimals()
+            under_decimals = _decimals(underlying,block)
             return [exchange_rate * 10 ** (decimals - under_decimals), underlying]
         except AttributeError:
             exchange_rate, decimals = fetch_multicall(
@@ -68,17 +70,15 @@ def get_price(token, block=None):
             exchange_rate /= 1e18
             under_decimals = 18
             return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
-    elif chain.id in [56,137]: # no multicall2 on bsc or poly :(
+    elif chain.id in []: # no current chains without multicall2 support, keeping for future use
         try:
             underlying = token.underlying(block_identifier = block)
-            exchange_rate = token.exchangeRateStored(block_identifier = block)
-            decimals = token.decimals(block_identifier = block)
-            exchange_rate /= 1e18
-            under_decimals = Contract(underlying).decimals()
+            exchange_rate = token.exchangeRateStored(block_identifier = block) / 1e18
+            decimals = _decimals(token_address,block)
+            under_decimals = _decimals(underlying,block)
             return [exchange_rate * 10 ** (decimals - under_decimals), underlying]
         except AttributeError:
-            exchange_rate = token.exchangeRateStored(block_identifier = block)
-            decimals = token.decimals(block_identifier = block)
-            exchange_rate /= 1e18
+            exchange_rate = token.exchangeRateStored(block_identifier = block) / 1e18
+            decimals = _decimals(token_address,block)
             under_decimals = 18
             return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]

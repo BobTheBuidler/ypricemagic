@@ -7,3 +7,4 @@ ypricemagic/old
 /.eggs
 /cache
 __pycache__/
+/.vscode

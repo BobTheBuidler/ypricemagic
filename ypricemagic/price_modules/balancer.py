@@ -1,26 +1,21 @@
-from inspect import Attribute
 import logging
 
 from brownie import Contract, chain
 from cachetools.func import ttl_cache
 from joblib import Parallel, delayed
 
-from ypricemagic.utils.utils import (PROXIES_reverse_lookup,
-                                     get_decimals_with_override)
+from ypricemagic.constants import dai, usdc, wbtc, weth
+from ypricemagic.interfaces.balancer.WeightedPool import WeightedPoolABI
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.events import decode_logs, get_logs_asap
+from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.raw_calls import _decimals
 
-from . import magic
-from .constants import PROXIES, dai, usdc, wbtc, weth
-from .interfaces.balancer.WeightedPool import WeightedPoolABI
-from .utils.cache import memory
-from .utils.events import decode_logs, get_logs_asap
-from .utils.multicall2 import fetch_multicall
-from .utils.utils import get_decimals_with_override
+from ypricemagic import magic
 
-chainid = chain.id
-
-if chainid == 1:
+if chain.id == 1:
     VAULT_V2 = Contract('0xBA12222222228d8Ba445958a75a0704d566BF2C8')
-if chainid == 250:
+if chain.id == 250:
     VAULT_V2 = Contract('0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce')
 
 @memory.cache()
@@ -86,7 +81,7 @@ def get_pool_price_v1(token, block=None):
     for position, balance in enumerate(balances):
         if balance is None:
             balances[position] = 0
-    balances = [balance / 10 ** get_decimals_with_override(token, block) for balance, token in zip(balances, tokens)]
+    balances = [balance / 10 ** _decimals(token, block) for balance, token in zip(balances, tokens)]
     logging.debug(f'balancer pool balances: {balances}')
     total = sum([balance * _magic_get_price(token, block=block) for balance, token in zip(balances, tokens)])
     return total / supply
@@ -105,7 +100,7 @@ def get_pool_price_v2(pool, block=None):
     return price
     
 
-def get_token_price_v2(token, block=None):
+def get_token_price_v2(token_address, block=None):
     def query_pool_price(pooladdress, poolid):
         poolcontract = Contract(pooladdress)
         pooltokens = VAULT_V2.getPoolTokens(poolid, block_identifier = block)
@@ -122,10 +117,10 @@ def get_token_price_v2(token, block=None):
             if pooltoken == weth:
                 wethBal = balance
                 wethWeight = weight
-            if pooltoken == token:
+            if pooltoken == token_address:
                 tokenBal = balance
                 tokenWeight = weight
-            if len(pooltokens) == 2 and pooltoken != token:
+            if len(pooltokens) == 2 and pooltoken != token_address:
                 pairedTokenBal = balance
                 pairedTokenWeight = weight
                 pairedToken = pooltoken
@@ -134,18 +129,18 @@ def get_token_price_v2(token, block=None):
         if usdcBal:
             usdcValueUSD = (usdcBal / 10 ** 6) * magic.get_price(usdc, block)
             tokenValueUSD = usdcValueUSD / usdcWeight * tokenWeight
-            tokenPrice = tokenValueUSD / (tokenBal / 10 ** Contract(token).decimals(block_identifier = block))
+            tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
         elif wethBal:
             wethValueUSD = (wethBal / 10 ** 18) * magic.get_price(weth, block)
             tokenValueUSD = wethValueUSD / wethWeight * tokenWeight
-            tokenPrice = tokenValueUSD / (tokenBal / 10 ** Contract(token).decimals(block_identifier = block))
+            tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
         elif pairedTokenBal:
-            pairedTokenValueUSD = (pairedTokenBal / 10 ** Contract(pairedToken).decimals(block_identifier = block)) * magic.get_price(pairedToken, block)
+            pairedTokenValueUSD = (pairedTokenBal / 10 ** _decimals(pairedToken,block)) * magic.get_price(pairedToken, block)
             tokenValueUSD = pairedTokenValueUSD / pairedTokenWeight * tokenWeight
-            tokenPrice = tokenValueUSD / (tokenBal / 10 ** Contract(token).decimals(block_identifier = block))
+            tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
         return tokenPrice
     
-    deepest_pool = deepest_pool_for_token_v2(token, block)
+    deepest_pool = deepest_pool_for_token_v2(token_address, block)
     if not deepest_pool:
         return
     try:
@@ -159,7 +154,7 @@ def get_token_price_v1(token, block=None):
     def get_output(scale=1):
         def check_against(out, scale=1):
             totalOutput = exchange_proxy.viewSplitExactIn(
-                token, out, 10 ** get_decimals_with_override(token) * scale, 32 # NOTE: 32 is max
+                token, out, 10 ** _decimals(token) * scale, 32 # NOTE: 32 is max
                 , block_identifier = block
             )['totalOutput']
             return out, totalOutput
@@ -179,32 +174,31 @@ def get_token_price_v1(token, block=None):
                         out = None
                         totalOutput = None
         return out, totalOutput
-    if chainid == 1: # chainid will always be 1, balancer v1 is only on mainnet
+    if chain.id == 1: # chain.id will always be 1, balancer v1 is only on mainnet
         exchange_proxy = Contract('0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21')
 
     # NOTE: Reverse lookup
     # NOTE: we might not need this when all is said and done
     logging.debug(f'token: {token}')
-    token = PROXIES_reverse_lookup(token)
     logging.debug(f'token after proxy reverse lookup: {token}')
     price = None
     out, totalOutput = get_output()
     if out:
-        price = (totalOutput / 10 ** Contract(out).decimals()) * magic.get_price(out, block)
+        price = (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block)
         logging.debug('price found via balancer v1')
         return price
     # Can we get an output if we try smaller size?
     scale = 0.5
     out, totalOutput = get_output(scale) 
     if out:
-        price = (totalOutput / 10 ** Contract(out).decimals()) * magic.get_price(out, block) / scale
+        price = (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
         logging.debug('price found via balancer v1')
         return price
     # How about now? 
     scale = 0.1
     out, totalOutput = get_output(scale)
     if out:
-        price = (totalOutput / 10 ** Contract(out).decimals()) * magic.get_price(out, block) / scale
+        price = (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
         logging.debug('price found via balancer v1')
         return price
     else:
@@ -222,11 +216,11 @@ def get_price(token, block=None):
     price = None    
     # NOTE: Only query v2 if block queried > v2 deploy block plus 100000 blocks
     if (
-        (chainid == 1 and (not block or block > 12272146 + 100000))
-        or (chainid == 250 and (not block or block > 16896080))
+        (chain.id == 1 and (not block or block > 12272146 + 100000))
+        or (chain.id == 250 and (not block or block > 16896080))
         ): # lets get some liquidity before we use this as price source
         price = get_token_price_v2(token, block)
-    if not price and chainid == 1:      
+    if not price and chain.id == 1:      
         if not block or block > 10730576:   # v1 registry deploy block
             price = get_token_price_v1(token, block)
     return price

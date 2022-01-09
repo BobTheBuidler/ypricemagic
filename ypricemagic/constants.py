@@ -27,11 +27,6 @@ if chain.id == 1:
         "0xe2f2a5C287993345a840Db3B0845fbC70f5935a5": "musd"
     }
 
-    PROXIES = {
-        # NOTE: Proxy address : current implementation
-        '0xC011A72400E58ecD99Ee497CF89E3775d4bd732F': '0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f', # snx
-        '0x0Ba45A8b5d5575935B8158a88C631E9F9C95a2e5': '0x88df592f8eb5d7bd38bfef7deb0fbc02cf3778a0', # trb
-    }
 elif chain.id == 56:
     weth = Contract("0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5")
     usdc = Contract("0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d")
@@ -50,7 +45,6 @@ elif chain.id == 56:
         "0x14016E85a25aeb13065688cAFB43044C2ef86784": "tusd",
         "0x03ab98f5dc94996F8C33E15cD4468794d12d41f9": "usdn",
     }
-    PROXIES = {}
 elif chain.id == 137: #poly
     weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
     usdc = Contract("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")
@@ -65,7 +59,6 @@ elif chain.id == 137: #poly
         "0xc2132D05D31c914a87C6611C10748AEb04B58e8F": "usdt",
         "0xE840B73E5287865EEc17d250bFb1536704B43B21": "musd",
     }
-    PROXIES = {}
 elif chain.id == 250:
     weth = Contract('0x74b23882a30290451A17c44f4F05243b6b58C76d')
     usdc = Contract('0x04068DA6C83AFCFA0e13ba15A6696662335D5B75')
@@ -79,13 +72,10 @@ elif chain.id == 250:
         "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E": "dai",
         "0x049d68029688eAbF473097a2fC38ef61633A3C7A": "fusdt",
     }
-    PROXIES = {}
 elif chain.id == 42161:
     STABLECOINS = {}
-    PROXIES = {}
 elif chain.id == 43114:
     STABLECOINS = {}
-    PROXIES = {}
 
 
 
