@@ -52,9 +52,9 @@ def get_pool_price(token_address, block=None):
             bal0 = token0.balanceOf(token,block_identifier = block) / 10 ** _decimals(token0_address,block)
             bal1 = token1.balanceOf(token,block_identifier = block) / 10 ** _decimals(token1_address,block)
 
-    if token0 == ZERO_ADDRESS:
+    if token0_address == ZERO_ADDRESS:
         token0 = gas_coin
-    if token1 == ZERO_ADDRESS:
+    if token1_address == ZERO_ADDRESS:
         token1 = gas_coin
     val0 = bal0 * get_price(token0.address, block)
     val1 = bal1 * get_price(token1.address, block)
