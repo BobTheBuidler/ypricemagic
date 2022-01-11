@@ -13,10 +13,6 @@ from ypricemagic import constants
 logger = logging.getLogger(__name__)
 
 
-class PriceError(Exception):
-    pass
-
-
 @memory.cache()
 def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
     token = convert.to_address(str(token))
