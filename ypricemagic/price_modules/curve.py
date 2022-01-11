@@ -70,14 +70,14 @@ class CurveRegistry(metaclass=Singleton):
 
         self.pools = set()
         self.identifiers = defaultdict(list)
-        self.addres_provider = Contract(addrs['address_provider'])
+        self.address_provider = Contract(addrs['address_provider'])
         self.watch_events()
 
     def watch_events(self):
         # TODO keep fresh in background
 
         # fetch all registries and factories from address provider
-        log_filter = create_filter(str(self.addres_provider))
+        log_filter = create_filter(str(self.address_provider))
         for event in decode_logs(log_filter.get_new_entries()):
             if event.name == 'NewAddressIdentifier':
                 self.identifiers[event['id']].append(event['addr'])
