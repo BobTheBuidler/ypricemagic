@@ -1,8 +1,6 @@
 from brownie import chain
 from ypricemagic.price_modules.balancer.v1.v1 import BalancerV1
 from ypricemagic.price_modules.balancer.v2.v2 import BalancerV2
-from ypricemagic.utils.cache import memory
-
 
 class Balancer:
     def __init__(self) -> None:

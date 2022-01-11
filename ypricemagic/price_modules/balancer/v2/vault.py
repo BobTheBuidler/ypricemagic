@@ -1,3 +1,4 @@
+from brownie import convert
 from ypricemagic.classes import ERC20
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.events import decode_logs, get_logs_asap
@@ -15,7 +16,7 @@ class BalancerV2Vault:
     def list_pools(self, block=None):
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
         events = decode_logs(get_logs_asap(self.address, topics, to_block=block))
-        return [{event['poolId']:event['poolAddress']} for event in events]
+        return [{convert.to_int(event['poolId']):event['poolAddress']} for event in events]
 
     def deepest_pool_for(self, token_address, block=None):
         pools = self.list_pools(block=block)
