@@ -32,10 +32,13 @@ def contract_creation_block(address) -> int:
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
-        if web3.eth.get_code(address, block_identifier=mid):
-            hi = mid
-        else:
-            lo = mid
+        try:
+            if web3.eth.get_code(address, block_identifier=mid): hi = mid
+            else: lo = mid
+        except ValueError as e:
+            if 'missing trie node' in str(e): lo = mid
+            else: raise
+        
     return hi if hi != height else None
 
 class Singleton(type):
