@@ -2,7 +2,7 @@ from brownie import Contract
 
 from ypricemagic import magic
 from ypricemagic.utils.cache import memory
-from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.multicall import fetch_multicall
 
 
 @memory.cache()

@@ -1,6 +1,6 @@
 from brownie import Contract, chain
 
-from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.multicall import fetch_multicall
 
 # NOTE: Yearn and Yearn-like
 

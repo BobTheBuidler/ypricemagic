@@ -8,7 +8,7 @@ from ypricemagic.constants import dai, usdc, wbtc, weth
 from ypricemagic.interfaces.balancer.WeightedPool import WeightedPoolABI
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.events import decode_logs, get_logs_asap
-from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
 
 from ypricemagic import magic

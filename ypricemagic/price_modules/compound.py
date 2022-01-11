@@ -2,7 +2,7 @@ from brownie import Contract, chain
 from cachetools.func import ttl_cache
 
 from ypricemagic.utils.cache import memory
-from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
 
 
