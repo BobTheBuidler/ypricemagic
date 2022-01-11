@@ -9,13 +9,12 @@ from ypricemagic.exceptions import PriceError
 from ypricemagic.price_modules import (aave, compound, curve,
                                        mstablefeederpool, uniswap, yearn)
 from ypricemagic.price_modules.balancer.balancer import Balancer
-from ypricemagic.price_modules.chainlink import chainlink
+from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 
 balancer = Balancer()
-
 
 @memory.cache()
 def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
@@ -30,7 +29,7 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         return 1
     
     if balancer.is_balancer_pool(token): return balancer.get_price(token, block)
-    if token in chainlink.feeds: return chainlink.get_price(token, block=block)
+    if token in chainlink: return chainlink.get_price(token, block)
     
     # these return type(price) == list
     if yearn.is_yearn_vault(token):
