@@ -1,6 +1,6 @@
 from brownie import ZERO_ADDRESS, Contract, chain, multicall, web3
+from ypricemagic import magic
 from ypricemagic.constants import weth
-from ypricemagic.magic import get_price
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 
@@ -56,8 +56,8 @@ def get_pool_price(token_address, block=None):
         token0 = gas_coin
     if token1_address == ZERO_ADDRESS:
         token1 = gas_coin
-    val0 = bal0 * get_price(token0.address, block)
-    val1 = bal1 * get_price(token1.address, block)
+    val0 = bal0 * magic.get_price(token0.address, block)
+    val1 = bal1 * magic.get_price(token1.address, block)
     totalVal = val0 + val1
     price = totalVal / totalSupply
     return price

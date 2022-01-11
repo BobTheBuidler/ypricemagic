@@ -4,13 +4,17 @@ from typing import Union
 from brownie import Contract, chain, convert, multicall
 from eth_typing.evm import Address, BlockNumber
 
+from ypricemagic import constants
+from ypricemagic.exceptions import PriceError
+from ypricemagic.price_modules import (aave, compound, curve,
+                                       mstablefeederpool, uniswap, yearn)
+from ypricemagic.price_modules.balancer.balancer import Balancer
+from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.utils.cache import memory
 
-from ypricemagic.price_modules import (aave, chainlink, compound, curve, mstablefeederpool,
-               uniswap, yearn)
-from ypricemagic import constants
-
 logger = logging.getLogger(__name__)
+
+balancer = Balancer()
 
 
 @memory.cache()
@@ -24,10 +28,25 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
     if token in constants.STABLECOINS:
         logger.debug("stablecoin -> %s", 1)
         return 1
+    
+    if balancer.is_balancer_pool(token): return balancer.get_price(token, block)
+    if token in chainlink.feeds: return chainlink.get_price(token, block=block)
+    
+    # these return type(price) == list
+    if yearn.is_yearn_vault(token):
+            price = yearn.get_price(token, block=block)
+            logger.debug("yearn -> %s", price)
+    
+    # if type(price) == list, this will output final price
+    if isinstance(price, list):
+        price, underlying = price
+        logger.debug("peel %s %s", price, underlying)
+        return price * get_price(underlying, block=block)
+
 
     if chain.id == 1: # eth mainnet
-        from ypricemagic.price_modules import (balancer, cream, gelato, mooniswap, piedao, tokensets,
-                       wsteth)
+        from ypricemagic.price_modules import (cream, gelato, mooniswap,
+                                               piedao, tokensets, wsteth)
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
@@ -38,10 +57,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             price = wsteth.get_price(token, block=block)
             logger.debug("wsteth -> %s", price)
 
-        elif token in chainlink.feeds:
-            price = chainlink.get_price(token, block=block)
-            logger.debug("chainlink -> %s", price)
-
         elif aave.is_atoken(token):
             price = aave.get_price(token, block=block)
             logger.debug("atoken -> %s", price)
@@ -49,10 +64,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         elif cream.is_creth(token):
             price = cream.get_price_creth(token, block)
             logger.debug("atoken -> %s", price)
-
-        elif yearn.is_yearn_vault(token):
-            price = yearn.get_price(token, block=block)
-            logger.debug("yearn -> %s", price)
 
         elif curve.is_curve_lp_token(token):
             price = curve.get_pool_price(token, block=block)
@@ -73,10 +84,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         elif mstablefeederpool.is_mstable_feeder_pool(token):
             price = mstablefeederpool.get_price(token,block=block)
             logger.debug("mstable feeder pool -> %s", price)
-
-        elif balancer.is_balancer_pool(token):
-            price = balancer.get_price(token, block=block)
-            logger.debug("balancer pool -> %s", price)
 
         elif tokensets.is_token_set(token):
             price = tokensets.get_price(token, block=block)
@@ -117,10 +124,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         #    price = curve.get_token_price(token, block=block)
         #    logger.debug("curve -> %s", price)
 
-        if price is None:
-            price = balancer.get_price(token, block=block)
-            logger.debug("balancer -> %s", price)
-
     if chain.id == 56: # binance smart chain
         from ypricemagic.price_modules import belt, ellipsis, ib, mooniswap
 
@@ -128,10 +131,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             token = str(constants.wbnb)
 
         # we can exit early with known tokens
-        if token in chainlink.feeds:
-            price = chainlink.get_price(token, block=block)
-            logger.debug("chainlink -> %s", price)
-
         elif belt.is_belt_lp(token):
             price = belt.get_price(token,block=block)
             logger.debug("belt -> %s", price)
@@ -155,10 +154,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         elif mooniswap.is_mooniswap_pool(token):
             price = mooniswap.get_pool_price(token, block=block)
             logger.debug("mooniswap pool -> %s", price)
-
-        elif yearn.is_yearn_vault(token):
-            price = yearn.get_price(token, block=block)
-            logger.debug("yearn -> %s", price)
 
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
@@ -244,9 +239,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             token = str(constants.wmatic)
 
         # we can exit early with known tokens
-        if token in chainlink.feeds:
-            price = chainlink.get_price(token, block=block)
-            logger.debug("chainlink -> %s", price)
 
         elif aave.is_atoken(token):
             price = aave.get_price(token, block=block)
@@ -263,10 +255,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block=block)
             logger.debug("uniswap pool -> %s", price)
-
-        elif yearn.is_yearn_vault(token):
-            price = yearn.get_price(token, block=block)
-            logger.debug("yearn -> %s", price)
 
         elif curve.is_curve_lp_token(token):
             price = curve.get_pool_price(token, block=block)
@@ -315,19 +303,12 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 250: # fantom
-        from ypricemagic.price_modules import balancer, froyo
+        from ypricemagic.price_modules import froyo
 
         if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
             token = str(constants.wftm)
         
         # we can exit early with known tokens
-        if token in chainlink.feeds:
-            price = chainlink.get_price(token, block=block)
-            logger.debug("chainlink -> %s", price)
-
-        elif yearn.is_yearn_vault(token):
-            price = yearn.get_price(token, block=block)
-            logger.debug("yearn -> %s", price)
 
         elif curve.is_curve_lp_token(token):
             price = curve.get_pool_price(token, block=block)
@@ -336,10 +317,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block)
             logger.debug("uniswap -> %s", price)
-
-        elif balancer.is_balancer_pool(token):
-            price = balancer.get_price(token, block=block)
-            logger.debug("balancer pool -> %s", price)
 
         elif froyo.is_froyo(token):
             price = froyo.get_price(token, block=block)
@@ -371,9 +348,16 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             price = uniswap.get_price(token, router="jetswap", block=block)
             logger.debug("uniswap -> %s", price)
 
-        if price is None:
-            price = balancer.get_price(token, block=block)
-            logger.debug("balancer -> %s", price)
+    # if type(price) == list, this will output final price
+    if isinstance(price, list):
+        price, underlying = price
+        logger.debug("peel %s %s", price, underlying)
+        return price * get_price(underlying, block=block)
+
+    # let's try a few more things
+    if price is None:
+        price = balancer.get_price(token, block=block)
+        logger.debug("balancer -> %s", price)
 
     if price is None and silent is False:
         logger.error("failed to get price for %s", token)
