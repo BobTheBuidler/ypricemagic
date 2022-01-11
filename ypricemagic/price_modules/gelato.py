@@ -1,6 +1,6 @@
-from brownie import Contract, multicall
-
 import ypricemagic.magic
+from brownie import multicall
+from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 
 

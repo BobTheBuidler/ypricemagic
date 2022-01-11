@@ -1,6 +1,6 @@
-from brownie import Contract
 
 from ypricemagic.utils.cache import memory
+from ypricemagic.utils.contracts import Contract
 
 POOLS = {
     "0x86aFa7ff694Ab8C985b79733745662760e454169": Contract("0xF16D312d119c13dD27fD0dC814b0bCdcaAa62dfD"), # Belt.fi bDAI/bUSDC/bUSDT/bBUSD

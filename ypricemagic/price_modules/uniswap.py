@@ -1,12 +1,12 @@
 import ypricemagic.magic
-from brownie import Contract, chain
+from brownie import chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from ypricemagic.constants import (STABLECOINS, dai, sushi, usdc, usdt, wbtc,
                                    weth)
 from ypricemagic.utils.cache import memory
-from ypricemagic.utils.contracts import Contract_with_erc20_fallback
-from ypricemagic.utils.multicall2 import fetch_multicall
+from ypricemagic.utils.contracts import Contract, Contract_with_erc20_fallback
+from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
 
 # NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.

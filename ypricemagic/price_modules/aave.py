@@ -1,6 +1,6 @@
-from brownie import Contract
-
 from ypricemagic import magic
+from ypricemagic.utils.cache import memory
+from ypricemagic.utils.contracts import Contract
 
 
 def is_atoken_v1(address):
@@ -13,6 +13,7 @@ def is_atoken_v2(address):
     required = {"ATOKEN_REVISION", "UNDERLYING_ASSET_ADDRESS"}
     return set(contract.__dict__) & required == required
 
+@memory.cache()
 def is_atoken(address):
     return is_atoken_v1(address) or is_atoken_v2(address)
 

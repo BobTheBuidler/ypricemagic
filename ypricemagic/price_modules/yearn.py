@@ -1,6 +1,10 @@
-from brownie import Contract, chain
+import logging
 
-from ypricemagic.utils.multicall2 import fetch_multicall
+from joblib import logger
+from ypricemagic.utils.contracts import Contract
+from ypricemagic.utils.multicall import fetch_multicall
+
+logger = logging.getLogger(__name__)
 
 # NOTE: Yearn and Yearn-like
 
@@ -121,6 +125,9 @@ def get_price(token, block=None):
             '''
 
     try:
-        return [share_price / 10 ** decimals, underlying]
+        price = [share_price / 10 ** decimals, underlying]
     except TypeError: # when getPricePerShare() reverts due to divide by zero
-        return [1, underlying]
+        price = [1, underlying]
+    
+    logger.debug("yearn -> %s", price)
+    return price
