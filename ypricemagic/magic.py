@@ -6,15 +6,16 @@ from eth_typing.evm import Address, BlockNumber
 
 from ypricemagic import constants
 from ypricemagic.exceptions import PriceError
-from ypricemagic.price_modules import (aave, compound, curve,
-                                       mstablefeederpool, uniswap, yearn)
-from ypricemagic.price_modules.balancer.balancer import Balancer
+from ypricemagic.price_modules import (aave, compound, mstablefeederpool,
+                                       uniswap, yearn)
+from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
+from ypricemagic.price_modules.curve import curve
 from ypricemagic.utils.cache import memory
+
 
 logger = logging.getLogger(__name__)
 
-balancer = Balancer()
 
 @memory.cache()
 def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
@@ -30,6 +31,7 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
     
     if balancer.is_balancer_pool(token): return balancer.get_price(token, block)
     if token in chainlink: return chainlink.get_price(token, block)
+    if token in curve: return curve.get_price(token, block)
     
     # these return type(price) == list
     if yearn.is_yearn_vault(token):
@@ -63,10 +65,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
         elif cream.is_creth(token):
             price = cream.get_price_creth(token, block)
             logger.debug("atoken -> %s", price)
-
-        elif curve.is_curve_lp_token(token):
-            price = curve.get_pool_price(token, block=block)
-            logger.debug("curve lp -> %s", price)
 
         elif compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
@@ -117,11 +115,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
 
         if price is None:
             price = uniswap.get_price(token, router="shibaswap", block=block)
-
-        # NOTE let's improve before we use
-        #if price is None and (not block or block >= 11153725): # NOTE: First block of curve registry
-        #    price = curve.get_token_price(token, block=block)
-        #    logger.debug("curve -> %s", price)
 
     if chain.id == 56: # binance smart chain
         from ypricemagic.price_modules import belt, ellipsis, ib, mooniswap
@@ -255,10 +248,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             price = uniswap.lp_price(token, block=block)
             logger.debug("uniswap pool -> %s", price)
 
-        elif curve.is_curve_lp_token(token):
-            price = curve.get_pool_price(token, block=block)
-            logger.debug("curve lp -> %s", price)
-
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
             price, underlying = price
@@ -308,10 +297,6 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             token = str(constants.wftm)
         
         # we can exit early with known tokens
-
-        elif curve.is_curve_lp_token(token):
-            price = curve.get_pool_price(token, block=block)
-            logger.debug("curve lp -> %s", price)
 
         elif uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block)
