@@ -1,4 +1,5 @@
 import ypricemagic.magic
+from brownie import Contract as _Contract
 from brownie import chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
@@ -56,7 +57,7 @@ elif chain.id == 56:
         "sushi": Contract("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"),
         "wault": Contract("0xD48745E39BbED146eEC15b79cBF964884F9877c2"),#
         "apeswap": Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7'),#
-        "swapliquidity": Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),#
+        "swapliquidity": _Contract.from_abi('SwapLiquidityRouter','0x70e139f4C3C4A58b2D586490aB608eAf3c1F0995',Contract('0xcF0feBd3f17CEf5b47b0cD257aCf6025c5BFf3b7').abi),#
         'thugswap': Contract('0x3bc677674df90A9e5D741f28f6CA303357D0E4Ec'),#
         "mdex": Contract('0x7DAe51BD3E3376B8c7c4900E9107f12Be3AF1bA8'),##
         "bakeryswap": Contract('0xCDe540d7eAFE93aC5fE6233Bee57E1270D3E330F'),#
@@ -157,7 +158,7 @@ elif chain.id == 137:
         "sushi": Contract("0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"),#
         "dfyn": Contract("0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"),#
         "wault": Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"),#
-        "cometh": Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi),#
+        "cometh": _Contract.from_abi("ComethSwapRouter","0x28E73C83C0f85784543300B96A1A3c2e900F7a35",Contract("0x3a1D87f206D12415f5b0A33E786967680AAb4f6d").abi),#
         "apeswap": Contract("0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"),#
         "jetswap": Contract("0x5C6EC38fb0e2609672BDf628B1fD605A523E5923"),#
         "polyzap": Contract("0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"),#

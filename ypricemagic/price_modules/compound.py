@@ -1,3 +1,4 @@
+from brownie import Contract as _Contract
 from brownie import chain
 from cachetools.func import ttl_cache
 from ypricemagic.utils.cache import memory
@@ -32,7 +33,7 @@ def get_markets():
         except:
             from ypricemagic.interfaces.compound.unitroller import \
                 UNITROLLER_ABI
-            easytroller = Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
+            easytroller = _Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
             results = [easytroller.getAllMarkets()]
         names = ['easyfi']
         return dict(zip(names, results))
