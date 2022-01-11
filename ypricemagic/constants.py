@@ -1,4 +1,6 @@
-from brownie import Contract, chain
+from brownie import chain
+
+from ypricemagic.utils.contracts import Contract
 
 sushi = None
 

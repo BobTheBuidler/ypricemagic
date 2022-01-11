@@ -1,6 +1,6 @@
-from brownie import Contract
 from ypricemagic import magic
 from ypricemagic.utils.cache import memory
+from ypricemagic.utils.contracts import Contract
 
 
 def is_atoken_v1(address):

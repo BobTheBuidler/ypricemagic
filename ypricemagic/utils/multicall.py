@@ -4,9 +4,9 @@ from operator import itemgetter
 from typing import List
 
 import requests
-from brownie import Contract, chain, web3
+from brownie import chain, web3
 from eth_abi.exceptions import InsufficientDataBytes
-from ypricemagic.utils.contracts import contract_creation_block
+from ypricemagic.utils.contracts import Contract, contract_creation_block
 from ypricemagic.utils.raw_calls import _decimals
 
 from multicall import Call, Multicall

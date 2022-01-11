@@ -1,7 +1,7 @@
 import logging
 from typing import Union
 
-from brownie import Contract, chain, convert, multicall
+from brownie import chain, convert, multicall
 from eth_typing.evm import Address, BlockNumber
 
 from ypricemagic import constants
@@ -12,7 +12,7 @@ from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.utils.cache import memory
-
+from ypricemagic.utils.contracts import Contract
 
 logger = logging.getLogger(__name__)
 

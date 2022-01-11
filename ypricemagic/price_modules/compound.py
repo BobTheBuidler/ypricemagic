@@ -1,7 +1,7 @@
-from brownie import Contract, chain
+from brownie import chain
 from cachetools.func import ttl_cache
-
 from ypricemagic.utils.cache import memory
+from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals
 
@@ -30,7 +30,8 @@ def get_markets():
         try:
             results = [easytroller.getAllMarkets()]
         except:
-            from ypricemagic.interfaces.compound.unitroller import UNITROLLER_ABI
+            from ypricemagic.interfaces.compound.unitroller import \
+                UNITROLLER_ABI
             easytroller = Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
             results = [easytroller.getAllMarkets()]
         names = ['easyfi']

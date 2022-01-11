@@ -1,6 +1,8 @@
-from brownie import Contract
 from decimal import Decimal
+
+from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _totalSupplyReadable
+
 
 class ERC20:
     def __init__(self, token_address) -> None:
