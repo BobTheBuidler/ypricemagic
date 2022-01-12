@@ -30,6 +30,11 @@ def multicall_same_func_no_input(addresses: list, method: str, apply_func=None, 
     calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
     return Multicall(calls, block_id=block, _w3=web3)()
 
+def multicall_same_func_same_contract_one_input(address: list, method: str, inputs: List=None, apply_func=None, block=None):
+    assert inputs
+    calls = [Call(address, [method, input], [[address,apply_func]]) for input in inputs]
+    return Multicall(calls, block_id=block, _w3=web3)()
+
 def multicall_decimals(addresses: List[str], block=None):
     try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block).values()
     except (CannotHandleRequest,InsufficientDataBytes): return [_decimals(address,block) for address in addresses] 
