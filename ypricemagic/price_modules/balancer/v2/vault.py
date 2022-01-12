@@ -11,9 +11,9 @@ class BalancerV2Vault:
         self.contract = Contract(self.address)
     
     def get_pool_tokens(self, pool_id: int, block=None):
-        a = 
+        a = self.contract.getPoolTokens(pool_id, block_identifier = block)
         print(a)
-        return self.contract.getPoolTokens(pool_id, block_identifier = block)
+        return a
 
     def list_pools(self, block=None):
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
