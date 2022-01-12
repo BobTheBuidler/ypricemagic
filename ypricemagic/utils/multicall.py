@@ -28,17 +28,17 @@ multicall_deploy_block = contract_creation_block(multicall2.address)
 
 def multicall_same_func_no_input(addresses: list, method: str, apply_func=None, block=None):
     calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
-    return Multicall(calls, block_id=block, _w3=web3)().values()
+    return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
 def multicall_same_func_different_contracts_same_input(addresses: list, method: str, input=None, apply_func=None, block=None):
     assert input
     calls = [Call(address, [method, input], [[address,apply_func]]) for address in addresses]
-    return Multicall(calls, block_id=block, _w3=web3)().values()
+    return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
 def multicall_same_func_same_contract_different_inputs(address: list, method: str, inputs: List=None, apply_func=None, block=None):
     assert inputs
     calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
-    return Multicall(calls, block_id=block, _w3=web3)().values()
+    return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
 def multicall_decimals(addresses: List[str], block=None):
     try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block)
