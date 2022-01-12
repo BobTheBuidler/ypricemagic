@@ -41,7 +41,7 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
     
     if balancer.is_balancer_pool(token): price = balancer.get_price(token, block)
     elif token in chainlink: price = chainlink.get_price(token, block)
-    elif token in curve: price = curve.get_price(token, block)
+    elif curve and token in curve: price = curve.get_price(token, block)
     
     # these return type(price) == list
     elif yearn.is_yearn_vault(token): price = yearn.get_price(token, block=block)
