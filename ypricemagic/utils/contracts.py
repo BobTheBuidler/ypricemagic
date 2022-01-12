@@ -2,7 +2,9 @@ import logging
 import threading
 from functools import lru_cache
 
-from brownie import Contract as _Contract, chain, web3
+from brownie import Contract as _Contract
+from brownie import chain, web3
+from brownie.exceptions import CompilerError
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 from ypricemagic.utils.cache import memory
 
@@ -16,7 +18,7 @@ def Contract_erc20(address):
 def Contract_with_erc20_fallback(address):
     try:
         contract = _Contract(address)
-    except (AttributeError, ValueError, IndexError):
+    except (AttributeError, CompilerError, IndexError, ValueError):
         contract = Contract_erc20(address)
     return contract
 
@@ -38,7 +40,6 @@ def contract_creation_block(address) -> int:
         except ValueError as e:
             if 'missing trie node' in str(e): lo = mid
             else: raise
-        
     return hi if hi != height else None
 
 class Singleton(type):
