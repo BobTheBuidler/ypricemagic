@@ -8,6 +8,7 @@ class Network(IntEnum):
     Fantom = 250
     Polygon = 137
     Arbitrum = 42161
+    Avalanche = 43114
 
     @staticmethod
     def label(chain_id):
