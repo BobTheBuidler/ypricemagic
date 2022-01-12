@@ -28,28 +28,28 @@ multicall_deploy_block = contract_creation_block(multicall2.address)
 
 def multicall_same_func_no_input(addresses: list, method: str, apply_func=None, block=None):
     calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
-    return Multicall(calls, block_id=block, _w3=web3)()
+    return Multicall(calls, block_id=block, _w3=web3)().values()
 
 def multicall_same_func_different_contracts_same_input(addresses: list, method: str, input=None, apply_func=None, block=None):
     assert input
     calls = [Call(address, [method, input], [[address,apply_func]]) for address in addresses]
-    return Multicall(calls, block_id=block, _w3=web3)()
+    return Multicall(calls, block_id=block, _w3=web3)().values()
 
 def multicall_same_func_same_contract_different_inputs(address: list, method: str, inputs: List=None, apply_func=None, block=None):
     assert inputs
-    calls = [Call(address, [method, input], [[address,apply_func]]) for input in inputs]
-    return Multicall(calls, block_id=block, _w3=web3)()
+    calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
+    return Multicall(calls, block_id=block, _w3=web3)().values()
 
 def multicall_decimals(addresses: List[str], block=None):
-    try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block).values()
+    try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block)
     except (CannotHandleRequest,InsufficientDataBytes): return [_decimals(address,block) for address in addresses] 
 
 def multicall_totalSupply(addresses: List[str], block=None):
-    try: return multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block).values()
+    try: return multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block)
     except (CannotHandleRequest,InsufficientDataBytes): return [_totalSupply(address,block) for address in addresses] 
 
 def multicall_balanceOf(token_addresses: List[str], hodler_address: str, block=None):
-    return multicall_same_func_different_contracts_same_input(token_addresses, 'balanceOf(address)(uint)', input=hodler_address,)
+    return multicall_same_func_different_contracts_same_input(token_addresses, 'balanceOf(address)(uint)', input=hodler_address)
 
 def fetch_multicall(*calls, block=None):
     # https://github.com/makerdao/multicall
