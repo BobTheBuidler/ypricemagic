@@ -1,5 +1,5 @@
 
-from brownie.network.contract import Contract
+from ypricemagic import Contract
 
 def is_froyo(address):
     return address == '0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3'

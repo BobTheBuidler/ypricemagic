@@ -4,10 +4,11 @@ from typing import Union
 from brownie import chain, convert, multicall
 from eth_typing.evm import Address, BlockNumber
 
-from ypricemagic import constants
+from ypricemagic import _symbol
+from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
 from ypricemagic.exceptions import PriceError
-from ypricemagic.price_modules import (aave, compound, mstablefeederpool,
-                                       uniswap, yearn)
+from ypricemagic.price_modules import (aave, compound, froyo,
+                                       mstablefeederpool, uniswap, yearn)
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
@@ -17,26 +18,34 @@ from ypricemagic.utils.contracts import Contract
 logger = logging.getLogger(__name__)
 
 
+
 @memory.cache()
 def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
     token = convert.to_address(str(token))
-    logger.debug(f"[chain{chain.id}] token: {token}")
+    try: return _get_price(token, block=block,silent=silent)
+    except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token)} {token}')
+
     
+def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None,silent: bool=False):
+    logger.debug(f"[chain{chain.id}] token: {token}")
     logger.debug("unwrapping %s", token)
+
     price = None
 
-    if token in constants.STABLECOINS:
+    if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
+        token = WRAPPED_GAS_COIN
+
+    if token in STABLECOINS:
         logger.debug("stablecoin -> %s", 1)
         return 1
     
-    if balancer.is_balancer_pool(token): return balancer.get_price(token, block)
-    if token in chainlink: return chainlink.get_price(token, block)
-    if token in curve: return curve.get_price(token, block)
+    if balancer.is_balancer_pool(token): price = balancer.get_price(token, block)
+    elif token in chainlink: price = chainlink.get_price(token, block)
+    elif token in curve: price = curve.get_price(token, block)
     
     # these return type(price) == list
-    if yearn.is_yearn_vault(token):
-            price = yearn.get_price(token, block=block)
-            logger.debug("yearn -> %s", price)
+    elif yearn.is_yearn_vault(token): price = yearn.get_price(token, block=block)
+        
     
     # if type(price) == list, this will output final price
     if isinstance(price, list):
@@ -50,8 +59,7 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
                                                piedao, tokensets, wsteth)
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
-        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
-            token = str(constants.weth)
+        
 
         # we can exit early with known tokens
         if wsteth.is_wsteth(token):
@@ -119,11 +127,8 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
     if chain.id == 56: # binance smart chain
         from ypricemagic.price_modules import belt, ellipsis, ib, mooniswap
 
-        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
-            token = str(constants.wbnb)
-
         # we can exit early with known tokens
-        elif belt.is_belt_lp(token):
+        if belt.is_belt_lp(token):
             price = belt.get_price(token,block=block)
             logger.debug("belt -> %s", price)
 
@@ -226,13 +231,9 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 137: # polygon
-
-        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
-            token = str(constants.wmatic)
-
         # we can exit early with known tokens
 
-        elif aave.is_atoken(token):
+        if aave.is_atoken(token):
             price = aave.get_price(token, block=block)
             logger.debug("atoken -> %s", price)
 
@@ -291,14 +292,10 @@ def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,N
             logger.debug("uniswap -> %s", price)
 
     if chain.id == 250: # fantom
-        from ypricemagic.price_modules import froyo
-
-        if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
-            token = str(constants.wftm)
         
         # we can exit early with known tokens
 
-        elif uniswap.is_uniswap_pool(token):
+        if uniswap.is_uniswap_pool(token):
             price = uniswap.lp_price(token, block)
             logger.debug("uniswap -> %s", price)
 

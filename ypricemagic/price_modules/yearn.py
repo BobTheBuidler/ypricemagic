@@ -129,5 +129,5 @@ def get_price(token, block=None):
     except TypeError: # when getPricePerShare() reverts due to divide by zero
         price = [1, underlying]
     
-    logger.debug("yearn -> %s", price)
+    if price: logger.debug("yearn -> %s", price)
     return price
