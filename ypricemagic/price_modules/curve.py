@@ -49,7 +49,13 @@ CURVE_CONTRACTS = {
         'voting_escrow': '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
         'gauge_controller': '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB',
     },
+    Network.BinanceSmartChain: {
+        'address_provider': ADDRESS_PROVIDER,
+    },
     Network.Fantom: {
+        'address_provider': ADDRESS_PROVIDER,
+    },
+    Network.Polygon: {
         'address_provider': ADDRESS_PROVIDER,
     },
     Network.Arbitrum: {
