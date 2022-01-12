@@ -27,9 +27,8 @@ if chain.id == 250:
 multicall_deploy_block = contract_creation_block(multicall2.address)
 
 def multicall_same_func_no_input(addresses: list, method: str, apply_func=None, block=None):
-    return Multicall([
-        Call(address, [method], [[address,apply_func]]) for address in addresses
-        ], block_id=block)()
+    calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
+    return Multicall(calls, block_id=block, _w3=web3)()
 
 def multicall_decimals(addresses: List[str], block=None):
     try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block).values()
