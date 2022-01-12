@@ -13,6 +13,7 @@ from ypricemagic.utils.contracts import Contract, Singleton
 from ypricemagic.utils.events import create_filter, decode_logs
 from ypricemagic.utils.middleware import ensure_middleware
 from ypricemagic.utils.multicall import fetch_multicall
+from ypricemagic.utils.raw_calls import _totalSupply, raw_call
 
 ensure_middleware()
 
@@ -55,6 +56,16 @@ CURVE_CONTRACTS = {
         'address_provider': ADDRESS_PROVIDER,
     },
 }
+
+OVERRIDES = {
+    Network.Mainnet: {
+        '0xc4AD29ba4B3c580e6D59105FFf484999997675Ff': '0xd51a44d3fae010294c616388b506acda1bfaae46', # crv3crypto
+        "0x3D229E1B4faab62F621eF2F6A610961f7BD7b23B": "0x98a7f18d4e56cfe84e3d081b40001b3d5bd3eb8b", # crvEURSUSDC
+        "0x3b6831c0077a1e44ED0a21841C3bC4dC11bCE833": "0x9838eccc42659fa8aa7daf2ad134b53984c9427b", # crvEURTUSD
+        "0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d": "0x8301ae4fc9c624d1d396cbdaa1ed877821d7c511", # crvCRVETH
+        "0x3A283D9c08E8b55966afb64C515f5143cf907611": "0xb576491f1e6e5e62f1d8f26062ee822b40b0e0d4", # crvCVXETH
+    }
+}.get(chain.id, {})
 
 
 class CurveRegistry(metaclass=Singleton):
@@ -146,13 +157,14 @@ class CurveRegistry(metaclass=Singleton):
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
-        if self.get_factory(token):
-            return token
+        if self.get_factory(token): return token
+            
+        if token in OVERRIDES: pool = OVERRIDES[token]
 
-        pool = self._pool_from_lp_token(token)
+        else: pool = self._pool_from_lp_token(token)
 
-        if pool != ZERO_ADDRESS:
-            return pool
+        if pool != ZERO_ADDRESS: return pool
+            
 
     @lru_cache(maxsize=None)
     def get_gauge(self, pool):
@@ -267,11 +279,11 @@ class CurveRegistry(metaclass=Singleton):
         pool = self.get_pool(token)
 
         # crypto pools can have different tokens, use slow method
-        if hasattr(Contract(pool), 'price_oracle'):
+        if self.has_oracle(pool):
             tvl = self.get_tvl(pool, block=block)
             if tvl is None:
                 return None
-            supply = Contract(token).totalSupply(block_identifier=block) / 1e18
+            supply = _totalSupply(token, block) / 1e18
             price = tvl / supply
             logger.debug("curve lp -> %s", price)
             return price
@@ -356,6 +368,12 @@ class CurveRegistry(metaclass=Singleton):
             "crv apy": rate * crv_price,
             "token price": token_price,
         }
+    
+    def has_oracle(self, pool):
+        try: return raw_call(pool,'price_oracle()')
+        except ValueError as e:
+            if 'execution reverted' in str(e): return False
+            else: raise
 
 
 curve = None
