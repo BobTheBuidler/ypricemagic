@@ -27,13 +27,14 @@ class BalancerV2:
 
     def get_token_price(self, token_address, block=None):
         deepest_pool = self.deepest_pool_for(token_address, block=block)
-        if not deepest_pool: return
+        if deepest_pool is None: return
         return deepest_pool.get_token_price(token_address, block)
     
     def deepest_pool_for(self, token_address, block=None):
         deepest_pools = {vault.address: vault.deepest_pool_for(token_address, block=block) for vault in self.vaults}
+        deepest_pools = {vault: deepest_pool for vault,deepest_pool in deepest_pools.items() if deepest_pool is not None}
         deepest_pool_balance = max(pool_balance for pool_address, pool_balance in deepest_pools.values())
         for pool_address, pool_balance in deepest_pools.values():
-            if pool_balance == deepest_pool_balance: return BalancerV2Pool(pool_address)
+            if pool_balance == deepest_pool_balance and pool_address: return BalancerV2Pool(pool_address)
 
 balancer = BalancerV2()
