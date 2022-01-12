@@ -1,3 +1,5 @@
+from time import sleep
+
 from brownie import ZERO_ADDRESS, chain, multicall, web3
 from ypricemagic import magic
 from ypricemagic.constants import weth
@@ -14,7 +16,13 @@ elif chain.id == 56:
 
 @memory.cache()
 def is_mooniswap_pool(token):
-    pools = router.getAllPools()
+    i = 1
+    while i:
+        try: pools = router.getAllPools()
+        except ValueError as e:
+            # sometimes calls to public rpcs can fail due to timeout, but the call itself is fine. Retry.
+            if str(e) == 'execution aborted (timeout = 5s)' and i <= 10: sleep(i) 
+            else: raise
     return token in pools
 
 def get_pool_price(token_address, block=None):
