@@ -29,11 +29,15 @@ class BalancerV2Vault:
             ct_tokens = len(info[0])
             pool_balances = {info[0][i]: info[1][i] for i in range(ct_tokens)}
             for token, balance in pool_balances.items():
-                if (
-                    token == token_address and balance > deepest_pool['balance']
-                    and ERC20(pool).build_name not in ['ConvergentCurvePool','MetaStablePool']
-                    ):
-                    deepest_pool = {'pool': pool, 'balance': balance}
+                try:
+                    if (
+                        token == token_address and balance > deepest_pool['balance']
+                        and ERC20(pool).build_name not in ['ConvergentCurvePool','MetaStablePool']
+                        ):
+                        deepest_pool = {'pool': pool, 'balance': balance}
+                except ValueError as e:
+                    if 'source code not verified' in str(e): pass
+                    else: raise
         return deepest_pool['pool'], deepest_pool['balance']
 
     
