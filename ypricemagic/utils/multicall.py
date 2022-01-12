@@ -6,6 +6,7 @@ from typing import List
 import requests
 from brownie import chain, web3
 from eth_abi.exceptions import InsufficientDataBytes
+from web3.exceptions import CannotHandleRequest
 from ypricemagic.utils.contracts import Contract, contract_creation_block
 from ypricemagic.utils.raw_calls import _decimals
 
@@ -32,7 +33,7 @@ def multicall_same_func_no_input(addresses: list, method: str, apply_func=None, 
 
 def multicall_decimals(addresses: List[str], block=None):
     try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block).values()
-    except InsufficientDataBytes: return [_decimals(address,block) for address in addresses] 
+    except (CannotHandleRequest,InsufficientDataBytes): return [_decimals(address,block) for address in addresses] 
 
 def fetch_multicall(*calls, block=None):
     # https://github.com/makerdao/multicall
