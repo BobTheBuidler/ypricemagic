@@ -42,7 +42,10 @@ def multicall_same_func_same_contract_different_inputs(address: list, method: st
 
 def multicall_decimals(addresses: List[str], block=None):
     try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block)
-    except (CannotHandleRequest,InsufficientDataBytes): return [_decimals(address,block) for address in addresses] 
+    except ValueError as e:
+        if 'execution reverted' in str(e): return [_decimals(address,block,return_None_on_failure=True) for address in addresses]
+        else: raise
+    except (CannotHandleRequest,InsufficientDataBytes): return [_decimals(address,block,return_None_on_failure=True) for address in addresses] 
 
 def multicall_totalSupply(addresses: List[str], block=None):
     try: return multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block)

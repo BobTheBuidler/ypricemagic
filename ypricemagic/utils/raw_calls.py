@@ -6,9 +6,13 @@ from toolz.itertoolz import concat
 from ypricemagic import Contract
 
 
-def _decimals(contract_address, block=None):
-    try: return convert.to_int(raw_call(contract_address, "decimals()", block=block))
-    except OverflowError: return Contract(contract_address).decimals(block_identifier=block)
+def _decimals(contract_address, block=None, return_None_on_failure=False):
+    try:
+        try: return convert.to_int(raw_call(contract_address, "decimals()", block=block))
+        except OverflowError: return Contract(contract_address).decimals(block_identifier=block)
+    except ValueError as e:
+        if 'execution reverted' in str(e) and return_None_on_failure: return None
+        else: raise
 
 
 def _symbol(contract_address, block=None):
@@ -45,6 +49,7 @@ def raw_call(contract_address: str, method: str, block=None, inputs=None, output
     elif output == 'address': return convert.to_address(f'0x{response.hex()[-40:]}')
     elif output in ['int','uint','uint256']: return convert.to_int(response)
 
+
 def prepare_data(method, inputs=None):
     method = fourbyte(method)
     if inputs is None:
@@ -57,6 +62,7 @@ def prepare_data(method, inputs=None):
         return encode_hex(concat(method,*[prepare_input(_) for _ in inputs.values()]))
     else:
         raise ValueError(f'Unsupported input type. Supported types are: str, int, bytes, Set[str,int,bytes], List[str,int,bytes], Tuple[str,int,bytes], Dict[Any:[str,int,bytes]]')
+
 
 def prepare_input(input):
     try: return '000000000000000000000000' + convert.to_address(input)[2:]
