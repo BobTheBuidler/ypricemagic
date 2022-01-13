@@ -1,8 +1,9 @@
 import logging
-from typing import Union
+from typing import List, Union
 
 from brownie import chain, convert, multicall
 from eth_typing.evm import Address, BlockNumber
+from joblib.parallel import Parallel, delayed
 
 from ypricemagic import _symbol
 from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
@@ -24,13 +25,17 @@ logger = logging.getLogger(__name__)
 
 
 @memory.cache()
-def get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, silent: bool=False) -> float:
-    token = convert.to_address(str(token))
-    try: return _get_price(token, block=block,silent=silent)
-    except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token)} {token}')
+def get_price(token_address: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_quietly:bool=False, silent:bool=False) -> float:
+    token_address = convert.to_address(str(token_address))
+    try: return _get_price(token_address, block=block, fail_quietly=fail_quietly, silent=silent)
+    except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address}')
+
+
+def get_prices(token_addresses: List[Union[str,Address,Contract]], block: Union[BlockNumber,int,None]=None, silent: bool=False):
+    return Parallel(4,'threading')(delayed(get_price)(token_address, block, fail_quietly=True) for token_address in token_addresses)
 
     
-def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None,silent: bool=False):
+def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_quietly:bool=False, silent:bool=False):
     logger.debug(f"[chain{chain.id}] token: {token}")
     logger.debug("unwrapping %s", token)
 
@@ -195,11 +200,9 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
         price = balancer.get_price(token, block=block)
         logger.debug("balancer -> %s", price)
 
-    if price is None and silent is False:
-        logger.error("failed to get price for %s", token)
+    if price is None and silent is False: logger.error("failed to get price for %s", token)
 
-    if price is None:
-        raise PriceError(f'could not fetch price for {token}')
+    if price is None and fail_quietly is False: raise PriceError(f'could not fetch price for {token}')
 
     return price
 
