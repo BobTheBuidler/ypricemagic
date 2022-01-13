@@ -218,7 +218,7 @@ def _exit_early_for_known_tokens(token_address: str, block=None):
     elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
 
     elif bucket == 'chainlink feed':        price = chainlink.chainlink.get_price(token_address, block)
-    elif bucket == 'compound':              price = compound.get_price(token_address, block=block)
+    elif bucket == 'compound':              price = compound.compound.get_price(token_address, block=block)
     elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
 
     elif bucket == 'curve lp token':        price = curve.get_price(token_address, block)
