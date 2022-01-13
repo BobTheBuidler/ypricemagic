@@ -1,9 +1,13 @@
+import logging
 from typing import Dict, List, Set, Tuple
+
+import web3
 from brownie import convert, web3
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
-from toolz.itertoolz import concat
 from ypricemagic import Contract
+
+logger = logging.getLogger(__name__)
 
 
 def _decimals(contract_address, block=None, return_None_on_failure=False):
@@ -51,20 +55,32 @@ def raw_call(contract_address: str, method: str, block=None, inputs=None, output
 
 
 def prepare_data(method, inputs=None):
-    method = fourbyte(method)
+    method = encode_hex(fourbyte(method))
+
     if inputs is None:
-        return encode_hex(method)
+        return method
+
     elif type(inputs) in [str,int,bytes]:
-        return encode_hex(concat(method,prepare_input(inputs)))
-    elif type(inputs) in (Set,List,Tuple):
-        return encode_hex(concat(method,*[prepare_input(_) for _ in inputs]))
-    elif type(inputs) == Dict:
-        return encode_hex(concat(method,*[prepare_input(_) for _ in inputs.values()]))
+        return method + prepare_input(inputs)
+    
     else:
         raise ValueError(f'Unsupported input type. Supported types are: str, int, bytes, Set[str,int,bytes], List[str,int,bytes], Tuple[str,int,bytes], Dict[Any:[str,int,bytes]]')
+    
+    # these don't work yet, wip
+    '''
+    elif type(inputs) in (Set,List,Tuple):
+        # this doesn't work right now
+        inputs = str(concat([method,*[prepare_input(_) for _ in inputs]]))
+        logger.warn(inputs)
+        return encode_hex(inputs)
+    elif type(inputs) == Dict:
+        # this doesn't work right now
+        inputs = str(concat([method,*[prepare_input(_) for _ in inputs.values()]]))
+        logger.warn(inputs)
+        return encode_hex(inputs)
+    '''
 
 
 def prepare_input(input):
     try: return '000000000000000000000000' + convert.to_address(input)[2:]
     except: raise 
-    
