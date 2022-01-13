@@ -1,6 +1,7 @@
 from ypricemagic import magic
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.contracts import Contract
+from ypricemagic.utils.raw_calls import raw_call
 
 
 def is_atoken_v1(address):
@@ -18,11 +19,11 @@ def is_atoken(address):
     return is_atoken_v1(address) or is_atoken_v2(address)
 
 def get_price_v1(token, block=None):
-    underlying = Contract(token).underlyingAssetAddress(block_identifier = block)
+    underlying = raw_call(token, 'underlyingAssetAddress()', block=block, output='address')
     return magic.get_price(underlying, block=block)
 
 def get_price_v2(token, block=None):
-    underlying = Contract(token).UNDERLYING_ASSET_ADDRESS(block_identifier = block)
+    underlying = raw_call(token, 'UNDERLYING_ASSET_ADDRESS()',block=block,output='address')
     return magic.get_price(underlying, block=block)
 
 def get_price(token, block=None):
