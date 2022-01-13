@@ -7,6 +7,7 @@ from eth_typing.evm import Address, BlockNumber
 from ypricemagic import _symbol
 from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
 from ypricemagic.exceptions import PriceError
+from ypricemagic.networks import Network
 from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
                                        froyo, gelato, ib, mooniswap,
                                        mstablefeederpool, piedao, tokensets,
@@ -36,22 +37,10 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
     price = _exit_early_for_known_tokens(token, block=block)
     if price: return price
     
-    if chain.id == 1: # eth mainnet
+    # a few more attempts to fetch a price a token
+    if chain.id == Network.Mainnet: # eth mainnet
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
-        # we can exit early with known tokens
-
-        if compound.is_compound_market(token):
-            price = compound.get_price(token, block=block)
-            logger.debug("compound -> %s", price)
-        
-        # peel a layer from [multiplier, underlying]
-        if isinstance(price, list):
-            price, underlying = price
-            logger.debug("peel %s %s", price, underlying)
-            return price * get_price(underlying, block=block)
-
-        # a few more attempts to fetch a price a token
         if price is None: # NOTE: 'if not price' returns True if price == 0 but we actually only want to proceed if price == None
             price = uniswap.get_price(token, router="sushiswap", block=block)
             logger.debug("sushiswap -> %s", price)
@@ -67,19 +56,8 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
         if price is None:
             price = uniswap.get_price(token, router="shibaswap", block=block)
 
-    if chain.id == 56: # binance smart chain
+    if chain.id == Network.BinanceSmartChain:
 
-        # we can exit early with known tokens
-        if compound.is_compound_market(token):
-            price = compound.get_price(token, block=block)
-            logger.debug("compound -> %s", price)
-
-        # peel a layer from [multiplier, underlying]
-        if isinstance(price, list):
-            price, underlying = price
-            logger.debug("peel %s %s", price, underlying)
-            return price * get_price(underlying, block=block)
-        
         if price is None:
             price = uniswap.get_price(token, router="pancakeswapv2", block=block)
             logger.debug("uniswap -> %s", price)
@@ -152,19 +130,8 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
             price = uniswap.get_price(token, router="complus", block=block)
             logger.debug("uniswap -> %s", price)
 
-    if chain.id == 137: # polygon
-        # we can exit early with known tokens
+    if chain.id == Network.Polygon:
 
-        if compound.is_compound_market(token):
-            price = compound.get_price(token, block=block)
-            logger.debug("compound -> %s", price)
-
-        # peel a layer from [multiplier, underlying]
-        if isinstance(price, list):
-            price, underlying = price
-            logger.debug("peel %s %s", price, underlying)
-            return price * get_price(underlying, block=block)
-        
         if price is None:
             price = uniswap.get_price(token, router="quickswap", block=block)
             logger.debug("uniswap -> %s", price)
@@ -201,7 +168,7 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
             price = uniswap.get_price(token, router="cafeswap", block=block)
             logger.debug("uniswap -> %s", price)
 
-    if chain.id == 250: # fantom
+    if chain.id == Network.Fantom:
         
         if price is None:
             price = uniswap.get_price(token, router="sushi", block=block)
@@ -222,12 +189,6 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
         if price is None:
             price = uniswap.get_price(token, router="jetswap", block=block)
             logger.debug("uniswap -> %s", price)
-
-    # if type(price) == list, this will output final price
-    if isinstance(price, list):
-        price, underlying = price
-        logger.debug("peel %s %s", price, underlying)
-        return price * get_price(underlying, block=block)
 
     # let's try a few more things
     if price is None:
@@ -254,25 +215,26 @@ def _exit_early_for_known_tokens(token_address: str, block=None):
     elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
 
     elif bucket == 'chainlink feed':        price = chainlink.chainlink.get_price(token_address, block)
+    elif bucket == 'compound':              price = compound.get_price(token_address, block=block)
     elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
-    elif bucket == 'curve lp token':        price = curve.get_price(token_address, block)
 
+    elif bucket == 'curve lp token':        price = curve.get_price(token_address, block)
     elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
     elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
-    elif bucket == 'gelato':                price = gelato.get_price(token_address, block=block)
 
+    elif bucket == 'gelato':                price = gelato.get_price(token_address, block=block)
     elif bucket == 'ib token':              price = ib.get_price(token_address,block=block)
     elif bucket == 'mooniswap lp':          price = mooniswap.get_pool_price(token_address, block=block)
-    elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
 
+    elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
     elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
     elif bucket == 'stable usd':            price = 1
-    elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
 
+    elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
     elif bucket == 'uni or uni-like lp':    price = uniswap.lp_price(token_address, block)
     elif bucket == 'wrapped gas coin':      price = get_price(WRAPPED_GAS_COIN, block)
-    elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
 
+    elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
     elif bucket == 'yearn or yearn-like':   price = yearn.get_price(token_address, block)
 
     # if type(price) == list, this will output final price
@@ -301,7 +263,7 @@ def _check_bucket(token_address: str):
     # these require contract initialization but no calls
     # TODO initialize the contract here and pass it into the below functions to save init time
     # token_contract = Contract(token_address)
-    if balancer.is_balancer_pool(token_address):                          return 'balancer pool'
+    if balancer.is_balancer_pool(token_address):                            return 'balancer pool'
     elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
     elif aave.is_atoken(token_address):                                     return 'atoken' 
 
@@ -314,10 +276,13 @@ def _check_bucket(token_address: str):
     elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
 
     # these require both calls and contract initializations
-    elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
     elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
+    elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
+    elif compound.compound.is_compound_market(token_address):               return 'compound'
     elif curve and token_address in curve:                                  return 'curve lp'
     elif token_address in chainlink.chainlink:                              return 'chainlink feed'
+
+            
 
     
 

@@ -1,58 +1,52 @@
-from brownie import Contract as _Contract
 from brownie import chain
 from cachetools.func import ttl_cache
-from ypricemagic.utils.cache import memory
+from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract
-from ypricemagic.utils.multicall import fetch_multicall
+from ypricemagic.utils.multicall import (fetch_multicall,
+                                         multicall_same_func_no_input)
 from ypricemagic.utils.raw_calls import _decimals
 
-
-@ttl_cache(ttl=600)
-def get_markets():
-    if chain.id == 1: # eth mainnet
-        comptroller = Contract("0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B")
-        creamtroller = Contract('0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258')
-        ironbankroller = Contract("0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB")
-        
-        results = fetch_multicall(
-            [comptroller, 'getAllMarkets'],
-            [creamtroller, 'getAllMarkets'],
-            [ironbankroller, 'getAllMarkets'],
-        )
-        names = ['compound', 'cream', 'ironbank']
-        return dict(zip(names, results))
-    elif chain.id == 56: # bsc mainnet
-        venustroller = Contract("0xfD36E2c2a6789Db23113685031d7F16329158384")
-        results = [venustroller.getAllMarkets()]
-        names = ['venus']
-        return dict(zip(names, results))
-    elif chain.id == 137: # poly mainnet
-        easytroller = Contract("0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8")
-        try:
-            results = [easytroller.getAllMarkets()]
-        except:
-            from ypricemagic.interfaces.compound.unitroller import \
-                UNITROLLER_ABI
-            easytroller = _Contract.from_abi('Unitroller',"0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8", UNITROLLER_ABI)
-            results = [easytroller.getAllMarkets()]
-        names = ['easyfi']
-        return dict(zip(names, results))
+UNITROLLERS = {
+    Network.Mainnet: {
+        "comp": "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
+        "cream": "0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258",
+        "ironbank": "0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB"
+    },
+    Network.BinanceSmartChain: {
+        "venus": "0xfD36E2c2a6789Db23113685031d7F16329158384"
+    },
+    Network.Polygon: {
+        "easyfi": "0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8"
+    }
+}.get(chain.id, {})
 
 
-@memory.cache()
-def is_compound_market(token):
-    markets = get_markets()
-    if any(token in market for market in markets.values()):
-        return True
-    # NOTE: Workaround for pools that have since been revoked
-    token_contract = Contract(token)
-    required = {"isCToken", "comptroller", "underlying"} 
-    return set(token_contract.__dict__) & required == required
+class Comptroller:
+    def __init__(self, address, markets) -> None:
+        self.address = address
+        self.markets = markets
 
+class Compound:
+    def __init__(self) -> None:
+        self.prep_trollers()
 
-def get_price(token_address: str, block=None):
-    token = Contract(token_address)
-    if chain.id in [1,56,137]:
+    @ttl_cache(ttl=600)
+    def prep_trollers(self):
+        if self.trollers:
+            trollers = {name: address for name, address in UNITROLLERS.items()}
+            response = multicall_same_func_no_input(self.trollers, 'getAllMarkets()(address[])')
+            self.trollers = {name: Comptroller(troller, markets) for name, troller, markets in zip(trollers.keys(), trollers.values(), response)}
+
+    def is_compound_market(self, token_address: str):
+        if any(token_address in self.trollers[name].markets for name in self.trollers):
+            return True
+        # NOTE: Workaround for pools that have since been revoked
+        token_contract = Contract(token_address)
+        required = {"isCToken", "comptroller", "underlying"} 
+        return set(token_contract.__dict__) & required == required
+    
+    def get_price(self, token_address: str, block=None):
+        token = Contract(token_address)
         try:
             underlying, exchange_rate, decimals = fetch_multicall(
                 [token, 'underlying'],
@@ -63,7 +57,7 @@ def get_price(token_address: str, block=None):
             exchange_rate /= 1e18
             under_decimals = _decimals(underlying,block)
             return [exchange_rate * 10 ** (decimals - under_decimals), underlying]
-        except AttributeError:
+        except AttributeError: # this will run for gas coin markets like cETH, crETH
             exchange_rate, decimals = fetch_multicall(
                 [token, 'exchangeRateCurrent'],
                 [token, 'decimals'],
@@ -72,7 +66,9 @@ def get_price(token_address: str, block=None):
             exchange_rate /= 1e18
             under_decimals = 18
             return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
-    elif chain.id in []: # no current chains without multicall2 support, keeping for future use
+        '''
+        # NOTE no current chains without multicall2 support, keeping for future use
+
         try:
             underlying = token.underlying(block_identifier = block)
             exchange_rate = token.exchangeRateStored(block_identifier = block) / 1e18
@@ -84,3 +80,6 @@ def get_price(token_address: str, block=None):
             decimals = _decimals(token_address,block)
             under_decimals = 18
             return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
+        '''
+
+compound = Compound()
