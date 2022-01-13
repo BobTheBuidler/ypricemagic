@@ -4,6 +4,7 @@ from typing import List, Union
 from brownie import chain, convert
 from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
+from tqdm import tqdm
 
 from ypricemagic import _symbol
 from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
@@ -23,25 +24,42 @@ from ypricemagic.utils.contracts import Contract
 logger = logging.getLogger(__name__)
 
 
-
 @memory.cache()
-def get_price(token_address: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_quietly:bool=False, silent:bool=False) -> float:
+def get_price(token_address: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_to_None:bool=False, silent:bool=False) -> float:
+    '''
+    when `get_price` is unable to find a price:
+        if `silent == True`, ypricemagic will print an error message using standard python logging
+        if `silent == False`, ypricemagic will not log any error
+        if `fail_to_None == True`, ypricemagic will return `None`
+        if `fail_to_None == False`, ypricemagic will raise a PriceError
+    '''
     token_address = convert.to_address(str(token_address))
-    try: return _get_price(token_address, block=block, fail_quietly=fail_quietly, silent=silent)
+    try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
     except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address}')
 
 
-def get_prices(token_addresses: List[Union[str,Address,Contract]], block: Union[BlockNumber,int,None]=None, silent: bool=False):
-    return Parallel(4,'threading')(delayed(get_price)(token_address, block, fail_quietly=True) for token_address in token_addresses)
+def get_prices(token_addresses: List[Union[str,Address,Contract]], block: Union[BlockNumber,int,None]=None, fail_to_None:bool=True,silent: bool=False):
+    '''
+    in every case:
+        if `silent == True`, tqdm will not be used
+        if `silent == False`, tqdm will be used
+
+    when `get_prices` is unable to find a price:
+        if `fail_to_None == True`, ypricemagic will return `None` for that token
+        if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
+    '''
+    if not silent: token_addresses = tqdm(token_addresses)
+    return Parallel(4,'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
     
-def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_quietly:bool=False, silent:bool=False):
-    logger.debug(f"[chain{chain.id}] token: {token}")
+def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_to_None:bool=False, silent:bool=False):
+    logger.debug(f"network: {Network.name(chain.id)} token: {token}")
     logger.debug("unwrapping %s", token)
 
     price = _exit_early_for_known_tokens(token, block=block)
     if not price: price = uniswap.try_for_price(token, block=block)
     if not price: price = balancer.get_price(token, block=block)
+    if not price: _fail_appropriately(token, fail_to_None=fail_to_None, silent=silent)
     return price
 
 
@@ -123,33 +141,16 @@ def _check_bucket(token_address: str):
     elif curve and token_address in curve:                                  return 'curve lp'
     elif token_address in chainlink.chainlink:                              return 'chainlink feed'
 
-            
-
-    
-
-    
-    
-
-    
-    
-
-
-    
-    
-    
-
-    
-    
-
-    
-            
-            
-            
-            
-            
-            
-            
-        
-    
-    
-        
+         
+def _fail_appropriately(token_address:str, fail_to_None:bool=False, silent:bool=False):
+    '''
+    when `get_price` is unable to find a price:
+        if `silent == True`, ypricemagic will print an error message using standard python logging
+        if `silent == False`, ypricemagic will not log any error
+        if `fail_to_None == True`, ypricemagic will return `None`
+        if `fail_to_None == False`, ypricemagic will raise a PriceError
+    '''
+    network = Network.name(chain.id)
+    symbol = _symbol(token_address)
+    if not silent: logger.error(f"failed to get price for {symbol} {token_address} on {network}")
+    if not fail_to_None: raise PriceError(f'could not fetch price for {symbol} {token_address} on {network}')
