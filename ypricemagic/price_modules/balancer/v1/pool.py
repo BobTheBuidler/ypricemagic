@@ -24,7 +24,8 @@ class BalancerV1Pool(ERC20):
 
     def get_tvl(self, block=None):
         balances = self.get_balances(block)
-        return sum([balance * _get_price(token, block=block) for token, balance in balances.items()])
+        prices = [_get_price(token, block=block) for token in balances]
+        return sum(balance * price for balance, price in zip(balances.values(), prices) if price)
 
     def get_balances(self, block=None):
         tokens = self.tokens(block=block)
@@ -36,4 +37,4 @@ class BalancerV1Pool(ERC20):
 
 def _get_price(token_address, block=None):
     try: return magic.get_price(token_address, block)
-    except PriceError: return 0
+    except PriceError: return None
