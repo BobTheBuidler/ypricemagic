@@ -13,9 +13,13 @@ if chain.id == 1:
 elif chain.id == 56:
     router = Contract("0xD41B24bbA51fAc0E4827b6F94C0D6DDeB183cD64")
     gas_coin = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c") #wbnb
+else: 
+    router = None
+    gas_coin = None
 
 @memory.cache()
 def is_mooniswap_pool(token):
+    if router is None: return False
     return router.isPool(token)
 
 def get_pool_price(token_address, block=None):

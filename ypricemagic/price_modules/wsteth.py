@@ -1,14 +1,25 @@
+from brownie import chain
 from ypricemagic import magic
 from ypricemagic.constants import weth
-from ypricemagic.utils.cache import memory
-from ypricemagic.utils.contracts import Contract
+from ypricemagic.exceptions import UnsupportedNetwork
+from ypricemagic.networks import Network
+from ypricemagic.utils.raw_calls import raw_call
 
-wsteth = Contract('0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0')
 
-@memory.cache()
+class wstEth:
+    def __init__(self) -> None:
+        try: self.address = {
+            Network.Mainnet: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0'
+            }[chain.id]
+        except IndexError: self.address = None
+    
+    def get_price(self, block=None):
+        share_price = raw_call(self.address, 'stEthPerToken()', output='int', block=block) / 1e18
+        return share_price * magic.get_price(weth, block)
+
+wsteth = wstEth()
+
 def is_wsteth(address):
-    return address == '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0'
+    try: return address == wsteth.address
+    except UnsupportedNetwork: return False
 
-def get_price(address, block=None):
-    share_price = wsteth.stEthPerToken(block_identifier = block) / 10 ** 18
-    return share_price * magic.get_price(weth, block)

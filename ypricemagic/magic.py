@@ -7,11 +7,14 @@ from eth_typing.evm import Address, BlockNumber
 from ypricemagic import _symbol
 from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
 from ypricemagic.exceptions import PriceError
-from ypricemagic.price_modules import (aave, compound, froyo,
-                                       mstablefeederpool, uniswap, yearn)
+from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
+                                       froyo, gelato, ib, mooniswap,
+                                       mstablefeederpool, piedao, tokensets,
+                                       wsteth, yearn)
 from ypricemagic.price_modules.balancer.balancer import balancer
-from ypricemagic.price_modules.chainlink.chainlink import chainlink
+from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
+from ypricemagic.price_modules.uniswap.v2 import uniswap
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.contracts import Contract
 
@@ -30,77 +33,17 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
     logger.debug(f"[chain{chain.id}] token: {token}")
     logger.debug("unwrapping %s", token)
 
-    price = None
-
-    if token == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":
-        token = WRAPPED_GAS_COIN
-
-    if token in STABLECOINS:
-        logger.debug("stablecoin -> %s", 1)
-        return 1
+    price = _exit_early_for_known_tokens(token, block=block)
+    if price: return price
     
-    if balancer.is_balancer_pool(token): price = balancer.get_price(token, block)
-    elif token in chainlink: price = chainlink.get_price(token, block)
-    elif curve and token in curve: price = curve.get_price(token, block)
-    
-    # these return type(price) == list
-    elif yearn.is_yearn_vault(token): price = yearn.get_price(token, block=block)
-        
-    
-    # if type(price) == list, this will output final price
-    if isinstance(price, list):
-        price, underlying = price
-        logger.debug("peel %s %s", price, underlying)
-        return price * get_price(underlying, block=block)
-
-
     if chain.id == 1: # eth mainnet
-        from ypricemagic.price_modules import (cream, gelato, mooniswap,
-                                               piedao, tokensets, wsteth)
         multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
 
-        
-
         # we can exit early with known tokens
-        if wsteth.is_wsteth(token):
-            price = wsteth.get_price(token, block=block)
-            logger.debug("wsteth -> %s", price)
 
-        elif aave.is_atoken(token):
-            price = aave.get_price(token, block=block)
-            logger.debug("atoken -> %s", price)
-
-        elif cream.is_creth(token):
-            price = cream.get_price_creth(token, block)
-            logger.debug("atoken -> %s", price)
-
-        elif compound.is_compound_market(token):
+        if compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
             logger.debug("compound -> %s", price)
-
-        elif uniswap.is_uniswap_pool(token):
-            price = uniswap.lp_price(token, block=block)
-            logger.debug("uniswap pool -> %s", price)
-
-        elif mooniswap.is_mooniswap_pool(token):
-            price = mooniswap.get_pool_price(token, block=block)
-            logger.debug("mooniswap pool -> %s", price)
-
-        elif mstablefeederpool.is_mstable_feeder_pool(token):
-            price = mstablefeederpool.get_price(token,block=block)
-            logger.debug("mstable feeder pool -> %s", price)
-
-        elif tokensets.is_token_set(token):
-            price = tokensets.get_price(token, block=block)
-            logger.debug("token set -> %s", price)
-
-        elif piedao.is_pie(token):
-            price = piedao.get_price(token, block=block)
-            logger.debug("piedeo -> %s", price)
-
-        elif gelato.is_gelato_pool(token):
-            price = gelato.get_price(token, block=block)
-            logger.debug("gelato -> %s", price)
         
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
@@ -125,32 +68,11 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
             price = uniswap.get_price(token, router="shibaswap", block=block)
 
     if chain.id == 56: # binance smart chain
-        from ypricemagic.price_modules import belt, ellipsis, ib, mooniswap
 
         # we can exit early with known tokens
-        if belt.is_belt_lp(token):
-            price = belt.get_price(token,block=block)
-            logger.debug("belt -> %s", price)
-
-        elif compound.is_compound_market(token):
+        if compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
             logger.debug("compound -> %s", price)
-
-        elif uniswap.is_uniswap_pool(token):
-            price = uniswap.lp_price(token, block=block)
-            logger.debug("uniswap pool -> %s", price)
-
-        elif ib.is_ib_token(token):
-            price = ib.get_price(token,block=block)
-            logger.debug("ib token -> %s", price)
-
-        elif ellipsis.is_eps_rewards_pool(token):
-            price = ellipsis.get_price(token, block=block)
-            logger.debug("ellipsis pool -> %s", price)
-
-        elif mooniswap.is_mooniswap_pool(token):
-            price = mooniswap.get_pool_price(token, block=block)
-            logger.debug("mooniswap pool -> %s", price)
 
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
@@ -233,21 +155,9 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
     if chain.id == 137: # polygon
         # we can exit early with known tokens
 
-        if aave.is_atoken(token):
-            price = aave.get_price(token, block=block)
-            logger.debug("atoken -> %s", price)
-
-        elif compound.is_compound_market(token):
+        if compound.is_compound_market(token):
             price = compound.get_price(token, block=block)
             logger.debug("compound -> %s", price)
-
-        elif mstablefeederpool.is_mstable_feeder_pool(token):
-            price = mstablefeederpool.get_price(token,block=block)
-            logger.debug("mstable feeder pool -> %s", price)
-
-        elif uniswap.is_uniswap_pool(token):
-            price = uniswap.lp_price(token, block=block)
-            logger.debug("uniswap pool -> %s", price)
 
         # peel a layer from [multiplier, underlying]
         if isinstance(price, list):
@@ -293,22 +203,6 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
 
     if chain.id == 250: # fantom
         
-        # we can exit early with known tokens
-
-        if uniswap.is_uniswap_pool(token):
-            price = uniswap.lp_price(token, block)
-            logger.debug("uniswap -> %s", price)
-
-        elif froyo.is_froyo(token):
-            price = froyo.get_price(token, block=block)
-            logger.debug("froyo -> %s", price)
-
-        # peel a layer from [multiplier, underlying]
-        if isinstance(price, list):
-            price, underlying = price
-            logger.debug("peel %s %s", price, underlying)
-            return price * get_price(underlying, block=block)
-        
         if price is None:
             price = uniswap.get_price(token, router="sushi", block=block)
             logger.debug("uniswap -> %s", price)
@@ -347,3 +241,109 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
         raise PriceError(f'could not fetch price for {token}')
 
     return price
+
+
+def _exit_early_for_known_tokens(token_address: str, block=None):
+
+    bucket = _check_bucket(token_address)
+
+    price = None
+
+    if bucket == 'atoken':                  price = aave.get_price(token_address, block=block)
+    elif bucket == 'balancer pool':         price = balancer.get_price(token_address, block)
+    elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
+
+    elif bucket == 'chainlink feed':        price = chainlink.chainlink.get_price(token_address, block)
+    elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
+    elif bucket == 'curve lp token':        price = curve.get_price(token_address, block)
+
+    elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
+    elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
+    elif bucket == 'gelato':                price = gelato.get_price(token_address, block=block)
+
+    elif bucket == 'ib token':              price = ib.get_price(token_address,block=block)
+    elif bucket == 'mooniswap lp':          price = mooniswap.get_pool_price(token_address, block=block)
+    elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
+
+    elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
+    elif bucket == 'stable usd':            price = 1
+    elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
+
+    elif bucket == 'uni or uni-like lp':    price = uniswap.lp_price(token_address, block)
+    elif bucket == 'wrapped gas coin':      price = get_price(WRAPPED_GAS_COIN, block)
+    elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
+
+    elif bucket == 'yearn or yearn-like':   price = yearn.get_price(token_address, block)
+
+    # if type(price) == list, this will output final price
+    if isinstance(price, list):
+        price, underlying = price
+        logger.debug("peel %s %s", price, underlying)
+        price *= get_price(underlying, block=block)
+
+    logger.debug(f"{bucket} -> ${price}")
+
+    return price if price else None
+
+
+@memory.cache()
+def _check_bucket(token_address: str):
+
+    # these require neither calls to the chain nor contract initialization
+    if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
+    elif token_address in STABLECOINS:                                      return 'stable usd'
+
+    elif wsteth.is_wsteth(token_address):                                   return 'wsteth'
+    elif cream.is_creth(token_address):                                     return 'creth'
+    elif belt.is_belt_lp(token_address):                                    return 'belt lp'
+    elif froyo.is_froyo(token_address):                                     return 'froyo'
+
+    # these require contract initialization but no calls
+    # TODO initialize the contract here and pass it into the below functions to save init time
+    # token_contract = Contract(token_address)
+    if balancer.is_balancer_pool(token_address):                          return 'balancer pool'
+    elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
+    elif aave.is_atoken(token_address):                                     return 'atoken' 
+
+    elif ib.is_ib_token(token_address):                                     return 'ib token'
+    elif gelato.is_gelato_pool(token_address):                              return 'gelato'
+    elif piedao.is_pie(token_address):                                      return 'piedao lp'
+
+    elif tokensets.is_token_set(token_address):                             return 'token set'
+    elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
+    elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
+
+    # these require both calls and contract initializations
+    elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
+    elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
+    elif curve and token_address in curve:                                  return 'curve lp'
+    elif token_address in chainlink.chainlink:                              return 'chainlink feed'
+
+    
+
+    
+    
+
+    
+    
+
+
+    
+    
+    
+
+    
+    
+
+    
+            
+            
+            
+            
+            
+            
+            
+        
+    
+    
+        
