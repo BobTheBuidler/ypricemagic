@@ -1,6 +1,12 @@
+import logging
+
 from brownie import chain
+from ypricemagic.networks import Network
 from ypricemagic.price_modules.balancer.v1.v1 import BalancerV1
 from ypricemagic.price_modules.balancer.v2.v2 import BalancerV2
+
+logger = logging.getLogger(__name__)
+
 
 class Balancer:
     def __init__(self) -> None:
@@ -30,14 +36,19 @@ class Balancer:
         price = None    
         
         if ( # NOTE: Only query v2 if block queried > v2 deploy block plus some extra blocks to build up liquidity
-            (chain.id == 1 and (not block or block > 12272146 + 100000))
-            or (chain.id == 250 and (not block or block > 16896080))
+            (chain.id == Network.Mainnet and (not block or block > 12272146 + 100000))
+            or (chain.id == Network.Fantom and (not block or block > 16896080))
             ): 
             price = self.v2.get_token_price(token_address, block)
+            if price:
+                logger.debug(f"balancer v2 -> ${price}")
+                return price
 
-        if not price and chain.id == 1:      
+        if not price and chain.id == Network.Mainnet:      
             price = self.v1.get_token_price(token_address, block)
+            if price:
+                logger.debug(f"balancer v1 -> ${price}")
+                return price
         
-        if price: return price
 
 balancer = Balancer()

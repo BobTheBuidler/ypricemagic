@@ -1,7 +1,7 @@
 import logging
 from typing import List, Union
 
-from brownie import chain, convert, multicall
+from brownie import chain, convert
 from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
 
@@ -16,7 +16,7 @@ from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
-from ypricemagic.price_modules.uniswap.v2 import uniswap
+from ypricemagic.price_modules.uniswap.uniswap import uniswap
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.contracts import Contract
 
@@ -40,170 +40,8 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
     logger.debug("unwrapping %s", token)
 
     price = _exit_early_for_known_tokens(token, block=block)
-    if price: return price
-    
-    # a few more attempts to fetch a price a token
-    if chain.id == Network.Mainnet: # eth mainnet
-        multicall(address='0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696')
-
-        if price is None: # NOTE: 'if not price' returns True if price == 0 but we actually only want to proceed if price == None
-            price = uniswap.get_price(token, router="sushiswap", block=block)
-            logger.debug("sushiswap -> %s", price)
-        
-        if price is None:
-            price = uniswap.get_price(token, router="uniswap", block=block)
-            logger.debug("uniswap -> %s", price)
-        
-        if price is None:
-            price = uniswap.get_price_v1(token, block=block)
-            logger.debug("uniswap v1 -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="shibaswap", block=block)
-
-    if chain.id == Network.BinanceSmartChain:
-
-        if price is None:
-            price = uniswap.get_price(token, router="pancakeswapv2", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="pancakeswapv1", block=block)
-            logger.debug("uniswap -> %s", price)
-        
-        if price is None:
-            price = uniswap.get_price(token, router="apeswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="wault", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="swapliquidity", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="thugswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="mdex", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="bakeryswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="nyanswop", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="narwhalswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="cafeswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="jetswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="babyswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="annex", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="viralata", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="elk", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="pantherswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="complus", block=block)
-            logger.debug("uniswap -> %s", price)
-
-    if chain.id == Network.Polygon:
-
-        if price is None:
-            price = uniswap.get_price(token, router="quickswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="sushi", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="apeswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="dfyn", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="wault", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="cometh", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="jetswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="polyzap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="cafeswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-    if chain.id == Network.Fantom:
-        
-        if price is None:
-            price = uniswap.get_price(token, router="sushi", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="spookyswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="spiritswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="paintswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-        if price is None:
-            price = uniswap.get_price(token, router="jetswap", block=block)
-            logger.debug("uniswap -> %s", price)
-
-    # let's try a few more things
-    if price is None:
-        price = balancer.get_price(token, block=block)
-        logger.debug("balancer -> %s", price)
-
-    if price is None and silent is False: logger.error("failed to get price for %s", token)
-
-    if price is None and fail_quietly is False: raise PriceError(f'could not fetch price for {token}')
-
+    if not price: price = uniswap.try_for_price(token, block=block)
+    if not price: price = balancer.get_price(token, block=block)
     return price
 
 
