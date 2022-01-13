@@ -61,3 +61,7 @@ _contract = lru_cache(maxsize=None)(_Contract)
 def Contract(address):
     with _contract_lock:
         return _contract(address)
+
+def is_contract(address: str) -> bool:
+    '''checks to see if the input address is a contract'''
+    return web3.eth.get_code(address) != '0x'
