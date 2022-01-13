@@ -35,7 +35,8 @@ def _totalSupplyReadable(contract_address, block=None):
 
 def _balanceOf(call_address, input_address, block=None):
     data = raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address)
-    return convert.to_int(data)
+    try: return convert.to_int(data)
+    except: return Contract(call_address).balanceOf(input_address, block_identifier=block)
 
 
 def _balanceOfReadable(call_address, input_address, block=None):
