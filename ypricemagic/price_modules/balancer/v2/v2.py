@@ -23,7 +23,7 @@ class BalancerV2:
         except AttributeError: return False
     
     def get_pool_price(self, pool_address, block=None):
-        return BalancerV2Pool(pool_address).get_pool_price()
+        return BalancerV2Pool(pool_address).get_pool_price(block=block)
 
     def get_token_price(self, token_address, block=None):
         deepest_pool = self.deepest_pool_for(token_address, block=block)
