@@ -16,14 +16,7 @@ elif chain.id == 56:
 
 @memory.cache()
 def is_mooniswap_pool(token):
-    i = 1
-    while i:
-        try: pools = router.getAllPools()
-        except ValueError as e:
-            # sometimes calls to public rpcs can fail due to timeout, but the call itself is fine. Retry.
-            if str(e) == 'execution aborted (timeout = 5s)' and i <= 10: sleep(i) 
-            else: raise
-    return token in pools
+    return router.isPool(token)
 
 def get_pool_price(token_address, block=None):
     token = Contract(token_address)
