@@ -1,5 +1,6 @@
 
-from brownie import chain
+import logging
+from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from ypricemagic.constants import usdc
 from ypricemagic.exceptions import UnsupportedNetwork
@@ -18,8 +19,10 @@ class UniswapV1:
     def get_price(self, token_address, block):
         try: factory = Contract(self.factory)
         except ValueError: raise UnsupportedNetwork
+        exchange = factory.getExchange(token_address)
+        if exchange == ZERO_ADDRESS: return
         try:
-            exchange = Contract(factory.getExchange(token_address))
+            exchange = Contract(exchange)
             eth_bought = exchange.getTokenToEthInputPrice(10 ** _decimals(token_address,block), block_identifier=block)
             exchange = Contract(factory.getExchange(usdc))
             usdc_bought = exchange.getEthToTokenInputPrice(eth_bought, block_identifier=block) / 1e6
