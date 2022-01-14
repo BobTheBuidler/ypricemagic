@@ -14,6 +14,9 @@ def _decimals(contract_address, block=None, return_None_on_failure=False):
     try:
         try: return convert.to_int(raw_call(contract_address, "decimals()", block=block))
         except OverflowError: return Contract(contract_address).decimals(block_identifier=block)
+        except ValueError as e: 
+            if 'execution reverted' in str(e): return Contract(contract_address).decimals(block_identifier=block)
+            else: raise
     except ValueError as e:
         if 'execution reverted' in str(e) and return_None_on_failure: return None
         else: raise
