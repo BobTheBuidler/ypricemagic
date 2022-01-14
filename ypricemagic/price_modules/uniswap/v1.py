@@ -30,3 +30,6 @@ class UniswapV1:
             return usdc_bought / fees
         except (ContractNotFound):
             pass
+        except ValueError as e:
+            if 'invalid jump destination' in str(e): return
+            else: raise
