@@ -59,7 +59,7 @@ class Uniswap:
                 balances[0] = reserves[0] / scales[0] * price0
             if price1:
                 balances[1] = reserves[1] / scales[1] * price1
-        balances = _extrapolate_balance_if_needed()
+        balances = _extrapolate_balance_if_needed(balances)
         return sum(balances) / supply
     
     @ttl_cache(ttl=36000)
