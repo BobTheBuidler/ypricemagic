@@ -17,8 +17,9 @@ class UniswapPoolV2:
         self.scale = 10 ** self.decimals
         try: self.factory = raw_call(self.address, 'factory()', output='address')
         except ValueError as e:
+            okay_errors = ['is not a valid ETH address','invalid opcode']
             if 'execution reverted' in str(e): raise NotUniswapPoolV2
-            elif 'is not a valid ETH address' in str(e):
+            elif any([msg in str(e) for msg in okay_errors]):
                 try: self.factory = Contract(self.address).factory()
                 except AttributeError: raise NotUniswapPoolV2
             else: raise
