@@ -25,7 +25,6 @@ class UniswapPoolV2:
 
     def get_pool_details(self, block=None):
         pair = Contract(self.address)
-        factory = self.factory
         if chain.id in [Network.Mainnet, Network.BinanceSmartChain, Network.Polygon, Network.Fantom]: 
             token0, token1, supply, reserves = fetch_multicall(
                 [pair, "token0"],
@@ -40,13 +39,7 @@ class UniswapPoolV2:
             supply = pair.totalSupply(block_identifier = block)
             reserves = pair.getReserves(block_identifier = block)
 
-        return {
-            "factory": factory,
-            'token0': token0,
-            'token1': token1,
-            'supply': supply,
-            'reserves': reserves,
-        }
+        return token0, token1, supply, reserves
 
 
     
