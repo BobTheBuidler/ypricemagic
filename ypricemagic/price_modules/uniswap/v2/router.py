@@ -4,7 +4,7 @@ import logging
 from brownie import chain
 from cachetools.func import ttl_cache
 from ypricemagic.constants import usdc, weth, sushi
-from ypricemagic.price_modules.uniswap.protocols import ROUTER_TO_FACTORY, special_paths
+from ypricemagic.price_modules.uniswap.protocols import ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL, special_paths
 from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.constants import STABLECOINS
@@ -17,6 +17,7 @@ class UniswapRouterV2:
         self.address = router_address
         self.contract = Contract(self.address)
         self.factory = ROUTER_TO_FACTORY[self.address]
+        self.label = ROUTER_TO_PROTOCOL[self.address]
         self.special_paths = special_paths(self.address)
 
     @ttl_cache(ttl=36000)
@@ -38,7 +39,7 @@ class UniswapRouterV2:
 
         path = self.path_selector(token_in, token_out, paired_against)
         fees = 0.997 ** (len(path) - 1)
-        logger.warn(f'path: {path}')
+        logger.debug(f'router: {self.label}     path: {path}')
         quote = self.contract.getAmountsOut(amount_in, path, block_identifier=block)
         amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
         return amount_out / fees
