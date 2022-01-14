@@ -40,7 +40,10 @@ class UniswapRouterV2:
         path = self.path_selector(token_in, token_out, paired_against)
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
-        quote = self.contract.getAmountsOut(amount_in, path, block_identifier=block)
+        try: quote = self.contract.getAmountsOut(amount_in, path, block_identifier=block)
+        except ValueError as e:
+            if 'execution reverted' in str(e): return
+            else: raise
         amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
         return amount_out / fees
 
