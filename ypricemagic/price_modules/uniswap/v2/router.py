@@ -51,7 +51,7 @@ class UniswapRouterV2:
 
         if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
         elif weth in (token_in, token_out):                                                 path = [token_in, token_out]
-        elif paired_against == sushi and token_out != sushi:                                path = [token_in,sushi,weth,token_out]
+        elif sushi and paired_against == sushi and token_out != sushi:                      path = [token_in,sushi,weth,token_out]
         elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:  path = self.special_paths[str(token_in)]
 
         elif chain.id == Network.BinanceSmartChain:
