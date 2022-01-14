@@ -11,7 +11,7 @@ def is_atoken_v1(address):
 
 def is_atoken_v2(address):
     contract = Contract(address)
-    required = {"ATOKEN_REVISION", "UNDERLYING_ASSET_ADDRESS"}
+    required = {"LENDING_POOL", "UNDERLYING_ASSET_ADDRESS"}
     return set(contract.__dict__) & required == required
 
 @memory.cache()
