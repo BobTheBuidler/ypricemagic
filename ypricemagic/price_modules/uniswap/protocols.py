@@ -4,10 +4,10 @@ from ypricemagic.constants import weth, usdc, usdt, dai, wbtc
 from ypricemagic.networks import Network
 
 TRY_ORDER = {
-    Network.Mainnet: {'sushiswap', 'uniswap v2', 'uniswap v1', 'shibaswap', },
-    Network.BinanceSmartChain: {'pancakeswapv2', 'pancakeswapv1', 'apeswap', 'wault', 'swapliquidity', 'thugswap', 'mdex', 'bakeryswap', 'nyanswop', 'narwhalswap', 'cafeswap', 'jetswap', 'babyswap', 'annex', 'viralata', 'elk', 'pantherswap', 'complus', },
-    Network.Polygon: {'quickswap', 'sushi', 'apeswap', 'dfyn', 'wault', 'cometh', 'jetswap', 'polyzap', 'cafeswap', },
-    Network.Fantom: {'sushi', 'spookyswap', 'spiritswap', 'paintswap', 'jetswap'},
+    Network.Mainnet: ['sushiswap', 'uniswap v2', 'kyber', 'uniswap v1', 'shibaswap'],
+    Network.BinanceSmartChain: ['pancakeswapv2', 'pancakeswapv1', 'apeswap', 'wault', 'swapliquidity', 'thugswap', 'mdex', 'bakeryswap', 'nyanswop', 'narwhalswap', 'cafeswap', 'jetswap', 'babyswap', 'annex', 'viralata', 'elk', 'pantherswap', 'complus'],
+    Network.Polygon: ['quickswap', 'sushi', 'apeswap', 'dfyn', 'wault', 'cometh', 'jetswap', 'polyzap', 'cafeswap'],
+    Network.Fantom: ['sushi', 'spookyswap', 'spiritswap', 'paintswap', 'jetswap'],
 }.get(chain.id, set())
 
 UNISWAPS = {
@@ -15,6 +15,7 @@ UNISWAPS = {
         "uniswap v2":       {"factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"},
         "sushiswap":        {"factory": "0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac", "router": "0xD9E1CE17F2641F24AE83637AB66A2CCA9C378B9F"},
         "shibaswap":        {"factory": "0x115934131916C8b277DD010Ee02de363c09d037c", "router": "0x03f7724180AA6b939894B5Ca4314783B0b36b329"},
+        #"kyber":            {"factory": "0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE", "router": "0x1c87257f5e8609940bc751a07bb085bb7f8cdbe6"}
     },
     Network.BinanceSmartChain: {
         "pancakeswapv2":    {"factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73", "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E"},
