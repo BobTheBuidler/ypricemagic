@@ -1,11 +1,13 @@
 import logging
-from typing import List, Union
+from typing import Sequence, Union
 
+import brownie
 from brownie import chain, convert
 from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
 
+import ypricemagic
 from ypricemagic import _symbol
 from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
 from ypricemagic.exceptions import PriceError
@@ -19,13 +21,19 @@ from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
 from ypricemagic.utils.cache import memory
-from ypricemagic.utils.contracts import Contract
 
 logger = logging.getLogger(__name__)
 
+NETWORK = Network.name(chain.id)
+
 
 @memory.cache()
-def get_price(token_address: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_to_None:bool=False, silent:bool=False) -> float:
+def get_price(
+    token_address: Union[str, Address, brownie.Contract, ypricemagic.Contract], 
+    block: Union[BlockNumber, int, None] = None, 
+    fail_to_None: bool = False, 
+    silent: bool = False
+    ) -> float:
     '''
     when `get_price` is unable to find a price:
         if `silent == True`, ypricemagic will print an error message using standard python logging
@@ -34,11 +42,19 @@ def get_price(token_address: Union[str,Address,Contract], block: Union[BlockNumb
         if `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
     token_address = convert.to_address(str(token_address))
-    try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
-    except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address}')
+    try:
+        return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
+    except RecursionError:
+        raise PriceError(
+            f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK}')
 
 
-def get_prices(token_addresses: List[Union[str,Address,Contract]], block: Union[BlockNumber,int,None]=None, fail_to_None:bool=True,silent: bool=False):
+def get_prices(
+    token_addresses: Sequence[Union[str, Address, brownie.Contract, ypricemagic.Contract]],
+    block: Union[int, BlockNumber, None] = None,
+    fail_to_None: bool = True,
+    silent: bool = False
+    ):
     '''
     in every case:
         if `silent == True`, tqdm will not be used
@@ -48,11 +64,17 @@ def get_prices(token_addresses: List[Union[str,Address,Contract]], block: Union[
         if `fail_to_None == True`, ypricemagic will return `None` for that token
         if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
-    if not silent: token_addresses = tqdm(token_addresses)
-    return Parallel(4,'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
+    if not silent:
+        token_addresses = tqdm(token_addresses)
+    return Parallel(4, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
     
-def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,None]=None, fail_to_None:bool=False, silent:bool=False):
+def _get_price(
+    token: Union[str, Address, brownie.Contract, ypricemagic.Contract], 
+    block: Union[int, BlockNumber, None] = None, 
+    fail_to_None: bool = False, 
+    silent: bool = False
+    ):
     logger.debug(f"network: {Network.name(chain.id)} token: {token}")
     logger.debug("unwrapping %s", token)
 
@@ -63,7 +85,10 @@ def _get_price(token: Union[str,Address,Contract], block: Union[BlockNumber,int,
     return price
 
 
-def _exit_early_for_known_tokens(token_address: str, block=None):
+def _exit_early_for_known_tokens(
+    token_address: str,
+    block = None
+    ):
 
     bucket = _check_bucket(token_address)
 
@@ -77,7 +102,7 @@ def _exit_early_for_known_tokens(token_address: str, block=None):
     elif bucket == 'compound':              price = compound.compound.get_price(token_address, block=block)
     elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
 
-    elif bucket == 'curve lp':        price = curve.get_price(token_address, block)
+    elif bucket == 'curve lp':              price = curve.get_price(token_address, block)
     elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
     elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
 
@@ -108,7 +133,12 @@ def _exit_early_for_known_tokens(token_address: str, block=None):
 
 
 @memory.cache()
-def _check_bucket(token_address: str):
+def _check_bucket(
+    token_address: Union[str, Address, brownie.Contract, ypricemagic.Contract]
+    ):
+
+    if type(token_address) != str:
+        token_address = str(token_address)
 
     # these require neither calls to the chain nor contract initialization
     if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
@@ -142,15 +172,25 @@ def _check_bucket(token_address: str):
     elif token_address in chainlink.chainlink:                              return 'chainlink feed'
 
          
-def _fail_appropriately(token_address:str, fail_to_None:bool=False, silent:bool=False):
+def _fail_appropriately(
+    token_address: str, 
+    fail_to_None: bool = False, 
+    silent: bool = False
+    ):
     '''
+    dictates how `magic.get_price()` will handle failures
+
     when `get_price` is unable to find a price:
         if `silent == True`, ypricemagic will print an error message using standard python logging
         if `silent == False`, ypricemagic will not log any error
         if `fail_to_None == True`, ypricemagic will return `None`
         if `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-    network = Network.name(chain.id)
-    symbol = _symbol(token_address)
-    if not silent: logger.error(f"failed to get price for {symbol} {token_address} on {network}")
-    if not fail_to_None: raise PriceError(f'could not fetch price for {symbol} {token_address} on {network}')
+    if not silent or not fail_to_None:
+        symbol = _symbol(token_address)
+
+    if not silent:
+        logger.error(f"failed to get price for {symbol} {token_address} on {NETWORK}")
+
+    if not fail_to_None:
+        raise PriceError(f'could not fetch price for {symbol} {token_address} on {NETWORK}')
