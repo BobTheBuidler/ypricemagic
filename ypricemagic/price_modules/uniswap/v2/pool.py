@@ -15,9 +15,12 @@ class UniswapPoolV2:
         self.address = pool_address
         self.decimals = _decimals(self.address)
         self.scale = 10 ** self.decimals
-        try: self.factory = raw_call(pool_address, 'factory()', output='address')
+        try: self.factory = raw_call(self.address, 'factory()', output='address')
         except ValueError as e:
             if 'execution reverted' in str(e): raise NotUniswapPoolV2
+            elif 'is not a valid ETH address' in str(e):
+                try: self.factory = Contract(self.address).factory()
+                except AttributeError: raise NotUniswapPoolV2
             else: raise
 
     def get_pool_details(self, block=None):
