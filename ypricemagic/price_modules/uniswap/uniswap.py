@@ -43,7 +43,7 @@ class Uniswap:
         price0 = self.get_price(token0, paired_against=token1, protocol=protocol, block=block)
         price1 = self.get_price(token1, paired_against=token0, protocol=protocol, block=block)
         prices = [price0,price1]
-        scales = [10 ** _decimals(token.address,block) for token in [token0, token1]]
+        scales = [10 ** _decimals(token,block) for token in [token0, token1]]
         supply = supply / 1e18
         try: balances = [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
         except TypeError: # If can't get price via router, try to get from elsewhere
