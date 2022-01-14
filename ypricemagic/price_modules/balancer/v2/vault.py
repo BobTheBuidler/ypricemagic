@@ -1,8 +1,10 @@
-import sys
+import logging
 from ypricemagic.classes import ERC20
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall import fetch_multicall
+
+logger = logging.getLogger(__name__)
 
 
 class BalancerV2Vault:
@@ -12,7 +14,7 @@ class BalancerV2Vault:
     
     def get_pool_tokens(self, pool_id: int, block=None):
         a = self.contract.getPoolTokens(pool_id, block_identifier = block)
-        print(a)
+        logger.debug(a)
         return a
 
     def list_pools(self, block=None):
