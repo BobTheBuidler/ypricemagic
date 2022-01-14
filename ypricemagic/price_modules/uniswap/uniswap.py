@@ -68,8 +68,13 @@ class Uniswap:
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
         """
-        if protocol:
+        if not protocol:
+            protocol = self._try_order[0]
+        try:
             return self.routers[protocol].get_price(token_in, token_out=token_out, block=block, paired_against=paired_against)
+        except ValueError as e:
+            if 'execution reverted' in str(e): return None
+            else: raise
     
     def try_for_price(self, token_in, token_out=usdc, block=None, paired_against=weth):
         for protocol in self._try_order:

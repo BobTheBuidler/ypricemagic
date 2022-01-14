@@ -1,5 +1,6 @@
 
 
+import logging
 from brownie import chain
 from cachetools.func import ttl_cache
 from ypricemagic.constants import usdc, weth, sushi
@@ -8,6 +9,8 @@ from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.constants import STABLECOINS
 from ypricemagic.utils.raw_calls import _decimals
+
+logger = logging.getLogger(__name__)
 
 class UniswapRouterV2:
     def __init__(self, router_address) -> None:
@@ -35,6 +38,7 @@ class UniswapRouterV2:
 
         path = self.path_selector(token_in, token_out, paired_against)
         fees = 0.997 ** (len(path) - 1)
+        logger.warn(f'path: {path}')
         quote = self.contract.getAmountsOut(amount_in, path, block_identifier=block)
         amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
         return amount_out / fees
