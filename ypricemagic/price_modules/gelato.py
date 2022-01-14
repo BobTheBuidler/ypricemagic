@@ -9,11 +9,10 @@ def is_gelato_pool(token_address: str) -> bool:
     return hasattr(pool, 'gelatoBalance0') and hasattr(pool, 'gelatoBalance1')
 
 def get_price(token_address: str, block=None):
-    with multicall:
-        token0 = raw_call(token_address,'token0()',block=block,output='address')
-        token1 = raw_call(token_address,'token1()',block=block,output='address')
-        balance0 = raw_call(token_address,'gelatoBalance0()',block=block,output='int')
-        balance1 = raw_call(token_address,'gelatoBalance1()',block=block,output='int')
+    token0 = raw_call(token_address,'token0()',block=block,output='address')
+    token1 = raw_call(token_address,'token1()',block=block,output='address')
+    balance0 = raw_call(token_address,'gelatoBalance0()',block=block,output='int')
+    balance1 = raw_call(token_address,'gelatoBalance1()',block=block,output='int')
     balance0 /= 10 ** _decimals(token0,block)
     balance1 /= 10 ** _decimals(token1,block)
     totalSupply = _totalSupplyReadable(token_address,block)
