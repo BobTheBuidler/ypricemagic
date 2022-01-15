@@ -4,8 +4,8 @@ import logging
 
 from brownie import chain
 from cachetools.func import ttl_cache
+from y.constants import STABLECOINS, sushi, usdc, weth
 from y.networks import Network
-from ypricemagic.constants import STABLECOINS, sushi, usdc, weth
 from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
                                                          ROUTER_TO_PROTOCOL,
                                                          special_paths)
@@ -58,16 +58,16 @@ class UniswapRouterV2:
         elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:  path = self.special_paths[str(token_in)]
 
         elif chain.id == Network.BinanceSmartChain:
-            from ypricemagic.constants import cake, wbnb
+            from y.constants import cake, wbnb
             if wbnb in (token_in, token_out):                                               path = [token_in, token_out]
             elif cake in (token_in, token_out):                                             path = [token_in, token_out]
             else:                                                                           path = [token_in,wbnb,token_out]
         elif chain.id == Network.Polygon:
-            from ypricemagic.constants import wmatic
+            from y.constants import wmatic
             if wmatic in (token_in, token_out):                                             path = [token_in, token_out]
             else:                                                                           path = [token_in,wmatic,token_out]
         elif chain.id == Network.Fantom:
-            from ypricemagic.constants import wftm
+            from y.constants import wftm
             if wftm in (token_in, token_out):                                               path = [token_in, token_out]
             else:                                                                           path = [token_in, wftm, token_out]
 

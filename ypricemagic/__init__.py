@@ -1,9 +1,9 @@
 import os
 
 from brownie import network
+from y.constants import dai, usdc, wbtc, weth
 from y.networks import Network
 
-from ypricemagic.constants import dai, usdc, wbtc, weth
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import (_balanceOf, _balanceOfReadable,

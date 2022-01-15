@@ -1,8 +1,8 @@
 
 from brownie import ZERO_ADDRESS, chain, multicall, web3
+from y.constants import weth
 from y.utils.cache import memory
 from ypricemagic import magic
-from ypricemagic.constants import weth
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.multicall import multicall2
 from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable

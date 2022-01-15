@@ -1,6 +1,6 @@
 import logging
 
-from ypricemagic.constants import usdc
+from y.constants import usdc
 from ypricemagic.utils.contracts import Contract
 
 

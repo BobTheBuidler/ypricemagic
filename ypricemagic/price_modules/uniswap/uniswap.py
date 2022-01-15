@@ -2,7 +2,7 @@ import logging
 
 import ypricemagic.magic
 from cachetools.func import ttl_cache
-from ypricemagic.constants import usdc, weth
+from y.constants import usdc, weth
 from ypricemagic.price_modules.uniswap.protocols import (FACTORY_TO_PROTOCOL,
                                                          TRY_ORDER, UNISWAPS)
 from ypricemagic.price_modules.uniswap.v1 import UniswapV1

@@ -1,9 +1,9 @@
 
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
+from y.constants import usdc
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from ypricemagic.constants import usdc
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _decimals
 

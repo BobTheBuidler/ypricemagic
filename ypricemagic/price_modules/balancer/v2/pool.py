@@ -1,8 +1,8 @@
 
 from joblib import Parallel, delayed
+from y.constants import usdc, weth
 from ypricemagic import magic
 from ypricemagic.classes import ERC20
-from ypricemagic.constants import usdc, weth
 from ypricemagic.price_modules.balancer.v2.vault import BalancerV2Vault
 from ypricemagic.utils.multicall import fetch_multicall, multicall_decimals
 from ypricemagic.utils.raw_calls import _decimals
