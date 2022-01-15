@@ -74,7 +74,7 @@ def _sense_check(
     if bucket == 'uni or uni-like lp':
         return
     
-    elif bucked == 'balancer pool':
+    elif bucket == 'balancer pool':
         return
 
     # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
