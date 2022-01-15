@@ -75,19 +75,28 @@ def _sense_check(
     # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
 
     elif bucket == 'yearn or yearn-like':
-        token_address = raw_call(token_address, 'token()', output='address')
-        if token_address in ACCEPTABLE_HIGH_PRICES: return
+        try: # v2
+            token_address = raw_call(token_address, 'token()', output='address')
+            if token_address in ACCEPTABLE_HIGH_PRICES: return
+        except:
+            try: # v1
+                token_address = raw_call(token_address, 'want()', output='address')
+                if token_address in ACCEPTABLE_HIGH_PRICES: return
+            except: pass
     
     elif bucket == 'atoken':
         try: # v2
             token_address = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
+            if token_address in ACCEPTABLE_HIGH_PRICES: return
         except:
             try: # v1
                 token_address = raw_call(token_address, 'underlyingAssetAddress()', output='address')
+                if token_address in ACCEPTABLE_HIGH_PRICES: return
             except: pass
 
     elif bucket == 'compound':
         token_address = raw_call(token_address, 'underlying()', output='address')
+        if token_address in ACCEPTABLE_HIGH_PRICES: return
 
     # proceed with sense check
 
