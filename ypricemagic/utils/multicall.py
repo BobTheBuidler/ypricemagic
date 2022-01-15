@@ -7,6 +7,7 @@ import brownie
 import requests
 import ypricemagic
 from brownie import chain, convert, web3
+from brownie.convert.datatypes import EthAddress
 from eth_abi.exceptions import InsufficientDataBytes
 from eth_typing.evm import Address, BlockNumber
 from web3.exceptions import CannotHandleRequest
@@ -16,7 +17,7 @@ from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 
 from multicall import Call, Multicall
 
-SUPPORTED_INPUT_TYPES = str, Address, brownie.Contract, ypricemagic.Contract
+SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, ypricemagic.Contract
 
 MULTICALL2 = {
     Network.Mainnet: "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696",

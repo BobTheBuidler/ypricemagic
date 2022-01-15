@@ -1,13 +1,15 @@
 from typing import Any, Callable, List, Tuple, Union
 
 import brownie
+from brownie.convert.datatypes import EthAddress
 from eth_typing.evm import Address, BlockNumber
-from ypricemagic.utils.multicall import multicall_decimals, multicall_totalSupply
+from ypricemagic.utils.multicall import (multicall_decimals,
+                                         multicall_totalSupply)
 from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 
 import y
 
-SUPPORTED_INPUT_TYPES = str, Address, brownie.Contract, y.Contract
+SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, y.Contract
 
 
 def decimals(
