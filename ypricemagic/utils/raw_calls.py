@@ -2,17 +2,17 @@ import logging
 from typing import Union
 
 import brownie
-import ypricemagic as y
 from brownie import convert, web3
 from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
+from y.contracts import Contract
 
 logger = logging.getLogger(__name__)
 
 
 def _decimals(
-    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None, 
     return_None_on_failure: bool = False
     ):
@@ -23,9 +23,9 @@ def _decimals(
     try:
         try: return raw_call(contract_address, "decimals()", block=block, output='int')
         # the contract might not comply with standards, so we can possibly fetch decimals using the non standard abi as a fallback
-        except OverflowError: return y.Contract(contract_address).decimals(block_identifier=block)
+        except OverflowError: return Contract(contract_address).decimals(block_identifier=block)
         except ValueError as e: 
-            if 'execution reverted' in str(e): return y.Contract(contract_address).decimals(block_identifier=block)
+            if 'execution reverted' in str(e): return Contract(contract_address).decimals(block_identifier=block)
             else: raise
     # if both methods fail to fetch decimals, determine how to fail and fail fast
     except (AttributeError, ValueError) as e:
@@ -38,7 +38,7 @@ def _decimals(
 
 
 def _symbol(
-    contract_address: Union[str, Address, brownie.Contract, y.Contract],
+    contract_address: Union[str, Address, brownie.Contract, Contract],
     block: Union[BlockNumber, int, None] = None
     ):
 
@@ -50,7 +50,7 @@ def _symbol(
 
 
 def _totalSupply(
-    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None,
     return_None_on_failure: bool = False # TODO: implement this kwarg
     ):
@@ -61,19 +61,19 @@ def _totalSupply(
     try:
         return raw_call(contract_address, "totalSupply()", block=block, output='int')
     except OverflowError:
-        return y.Contract(contract_address).totalSupply(block_identifier=block)
+        return Contract(contract_address).totalSupply(block_identifier=block)
 
 
 def _totalSupplyReadable(
-    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None
     ):
     return _totalSupply(contract_address,block) / 10 ** _decimals(contract_address,block)
 
 
 def _balanceOf(
-    call_address: Union[str, Address, brownie.Contract, y.Contract], 
-    input_address: Union[str, Address, brownie.Contract, y.Contract], 
+    call_address: Union[str, Address, brownie.Contract, Contract], 
+    input_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None
     ):
 
@@ -85,19 +85,19 @@ def _balanceOf(
 
     data = raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address)
     try: return convert.to_int(data)
-    except: return y.Contract(call_address).balanceOf(input_address, block_identifier=block)
+    except: return Contract(call_address).balanceOf(input_address, block_identifier=block)
 
 
 def _balanceOfReadable(
-    call_address: Union[str, Address, brownie.Contract, y.Contract], 
-    input_address: Union[str, Address, brownie.Contract, y.Contract], 
+    call_address: Union[str, Address, brownie.Contract, Contract], 
+    input_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None
     ):
     return _balanceOf(call_address, input_address, block=block) / 10 ** _decimals(call_address, block)
 
 
 def raw_call(
-    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    contract_address: Union[str, Address, brownie.Contract, Contract], 
     method: str, 
     block: Union[BlockNumber, int, None] = None, 
     inputs = None, 
