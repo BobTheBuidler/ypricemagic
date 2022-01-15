@@ -11,10 +11,10 @@ def is_atoken_v1(address):
 
 def is_atoken_v2(address):
     contract = Contract(address)
-    return all(
+    return all([
         hasattr(contract, 'UNDERLYING_ASSET_ADDRESS'),
         any([hasattr(contract,'LENDING_POOL'), hasattr(contract, 'ATOKEN_REVISION')])
-    )
+    ])
 
 @memory.cache()
 def is_atoken(address):
