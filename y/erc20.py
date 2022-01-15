@@ -1,4 +1,4 @@
-from typing import Any, Callable, List, Tuple, Union
+from typing import Any, Callable, KeysView, List, Tuple, Union
 
 import brownie
 from brownie.convert.datatypes import EthAddress
@@ -57,8 +57,8 @@ def _choose_appropriate_fn(
 def _input_type(
     input: Any
     ) -> str:
-
-    if type(input) in [list, Tuple]: 
+    
+    if type(input) in [list, Tuple] or isinstance(input, KeysView): 
         for value in input: _check_if_supported(value)
         return 'multi'
     
