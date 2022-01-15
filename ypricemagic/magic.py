@@ -132,7 +132,7 @@ def _exit_early_for_known_tokens(
 
     logger.debug(f"{bucket} -> ${price}")
 
-    return price if price else None, bucket
+    return price if price is not None else None, bucket
 
 
 @memory.cache()
