@@ -8,15 +8,15 @@ sushi = None
 if chain.id == 1:
     weth = Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
     usdc = Contract("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
-    dai = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+    dai  = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
     wbtc = Contract("0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599")
     usdt = Contract("0xdAC17F958D2ee523a2206206994597C13D831ec7")
     sushi = Contract("0x6B3595068778DD592e39A122f4f5a5cF09C90fE2")
 
 elif chain.id == 56:
-    weth = Contract("0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5")
+    weth = Contract("0x2170Ed0880ac9A755fd29B2688956BD959F933F8")
     usdc = Contract("0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d")
-    dai = Contract("0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3")
+    dai  = Contract("0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3")
     wbtc = Contract("0x2ccb7c8c51e55c2364b555ff6e6e3f7246499e16")
     usdt = Contract("0x55d398326f99059ff775485246999027b3197955")
     wbnb = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
@@ -25,15 +25,15 @@ elif chain.id == 56:
 elif chain.id == 137: #poly
     weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
     usdc = Contract("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")
-    dai = Contract("0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063")
+    dai  = Contract("0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063")
     wbtc = Contract("0x1bfd67037b42cf73acf2047067bd4f2c47d9bfd6")
     usdt = Contract("0xc2132D05D31c914a87C6611C10748AEb04B58e8F")
     wmatic = Contract("0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270")
     
 elif chain.id == 250:
-    weth = Contract('0x2170Ed0880ac9A755fd29B2688956BD959F933F8')
+    weth = Contract('0x74b23882a30290451A17c44f4F05243b6b58C76d')
     usdc = Contract('0x04068DA6C83AFCFA0e13ba15A6696662335D5B75')
-    dai = Contract('0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E')
+    dai  = Contract('0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E')
     wbtc = Contract('0x321162Cd933E2Be498Cd2267a90534A804051b11')
     usdt = Contract('0x049d68029688eAbF473097a2fC38ef61633A3C7A') #fusdt
     wftm = Contract('0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83')
