@@ -1,53 +1,108 @@
 import logging
-from typing import Dict, List, Set, Tuple
+from typing import Union
 
-import web3
+import brownie
+import ypricemagic as y
 from brownie import convert, web3
+from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
-from ypricemagic import Contract
 
 logger = logging.getLogger(__name__)
 
 
-def _decimals(contract_address, block=None, return_None_on_failure=False):
+def _decimals(
+    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    block: Union[BlockNumber, int, None] = None, 
+    return_None_on_failure: bool = False
+    ):
+
+    if type(contract_address) != str:
+        contract_address = str(contract_address)
+
     try:
-        try: return convert.to_int(raw_call(contract_address, "decimals()", block=block))
-        except OverflowError: return Contract(contract_address).decimals(block_identifier=block)
+        try: return raw_call(contract_address, "decimals()", block=block, output='int')
+        # the contract might not comply with standards, so we can possibly fetch decimals using the non standard abi as a fallback
+        except OverflowError: return y.Contract(contract_address).decimals(block_identifier=block)
         except ValueError as e: 
-            if 'execution reverted' in str(e):
-                return Contract(contract_address).decimals(block_identifier=block)
+            if 'execution reverted' in str(e): return y.Contract(contract_address).decimals(block_identifier=block)
             else: raise
-    except ValueError as e:
-        if 'execution reverted' in str(e) and return_None_on_failure: return None
+    # if both methods fail to fetch decimals, determine how to fail and fail fast
+    except (AttributeError, ValueError) as e:
+        fail_msgs = [
+            'execution reverted',
+            "has no attribute 'decimals'",
+        ]
+        if return_None_on_failure and any([msg in str(e) for msg in fail_msgs]): return None
         else: raise
 
 
-def _symbol(contract_address, block=None):
+def _symbol(
+    contract_address: Union[str, Address, brownie.Contract, y.Contract],
+    block: Union[BlockNumber, int, None] = None
+    ):
+
+    if type(contract_address) != str:
+        contract_address = str(contract_address)
+
     data = raw_call(contract_address, "symbol()", block=block)
     return convert.to_string(data) 
 
 
-def _totalSupply(contract_address, block=None):
-    try: return convert.to_int(raw_call(contract_address, "totalSupply()", block=block))
-    except OverflowError: return Contract(contract_address).totalSupply(block_identifier=block)
+def _totalSupply(
+    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    block: Union[BlockNumber, int, None] = None,
+    return_None_on_failure: bool = False # TODO: implement this kwarg
+    ):
+
+    if type(contract_address) != str:
+        contract_address = str(contract_address)
+
+    try:
+        return raw_call(contract_address, "totalSupply()", block=block, output='int')
+    except OverflowError:
+        return y.Contract(contract_address).totalSupply(block_identifier=block)
 
 
-def _totalSupplyReadable(contract_address, block=None):
+def _totalSupplyReadable(
+    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    block: Union[BlockNumber, int, None] = None
+    ):
     return _totalSupply(contract_address,block) / 10 ** _decimals(contract_address,block)
 
 
-def _balanceOf(call_address, input_address, block=None):
+def _balanceOf(
+    call_address: Union[str, Address, brownie.Contract, y.Contract], 
+    input_address: Union[str, Address, brownie.Contract, y.Contract], 
+    block: Union[BlockNumber, int, None] = None
+    ):
+
+    if type(call_address) != str:
+        call_address = str(call_address)
+    
+    if type(input_address) != str:
+        input_address = str(input_address)
+
     data = raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address)
     try: return convert.to_int(data)
-    except: return Contract(call_address).balanceOf(input_address, block_identifier=block)
+    except: return y.Contract(call_address).balanceOf(input_address, block_identifier=block)
 
 
-def _balanceOfReadable(call_address, input_address, block=None):
+def _balanceOfReadable(
+    call_address: Union[str, Address, brownie.Contract, y.Contract], 
+    input_address: Union[str, Address, brownie.Contract, y.Contract], 
+    block: Union[BlockNumber, int, None] = None
+    ):
     return _balanceOf(call_address, input_address, block=block) / 10 ** _decimals(call_address, block)
 
 
-def raw_call(contract_address: str, method: str, block=None, inputs=None, output:str=None):
+def raw_call(
+    contract_address: Union[str, Address, brownie.Contract, y.Contract], 
+    method: str, 
+    block: Union[BlockNumber, int, None] = None, 
+    inputs = None, 
+    output: str = None
+    ):
     '''
     call a contract with only address and method.
     only works with 1 input, ie `balanceOf(address)`
@@ -59,7 +114,10 @@ def raw_call(contract_address: str, method: str, block=None, inputs=None, output
     elif output in ['int','uint','uint256']: return convert.to_int(response)
 
 
-def prepare_data(method, inputs=None):
+def prepare_data(
+    method, 
+    inputs = None
+    ):
     method = encode_hex(fourbyte(method))
 
     if inputs is None:
