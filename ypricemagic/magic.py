@@ -14,7 +14,7 @@ from y.prices import _sense_check
 from y.utils.cache import memory
 
 import ypricemagic
-from ypricemagic import _symbol
+from ypricemagic.utils.raw_calls import _symbol
 from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
                                        froyo, gelato, ib, mooniswap,
                                        mstablefeederpool, piedao, tokensets,
