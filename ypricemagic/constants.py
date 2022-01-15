@@ -31,7 +31,7 @@ elif chain.id == 137: #poly
     wmatic = Contract("0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270")
     
 elif chain.id == 250:
-    weth = Contract('0x74b23882a30290451A17c44f4F05243b6b58C76d')
+    weth = Contract('0x2170Ed0880ac9A755fd29B2688956BD959F933F8')
     usdc = Contract('0x04068DA6C83AFCFA0e13ba15A6696662335D5B75')
     dai = Contract('0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E')
     wbtc = Contract('0x321162Cd933E2Be498Cd2267a90534A804051b11')
