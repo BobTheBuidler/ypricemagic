@@ -13,19 +13,37 @@ logger = logging.getLogger(__name__)
 
 ACCEPTABLE_HIGH_PRICES = {
     Network.Mainnet: [
+        # eth and eth-like
         weth.address,
+        # btc and btc-like
         wbtc.address,
+        "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
+        "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", # sbtc
+        # gold tokens
+        "0x68749665FF8D2d112Fa859AA293F07A622782F38", # xaut
+        # other
+        "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", # yfi
+        "0xD5525D397898e5502075Ea5E830d8914f6F0affe", # meme
+        "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2", # mkr
+        "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
+        "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5", # socks
     ],
     Network.BinanceSmartChain: [
+        # eth and eth-like
         weth.address,
+        # btc and btc-like
         wbtc.address,
     ],
     Network.Polygon: [
+        # eth and eth-like
         weth.address,
+        # btc and btc-like
         wbtc.address,
     ],
     Network.Fantom: [
+        # eth and eth-like
         weth.address,
+        # btc and btc-like
         wbtc.address,
     ],
 }.get(chain.id, [])
@@ -57,10 +75,21 @@ def _sense_check(
     elif bucket == 'yearn or yearn-like':
         token_address = raw_call(token_address, 'token()', output='address')
         if token_address in ACCEPTABLE_HIGH_PRICES: return
+    
+    elif bucket == 'atoken':
+        try: # v2
+            token_address = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
+        except:
+            try: # v1
+                token_address = raw_call(token_address, 'underlyingAssetAddress()', output='address')
+            except: pass
+
+    elif bucket == 'compound':
+        token_address = raw_call(token_address, 'underlying()', output='address')
 
     # proceed with sense check
 
     price_readable = round(price, 4)
     symbol = _symbol(token_address)
     network = Network.name(chain.id)
-    logger.warn(f'unusually high price (${price_readable}) returned for {symbol} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+    logger.warn(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
