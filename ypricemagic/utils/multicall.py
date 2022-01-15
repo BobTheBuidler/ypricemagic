@@ -16,6 +16,8 @@ from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 
 from multicall import Call, Multicall
 
+SUPPORTED_INPUT_TYPES = str, Address, brownie.Contract, ypricemagic.Contract
+
 MULTICALL2 = {
     Network.Mainnet: "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696",
     Network.BinanceSmartChain: "0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B",
@@ -39,6 +41,7 @@ def multicall_same_func_no_input(
     apply_func = None
     ):
 
+    addresses = _clean_addresses(addresses)
     calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
     return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
@@ -52,6 +55,7 @@ def multicall_same_func_different_contracts_same_input(
     ):
 
     assert input
+    addresses = _clean_addresses(addresses)
     calls = [Call(address, [method, input], [[address,apply_func]]) for address in addresses]
     return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
@@ -65,6 +69,7 @@ def multicall_same_func_same_contract_different_inputs(
     ):
 
     assert inputs
+    address = _clean_address(address)
     calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
     return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
@@ -189,3 +194,23 @@ def batch_call(calls):
         fn.decode_output(res['result'])
         for res in sorted(response, key=itemgetter('id'))
     ]
+
+
+def _clean_addresses(
+    addresses: Sequence[Any]
+):
+
+    return [_clean_address(address) for address in addresses]
+
+
+def _clean_address(
+    address: Any
+    ):
+
+    if type(address) not in SUPPORTED_INPUT_TYPES:
+        raise TypeError(f'Unsupported input type: {type(address)}')
+    
+    if type(address) != str: 
+        address = str(address)
+
+    return convert.to_address(address)
