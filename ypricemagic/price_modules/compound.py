@@ -1,4 +1,4 @@
-from brownie import chain
+from brownie import chain, convert
 from cachetools.func import ttl_cache
 from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract
@@ -30,6 +30,7 @@ class Compound:
     def __init__(self) -> None:
         trollers = {name: address for name, address in UNITROLLERS.items()}
         response = multicall_same_func_no_input(trollers.values(), 'getAllMarkets()(address[])')
+        response = [[convert.to_address(market) for market in troller_market] for troller_market in response]
         self.trollers = {name: Comptroller(troller, markets) for name, troller, markets in zip(trollers.keys(), trollers.values(), response)}
 
     def is_compound_market(self, token_address: str):
