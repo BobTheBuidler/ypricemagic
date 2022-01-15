@@ -14,17 +14,19 @@ logger = logging.getLogger(__name__)
 ACCEPTABLE_HIGH_PRICES = {
     Network.Mainnet: [
         # eth and eth-like
+        "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", # eth
         weth.address,
         # btc and btc-like
         wbtc.address,
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
         "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", # sbtc
         # gold tokens
-        "0x68749665FF8D2d112Fa859AA293F07A622782F38", # xaut
+        "0x4922a015c4407F87432B179bb209e125432E4a2A", # xaut
         # other
         "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", # yfi
         "0xD5525D397898e5502075Ea5E830d8914f6F0affe", # meme
         "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2", # mkr
+        "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
         "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
         "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5", # socks
     ],
