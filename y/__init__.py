@@ -1,8 +1,9 @@
 import os
 
 from brownie import network
-from ypricemagic.constants import dai, usdc, wbtc, weth
 from ypricemagic import magic
+from ypricemagic.constants import dai, usdc, wbtc, weth
+from ypricemagic.exceptions import *
 from ypricemagic.magic import get_price, get_prices
 from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract
@@ -10,6 +11,7 @@ from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _balanceOf as balanceOf
 from ypricemagic.utils.raw_calls import _balanceOfReadable as balanceOfReadable
 from ypricemagic.utils.raw_calls import _symbol as symbol
+from ypricemagic.utils.raw_calls import raw_call
 
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
 
@@ -22,6 +24,9 @@ __all__ = [
 
     # network stuff
     'Network',
+
+    # magic
+    'magic'
 
     # prices
     'get_price',
@@ -43,6 +48,7 @@ __all__ = [
     'balanceOfReadable',
     'totalSupply',
     'totalSupplyReadable',
+    'raw_call'
 ]
 
 if not network.is_connected():
