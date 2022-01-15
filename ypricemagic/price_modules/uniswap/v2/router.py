@@ -43,6 +43,7 @@ class UniswapRouterV2:
         try: quote = self.contract.getAmountsOut(amount_in, path, block_identifier=block)
         except ValueError as e:
             if 'execution reverted' in str(e): return
+            elif 'Sequence has incorrect length' in str(e): return # TODO figure out how to best handle uni forks with slight modifications
             else: raise
         amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
         return amount_out / fees
