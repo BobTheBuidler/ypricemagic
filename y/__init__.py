@@ -2,6 +2,7 @@ import os
 
 from brownie import network
 from ypricemagic.constants import dai, usdc, wbtc, weth
+from ypricemagic import magic
 from ypricemagic.magic import get_price, get_prices
 from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract
