@@ -33,8 +33,10 @@ ACCEPTABLE_HIGH_PRICES = {
     Network.BinanceSmartChain: [
         # eth and eth-like
         weth.address,
+        "0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5", # bweth
         # btc and btc-like
         wbtc.address,
+        "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c", # btcb
     ],
     Network.Polygon: [
         # eth and eth-like
