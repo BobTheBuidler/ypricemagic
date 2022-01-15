@@ -16,10 +16,22 @@ ACCEPTABLE_HIGH_PRICES = {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", # eth
         weth.address,
+        "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", #wsteth
+        "0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c", # ecrv
+        "0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf", # ankrcrv
+        "0x53a901d48795C58f485cBB38df08FA96a24669D5", # rcrv
+        "0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e", # alETH+ETH-f
         # btc and btc-like
         wbtc.address,
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
         "0xfe18be6b3bd88a2d2a7f928d00292e7a9963cfc6", # sbtc
+        "0x49849C98ae39Fff122806C06791Fa73784FB3675", # crvrenwbtc
+        "0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3", # crvrenwsbtc
+        "0xb19059ebb43466C323583928285a49f558E572Fd", # hcrv
+        "0x64eda51d3Ad40D56b9dFc5554E06F94e1Dd786Fd", # tbtc/sbtcCrv
+        "0xDE5331AC4B3630f94853Ff322B66407e0D6331E8", # pBTC/sbtcCRV
+        "0x410e3E86ef427e30B9235497143881f717d93c2A", # bBTC/sbtcCRV
+        "0x2fE94ea3d5d4a175184081439753DE15AeF9d614", # oBTC/sbtcCRV
         # gold tokens
         "0x4922a015c4407F87432B179bb209e125432E4a2A", # xaut
         # other
@@ -29,6 +41,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
         "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
         "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5", # socks
+        "0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF", # crvtricrypto
     ],
     Network.BinanceSmartChain: [
         # eth and eth-like
