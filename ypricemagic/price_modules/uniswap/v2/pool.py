@@ -1,7 +1,7 @@
 
 from brownie import chain
+from y.contracts import Contract
 from y.networks import Network
-from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals, raw_call
 

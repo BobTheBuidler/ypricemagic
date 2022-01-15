@@ -1,7 +1,7 @@
 import logging
 
 from y.constants import usdc
-from ypricemagic.utils.contracts import Contract
+from y.contracts import Contract
 
 
 def is_token_set(address):

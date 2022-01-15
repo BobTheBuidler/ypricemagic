@@ -1,7 +1,7 @@
 import logging
 
 from joblib import logger
-from ypricemagic.utils.contracts import Contract
+from y.contracts import Contract
 from ypricemagic.utils.multicall import fetch_multicall
 
 logger = logging.getLogger(__name__)

@@ -1,6 +1,7 @@
 import logging
+
+from y.contracts import Contract
 from ypricemagic.classes import ERC20
-from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall import fetch_multicall
 

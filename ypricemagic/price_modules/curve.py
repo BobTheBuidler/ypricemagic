@@ -6,11 +6,11 @@ from itertools import islice
 from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
 from y.constants import dai
+from y.contracts import Contract, Singleton
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.middleware import ensure_middleware
 from ypricemagic import magic
-from ypricemagic.utils.contracts import Contract, Singleton
 from ypricemagic.utils.events import create_filter, decode_logs
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _totalSupply, raw_call

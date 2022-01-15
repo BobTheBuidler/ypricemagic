@@ -7,8 +7,8 @@ from brownie.network.event import EventDict, _decode_logs
 from joblib import Parallel, delayed
 from toolz import groupby
 from web3.middleware.filter import block_ranges
+from y.contracts import contract_creation_block
 from y.utils.middleware import BATCH_SIZE
-from ypricemagic.utils.contracts import contract_creation_block
 
 logger = logging.getLogger(__name__)
 

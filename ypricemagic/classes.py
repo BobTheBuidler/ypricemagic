@@ -1,6 +1,7 @@
 from decimal import Decimal
 
-from ypricemagic.utils.contracts import Contract
+from y.contracts import Contract
+
 from ypricemagic.utils.raw_calls import _totalSupplyReadable
 
 

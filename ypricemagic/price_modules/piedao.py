@@ -1,7 +1,7 @@
 import logging
 
+from y.contracts import Contract
 from ypricemagic import magic
-from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _decimals
 
 # NOTE: If this module is not working with you, try to reinitialize your contract with 

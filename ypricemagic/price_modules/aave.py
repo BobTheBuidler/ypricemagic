@@ -1,6 +1,6 @@
+from y.contracts import Contract
 from y.utils.cache import memory
 from ypricemagic import magic
-from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import raw_call
 
 
