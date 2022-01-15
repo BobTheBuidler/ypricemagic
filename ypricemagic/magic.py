@@ -79,11 +79,11 @@ def _get_price(
     logger.debug(f"network: {Network.name(chain.id)} token: {token}")
     logger.debug("unwrapping %s", token)
 
-    price = _exit_early_for_known_tokens(token, block=block)
+    price, bucket = _exit_early_for_known_tokens(token, block=block)
     if not price: price = uniswap.try_for_price(token, block=block)
     if not price: price = balancer.get_price(token, block=block)
     if not price: _fail_appropriately(token, fail_to_None=fail_to_None, silent=silent)
-    if price: _sense_check(token, price)
+    if price: _sense_check(token, price, bucket)
     return price
 
 
@@ -131,7 +131,7 @@ def _exit_early_for_known_tokens(
 
     logger.debug(f"{bucket} -> ${price}")
 
-    return price if price else None
+    return price if price else None, bucket
 
 
 @memory.cache()
