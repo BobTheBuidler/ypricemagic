@@ -7,7 +7,7 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider
 from web3.middleware import filter
-from ypricemagic.utils.cache import memory
+from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 

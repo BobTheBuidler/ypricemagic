@@ -1,6 +1,6 @@
 
+from y.utils.cache import memory
 from ypricemagic import magic
-from ypricemagic.utils.cache import memory
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 

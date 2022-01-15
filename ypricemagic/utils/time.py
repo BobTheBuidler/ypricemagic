@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from brownie import chain, web3
-from ypricemagic.utils.cache import memory
+from y.utils.cache import memory
 from ypricemagic.utils.client import get_ethereum_client
 
 logger = logging.getLogger(__name__)

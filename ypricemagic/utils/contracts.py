@@ -5,8 +5,8 @@ from functools import lru_cache
 from brownie import Contract as _Contract
 from brownie import chain, web3
 from brownie.exceptions import CompilerError
+from y.utils.cache import memory
 from ypricemagic.interfaces.ERC20 import ERC20ABI
-from ypricemagic.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 

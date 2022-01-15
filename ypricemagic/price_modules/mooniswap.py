@@ -1,12 +1,11 @@
-from time import sleep
 
 from brownie import ZERO_ADDRESS, chain, multicall, web3
+from y.utils.cache import memory
 from ypricemagic import magic
 from ypricemagic.constants import weth
-from ypricemagic.utils.cache import memory
 from ypricemagic.utils.contracts import Contract
-from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 from ypricemagic.utils.multicall import multicall2
+from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
 
 if chain.id == 1:
     router = Contract("0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643")

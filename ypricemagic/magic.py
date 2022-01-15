@@ -7,6 +7,7 @@ from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
 from y.prices import _sense_check
+from y.utils.cache import memory
 
 import ypricemagic
 from ypricemagic import _symbol
@@ -21,7 +22,6 @@ from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
-from ypricemagic.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 
