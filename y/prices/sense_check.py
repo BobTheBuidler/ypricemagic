@@ -46,14 +46,19 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
         "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5", # socks
         "0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF", # crvtricrypto
+        "0xc4AD29ba4B3c580e6D59105FFf484999997675Ff", # crv3crypto
+        "0xd075e95423C5c4BA1E122CaE0f4CdFA19b82881b", # wPE
+        "0xe9F84dE264E91529aF07Fa2C746e934397810334", # sak3
     ],
     Network.BinanceSmartChain: [
         # eth and eth-like
         weth.address,
         "0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5", # bweth
+        "0xbfF4a34A4644a113E8200D7F1D79b3555f723AfE", # ibeth
         # btc and btc-like
         wbtc.address,
         "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c", # btcb
+        "0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7", # ibbtcb
     ],
     Network.Polygon: [
         # eth and eth-like
