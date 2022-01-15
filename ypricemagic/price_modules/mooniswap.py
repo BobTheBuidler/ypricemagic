@@ -6,6 +6,7 @@ from ypricemagic.constants import weth
 from ypricemagic.utils.cache import memory
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
+from ypricemagic.utils.multicall import multicall2
 
 if chain.id == 1:
     router = Contract("0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643")
@@ -25,7 +26,7 @@ def is_mooniswap_pool(token):
 def get_pool_price(token_address, block=None):
     token = Contract(token_address)
     if block >= 12336033 and chain.id == 1:
-        with multicall(address=multicall.address, block_identifier = block):
+        with multicall(address=multicall2.address, block_identifier = block):
             token0_address = token.token0()
             token1_address = token.token1()
             totalSupply = _totalSupplyReadable(token_address,block)
