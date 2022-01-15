@@ -10,6 +10,7 @@ from ypricemagic.utils.raw_calls import _balanceOfReadable as balanceOfReadable
 from ypricemagic.utils.raw_calls import _symbol as symbol
 from ypricemagic.utils.raw_calls import raw_call
 
+from y import time
 from y.constants import dai, usdc, wbtc, weth
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
 from y.exceptions import *
@@ -26,7 +27,7 @@ __all__ = [
     'Network',
 
     # magic
-    'magic'
+    'magic',
 
     # prices
     'get_price',
@@ -48,7 +49,10 @@ __all__ = [
     'balanceOfReadable',
     'totalSupply',
     'totalSupplyReadable',
-    'raw_call'
+    'raw_call',
+
+    # time
+    'time',
 ]
 
 if not network.is_connected():
