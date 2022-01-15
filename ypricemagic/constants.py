@@ -1,7 +1,7 @@
 from brownie import chain
+from y.networks import Network
 
 from ypricemagic.utils.contracts import Contract
-from ypricemagic.networks import Network
 
 sushi = None
 

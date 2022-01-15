@@ -1,8 +1,7 @@
 
 from brownie import chain
-from ypricemagic.networks import Network
+from y.networks import Network
 from ypricemagic.utils.raw_calls import raw_call
-
 
 POOLS = {
     Network.BinanceSmartChain: {

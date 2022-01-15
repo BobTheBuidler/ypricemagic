@@ -1,7 +1,7 @@
 from brownie import chain
+from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.constants import weth
-from ypricemagic.networks import Network
 from ypricemagic.utils.raw_calls import _totalSupply, raw_call
 
 

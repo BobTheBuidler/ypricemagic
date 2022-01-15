@@ -1,7 +1,7 @@
 import logging
 
 from brownie import chain
-from ypricemagic.networks import Network
+from y.networks import Network
 from ypricemagic.price_modules.balancer.v1.v1 import BalancerV1
 from ypricemagic.price_modules.balancer.v2.v2 import BalancerV2
 

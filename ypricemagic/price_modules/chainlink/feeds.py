@@ -1,6 +1,5 @@
 from brownie import chain
-from ypricemagic.networks import Network
-
+from y.networks import Network
 
 FEEDS = {
     Network.Mainnet: {

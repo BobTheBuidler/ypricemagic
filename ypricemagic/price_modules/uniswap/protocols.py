@@ -1,7 +1,7 @@
 
 from brownie import chain
-from ypricemagic.constants import weth, usdc, usdt, dai, wbtc
-from ypricemagic.networks import Network
+from y.networks import Network
+from ypricemagic.constants import dai, usdc, usdt, wbtc, weth
 
 TRY_ORDER = {
     Network.Mainnet: ['sushiswap', 'uniswap v2', 'uniswap v1', 'shibaswap'],

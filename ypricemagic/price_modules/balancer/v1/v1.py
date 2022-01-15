@@ -1,7 +1,7 @@
 from brownie import chain
+from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.constants import dai, usdc, wbtc, weth
-from ypricemagic.networks import Network
 from ypricemagic.price_modules.balancer.v1.pool import BalancerV1Pool
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.raw_calls import _decimals

@@ -11,7 +11,7 @@ from brownie.convert.datatypes import EthAddress
 from eth_abi.exceptions import InsufficientDataBytes
 from eth_typing.evm import Address, BlockNumber
 from web3.exceptions import CannotHandleRequest
-from ypricemagic.networks import Network
+from y.networks import Network
 from ypricemagic.utils.contracts import contract_creation_block
 from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 

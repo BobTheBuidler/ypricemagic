@@ -1,7 +1,7 @@
 
 from brownie import chain
+from y.networks import Network
 from ypricemagic import Contract
-from ypricemagic.networks import Network
 
 
 def is_froyo(address):

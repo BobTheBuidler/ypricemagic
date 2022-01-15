@@ -1,5 +1,5 @@
 from brownie import chain
-from ypricemagic.networks import Network
+from y.networks import Network
 from ypricemagic.price_modules.balancer.v2.pool import BalancerV2Pool
 from ypricemagic.price_modules.balancer.v2.vault import BalancerV2Vault
 

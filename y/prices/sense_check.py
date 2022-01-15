@@ -3,8 +3,8 @@ import logging
 from typing import Union
 
 from brownie import chain
-from ypricemagic.constants import weth, wbtc
-from ypricemagic.networks import Network
+from y.networks import Network
+from ypricemagic.constants import wbtc, weth
 from ypricemagic.utils.raw_calls import _symbol, raw_call
 
 logger = logging.getLogger(__name__)

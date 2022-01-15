@@ -1,6 +1,5 @@
 from brownie import chain, convert
-from cachetools.func import ttl_cache
-from ypricemagic.networks import Network
+from y.networks import Network
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.multicall import (fetch_multicall,
                                          multicall_same_func_no_input)

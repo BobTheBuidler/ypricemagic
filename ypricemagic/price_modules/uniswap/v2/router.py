@@ -1,13 +1,15 @@
 
 
 import logging
+
 from brownie import chain
 from cachetools.func import ttl_cache
-from ypricemagic.constants import usdc, weth, sushi
-from ypricemagic.price_modules.uniswap.protocols import ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL, special_paths
-from ypricemagic.networks import Network
+from y.networks import Network
+from ypricemagic.constants import STABLECOINS, sushi, usdc, weth
+from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
+                                                         ROUTER_TO_PROTOCOL,
+                                                         special_paths)
 from ypricemagic.utils.contracts import Contract
-from ypricemagic.constants import STABLECOINS
 from ypricemagic.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)

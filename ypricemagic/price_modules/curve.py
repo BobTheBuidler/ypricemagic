@@ -5,10 +5,10 @@ from itertools import islice
 
 from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
+from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.constants import dai
 from ypricemagic.exceptions import UnsupportedNetwork
-from ypricemagic.networks import Network
 from ypricemagic.utils.contracts import Contract, Singleton
 from ypricemagic.utils.events import create_filter, decode_logs
 from ypricemagic.utils.middleware import ensure_middleware
