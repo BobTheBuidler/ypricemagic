@@ -6,6 +6,7 @@ from brownie import chain, convert
 from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
+from y.prices import _sense_check
 
 import ypricemagic
 from ypricemagic import _symbol
@@ -82,6 +83,7 @@ def _get_price(
     if not price: price = uniswap.try_for_price(token, block=block)
     if not price: price = balancer.get_price(token, block=block)
     if not price: _fail_appropriately(token, fail_to_None=fail_to_None, silent=silent)
+    if price: _sense_check(token, price)
     return price
 
 
