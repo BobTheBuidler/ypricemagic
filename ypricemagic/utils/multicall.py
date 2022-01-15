@@ -1,7 +1,7 @@
 from collections import defaultdict
 from itertools import count, product
 from operator import itemgetter
-from typing import Any, List, Sequence, Union
+from typing import Any, List, Sequence, Tuple, Union
 
 import brownie
 import requests
@@ -64,15 +64,16 @@ def multicall_same_func_different_contracts_same_input(
 def multicall_same_func_same_contract_different_inputs(
     address: Union[str, Address, brownie.Contract, ypricemagic.Contract], 
     method: str, 
-    inputs: List = None,  
+    inputs: Union[List, Tuple],  
     block: Union[int, BlockNumber, None] = None,
-    apply_func = None
+    apply_func = None,
+    return_None_on_failure: bool = False
     ):
 
     assert inputs
     address = _clean_address(address)
     calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
-    return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
+    return [result for result in Multicall(calls, block_id=block, _w3=web3, require_success = not return_None_on_failure)().values()]
 
 
 def multicall_decimals(
