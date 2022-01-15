@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 from typing import Sequence, Union
 
 import brownie
@@ -93,7 +94,7 @@ def _exit_early_for_known_tokens(
     block = None
     ):
 
-    bucket = _check_bucket(token_address)
+    bucket = check_bucket(token_address)
 
     price = None
 
@@ -135,8 +136,8 @@ def _exit_early_for_known_tokens(
     return price if price is not None else None, bucket
 
 
-@memory.cache()
-def _check_bucket(
+@lru_cache(maxsize=None)
+def check_bucket(
     token_address: Union[str, Address, brownie.Contract, ypricemagic.Contract]
     ):
 
