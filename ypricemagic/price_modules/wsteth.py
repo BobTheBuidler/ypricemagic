@@ -1,8 +1,8 @@
 from brownie import chain
+from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.constants import weth
-from ypricemagic.exceptions import UnsupportedNetwork
 from ypricemagic.utils.raw_calls import raw_call
 
 

@@ -3,7 +3,6 @@ import os
 from brownie import network
 from ypricemagic import magic
 from ypricemagic.constants import dai, usdc, wbtc, weth
-from ypricemagic.exceptions import *
 from ypricemagic.magic import get_price, get_prices
 from ypricemagic.utils.contracts import Contract
 from ypricemagic.utils.multicall import fetch_multicall
@@ -13,6 +12,7 @@ from ypricemagic.utils.raw_calls import _symbol as symbol
 from ypricemagic.utils.raw_calls import raw_call
 
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
+from y.exceptions import *
 from y.networks import Network
 
 __all__ = [

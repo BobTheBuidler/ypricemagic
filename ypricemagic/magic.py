@@ -6,6 +6,7 @@ from brownie import chain, convert
 from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
+from y.exceptions import PriceError
 from y.networks import Network
 from y.prices import _sense_check
 from y.utils.cache import memory
@@ -13,7 +14,6 @@ from y.utils.cache import memory
 import ypricemagic
 from ypricemagic import _symbol
 from ypricemagic.constants import STABLECOINS, WRAPPED_GAS_COIN
-from ypricemagic.exceptions import PriceError
 from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
                                        froyo, gelato, ib, mooniswap,
                                        mstablefeederpool, piedao, tokensets,

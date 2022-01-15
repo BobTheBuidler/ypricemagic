@@ -2,8 +2,8 @@ import logging
 
 from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
+from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from ypricemagic.exceptions import UnsupportedNetwork
 from ypricemagic.price_modules.chainlink.feeds import FEEDS
 from ypricemagic.utils.contracts import Contract, Singleton
 from ypricemagic.utils.events import decode_logs, get_logs_asap

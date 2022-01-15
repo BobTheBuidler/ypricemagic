@@ -1,6 +1,6 @@
 
+from y.exceptions import PriceError
 from ypricemagic import magic
-from ypricemagic.exceptions import PriceError
 from ypricemagic.classes import ERC20
 from ypricemagic.utils.multicall import fetch_multicall, multicall_decimals
 from ypricemagic.utils.raw_calls import _totalSupplyReadable
