@@ -6,7 +6,7 @@ from y.contracts import Contract, Singleton
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from ypricemagic.price_modules.chainlink.feeds import FEEDS
-from ypricemagic.utils.events import decode_logs, get_logs_asap
+from ypricemagic.utils.events import decode_logs, get_logs_asap, create_filter
 
 logger = logging.getLogger(__name__)
 
@@ -33,9 +33,15 @@ class Chainlink(metaclass=Singleton):
 
     def load_feeds(self):
         if chain.id in registries:
-            logs = decode_logs(
-                get_logs_asap(str(self.registry), [self.registry.topics['FeedConfirmed']])
-            )
+            try:
+                log_filter = create_filter(str(self.registry), [self.registry.topics['FeedConfirmed']])
+                new_entries = log_filter.get_new_entries()
+            except ValueError as e:
+                if 'the method is currently not implemented: eth_newFilter' not in str(e):
+                    raise
+                new_entries = get_logs_asap(str(self.registry), [self.registry.topics['FeedConfirmed']])
+
+            logs = decode_logs(new_entries)
             self.feeds = {
                 log['asset']: log['latestAggregator']
                 for log in logs
