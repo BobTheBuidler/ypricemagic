@@ -22,6 +22,8 @@ elif chain.id == 56:
     wbnb = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
     cake = Contract("0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82")
 
+#elif chain.id == 100: # xdai
+
 elif chain.id == 137: #poly
     weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
     usdc = Contract("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")
@@ -38,8 +40,9 @@ elif chain.id == 250:
     usdt = Contract('0x049d68029688eAbF473097a2fC38ef61633A3C7A') #fusdt
     wftm = Contract('0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83')
 
-elif chain.id == 42161: pass
-elif chain.id == 43114: pass
+#elif chain.id == 42161:
+#elif chain.id == 43114:
+else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {
     Network.Mainnet: {
