@@ -38,7 +38,9 @@ def contract_creation_block(address) -> int:
             if web3.eth.get_code(address, block_identifier=mid): hi = mid
             else: lo = mid
         except ValueError as e:
-            if 'missing trie node' in str(e): lo = mid
+            if 'missing trie node' in str(e):
+                logger.critical('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
+                lo = mid
             else: raise
     return hi if hi != height else None
 
