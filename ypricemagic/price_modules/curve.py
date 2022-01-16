@@ -1,4 +1,3 @@
-from hashlib import new
 import logging
 from collections import defaultdict
 from functools import lru_cache
@@ -105,17 +104,16 @@ class CurveRegistry(metaclass=Singleton):
         for event in decode_logs(new_entries):
             if event.name == 'NewAddressIdentifier':
                 self.identifiers[event['id']].append(event['addr'])
-            if event.name == 'AddressModified':
+            elif event.name == 'AddressModified':
                 self.identifiers[event['id']].append(event['new_address'])
-
 
         # fetch pools from the latest registry
         log_filter = create_filter(str(self.registry))
         new_entries = log_filter.get_new_entries()
-
-        if not len(new_entries):
+        
+        if not len(new_entries): # if your setup is unable to correctly utilize filters
             new_entries = get_logs_asap(str(self.registry), None)
-            
+
         for event in decode_logs(new_entries):
             if event.name == 'PoolAdded':
                 self.pools.add(event['pool'])
