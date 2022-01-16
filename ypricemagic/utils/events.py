@@ -55,6 +55,11 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
             delayed(web3.eth.get_logs)({"topics": topics, "fromBlock": start, "toBlock": end})
             for start, end in ranges
         )
+    elif topics is None:
+        batches = Parallel(8, "threading", verbose=verbose)(
+            delayed(web3.eth.get_logs)({"address": address, "fromBlock": start, "toBlock": end})
+            for start, end in ranges
+        )
     else:
         batches = Parallel(8, "threading", verbose=verbose)(
             delayed(web3.eth.get_logs)({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})

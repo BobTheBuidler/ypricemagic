@@ -1,3 +1,4 @@
+from hashlib import new
 import logging
 from collections import defaultdict
 from functools import lru_cache
@@ -11,7 +12,7 @@ from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.middleware import ensure_middleware
 from ypricemagic import magic
-from ypricemagic.utils.events import create_filter, decode_logs
+from ypricemagic.utils.events import create_filter, decode_logs, get_logs_asap
 from ypricemagic.utils.multicall import fetch_multicall, multicall_same_func_same_contract_different_inputs
 from ypricemagic.utils.raw_calls import _totalSupply, raw_call
 
@@ -96,15 +97,26 @@ class CurveRegistry(metaclass=Singleton):
 
         # fetch all registries and factories from address provider
         log_filter = create_filter(str(self.address_provider))
-        for event in decode_logs(log_filter.get_new_entries()):
+        new_entries = log_filter.get_new_entries()
+
+        if not len(new_entries): # if your setup is unable to correctly utilize filters
+            new_entries = get_logs_asap(str(self.address_provider), None)
+
+        for event in decode_logs(new_entries):
             if event.name == 'NewAddressIdentifier':
                 self.identifiers[event['id']].append(event['addr'])
             if event.name == 'AddressModified':
                 self.identifiers[event['id']].append(event['new_address'])
 
+
         # fetch pools from the latest registry
         log_filter = create_filter(str(self.registry))
-        for event in decode_logs(log_filter.get_new_entries()):
+        new_entries = log_filter.get_new_entries()
+
+        if not len(new_entries):
+            new_entries = get_logs_asap(str(self.registry), None)
+            
+        for event in decode_logs(new_entries):
             if event.name == 'PoolAdded':
                 self.pools.add(event['pool'])
 
