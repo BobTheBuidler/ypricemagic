@@ -60,4 +60,7 @@ def setup_middleware():
     w3.middleware_onion.add(cache_middleware)
 
 def ensure_middleware():
-    setup_middleware()
+    try: setup_middleware()
+    except AttributeError as e:
+        if "'IPCProvider' object has no attribute 'endpoint_uri'" in str(e): return 
+        else: raise
