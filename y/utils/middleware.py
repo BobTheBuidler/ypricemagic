@@ -47,12 +47,16 @@ def cache_middleware(make_request, w3):
 def setup_middleware():
     # patch web3 provider with more connections and higher timeout
     if w3.provider:
-        assert w3.provider.endpoint_uri.startswith("http"), "only http and https providers are supported"
-        adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
-        session = Session()
-        session.mount("http://", adapter)
-        session.mount("https://", adapter)
-        w3.provider = HTTPProvider(w3.provider.endpoint_uri, {"timeout": 600}, session)
+        try:
+            assert w3.provider.endpoint_uri.startswith("http"), "only http and https providers are supported"
+            adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
+            session = Session()
+            session.mount("http://", adapter)
+            session.mount("https://", adapter)
+            w3.provider = HTTPProvider(w3.provider.endpoint_uri, {"timeout": 600}, session)
+        except AttributeError as e:
+            if "'IPCProvider' object has no attribute 'endpoint_uri'" in str(e): pass 
+            else: raise
 
     # patch and inject local filter middleware
     filter.MAX_BLOCK_REQUEST = BATCH_SIZE
@@ -60,7 +64,5 @@ def setup_middleware():
     w3.middleware_onion.add(cache_middleware)
 
 def ensure_middleware():
-    try: setup_middleware()
-    except AttributeError as e:
-        if "'IPCProvider' object has no attribute 'endpoint_uri'" in str(e): return 
-        else: raise
+    setup_middleware()
+    
