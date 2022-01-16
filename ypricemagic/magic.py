@@ -13,7 +13,7 @@ from y.networks import Network
 from y.prices import _sense_check
 from y.utils.cache import memory
 
-import ypricemagic
+from y.contracts import Contract
 from ypricemagic.utils.raw_calls import _symbol
 from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
                                        froyo, gelato, ib, mooniswap,
@@ -31,7 +31,7 @@ NETWORK = Network.name(chain.id)
 
 @memory.cache()
 def get_price(
-    token_address: Union[str, Address, brownie.Contract, ypricemagic.Contract], 
+    token_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None, 
     fail_to_None: bool = False, 
     silent: bool = False
@@ -52,7 +52,7 @@ def get_price(
 
 
 def get_prices(
-    token_addresses: Sequence[Union[str, Address, brownie.Contract, ypricemagic.Contract]],
+    token_addresses: Sequence[Union[str, Address, brownie.Contract, Contract]],
     block: Union[int, BlockNumber, None] = None,
     fail_to_None: bool = True,
     silent: bool = False
@@ -72,7 +72,7 @@ def get_prices(
 
     
 def _get_price(
-    token: Union[str, Address, brownie.Contract, ypricemagic.Contract], 
+    token: Union[str, Address, brownie.Contract, Contract], 
     block: Union[int, BlockNumber, None] = None, 
     fail_to_None: bool = False, 
     silent: bool = False
@@ -138,7 +138,7 @@ def _exit_early_for_known_tokens(
 
 @lru_cache(maxsize=None)
 def check_bucket(
-    token_address: Union[str, Address, brownie.Contract, ypricemagic.Contract]
+    token_address: Union[str, Address, brownie.Contract, Contract]
     ):
 
     if type(token_address) != str:
