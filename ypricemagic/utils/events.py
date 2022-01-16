@@ -8,6 +8,7 @@ from joblib import Parallel, delayed
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from y.contracts import contract_creation_block
+from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
 logger = logging.getLogger(__name__)
@@ -49,22 +50,9 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
     if verbose > 0:
         logger.info('fetching %d batches', len(ranges))
-
-    if address is None:
-        batches = Parallel(8, "threading", verbose=verbose)(
-            delayed(web3.eth.get_logs)({"topics": topics, "fromBlock": start, "toBlock": end})
-            for start, end in ranges
-        )
-    elif topics is None:
-        batches = Parallel(8, "threading", verbose=verbose)(
-            delayed(web3.eth.get_logs)({"address": address, "fromBlock": start, "toBlock": end})
-            for start, end in ranges
-        )
-    else:
-        batches = Parallel(8, "threading", verbose=verbose)(
-            delayed(web3.eth.get_logs)({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
-            for start, end in ranges
-        )
+    logger.critical(ranges)
+    batches = Parallel(8, "threading", verbose=verbose)(delayed(_get_logs)(address, topics, start, end) for start, end in ranges)
+    logger.critical(batches)
     for batch in batches:
         logs.extend(batch)
 
@@ -97,3 +85,29 @@ def checkpoints_to_weight(checkpoints, start_block, end_block):
         b = min(b, end_block) if b else end_block
         total += checkpoints[a] * (b - a) / (end_block - start_block)
     return total
+
+
+def _get_logs(address, topics, start, end):
+    if end - start == BATCH_SIZE - 1:
+        response = _get_logs_batch_cached(address, topics, start, end)
+    else:
+        response = _get_logs_no_cache(address, topics, start, end)
+    logger.critical(response)
+    return response
+
+
+def _get_logs_no_cache(address, topics, start, end):
+    logger.critical(f'processing {start} to {end}')
+    if address is None:
+        response = web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+    elif topics is None:
+        response = web3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+    else:
+        response = web3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+    logger.critical(f'finished processing {start} to {end}')
+    return response
+
+
+@memory.cache()
+def _get_logs_batch_cached(address, topics, start, end):
+    return _get_logs_no_cache(address, topics, start, end)
