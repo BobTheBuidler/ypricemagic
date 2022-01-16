@@ -50,9 +50,9 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
     if verbose > 0:
         logger.info('fetching %d batches', len(ranges))
-    logger.critical(ranges)
+    
     batches = Parallel(8, "threading", verbose=verbose)(delayed(_get_logs)(address, topics, start, end) for start, end in ranges)
-    logger.critical(batches)
+    
     for batch in batches:
         logs.extend(batch)
 
@@ -92,19 +92,18 @@ def _get_logs(address, topics, start, end):
         response = _get_logs_batch_cached(address, topics, start, end)
     else:
         response = _get_logs_no_cache(address, topics, start, end)
-    logger.critical(response)
     return response
 
 
 def _get_logs_no_cache(address, topics, start, end):
-    logger.critical(f'processing {start} to {end}')
+    logger.debug(f'fetching logs {start} to {end}')
     if address is None:
         response = web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
     elif topics is None:
         response = web3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
     else:
         response = web3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
-    logger.critical(f'finished processing {start} to {end}')
+    logger.debug(f'finished fetching logs {start} to {end}')
     return response
 
 
