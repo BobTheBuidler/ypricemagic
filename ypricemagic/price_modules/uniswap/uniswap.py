@@ -18,7 +18,12 @@ logger = logging.getLogger(__name__)
 
 class Uniswap:
     def __init__(self) -> None:
-        self.routers = {name:UniswapRouterV2(UNISWAPS[name]['router']) for name in UNISWAPS}
+        self.routers = {}
+        for name in UNISWAPS:
+            try: self.routers[name] = UniswapRouterV2(UNISWAPS[name]['router'])
+            except ValueError as e:
+                if 'Contract source code not verified' in str(e): continue
+                else: raise
         self.factories = [UNISWAPS[name]['factory'] for name in UNISWAPS]
         self._try_order = TRY_ORDER
         self.v1 = UniswapV1()
