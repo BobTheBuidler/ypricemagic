@@ -5,7 +5,8 @@ from y.networks import Network
 
 sushi = None
 
-if chain.id == 1:
+
+if chain.id == Network.Mainnet:
     weth = Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
     usdc = Contract("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
     dai  = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
@@ -13,7 +14,7 @@ if chain.id == 1:
     usdt = Contract("0xdAC17F958D2ee523a2206206994597C13D831ec7")
     sushi = Contract("0x6B3595068778DD592e39A122f4f5a5cF09C90fE2")
 
-elif chain.id == 56:
+elif chain.id == Network.BinanceSmartChain:
     weth = Contract("0x2170Ed0880ac9A755fd29B2688956BD959F933F8")
     usdc = Contract("0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d")
     dai  = Contract("0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3")
@@ -22,9 +23,11 @@ elif chain.id == 56:
     wbnb = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")
     cake = Contract("0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82")
 
-#elif chain.id == 100: # xdai
+elif chain.id == Network.xDai:
+    weth = Contract('0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1')
+    wbtc = Contract('0x8e5bBbb09Ed1ebdE8674Cda39A0c169401db4252')
 
-elif chain.id == 137: #poly
+elif chain.id == Network.Polygon:
     weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
     usdc = Contract("0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174")
     dai  = Contract("0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063")
@@ -32,7 +35,7 @@ elif chain.id == 137: #poly
     usdt = Contract("0xc2132D05D31c914a87C6611C10748AEb04B58e8F")
     wmatic = Contract("0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270")
     
-elif chain.id == 250:
+elif chain.id == Network.Fantom:
     weth = Contract('0x74b23882a30290451A17c44f4F05243b6b58C76d')
     usdc = Contract('0x04068DA6C83AFCFA0e13ba15A6696662335D5B75')
     dai  = Contract('0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E')
@@ -40,8 +43,14 @@ elif chain.id == 250:
     usdt = Contract('0x049d68029688eAbF473097a2fC38ef61633A3C7A') #fusdt
     wftm = Contract('0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83')
 
-#elif chain.id == 42161:
-#elif chain.id == 43114:
+elif chain.id == Network.Arbitrum:
+    weth = Contract('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1')
+    wbtc = Contract('0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f')
+
+elif chain.id == Network.Avalanche:
+    weth = Contract('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB')
+    wbtc = Contract('0x50b7545627a5162F82A992c33b87aDc75187B218')
+
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {

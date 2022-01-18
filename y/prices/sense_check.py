@@ -16,7 +16,7 @@ ACCEPTABLE_HIGH_PRICES = {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", # eth
         weth.address,
-        "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", #wsteth
+        "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", # wsteth
         "0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c", # ecrv
         "0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf", # ankrcrv
         "0x53a901d48795C58f485cBB38df08FA96a24669D5", # rcrv
