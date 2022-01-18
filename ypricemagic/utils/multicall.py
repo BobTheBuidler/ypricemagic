@@ -19,15 +19,16 @@ from multicall import Call, Multicall
 SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, Contract
 
 MULTICALL2 = {
-    Network.Mainnet: "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696",
-    Network.BinanceSmartChain: "0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B",
-    Network.xDai: "0x9903f30c1469d8A2f415D4E8184C93BD26992573",
-    Network.Polygon: "0xc8E51042792d7405184DfCa245F2d27B94D013b6",
-    Network.Fantom: "0xBAD2B082e2212DE4B065F636CA4e5e0717623d18",
-    Network.Arbitrum: "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2",
-    Network.Avalanche: "0xdf2122931FEb939FB8Cf4e67Ea752D1125e18858",
-    Network.Moonriver: "0xaeF00A0Cf402D9DEdd54092D9cA179Be6F9E5cE3",
-    Network.Heco: "0xd28985698798A0d6d25fAA338A50F8d90cBAc98E",
+    Network.Mainnet:            "0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696",
+    Network.Arbitrum:           "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2",
+    Network.Avalanche:          "0xdf2122931FEb939FB8Cf4e67Ea752D1125e18858",
+    Network.BinanceSmartChain:  "0xfF6FD90A470Aaa0c1B8A54681746b07AcdFedc9B",
+    Network.Fantom:             "0xBAD2B082e2212DE4B065F636CA4e5e0717623d18",
+    Network.Harmony:            "0x34b415f4d3b332515e66f70595ace1dcf36254c5",
+    Network.Heco:               "0xd28985698798A0d6d25fAA338A50F8d90cBAc98E",
+    Network.Moonriver:          "0xaeF00A0Cf402D9DEdd54092D9cA179Be6F9E5cE3",
+    Network.Polygon:            "0xc8E51042792d7405184DfCa245F2d27B94D013b6",
+    Network.xDai:               "0x9903f30c1469d8A2f415D4E8184C93BD26992573",
 }.get(chain.id, None)
 
 multicall = None
