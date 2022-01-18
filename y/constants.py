@@ -1,4 +1,5 @@
-from brownie import chain
+from brownie import chain, Contract as _Contract
+from ypricemagic.interfaces.ERC20 import ERC20ABI
 
 from y.contracts import Contract
 from y.networks import Network
@@ -48,7 +49,8 @@ elif chain.id == Network.Fantom:
 
 elif chain.id == Network.Arbitrum:
     weth = Contract('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1')
-    wbtc = Contract('0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f')
+    # for some reason wbtc unverified on arbi
+    wbtc = _Contract.from_abi("wbtc",'0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',ERC20ABI)
     dai = Contract('0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1')
     usdc = Contract('0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8')
     usdt = Contract('0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
