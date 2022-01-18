@@ -2,6 +2,7 @@ from typing import Any, Callable, KeysView, List, Tuple, Union
 
 import brownie
 from brownie.convert.datatypes import EthAddress
+import logging
 from eth_typing.evm import Address, BlockNumber
 from ypricemagic.utils.multicall import (multicall_decimals,
                                          multicall_totalSupply)
@@ -40,6 +41,7 @@ def totalSupplyReadable(
 
     token_supplys = totalSupply(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
     token_decimals = decimals(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    logging.critical(f'token_supplys: {token_supplys}  token_decimals: {token_decimals}')
     return [supply / 10 ** decimal for supply, decimal in zip(token_supplys, token_decimals)]
 
 
