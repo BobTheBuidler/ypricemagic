@@ -42,13 +42,18 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", # yfi
         "0xD5525D397898e5502075Ea5E830d8914f6F0affe", # meme
         "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2", # mkr
-        "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
-        "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
         "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5", # socks
         "0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF", # crvtricrypto
         "0xc4AD29ba4B3c580e6D59105FFf484999997675Ff", # crv3crypto
         "0xd075e95423C5c4BA1E122CaE0f4CdFA19b82881b", # wPE
         "0xe9F84dE264E91529aF07Fa2C746e934397810334", # sak3
+        # nfts
+        "0x641927E970222B10b2E8CDBC96b1B4F427316f16", # meeb
+        "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
+        "0x269616D549D7e8Eaa82DFb17028d0B212D11232A", # punk (different)
+        "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
+        "0xD70240Dd62F4ea9a6A2416e0073D72139489d2AA", # glyph
+        "", # bayc
     ],
     Network.BinanceSmartChain: [
         # eth and eth-like
