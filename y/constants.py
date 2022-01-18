@@ -96,7 +96,7 @@ STABLECOINS = {
     Network.Avalanche: {
         "": "",
     }
-}
+}.get(chain.id, {})
 
 
 WRAPPED_GAS_COIN = {
