@@ -69,6 +69,13 @@ elif chain.id == Network.Moonriver:
     usdc = Contract('0xE3F5a90F9cb311505cd691a46596599aA1A0AD7D')
     usdt = Contract('0xB44a9B6905aF7c801311e8F4E76932ee959c663C')
 
+elif chain.id == Network.Heco:
+    weth = Contract('0x64FF637fB478863B7468bc97D30a5bF3A428a1fD')
+    wbtc = Contract('0x70D171d269D964d14aF9617858540061e7bE9EF1')
+    dai  = Contract('0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a')
+    usdc = Contract('0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B')
+    usdt = Contract('0xa71EdC38d189767582C38A3145b5873052c3e47a')
+
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {

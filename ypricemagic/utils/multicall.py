@@ -27,6 +27,7 @@ MULTICALL2 = {
     Network.Arbitrum: "0x842eC2c7D803033Edf55E478F461FC547Bc54EB2",
     Network.Avalanche: "0xdf2122931FEb939FB8Cf4e67Ea752D1125e18858",
     Network.Moonriver: "0xaeF00A0Cf402D9DEdd54092D9cA179Be6F9E5cE3",
+    Network.Heco: "0xd28985698798A0d6d25fAA338A50F8d90cBAc98E",
 }.get(chain.id, None)
 
 multicall = None
