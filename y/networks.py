@@ -8,9 +8,9 @@ class Network(IntEnum):
     Mainnet = 1
     BinanceSmartChain = 56
     xDai = 100
+    Heco = 128
     Polygon = 137
     Fantom = 250
-    Heco = 256
     Moonriver = 1285
     Arbitrum = 42161
     Avalanche = 43114
