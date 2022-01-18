@@ -28,6 +28,7 @@ elif chain.id == Network.xDai:
     wbtc = Contract('0x8e5bBbb09Ed1ebdE8674Cda39A0c169401db4252')
     dai = Contract('0x44fA8E6f47987339850636F88629646662444217')
     usdc = Contract('0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83')
+    usdt = Contract('0x4ECaBa5870353805a9F068101A40E0f32ed605C6')
 
 elif chain.id == Network.Polygon:
     weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
@@ -50,12 +51,14 @@ elif chain.id == Network.Arbitrum:
     wbtc = Contract('0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f')
     dai = Contract('0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1')
     usdc = Contract('0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8')
+    usdt = Contract('0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
 
 elif chain.id == Network.Avalanche:
     weth = Contract('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB')
     wbtc = Contract('0x50b7545627a5162F82A992c33b87aDc75187B218')
     dai = Contract('0xd586E7F844cEa2F87f50152665BCbc2C279D8d70')
     usdc = Contract('0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E')
+    usdt = Contract('0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7')
 
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
