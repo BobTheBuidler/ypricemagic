@@ -9,10 +9,12 @@ class Network(IntEnum):
     BinanceSmartChain = 56
     xDai = 100
     Polygon = 137
-    Moonriver = 1285
     Fantom = 250
+    Heco = 256
+    Moonriver = 1285
     Arbitrum = 42161
     Avalanche = 43114
+    Harmony = 1666600000
 
     @staticmethod
     def label(chain_id = None):
