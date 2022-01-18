@@ -76,6 +76,13 @@ elif chain.id == Network.Heco:
     usdc = Contract('0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B')
     usdt = Contract('0xa71EdC38d189767582C38A3145b5873052c3e47a')
 
+elif chain.id == Network.Harmony:
+    weth = Contract('0x6983D1E6DEf3690C4d616b13597A09e6193EA013')
+    wbtc = Contract('0x3095c7557bCb296ccc6e363DE01b760bA031F2d9')
+    dai  = Contract('0xEf977d2f931C1978Db5F6747666fa1eACB0d0339')
+    usdc = Contract('0x985458E523dB3d53125813eD68c274899e9DfAb4')
+    usdt = Contract('0x3C2B8Be99c50593081EAA2A724F0B8285F5aba8f')
+
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {
