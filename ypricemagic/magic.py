@@ -8,21 +8,22 @@ from eth_typing.evm import Address, BlockNumber
 from hexbytes import HexBytes
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN, NETWORK_STRING
+from y.constants import NETWORK_STRING, STABLECOINS, WRAPPED_GAS_COIN
+from y.contracts import Contract
 from y.exceptions import PriceError
 from y.prices import _sense_check
-from y.utils.cache import memory
 
 from ypricemagic.price_modules import *
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
+from ypricemagic.utils.raw_calls import _symbol
 
 logger = logging.getLogger(__name__)
 
 
-@memory.cache()
+@lru_cache(maxsize=None)
 def get_price(
     token_address: Union[str, Address, brownie.Contract, Contract, int],
         # Don't pass an int like `123` into `token_address` please, that's just silly/
@@ -70,8 +71,7 @@ def get_prices(
     - if `fail_to_None == True`, ypricemagic will return `None` for that token
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
-    if not silent:
-        token_addresses = tqdm(token_addresses)
+    if not silent: token_addresses = tqdm(token_addresses)
     return Parallel(4, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
     
