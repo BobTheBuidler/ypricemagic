@@ -300,7 +300,10 @@ def raw_call(
 
 def prepare_data(
     method, 
-    inputs = Union[bytes, int, str, Address, brownie.Contract, Contract, Sequence[bytes, int, str, Address, brownie.Contract, Contract]]
+    inputs = Union[
+        bytes, int, str, Address, brownie.Contract, Contract, 
+        Sequence[Union[bytes, int, str, Address, brownie.Contract, Contract]]
+        ]
     ):
     method = encode_hex(fourbyte(method))
 
@@ -311,8 +314,10 @@ def prepare_data(
         return method + prepare_input(inputs)
     
     raise CalldataPreparationError(f'''
-        Supported types are: Union[bytes, int, str, Address, brownie.Contract, y.Contract, 
-            Sequence[bytes, int, str, Address, brownie.Contract, y.Contract]]
+        Supported types are: Union[
+            bytes, int, str, Address, brownie.Contract, y.Contract, 
+            Sequence[Union[bytes, int, str, Address, brownie.Contract, y.Contract]]
+            ]
         You passed {type(inputs)} {inputs}''')
     
     # these don't work yet, wip
