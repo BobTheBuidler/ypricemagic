@@ -4,6 +4,8 @@ from ypricemagic.interfaces.ERC20 import ERC20ABI
 from y.contracts import Contract
 from y.networks import Network
 
+NETWORK_STRING = Network.name(chain.id) if Network.name(chain.id) else f"chain {chain.id}"
+
 sushi = None
 
 

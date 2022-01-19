@@ -7,9 +7,8 @@ from brownie import chain, convert
 from eth_typing.evm import Address, BlockNumber
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, NETWORK_STRING
 from y.exceptions import PriceError
-from y.networks import Network
 from y.prices import _sense_check
 from y.utils.cache import memory
 
@@ -25,8 +24,6 @@ from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
 
 logger = logging.getLogger(__name__)
-
-NETWORK = Network.name(chain.id)
 
 
 @memory.cache()
@@ -48,7 +45,7 @@ def get_price(
         return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
     except RecursionError:
         raise PriceError(
-            f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK}')
+            f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
 
 
 def get_prices(
@@ -77,7 +74,7 @@ def _get_price(
     fail_to_None: bool = False, 
     silent: bool = False
     ):
-    logger.debug(f"network: {Network.name(chain.id)} token: {token}")
+    logger.debug(f"network: {NETWORK_STRING} token: {token}")
     logger.debug("unwrapping %s", token)
 
     price, bucket = _exit_early_for_known_tokens(token, block=block)
@@ -194,7 +191,7 @@ def _fail_appropriately(
         symbol = _symbol(token_address)
 
     if not silent:
-        logger.error(f"failed to get price for {symbol} {token_address} on {NETWORK}")
+        logger.error(f"failed to get price for {symbol} {token_address} on {NETWORK_STRING}")
 
     if not fail_to_None:
-        raise PriceError(f'could not fetch price for {symbol} {token_address} on {NETWORK}')
+        raise PriceError(f'could not fetch price for {symbol} {token_address} on {NETWORK_STRING}')
