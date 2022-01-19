@@ -3,8 +3,9 @@ from functools import lru_cache
 from typing import Sequence, Union
 
 import brownie
-from brownie import chain, convert
+from brownie import convert
 from eth_typing.evm import Address, BlockNumber
+from hexbytes import HexBytes
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, NETWORK_STRING
@@ -28,24 +29,35 @@ logger = logging.getLogger(__name__)
 
 @memory.cache()
 def get_price(
-    token_address: Union[str, Address, brownie.Contract, Contract], 
+    token_address: Union[str, Address, brownie.Contract, Contract, int],
+        # Don't pass an int like `123` into `token_address` please, that's just silly/
+        # ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
+        # so you can save yourself some keystrokes while testing in a console
+        # (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")` )
     block: Union[BlockNumber, int, None] = None, 
     fail_to_None: bool = False, 
     silent: bool = False
     ) -> float:
     '''
-    when `get_price` is unable to find a price:
-        if `silent == True`, ypricemagic will print an error message using standard python logging
-        if `silent == False`, ypricemagic will not log any error
-        if `fail_to_None == True`, ypricemagic will return `None`
-        if `fail_to_None == False`, ypricemagic will raise a PriceError
+    Don't pass an int like `123` into `token_address` please, that's just silly.
+    - ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
+        so you can save yourself some keystrokes while testing in a console
+    - (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")`)
+
+    When `get_price` is unable to find a price:
+    - If `silent == True`, ypricemagic will print an error message using standard python logging
+    - If `silent == False`, ypricemagic will not log any error
+    - If `fail_to_None == True`, ypricemagic will return `None`
+    - If `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-    token_address = convert.to_address(str(token_address))
-    try:
-        return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
-    except RecursionError:
-        raise PriceError(
-            f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
+
+    # see comments above to see why we do this
+    if type(token_address) == int:
+        token_address = HexBytes(token_address)
+
+    token_address = convert.to_address(token_address)
+    try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
+    except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
 
 
 def get_prices(
@@ -55,13 +67,13 @@ def get_prices(
     silent: bool = False
     ):
     '''
-    in every case:
-        if `silent == True`, tqdm will not be used
-        if `silent == False`, tqdm will be used
+    In every case:
+    - if `silent == True`, tqdm will not be used
+    - if `silent == False`, tqdm will be used
 
-    when `get_prices` is unable to find a price:
-        if `fail_to_None == True`, ypricemagic will return `None` for that token
-        if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
+    When `get_prices` is unable to find a price:
+    - if `fail_to_None == True`, ypricemagic will return `None` for that token
+    - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
     if not silent:
         token_addresses = tqdm(token_addresses)
