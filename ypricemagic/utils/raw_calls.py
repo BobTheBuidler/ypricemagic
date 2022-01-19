@@ -1,14 +1,48 @@
 import logging
-from typing import Union
+from functools import lru_cache
+from typing import Callable, Sequence, Union
 
 import brownie
 from brownie import convert, web3
 from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
+from y.constants import NETWORK_STRING
 from y.contracts import Contract
 
 logger = logging.getLogger(__name__)
+
+"""
+We use raw calls for commonly used functions because its much faster than using brownie Contracts
+"""
+
+class CalldataPreparationError(Exception):
+    pass
+
+class NonStandardERC20(Exception):
+    pass
+
+@lru_cache(maxsize=None)
+def _cached_call_fn(
+    func: Callable,
+    contract_address: Union[str, Address, brownie.Contract, Contract], 
+    # Only supports one required arg besides contract_address for now
+    block: Union[BlockNumber, int, None], 
+    required_arg = None,
+):
+    if required_arg is None: return func(contract_address, block=block)
+    else: return func(contract_address, required_arg, block=block)
+
+
+def decimals(
+    contract_address: Union[str, Address, brownie.Contract, Contract], 
+    block: Union[BlockNumber, int, None] = None, 
+    return_None_on_failure: bool = False
+    ):
+    if block is None or return_None_on_failure is True: 
+        return _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
+    else:
+        return _cached_call_fn(_decimals,contract_address,block)
 
 
 def _decimals(
@@ -17,36 +51,115 @@ def _decimals(
     return_None_on_failure: bool = False
     ):
 
-    if type(contract_address) != str:
-        contract_address = str(contract_address)
+    # method 1
+    # NOTE: this will almost always work, you will rarely proceed to further methods
+    try: decimals = raw_call(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True)
+    except OverflowError:
+        # OverflowError means the call didn't revert, but we can't decode it correctly
+        # the contract might not comply with standards, so we can possibly fetch 
+        # using the verified non standard abi as a fallback
+        try: decimals = Contract(contract_address).decimals(block_identifier=block)
+        except AttributeError as e:
+            if "has no attribute 'decimals'" not in str(e): raise
+            # we got a response from the chain but brownie can't find `DECIMALS` method, 
+            # maybe our cached contract definition is messed up. let's repull it
+            decimals = brownie.Contract.from_explorer(contract_address).decimals(block_identifier=block)
 
-    try:
-        try: return raw_call(contract_address, "decimals()", block=block, output='int')
-        # the contract might not comply with standards, so we can possibly fetch decimals using the non standard abi as a fallback
-        except OverflowError: return Contract(contract_address).decimals(block_identifier=block)
-        except ValueError as e: 
-            if 'execution reverted' in str(e): return Contract(contract_address).decimals(block_identifier=block)
-            else: raise
-    # if both methods fail to fetch decimals, determine how to fail and fail fast
-    except (AttributeError, ValueError) as e:
-        fail_msgs = [
-            'execution reverted',
-            "has no attribute 'decimals'",
-        ]
-        if return_None_on_failure and any([msg in str(e) for msg in fail_msgs]): return None
-        else: raise
+    if decimals is not None: return decimals
+
+    # method 2
+    try: decimals = raw_call(contract_address, "DECIMALS()", block=block, output='int', return_None_on_failure=True)
+    except OverflowError: 
+        # OverflowError means the call didn't revert, but we can't decode it correctly
+        # the contract might not comply with standards, so we can possibly fetch DECIMALS 
+        # using the verified non standard abi as a fallback
+        try: decimals = Contract(contract_address).DECIMALS(block_identifier=block)
+        except AttributeError as e:
+            if "has no attribute 'DECIMALS'" not in str(e): raise
+            # we got a response from the chain but brownie can't find `DECIMALS` method, 
+            # maybe our cached contract definition is messed up. let's repull it
+            decimals = brownie.Contract.from_explorer(contract_address).DECIMALS(block_identifier=block)
+                
+    if decimals is not None: return decimals
+
+    # method 3
+    try: decimals = raw_call(contract_address, "getDecimals()", block=block, output='int', return_None_on_failure=True)
+    except OverflowError: 
+        # OverflowError means the call didn't revert, but we can't decode it correctly
+        # the contract might not comply with standards, so we can possibly fetch DECIMALS 
+        # using the verified non standard abi as a fallback
+        try: decimals = Contract(contract_address).getDecimals(block_identifier=block)
+        except AttributeError as e:
+            if "has no attribute 'getDecimals'" not in str(e): raise
+            # we got a response from the chain but brownie can't find `DECIMALS` method, 
+            # maybe our cached contract definition is messed up. let's repull it
+            decimals = brownie.Contract.from_explorer(contract_address).getDecimals(block_identifier=block)
+                
+    if decimals is not None: return decimals
+
+    # we've failed to fetch
+    if return_None_on_failure: return None
+    raise NonStandardERC20(f'''
+        Unable to fetch `decimals` for {contract_address} on {NETWORK_STRING}
+        If the contract is verified, please check to see if it has a strangely named
+        `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
 def _symbol(
     contract_address: Union[str, Address, brownie.Contract, Contract],
-    block: Union[BlockNumber, int, None] = None
+    block: Union[BlockNumber, int, None] = None,
+    return_None_on_failure: bool = False
     ):
 
-    if type(contract_address) != str:
-        contract_address = str(contract_address)
+    # method 1
+    # NOTE: this will almost always work, you will rarely proceed to further methods
+    symbol = raw_call(contract_address, "symbol()", block=block, output='str', return_None_on_failure=True)
+    if symbol is not None: return symbol
 
-    data = raw_call(contract_address, "symbol()", block=block)
-    return convert.to_string(data) 
+    # method 2
+    symbol = raw_call(contract_address, "SYMBOL()", block=block, output='str', return_None_on_failure=True)
+    if symbol is not None: return symbol
+
+    # method 3
+    symbol = raw_call(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
+    if symbol is not None: return symbol
+
+    # we've failed to fetch
+    if return_None_on_failure: return None
+    raise NonStandardERC20(f'''
+        Unable to fetch `symbol` for {contract_address} on {NETWORK_STRING}
+        If the contract is verified, please check to see if it has a strangely named
+        `symbol` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct method name so we can keep things going smoothly :)''')
+
+
+def _name(
+    contract_address: Union[str, Address, brownie.Contract, Contract],
+    block: Union[BlockNumber, int, None] = None,
+    return_None_on_failure: bool = False
+    ):
+
+    # method 1
+    # NOTE: this will almost always work, you will rarely proceed to further methods
+    name = raw_call(contract_address, "name()", block=block, output='str', return_None_on_failure=True)
+    if name is not None: return name
+
+    # method 2
+    name = raw_call(contract_address, "NAME()", block=block, output='str', return_None_on_failure=True)
+    if name is not None: return name
+
+    # method 3
+    name = raw_call(contract_address, "getName()", block=block, output='str', return_None_on_failure=True)
+    if name is not None: return name
+
+    # we've failed to fetch
+    if return_None_on_failure: return None
+    raise NonStandardERC20(f'''
+        Unable to fetch `name` for {contract_address} on {NETWORK_STRING}
+        If the contract is verified, please check to see if it has a strangely named
+        `name` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
 def _totalSupply(
@@ -55,45 +168,103 @@ def _totalSupply(
     return_None_on_failure: bool = False # TODO: implement this kwarg
     ):
 
-    if type(contract_address) != str:
-        contract_address = str(contract_address)
-
-    try:
-        return raw_call(contract_address, "totalSupply()", block=block, output='int')
+    try: total_supply = raw_call(contract_address, "totalSupply()", block=block, output='int', return_None_on_failure=True)
     except OverflowError:
-        return Contract(contract_address).totalSupply(block_identifier=block)
+        # OverflowError means the call didn't revert, but we can't decode it correctly
+        # the contract might not comply with standards, so we can possibly fetch totalSupply 
+        # using the verified non standard abi as a fallback
+        try: total_supply = Contract(contract_address).totalSupply(block_identifier=block)
+        except AttributeError as e:
+            if "has no attribute 'totalSupply'" not in str(e): raise
+            # we got a response from the chain but brownie can't find `totalSupply` method, 
+            # maybe our cached contract definition is messed up. let's repull it
+            total_supply = brownie.Contract.from_explorer(contract_address).totalSupply(block_identifier=block)
+
+    if total_supply is not None: return total_supply
+
+    if return_None_on_failure: return None
+    raise NonStandardERC20(f'''
+        Unable to fetch `totalSupply` for {contract_address} on {NETWORK_STRING}
+        If the contract is verified, please check to see if it has a strangely named
+        `totalSupply` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
 def _totalSupplyReadable(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
-    block: Union[BlockNumber, int, None] = None
+    block: Union[BlockNumber, int, None] = None,
+    return_None_on_failure: bool = False
     ):
-    return _totalSupply(contract_address,block) / 10 ** _decimals(contract_address,block)
+
+    total_supply = _totalSupply(contract_address, block=block, return_None_on_failure=return_None_on_failure)
+    decimals = _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
+
+    if total_supply is not None and decimals is not None: return total_supply / 10 ** decimals
+
+    if total_supply is None and decimals is None and return_None_on_failure: return None
+
+    raise NonStandardERC20(f'''
+        Unable to fetch `totalSupplyReadable` for {contract_address} on {NETWORK_STRING}
+        totalSupply: {total_supply} decimals: {decimals}
+        If the contract is verified, please check to see if it has a strangely named `totalSupply` or
+        `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
 def _balanceOf(
     call_address: Union[str, Address, brownie.Contract, Contract], 
     input_address: Union[str, Address, brownie.Contract, Contract], 
-    block: Union[BlockNumber, int, None] = None
+    block: Union[BlockNumber, int, None] = None,
+    return_None_on_failure: bool = False
     ):
 
-    if type(call_address) != str:
-        call_address = str(call_address)
+    # method 1
+    # NOTE: this will almost always work, you will rarely proceed to further methods
+    try: balance = raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address, output='int', return_None_on_failure=True)
+    except OverflowError:
+        # OverflowError means the call didn't revert, but we can't decode it correctly
+        # the contract might not comply with standards, so we can possibly fetch balanceOf 
+        # using the verified non standard abi as a fallback
+        try: return Contract(call_address).balanceOf(input_address, block_identifier=block)
+        except AttributeError as e:
+            if "has no attribute 'balanceOf'" not in str(e): raise
+            # we got a response from the chain but brownie can't find `balanceOf` method, 
+            # maybe our cached contract definition is messed up. let's repull it
+            balance = brownie.Contract.from_explorer(call_address).balanceOf(input_address, block_identifier=block)
     
-    if type(input_address) != str:
-        input_address = str(input_address)
+    if balance is not None: return balance
 
-    data = raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address)
-    try: return convert.to_int(data)
-    except: return Contract(call_address).balanceOf(input_address, block_identifier=block)
+    # we've failed to fetch
+    if return_None_on_failure: return None
+    raise NonStandardERC20(f'''
+        Unable to fetch `balanceOf` for token: {call_address} holder: {input_address} on {NETWORK_STRING}
+        If the contract is verified, please check to see if it has a strangely named
+        `totalSupply` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
 def _balanceOfReadable(
     call_address: Union[str, Address, brownie.Contract, Contract], 
     input_address: Union[str, Address, brownie.Contract, Contract], 
-    block: Union[BlockNumber, int, None] = None
+    block: Union[BlockNumber, int, None] = None,
+    return_None_on_failure: bool = False
     ):
-    return _balanceOf(call_address, input_address, block=block) / 10 ** _decimals(call_address, block)
+
+    # TODO _balanceOf return_None_on_failure
+    balance = _balanceOf(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure)
+    decimals = _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure)
+
+    if balance is not None and decimals is not None: return balance / 10 ** decimals
+
+    # we've failed to fetch
+    if return_None_on_failure: return None
+    else: raise NonStandardERC20(
+        f'''Unable to fetch `balanceOfReadable` for
+        token: {call_address} holder: {input_address} on {NETWORK_STRING}
+        balanceOf: {balance} decimals: {decimals}
+        If the contract is verified, please check to see if it has a strangely named `balanceOf` or
+        `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
 def raw_call(
@@ -101,22 +272,35 @@ def raw_call(
     method: str, 
     block: Union[BlockNumber, int, None] = None, 
     inputs = None, 
-    output: str = None
+    output: str = None,
+    return_None_on_failure: bool = False
     ):
     '''
-    call a contract with only address and method.
-    only works with 1 input, ie `balanceOf(address)`
+    call a contract with only address and method. Bypasses brownie Contract object formation to save time
+    only works with 1 input, ie `balanceOf(address)` or `getPoolInfo(uint256)`
     '''
+
+    if type(contract_address) != str:
+        contract_address = str(contract_address)
+
     data = {'to': convert.to_address(contract_address),'data': prepare_data(method,inputs)}
-    response = web3.eth.call(data,block_identifier=block)
-    if output is None: return response
-    elif output == 'address': return convert.to_address(f'0x{response.hex()[-40:]}')
-    elif output in ['int','uint','uint256']: return convert.to_int(response)
+
+    try: response = web3.eth.call(data,block_identifier=block)
+    except ValueError as e:
+        if return_None_on_failure is False: raise
+        if 'execution reverted' in str(e): return None
+        if 'invalid opcode' in str(e): return None
+    
+    if output is None:                              return response
+    elif output == 'address':                       return convert.to_address(f'0x{response.hex()[-40:]}')
+    elif output in [int, 'int','uint','uint256']:   return convert.to_int(response)
+    elif output in [str, 'str']:                    return convert.to_string(response)
+    else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
 def prepare_data(
     method, 
-    inputs = None
+    inputs = Union[bytes, int, str, Address, brownie.Contract, Contract, Sequence[bytes, int, str, Address, brownie.Contract, Contract]]
     ):
     method = encode_hex(fourbyte(method))
 
@@ -126,8 +310,10 @@ def prepare_data(
     elif type(inputs) in [str,int,bytes]:
         return method + prepare_input(inputs)
     
-    else:
-        raise ValueError(f'Unsupported input type. Supported types are: str, int, bytes, Set[str,int,bytes], List[str,int,bytes], Tuple[str,int,bytes], Dict[Any:[str,int,bytes]]')
+    raise CalldataPreparationError(f'''
+        Supported types are: Union[bytes, int, str, Address, brownie.Contract, y.Contract, 
+            Sequence[bytes, int, str, Address, brownie.Contract, y.Contract]]
+        You passed {type(inputs)} {inputs}''')
     
     # these don't work yet, wip
     '''
@@ -144,6 +330,19 @@ def prepare_data(
     '''
 
 
-def prepare_input(input):
-    try: return '000000000000000000000000' + convert.to_address(input)[2:]
-    except: raise 
+def prepare_input(input: Union[int, bytes, Union[str, Address, brownie.Contract, Contract]]):
+    input_type = type(input)
+
+    if input_type == int: return convert.to_bytes(input).hex()
+
+    if input_type == bytes: return input.hex()
+
+    # we can't process actual strings so we can assume that any string input is an address. regular strings will fail
+    if input_type in [str, Address, brownie.Contract, Contract]: return '000000000000000000000000' + convert.to_address(input)[2:]
+    
+    raise CalldataPreparationError(f'''
+        Supported input types are
+        uint: int, 
+        address: Union[str, Address, brownie.Contract, y.Contract]
+        you passed input: {input} type: {input_type}
+        ''')
