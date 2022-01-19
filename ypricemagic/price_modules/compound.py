@@ -32,7 +32,7 @@ class Compound:
             response = multicall_same_func_no_input(trollers.values(), 'getAllMarkets()(address[])')
             response = [[convert.to_address(market) for market in troller_market] for troller_market in response]
             self.trollers = {name: Comptroller(troller, markets) for name, troller, markets in zip(trollers.keys(), trollers.values(), response)}
-        else: self.trollers = None
+        else: self.trollers = [None]
 
     def is_compound_market(self, token_address: str):
         if any(token_address in self.trollers[name].markets for name in self.trollers):
