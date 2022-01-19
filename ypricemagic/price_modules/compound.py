@@ -28,10 +28,11 @@ class Comptroller:
 class Compound:
     def __init__(self) -> None:
         trollers = {name: address for name, address in UNITROLLERS.items()}
-        if not len(trollers): return # if no trollers on active chain, we are done
-        response = multicall_same_func_no_input(trollers.values(), 'getAllMarkets()(address[])')
-        response = [[convert.to_address(market) for market in troller_market] for troller_market in response]
-        self.trollers = {name: Comptroller(troller, markets) for name, troller, markets in zip(trollers.keys(), trollers.values(), response)}
+        if len(trollers): 
+            response = multicall_same_func_no_input(trollers.values(), 'getAllMarkets()(address[])')
+            response = [[convert.to_address(market) for market in troller_market] for troller_market in response]
+            self.trollers = {name: Comptroller(troller, markets) for name, troller, markets in zip(trollers.keys(), trollers.values(), response)}
+        else: self.trollers = None
 
     def is_compound_market(self, token_address: str):
         if any(token_address in self.trollers[name].markets for name in self.trollers):
