@@ -1,9 +1,11 @@
+from ast import Add
 import logging
 from functools import lru_cache
 from typing import Callable, Sequence, Union
 
 import brownie
 from brownie import convert, web3
+from brownie.convert.datatypes import EthAddress
 from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
@@ -300,24 +302,18 @@ def raw_call(
 
 def prepare_data(
     method, 
-    inputs = Union[
-        bytes, int, str, Address, brownie.Contract, Contract, 
-        Sequence[Union[bytes, int, str, Address, brownie.Contract, Contract]]
-        ]
+    inputs = Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract]
     ):
     method = encode_hex(fourbyte(method))
 
     if inputs is None:
         return method
 
-    elif type(inputs) in [str,int,bytes]:
+    elif type(inputs) in [bytes, int, str, Address, EthAddress, brownie.Contract, Contract]:
         return method + prepare_input(inputs)
     
     raise CalldataPreparationError(f'''
-        Supported types are: Union[
-            bytes, int, str, Address, brownie.Contract, y.Contract, 
-            Sequence[Union[bytes, int, str, Address, brownie.Contract, y.Contract]]
-            ]
+        Supported types are: Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, y.Contract]
         You passed {type(inputs)} {inputs}''')
     
     # these don't work yet, wip
@@ -335,15 +331,25 @@ def prepare_data(
     '''
 
 
-def prepare_input(input: Union[int, bytes, Union[str, Address, brownie.Contract, Contract]]):
+def prepare_input(
+    input: Union[
+        bytes, # for bytes input
+        int, # for int input
+        Union[str, Address, EthAddress, brownie.Contract, Contract] # for address input
+        ]
+    ):
+    
     input_type = type(input)
 
-    if input_type == int: return convert.to_bytes(input).hex()
+    if input_type == bytes:
+        return input.hex()
 
-    if input_type == bytes: return input.hex()
+    if input_type == int:
+        return convert.to_bytes(input).hex()
 
     # we can't process actual strings so we can assume that any string input is an address. regular strings will fail
-    if input_type in [str, Address, brownie.Contract, Contract]: return '000000000000000000000000' + convert.to_address(input)[2:]
+    if input_type in [str, Address, EthAddress, brownie.Contract, Contract]:
+        return '000000000000000000000000' + convert.to_address(input)[2:]
     
     raise CalldataPreparationError(f'''
         Supported input types are
