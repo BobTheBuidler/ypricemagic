@@ -13,12 +13,7 @@ from y.exceptions import PriceError
 from y.prices import _sense_check
 from y.utils.cache import memory
 
-from y.contracts import Contract
-from ypricemagic.utils.raw_calls import _symbol
-from ypricemagic.price_modules import (aave, belt, compound, cream, ellipsis,
-                                       froyo, gelato, ib, mooniswap,
-                                       mstablefeederpool, piedao, tokensets,
-                                       wsteth, yearn)
+from ypricemagic.price_modules import *
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
