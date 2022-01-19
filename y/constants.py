@@ -6,6 +6,8 @@ from y.networks import Network
 
 NETWORK_STRING = Network.name(chain.id) if Network.name(chain.id) else f"chain {chain.id}"
 
+EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+
 sushi = None
 
 
