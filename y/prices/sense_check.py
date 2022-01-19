@@ -36,10 +36,12 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd", # btc++
         "0x3212b29E33587A00FB1C83346f5dBFA69A458923", # imbtc
         "0x5228a22e72ccC52d415EcFd199F99D0665E7733b", # pbtc
+        "0xFbdCA68601f835b27790D98bbb8eC7f05FDEaA9B", # ibbtc/sbtcCRV-f
         # gold tokens
         "0x4922a015c4407F87432B179bb209e125432E4a2A", # xaut
         # other
         "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", # yfi
+        "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44", # kp3r
         "0xD5525D397898e5502075Ea5E830d8914f6F0affe", # meme
         "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2", # mkr
         "0x23B608675a2B2fB1890d3ABBd85c5775c51691d5", # socks
@@ -53,7 +55,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x269616D549D7e8Eaa82DFb17028d0B212D11232A", # punk (different)
         "0x69BbE2FA02b4D90A944fF328663667DC32786385", # punk-basic
         "0xD70240Dd62F4ea9a6A2416e0073D72139489d2AA", # glyph
-        "", # bayc
+        "0x114f1388fAB456c4bA31B1850b244Eedcd024136", # coolcats
+        "0xEA47B64e1BFCCb773A0420247C0aa0a3C1D2E5C5", # bayc
     ],
     Network.BinanceSmartChain: [
         # eth and eth-like
