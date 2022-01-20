@@ -3,6 +3,7 @@ import logging
 from brownie import chain, convert
 from y.contracts import Contract
 from y.networks import Network
+from y.utils.logging import gh_issue_request
 from ypricemagic.utils.multicall import (fetch_multicall,
                                          multicall_same_func_no_input)
 from ypricemagic.utils.raw_calls import _decimals, raw_call
@@ -95,15 +96,12 @@ class Compound:
         If the `comptroller` for token `token_address` is not known to ypricemagic, log a message:
         - `logger.warn(f'Comptroller {comptroller} is unknown to ypricemagic.')`
         - `logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')`
-        - `logger.warn('In your issue, please include the network name ({Network.name()}) and the comptroller address')`
+        - `logger.warn(f'In your issue, please include the network {network_details} and the comptroller address')`
         - `logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')`
         '''
         comptroller = raw_call(token_address,'comptroller()',output='address')
         if comptroller not in self.trollers:
-            logger.warn(f'Comptroller {comptroller} is unknown to ypricemagic.')
-            logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')
-            logger.warn('In your issue, please include the network name ({Network.name()}) and the comptroller address.')
-            logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')
+            gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
 
 
 compound = Compound()
