@@ -1,3 +1,4 @@
+# General
 
 class PriceError(Exception):
     pass
@@ -8,16 +9,10 @@ class UnsupportedNetwork(Exception):
 class NonStandardERC20(Exception):
     pass
 
-class NotUniswapPoolV2(Exception):
-    pass
 
-class CalldataPreparationError(Exception):
-    pass
+# Contracts
 
 class ContractNotVerified(Exception):
-    pass
-
-class CallReverted(Exception):
     pass
 
 
@@ -27,6 +22,24 @@ def contract_not_verified(e: Exception) -> bool:
         'has not been verified',
     ]
     return any(trigger in str(e) for trigger in triggers)
+
+
+# Pool detection
+
+class NotAUniswapV2Pool(Exception):
+    pass
+
+class NotABalancerV2Pool(Exception):
+    pass
+
+
+# Calls
+
+class CalldataPreparationError(Exception):
+    pass
+
+class CallReverted(Exception):
+    pass
 
 
 def call_reverted(e: Exception) -> bool:
