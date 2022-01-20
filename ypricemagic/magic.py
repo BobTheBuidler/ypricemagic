@@ -53,7 +53,9 @@ def get_price(
 
     token_address = convert.to_address(token_address)
     try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
-    except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
+    except RecursionError:
+        if fail_to_None: return None
+        else: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
 
 
 def get_prices(
