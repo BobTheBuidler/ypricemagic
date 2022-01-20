@@ -8,9 +8,9 @@ from brownie import chain, web3
 from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
-from ypricemagic.utils.raw_calls import raw_call
 
-from y.exceptions import ContractNotVerified, contract_not_verified
+from y.exceptions import (ContractNotVerified, call_reverted,
+                          contract_not_verified)
 from y.networks import Network
 from y.utils.cache import memory
 
@@ -79,9 +79,18 @@ def is_contract(address: str) -> bool:
     return web3.eth.get_code(address) != '0x'
 
 @memory.cache()
-def has_method(address: str, method: str) -> bool:
-    '''checks to see if a contract has a `method` view method with no inputs'''
-    return True if raw_call(address, method, return_None_on_failure=True) else False
+def has_method(address: str, method: str, return_response: bool = False) -> bool:
+    '''
+    Checks to see if a contract has a `method` view method with no inputs.
+    `return_response=True` will return `response` in bytes if `response` else `False`
+    '''
+    try: response = Call(address, [f'{method}()()', None], [[None, None]], _w3=web3)()
+    except Exception as e:
+        if call_reverted(e): return False
+        raise
+    
+    if return_response: return response
+    else: return True
 
 @memory.cache()
 def has_methods(address: str, methods: List[str]) -> bool:
