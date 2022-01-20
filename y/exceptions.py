@@ -18,5 +18,8 @@ class ContractNotVerified(Exception):
     pass
 
 def contract_not_verified(e: Exception) -> bool:
-    message = 'Contract source code not verified'
-    return True if message not in str(e) else False
+    triggers = [
+        'Contract source code not verified',
+        'has not been verified',
+    ]
+    return True if any(trigger in str(e) for trigger in triggers) not in str(e) else False
