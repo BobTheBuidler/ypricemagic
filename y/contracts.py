@@ -97,13 +97,24 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
     else: return True
 
 @memory.cache()
-def has_methods(address: str, methods: List[str]) -> bool:
-    '''checks to see if a contract has each view method (with no inputs) in `methods`'''
+def has_methods(
+    address: str, 
+    methods: List[str],
+    at_least_one: bool = False
+) -> bool:
+    '''
+    Checks to see if a contract has each view method (with no inputs) in `methods`.
+    Pass `at_least_one=True` to only verify a contract has at least one of the methods.
+    '''
+    func = any if at_least_one else all
     calls = [Call(address, [f'{method}()()'], [[i, None]]) for i, method in enumerate(methods)]
-    try: return any(Multicall(calls, _w3=web3, require_success=False)().values())
+    try: return func(Multicall(calls, _w3=web3, require_success=False)().values())
+    # We return False here because `has_methods` is only supposed to work for public view methods with no inputs
+    # Out of gas error implies method is state-changing
     except ValueError as e:
-        if 'out of gas' in str(e): return False
+        if 'out of gas' in str(e): return False 
         else: raise
+    
 
 @memory.cache()
 def build_name(address: str, return_None_on_failure: bool = False) -> str:
