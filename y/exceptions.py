@@ -8,6 +8,9 @@ class UnsupportedNetwork(Exception):
 class NonStandardERC20(Exception):
     pass
 
+class NotUniswapPoolV2(Exception):
+    pass
+
 class CalldataPreparationError(Exception):
     pass
 
