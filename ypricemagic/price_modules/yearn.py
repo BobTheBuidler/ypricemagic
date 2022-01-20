@@ -1,7 +1,6 @@
 import logging
 
-from joblib import logger
-from y.contracts import Contract
+from y.contracts import Contract, has_methods
 from ypricemagic.utils.multicall import fetch_multicall
 
 logger = logging.getLogger(__name__)
@@ -9,15 +8,14 @@ logger = logging.getLogger(__name__)
 # NOTE: Yearn and Yearn-like
 
 def is_yearn_vault(token):
-    vault = Contract(token)
+    logger.debug(f'Checking `is_yearn_vault({token})')
     # Yearn-like contracts can use these formats
-    return any([
-        hasattr(vault, 'pricePerShare'),
-        hasattr(vault, 'getPricePerFullShare'),
-        hasattr(vault, 'getPricePerShare'),
-        hasattr(vault, 'exchangeRate') and hasattr(vault,'underlying'),
-        hasattr(vault, 'getSharesToUnderlying')
-        ])
+    result = any([
+        has_methods(token, ['pricePerShare','getPricePerShare','getPricePerFullShare','getSharesToUnderlying'], at_least_one=True),
+        has_methods(token, ['exchangeRate','underlying']),
+    ])
+    logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
+    return result
 
 
 def get_price(token, block=None):
