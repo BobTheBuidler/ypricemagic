@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import List
 
 from brownie import Contract as _Contract
-from brownie import chain, web3
+from brownie import chain, convert, web3
 from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
@@ -93,8 +93,9 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
         if call_reverted(e): return False
         raise
     
+    if not got_response(response): return False
     if return_response: return response
-    else: return True
+    return True
 
 @memory.cache()
 def has_methods(
@@ -108,12 +109,26 @@ def has_methods(
     '''
     func = any if at_least_one else all
     calls = [Call(address, [f'{method}()()'], [[i, None]]) for i, method in enumerate(methods)]
-    try: return func(Multicall(calls, _w3=web3, require_success=False)().values())
+    try: response = Multicall(calls, _w3=web3, require_success=False)().values()
     # We return False here because `has_methods` is only supposed to work for public view methods with no inputs
     # Out of gas error implies method is state-changing
     except ValueError as e:
         if 'out of gas' in str(e): return False 
         else: raise
+    
+    # sometimes the call won't revert but you don't get anything back
+    response = [got_response(data) for data in response]
+
+    return func(response)
+
+def got_response(data) -> bool:
+    '''
+    Sometimes a call won't revert but you don't get anything back.
+    This will validate whether you got a response.
+    '''
+    if data is None: return False
+    if convert.to_string(data) == '': return False
+    return True 
     
 
 @memory.cache()
