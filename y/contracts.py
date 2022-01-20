@@ -7,11 +7,11 @@ from brownie import Contract as _Contract
 from brownie import chain, web3
 from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
-from y.constants import NETWORK_STRING
-from y.exceptions import ContractNotVerified, contract_not_verified
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 from ypricemagic.utils.raw_calls import raw_call
 
+from y.exceptions import ContractNotVerified, contract_not_verified
+from y.networks import Network
 from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
@@ -70,7 +70,7 @@ def Contract(address):
     with _contract_lock:
         try: return _contract(address)
         except ValueError as e:
-            if contract_not_verified(e): raise ContractNotVerified(f'{address} on {NETWORK_STRING}')
+            if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.string}')
             else: raise
 
 @memory.cache()

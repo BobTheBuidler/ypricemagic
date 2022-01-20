@@ -8,9 +8,10 @@ from eth_typing.evm import Address, BlockNumber
 from hexbytes import HexBytes
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
-from y.constants import NETWORK_STRING, STABLECOINS, WRAPPED_GAS_COIN
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN
 from y.contracts import Contract
-from y.exceptions import NonStandardERC20, PriceError
+from y.exceptions import PriceError
+from y.networks import Network
 from y.prices import _sense_check
 
 from ypricemagic.price_modules import *
@@ -55,7 +56,7 @@ def get_price(
     try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
     except RecursionError:
         if fail_to_None: return None
-        else: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
+        else: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {Network.printable()}')
 
 
 def get_prices(
@@ -83,7 +84,7 @@ def _get_price(
     fail_to_None: bool = False, 
     silent: bool = False
     ):
-    logger.debug(f"network: {NETWORK_STRING} token: {token}")
+    logger.debug(f"network: {Network.printable()} token: {token}")
     logger.debug("unwrapping %s", token)
 
     price, bucket = _exit_early_for_known_tokens(token, block=block)
@@ -200,7 +201,7 @@ def _fail_appropriately(
         symbol = _symbol(token_address)
 
     if not silent:
-        logger.error(f"failed to get price for {symbol} {token_address} on {NETWORK_STRING}")
+        logger.error(f"failed to get price for {symbol} {token_address} on {Network.printable()}")
 
     if not fail_to_None:
-        raise PriceError(f'could not fetch price for {symbol} {token_address} on {NETWORK_STRING}')
+        raise PriceError(f'could not fetch price for {symbol} {token_address} on {Network.printable()}')

@@ -10,8 +10,8 @@ from brownie.convert.datatypes import EthAddress
 from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
-from y.constants import NETWORK_STRING
 from y.contracts import Contract
+from y.networks import Network
 
 logger = logging.getLogger(__name__)
 
@@ -97,7 +97,7 @@ def _decimals(
     # we've failed to fetch
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
-        Unable to fetch `decimals` for {contract_address} on {NETWORK_STRING}
+        Unable to fetch `decimals` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
         `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
         with the contract address and correct method name so we can keep things going smoothly :)''')
@@ -125,7 +125,7 @@ def _symbol(
     # we've failed to fetch
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
-        Unable to fetch `symbol` for {contract_address} on {NETWORK_STRING}
+        Unable to fetch `symbol` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
         `symbol` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
         with the contract address and correct method name so we can keep things going smoothly :)''')
@@ -153,7 +153,7 @@ def _name(
     # we've failed to fetch
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
-        Unable to fetch `name` for {contract_address} on {NETWORK_STRING}
+        Unable to fetch `name` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
         `name` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
         with the contract address and correct method name so we can keep things going smoothly :)''')
@@ -181,7 +181,7 @@ def _totalSupply(
 
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
-        Unable to fetch `totalSupply` for {contract_address} on {NETWORK_STRING}
+        Unable to fetch `totalSupply` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
         `totalSupply` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
         with the contract address and correct method name so we can keep things going smoothly :)''')
@@ -201,7 +201,7 @@ def _totalSupplyReadable(
     if total_supply is None and decimals is None and return_None_on_failure: return None
 
     raise NonStandardERC20(f'''
-        Unable to fetch `totalSupplyReadable` for {contract_address} on {NETWORK_STRING}
+        Unable to fetch `totalSupplyReadable` for {contract_address} on {Network.printable()}
         totalSupply: {total_supply} decimals: {decimals}
         If the contract is verified, please check to see if it has a strangely named `totalSupply` or
         `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
@@ -234,7 +234,7 @@ def _balanceOf(
     # we've failed to fetch
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
-        Unable to fetch `balanceOf` for token: {call_address} holder: {input_address} on {NETWORK_STRING}
+        Unable to fetch `balanceOf` for token: {call_address} holder: {input_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
         `totalSupply` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
         with the contract address and correct function name so we can keep things going smoothly :)''')
@@ -257,7 +257,7 @@ def _balanceOfReadable(
     if return_None_on_failure: return None
     else: raise NonStandardERC20(
         f'''Unable to fetch `balanceOfReadable` for
-        token: {call_address} holder: {input_address} on {NETWORK_STRING}
+        token: {call_address} holder: {input_address} on {Network.printable()}
         balanceOf: {balance} decimals: {decimals}
         If the contract is verified, please check to see if it has a strangely named `balanceOf` or
         `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic

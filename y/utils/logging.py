@@ -4,9 +4,12 @@ import logging
 from functools import lru_cache
 from typing import Any, List, Union
 
-from y.constants import NETWORK_DETAIL_FOR_LOGGING
+from brownie import chain
+from y import Network
 
 logger = logging.getLogger(__name__)
+
+NETWORK_DESCRIPTOR_FOR_ISSUE_REQ =f'name ({Network.name()})' if Network.name() else f'chainid ({chain.id})'
 
 def gh_issue_request(issue_request_details: Union[str, List[str]], _logger = None) -> None:
 
@@ -20,7 +23,7 @@ def gh_issue_request(issue_request_details: Union[str, List[str]], _logger = Non
             _logger.warn(message)
 
     _logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')
-    _logger.warn(f'In your issue, please include the network {NETWORK_DETAIL_FOR_LOGGING} and the detail shown above.')
+    _logger.warn(f'In your issue, please include the network {NETWORK_DESCRIPTOR_FOR_ISSUE_REQ} and the detail shown above.')
     _logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')
 
 

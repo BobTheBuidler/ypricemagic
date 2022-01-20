@@ -45,3 +45,9 @@ class Network(IntEnum):
         elif chain_id == Network.Arbitrum:              return 'Arbitrum'
         elif chain_id == Network.Avalanche:             return 'Avalanche'
         elif chain_id == Network.Harmony:               return "HarmonyOne Shard 0"
+
+    @staticmethod
+    def printable(chain_id = None):
+        # will always work to print a readable string that identifies the network, even if network not supported
+        if chain_id is None: chain_id = chain.id
+        return Network.name(chain_id) if Network.name(chain_id) else f"chain {chain_id}"
