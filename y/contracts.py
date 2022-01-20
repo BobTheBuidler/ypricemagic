@@ -1,12 +1,16 @@
 import logging
 import threading
 from functools import lru_cache
+from typing import List
 
 from brownie import Contract as _Contract
 from brownie import chain, web3
 from brownie.exceptions import CompilerError
-from y.utils.cache import memory
+from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
+from ypricemagic.utils.raw_calls import raw_call
+
+from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 
@@ -64,6 +68,18 @@ def Contract(address):
     with _contract_lock:
         return _contract(address)
 
+@memory.cache()
 def is_contract(address: str) -> bool:
     '''checks to see if the input address is a contract'''
     return web3.eth.get_code(address) != '0x'
+
+@memory.cache()
+def has_method(address: str, method: str) -> bool:
+    '''checks to see if a contract has a `method` view method with no inputs'''
+    return True if raw_call(address, method, return_None_on_failure=True) else False
+
+@memory.cache()
+def has_methods(address: str, methods: List[str]) -> bool:
+    '''checks to see if a contract has each view method (with no inputs) in `methods`'''
+    calls = [Call(address, [f'{method}()()', None], [[i, None]]) for i, method in enumerate(methods)]
+    return any(Multicall(calls, _w3=web3, require_success=False)().values())
