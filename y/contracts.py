@@ -7,6 +7,8 @@ from brownie import Contract as _Contract
 from brownie import chain, web3
 from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
+from y.constants import NETWORK_STRING
+from y.exceptions import ContractNotVerified, contract_not_verified
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 from ypricemagic.utils.raw_calls import raw_call
 
@@ -66,7 +68,10 @@ _contract = lru_cache(maxsize=None)(_Contract)
 
 def Contract(address):
     with _contract_lock:
-        return _contract(address)
+        try: return _contract(address)
+        except ValueError as e:
+            if contract_not_verified(e): raise ContractNotVerified(f'{address} on {NETWORK_STRING}')
+            else: raise
 
 @memory.cache()
 def is_contract(address: str) -> bool:
