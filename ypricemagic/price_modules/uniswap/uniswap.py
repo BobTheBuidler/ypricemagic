@@ -8,7 +8,7 @@ from y.exceptions import contract_not_verified
 from ypricemagic.price_modules.uniswap.protocols import (FACTORY_TO_PROTOCOL,
                                                          TRY_ORDER, UNISWAPS)
 from ypricemagic.price_modules.uniswap.v1 import UniswapV1
-from ypricemagic.price_modules.uniswap.v2.pool import (NotUniswapPoolV2,
+from ypricemagic.price_modules.uniswap.v2.pool import (NotAUniswapV2Pool,
                                                        UniswapPoolV2)
 from ypricemagic.price_modules.uniswap.v2.router import UniswapRouterV2
 from ypricemagic.utils.raw_calls import _decimals
@@ -32,7 +32,7 @@ class Uniswap:
 
     def is_uniswap_pool(self, token_address: str) -> bool:
         try: return UniswapPoolV2(token_address).factory in self.factories
-        except NotUniswapPoolV2: return False
+        except NotAUniswapV2Pool: return False
 
     def get_price_v1(self, token_address, block=None):
         return self.v1.get_price(token_address, block)
