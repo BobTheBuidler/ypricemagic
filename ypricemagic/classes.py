@@ -7,7 +7,6 @@ from ypricemagic.utils.raw_calls import _name, _symbol, _totalSupplyReadable
 
 
 # WIP
-@lru_cache(maxsize=None) # TODO test to see this actually works how I want
 class ERC20:
     def __init__(self, token_address) -> None:
         self.address = token_address
