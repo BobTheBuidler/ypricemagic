@@ -5,7 +5,7 @@ from functools import lru_cache
 from typing import Any, List, Union
 
 from brownie import chain
-from y import Network
+from y.networks import Network
 
 logger = logging.getLogger(__name__)
 
