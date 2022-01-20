@@ -1,8 +1,6 @@
 import logging
 
-from y.contracts import Contract
-from y.exceptions import contract_not_verified
-from ypricemagic.classes import ERC20
+from y.contracts import Contract, build_name
 from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall import fetch_multicall
 
@@ -26,23 +24,29 @@ class BalancerV2Vault:
 
     def deepest_pool_for(self, token_address, block=None):
         pools = self.list_pools(block=block)
-        pools_info = fetch_multicall(*[[self.contract,'getPoolTokens',poolId] for poolId in pools.keys()], block=block)
+        poolids = [poolid for poolid, pool in pools.items() if _is_standard_pool(pool)]
+        pools_info = fetch_multicall(*[[self.contract,'getPoolTokens',poolId] for poolId in poolids], block=block)
         deepest_pool = {'pool': None, 'balance': 0}
+        pools_info = {pool: info for pool, info in zip(pools.values(), pools_info) if str(info) != "((), (), 0)"}
         for pool, info in zip(pools.values(),pools_info):
-            if str(info) == "((), (), 0)": continue
             ct_tokens = len(info[0])
             pool_balances = {info[0][i]: info[1][i] for i in range(ct_tokens)}
-            for token, balance in pool_balances.items():
-                try:
-                    if (
-                        token == token_address and balance > deepest_pool['balance']
-                        and ERC20(pool).build_name not in ['ConvergentCurvePool','MetaStablePool']
-                        ):
-                        deepest_pool = {'pool': pool, 'balance': balance}
-                except ValueError as e:
-                    if contract_not_verified(e): pass
-                    else: raise
+            pool_balance = [balance for token, balance in pool_balances.items() if token == token_address]
+
+            assert len(pool_balance) == 1
+            pool_balance = pool_balance[0]
+
+            if pool_balance > deepest_pool['balance']:
+                deepest_pool = {'pool': pool, 'balance': pool_balance}
+
         return deepest_pool['pool'], deepest_pool['balance']
 
     
-        
+def _is_standard_pool(pool: str):
+    '''
+    Returns `False` if `build_name(pool) in ['ConvergentCurvePool','MetaStablePool']`, else `True`
+    '''
+    
+    # With `return_None_on_failure=True`, if `build_name(pool)` fails,
+    # we can't know for sure that its a standard pool, but... it probably is.
+    build = build_name(pool, return_None_on_failure=True) not in ['ConvergentCurvePool','MetaStablePool']
