@@ -1,9 +1,13 @@
+import logging
+
 from brownie import chain, convert
 from y.contracts import Contract
 from y.networks import Network
 from ypricemagic.utils.multicall import (fetch_multicall,
                                          multicall_same_func_no_input)
-from ypricemagic.utils.raw_calls import _decimals
+from ypricemagic.utils.raw_calls import _decimals, raw_call
+
+logger = logging.getLogger(__name__)
 
 UNITROLLERS = {
     Network.Mainnet: {
@@ -28,7 +32,7 @@ class Comptroller:
 class Compound:
     def __init__(self) -> None:
         self.trollers = {name: address for name, address in UNITROLLERS.items()}
-        
+
         if len(self.trollers) == 0: return 
 
         response = multicall_same_func_no_input(self.trollers.values(), 'getAllMarkets()(address[])')
@@ -45,7 +49,9 @@ class Compound:
         # NOTE: Workaround for pools that have since been revoked
         token_contract = Contract(token_address)
         required = {"isCToken", "comptroller", "underlying"} 
-        return set(token_contract.__dict__) & required == required
+        result = set(token_contract.__dict__) & required == required
+        if result is True: self.notify_if_unknown_comptroller(token_address)
+        return result
     
     def get_price(self, token_address: str, block=None):
         token = Contract(token_address)
@@ -83,5 +89,21 @@ class Compound:
             under_decimals = 18
             return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
         '''
+
+    def notify_if_unknown_comptroller(self, token_address: str) -> None:
+        '''
+        If the `comptroller` for token `token_address` is not known to ypricemagic, log a message:
+        - `logger.warn(f'Comptroller {comptroller} is unknown to ypricemagic.')`
+        - `logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')`
+        - `logger.warn('In your issue, please include the network name ({Network.name()}) and the comptroller address')`
+        - `logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')`
+        '''
+        comptroller = raw_call(token_address,'comptroller()',output='address')
+        if comptroller not in self.trollers:
+            logger.warn(f'Comptroller {comptroller} is unknown to ypricemagic.')
+            logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')
+            logger.warn('In your issue, please include the network name ({Network.name()}) and the comptroller address.')
+            logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')
+
 
 compound = Compound()
