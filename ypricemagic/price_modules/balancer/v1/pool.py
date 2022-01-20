@@ -1,4 +1,5 @@
 
+from y.contracts import has_methods
 from y.exceptions import PriceError
 from ypricemagic import magic
 from ypricemagic.classes import ERC20
@@ -11,8 +12,7 @@ class BalancerV1Pool(ERC20):
         super().__init__(pool_address)
     
     def is_pool(self):
-        required = {"getCurrentTokens", "getBalance", "totalSupply"}
-        return set(self.contract.__dict__) & required == required
+        return has_methods(self.address ,{"getCurrentTokens", "getBalance", "totalSupply"})
 
     def tokens(self, block=None):
         return self.contract.getCurrentTokens(block_identifier=block)
