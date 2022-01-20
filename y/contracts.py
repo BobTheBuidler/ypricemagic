@@ -88,3 +88,12 @@ def has_methods(address: str, methods: List[str]) -> bool:
     '''checks to see if a contract has each view method (with no inputs) in `methods`'''
     calls = [Call(address, [f'{method}()()', None], [[i, None]]) for i, method in enumerate(methods)]
     return any(Multicall(calls, _w3=web3, require_success=False)().values())
+
+@memory.cache()
+def build_name(address: str, return_None_on_failure: bool = False) -> str:
+    try:
+        contract = Contract(address)
+        return contract.__dict__['_build']['contractName']
+    except ContractNotVerified:
+        if return_None_on_failure: return None
+        else: raise
