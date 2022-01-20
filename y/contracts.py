@@ -100,7 +100,10 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
 def has_methods(address: str, methods: List[str]) -> bool:
     '''checks to see if a contract has each view method (with no inputs) in `methods`'''
     calls = [Call(address, [f'{method}()()'], [[i, None]]) for i, method in enumerate(methods)]
-    return any(Multicall(calls, _w3=web3, require_success=False)().values())
+    try: return any(Multicall(calls, _w3=web3, require_success=False)().values())
+    except ValueError as e:
+        if 'out of gas' in str(e): return False
+        else: raise
 
 @memory.cache()
 def build_name(address: str, return_None_on_failure: bool = False) -> str:
