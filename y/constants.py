@@ -4,7 +4,9 @@ from ypricemagic.interfaces.ERC20 import ERC20ABI
 from y.contracts import Contract
 from y.networks import Network
 
-NETWORK_STRING = Network.name(chain.id) if Network.name(chain.id) else f"chain {chain.id}"
+NETWORK_DETAIL_FOR_LOGGING = f'name ({Network.name()})' if Network.name() else f'chainid ({chain.id})'
+
+NETWORK_STRING = Network.name() if Network.name() else f"chain {chain.id}"
 
 EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
