@@ -391,7 +391,12 @@ class CurveRegistry(metaclass=Singleton):
         }
     
     def oracle(self, pool):
-        return raw_call(pool, 'price_oracle()', output='address', return_None_on_failure=True)
+        '''
+        If `pool` has method `price_oracle`, returns price_oracle address.
+        Else, returns `None`.
+        '''
+        response = raw_call(pool, 'price_oracle()', output='address', return_None_on_failure=True)
+        return response if response != ZERO_ADDRESS else None
 
 
 curve = None

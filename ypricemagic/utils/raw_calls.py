@@ -5,7 +5,7 @@ from typing import Callable, Union
 
 from y.exceptions import NonStandardERC20, CalldataPreparationError, call_reverted
 import brownie
-from brownie import convert, web3
+from brownie import ZERO_ADDRESS, convert, web3
 from brownie.convert.datatypes import EthAddress
 from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
@@ -284,16 +284,17 @@ def raw_call(
 
     try: response = web3.eth.call(data,block_identifier=block)
     except ValueError as e:
-        if return_None_on_failure is False:         raise
-        if call_reverted(e):                        return None
-        if 'invalid opcode' in str(e):              return None
-        else:                                       raise
+        if return_None_on_failure is False:                 raise
+        if call_reverted(e):                                return None
+        if 'invalid opcode' in str(e):                      return None
+        else:                                               raise
     
-    if output is None:                              return response
-    elif output == 'address':                       return convert.to_address(f'0x{response.hex()[-40:]}')
-    elif output in [int, 'int','uint','uint256']:   return convert.to_int(response)
-    elif output in [str, 'str']:                    return convert.to_string(response)
-    
+    if output is None:                                      return response
+    elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
+    elif output == 'address':                               return convert.to_address(f'0x{response.hex()[-40:]}')
+    elif output in [int, 'int','uint','uint256']:           return convert.to_int(response)
+    elif output in [str, 'str']:                            return convert.to_string(response)
+
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
