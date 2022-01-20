@@ -53,4 +53,7 @@ def call_reverted(e: Exception) -> bool:
 def continue_if_call_reverted(e: Exception) -> None:
     if call_reverted(e): return
     else: raise e
-    
+
+
+def out_of_gas(e: Exception) -> bool:
+    return 'out of gas' in str(e) 

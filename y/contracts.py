@@ -1,16 +1,16 @@
 import logging
 import threading
 from functools import lru_cache
-from typing import List
+from typing import List, Union
 
 from brownie import Contract as _Contract
-from brownie import chain, convert, web3
+from brownie import chain, web3
 from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 
 from y.exceptions import (ContractNotVerified, call_reverted,
-                          contract_not_verified)
+                          contract_not_verified, out_of_gas)
 from y.networks import Network
 from y.utils.cache import memory
 
@@ -88,12 +88,15 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`
     '''
-    try: response = Call(address, [f'{method}()()'], [[None, None]], _w3=web3)()
+    try: response = Call(address, [f'{method}'], [[None, None]], _w3=web3)().values()
     except Exception as e:
         if call_reverted(e): return False
+        # We return False here because `has_method` is only supposed to work for public view methods with no inputs
+        # Out of gas error implies method is state-changing. Therefore the contract does not have a public view method called `method`
+        if 'out of gas' in str(e): return False
         raise
     
-    if not got_response(response): return False
+    if response is None: return False
     if return_response: return response
     return True
 
@@ -101,35 +104,26 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
 def has_methods(
     address: str, 
     methods: List[str],
-    at_least_one: bool = False
+    func: Union[any, all] = all
 ) -> bool:
     '''
     Checks to see if a contract has each view method (with no inputs) in `methods`.
     Pass `at_least_one=True` to only verify a contract has at least one of the methods.
     '''
-    func = any if at_least_one else all
-    calls = [Call(address, [f'{method}()()'], [[i, None]]) for i, method in enumerate(methods)]
-    try: response = Multicall(calls, _w3=web3, require_success=False)().values()
-    # We return False here because `has_methods` is only supposed to work for public view methods with no inputs
-    # Out of gas error implies method is state-changing
-    except ValueError as e:
-        if 'out of gas' in str(e): return False 
-        else: raise
-    
-    # sometimes the call won't revert but you don't get anything back
-    response = [got_response(data) for data in response]
 
-    return func(response)
+    assert func in [all, any], '`func` must be either `any` or `all`'
 
-def got_response(data) -> bool:
-    '''
-    Sometimes a call won't revert but you don't get anything back.
-    This will validate whether you got a response.
-    '''
-    if data is None: return False
-    if convert.to_string(data) == '': return False
-    return True 
-    
+    calls = [Call(address, [f'{method}'], [[i, None]]) for i, method in enumerate(methods)]
+    try:
+        response = Multicall(calls, _w3=web3, require_success=False)().values()
+        return func(response)
+    except Exception as e:
+        if not out_of_gas(e): raise
+        # Out of gas error implies one or more method is state-changing.
+        # If `func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
+        # If `func == any` maybe one of the methods will work without "out of gas" error
+        return False if func == all else any(has_method(address, method) for method in methods)
+
 
 @memory.cache()
 def build_name(address: str, return_None_on_failure: bool = False) -> str:
