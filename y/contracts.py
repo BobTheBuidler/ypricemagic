@@ -70,7 +70,7 @@ def Contract(address):
     with _contract_lock:
         try: return _contract(address)
         except ValueError as e:
-            if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.string}')
+            if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
             else: raise
 
 @memory.cache()
