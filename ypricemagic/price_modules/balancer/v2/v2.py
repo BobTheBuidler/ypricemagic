@@ -1,4 +1,5 @@
 from brownie import chain
+from y.contracts import has_methods
 from y.networks import Network
 from ypricemagic.price_modules.balancer.v2.pool import BalancerV2Pool
 from ypricemagic.price_modules.balancer.v2.vault import BalancerV2Vault
@@ -19,8 +20,7 @@ class BalancerV2:
         self.vaults = BALANCER_V2_VAULTS
 
     def is_pool(self, token_address):
-        try: return BalancerV2Pool(token_address).is_pool()
-        except AttributeError: return False
+        return has_methods(token_address, ['getPoolId','getPausedState','getSwapFeePercentage'])
     
     def get_pool_price(self, pool_address, block=None):
         return BalancerV2Pool(pool_address).get_pool_price(block=block)

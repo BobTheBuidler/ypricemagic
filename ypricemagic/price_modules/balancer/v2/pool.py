@@ -1,22 +1,27 @@
 
+from functools import cached_property
+
 from joblib import Parallel, delayed
 from y.constants import usdc, weth
 from ypricemagic import magic
 from ypricemagic.classes import ERC20
 from ypricemagic.price_modules.balancer.v2.vault import BalancerV2Vault
-from ypricemagic.utils.multicall import fetch_multicall, multicall_decimals
-from ypricemagic.utils.raw_calls import _decimals
+from ypricemagic.utils.multicall import multicall_decimals
+from ypricemagic.utils.raw_calls import _decimals, raw_call
 
 
 class BalancerV2Pool(ERC20):
     def __init__(self, pool_address) -> None:
         super().__init__(pool_address)
-        self.id, vault = fetch_multicall([self.contract, 'getPoolId'],[self.contract,'getVault'])
-        self.vault = BalancerV2Vault(vault)
 
-    def is_pool(self):
-        required = {'getPoolId','getPausedState','getSwapFeePercentage'}
-        return set(self.contract.__dict__) & required == required
+    @cached_property
+    def id(self):
+        return self.contract.getPoolId()
+    
+    @cached_property
+    def vault(self):
+        vault = raw_call(self.address,'getVault()','address')
+        return BalancerV2Vault(vault)
 
     def get_pool_price(self, block=None):
         return self.get_tvl(block=block) / self.total_supply(block=block)
