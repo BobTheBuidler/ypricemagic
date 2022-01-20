@@ -3,10 +3,10 @@ from functools import lru_cache
 
 from brownie import chain
 from y.contracts import Contract
-from y.exceptions import NotUniswapPoolV2
+from y.exceptions import NotUniswapPoolV2, call_reverted
 from y.networks import Network
 from ypricemagic.utils.multicall import fetch_multicall
-from ypricemagic.utils.raw_calls import NonStandardERC20, _decimals, raw_call
+from ypricemagic.utils.raw_calls import _decimals, raw_call
 
 
 @lru_cache(maxsize=None)
@@ -18,7 +18,7 @@ class UniswapPoolV2:
         self.scale = 10 ** self.decimals
         try: self.factory = raw_call(self.address, 'factory()', output='address')
         except ValueError as e:
-            if 'execution reverted' in str(e): raise NotUniswapPoolV2
+            if call_reverted(e): raise NotUniswapPoolV2
             # `is not a valid ETH address` means we got some kind of response from the chain.
             # but couldn't convert to address. If there happens to be a goofy but
             # verified uni fork, maybe we can get factory this way

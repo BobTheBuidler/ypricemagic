@@ -12,6 +12,7 @@ from eth_abi.exceptions import InsufficientDataBytes
 from eth_typing.evm import Address, BlockNumber
 from web3.exceptions import CannotHandleRequest
 from y.contracts import Contract, contract_creation_block
+from y.exceptions import continue_if_call_reverted
 from y.networks import Network
 from ypricemagic.interfaces.multicall2 import MULTICALL2_ABI
 from ypricemagic.utils.raw_calls import _decimals, _totalSupply
@@ -89,12 +90,13 @@ def multicall_decimals(
     return_None_on_failure: bool = True
     ):
 
-    try: return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block)
-    except ValueError as e:
-        if 'execution reverted' in str(e): pass 
-        else: raise
-    except (CannotHandleRequest,InsufficientDataBytes): pass
-    
+    try: 
+        return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block)
+    except (CannotHandleRequest,InsufficientDataBytes):
+        pass # TODO investigate these
+    except Exception as e:
+        continue_if_call_reverted(e)
+
     return [_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses]
 
 def multicall_totalSupply(

@@ -1,9 +1,10 @@
 import logging
-from y.exceptions import contract_not_verified
 
 import ypricemagic.magic
 from cachetools.func import ttl_cache
 from y.constants import usdc, weth
+from y.decorators import continue_on_revert
+from y.exceptions import contract_not_verified
 from ypricemagic.price_modules.uniswap.protocols import (FACTORY_TO_PROTOCOL,
                                                          TRY_ORDER, UNISWAPS)
 from ypricemagic.price_modules.uniswap.v1 import UniswapV1
@@ -74,13 +75,9 @@ class Uniswap:
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
         """
-        if not protocol:
-            protocol = self._try_order[0]
-        try:
-            return self.routers[protocol].get_price(token_in, token_out=token_out, block=block, paired_against=paired_against)
-        except ValueError as e:
-            if 'execution reverted' in str(e): return None
-            else: raise
+        if not protocol: protocol = self._try_order[0]
+        
+        return self.routers[protocol].get_price(token_in, token_out=token_out, block=block, paired_against=paired_against)
     
     def try_for_price(self, token_in, token_out=usdc, block=None, paired_against=weth):
         for protocol in self._try_order:

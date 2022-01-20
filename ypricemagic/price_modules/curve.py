@@ -12,7 +12,8 @@ from y.networks import Network
 from y.utils.middleware import ensure_middleware
 from ypricemagic import magic
 from ypricemagic.utils.events import create_filter, decode_logs, get_logs_asap
-from ypricemagic.utils.multicall import fetch_multicall, multicall_same_func_same_contract_different_inputs
+from ypricemagic.utils.multicall import (
+    fetch_multicall, multicall_same_func_same_contract_different_inputs)
 from ypricemagic.utils.raw_calls import _totalSupply, raw_call
 
 ensure_middleware()
@@ -299,7 +300,7 @@ class CurveRegistry(metaclass=Singleton):
         pool = self.get_pool(token)
 
         # crypto pools can have different tokens, use slow method
-        if self.has_oracle(pool):
+        if self.oracle(pool):
             tvl = self.get_tvl(pool, block=block)
             if tvl is None:
                 return None
@@ -389,11 +390,8 @@ class CurveRegistry(metaclass=Singleton):
             "token price": token_price,
         }
     
-    def has_oracle(self, pool):
-        try: return raw_call(pool,'price_oracle()')
-        except ValueError as e:
-            if 'execution reverted' in str(e): return False
-            else: raise
+    def oracle(self, pool):
+        return raw_call(pool, 'price_oracle()', output='address', return_None_on_failure=True)
 
 
 curve = None

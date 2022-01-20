@@ -1,11 +1,13 @@
 
 
 import logging
+from typing import List
 
 from brownie import chain
 from cachetools.func import ttl_cache
 from y.constants import STABLECOINS, sushi, usdc, weth
 from y.contracts import Contract
+from y.decorators import continue_on_revert
 from y.networks import Network
 from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
                                                          ROUTER_TO_PROTOCOL,
@@ -42,16 +44,22 @@ class UniswapRouterV2:
         path = self.path_selector(token_in, token_out, paired_against)
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
-        try: quote = self.contract.getAmountsOut(amount_in, path, block_identifier=block)
+        quote = self.get_quote(amount_in, path, block=block)
+        if quote is not None:
+            amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
+            return amount_out / fees
+
+    @continue_on_revert
+    def get_quote(self, amount_in: int, path: List[str], block=None):
+        try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
+
+        # TODO figure out how to best handle uni forks with slight modifications
         except ValueError as e:
-            if 'execution reverted' in str(e): return
-            elif 'No data was returned - the call likely reverted': return
-            elif 'Sequence has incorrect length' in str(e): return # TODO figure out how to best handle uni forks with slight modifications
+            if 'Sequence has incorrect length' in str(e): return 
             else: raise
-        amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
-        return amount_out / fees
 
     def path_selector(self, token_in, token_out, paired_against):
+        '''Chooses swap path to use for quote'''
 
         if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
         elif weth in (token_in, token_out):                                                 path = [token_in, token_out]
