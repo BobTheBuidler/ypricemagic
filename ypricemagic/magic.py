@@ -10,7 +10,7 @@ from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
 from y.constants import NETWORK_STRING, STABLECOINS, WRAPPED_GAS_COIN
 from y.contracts import Contract
-from y.exceptions import PriceError
+from y.exceptions import NonStandardERC20, PriceError
 from y.prices import _sense_check
 
 from ypricemagic.price_modules import *
@@ -54,6 +54,9 @@ def get_price(
     token_address = convert.to_address(token_address)
     try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
     except RecursionError: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {NETWORK_STRING}')
+    except NonStandardERC20:
+        if fail_to_None: return None
+        else: raise
 
 
 def get_prices(
