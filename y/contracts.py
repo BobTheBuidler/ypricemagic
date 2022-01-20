@@ -84,7 +84,7 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`
     '''
-    try: response = Call(address, [f'{method}()()', None], [[None, None]], _w3=web3)()
+    try: response = Call(address, [f'{method}()()'], [[None, None]], _w3=web3)()
     except Exception as e:
         if call_reverted(e): return False
         raise
