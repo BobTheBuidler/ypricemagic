@@ -1,8 +1,9 @@
 from ast import Add
 import logging
 from functools import lru_cache
-from typing import Callable, Sequence, Union
+from typing import Callable, Union
 
+from y.exceptions import NonStandardERC20, CalldataPreparationError
 import brownie
 from brownie import convert, web3
 from brownie.convert.datatypes import EthAddress
@@ -17,12 +18,6 @@ logger = logging.getLogger(__name__)
 """
 We use raw calls for commonly used functions because its much faster than using brownie Contracts
 """
-
-class CalldataPreparationError(Exception):
-    pass
-
-class NonStandardERC20(Exception):
-    pass
 
 @lru_cache(maxsize=None)
 def _cached_call_fn(

@@ -136,7 +136,6 @@ def _sense_check(
         if token_address in ACCEPTABLE_HIGH_PRICES: return
 
     # proceed with sense check
-
     price_readable = round(price, 4)
     symbol = _symbol(token_address)
     network = Network.name(chain.id)

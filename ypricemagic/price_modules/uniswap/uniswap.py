@@ -1,4 +1,5 @@
 import logging
+from y.exceptions import contract_not_verified
 
 import ypricemagic.magic
 from cachetools.func import ttl_cache
@@ -22,7 +23,7 @@ class Uniswap:
         for name in UNISWAPS:
             try: self.routers[name] = UniswapRouterV2(UNISWAPS[name]['router'])
             except ValueError as e:
-                if 'Contract source code not verified' in str(e): continue
+                if contract_not_verified(e): continue
                 else: raise
         self.factories = [UNISWAPS[name]['factory'] for name in UNISWAPS]
         self._try_order = TRY_ORDER

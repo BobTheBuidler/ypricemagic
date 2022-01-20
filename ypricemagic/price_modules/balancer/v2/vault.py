@@ -1,6 +1,7 @@
 import logging
 
 from y.contracts import Contract
+from y.exceptions import contract_not_verified
 from ypricemagic.classes import ERC20
 from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall import fetch_multicall
@@ -39,7 +40,7 @@ class BalancerV2Vault:
                         ):
                         deepest_pool = {'pool': pool, 'balance': balance}
                 except ValueError as e:
-                    if 'source code not verified' in str(e): pass
+                    if contract_not_verified(e): pass
                     else: raise
         return deepest_pool['pool'], deepest_pool['balance']
 

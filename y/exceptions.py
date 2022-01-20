@@ -10,3 +10,10 @@ class NonStandardERC20(Exception):
 
 class CalldataPreparationError(Exception):
     pass
+
+class ContractNotVerified(Exception):
+    pass
+
+def contract_not_verified(e: Exception) -> bool:
+    message = 'Contract source code not verified'
+    return True if message not in str(e) else False
