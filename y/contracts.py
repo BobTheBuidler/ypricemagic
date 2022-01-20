@@ -75,7 +75,11 @@ def Contract(address):
 
 @memory.cache()
 def is_contract(address: str) -> bool:
-    '''checks to see if the input address is a contract'''
+    '''
+    Checks to see if the input address is a contract. Returns `True` if:
+    - The address is not and has never been a contract
+    - The address used to be a contract but has self-destructed
+    '''
     return web3.eth.get_code(address) != '0x'
 
 @memory.cache()
@@ -95,7 +99,7 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
 @memory.cache()
 def has_methods(address: str, methods: List[str]) -> bool:
     '''checks to see if a contract has each view method (with no inputs) in `methods`'''
-    calls = [Call(address, [f'{method}()()', None], [[i, None]]) for i, method in enumerate(methods)]
+    calls = [Call(address, [f'{method}()()'], [[i, None]]) for i, method in enumerate(methods)]
     return any(Multicall(calls, _w3=web3, require_success=False)().values())
 
 @memory.cache()
