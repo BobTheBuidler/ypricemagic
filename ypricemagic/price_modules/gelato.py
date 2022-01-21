@@ -1,12 +1,14 @@
+from functools import lru_cache
+
 import ypricemagic.magic
-from y.contracts import Contract
+from y.contracts import has_methods
 from ypricemagic.utils.raw_calls import (_decimals, _totalSupplyReadable,
                                          raw_call)
 
 
+@lru_cache
 def is_gelato_pool(token_address: str) -> bool:
-    pool = Contract(token_address)
-    return hasattr(pool, 'gelatoBalance0') and hasattr(pool, 'gelatoBalance1')
+    return has_methods(token_address, ['gelatoBalance0()(uint)','gelatoBalance1()(uint)'])
 
 def get_price(token_address: str, block=None):
     token0 = raw_call(token_address,'token0()',block=block,output='address')
