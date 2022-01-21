@@ -16,7 +16,7 @@ from y.prices import _sense_check
 
 from ypricemagic.price_modules import *
 from ypricemagic.price_modules.balancer.balancer import balancer
-from ypricemagic.price_modules.chainlink import chainlink
+from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
 from ypricemagic.utils.raw_calls import _symbol
@@ -109,7 +109,7 @@ def _exit_early_for_known_tokens(
     elif bucket == 'balancer pool':         price = balancer.get_price(token_address, block)
     elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
 
-    elif bucket == 'chainlink feed':        price = chainlink.chainlink.get_price(token_address, block)
+    elif bucket == 'chainlink feed':        price = chainlink.get_price(token_address, block)
     elif bucket == 'compound':              price = compound.compound.get_price(token_address, block=block)
     elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
 
@@ -179,8 +179,8 @@ def check_bucket(
     elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
     elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
     elif compound.compound.is_compound_market(token_address):               return 'compound'
-    elif curve and token_address in curve:                                  return 'curve lp'
-    elif token_address in chainlink.chainlink:                              return 'chainlink feed'
+    elif curve is not None and token_address in curve:                      return 'curve lp'
+    elif chainlink is not None and token_address in chainlink:              return 'chainlink feed'
 
          
 def _fail_appropriately(
