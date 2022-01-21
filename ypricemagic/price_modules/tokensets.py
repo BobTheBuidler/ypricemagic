@@ -1,13 +1,13 @@
 import logging
+from functools import lru_cache
 
 from y.constants import usdc
-from y.contracts import Contract
+from y.contracts import Contract, has_methods
 
 
+@lru_cache
 def is_token_set(address):
-    pool = Contract(address)
-    required = {"tokenIsComponent", "getComponents", "naturalUnit"}
-    return set(pool.__dict__) & required == required
+    return has_methods(address, {"tokenIsComponent(address)(bool)", "getComponents()(address[])", "naturalUnit()(uint)"})
 
 def get_price(token, block=None):
     setValuer = Contract('0xDdF4F0775fF69c73619a4dBB42Ba61b0ac1F555f')
