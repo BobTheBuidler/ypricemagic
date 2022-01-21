@@ -96,8 +96,11 @@ class Uniswap:
 uniswap = Uniswap()
 
 def _extrapolate_balance_if_needed(balances):
+    logger.debug('Attempting to extrapolate balance from one side of the pool to the other')
+    logger.debug(f'Balances: {balances}')
     if balances[0] and not balances[1]:
         balances[1] = balances[0]
     if balances[1] and not balances[0]:
         balances[0] = balances[1]
+    logger.debug(f'Extrapolated balances: {balances}')
     return balances
