@@ -1,19 +1,16 @@
 
-from y.contracts import Contract
-from y.utils.cache import memory
+from functools import lru_cache
+from y.contracts import Contract, has_methods
 from ypricemagic import magic
-from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable
+from ypricemagic.utils.raw_calls import _decimals, _totalSupplyReadable, raw_call
 
 
-@memory.cache()
+@lru_cache
 def is_eps_rewards_pool(token_address: str) -> bool:
-    token = Contract(token_address)
-    methods = ['lpStaker','rewardTokens','rewardPerToken','minter']
-    return all(hasattr(token,method) for method in methods)
+    return has_methods(token_address, ['lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'])
 
 def get_price(token_address: str, block=None):
-    token = Contract(token_address)
-    minter = Contract(token.minter(block_identifier=block))
+    minter = Contract(raw_call(token_address,'minter()',output='address', block=block))
     i, balances = 0, []
     while True:
         try:
