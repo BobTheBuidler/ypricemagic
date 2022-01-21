@@ -1,4 +1,5 @@
 import logging
+from functools import lru_cache
 
 from y.contracts import Contract, has_methods
 from ypricemagic.utils.multicall import fetch_multicall
@@ -7,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 # NOTE: Yearn and Yearn-like
 
+@lru_cache(maxsize=None)
 def is_yearn_vault(token):
     logger.debug(f'Checking `is_yearn_vault({token})')
     # Yearn-like contracts can use these formats
