@@ -63,7 +63,8 @@ def get_prices(
     token_addresses: Sequence[Union[str, Address, brownie.Contract, Contract]],
     block: Union[int, BlockNumber, None] = None,
     fail_to_None: bool = True,
-    silent: bool = False
+    silent: bool = False,
+    dop: int = 4
     ):
     '''
     In every case:
@@ -75,7 +76,7 @@ def get_prices(
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
     if not silent: token_addresses = tqdm(token_addresses)
-    return Parallel(4, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
+    return Parallel(dop, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
     
 def _get_price(
