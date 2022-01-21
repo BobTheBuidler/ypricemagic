@@ -1,5 +1,5 @@
 
-from y.contracts import Contract
+from y.contracts import Contract, has_methods
 from y.utils.cache import memory
 from ypricemagic import magic
 from ypricemagic.utils.multicall import fetch_multicall
@@ -7,8 +7,7 @@ from ypricemagic.utils.multicall import fetch_multicall
 
 @memory.cache()
 def is_ib_token(address):
-    token = Contract(address)
-    return hasattr(token, 'debtShareToVal') and hasattr(token, 'debtValToShare')
+    return has_methods(address, ['debtShareToVal(uint)(uint)','debtValToShare(uint)(uint)'])
 
 def get_price(address, block=None):
     contract = Contract(address)
