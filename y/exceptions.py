@@ -46,6 +46,7 @@ def call_reverted(e: Exception) -> bool:
     triggers = [
         'execution reverted',
         'No data was returned - the call likely reverted',
+        'invalid opcode: opcode 0xfe not defined'
     ]
     return any(trigger in str(e) for trigger in triggers)
 
