@@ -59,7 +59,7 @@ UNISWAPS = {
         "paintswap":        {"factory": "0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5", "router": "0xfD000ddCEa75a2E23059881c3589F6425bFf1AbB"},
         "jetswap":          {"factory": "0xf6488205957f0b4497053d6422F49e27944eE3Dd", "router": "0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25"},
     },
-    Network.Avalanche {
+    Network.Avalanche: {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
         "traderjoe":        {"factory": "0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10", "router": "0x60aE616a2155Ee3d9A68541Ba4544862310933d4"},
     },
