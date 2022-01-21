@@ -1,6 +1,7 @@
+from functools import lru_cache
 import logging
 
-from y.contracts import Contract
+from y.contracts import Contract, has_methods
 from ypricemagic import magic
 from ypricemagic.utils.raw_calls import _decimals
 
@@ -8,10 +9,9 @@ from ypricemagic.utils.raw_calls import _decimals
 # Contract.from_abi(). Get the proper abi from etherscan. For some reason, Contract()
 # hasn't been pulling it correctly for me but this fix works. 
 
+@lru_cache
 def is_pie(address):
-    pool = Contract(address)
-    required = {"getCap", "getPublicSwapSetter", "getTokenBinder"}
-    return set(pool.__dict__) & required == required
+    return has_methods(address, {"getCap()(uint)", "getPublicSwapSetter()(address)", "getTokenBinder()(address)"})
 
 def value(token, block, balance):
     logging.debug(f'token: {token}')
