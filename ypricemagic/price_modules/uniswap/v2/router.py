@@ -5,7 +5,7 @@ from typing import List
 
 from brownie import chain
 from cachetools.func import ttl_cache
-from y.constants import STABLECOINS, sushi, usdc, weth
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert
 from y.networks import Network
@@ -71,6 +71,10 @@ class UniswapRouterV2:
             if wbnb in (token_in, token_out):                                               path = [token_in, token_out]
             elif cake in (token_in, token_out):                                             path = [token_in, token_out]
             else:                                                                           path = [token_in,wbnb,token_out]
+        else:
+            if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
+            else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
+        '''                  # NOTE can probably get rid of this now, just want to be sure before deleting                                  
         elif chain.id == Network.Polygon:
             from y.constants import wmatic
             if wmatic in (token_in, token_out):                                             path = [token_in, token_out]
@@ -79,8 +83,7 @@ class UniswapRouterV2:
             from y.constants import wftm
             if wftm in (token_in, token_out):                                               path = [token_in, token_out]
             else:                                                                           path = [token_in, wftm, token_out]
-
-        else:                                                                               path = [token_in, weth, token_out]
+        '''
 
         return path
     
