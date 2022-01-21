@@ -1,4 +1,3 @@
-from ast import Add
 import logging
 from functools import lru_cache
 from typing import Callable, Union
@@ -293,7 +292,7 @@ def raw_call(
     elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
     elif output == 'address':                               return convert.to_address(f'0x{response.hex()[-40:]}')
     elif output in [int, 'int','uint','uint256']:           return convert.to_int(response)
-    elif output in [str, 'str']:                            return convert.to_string(response)
+    elif output in [str, 'str']:                            return convert.to_string(response).replace('\x00','').strip()
 
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
