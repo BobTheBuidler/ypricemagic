@@ -1,14 +1,13 @@
 
-from y.contracts import Contract
-from y.utils.cache import memory
+from functools import lru_cache
+from y.contracts import Contract, has_methods
 from ypricemagic import magic
 from ypricemagic.utils.multicall import fetch_multicall
 
 
-@memory.cache()
+@lru_cache
 def is_mstable_feeder_pool(address: str) -> bool:
-    contract = Contract(address)
-    return hasattr(contract,'getPrice') and hasattr(contract,'mAsset')
+    return has_methods(address, ['getPrice()((uint,uint))','mAsset()(address)'])
 
 def get_price(address, block=None):
     contract = Contract(address)
