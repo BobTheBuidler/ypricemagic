@@ -8,7 +8,7 @@ TRY_ORDER = {
     Network.BinanceSmartChain: ['pancakeswapv2', 'pancakeswapv1', 'apeswap', 'wault', 'swapliquidity', 'thugswap', 'mdex', 'bakeryswap', 'nyanswop', 'narwhalswap', 'cafeswap', 'jetswap', 'babyswap', 'annex', 'viralata', 'elk', 'pantherswap', 'complus'],
     Network.Polygon: ['quickswap', 'sushi', 'apeswap', 'dfyn', 'wault', 'cometh', 'jetswap', 'polyzap', 'cafeswap', 'polycat'],
     Network.Fantom: ['sushi', 'spookyswap', 'spiritswap', 'paintswap', 'jetswap'],
-    Network.Avalanche: ['pangolin', 'traderjoe'],
+    Network.Avalanche: ['traderjoe','pangolin'],
     Network.Harmony: ['defikingdoms'],
 }.get(chain.id, set())
 
