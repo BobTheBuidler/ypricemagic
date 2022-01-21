@@ -113,7 +113,7 @@ def has_methods(
 
     assert func in [all, any], '`func` must be either `any` or `all`'
 
-    calls = [Call(address, [f'{method}'], [[i, None]]) for i, method in enumerate(methods)]
+    calls = [Call(address, [method], [[method, None]]) for method in methods]
     try:
         response = Multicall(calls, _w3=web3, require_success=False)().values()
         return func(response)
