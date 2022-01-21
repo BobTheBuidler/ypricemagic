@@ -93,7 +93,7 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
         if call_reverted(e): return False
         # We return False here because `has_method` is only supposed to work for public view methods with no inputs
         # Out of gas error implies method is state-changing. Therefore the contract does not have a public view method called `method`
-        if 'out of gas' in str(e): return False
+        if out_of_gas(e): return False
         raise
     
     if response is None: return False
@@ -118,7 +118,7 @@ def has_methods(
         response = Multicall(calls, _w3=web3, require_success=False)().values()
         return func(response)
     except Exception as e:
-        if not out_of_gas(e): raise
+        if not call_reverted(e) and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
         # If `func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `func == any` maybe one of the methods will work without "out of gas" error
