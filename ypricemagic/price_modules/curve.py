@@ -7,6 +7,7 @@ from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
 from y.constants import dai
 from y.contracts import Contract, Singleton
+from y.erc20 import decimals
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.middleware import ensure_middleware
@@ -243,19 +244,17 @@ class CurveRegistry(metaclass=Singleton):
         return [coin for coin in coins if coin != ZERO_ADDRESS]
 
     @lru_cache(maxsize=None)
-    def get_decimals(self, pool):
+    def get_coins_decimals(self, pool):
         factory = self.get_factory(pool)
         source = Contract(factory) if factory else self.registry
-        decimals = source.get_decimals(pool)
+        coins_decimals = source.get_coins_decimals(pool)
 
         # pool not in registry
-        if not any(decimals):
+        if not any(coins_decimals):
             coins = self.get_coins(pool)
-            decimals = fetch_multicall(
-                *[[Contract(token), 'decimals'] for token in coins]
-            )
+            coins_decimals = decimals(coins)
         
-        return [dec for dec in decimals if dec != 0]
+        return [dec for dec in coins_decimals if dec != 0]
 
     def get_balances(self, pool, block=None):
         """
@@ -263,7 +262,7 @@ class CurveRegistry(metaclass=Singleton):
         """
         factory = self.get_factory(pool)
         coins = self.get_coins(pool)
-        decimals = self.get_decimals(pool)
+        decimals = self.get_coins_decimals(pool)
 
         try:
             source = Contract(factory) if factory else self.registry
