@@ -64,7 +64,7 @@ def _input_type(
     input: Any
     ) -> str:
     
-    if type(input) in [list, Tuple] or isinstance(input, KeysView): 
+    if type(input) in [list, tuple] or isinstance(input, KeysView): 
         for value in input: _check_if_supported(value)
         return 'multi'
     
