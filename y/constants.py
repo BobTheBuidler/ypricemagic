@@ -128,7 +128,13 @@ STABLECOINS = {
         "": "",
     },
     Network.Avalanche: {
-        "": "",
+        "0xde3A24028580884448a5397872046a019649b084": "usdt",
+        "0xc7198437980c041c805A1EDcbA50c1Ce5db95118": "usdt.e",
+        "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E": "usdc",
+        "0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664": "usdc.e",
+        "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70": "dai",
+        "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70": "dai.e",
+        "0x130966628846BFd36ff31a822705796e8cb8C18D": "mim",
     }
 }.get(chain.id, {})
 
