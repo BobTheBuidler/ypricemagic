@@ -7,13 +7,13 @@ from ypricemagic.utils.multicall import (multicall_decimals,
                                          multicall_totalSupply)
 from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 
-import y
+from y.contracts import Contract
 
-SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, y.Contract
+SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, Contract
 
 
 def decimals(
-    contract_address_or_addresses: Union[str, Address, brownie.Contract, y.Contract, List[Union[str, Address, brownie.Contract, y.Contract]], Tuple[Union[str, Address, brownie.Contract, y.Contract]]],
+    contract_address_or_addresses: Union[str, Address, brownie.Contract, Contract, List[Union[str, Address, brownie.Contract, Contract]], Tuple[Union[str, Address, brownie.Contract, Contract]]],
     block: Union[BlockNumber, int, None] = None, 
     return_None_on_failure: bool = False
     ): 
@@ -23,7 +23,7 @@ def decimals(
 
 
 def totalSupply(
-    contract_address_or_addresses: Union[str, Address, brownie.Contract, y.Contract, List[Union[str, Address, brownie.Contract, y.Contract]], Tuple[Union[str, Address, brownie.Contract, y.Contract]]],
+    contract_address_or_addresses: Union[str, Address, brownie.Contract, Contract, List[Union[str, Address, brownie.Contract, Contract]], Tuple[Union[str, Address, brownie.Contract, Contract]]],
     block: Union[BlockNumber, int, None] = None, 
     return_None_on_failure: bool = False
     ):
@@ -33,7 +33,7 @@ def totalSupply(
 
 
 def totalSupplyReadable(
-    contract_address_or_addresses: Union[str, Address, brownie.Contract, y.Contract, List[Union[str, Address, brownie.Contract, y.Contract]], Tuple[Union[str, Address, brownie.Contract, y.Contract]]],
+    contract_address_or_addresses: Union[str, Address, brownie.Contract, Contract, List[Union[str, Address, brownie.Contract, Contract]], Tuple[Union[str, Address, brownie.Contract, Contract]]],
     block: Union[BlockNumber, int, None] = None, 
     return_None_on_failure: bool = False
     ):
@@ -47,7 +47,6 @@ def totalSupplyReadable(
         return supply / 10 ** decimal
     return [supply / 10 ** decimal for supply, decimal in zip(token_supplys, token_decimals)]
         
-
 
 def _choose_appropriate_fn(
     input: Any,
