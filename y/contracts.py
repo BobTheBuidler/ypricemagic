@@ -97,7 +97,7 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
         raise
     
     if response is None: return False
-    if return_response: return response
+    if return_response: return list(response)[0]
     return True
 
 @memory.cache()
