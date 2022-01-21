@@ -46,7 +46,8 @@ def call_reverted(e: Exception) -> bool:
     triggers = [
         'execution reverted',
         'No data was returned - the call likely reverted',
-        'invalid opcode: opcode 0xfe not defined'
+        'invalid opcode: opcode 0xfe not defined',
+        'Tried to read 32 bytes.  Only got 0 bytes',
     ]
     return any(trigger in str(e) for trigger in triggers)
 
