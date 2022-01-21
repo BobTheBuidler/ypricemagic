@@ -20,7 +20,7 @@ class BalancerV2:
         self.vaults = BALANCER_V2_VAULTS
 
     def is_pool(self, token_address):
-        return has_methods(token_address, ['getPoolId','getPausedState','getSwapFeePercentage'])
+        return has_methods(token_address, ['getPoolId()(bytes32)','getPausedState()((bool, uint, uint))','getSwapFeePercentage()(uint)'])
     
     def get_pool_price(self, pool_address, block=None):
         return BalancerV2Pool(pool_address).get_pool_price(block=block)

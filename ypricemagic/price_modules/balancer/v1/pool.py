@@ -12,7 +12,7 @@ class BalancerV1Pool(ERC20):
         super().__init__(pool_address)
     
     def is_pool(self):
-        return has_methods(self.address ,{"getCurrentTokens", "getBalance", "totalSupply"})
+        return has_methods(self.address ,{"getCurrentTokens()(address[])", "getBalance()(uint)", "totalSupply()(uint)"})
 
     def tokens(self, block=None):
         return self.contract.getCurrentTokens(block_identifier=block)
