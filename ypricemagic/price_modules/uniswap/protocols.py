@@ -63,7 +63,7 @@ UNISWAPS = {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
         "traderjoe":        {"factory": "0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10", "router": "0x60aE616a2155Ee3d9A68541Ba4544862310933d4"},
     },
-    Network.Harmony {
+    Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
     },
 }.get(chain.id, {})
