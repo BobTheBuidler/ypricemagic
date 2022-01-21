@@ -11,7 +11,7 @@ from ypricemagic.utils.raw_calls import raw_call
 
 from y import time
 from y.constants import dai, usdc, wbtc, weth
-from y.contracts import Contract
+from y.contracts import Contract, has_method, has_methods
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
 from y.exceptions import *
 from y.networks import Network
@@ -22,6 +22,8 @@ __all__ = [
 
     # contract stuff
     'Contract',
+    'has_method',
+    'has_methods',
 
     # network stuff
     'Network',
