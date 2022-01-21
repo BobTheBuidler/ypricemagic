@@ -11,7 +11,7 @@ def is_yearn_vault(token):
     logger.debug(f'Checking `is_yearn_vault({token})')
     # Yearn-like contracts can use these formats
     result = any([
-        has_methods(token, ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'], at_least_one=True),
+        has_methods(token, ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'], any),
         has_methods(token, ['exchangeRate()(uint)','underlying()(address)']),
     ])
     logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
