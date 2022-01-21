@@ -1,7 +1,7 @@
 import logging
 
 from brownie import chain, convert
-from y.contracts import Contract
+from y.contracts import Contract, has_methods
 from y.networks import Network
 from y.utils.logging import gh_issue_request
 from ypricemagic.utils.multicall import (fetch_multicall,
@@ -48,9 +48,7 @@ class Compound:
         if any(token_address in self.trollers[name].markets for name in self.trollers):
             return True
         # NOTE: Workaround for pools that have since been revoked
-        token_contract = Contract(token_address)
-        required = {"isCToken", "comptroller", "underlying"} 
-        result = set(token_contract.__dict__) & required == required
+        result = has_methods(token_address, ['isCToken()(bool)','comptroller()(address)','underlying()(address)'])
         if result is True: self.notify_if_unknown_comptroller(token_address)
         return result
     
