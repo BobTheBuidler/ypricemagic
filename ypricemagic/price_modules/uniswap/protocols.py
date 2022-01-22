@@ -5,10 +5,10 @@ from y.networks import Network
 
 TRY_ORDER = {
     Network.Mainnet: ['sushiswap', 'uniswap v2', 'uniswap v1', 'shibaswap'],
-    Network.BinanceSmartChain: ['pancakeswapv2', 'pancakeswapv1', 'apeswap', 'wault', 'swapliquidity', 'thugswap', 'mdex', 'bakeryswap', 'nyanswop', 'narwhalswap', 'cafeswap', 'jetswap', 'babyswap', 'annex', 'viralata', 'elk', 'pantherswap', 'complus'],
+    Network.BinanceSmartChain: ['pancakeswapv2', 'pancakeswapv1', 'biswap', 'apeswap', 'wault', 'swapliquidity', 'thugswap', 'mdex', 'bakeryswap', 'nyanswop', 'narwhalswap', 'cafeswap', 'jetswap', 'babyswap', 'annex', 'viralata', 'elk', 'pantherswap', 'complus'],
     Network.Polygon: ['quickswap', 'sushi', 'apeswap', 'dfyn', 'wault', 'cometh', 'jetswap', 'polyzap', 'cafeswap', 'polycat'],
     Network.Fantom: ['sushi', 'spookyswap', 'spiritswap', 'paintswap', 'jetswap'],
-    Network.Avalanche: ['traderjoe','pangolin'],
+    Network.Avalanche: ['traderjoe', 'pangolin', 'lydia'],
     Network.Harmony: ['defikingdoms'],
 }.get(chain.id, set())
 
@@ -39,6 +39,7 @@ UNISWAPS = {
         "elk":              {"factory": "0x31aFfd875e9f68cd6Cd12Cee8943566c9A4bBA13", "router": "0xA63B831264183D755756ca9AE5190fF5183d65D6"},
         "pantherswap":      {"factory": "0x670f55c6284c629c23baE99F585e3f17E8b9FC31", "router": "0x24f7C33ae5f77e2A9ECeed7EA858B4ca2fa1B7eC"},
         "complus":          {"factory": "0xDf97982Bf70be91df4ACD3d511c551F06a0D19eC", "router": "0x07DC75E8bc57A21A183129Ec29bbCC232d79eE56"},
+        "biswap":           {"factory": "0x858E3312ed3A876947EA49d572A7C42DE08af7EE", "router": "0x3a6d8cA21D1CF76F653A67577FA0D27453350dD8"},
     },
     Network.Polygon: {
         "quickswap":        {"factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32", "router": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"},
@@ -62,6 +63,7 @@ UNISWAPS = {
     Network.Avalanche: {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
         "traderjoe":        {"factory": "0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10", "router": "0x60aE616a2155Ee3d9A68541Ba4544862310933d4"},
+        "lydia":            {"factory": "0xe0C1bb6DF4851feEEdc3E14Bd509FEAF428f7655", "router": "0xA52aBE4676dbfd04Df42eF7755F01A3c41f28D27"},
     },
     Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
