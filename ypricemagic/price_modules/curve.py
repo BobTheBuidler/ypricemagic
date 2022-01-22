@@ -8,7 +8,7 @@ from cachetools.func import ttl_cache
 from y.constants import dai
 from y.contracts import Contract, Singleton
 from y.erc20 import decimals
-from y.exceptions import ContractNotVerified, UnsupportedNetwork
+from y.exceptions import ContractNotVerified, UnsupportedNetwork, call_reverted
 from y.networks import Network
 from y.utils.middleware import ensure_middleware
 from ypricemagic import magic
@@ -305,8 +305,14 @@ class CurveRegistry(metaclass=Singleton):
         except KeyError:
             coin = coins[0]
 
-        virtual_price = Contract(pool).get_virtual_price(block_identifier=block) / 1e18
-        price = virtual_price * magic.get_price(coin, block)
+        try:
+            virtual_price = Contract(pool).get_virtual_price(block_identifier=block) / 1e18
+            price = virtual_price * magic.get_price(coin, block)
+        except Exception as e:
+            if call_reverted(e): # get_virtual_price can revert if totalSupply == 0
+                total_supply = _totalSupply(pool)
+                if total_supply == 0: price = 0
+                else: raise
         logger.debug("curve lp -> %s", price)
         return price
 
