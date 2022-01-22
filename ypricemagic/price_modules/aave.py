@@ -1,13 +1,13 @@
 import logging
 from functools import lru_cache
-from brownie import web3, chain
 
+from brownie import chain, web3
 from multicall import Call, Multicall
-from y import Network
 from y.contracts import Contract
+from y.networks import Network
 from ypricemagic import magic
-from ypricemagic.utils.raw_calls import raw_call
 from ypricemagic.utils.multicall import fetch_multicall
+from ypricemagic.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
