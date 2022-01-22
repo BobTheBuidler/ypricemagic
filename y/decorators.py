@@ -1,13 +1,12 @@
 
 from typing import Any, Callable
 
-from y.exceptions import continue_if_call_reverted
-
 
 def continue_on_revert(func: Callable) -> Any:
     '''
     Decorates a call-making function. If the call reverts, returns `None`. Raises any other exceptions.
     '''
+    from y.exceptions import continue_if_call_reverted
 
     def wrap(*args, **kwargs):
 
