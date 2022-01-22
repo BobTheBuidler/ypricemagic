@@ -1,5 +1,6 @@
 import logging
 from functools import lru_cache
+from attr import has
 
 from brownie import chain, web3
 from multicall import Call, Multicall
@@ -66,13 +67,15 @@ class Aave:
 
     def is_atoken_v1(self,token_address):
         logger.debug(f'Checking `is_atoken_v1({token_address})')
-        result = token_address in self.atokens_v1
+        if not hasattr(self, 'atokens_v1'): result = False
+        else: result = token_address in self.atokens_v1
         logger.debug(f'`is_atoken_v1({token_address}` returns `{result}`')
         return result
 
     def is_atoken_v2(self,token_address: str):
         logger.debug(f'Checking `is_atoken_v2({token_address})')
-        result = token_address in self.atokens_v2
+        if not hasattr(self, 'atokens_v2'): result = False
+        else: result = token_address in self.atokens_v2
         logger.debug(f'`is_atoken_v2({token_address}` returns `{result}`')
         return result
 
