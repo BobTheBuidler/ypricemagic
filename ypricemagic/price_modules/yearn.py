@@ -2,6 +2,7 @@ import logging
 from functools import lru_cache
 
 from y.contracts import Contract, has_methods
+from y.exceptions import ContractNotVerified
 from ypricemagic.utils.multicall import fetch_multicall
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,13 @@ def is_yearn_vault(token):
         has_methods(token, ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'], any),
         has_methods(token, ['exchangeRate()(uint)','underlying()(address)']),
     ])
+
+    # pricePerShare can revert if totalSupply == 0, which would cause `has_methods` to return `False`,
+    # but it might still be a vault. This section will correct `result` for problematic vaults.
+    if result is False:
+        try: result = hasattr(Contract(token),'getPricePerFullShare')
+        except ContractNotVerified: pass
+
     logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
     return result
 
