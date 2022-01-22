@@ -1,3 +1,5 @@
+from brownie import Contract
+
 # General
 
 class PriceError(Exception):
@@ -16,7 +18,10 @@ class ContractNotVerified(Exception):
     pass
 
 class MessedUpBrownieContract(Exception):
-    pass
+    def __init__(self, address, *args: object) -> None:
+        super().__init__(*args)
+        # try to recache the contract
+        Contract.from_explorer(address)
 
 
 def contract_not_verified(e: Exception) -> bool:
