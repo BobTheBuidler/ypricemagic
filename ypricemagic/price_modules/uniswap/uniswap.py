@@ -67,7 +67,10 @@ class Uniswap:
             if price1:
                 balances[1] = reserves[1] / scales[1] * price1
         balances = _extrapolate_balance_if_needed(balances)
-        return sum(balances) / supply
+        try: return sum(balances) / supply
+        except TypeError as e:
+            if "unsupported operand type(s) for +: 'int' and 'NoneType'" in str(e): return None
+            else: raise
     
     @ttl_cache(ttl=36000)
     def get_price(self, token_in, token_out=usdc, protocol=None, block=None, paired_against=weth):
