@@ -116,7 +116,7 @@ def has_methods(
     calls = [Call(address, [method], [[method, None]]) for method in methods]
     try:
         response = Multicall(calls, _w3=web3, require_success=False)().values()
-        return func(response)
+        return func([False if call is None else True for call in response])
     except Exception as e:
         if not call_reverted(e) and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
