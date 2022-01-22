@@ -398,8 +398,5 @@ class CurveRegistry(metaclass=Singleton):
         return response if response != ZERO_ADDRESS else None
 
 
-curve = None
-try:
-    curve = CurveRegistry()
-except UnsupportedNetwork:
-    pass
+try: curve = CurveRegistry()
+except UnsupportedNetwork: curve = set()

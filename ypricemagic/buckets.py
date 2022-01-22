@@ -8,6 +8,7 @@ from y.contracts import Contract
 
 from ypricemagic.price_modules import *
 from ypricemagic.price_modules.aave import aave
+from ypricemagic.price_modules.compound import compound
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
@@ -48,6 +49,6 @@ def check_bucket(
     # these require both calls and contract initializations
     elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
     elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
-    elif compound.compound.is_compound_market(token_address):               return 'compound'
-    elif curve is not None and token_address in curve:                      return 'curve lp'
-    elif chainlink is not None and token_address in chainlink:              return 'chainlink feed'
+    elif token_address in compound:                                         return 'compound'
+    elif token_address in curve:                                            return 'curve lp'
+    elif token_address in chainlink:                                        return 'chainlink feed'

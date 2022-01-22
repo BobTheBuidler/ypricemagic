@@ -44,13 +44,16 @@ class Compound:
             in zip(self.trollers.keys(), self.trollers.values(), response)
         }
 
-    def is_compound_market(self, token_address: str):
+    def is_compound_market(self, token_address: str) -> bool:
         if any(token_address in self.trollers[name].markets for name in self.trollers):
             return True
         # NOTE: Workaround for pools that have since been revoked
         result = has_methods(token_address, ['isCToken()(bool)','comptroller()(address)','underlying()(address)'])
         if result is True: self.notify_if_unknown_comptroller(token_address)
         return result
+    
+    def __contains__(self, token_address: str) -> bool:
+        return self.is_compound_market(token_address)
     
     def get_price(self, token_address: str, block=None):
         token = Contract(token_address)

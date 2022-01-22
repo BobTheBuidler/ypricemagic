@@ -71,8 +71,5 @@ class Chainlink(metaclass=Singleton):
             return None
 
 
-chainlink = None
-try:
-    chainlink = Chainlink()
-except UnsupportedNetwork:
-    pass
+try: chainlink = Chainlink()
+except UnsupportedNetwork: chainlink = set()
