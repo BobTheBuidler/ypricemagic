@@ -64,6 +64,8 @@ UNISWAPS = {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
         "traderjoe":        {"factory": "0x9Ad6C38BE94206cA50bb0d90783181662f0Cfa10", "router": "0x60aE616a2155Ee3d9A68541Ba4544862310933d4"},
         "lydia":            {"factory": "0xe0C1bb6DF4851feEEdc3E14Bd509FEAF428f7655", "router": "0xA52aBE4676dbfd04Df42eF7755F01A3c41f28D27"},
+        "olive":            {"factory": "0x4Fe4D8b01A56706Bc6CaD26E8C59D0C7169976b3", "router": "0x0c45FB63001b56a21e29c7dcc1727bfDA273a368"},
+        "complus":          {"factory": "0x5C02e78A3969D0E64aa2CFA765ACc1d671914aC0", "router": "0x78c18E6BE20df11f1f41b9635F3A18B8AD82dDD1"},
     },
     Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
