@@ -8,7 +8,7 @@ from cachetools.func import ttl_cache
 from y.constants import dai
 from y.contracts import Contract, Singleton
 from y.erc20 import decimals
-from y.exceptions import UnsupportedNetwork
+from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.networks import Network
 from y.utils.middleware import ensure_middleware
 from ypricemagic import magic
@@ -44,23 +44,11 @@ BASIC_TOKENS = {
     }
 }.get(chain.id, set())
 
-CURVE_CONTRACTS = {
-    Network.Mainnet: {
-        'address_provider': ADDRESS_PROVIDER,
-        'crv': '0xD533a949740bb3306d119CC777fa900bA034cd52',
-        'voting_escrow': '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
-        'gauge_controller': '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB',
-    },
-    Network.Fantom: {
-        'address_provider': ADDRESS_PROVIDER,
-    },
-    Network.Polygon: {
-        'address_provider': ADDRESS_PROVIDER,
-    },
-    Network.Arbitrum: {
-        'address_provider': ADDRESS_PROVIDER,
-    },
-}
+CURVE_MAINNET_CONTRACTS = {
+    'crv': '0xD533a949740bb3306d119CC777fa900bA034cd52',
+    'voting_escrow': '0x5f3b5DfEb7B28CDbD7FAba78963EE202a494e2A2',
+    'gauge_controller': '0x2F50D538606Fa9EDD2B11E2446BEb18C9D5846bB',
+    }
 
 OVERRIDES = {
     Network.Mainnet: {
@@ -79,18 +67,17 @@ OVERRIDES = {
 
 class CurveRegistry(metaclass=Singleton):
     def __init__(self):
-        if chain.id not in CURVE_CONTRACTS:
+        try: self.address_provider = Contract(ADDRESS_PROVIDER)
+        except ContractNotVerified:
             raise UnsupportedNetwork("curve is not supported on this network")
 
-        addrs = CURVE_CONTRACTS[chain.id]
         if chain.id == Network.Mainnet:
-            self.crv = Contract(addrs['crv'])
-            self.voting_escrow = Contract(addrs['voting_escrow'])
-            self.gauge_controller = Contract(addrs['gauge_controller'])
+            self.crv = Contract(CURVE_MAINNET_CONTRACTS['crv'])
+            self.voting_escrow = Contract(CURVE_MAINNET_CONTRACTS['voting_escrow'])
+            self.gauge_controller = Contract(CURVE_MAINNET_CONTRACTS['gauge_controller'])
 
         self.pools = set()
         self.identifiers = defaultdict(list)
-        self.address_provider = Contract(addrs['address_provider'])
         self.watch_events()
 
     def watch_events(self):
@@ -109,6 +96,9 @@ class CurveRegistry(metaclass=Singleton):
             elif event.name == 'AddressModified':
                 self.identifiers[event['id']].append(event['new_address'])
 
+        self.pools = {pool for pools in self.metapools_by_factory.values() for pool in pools}
+
+        ''' will probably get rid of
         # fetch pools from the latest registry
         log_filter = create_filter(str(self.registry))
         new_entries = log_filter.get_new_entries()
@@ -119,7 +109,7 @@ class CurveRegistry(metaclass=Singleton):
         for event in decode_logs(new_entries):
             if event.name == 'PoolAdded':
                 self.pools.add(event['pool'])
-
+        '''
         logger.info(f'loaded {len(self.pools)} pools')
 
     @property
