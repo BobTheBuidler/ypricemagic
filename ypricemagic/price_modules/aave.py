@@ -26,15 +26,13 @@ v2_pools = {
 }.get(chain.id, [])
 
 
-calls = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
-v1_pools = [Contract(pool) for pool in v1_pools]
-v1_reserves = Multicall(calls, _w3=web3)()
-v1_atokens = [data['aTokenAddress'] for data in fetch_multicall(*[[v1_pool, 'getReserveData', reserve] for v1_pool, reserves in zip(v1_pools, v1_reserves.values()) for reserve in reserves])]
+v1_calls = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
+v1_reserves = {Contract(pool): reserves for pool, reserves in Multicall(v1_calls, _w3=web3)()}
+v1_atokens = [data['aTokenAddress'] for data in fetch_multicall(*[[v1_pool, 'getReserveData', reserve] for v1_pool, reserve in v1_reserves])]
 
-calls = [Call(v2_pool, ['getReserves()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
-v2_pools = [Contract(pool) for pool in v2_pools]
-v2_reserves = Multicall(calls, _w3=web3)()
-v2_atokens = [data[7] for data in fetch_multicall(*[[v2_pool, 'getReserveData', reserve] for v2_pool, reserves in zip(v2_pools, v2_reserves.values()) for reserve in reserves])]
+v2_calls = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
+v2_reserves = {Contract(pool): reserves for pool, reserves in Multicall(v2_calls, _w3=web3)()}
+v2_atokens = [data[7] for data in fetch_multicall(*[[v2_pool, 'getReserveData', reserve] for v2_pool, reserve in v2_reserves])]
 
 @lru_cache
 def is_atoken_v1(address):
