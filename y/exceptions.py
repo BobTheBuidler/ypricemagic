@@ -15,6 +15,9 @@ class NonStandardERC20(Exception):
 class ContractNotVerified(Exception):
     pass
 
+class MessedUpBrownieContract(Exception):
+    pass
+
 
 def contract_not_verified(e: Exception) -> bool:
     triggers = [

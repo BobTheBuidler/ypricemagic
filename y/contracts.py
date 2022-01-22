@@ -9,8 +9,8 @@ from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 
-from y.exceptions import (ContractNotVerified, call_reverted,
-                          contract_not_verified, out_of_gas)
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+                          call_reverted, contract_not_verified, out_of_gas)
 from y.networks import Network
 from y.utils.cache import memory
 
@@ -71,6 +71,7 @@ def Contract(address):
         try: return _contract(address)
         except ValueError as e:
             if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
+            if "invalid literal for int() with base 16: ''" in str(e): raise MessedUpBrownieContract(address, str(e))
             else: raise
 
 @memory.cache()
