@@ -247,7 +247,7 @@ class CurveRegistry(metaclass=Singleton):
     def get_coins_decimals(self, pool):
         factory = self.get_factory(pool)
         source = Contract(factory) if factory else self.registry
-        coins_decimals = source.get_coins_decimals(pool)
+        coins_decimals = source.get_decimals(pool)
 
         # pool not in registry
         if not any(coins_decimals):
