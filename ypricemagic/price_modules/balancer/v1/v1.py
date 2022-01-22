@@ -1,6 +1,9 @@
+import logging
+
 from brownie import chain
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract
+from y.decorators import log
 from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.price_modules.balancer.v1.pool import BalancerV1Pool
@@ -10,20 +13,23 @@ EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
 }.get(chain.id, None)
 
+logger = logging.getLogger(__name__)
 
 class BalancerV1:
     def __init__(self) -> None:
         self.exchange_proxy = Contract(EXCHANGE_PROXY) if EXCHANGE_PROXY else None
     
+    @log(logger)
     def is_pool(self, token_address):
         return BalancerV1Pool(token_address).is_pool()
     
+    @log(logger)
     def get_pool_price(self, token_address, block=None):
         pool = BalancerV1Pool(token_address)
         assert pool.is_pool()
         return pool.get_pool_price(block=block)
 
-
+    @log(logger)
     def get_token_price(self, token_address, block=None):
         out, totalOutput = self.get_some_output(token_address, block=block)
         if out: return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block)
@@ -37,6 +43,7 @@ class BalancerV1:
         if out: return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
         else: return
 
+    @log(logger)
     def check_liquidity_against(self, token_in, token_out, scale=1, block=None):
         output = self.exchange_proxy.viewSplitExactIn(
             token_in, token_out, 10 ** _decimals(token_in) * scale, 32 # NOTE: 32 is max
@@ -44,6 +51,7 @@ class BalancerV1:
         )['totalOutput']
         return token_out, output
 
+    @log(logger)
     def get_some_output(self, token_in, scale=1, block=None):
         try:
             out, totalOutput = self.check_liquidity_against(token_in, weth, block=block)

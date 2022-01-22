@@ -1,7 +1,11 @@
-
+import logging
+from functools import lru_cache
 from brownie import chain
 from y.constants import dai, usdc, usdt, wbtc, weth
+from y.decorators import log
 from y.networks import Network
+
+logger = logging.getLogger(__name__)
 
 TRY_ORDER = {
     Network.Mainnet: ['sushiswap', 'uniswap v2', 'uniswap v1', 'shibaswap'],
@@ -102,6 +106,8 @@ SPECIAL_PATHS = {
     },
 }.get(chain.id, {})
 
+@log(logger)
+@lru_cache
 def special_paths(router_address: str):
     protocol = ROUTER_TO_PROTOCOL[router_address]
     return SPECIAL_PATHS.get(protocol, {})

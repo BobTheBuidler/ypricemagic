@@ -3,6 +3,7 @@ import logging
 from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
 from y.contracts import Contract, Singleton
+from y.decorators import log
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from ypricemagic.price_modules.chainlink.feeds import FEEDS
@@ -31,6 +32,7 @@ class Chainlink(metaclass=Singleton):
         
         self.load_feeds()
 
+    @log(logger)
     def load_feeds(self):
         if chain.id in registries:
             try:
@@ -53,13 +55,16 @@ class Chainlink(metaclass=Singleton):
         self.feeds.update(FEEDS)
         logger.info(f'loaded {len(self.feeds)} feeds')
 
+    @log(logger)
     def get_feed(self, asset):
         return Contract(self.feeds[asset])
 
+    @log(logger)
     def __contains__(self, asset):
         return asset in self.feeds
 
     @ttl_cache(maxsize=None, ttl=600)
+    @log(logger)
     def get_price(self, asset, block=None):
         if asset == ZERO_ADDRESS:
             return None

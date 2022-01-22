@@ -1,3 +1,4 @@
+import logging
 from functools import lru_cache
 from typing import Union
 
@@ -5,16 +6,19 @@ import brownie
 from eth_typing.evm import Address, BlockNumber
 from y.constants import STABLECOINS
 from y.contracts import Contract
+from y.decorators import log
 
 from ypricemagic.price_modules import *
 from ypricemagic.price_modules.aave import aave
-from ypricemagic.price_modules.compound import compound
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
+from ypricemagic.price_modules.compound import compound
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
 
+logger = logging.getLogger(__name__)
 
+@log(logger)
 @lru_cache(maxsize=None)
 def check_bucket(
     token_address: Union[str, Address, brownie.Contract, Contract]

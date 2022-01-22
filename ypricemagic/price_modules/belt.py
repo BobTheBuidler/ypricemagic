@@ -1,7 +1,12 @@
 
+import logging
+
 from brownie import chain
+from y.decorators import log
 from y.networks import Network
 from ypricemagic.utils.raw_calls import raw_call
+
+logger = logging.getLogger(__name__)
 
 POOLS = {
     Network.BinanceSmartChain: {
@@ -11,10 +16,12 @@ POOLS = {
 }.get(chain.id, {})
 
 
+@log(logger)
 def is_belt_lp(token_address):
     return token_address in POOLS
 
 
+@log(logger)
 def get_price(token_address, block=None):
     pool = POOLS[token_address]
     return raw_call(pool, 'get_virtual_price()', output='int', block=block) / 1e18

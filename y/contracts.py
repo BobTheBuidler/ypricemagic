@@ -9,6 +9,7 @@ from brownie.exceptions import CompilerError
 from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 
+from y.decorators import log
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           call_reverted, contract_not_verified, out_of_gas)
 from y.networks import Network
@@ -29,6 +30,7 @@ def Contract_with_erc20_fallback(address):
     return contract
 
 
+@log(logger)
 @memory.cache()
 def contract_creation_block(address) -> int:
     """
@@ -74,6 +76,7 @@ def Contract(address):
             if "invalid literal for int() with base 16: ''" in str(e): raise MessedUpBrownieContract(address, str(e))
             else: raise
 
+@log(logger)
 @memory.cache()
 def is_contract(address: str) -> bool:
     '''
@@ -83,6 +86,7 @@ def is_contract(address: str) -> bool:
     '''
     return web3.eth.get_code(address) != '0x'
 
+@log(logger)
 @memory.cache()
 def has_method(address: str, method: str, return_response: bool = False) -> bool:
     '''
@@ -101,6 +105,7 @@ def has_method(address: str, method: str, return_response: bool = False) -> bool
     if return_response: return list(response)[0]
     return True
 
+@log(logger)
 @memory.cache()
 def has_methods(
     address: str, 
@@ -126,6 +131,7 @@ def has_methods(
         return False if func == all else any(has_method(address, method) for method in methods)
 
 
+@log(logger)
 @memory.cache()
 def build_name(address: str, return_None_on_failure: bool = False) -> str:
     try:

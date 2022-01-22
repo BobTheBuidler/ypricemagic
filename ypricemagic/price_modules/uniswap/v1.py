@@ -1,11 +1,16 @@
 
+import logging
+
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from y.constants import usdc
 from y.contracts import Contract
+from y.decorators import log
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from ypricemagic.utils.raw_calls import _decimals
+
+logger = logging.getLogger(__name__)
 
 V1 = {
     Network.Mainnet: "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95",
@@ -15,6 +20,7 @@ class UniswapV1:
     def __init__(self) -> None:
         self.factory = V1
     
+    @log(logger)
     def get_price(self, token_address, block):
         try: factory = Contract(self.factory)
         except ValueError: raise UnsupportedNetwork

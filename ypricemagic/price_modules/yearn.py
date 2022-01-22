@@ -2,6 +2,7 @@ import logging
 from functools import lru_cache
 
 from y.contracts import Contract, has_methods
+from y.decorators import log
 from y.exceptions import ContractNotVerified
 from ypricemagic.utils.multicall import fetch_multicall
 
@@ -9,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 # NOTE: Yearn and Yearn-like
 
+@log(logger)
 @lru_cache(maxsize=None)
 def is_yearn_vault(token):
     logger.debug(f'Checking `is_yearn_vault({token})')
@@ -35,6 +37,7 @@ def is_yearn_vault(token):
     return result
 
 
+@log(logger)
 def get_price(token, block=None):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals

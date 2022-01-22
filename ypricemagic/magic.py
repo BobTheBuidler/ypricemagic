@@ -107,6 +107,7 @@ def _get_price(
     return price
 
 
+@log(logger)
 def _exit_early_for_known_tokens(
     token_address: str,
     block = None

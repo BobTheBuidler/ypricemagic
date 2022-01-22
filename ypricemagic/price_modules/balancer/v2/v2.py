@@ -1,8 +1,13 @@
+import logging
+
 from brownie import chain
 from y.contracts import has_methods
+from y.decorators import log
 from y.networks import Network
 from ypricemagic.price_modules.balancer.v2.pool import BalancerV2Pool
 from ypricemagic.price_modules.balancer.v2.vault import BalancerV2Vault
+
+logger = logging.getLogger(__name__)
 
 BALANCER_V2_VAULTS = {
     Network.Mainnet: [
@@ -19,17 +24,21 @@ class BalancerV2:
     def __init__(self) -> None:
         self.vaults = BALANCER_V2_VAULTS
 
+    @log(logger)
     def is_pool(self, token_address):
         return has_methods(token_address, ['getPoolId()(bytes32)','getPausedState()((bool, uint, uint))','getSwapFeePercentage()(uint)'])
     
+    @log(logger)
     def get_pool_price(self, pool_address, block=None):
         return BalancerV2Pool(pool_address).get_pool_price(block=block)
 
+    @log(logger)
     def get_token_price(self, token_address, block=None):
         deepest_pool = self.deepest_pool_for(token_address, block=block)
         if deepest_pool is None: return
         return deepest_pool.get_token_price(token_address, block)
     
+    @log(logger)
     def deepest_pool_for(self, token_address, block=None):
         deepest_pools = {vault.address: vault.deepest_pool_for(token_address, block=block) for vault in self.vaults}
         deepest_pools = {vault: deepest_pool for vault,deepest_pool in deepest_pools.items() if deepest_pool is not None}

@@ -1,6 +1,7 @@
 import logging
 
 from y.contracts import Contract, build_name
+from y.decorators import log
 from ypricemagic.utils.events import decode_logs, get_logs_asap
 from ypricemagic.utils.multicall import fetch_multicall
 
@@ -12,16 +13,17 @@ class BalancerV2Vault:
         self.address = vault_address
         self.contract = Contract(self.address)
     
+    @log(logger)
     def get_pool_tokens(self, pool_id: int, block=None):
-        a = self.contract.getPoolTokens(pool_id, block_identifier = block)
-        logger.debug(a)
-        return a
+        return self.contract.getPoolTokens(pool_id, block_identifier = block)
 
+    @log(logger)
     def list_pools(self, block=None):
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
         events = decode_logs(get_logs_asap(self.address, topics, to_block=block))
         return {event['poolId'].hex():event['poolAddress'] for event in events}
 
+    @log(logger)
     def deepest_pool_for(self, token_address, block=None):
         pools = self.list_pools(block=block)
         poolids = [poolid for poolid, pool in pools.items() if _is_standard_pool(pool)]

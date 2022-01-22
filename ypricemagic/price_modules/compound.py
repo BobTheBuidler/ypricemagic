@@ -2,6 +2,7 @@ import logging
 
 from brownie import chain, convert
 from y.contracts import Contract, has_methods
+from y.decorators import log
 from y.networks import Network
 from y.utils.logging import gh_issue_request
 from ypricemagic.utils.multicall import (fetch_multicall,
@@ -44,6 +45,7 @@ class Compound:
             in zip(self.trollers.keys(), self.trollers.values(), response)
         }
 
+    @log(logger)
     def is_compound_market(self, token_address: str) -> bool:
         if any(token_address in self.trollers[name].markets for name in self.trollers):
             return True
@@ -52,9 +54,11 @@ class Compound:
         if result is True: self.notify_if_unknown_comptroller(token_address)
         return result
     
+    @log(logger)
     def __contains__(self, token_address: str) -> bool:
         return self.is_compound_market(token_address)
     
+    @log(logger)
     def get_price(self, token_address: str, block=None):
         token = Contract(token_address)
         try:
@@ -92,6 +96,7 @@ class Compound:
             return [exchange_rate * 10 ** (decimals - under_decimals), "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"]
         '''
 
+    @log(logger)
     def notify_if_unknown_comptroller(self, token_address: str) -> None:
         '''
         If the `comptroller` for token `token_address` is not known to ypricemagic, log a message:

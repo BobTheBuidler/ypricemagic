@@ -1,4 +1,8 @@
+import logging
 from brownie import Contract
+from y.decorators import log
+
+logger = logging.getLogger(__name__)
 
 # General
 
@@ -24,6 +28,7 @@ class MessedUpBrownieContract(Exception):
         Contract.from_explorer(address)
 
 
+@log(logger)
 def contract_not_verified(e: Exception) -> bool:
     triggers = [
         'Contract source code not verified',
@@ -50,6 +55,7 @@ class CallReverted(Exception):
     pass
 
 
+@log(logger)
 def call_reverted(e: Exception) -> bool:
     triggers = [
         'execution reverted',
@@ -66,5 +72,6 @@ def continue_if_call_reverted(e: Exception) -> None:
     else: raise e
 
 
+@log(logger)
 def out_of_gas(e: Exception) -> bool:
     return 'out of gas' in str(e) 

@@ -1,10 +1,10 @@
 import logging
 from functools import lru_cache
-from attr import has
 
 from brownie import chain, web3
 from multicall import Call, Multicall
 from y.contracts import Contract
+from y.decorators import log
 from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.utils.multicall import fetch_multicall
@@ -49,6 +49,7 @@ class Aave:
             self.atokens_v2 = [reserve[7] for reserve in multicall_v2]
             logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
 
+    @log(logger)
     @lru_cache
     def is_atoken(self,token_address: str):
         logger.debug(f'Checking `is_atoken({token_address})')
@@ -56,6 +57,7 @@ class Aave:
         logger.debug(f'`is_atoken({token_address}` returns `{result}`')
         return result
 
+    @log(logger)
     def get_price(self, token_address: str, block=None):
         logger.debug(f'Checking `aave.get_price({token_address}, {block})`')
         if self.is_atoken_v1(token_address):
@@ -65,6 +67,7 @@ class Aave:
         logger.debug(f'`aave.get_price({token_address}, {block})` returns `{price}`')
         return price
 
+    @log(logger)
     def is_atoken_v1(self,token_address):
         logger.debug(f'Checking `is_atoken_v1({token_address})')
         if not hasattr(self, 'atokens_v1'): result = False
@@ -72,6 +75,7 @@ class Aave:
         logger.debug(f'`is_atoken_v1({token_address}` returns `{result}`')
         return result
 
+    @log(logger)
     def is_atoken_v2(self,token_address: str):
         logger.debug(f'Checking `is_atoken_v2({token_address})')
         if not hasattr(self, 'atokens_v2'): result = False
@@ -79,10 +83,12 @@ class Aave:
         logger.debug(f'`is_atoken_v2({token_address}` returns `{result}`')
         return result
 
+    @log(logger)
     def get_price_v1(self,token_address: str, block=None):
         underlying = raw_call(token_address, 'underlyingAssetAddress()', block=block, output='address')
         return magic.get_price(underlying, block=block)
 
+    @log(logger)
     def get_price_v2(self,token_address: str, block=None):
         underlying = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',block=block,output='address')
         return magic.get_price(underlying, block=block)

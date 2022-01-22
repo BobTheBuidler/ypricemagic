@@ -1,13 +1,16 @@
 
+import logging
 from functools import lru_cache
 
 from brownie import chain
 from y.contracts import Contract
+from y.decorators import log
 from y.exceptions import NotAUniswapV2Pool, call_reverted
 from y.networks import Network
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals, raw_call
 
+logger = logging.getLogger(__name__)
 
 @lru_cache(maxsize=None)
 class UniswapPoolV2:
@@ -28,6 +31,7 @@ class UniswapPoolV2:
                 except AttributeError: raise NotAUniswapV2Pool
             else: raise
 
+    @log(logger)
     def get_pool_details(self, block=None):
         pair = Contract(self.address)
         if chain.id in [Network.Mainnet, Network.BinanceSmartChain, Network.Polygon, Network.Fantom]: 

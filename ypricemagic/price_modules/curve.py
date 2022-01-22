@@ -7,6 +7,7 @@ from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
 from y.constants import dai
 from y.contracts import Contract, Singleton
+from y.decorators import log
 from y.erc20 import decimals
 from y.exceptions import ContractNotVerified, UnsupportedNetwork, call_reverted
 from y.networks import Network
@@ -113,10 +114,12 @@ class CurveRegistry(metaclass=Singleton):
         logger.info(f'loaded {len(self.pools)} pools')
 
     @property
+    @log(logger)
     def registry(self):
         return Contract(self.identifiers[0][-1])
 
     @property
+    @log(logger)
     @ttl_cache(ttl=3600)
     def metapools_by_factory(self):
         """
@@ -141,6 +144,7 @@ class CurveRegistry(metaclass=Singleton):
             for factory, pool_count in zip(metapool_factories, pool_counts)
         }
 
+    @log(logger)
     def get_factory(self, pool):
         """
         Get metapool factory that has spawned a pool.
@@ -154,13 +158,16 @@ class CurveRegistry(metaclass=Singleton):
         except StopIteration:
             return None
 
+    @log(logger)
     @lru_cache(maxsize=None)
     def _pool_from_lp_token(self, token):
         return self.registry.get_pool_from_lp_token(token)
 
+    @log(logger)
     def __contains__(self, token):
         return self.get_pool(token) is not None
 
+    @log(logger)
     @lru_cache(maxsize=None)
     def get_pool(self, token):
         """
@@ -174,7 +181,7 @@ class CurveRegistry(metaclass=Singleton):
 
         if pool != ZERO_ADDRESS: return pool
             
-
+    @log(logger)
     @lru_cache(maxsize=None)
     def get_gauge(self, pool):
         """
@@ -190,6 +197,7 @@ class CurveRegistry(metaclass=Singleton):
         if gauges[0] != ZERO_ADDRESS:
             return gauges[0]
 
+    @log(logger)
     @lru_cache(maxsize=None)
     def get_coins(self, pool):
         """
@@ -213,6 +221,7 @@ class CurveRegistry(metaclass=Singleton):
 
         return [coin for coin in coins if coin not in {None, ZERO_ADDRESS}]
 
+    @log(logger)
     @lru_cache(maxsize=None)
     def get_underlying_coins(self, pool):
         factory = self.get_factory(pool)
@@ -233,6 +242,7 @@ class CurveRegistry(metaclass=Singleton):
 
         return [coin for coin in coins if coin != ZERO_ADDRESS]
 
+    @log(logger)
     @lru_cache(maxsize=None)
     def get_coins_decimals(self, pool):
         factory = self.get_factory(pool)
@@ -246,6 +256,7 @@ class CurveRegistry(metaclass=Singleton):
         
         return [dec for dec in coins_decimals if dec != 0]
 
+    @log(logger)
     def get_balances(self, pool, block=None):
         """
         Get {token: balance} of liquidity in the pool.
@@ -272,6 +283,7 @@ class CurveRegistry(metaclass=Singleton):
             if coin != ZERO_ADDRESS
         }
 
+    @log(logger)
     def get_tvl(self, pool, block=None):
         """
         Get total value in Curve pool.
@@ -284,6 +296,7 @@ class CurveRegistry(metaclass=Singleton):
             balances[coin] * magic.get_price(coin, block=block) for coin in balances
         )
 
+    @log(logger)
     @ttl_cache(maxsize=None, ttl=600)
     def get_price(self, token, block=None):
         pool = self.get_pool(token)
@@ -316,6 +329,7 @@ class CurveRegistry(metaclass=Singleton):
         logger.debug("curve lp -> %s", price)
         return price
 
+    @log(logger)
     def calculate_boost(self, gauge, addr, block=None):
         results = fetch_multicall(
             [gauge, "balanceOf", addr],
@@ -357,6 +371,7 @@ class CurveRegistry(metaclass=Singleton):
             "min vecrv": min_vecrv,
         }
 
+    @log(logger)
     def calculate_apy(self, gauge, lp_token, block=None):
         crv_price = magic.get_price(self.crv)
         pool = Contract(self.get_pool(lp_token))
@@ -385,6 +400,7 @@ class CurveRegistry(metaclass=Singleton):
             "token price": token_price,
         }
     
+    @log(logger)
     def oracle(self, pool):
         '''
         If `pool` has method `price_oracle`, returns price_oracle address.

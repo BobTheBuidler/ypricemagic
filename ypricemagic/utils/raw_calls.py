@@ -2,7 +2,6 @@ import logging
 from functools import lru_cache
 from typing import Callable, Union
 
-from y.exceptions import NonStandardERC20, CalldataPreparationError, call_reverted
 import brownie
 from brownie import ZERO_ADDRESS, convert, web3
 from brownie.convert.datatypes import EthAddress
@@ -10,6 +9,9 @@ from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 from y.contracts import Contract
+from y.decorators import log
+from y.exceptions import (CalldataPreparationError, NonStandardERC20,
+                          call_reverted)
 from y.networks import Network
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,7 @@ logger = logging.getLogger(__name__)
 We use raw calls for commonly used functions because its much faster than using brownie Contracts
 """
 
+@log(logger)
 @lru_cache(maxsize=None)
 def _cached_call_fn(
     func: Callable,
@@ -30,6 +33,7 @@ def _cached_call_fn(
     else: return func(contract_address, required_arg, block=block)
 
 
+@log(logger)
 def decimals(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None, 
@@ -41,6 +45,7 @@ def decimals(
         return _cached_call_fn(_decimals,contract_address,block)
 
 
+@log(logger)
 def _decimals(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None, 
@@ -102,6 +107,7 @@ def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 @lru_cache
 def _symbol(
     contract_address: Union[str, Address, brownie.Contract, Contract],
@@ -131,6 +137,7 @@ def _symbol(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 @lru_cache
 def _name(
     contract_address: Union[str, Address, brownie.Contract, Contract],
@@ -160,6 +167,7 @@ def _name(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 def _totalSupply(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None,
@@ -188,6 +196,7 @@ def _totalSupply(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 def _totalSupplyReadable(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None,
@@ -209,6 +218,7 @@ def _totalSupplyReadable(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 def _balanceOf(
     call_address: Union[str, Address, brownie.Contract, Contract], 
     input_address: Union[str, Address, brownie.Contract, Contract], 
@@ -241,6 +251,7 @@ def _balanceOf(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 def _balanceOfReadable(
     call_address: Union[str, Address, brownie.Contract, Contract], 
     input_address: Union[str, Address, brownie.Contract, Contract], 
@@ -265,6 +276,7 @@ def _balanceOfReadable(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
+@log(logger)
 def raw_call(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
     method: str, 
@@ -299,6 +311,7 @@ def raw_call(
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
+@log(logger)
 def prepare_data(
     method, 
     inputs = Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract]
@@ -330,6 +343,7 @@ def prepare_data(
     '''
 
 
+@log(logger)
 def prepare_input(
     input: Union[
         bytes, # for bytes input

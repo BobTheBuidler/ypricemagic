@@ -1,3 +1,4 @@
+import logging
 from collections import defaultdict
 from itertools import count, product
 from operator import itemgetter
@@ -12,12 +13,15 @@ from eth_abi.exceptions import InsufficientDataBytes
 from eth_typing.evm import Address, BlockNumber
 from web3.exceptions import CannotHandleRequest
 from y.contracts import Contract, contract_creation_block
+from y.decorators import log
 from y.exceptions import continue_if_call_reverted
 from y.networks import Network
 from ypricemagic.interfaces.multicall2 import MULTICALL2_ABI
 from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 
 from multicall import Call, Multicall
+
+logger = logging.getLogger(__name__)
 
 SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, Contract
 
@@ -43,6 +47,7 @@ code = "0x608060405234801561001057600080fd5b50600436106100b45760003560e01c806372
 multicall_deploy_block = contract_creation_block(multicall2.address)
 
 
+@log(logger)
 def multicall_same_func_no_input(
     addresses: list,
     method: str, 
@@ -55,6 +60,7 @@ def multicall_same_func_no_input(
     return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
 
+@log(logger)
 def multicall_same_func_different_contracts_same_input(
     addresses: list, 
     method: str, 
@@ -69,6 +75,7 @@ def multicall_same_func_different_contracts_same_input(
     return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
 
 
+@log(logger)
 def multicall_same_func_same_contract_different_inputs(
     address: Union[str, Address, brownie.Contract, Contract], 
     method: str, 
@@ -84,6 +91,7 @@ def multicall_same_func_same_contract_different_inputs(
     return [result for result in Multicall(calls, block_id=block, _w3=web3, require_success = not return_None_on_failure)().values()]
 
 
+@log(logger)
 def multicall_decimals(
     addresses: List[str], 
     block: Union[int, BlockNumber, None] = None,
@@ -99,6 +107,8 @@ def multicall_decimals(
 
     return [_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses]
 
+
+@log(logger)
 def multicall_totalSupply(
     addresses: List[str], 
     block: Union[int, BlockNumber, None] = None,
@@ -111,6 +121,7 @@ def multicall_totalSupply(
     return [_totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
 
 
+@log(logger)
 def multicall_balanceOf(
     token_addresses: List[str], 
     hodler_address: str, 
@@ -120,6 +131,7 @@ def multicall_balanceOf(
     return multicall_same_func_different_contracts_same_input(token_addresses, 'balanceOf(address)(uint)', input=hodler_address, block=block)
 
 
+@log(logger)
 def fetch_multicall(*calls, block=None):
     # https://github.com/makerdao/multicall
     multicall_input = []
@@ -160,6 +172,7 @@ def fetch_multicall(*calls, block=None):
     return decoded
 
 
+@log(logger)
 def multicall_matrix(contracts, params, block="latest"):
     matrix = list(product(contracts, params))
     calls = [[contract, param] for contract, param in matrix]
@@ -173,6 +186,7 @@ def multicall_matrix(contracts, params, block="latest"):
     return dict(output)
 
 
+@log(logger)
 def batch_call(calls):
     """
     Similar interface but block height as last param. Uses JSON-RPC batch.
@@ -207,6 +221,7 @@ def batch_call(calls):
     ]
 
 
+@log(logger)
 def _clean_addresses(
     addresses: Sequence[Any]
 ):
@@ -214,6 +229,7 @@ def _clean_addresses(
     return [_clean_address(address) for address in addresses]
 
 
+@log(logger)
 def _clean_address(
     address: Any
     ):

@@ -3,7 +3,7 @@ import logging
 import ypricemagic.magic
 from cachetools.func import ttl_cache
 from y.constants import usdc, weth
-from y.decorators import continue_on_revert
+from y.decorators import continue_on_revert, log
 from y.exceptions import contract_not_verified
 from ypricemagic.price_modules.uniswap.protocols import (FACTORY_TO_PROTOCOL,
                                                          TRY_ORDER, UNISWAPS)
@@ -30,13 +30,16 @@ class Uniswap:
         self._try_order = TRY_ORDER
         self.v1 = UniswapV1()
 
+    @log(logger)
     def is_uniswap_pool(self, token_address: str) -> bool:
         try: return UniswapPoolV2(token_address).factory in self.factories
         except NotAUniswapV2Pool: return False
 
+    @log(logger)
     def get_price_v1(self, token_address, block=None):
         return self.v1.get_price(token_address, block)
     
+    @log(logger)
     @ttl_cache(ttl=600)
     def lp_price(self, token_address: str, block=None):
         """ Get Uniswap/Sushiswap LP token price. """
@@ -72,6 +75,7 @@ class Uniswap:
             if "unsupported operand type(s) for +: 'int' and 'NoneType'" in str(e): return None
             else: raise
     
+    @log(logger)
     @ttl_cache(ttl=36000)
     def get_price(self, token_in, token_out=usdc, protocol=None, block=None, paired_against=weth):
         """
@@ -98,6 +102,7 @@ class Uniswap:
 
 uniswap = Uniswap()
 
+@log(logger)
 def _extrapolate_balance_if_needed(balances):
     logger.debug('Attempting to extrapolate balance from one side of the pool to the other')
     logger.debug(f'Balances: {balances}')

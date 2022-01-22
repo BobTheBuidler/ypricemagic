@@ -9,7 +9,7 @@ from cachetools.func import ttl_cache
 from multicall import Call
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
-from y.decorators import continue_on_revert
+from y.decorators import continue_on_revert, log
 from y.exceptions import ContractNotVerified
 from y.networks import Network
 from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
@@ -27,10 +27,12 @@ class UniswapRouterV2:
         self.special_paths = special_paths(self.address)
     
     @cached_property
+    @log(logger)
     def contract(self):
         return Contract(self.address)
 
     @ttl_cache(ttl=36000)
+    @log(logger)
     def get_price(self, token_in, token_out=usdc, block=None, paired_against=weth):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -56,6 +58,7 @@ class UniswapRouterV2:
             return amount_out / fees
 
     @continue_on_revert
+    @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
         try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
         except ContractNotVerified: return Call(self.address,['getAmountsOut(uint,address[])',amount_in,path],[['amounts',None]],_w3=web3,block=block)
@@ -64,6 +67,7 @@ class UniswapRouterV2:
             if 'Sequence has incorrect length' in str(e): return 
             else: raise
 
+    @log(logger)
     def path_selector(self, token_in, token_out, paired_against):
         '''Chooses swap path to use for quote'''
 
