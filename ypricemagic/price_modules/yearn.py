@@ -21,7 +21,14 @@ def is_yearn_vault(token):
     # pricePerShare can revert if totalSupply == 0, which would cause `has_methods` to return `False`,
     # but it might still be a vault. This section will correct `result` for problematic vaults.
     if result is False:
-        try: result = hasattr(Contract(token),'getPricePerFullShare')
+        try: 
+            contract = Contract(token)
+            result = any([
+                hasattr(contract,'pricePerShare'),
+                hasattr(contract,'getPricePerShare'),
+                hasattr(contract,'getPricePerFullShare'),
+                hasattr(contract, 'getSharesToUnderlying'),
+            ])
         except ContractNotVerified: pass
 
     logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
