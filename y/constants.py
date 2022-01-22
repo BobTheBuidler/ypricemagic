@@ -135,6 +135,7 @@ STABLECOINS = {
         "0xbA7dEebBFC5fA1100Fb055a87773e1E99Cd3507a": "dai",
         "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70": "dai.e",
         "0x130966628846BFd36ff31a822705796e8cb8C18D": "mim",
+        "0xaEb044650278731Ef3DC244692AB9F64C78FfaEA": "busd",
     }
 }.get(chain.id, {})
 
