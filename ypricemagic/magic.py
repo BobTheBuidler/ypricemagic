@@ -15,6 +15,7 @@ from y.networks import Network
 from y.prices import _sense_check
 
 from ypricemagic.price_modules import *
+from ypricemagic.price_modules.aave import aave
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.price_modules.curve import curve
@@ -159,20 +160,19 @@ def check_bucket(
     elif wsteth.is_wsteth(token_address):                                   return 'wsteth'
     elif cream.is_creth(token_address):                                     return 'creth'
     elif belt.is_belt_lp(token_address):                                    return 'belt lp'
-    elif froyo.is_froyo(token_address):                                     return 'froyo'
 
-    # these require contract initialization but no calls
-    # TODO initialize the contract here and pass it into the below functions to save init time
-    # token_contract = Contract(token_address)
-    if balancer.is_balancer_pool(token_address):                            return 'balancer pool'
-    elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
+    elif froyo.is_froyo(token_address):                                     return 'froyo'
     elif aave.is_atoken(token_address):                                     return 'atoken' 
 
+    # these just require calls
+    elif balancer.is_balancer_pool(token_address):                          return 'balancer pool'
+    elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
     elif ib.is_ib_token(token_address):                                     return 'ib token'
+
     elif gelato.is_gelato_pool(token_address):                              return 'gelato'
     elif piedao.is_pie(token_address):                                      return 'piedao lp'
-
     elif tokensets.is_token_set(token_address):                             return 'token set'
+
     elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
     elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
 

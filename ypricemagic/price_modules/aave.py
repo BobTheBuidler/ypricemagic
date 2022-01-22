@@ -26,42 +26,54 @@ v2_pools = {
 }.get(chain.id, [])
 
 
-v1_calls = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
-v1_reserves = {Contract(pool): reserves for pool, reserves in Multicall(v1_calls, _w3=web3)()}
-v1_atokens = [data['aTokenAddress'] for data in fetch_multicall(*[[v1_pool, 'getReserveData', reserve] for v1_pool, reserve in v1_reserves])]
+class Aave:
+    def __init__(self) -> None:
+        if len(v1_pools):
+            calls_v1 = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
+            reserves_v1 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v1, _w3=web3)()}
+            self.atokens_v1 = [data['aTokenAddress'] for data in fetch_multicall(*[[v1_pool, 'getReserveData', reserve] for v1_pool, reserve in reserves_v1.items()])]
+            logger.info(f'loaded {len(self.atokens_v1)} v1 atokens')
 
-v2_calls = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
-v2_reserves = {Contract(pool): reserves for pool, reserves in Multicall(v2_calls, _w3=web3)()}
-v2_atokens = [data[7] for data in fetch_multicall(*[[v2_pool, 'getReserveData', reserve] for v2_pool, reserve in v2_reserves])]
+        if len(v2_pools):
+            calls_v2 = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
+            reserves_v2 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v2, _w3=web3)()}
+            self.atokens_v2 = [data[7] for data in fetch_multicall(*[[v2_pool, 'getReserveData', reserve] for v2_pool, reserve in reserves_v2.items()])]
+            logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
 
-@lru_cache
-def is_atoken_v1(address):
-    logger.debug(f'Checking `is_atoken_v1({address})')
-    result = address in v1_atokens
-    logger.debug(f'`is_atoken_v1({address}` returns `{result}`')
-    return result
+    @lru_cache
+    def is_atoken(self,token_address: str):
+        logger.debug(f'Checking `is_atoken({token_address})')
+        result = self.is_atoken_v2(token_address) or self.is_atoken_v1(token_address)
+        logger.debug(f'`is_atoken({token_address}` returns `{result}`')
+        return result
 
-@lru_cache
-def is_atoken_v2(address):
-    logger.debug(f'Checking `is_atoken_v2({address})')
-    result = address in v2_atokens
-    logger.debug(f'`is_atoken_v2({address}` returns `{result}`')
-    return result
+    def get_price(self, token_address: str, block=None):
+        logger.debug(f'Checking `aave.get_price({token_address}, {block})`')
+        if self.is_atoken_v1(token_address):
+            price = self.get_price_v1(token_address, block)
+        if self.is_atoken_v2(token_address):
+            price = self.get_price_v2(token_address, block)
+        logger.debug(f'`aave.get_price({token_address}, {block})` returns `{price}`')
+        return price
 
-@lru_cache
-def is_atoken(address):
-    return is_atoken_v1(address) or is_atoken_v2(address)
+    def is_atoken_v1(self,token_address):
+        logger.debug(f'Checking `is_atoken_v1({token_address})')
+        result = token_address in self.atokens_v1
+        logger.debug(f'`is_atoken_v1({token_address}` returns `{result}`')
+        return result
 
-def get_price_v1(token, block=None):
-    underlying = raw_call(token, 'underlyingAssetAddress()', block=block, output='address')
-    return magic.get_price(underlying, block=block)
+    def is_atoken_v2(self,token_address: str):
+        logger.debug(f'Checking `is_atoken_v2({token_address})')
+        result = token_address in self.atokens_v2
+        logger.debug(f'`is_atoken_v2({token_address}` returns `{result}`')
+        return result
 
-def get_price_v2(token, block=None):
-    underlying = raw_call(token, 'UNDERLYING_ASSET_ADDRESS()',block=block,output='address')
-    return magic.get_price(underlying, block=block)
+    def get_price_v1(self,token_address: str, block=None):
+        underlying = raw_call(token_address, 'underlyingAssetAddress()', block=block, output='address')
+        return magic.get_price(underlying, block=block)
 
-def get_price(token, block=None):
-    if is_atoken_v1(token):
-        return get_price_v1(token, block)
-    if is_atoken_v2(token):
-        return get_price_v2(token, block)
+    def get_price_v2(self,token_address: str, block=None):
+        underlying = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',block=block,output='address')
+        return magic.get_price(underlying, block=block)
+
+aave = Aave()
