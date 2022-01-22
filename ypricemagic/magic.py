@@ -8,12 +8,13 @@ from eth_typing.evm import Address, BlockNumber
 from hexbytes import HexBytes
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN
+from y.constants import WRAPPED_GAS_COIN
 from y.contracts import Contract
 from y.exceptions import PriceError
 from y.networks import Network
 from y.prices import _sense_check
 
+from ypricemagic.buckets import check_bucket
 from ypricemagic.price_modules import *
 from ypricemagic.price_modules.aave import aave
 from ypricemagic.price_modules.balancer.balancer import balancer
@@ -86,15 +87,21 @@ def _get_price(
     fail_to_None: bool = False, 
     silent: bool = False
     ):
-    logger.debug(f"network: {Network.printable()} token: {token}")
-    logger.debug("unwrapping %s", token)
 
-    price, bucket = _exit_early_for_known_tokens(token, block=block)
+    token_string = f"{_symbol(token)} {token}" if _symbol(token) else token
+
+    logger.debug("-------------[ y ]-------------")
+    logger.debug(f"Fetching price for...")
+    logger.debug(f"Token: {token_string}")
+    logger.debug(f"Block: {block or 'latest'}") 
+    logger.debug(f"Network: {Network.printable()}")
+
+    price = _exit_early_for_known_tokens(token, block=block)
     if price == 0: return 0 # this happens when a LP token has 0 totalSupply
     if not price: price = uniswap.try_for_price(token, block=block)
     if not price: price = balancer.get_price(token, block=block)
     if not price: _fail_appropriately(token, fail_to_None=fail_to_None, silent=silent)
-    if price: _sense_check(token, price, bucket)
+    if price: _sense_check(token, price)
     return price
 
 
@@ -142,46 +149,7 @@ def _exit_early_for_known_tokens(
 
     logger.debug(f"{bucket} -> ${price}")
 
-    return price if price is not None else None, bucket
-
-
-@lru_cache(maxsize=None)
-def check_bucket(
-    token_address: Union[str, Address, brownie.Contract, Contract]
-    ):
-
-    if type(token_address) != str:
-        token_address = str(token_address)
-
-    # these require neither calls to the chain nor contract initialization
-    if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
-    elif token_address in STABLECOINS:                                      return 'stable usd'
-
-    elif wsteth.is_wsteth(token_address):                                   return 'wsteth'
-    elif cream.is_creth(token_address):                                     return 'creth'
-    elif belt.is_belt_lp(token_address):                                    return 'belt lp'
-
-    elif froyo.is_froyo(token_address):                                     return 'froyo'
-    elif aave.is_atoken(token_address):                                     return 'atoken' 
-
-    # these just require calls
-    elif balancer.is_balancer_pool(token_address):                          return 'balancer pool'
-    elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
-    elif ib.is_ib_token(token_address):                                     return 'ib token'
-
-    elif gelato.is_gelato_pool(token_address):                              return 'gelato'
-    elif piedao.is_pie(token_address):                                      return 'piedao lp'
-    elif tokensets.is_token_set(token_address):                             return 'token set'
-
-    elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
-    elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
-
-    # these require both calls and contract initializations
-    elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
-    elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
-    elif compound.compound.is_compound_market(token_address):               return 'compound'
-    elif curve is not None and token_address in curve:                      return 'curve lp'
-    elif chainlink is not None and token_address in chainlink:              return 'chainlink feed'
+    return price if price is not None else None
 
          
 def _fail_appropriately(

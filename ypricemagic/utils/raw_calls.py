@@ -102,6 +102,7 @@ def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
+@lru_cache
 def _symbol(
     contract_address: Union[str, Address, brownie.Contract, Contract],
     block: Union[BlockNumber, int, None] = None,
@@ -130,6 +131,7 @@ def _symbol(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
+@lru_cache
 def _name(
     contract_address: Union[str, Address, brownie.Contract, Contract],
     block: Union[BlockNumber, int, None] = None,

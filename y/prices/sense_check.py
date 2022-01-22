@@ -1,10 +1,10 @@
 
 import logging
-from typing import Union
 
 from brownie import chain
 from y.constants import wbtc, weth
 from y.networks import Network
+from ypricemagic.buckets import check_bucket
 from ypricemagic.utils.raw_calls import _symbol, raw_call
 
 logger = logging.getLogger(__name__)
@@ -86,57 +86,69 @@ ACCEPTABLE_HIGH_PRICES = {
 
 def _sense_check(
     token_address: str, 
-    price: float,
-    bucket: Union[str, None]
+    price: float
     ):
 
     # if price is in "normal" range, exit sense check
-
     if price < 1000:
         return
     
     # if we've already validated that the token should have a high price, exit sense check
-
     if token_address in ACCEPTABLE_HIGH_PRICES:
         return
 
     # for some token types, its normal to have a crazy high nominal price
     # we can skip the sense check for those
-
-    if bucket == 'uni or uni-like lp':
-        return
-    
-    elif bucket == 'balancer pool':
-        return
-
-    # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
-
-    elif bucket == 'yearn or yearn-like':
-        try: # v2
-            token_address = raw_call(token_address, 'token()', output='address')
-            if token_address in ACCEPTABLE_HIGH_PRICES: return
-        except:
-            try: # v1
-                token_address = raw_call(token_address, 'want()', output='address')
-                if token_address in ACCEPTABLE_HIGH_PRICES: return
-            except: pass
-    
-    elif bucket == 'atoken':
-        try: # v2
-            token_address = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
-            if token_address in ACCEPTABLE_HIGH_PRICES: return
-        except:
-            try: # v1
-                token_address = raw_call(token_address, 'underlyingAssetAddress()', output='address')
-                if token_address in ACCEPTABLE_HIGH_PRICES: return
-            except: pass
-
-    elif bucket == 'compound':
-        token_address = raw_call(token_address, 'underlying()', output='address')
-        if token_address in ACCEPTABLE_HIGH_PRICES: return
+    if _exit_sense_check(token_address): return
 
     # proceed with sense check
     price_readable = round(price, 4)
     symbol = _symbol(token_address)
     network = Network.name(chain.id)
     logger.warn(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+
+
+def _exit_sense_check(token_address: str) -> bool:
+    '''
+    For some token types, its normal to have a crazy high nominal price.
+    We can skip the sense check for those.
+    We can also skip wrapped versions of tokens in `ACCEPTABLE_HIGH_PRICES`.
+    '''
+
+    bucket = check_bucket(token_address)
+
+    if bucket == 'uni or uni-like lp':
+        return True
+    
+    elif bucket == 'balancer pool':
+        return True
+    
+    # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
+
+    elif bucket == 'yearn or yearn-like':
+        try: # v2
+            underlying = raw_call(token_address, 'token()', output='address')
+            if underlying in ACCEPTABLE_HIGH_PRICES: return True
+        except:
+            try: # v1
+                underlying = raw_call(token_address, 'want()', output='address')
+                if underlying in ACCEPTABLE_HIGH_PRICES: return True
+                elif _exit_sense_check(underlying): return True
+            except: pass
+    
+    elif bucket == 'atoken':
+        try: # v2
+            underlying = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
+            if underlying in ACCEPTABLE_HIGH_PRICES: return True
+            elif _exit_sense_check(underlying): return True
+        except:
+            try: # v1
+                underlying = raw_call(token_address, 'underlyingAssetAddress()', output='address')
+                if underlying in ACCEPTABLE_HIGH_PRICES: return True
+                elif _exit_sense_check(underlying): return True
+            except: pass
+
+    elif bucket == 'compound':
+        underlying = raw_call(token_address, 'underlying()', output='address')
+        if underlying in ACCEPTABLE_HIGH_PRICES: return True
+        elif _exit_sense_check(underlying): return True
