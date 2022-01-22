@@ -10,6 +10,7 @@ from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
 from y.constants import WRAPPED_GAS_COIN
 from y.contracts import Contract
+from y.decorators import log
 from y.exceptions import PriceError
 from y.networks import Network
 from y.prices import _sense_check
@@ -27,6 +28,7 @@ from ypricemagic.utils.raw_calls import _symbol
 logger = logging.getLogger(__name__)
 
 
+@log(logger)
 @lru_cache(maxsize=None)
 def get_price(
     token_address: Union[str, Address, brownie.Contract, Contract, int],
