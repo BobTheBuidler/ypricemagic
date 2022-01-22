@@ -19,6 +19,7 @@ from ypricemagic.price_modules import *
 from ypricemagic.price_modules.aave import aave
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
+from ypricemagic.price_modules.compound import compound
 from ypricemagic.price_modules.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
 from ypricemagic.utils.raw_calls import _symbol
@@ -119,7 +120,7 @@ def _exit_early_for_known_tokens(
     elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
 
     elif bucket == 'chainlink feed':        price = chainlink.get_price(token_address, block)
-    elif bucket == 'compound':              price = compound.compound.get_price(token_address, block=block)
+    elif bucket == 'compound':              price = compound.get_price(token_address, block=block)
     elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
 
     elif bucket == 'curve lp':              price = curve.get_price(token_address, block)
