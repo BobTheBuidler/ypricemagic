@@ -31,13 +31,21 @@ class Aave:
         if len(v1_pools):
             calls_v1 = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
             reserves_v1 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v1, _w3=web3)().items()}
-            self.atokens_v1 = [data['aTokenAddress'] for data in fetch_multicall(*[[v1_pool, 'getReserveData', reserve] for v1_pool, reserve in reserves_v1.items()])]
+            multicall_v1 = fetch_multicall(*[
+                [v1_pool, 'getReserveData', reserve]
+                for v1_pool, reserves in reserves_v1.items() for reserve in reserves
+            ])
+            self.atokens_v1 = [reserve['aTokenAddress'] for reserve in multicall_v1]
             logger.info(f'loaded {len(self.atokens_v1)} v1 atokens')
 
         if len(v2_pools):
             calls_v2 = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
             reserves_v2 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v2, _w3=web3)().items()}
-            self.atokens_v2 = [data[7] for data in fetch_multicall(*[[v2_pool, 'getReserveData', reserve] for v2_pool, reserve in reserves_v2.items()])]
+            multicall_v2 = fetch_multicall(*[
+                [v2_pool, 'getReserveData', reserve]
+                for v2_pool, reserves in reserves_v2.items() for reserve in reserves
+            ])
+            self.atokens_v2 = [reserve[7] for reserve in multicall_v2]
             logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
 
     @lru_cache
