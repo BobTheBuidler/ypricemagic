@@ -91,7 +91,7 @@ def _get_price(
     silent: bool = False
     ):
 
-    symbol = _symbol(token, fail_to_None=True)
+    symbol = _symbol(token, return_None_on_failure=True)
     token_string = f"{symbol} {token}" if symbol else token
 
     logger.debug("-------------[ y ]-------------")
