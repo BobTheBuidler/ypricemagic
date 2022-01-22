@@ -1,13 +1,16 @@
 
 
 import logging
+from functools import cached_property
 from typing import List
 
-from brownie import chain
+from brownie import chain, web3
 from cachetools.func import ttl_cache
+from multicall import Call
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert
+from y.exceptions import ContractNotVerified
 from y.networks import Network
 from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
                                                          ROUTER_TO_PROTOCOL,
@@ -19,10 +22,13 @@ logger = logging.getLogger(__name__)
 class UniswapRouterV2:
     def __init__(self, router_address) -> None:
         self.address = router_address
-        self.contract = Contract(self.address)
         self.factory = ROUTER_TO_FACTORY[self.address]
         self.label = ROUTER_TO_PROTOCOL[self.address]
         self.special_paths = special_paths(self.address)
+    
+    @cached_property
+    def contract(self):
+        return Contract(self.address)
 
     @ttl_cache(ttl=36000)
     def get_price(self, token_in, token_out=usdc, block=None, paired_against=weth):
@@ -52,7 +58,7 @@ class UniswapRouterV2:
     @continue_on_revert
     def get_quote(self, amount_in: int, path: List[str], block=None):
         try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
-
+        except ContractNotVerified: return Call(self.address,['getAmountsOut(uint,address[])',amount_in,path],[['amounts',None]],_w3=web3,block=block)
         # TODO figure out how to best handle uni forks with slight modifications
         except ValueError as e:
             if 'Sequence has incorrect length' in str(e): return 
@@ -68,22 +74,12 @@ class UniswapRouterV2:
 
         elif chain.id == Network.BinanceSmartChain:
             from y.constants import cake, wbnb
-            if wbnb in (token_in, token_out):                                               path = [token_in, token_out]
+            if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
             elif cake in (token_in, token_out):                                             path = [token_in, token_out]
             else:                                                                           path = [token_in,wbnb,token_out]
         else:
             if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
             else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
-        '''                  # NOTE can probably get rid of this now, just want to be sure before deleting                                  
-        elif chain.id == Network.Polygon:
-            from y.constants import wmatic
-            if wmatic in (token_in, token_out):                                             path = [token_in, token_out]
-            else:                                                                           path = [token_in,wmatic,token_out]
-        elif chain.id == Network.Fantom:
-            from y.constants import wftm
-            if wftm in (token_in, token_out):                                               path = [token_in, token_out]
-            else:                                                                           path = [token_in, wftm, token_out]
-        '''
 
         return path
     
