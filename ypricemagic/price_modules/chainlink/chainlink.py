@@ -45,7 +45,7 @@ class Chainlink(metaclass=Singleton):
             self.feeds = {
                 log['asset']: log['latestAggregator']
                 for log in logs
-                if log['denomination'] == DENOMINATIONS['USD']
+                if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS
             }
         else: self.feeds = {}
         # for mainnet, we have some extra feeds to pull in
