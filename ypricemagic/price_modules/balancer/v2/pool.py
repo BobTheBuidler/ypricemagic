@@ -22,10 +22,10 @@ class BalancerV2Pool(ERC20):
     def id(self):
         return self.contract.getPoolId()
     
-    @log(logger)
     @cached_property
+    @log(logger)
     def vault(self):
-        vault = raw_call(self.address,'getVault()','address')
+        vault = raw_call(self.address,'getVault()',output='address')
         return BalancerV2Vault(vault)
 
     @log(logger)
