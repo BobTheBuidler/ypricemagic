@@ -13,6 +13,7 @@ from y.decorators import log
 from y.exceptions import (CalldataPreparationError, NonStandardERC20,
                           call_reverted)
 from y.networks import Network
+from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,7 @@ def decimals(
 
 
 @log(logger)
+@lru_cache
 def _decimals(
     contract_address: Union[str, Address, brownie.Contract, Contract], 
     block: Union[BlockNumber, int, None] = None, 
@@ -108,7 +110,7 @@ def _decimals(
 
 
 @log(logger)
-@lru_cache
+@memory.cache
 def _symbol(
     contract_address: Union[str, Address, brownie.Contract, Contract],
     block: Union[BlockNumber, int, None] = None,
@@ -138,7 +140,7 @@ def _symbol(
 
 
 @log(logger)
-@lru_cache
+@memory.cache
 def _name(
     contract_address: Union[str, Address, brownie.Contract, Contract],
     block: Union[BlockNumber, int, None] = None,
