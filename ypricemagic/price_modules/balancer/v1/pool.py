@@ -14,10 +14,6 @@ logger = logging.getLogger(__name__)
 class BalancerV1Pool(ERC20):
     def __init__(self, pool_address) -> None:
         super().__init__(pool_address)
-    
-    @log(logger)
-    def is_pool(self):
-        return has_methods(self.address ,{"getCurrentTokens()(address[])", "getBalance()(uint)", "totalSupply()(uint)"})
 
     @log(logger)
     def tokens(self, block=None):

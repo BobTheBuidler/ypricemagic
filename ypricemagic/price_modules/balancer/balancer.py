@@ -22,6 +22,9 @@ class Balancer:
             self.versions.append(self.v2)
         except ImportError:
             pass
+    
+    def __str__(self) -> str:
+        return "Balancer()"
 
     #@memory.cache()
     @log(logger)

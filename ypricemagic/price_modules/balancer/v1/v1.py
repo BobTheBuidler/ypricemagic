@@ -2,7 +2,7 @@ import logging
 
 from brownie import chain
 from y.constants import dai, usdc, wbtc, weth
-from y.contracts import Contract
+from y.contracts import Contract, has_methods
 from y.decorators import log
 from y.networks import Network
 from ypricemagic import magic
@@ -19,9 +19,12 @@ class BalancerV1:
     def __init__(self) -> None:
         self.exchange_proxy = Contract(EXCHANGE_PROXY) if EXCHANGE_PROXY else None
     
+    def __str__(self) -> str:
+        return "BalancerV1()"
+    
     @log(logger)
     def is_pool(self, token_address):
-        return BalancerV1Pool(token_address).is_pool()
+        return has_methods(token_address ,{"getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"})
     
     @log(logger)
     def get_pool_price(self, token_address, block=None):

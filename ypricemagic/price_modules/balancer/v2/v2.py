@@ -23,6 +23,9 @@ BALANCER_V2_VAULTS = [BalancerV2Vault(vault) for vault in BALANCER_V2_VAULTS.get
 class BalancerV2:
     def __init__(self) -> None:
         self.vaults = BALANCER_V2_VAULTS
+    
+    def __str__(self) -> str:
+        return "BalancerV2()"
 
     @log(logger)
     def is_pool(self, token_address):
