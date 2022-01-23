@@ -2,7 +2,9 @@
 import logging
 from functools import cached_property
 
+from brownie import web3
 from joblib import Parallel, delayed
+from multicall import Call
 from y.constants import usdc, weth
 from y.decorators import log
 from ypricemagic import magic
@@ -20,7 +22,7 @@ class BalancerV2Pool(ERC20):
     @cached_property
     @log(logger)
     def id(self):
-        return self.contract.getPoolId()
+        return Call(self.address, ['getPoolId()(bytes32)'], [['id',None]], _w3=web3)()['id']
     
     @cached_property
     @log(logger)
