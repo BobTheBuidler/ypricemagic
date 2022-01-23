@@ -49,6 +49,7 @@ def check_bucket(
 
     elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
     elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
+    elif saddle.is_saddle_lp(token_address):                              return 'saddle'
 
     # these require both calls and contract initializations
     elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'

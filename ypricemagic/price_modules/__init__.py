@@ -1,6 +1,7 @@
 from ypricemagic.price_modules import (belt, cream, ellipsis, froyo, gelato,
                                        ib, mooniswap, mstablefeederpool,
-                                       piedao, tokensets, wsteth, yearn)
+                                       piedao, saddle, tokensets, wsteth,
+                                       yearn)
 
 __all__ = [
     'belt',
@@ -12,6 +13,7 @@ __all__ = [
     'mooniswap',
     'mstablefeederpool',
     'piedao',
+    'saddle',
     'tokensets',
     'wsteth',
     'yearn',

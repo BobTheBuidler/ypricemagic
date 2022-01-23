@@ -137,6 +137,7 @@ def _exit_early_for_known_tokens(
 
     elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
     elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
+    elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
     elif bucket == 'stable usd':            price = 1
 
     elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
