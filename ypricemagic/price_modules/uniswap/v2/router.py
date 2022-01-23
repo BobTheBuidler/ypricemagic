@@ -10,7 +10,7 @@ from multicall import Call
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert, log
-from y.exceptions import ContractNotVerified
+from y.exceptions import ContractNotVerified, NonStandardERC20
 from y.networks import Network
 from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
                                                          ROUTER_TO_PROTOCOL,
@@ -45,7 +45,8 @@ class UniswapRouterV2:
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd
 
-        amount_in = 10 ** _decimals(token_in,block)
+        try: amount_in = 10 ** _decimals(token_in,block)
+        except NonStandardERC20: return None
 
         if str(token_in) in STABLECOINS: return 1
 
