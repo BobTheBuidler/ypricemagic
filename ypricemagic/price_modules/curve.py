@@ -113,13 +113,15 @@ class CurveRegistry(metaclass=Singleton):
         '''
         logger.info(f'loaded {len(self.pools)} pools')
 
+    def __str__(self) -> str:
+        return "CurveRegistry()"
+
     @property
     @log(logger)
     def registry(self):
         return Contract(self.identifiers[0][-1])
 
     @property
-    @log(logger)
     @ttl_cache(ttl=3600)
     def metapools_by_factory(self):
         """
@@ -318,14 +320,15 @@ class CurveRegistry(metaclass=Singleton):
         except KeyError:
             coin = coins[0]
 
-        try:
-            virtual_price = Contract(pool).get_virtual_price(block_identifier=block) / 1e18
-            price = virtual_price * magic.get_price(coin, block)
+        try: virtual_price = Contract(pool).get_virtual_price(block_identifier=block) / 1e18
         except Exception as e:
-            if call_reverted(e): # get_virtual_price can revert if totalSupply == 0
-                total_supply = _totalSupply(pool)
-                if total_supply == 0: price = 0
-                else: raise
+            # get_virtual_price can revert if totalSupply == 0
+            if call_reverted(e) and _totalSupply(pool) == 0: virtual_price = False
+            else: raise
+        
+        # if `get_virtual_price` reverted, totalSupply == 0, which means tvl == 0 and price == 0
+        price = 0 if not virtual_price else virtual_price * magic.get_price(coin, block)
+
         logger.debug("curve lp -> %s", price)
         return price
 
