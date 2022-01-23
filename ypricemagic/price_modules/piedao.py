@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @lru_cache
 def is_pie(address):
     logger.debug(f'Checking `is_pie({address})')
-    result = has_method(address, "getTokenBinder()(address)")
+    result = has_method(address, "getCap()(uint)")
     logger.debug(f'`is_pie({address}` returns `{result}`')
     return result
 
