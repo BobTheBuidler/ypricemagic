@@ -28,9 +28,8 @@ class BalancerV1:
     
     @log(logger)
     def get_pool_price(self, token_address, block=None):
-        pool = BalancerV1Pool(token_address)
-        assert pool.is_pool()
-        return pool.get_pool_price(block=block)
+        assert self.is_pool(token_address)
+        return BalancerV1Pool(token_address).get_pool_price(block=block)
 
     @log(logger)
     def get_token_price(self, token_address, block=None):
