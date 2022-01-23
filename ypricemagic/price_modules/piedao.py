@@ -3,7 +3,7 @@ from functools import lru_cache
 
 from brownie import web3
 from multicall import Call
-from y.contracts import has_methods
+from y.contracts import has_method
 from y.decorators import log
 from y.erc20 import decimals, totalSupplyReadable
 from ypricemagic import magic
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @lru_cache
 def is_pie(address):
     logger.debug(f'Checking `is_pie({address})')
-    result = has_methods(address, {"getCap()(uint)", "getPublicSwapSetter()(address)", "getTokenBinder()(address)"})
+    result = has_method(address, "getTokenBinder()(address)")
     logger.debug(f'`is_pie({address}` returns `{result}`')
     return result
 
