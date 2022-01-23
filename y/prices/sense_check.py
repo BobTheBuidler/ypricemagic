@@ -83,6 +83,12 @@ ACCEPTABLE_HIGH_PRICES = {
         # btc and btc-like
         wbtc.address,
     ],
+    Network.Avalanche: [
+        # eth and eth-like
+        weth.address,
+        # btc and btc-like
+        wbtc.address,
+    ]
 }.get(chain.id, [])
 
 def _sense_check(
