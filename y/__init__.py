@@ -13,7 +13,10 @@ from y import time
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, has_method, has_methods
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
-from y.exceptions import *
+from y.exceptions import (CalldataPreparationError, CallReverted,
+                          ContractNotVerified, MessedUpBrownieContract,
+                          NonStandardERC20, NotABalancerV2Pool,
+                          NotAUniswapV2Pool, PriceError, UnsupportedNetwork)
 from y.networks import Network
 
 __all__ = [
