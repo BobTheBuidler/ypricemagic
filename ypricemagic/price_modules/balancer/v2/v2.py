@@ -29,7 +29,7 @@ class BalancerV2:
 
     @log(logger)
     def is_pool(self, token_address):
-        return has_methods(token_address, ['getPoolId()(bytes32)','getPausedState()((bool, uint, uint))','getSwapFeePercentage()(uint)'])
+        return has_methods(token_address, ['getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)'])
     
     @log(logger)
     def get_pool_price(self, pool_address, block=None):
