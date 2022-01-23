@@ -1,7 +1,7 @@
 import logging
 from functools import lru_cache
 
-from brownie import web3
+from brownie import ZERO_ADDRESS, web3
 from multicall import Call
 from y.contracts import has_method
 from y.decorators import log
@@ -33,12 +33,15 @@ def get_price(pie_address: str, block=None):
 def get_tokens(pie_address: str, block: int = None):
     logger.debug(f'fetching tokens for pie {pie_address} at block {block}')
     tokens = Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], _w3=web3, block_id=block)()['tokens']
+    tokens = [address for address in tokens if address != ZERO_ADDRESS]
     logger.debug(f'pie tokens at block {block}: {tokens}')
     return tokens
 
 @log(logger)
 def get_bpool(pie_address: str, block: int = None):
-    try: return raw_call(pie_address, 'getBPool()', output='address', block=block)
+    try:
+        bpool = raw_call(pie_address, 'getBPool()', output='address', block=block)
+        return bpool if bpool != ZERO_ADDRESS else pie_address
     except Exception as e:
         if call_reverted(e): return pie_address
         else: raise
