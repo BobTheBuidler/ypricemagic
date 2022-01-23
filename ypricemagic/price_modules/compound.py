@@ -13,15 +13,18 @@ logger = logging.getLogger(__name__)
 
 UNITROLLERS = {
     Network.Mainnet: {
-        "comp": "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
-        "cream": "0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258",
-        "ironbank": "0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB"
+        "comp":     "0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B",
+        "cream":    "0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258",
+        "ironbank": "0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB",
     },
     Network.BinanceSmartChain: {
-        "venus": "0xfD36E2c2a6789Db23113685031d7F16329158384"
+        "venus":    "0xfD36E2c2a6789Db23113685031d7F16329158384",
     },
     Network.Polygon: {
-        "easyfi": "0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8"
+        "easyfi":   "0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8",
+    },
+    Network.Fantom: {
+        "cream":    "0x4250A6D3BD57455d7C6821eECb6206F507576cD2",
     }
 }.get(chain.id, {})
 
