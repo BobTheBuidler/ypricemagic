@@ -32,7 +32,7 @@ def get_price(pie_address: str, block=None):
 @log(logger)
 def get_tokens(pie_address: str, block: int = None):
     logger.debug(f'fetching tokens for pie {pie_address} at block {block}')
-    tokens = Call(pie_address, ['getTokens()(address[])'], returns=None, _w3=web3, block_id=block)()
+    tokens = Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], _w3=web3, block_id=block)()['tokens']
     logger.debug(f'pie tokens at block {block}: {tokens}')
     return tokens
 
