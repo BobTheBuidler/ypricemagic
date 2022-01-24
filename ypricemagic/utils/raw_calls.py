@@ -54,6 +54,8 @@ def _decimals(
     return_None_on_failure: bool = False
     ):
 
+    decimals = None
+
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
     try: decimals = raw_call(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True)
