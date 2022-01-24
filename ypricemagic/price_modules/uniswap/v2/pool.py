@@ -34,7 +34,7 @@ class UniswapPoolV2:
 
     @log(logger)
     def get_pool_details(self, block=None):
-        methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()(uint112,uint112,uint32)'
+        methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
         token0, token1, supply, reserves = Multicall(calls, _w3=web3, block_id=block)().values()
         return token0, token1, supply, reserves
