@@ -38,7 +38,7 @@ class Comptroller:
 
 class Compound:
     def __init__(self) -> None:
-        self.trollers = TROLLERS.items()
+        self.trollers = TROLLERS
 
         if len(self.trollers) == 0: return 
 
