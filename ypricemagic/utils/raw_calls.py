@@ -10,7 +10,7 @@ from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 from y.contracts import Contract
 from y.decorators import log
-from y.exceptions import (CalldataPreparationError, NonStandardERC20,
+from y.exceptions import (CalldataPreparationError, ContractNotVerified, NonStandardERC20,
                           call_reverted)
 from y.networks import Network
 from y.utils.cache import memory
@@ -62,6 +62,7 @@ def _decimals(
         # the contract might not comply with standards, so we can possibly fetch 
         # using the verified non standard abi as a fallback
         try: decimals = Contract(contract_address).decimals(block_identifier=block)
+        except ContractNotVerified: pass
         except AttributeError as e:
             if "has no attribute 'decimals'" not in str(e): raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
@@ -77,6 +78,7 @@ def _decimals(
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
         try: decimals = Contract(contract_address).DECIMALS(block_identifier=block)
+        except ContractNotVerified: pass
         except AttributeError as e:
             if "has no attribute 'DECIMALS'" not in str(e): raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
@@ -92,6 +94,7 @@ def _decimals(
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
         try: decimals = Contract(contract_address).getDecimals(block_identifier=block)
+        except ContractNotVerified: pass
         except AttributeError as e:
             if "has no attribute 'getDecimals'" not in str(e): raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
