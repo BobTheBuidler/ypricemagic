@@ -67,7 +67,7 @@ def get_price(
 def get_prices(
     token_addresses: Sequence[Union[str, Address, brownie.Contract, Contract]],
     block: Union[int, BlockNumber, None] = None,
-    fail_to_None: bool = True,
+    fail_to_None: bool = False,
     silent: bool = False,
     dop: int = 4
     ):
