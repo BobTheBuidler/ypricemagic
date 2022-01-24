@@ -2,7 +2,8 @@
 import logging
 from functools import lru_cache
 
-from brownie import chain
+from brownie import chain, web3
+from multicall import Call, Multicall
 from y.contracts import Contract
 from y.decorators import log
 from y.exceptions import NotAUniswapV2Pool, call_reverted
@@ -33,23 +34,15 @@ class UniswapPoolV2:
 
     @log(logger)
     def get_pool_details(self, block=None):
-        pair = Contract(self.address)
-        if chain.id in [Network.Mainnet, Network.BinanceSmartChain, Network.Polygon, Network.Fantom]: 
-            token0, token1, supply, reserves = fetch_multicall(
-                [pair, "token0"],
-                [pair, "token1"],
-                [pair, "totalSupply"],
-                [pair, "getReserves"],
-                block=block
-            )
-        else: # if your chain does not support multicall
+        methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()(uint112,uint112,uint32)'
+        calls = [Call(self.address, [method], [[method, None]]) for method in methods]
+        token0, token1, supply, reserves = Multicall(calls, _w3=web3, block_id=block)().values()
+        return token0, token1, supply, reserves
+
+        ''' Saving this code for chains without multicall
+         # if your chain does not support multicall
             token0 = pair.token0(block_identifier = block)
             token1 = pair.token1(block_identifier = block)
             supply = pair.totalSupply(block_identifier = block)
             reserves = pair.getReserves(block_identifier = block)
-
-        return token0, token1, supply, reserves
-
-
-    
-    
+        '''
