@@ -25,6 +25,11 @@ class UniswapRouterV2:
         self.factory = ROUTER_TO_FACTORY[self.address]
         self.label = ROUTER_TO_PROTOCOL[self.address]
         self.special_paths = special_paths(self.address)
+        try:
+            self.contract
+            self._verified = True
+        except ContractNotVerified:
+            self._verified = False
     
     @cached_property
     @log(logger)
@@ -61,12 +66,14 @@ class UniswapRouterV2:
     @continue_on_revert
     @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
-        try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
-        except ContractNotVerified: return Call(self.address,['getAmountsOut(uint,address[])',amount_in,path],[['amounts',None]],_w3=web3,block=block)
-        # TODO figure out how to best handle uni forks with slight modifications
-        except ValueError as e:
-            if 'Sequence has incorrect length' in str(e): return 
-            else: raise
+        if self._verified:
+            try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
+            # TODO figure out how to best handle uni forks with slight modifications
+            except ValueError as e:
+                if 'Sequence has incorrect length' in str(e): return 
+                else: raise
+
+        else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],_w3=web3,block_id=block)()['amounts']
 
     @log(logger)
     def path_selector(self, token_in, token_out, paired_against):
