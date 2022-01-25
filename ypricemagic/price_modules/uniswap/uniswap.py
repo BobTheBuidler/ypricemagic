@@ -76,9 +76,14 @@ class Uniswap:
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
         """
-        if not protocol: return self.deepest_router(token_in, block).get_price(token_in, block)
+        if protocol: router = self.routers[protocol]
+        else: router = self.deepest_router(token_in, block)
+
+        # if known routers do not support `token_in`
+        if router is None: return None
+
+        return router.get_price(token_in, block)
         
-        return self.routers[protocol].get_price(token_in, block=block)
     
 
     def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
