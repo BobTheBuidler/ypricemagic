@@ -25,7 +25,11 @@ class MessedUpBrownieContract(Exception):
     def __init__(self, address, *args: object) -> None:
         super().__init__(*args)
         # try to recache the contract
-        Contract.from_explorer(address)
+        try: Contract.from_explorer(address)
+        except Exception as e:
+            if "invalid literal for int() with base 16: ''" in str(e): pass # didn't work, oh well
+            if contract_not_verified(e): pass # not verified, won't work
+            else: raise
 
 
 @log(logger)
