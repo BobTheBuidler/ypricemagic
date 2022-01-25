@@ -146,6 +146,8 @@ def get_price(token, block=None):
         price = [share_price / 10 ** decimals, underlying]
     except TypeError: # when getPricePerShare() reverts due to divide by zero
         price = [1, underlying]
+    except UnboundLocalError: # not supported
+        price = None
     
     if price: logger.debug("yearn -> %s", price)
     return price
