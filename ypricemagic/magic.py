@@ -104,7 +104,7 @@ def _get_price(
     if price == 0: return 0 # this happens when a LP token has 0 totalSupply
     if not price: price = uniswap.try_for_price(token, block=block)
     if not price: price = balancer.get_price(token, block=block)
-    if not price: _fail_appropriately(token, fail_to_None=fail_to_None, silent=silent)
+    if not price: _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
     if price: _sense_check(token, price)
     return price
 
@@ -159,7 +159,7 @@ def _exit_early_for_known_tokens(
 
          
 def _fail_appropriately(
-    token_address: str, 
+    token_string: str, 
     fail_to_None: bool = False, 
     silent: bool = False
     ):
@@ -172,11 +172,9 @@ def _fail_appropriately(
         if `fail_to_None == True`, ypricemagic will return `None`
         if `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-    if not silent or not fail_to_None:
-        symbol = _symbol(token_address)
 
     if not silent:
-        logger.error(f"failed to get price for {symbol} {token_address} on {Network.printable()}")
+        logger.error(f"failed to get price for {token_string} on {Network.printable()}")
 
     if not fail_to_None:
-        raise PriceError(f'could not fetch price for {symbol} {token_address} on {Network.printable()}')
+        raise PriceError(f'could not fetch price for {token_string} on {Network.printable()}')
