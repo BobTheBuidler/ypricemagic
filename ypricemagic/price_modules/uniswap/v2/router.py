@@ -44,7 +44,7 @@ class UniswapRouterV2:
 
     @ttl_cache(ttl=36000)
     @log(logger)
-    def get_price(self, token_in: str, token_out: str = usdc.address, block: int = None, paired_against: str = weth.address):
+    def get_price(self, token_in: str, token_out = usdc, block: int = None, paired_against = weth):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -61,11 +61,15 @@ class UniswapRouterV2:
 
         if str(token_in) in STABLECOINS: return 1
 
-        if str(token_out) in STABLECOINS: path = self.get_path_to_stables(token_in, block)
-        else: path = self.smol_brain_path_selector(token_in, token_out, paired_against)
+        if str(token_out) in STABLECOINS:
+            try: path = self.get_path_to_stables(token_in, block)
+            except CantFindSwapPath: pass
+
+        if path is None: path = self.smol_brain_path_selector(token_in, token_out, paired_against)
 
         if type(path[-1]) == int: # TODO debug why this happens and address it at the root
-            path[-1] = HexBytes(path[-1])
+            last_step = path.pop([-1])
+            path.append(HexBytes(last_step))
 
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
@@ -89,6 +93,7 @@ class UniswapRouterV2:
     @log(logger)
     def smol_brain_path_selector(self, token_in: str, token_out: str, paired_against: str):
         '''Chooses swap path to use for quote'''
+        token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
 
         if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
         elif weth in (token_in, token_out):                                                 path = [token_in, token_out]
