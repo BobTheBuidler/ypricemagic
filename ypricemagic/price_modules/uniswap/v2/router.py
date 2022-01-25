@@ -43,7 +43,7 @@ class UniswapRouterV2:
 
     @ttl_cache(ttl=36000)
     @log(logger)
-    def get_price(self, token_in, token_out=usdc, block=None, paired_against=weth):
+    def get_price(self, token_in: str, token_out: str = usdc.address, block: int = None, paired_against: str = weth.address):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -89,7 +89,7 @@ class UniswapRouterV2:
         if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
         elif weth in (token_in, token_out):                                                 path = [token_in, token_out]
         elif sushi and paired_against == sushi and token_out != sushi:                      path = [token_in,sushi,weth,token_out]
-        elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:  path = self.special_paths[str(token_in)]
+        elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:         path = self.special_paths[str(token_in)]
 
         elif chain.id == Network.BinanceSmartChain:
             from y.constants import cake, wbnb
