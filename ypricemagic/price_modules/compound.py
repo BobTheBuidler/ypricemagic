@@ -111,7 +111,7 @@ class Compound:
         - `logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')`
         '''
         comptroller = raw_call(token_address,'comptroller()',output='address')
-        if comptroller not in self.trollers:
+        if comptroller not in self.trollers.values():
             gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
 
 
