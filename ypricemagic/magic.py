@@ -102,7 +102,7 @@ def _get_price(
 
     price = _exit_early_for_known_tokens(token, block=block)
     if price == 0: return 0 # this happens when a LP token has 0 totalSupply
-    if not price: price = uniswap.try_for_price(token, block=block)
+    if not price: price = uniswap.get_price(token, block=block)
     if not price: price = balancer.get_price(token, block=block)
     if not price: _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
     if price: _sense_check(token, price)
