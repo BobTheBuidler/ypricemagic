@@ -1,16 +1,15 @@
 import logging
 
-import ypricemagic.magic
 from cachetools.func import ttl_cache
-from y.constants import usdc, weth
-from y.decorators import continue_on_revert, log
-from y.exceptions import contract_not_verified
-from ypricemagic.price_modules.uniswap.protocols import (FACTORY_TO_PROTOCOL,
-                                                         TRY_ORDER, UNISWAPS)
+from y.decorators import log
+from y.exceptions import PriceError, contract_not_verified
+from ypricemagic import magic
+from ypricemagic.price_modules.uniswap.protocols import UNISWAPS
 from ypricemagic.price_modules.uniswap.v1 import UniswapV1
 from ypricemagic.price_modules.uniswap.v2.pool import (NotAUniswapV2Pool,
                                                        UniswapPoolV2)
 from ypricemagic.price_modules.uniswap.v2.router import UniswapRouterV2
+from ypricemagic.utils.multicall import multicall_same_func_no_input
 from ypricemagic.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
@@ -27,7 +26,6 @@ class Uniswap:
                 if contract_not_verified(e): continue
                 else: raise
         self.factories = [UNISWAPS[name]['factory'] for name in UNISWAPS]
-        self._try_order = TRY_ORDER
         self.v1 = UniswapV1()
 
     @log(logger)
@@ -45,24 +43,20 @@ class Uniswap:
         """ Get Uniswap/Sushiswap LP token price. """
         pool = UniswapPoolV2(token_address)
         token0, token1, supply, reserves = pool.get_pool_details(block)
-        protocol = FACTORY_TO_PROTOCOL[pool.factory]
-        #tokens = [Contract_with_erc20_fallback(token) for token in [pool_details['token0'], pool_details['token1']]]
-        #price0 = self.get_price(tokens[0], paired_against=tokens[1], router=router, block=block)
-        #price1 = self.get_price(tokens[1], paired_against=tokens[0], router=router, block=block)
         
-        price0 = self.get_price(token0, paired_against=token1, protocol=protocol, block=block)
-        price1 = self.get_price(token1, paired_against=token0, protocol=protocol, block=block)
+        price0 = self.get_price(token0, block=block)
+        price1 = self.get_price(token1, block=block)
         prices = [price0,price1]
         scales = [10 ** _decimals(token,block) for token in [token0, token1]]
         supply = supply / 1e18
         try: balances = [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
         except TypeError: # If can't get price via router, try to get from elsewhere
-            if not price0:
-                try: price0 = ypricemagic.magic.get_price(token0, block)
-                except ypricemagic.magic.PriceError: price0 is None
-            if not price1:
-                try: price1 = ypricemagic.magic.get_price(token1, block)
-                except ypricemagic.magic.PriceError: price1 is None
+            if price0 is None:
+                try: price0 = magic.get_price(token0, block)
+                except PriceError: pass
+            if price1 is None:
+                try: price1 = magic.get_price(token1, block)
+                except PriceError: pass
             prices = [price0,price1]
             balances = [None,None] # [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
             if price0:
@@ -77,28 +71,30 @@ class Uniswap:
     
     @log(logger)
     @ttl_cache(ttl=36000)
-    def get_price(self, token_in, token_out=usdc, protocol=None, block=None, paired_against=weth):
+    def get_price(self, token_in, block=None, protocol=None):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
-        Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
+        Always finds the deepest swap path for `token_in`.
         """
-        if not protocol: protocol = self._try_order[0]
+        if not protocol: return self.deepest_router(token_in, block).get_price(token_in, block)
         
-        return self.routers[protocol].get_price(token_in, token_out=token_out, block=block, paired_against=paired_against)
+        return self.routers[protocol].get_price(token_in, block=block)
     
-    def try_for_price(self, token_in, token_out=usdc, block=None, paired_against=weth):
-        for protocol in self._try_order:
-            if protocol == 'uniswap v1':
-                price = self.get_price_v1(token_in, block=block)
-            else:
-                price = self.get_price(
-                    token_in, token_out=token_out, block=block, protocol=protocol, paired_against=paired_against)
-            if price:
-                logger.debug(f"{protocol} -> ${price}")
-                return price
-        return None
 
-
+    def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
+        deepest_router = None
+        deepest_router_balance = 0
+        deepest_routers_to_pool = {router: router.deepest_pool(token_in, block) for router in self.routers.values()}
+        deepest_routers_to_pool = {router: pool for router, pool in deepest_routers_to_pool.items() if pool is not None}
+        reserves = multicall_same_func_no_input(deepest_routers_to_pool.values(), 'getReserves()((uint112,uint112,uint32))', block=block)
+        for router, pool, reserves in zip(deepest_routers_to_pool.keys(),deepest_routers_to_pool.values(),reserves):
+            if reserves is None: continue
+            if token_in == router.pools[pool]['token0']: reserve = reserves[0]
+            elif token_in == router.pools[pool]['token1']: reserve = reserves[1]
+            if reserve > deepest_router_balance: 
+                deepest_router = router
+                deepest_router_balance = reserve
+        return deepest_router
 
 uniswap = Uniswap()
 

@@ -49,6 +49,10 @@ class NotAUniswapV2Pool(Exception):
 class NotABalancerV2Pool(Exception):
     pass
 
+# Uni
+
+class CantFindSwapPath(Exception):
+    pass
 
 # Calls
 
