@@ -6,6 +6,7 @@ from typing import Dict, List
 
 from brownie import chain, convert, web3
 from cachetools.func import ttl_cache
+from brownie.convert.datatypes import HexBytes
 from multicall import Call
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
@@ -63,6 +64,9 @@ class UniswapRouterV2:
         if str(token_out) in STABLECOINS: path = self.get_path_to_stables(token_in, block)
         else: path = self.smol_brain_path_selector(token_in, token_out, paired_against)
 
+        if type(path[-1]) == int: # TODO debug why this happens and address it at the root
+            path[-1] = HexBytes(path[-1])
+
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
         quote = self.get_quote(amount_in, path, block=block)
@@ -94,8 +98,8 @@ class UniswapRouterV2:
         elif chain.id == Network.BinanceSmartChain:
             from y.constants import cake, wbnb
             if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
-            elif cake in (token_in, token_out):                                             path = [token_in, token_out]
-            else:                                                                           path = [token_in,wbnb,token_out]
+            elif cake.address in (token_in, token_out):                                     path = [token_in, token_out]
+            else:                                                                           path = [token_in,wbnb.address,token_out]
         else:
             if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
             else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
