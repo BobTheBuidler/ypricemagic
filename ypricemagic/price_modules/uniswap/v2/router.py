@@ -53,7 +53,7 @@ class UniswapRouterV2:
 
         if chain.id == Network.BinanceSmartChain and token_out == usdc:
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
-            token_out = busd
+            token_out = busd.address
 
         try: amount_in = 10 ** _decimals(token_in,block)
         except NonStandardERC20: return None
@@ -83,7 +83,7 @@ class UniswapRouterV2:
         else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],_w3=web3,block_id=block)()['amounts']
 
     @log(logger)
-    def smol_brain_path_selector(self, token_in, token_out, paired_against):
+    def smol_brain_path_selector(self, token_in: str, token_out: str, paired_against: str):
         '''Chooses swap path to use for quote'''
 
         if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
