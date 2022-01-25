@@ -74,7 +74,7 @@ def Contract(address):
         except CompilerError as e: raise MessedUpBrownieContract(address, str(e))
         except ValueError as e:
             if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
-            if "invalid literal for int() with base 16: ''" in str(e): raise MessedUpBrownieContract(address, str(e))
+            if "invalid literal for int() with base 16" in str(e): raise MessedUpBrownieContract(address, str(e))
             else: raise
 
 @log(logger)
