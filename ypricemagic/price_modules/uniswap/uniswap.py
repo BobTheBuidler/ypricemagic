@@ -1,5 +1,7 @@
 import logging
+from typing import Dict
 
+from brownie import convert
 from cachetools.func import ttl_cache
 from y.decorators import log
 from y.exceptions import PriceError, contract_not_verified
@@ -86,12 +88,13 @@ class Uniswap:
     
 
     def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
+        token_in = convert.to_address(token_in)
+        deepest_pool_by_router = self.deepest_routers(token_in, block=block)
+
         deepest_router = None
         deepest_router_balance = 0
-        deepest_routers_to_pool = {router: router.deepest_pool(token_in, block) for router in self.routers.values()}
-        deepest_routers_to_pool = {router: pool for router, pool in deepest_routers_to_pool.items() if pool is not None}
-        reserves = multicall_same_func_no_input(deepest_routers_to_pool.values(), 'getReserves()((uint112,uint112,uint32))', block=block)
-        for router, pool, reserves in zip(deepest_routers_to_pool.keys(),deepest_routers_to_pool.values(),reserves):
+        reserves = multicall_same_func_no_input(deepest_pool_by_router.values(), 'getReserves()((uint112,uint112,uint32))', block=block)
+        for router, pool, reserves in zip(deepest_pool_by_router.keys(),deepest_pool_by_router.values(),reserves):
             if reserves is None: continue
             if token_in == router.pools[pool]['token0']: reserve = reserves[0]
             elif token_in == router.pools[pool]['token1']: reserve = reserves[1]
@@ -99,6 +102,11 @@ class Uniswap:
                 deepest_router = router
                 deepest_router_balance = reserve
         return deepest_router
+    
+
+    def deepest_routers(self, token_in: str, block: int = None) -> Dict[UniswapRouterV2,str]:
+        deepest_routers = {router: router.deepest_pool(token_in, block) for router in self.routers.values()}
+        return {router: pool for router, pool in deepest_routers.items() if pool is not None}
 
 uniswap = Uniswap()
 
