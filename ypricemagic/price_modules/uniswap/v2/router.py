@@ -5,9 +5,9 @@ from functools import cached_property
 from typing import Dict, List
 
 from brownie import chain, convert, web3
+from brownie.convert.datatypes import EthAddress, HexBytes
 from cachetools.func import ttl_cache
-from brownie.convert.datatypes import HexBytes, EthAddress
-from multicall import Call
+from multicall import Call, Multicall
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert, log
@@ -18,8 +18,8 @@ from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
                                                          ROUTER_TO_PROTOCOL,
                                                          special_paths)
 from ypricemagic.utils.events import decode_logs, get_logs_asap
-from ypricemagic.utils.multicall import multicall_same_func_no_input
-from ypricemagic.utils.raw_calls import _decimals
+from ypricemagic.utils.multicall import multicall_same_func_no_input, multicall_same_func_same_contract_different_inputs
+from ypricemagic.utils.raw_calls import _decimals, raw_call
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -140,13 +140,38 @@ class UniswapRouterV2:
         logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
         PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
         events = decode_logs(get_logs_asap(self.factory, PairCreated))
-        return {
-            event['pair']: {
-                'token0':event['token0'],
-                'token1':event['token1']
+        pairs = {
+            event['']: {
+                event['pair']: {
+                    'token0':event['token0'],
+                    'token1':event['token1']
+                }
             }
             for event in events
         }
+        pools = {pool: tokens for i, pair in pairs.items() for pool, tokens in pair.items()}
+        all_pairs_len = raw_call(self.factory,'allPairsLength()',output='int')
+        if len(pairs) < all_pairs_len:
+            logger.debug("Oh no! looks like your node can't look back that far. Checking for the missing pools...")
+            pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in pairs]
+            logger.debug(f'pools: {pools_your_node_couldnt_get}')
+            calls = [Call(self.address,['allPairs(uint)(address)',i],[[i, None]]) for i in pools_your_node_couldnt_get]
+            pools_your_node_couldnt_get = multicall_same_func_same_contract_different_inputs(
+                self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get])
+            calls = [Call(pool, ['token0()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
+            token0s = Multicall(calls,_w3=web3)().values()
+            calls = [Call(pool, ['token1()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
+            token1s = Multicall(calls,_w3=web3)().values()
+            pools_your_node_couldnt_get = {
+                pool: {
+                    'token0':token0,
+                    'token1':token1,
+                }
+            for pool, token0, token1 in zip(pools_your_node_couldnt_get,token0s,token1s)}
+            pools.update(pools_your_node_couldnt_get)
+
+        return pools
+             
         
             
 
