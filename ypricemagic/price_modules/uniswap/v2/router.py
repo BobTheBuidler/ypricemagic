@@ -32,15 +32,11 @@ class UniswapRouterV2:
         self.label = ROUTER_TO_PROTOCOL[self.address]
         self.special_paths = special_paths(self.address)
         try:
-            self.contract
+            self.contract = Contract(self.address)
             self._verified = True
         except ContractNotVerified:
             self._verified = False
     
-    @cached_property
-    @log(logger)
-    def contract(self):
-        return Contract(self.address)
 
     @ttl_cache(ttl=36000)
     @log(logger)
@@ -84,6 +80,7 @@ class UniswapRouterV2:
             amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
             return amount_out / fees
 
+
     @continue_on_revert
     @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
@@ -92,9 +89,11 @@ class UniswapRouterV2:
             # TODO figure out how to best handle uni forks with slight modifications
             except ValueError as e:
                 if 'Sequence has incorrect length' in str(e): return 
+                if 'is not a valid ETH address' in str(e): pass # TODO figure out why this happens and fix root cause
                 else: raise
 
         else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],_w3=web3,block_id=block)()['amounts']
+
 
     @log(logger)
     def smol_brain_path_selector(self, token_in: str, token_out: str, paired_against: str):
@@ -117,6 +116,7 @@ class UniswapRouterV2:
 
         return path
     
+
     @cached_property
     def pools(self) -> Dict[str,Dict[str,str]]:
         logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
@@ -131,6 +131,7 @@ class UniswapRouterV2:
         }
         
             
+
     @cached_property
     def pool_mapping(self) -> Dict[str,Dict[str,str]]:
         pool_mapping = {}
@@ -151,13 +152,7 @@ class UniswapRouterV2:
         logger.info(f'Loaded {len(pool_mapping)} tokens on {self.label}')
         return pool_mapping
 
-    def map_pools_for_token(self, token: str) -> Dict[str, str]:
-        pools = {pool: tokens for pool, tokens in self.pools.items() if token in tokens.values()}
-        return {
-            pool: token0 if token == token1 else token1
-            for pool, tokens in pools.items() for token0, token1 in tokens.items()
-        }
-    
+
     @log(logger)
     def deepest_pool(self, token_address, block = None):
         token_address = convert.to_address(token_address)
@@ -179,6 +174,7 @@ class UniswapRouterV2:
                 deepest_pool_balance = reserve
         return deepest_pool
 
+
     @log(logger)
     def deepest_stable_pool(self, token_address: str, block: int = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
@@ -199,6 +195,7 @@ class UniswapRouterV2:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = reserve
         return deepest_stable_pool
+
 
     @log(logger)
     def get_path_to_stables(self, token_address: str, block: int = None):
