@@ -50,7 +50,7 @@ class UniswapRouterV2:
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
         """
 
-        token_in, token_out = str(token_in), str(token_out)
+        token_in, token_out, path = str(token_in), str(token_out), None
 
         if chain.id == Network.BinanceSmartChain and token_out == usdc:
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
@@ -62,10 +62,9 @@ class UniswapRouterV2:
         if str(token_in) in STABLECOINS:
             return 1
 
-        
         if str(token_out) in STABLECOINS:
             try: path = self.get_path_to_stables(token_in, block)
-            except CantFindSwapPath: path = None
+            except CantFindSwapPath: pass
 
         if path is None:
             path = self.smol_brain_path_selector(token_in, token_out, paired_against)
