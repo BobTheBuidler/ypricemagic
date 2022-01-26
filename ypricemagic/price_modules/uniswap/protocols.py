@@ -7,14 +7,6 @@ from y.networks import Network
 
 logger = logging.getLogger(__name__)
 
-TRY_ORDER = {
-    Network.Mainnet: ['sushiswap', 'uniswap v2', 'uniswap v1', 'shibaswap'],
-    Network.BinanceSmartChain: ['pancakeswapv2', 'pancakeswapv1', 'biswap', 'apeswap', 'wault', 'swapliquidity', 'thugswap', 'mdex', 'bakeryswap', 'nyanswop', 'narwhalswap', 'cafeswap', 'jetswap', 'babyswap', 'annex', 'viralata', 'elk', 'pantherswap', 'complus'],
-    Network.Polygon: ['quickswap', 'sushi', 'apeswap', 'dfyn', 'wault', 'cometh', 'jetswap', 'polyzap', 'cafeswap', 'polycat'],
-    Network.Fantom: ['sushi', 'spookyswap', 'spiritswap', 'paintswap', 'jetswap'],
-    Network.Avalanche: ['traderjoe', 'pangolin', 'lydia'],
-    Network.Harmony: ['defikingdoms'],
-}.get(chain.id, set())
 
 UNISWAPS = {
     Network.Mainnet: {
