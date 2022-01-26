@@ -51,7 +51,7 @@ def get_price(token, block=None):
     assert len(results) in [1,0], 'Something is going wrong in yearn vault calculations. Must debug'
     if len(results) == 1: share_price = results[0]
 
-    underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)']
+    underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
     calls = [Call(token, [method], [[method, None]]) for method in underlying_methods]
     results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
     assert len(results) in [1,0], 'Something is going wrong in yearn vault calculations. Must debug'
@@ -161,12 +161,12 @@ def get_price(token, block=None):
             decimals = vault.decimals(block_identifier = block)
             '''
 
-    #try:
-    price = [share_price / 10 ** decimals, underlying]
+    try:
+        price = [share_price / 10 ** decimals, underlying]
     #except TypeError: # when getPricePerShare() reverts due to divide by zero
     #    price = [1, underlying]
-    #except UnboundLocalError: # not supported
-    #    price = None
+    except UnboundLocalError: # not supported, try another way
+        price = None
     
     if price: logger.debug("yearn -> %s", price)
     return price
