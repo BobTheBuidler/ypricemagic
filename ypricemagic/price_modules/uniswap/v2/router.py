@@ -221,17 +221,28 @@ class UniswapRouterV2:
         path = None
         deepest_pool = self.deepest_pool(token_address, block)
         deepest_stable_pool = self.deepest_stable_pool(token_address, block)
-        if deepest_pool and deepest_stable_pool and deepest_pool == deepest_stable_pool:
-            path = [token_address, self.pool_mapping[token_address][deepest_pool]]
-        elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
-            deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
-            path = [token_address, WRAPPED_GAS_COIN, self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]]
-        elif self.pool_mapping[token_address][deepest_pool] == weth.address:
-            deepest_stable_pool_weth = self.deepest_stable_pool(weth.address, block)
-            path = [token_address, weth.address, self.pool_mapping[weth.address][deepest_stable_pool_weth]]
+        if deepest_pool:
+            if deepest_stable_pool and deepest_pool == deepest_stable_pool:
+                path = [token_address, self.pool_mapping[token_address][deepest_pool]]
+            elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
+                deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
+                last_step = self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]
+                
+                # for debugging
+                assert last_step
+
+                path = [token_address, WRAPPED_GAS_COIN, last_step]
+            elif self.pool_mapping[token_address][deepest_pool] == weth.address:
+                deepest_stable_pool_weth = self.deepest_stable_pool(weth.address, block)
+                last_step = self.pool_mapping[weth.address][deepest_stable_pool_weth]
+                
+                # for debugging
+                assert last_step
+
+                path = [token_address, weth.address, last_step]
         
         # some routers do their own thing and pair tokens against their own token
-        elif chain.id == Network.BinanceSmartChain:
+        if path is None and chain.id == Network.BinanceSmartChain:
             from y.constants import cake
             if self.pool_mapping[token_address][deepest_pool] == cake.address:
                 deepest_stable_pool_cake = self.deepest_stable_pool(cake.address, block)
