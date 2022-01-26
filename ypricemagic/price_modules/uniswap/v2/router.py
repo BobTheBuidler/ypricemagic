@@ -223,7 +223,7 @@ class UniswapRouterV2:
         deepest_pool = self.deepest_pool(token_address, block)
         deepest_stable_pool = self.deepest_stable_pool(token_address, block)
         if deepest_pool:
-            if deepest_stable_pool and deepest_pool == deepest_stable_pool:
+            if deepest_stable_pool is not None and deepest_pool == deepest_stable_pool:
                 last_step = self.pool_mapping[token_address][deepest_pool]
                 path = [token_address, last_step]
             elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
@@ -264,14 +264,14 @@ class UniswapRouterV2:
                 #path = [token_address, weth.address, last_step]
         
         # some routers do their own thing and pair tokens against their own token
-        if path is None and chain.id == Network.BinanceSmartChain:
+        if deepest_pool and path is None and chain.id == Network.BinanceSmartChain:
             from y.constants import cake
             if self.pool_mapping[token_address][deepest_pool] == cake.address:
                 deepest_stable_pool_cake = self.deepest_stable_pool(cake.address, block)
                 path = [token_address, cake.address, self.pool_mapping[cake.address][deepest_stable_pool_cake]]
         
         # deepest pool doesn't pair against any of the acceptable pair tokens, let's try something else
-        if path is None:
+        if deepest_pool and path is None:
             paired_with = self.pool_mapping[token_address][deepest_pool]
             path = [token_address].extend(self.get_path_to_stables(paired_with, _loop_count=_loop_count+1))
 
