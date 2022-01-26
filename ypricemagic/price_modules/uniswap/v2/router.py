@@ -223,7 +223,8 @@ class UniswapRouterV2:
         deepest_stable_pool = self.deepest_stable_pool(token_address, block)
         if deepest_pool:
             if deepest_stable_pool and deepest_pool == deepest_stable_pool:
-                path = [token_address, self.pool_mapping[token_address][deepest_pool]]
+                last_step = self.pool_mapping[token_address][deepest_pool]
+                path = [token_address, last_step]
             elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
                 deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
                 last_step = self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]
@@ -233,13 +234,25 @@ class UniswapRouterV2:
 
                 path = [token_address, WRAPPED_GAS_COIN, last_step]
             elif self.pool_mapping[token_address][deepest_pool] == weth.address:
-                deepest_stable_pool_weth = self.deepest_stable_pool(weth.address, block)
-                last_step = self.pool_mapping[weth.address][deepest_stable_pool_weth]
+                # commented out old method, trying new method
+                
+                #deepest_stable_pool_weth = self.deepest_stable_pool(weth.address, block)
+                #last_step = self.pool_mapping[weth.address][deepest_stable_pool_weth]
+
+                #new method
+                try: weth_path_to_stables = self.get_path_to_stables(weth.address, block=block)
+                except CantFindSwapPath: weth_path_to_stables = None
+
+                if weth_path_to_stables:
+                    path = [token_address]
+                    for step in weth_path_to_stables:
+                        path.append(step)
+                
                 
                 # for debugging
-                assert last_step
+                #assert last_step
 
-                path = [token_address, weth.address, last_step]
+                #path = [token_address, weth.address, last_step]
         
         # some routers do their own thing and pair tokens against their own token
         if path is None and chain.id == Network.BinanceSmartChain:
@@ -254,10 +267,6 @@ class UniswapRouterV2:
             path = [token_address].extend(self.get_path_to_stables(paired_with))
 
         if path is None: raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')
-
-        # for debugging
-        for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
 
         return path
 
