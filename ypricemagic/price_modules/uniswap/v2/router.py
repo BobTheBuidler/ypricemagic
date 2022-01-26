@@ -216,7 +216,8 @@ class UniswapRouterV2:
 
 
     @log(logger)
-    def get_path_to_stables(self, token_address: str, block: int = None):
+    def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0):
+        if _loop_count > 10: raise CantFindSwapPath
         token_address = convert.to_address(token_address)
         path = None
         deepest_pool = self.deepest_pool(token_address, block)
@@ -249,7 +250,7 @@ class UniswapRouterV2:
                 #last_step = self.pool_mapping[weth.address][deepest_stable_pool_weth]
 
                 #new method
-                try: weth_path_to_stables = self.get_path_to_stables(weth.address, block=block)
+                try: weth_path_to_stables = self.get_path_to_stables(weth.address, block=block, loop_count=_loop_count+1)
                 except CantFindSwapPath: weth_path_to_stables = None
 
                 if weth_path_to_stables:
