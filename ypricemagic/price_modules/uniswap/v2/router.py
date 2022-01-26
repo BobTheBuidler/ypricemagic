@@ -40,7 +40,7 @@ class UniswapRouterV2:
 
     @ttl_cache(ttl=36000)
     @log(logger)
-    def get_price(self, token_in: str, token_out = usdc, block: int = None, paired_against = weth):
+    def get_price(self, token_in: str, token_out = usdc, block: int = None, paired_against = WRAPPED_GAS_COIN):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -71,7 +71,7 @@ class UniswapRouterV2:
         
         # for debugging
         for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] , f'ix {i} type is not str, you passed {type(step)} {step}'
+            assert type(step) in [str,EthAddress] , f'ix path[{i}] type is not str, you passed {type(step)} {step}'
 
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
@@ -84,12 +84,17 @@ class UniswapRouterV2:
     @continue_on_revert
     @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
+        
+        # for debugging
+        for i, step in enumerate(path):
+            assert type(step) in [str,EthAddress] , f'ix path[{i}] type is not str, you passed {type(step)} {step}'
+
         if self._verified:
             try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
             # TODO figure out how to best handle uni forks with slight modifications
             except ValueError as e:
                 if 'Sequence has incorrect length' in str(e): return 
-                if 'is not a valid ETH address' in str(e): pass # TODO figure out why this happens and fix root cause
+                #if 'is not a valid ETH address' in str(e): pass # TODO figure out why this happens and fix root cause
                 else: raise
 
         else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],_w3=web3,block_id=block)()['amounts']
