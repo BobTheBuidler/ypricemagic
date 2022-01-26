@@ -48,15 +48,6 @@ class UniswapRouterV2:
 
         token_in, token_out, path = str(token_in), str(token_out), None
 
-        # for debugging
-        if not token_out.startswith('0x'):
-            if token_out == usdc.address: token_out = [address for address, symbol in STABLECOINS.items() if symbol == 'usdc'][0]
-            # TODO figure out why this is happening and fix root cause
-            # NOTE works fine on one machine, fails on second machine
-            else: raise 
-
-        assert token_out.startswith('0x'), f"token_out doesn't start with 0x, you passed {token_out}"
-
         if chain.id == Network.BinanceSmartChain and token_out == usdc.address:
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
@@ -78,10 +69,6 @@ class UniswapRouterV2:
             path = self.smol_brain_path_selector(token_in, token_out, paired_against)
             logger.debug('smol')
         
-        # for debugging
-        for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
-
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
         quote = self.get_quote(amount_in, path, block=block)
@@ -93,10 +80,6 @@ class UniswapRouterV2:
     @continue_on_revert
     @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
-
-        # for debugging
-        for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
 
         if self._verified:
             try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
@@ -127,10 +110,6 @@ class UniswapRouterV2:
         else:
             if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
             else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
-
-        # for debugging
-        for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
 
         return path
     
