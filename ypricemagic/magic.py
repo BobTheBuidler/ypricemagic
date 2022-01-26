@@ -11,7 +11,7 @@ from tqdm import tqdm
 from y.constants import WRAPPED_GAS_COIN
 from y.contracts import Contract
 from y.decorators import log
-from y.exceptions import PriceError
+from y.exceptions import PriceError, NonStandardERC20
 from y.networks import Network
 from y.prices import _sense_check
 
@@ -59,7 +59,7 @@ def get_price(
 
     token_address = convert.to_address(token_address)
     try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
-    except RecursionError:
+    except (NonStandardERC20, RecursionError):
         if fail_to_None: return None
         else: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {Network.printable()}')
 
