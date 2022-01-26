@@ -232,7 +232,7 @@ class UniswapRouterV2:
                 #last_step = self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]
 
                 # new method
-                try: gas_coin_path_to_stables = self.get_path_to_stables(WRAPPED_GAS_COIN, block=block)
+                try: gas_coin_path_to_stables = self.get_path_to_stables(WRAPPED_GAS_COIN, block=block, _loop_count=_loop_count+1)
                 except CantFindSwapPath: gas_coin_path_to_stables = None
 
                 if gas_coin_path_to_stables:
@@ -250,7 +250,7 @@ class UniswapRouterV2:
                 #last_step = self.pool_mapping[weth.address][deepest_stable_pool_weth]
 
                 #new method
-                try: weth_path_to_stables = self.get_path_to_stables(weth.address, block=block, loop_count=_loop_count+1)
+                try: weth_path_to_stables = self.get_path_to_stables(weth.address, block=block, _loop_count=_loop_count+1)
                 except CantFindSwapPath: weth_path_to_stables = None
 
                 if weth_path_to_stables:
@@ -273,7 +273,7 @@ class UniswapRouterV2:
         # deepest pool doesn't pair against any of the acceptable pair tokens, let's try something else
         if path is None:
             paired_with = self.pool_mapping[token_address][deepest_pool]
-            path = [token_address].extend(self.get_path_to_stables(paired_with))
+            path = [token_address].extend(self.get_path_to_stables(paired_with, _loop_count=_loop_count+1))
 
         if path is None: raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')
 
