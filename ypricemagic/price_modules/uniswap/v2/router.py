@@ -6,7 +6,7 @@ from typing import Dict, List
 
 from brownie import chain, convert, web3
 from cachetools.func import ttl_cache
-from brownie.convert.datatypes import HexBytes
+from brownie.convert.datatypes import HexBytes, EthAddress
 from multicall import Call
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
@@ -63,11 +63,19 @@ class UniswapRouterV2:
             return 1
 
         if str(token_out) in STABLECOINS:
-            try: path = self.get_path_to_stables(token_in, block)
-            except CantFindSwapPath: pass
+            try:
+                path = self.get_path_to_stables(token_in, block)
+                logger.debug('smrt')
+            except CantFindSwapPath:
+                pass
 
         if path is None:
             path = self.smol_brain_path_selector(token_in, token_out, paired_against)
+            logger.debug('smol')
+        
+        # for debugging
+        for i, step in enumerate(path):
+            assert type(step) in [str,EthAddress] , f'ix {i} type is not str, you passed {type(step)} {step}'
 
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
