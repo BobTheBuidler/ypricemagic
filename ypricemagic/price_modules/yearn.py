@@ -48,13 +48,13 @@ def get_price(token, block=None):
 
     share_price_methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
     calls = [Call(token, [method], [[method, None]]) for method in share_price_methods]
-    results = [result for result in Multicall(calls, _w3=web3, block_id=block)().values() if result is not None]
+    results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
     assert len(results) == 1, 'Something is going wrong in yearn vault calculations. Must debug'
     share_price = results[0]
 
     underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)']
     calls = [Call(token, [method], [[method, None]]) for method in underlying_methods]
-    results = [result for result in Multicall(calls, _w3=web3, block_id=block)().values() if result is not None]
+    results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
     assert len(results) == 1, 'Something is going wrong in yearn vault calculations. Must debug'
     underlying = results[0]
 
@@ -162,12 +162,12 @@ def get_price(token, block=None):
             decimals = vault.decimals(block_identifier = block)
             '''
 
-    try:
-        price = [share_price / 10 ** decimals, underlying]
+    #try:
+    price = [share_price / 10 ** decimals, underlying]
     #except TypeError: # when getPricePerShare() reverts due to divide by zero
     #    price = [1, underlying]
-    except UnboundLocalError: # not supported
-        price = None
+    #except UnboundLocalError: # not supported
+    #    price = None
     
     if price: logger.debug("yearn -> %s", price)
     return price
