@@ -150,9 +150,7 @@ class UniswapRouterV2:
             pools.update(pools_your_node_couldnt_get)
 
         return pools
-             
-        
-            
+
 
     @cached_property
     def pool_mapping(self) -> Dict[str,Dict[str,str]]:
@@ -165,12 +163,7 @@ class UniswapRouterV2:
 
             try: pool_mapping[token1][pool] = token0
             except KeyError: pool_mapping[token1] = {pool: token0}
-
-        '''
-        supported_tokens = set(token for tokens in self.pools.values() for token in tokens.values())
-        mapping = {token: self.map_pools_for_token(token) for token in tqdm(supported_tokens)} 
-        logger.info(f'Loaded {len(supported_tokens)} tokens on {self.label}')
-        '''
+        
         logger.info(f'Loaded {len(pool_mapping)} tokens on {self.label}')
         return pool_mapping
 
@@ -223,63 +216,31 @@ class UniswapRouterV2:
     def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0):
         if _loop_count > 10: raise CantFindSwapPath
         token_address = convert.to_address(token_address)
-        path = None
+        path = [token_address]
         deepest_pool = self.deepest_pool(token_address, block)
         deepest_stable_pool = self.deepest_stable_pool(token_address, block)
         if deepest_pool:
-            if deepest_stable_pool is not None and deepest_pool == deepest_stable_pool:
-                last_step = self.pool_mapping[token_address][deepest_pool]
-                path = [token_address, last_step]
-            elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
-                # commented out old method, trying new method
-                #deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
-                #last_step = self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]
-
-                # new method
-                try: gas_coin_path_to_stables = self.get_path_to_stables(WRAPPED_GAS_COIN, block=block, _loop_count=_loop_count+1)
-                except CantFindSwapPath: gas_coin_path_to_stables = None
-
-                if gas_coin_path_to_stables:
-                    path = [token_address]
-                    path.extend(gas_coin_path_to_stables)
-                
-                # for debugging
-                #assert last_step
-
-                #path = [token_address, WRAPPED_GAS_COIN, last_step]
-            elif self.pool_mapping[token_address][deepest_pool] == weth.address:
-                # commented out old method, trying new method
-                
-                #deepest_stable_pool_weth = self.deepest_stable_pool(weth.address, block)
-                #last_step = self.pool_mapping[weth.address][deepest_stable_pool_weth]
-
-                #new method
-                try: weth_path_to_stables = self.get_path_to_stables(weth.address, block=block, _loop_count=_loop_count+1)
-                except CantFindSwapPath: weth_path_to_stables = None
-
-                if weth_path_to_stables:
-                    path = [token_address]
-                    path.extend(weth_path_to_stables)
-                
-                
-                # for debugging
-                #assert last_step
-
-                #path = [token_address, weth.address, last_step]
-        
-        # some routers do their own thing and pair tokens against their own token
-        if deepest_pool and path is None and chain.id == Network.BinanceSmartChain:
-            from y.constants import cake
-            if self.pool_mapping[token_address][deepest_pool] == cake.address:
-                deepest_stable_pool_cake = self.deepest_stable_pool(cake.address, block)
-                path = [token_address, cake.address, self.pool_mapping[cake.address][deepest_stable_pool_cake]]
-        
-        # deepest pool doesn't pair against any of the acceptable pair tokens, let's try something else
-        if deepest_pool and path is None:
             paired_with = self.pool_mapping[token_address][deepest_pool]
-            path = [token_address].extend(self.get_path_to_stables(paired_with, _loop_count=_loop_count+1))
+            if deepest_pool == deepest_stable_pool:
+                last_step = self.pool_mapping[token_address][deepest_pool]
+                path.append(last_step)
 
-        if path is None: raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')
+            ''' can probably get rid of these 2 sections, testing
+            elif paired_with == WRAPPED_GAS_COIN:
+                try: path.extend(self.get_path_to_stables(WRAPPED_GAS_COIN, block=block, _loop_count=_loop_count+1))
+                except CantFindSwapPath: pass
+
+            elif paired_with == weth.address:
+                try: path.extend(self.get_path_to_stables(weth.address, block=block, _loop_count=_loop_count+1))
+                except CantFindSwapPath: pass
+            '''
+            
+            # deepest pool doesn't pair against any of the acceptable pair tokens, let's try something else
+            if path == [token_address]:
+                try: path.extend(self.get_path_to_stables(paired_with, block=block, _loop_count=_loop_count+1))
+                except CantFindSwapPath: pass
+
+        if path == [token_address]: raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')
 
         return path
 
