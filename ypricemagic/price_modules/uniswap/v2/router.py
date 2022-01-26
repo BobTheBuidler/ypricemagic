@@ -226,13 +226,22 @@ class UniswapRouterV2:
                 last_step = self.pool_mapping[token_address][deepest_pool]
                 path = [token_address, last_step]
             elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
-                deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
-                last_step = self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]
+                # commented out old method, trying new method
+                #deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
+                #last_step = self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]
+
+                # new method
+                try: gas_coin_path_to_stables = self.get_path_to_stables(WRAPPED_GAS_COIN, block=block)
+                except CantFindSwapPath: gas_coin_path_to_stables = None
+
+                if gas_coin_path_to_stables:
+                    path = [token_address]
+                    path.extend(gas_coin_path_to_stables)
                 
                 # for debugging
-                assert last_step
+                #assert last_step
 
-                path = [token_address, WRAPPED_GAS_COIN, last_step]
+                #path = [token_address, WRAPPED_GAS_COIN, last_step]
             elif self.pool_mapping[token_address][deepest_pool] == weth.address:
                 # commented out old method, trying new method
                 
@@ -245,8 +254,7 @@ class UniswapRouterV2:
 
                 if weth_path_to_stables:
                     path = [token_address]
-                    for step in weth_path_to_stables:
-                        path.append(step)
+                    path.extend(weth_path_to_stables)
                 
                 
                 # for debugging
