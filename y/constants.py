@@ -123,6 +123,7 @@ STABLECOINS = {
         "0x04068DA6C83AFCFA0e13ba15A6696662335D5B75": "usdc",
         "0x8D11eC38a3EB5E956B052f67Da8Bdc9bef8Abf3E": "dai",
         "0x049d68029688eAbF473097a2fC38ef61633A3C7A": "fusdt",
+        "0x9879aBDea01a879644185341F7aF7d8343556B7a": "tusd",
     },
     Network.Arbitrum: {
         "": "",
@@ -141,12 +142,12 @@ STABLECOINS = {
 
 
 WRAPPED_GAS_COIN = {
-    Network.Mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
-    Network.BinanceSmartChain: "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
-    Network.Polygon: "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
-    Network.Fantom: "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-    #Network.Arbitrum: "",
-    Network.Avalanche: "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+    Network.Mainnet:            "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+    Network.BinanceSmartChain:  "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
+    Network.Polygon:            "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
+    Network.Fantom:             "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
+    #Network.Arbitrum:          "",
+    Network.Avalanche:          "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
 }.get(chain.id)
 
 
