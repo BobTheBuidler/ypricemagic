@@ -5,8 +5,7 @@ from brownie import web3
 from multicall import Call, Multicall
 from y.contracts import Contract, has_methods
 from y.decorators import log
-from y.exceptions import ContractNotVerified
-from ypricemagic.utils.multicall import fetch_multicall
+from y.exceptions import ContractNotVerified, MessedUpBrownieContract
 from ypricemagic.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
@@ -34,7 +33,7 @@ def is_yearn_vault(token):
                 hasattr(contract,'getPricePerFullShare'),
                 hasattr(contract,'getSharesToUnderlying'),
             ])
-        except ContractNotVerified: pass
+        except (ContractNotVerified, MessedUpBrownieContract): pass
 
     logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
     return result
