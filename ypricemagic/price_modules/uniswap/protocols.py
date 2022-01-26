@@ -55,6 +55,8 @@ UNISWAPS = {
         "spiritswap":       {"factory": "0xEF45d134b73241eDa7703fa787148D9C9F4950b0", "router": "0x16327E3FbDaCA3bcF7E38F5Af2599D2DDc33aE52"},
         "paintswap":        {"factory": "0x733A9D1585f2d14c77b49d39BC7d7dd14CdA4aa5", "router": "0xfD000ddCEa75a2E23059881c3589F6425bFf1AbB"},
         "jetswap":          {"factory": "0xf6488205957f0b4497053d6422F49e27944eE3Dd", "router": "0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25"},
+        "wakaswap":         {"factory": "0xB2435253C71FcA27bE41206EB2793E44e1Df6b6D", "router": "0x7B17021FcB7Bc888641dC3bEdfEd3734fCaf2c87"},
+        "hyperswap":        {"factory": "0x991152411A7B5A14A8CF0cDDE8439435328070dF", "router": "0x53c153a0df7E050BbEFbb70eE9632061f12795fB"},
     },
     Network.Avalanche: {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
