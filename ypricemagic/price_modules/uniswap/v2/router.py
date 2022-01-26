@@ -40,7 +40,7 @@ class UniswapRouterV2:
 
     @ttl_cache(ttl=36000)
     @log(logger)
-    def get_price(self, token_in: str, token_out = usdc, block: int = None, paired_against = WRAPPED_GAS_COIN):
+    def get_price(self, token_in: str, token_out: str = usdc.address, block: int = None, paired_against = WRAPPED_GAS_COIN):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -48,7 +48,14 @@ class UniswapRouterV2:
 
         token_in, token_out, path = str(token_in), str(token_out), None
 
-        if chain.id == Network.BinanceSmartChain and token_out == usdc:
+        # for debugging
+        if not token_out.startswith('0x'):
+            if token_out == usdc.address: token_out = [address for address, symbol in STABLECOINS.items() if symbol == 'usdc'][0]
+            else: raise # TODO figure out why this is happening and fix root cause
+            
+        assert token_out.startswith('0x'), f"token_out doesn't start with 0x, you passed {token_out}"
+
+        if chain.id == Network.BinanceSmartChain and token_out == usdc.address:
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
@@ -122,7 +129,7 @@ class UniswapRouterV2:
         # for debugging
         for i, step in enumerate(path):
             assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
-            
+
         return path
     
 
