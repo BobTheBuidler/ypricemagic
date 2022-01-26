@@ -101,10 +101,16 @@ def _get_price(
     logger.debug(f"Network: {Network.printable()}")
 
     price = _exit_early_for_known_tokens(token, block=block)
-    if price == 0: return 0 # this happens when a LP token has 0 totalSupply
-    if not price: price = uniswap.get_price(token, block=block)
-    if not price: price = balancer.get_price(token, block=block)
-    if not price: _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
+    if price is not None: return price
+
+    if price is None: price = uniswap.get_price(token, block=block)
+
+    # if price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin
+    if price is None or price == 0:
+        new_price = balancer.get_price(token, block=block)
+        if new_price: price = new_price
+
+    if price is None: price: _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
     if price: _sense_check(token, price)
     return price
 
