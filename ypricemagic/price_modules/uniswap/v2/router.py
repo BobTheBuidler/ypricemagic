@@ -59,17 +59,16 @@ class UniswapRouterV2:
         try: amount_in = 10 ** _decimals(token_in,block)
         except NonStandardERC20: return None
 
-        if str(token_in) in STABLECOINS: return 1
+        if str(token_in) in STABLECOINS:
+            return 1
 
+        
         if str(token_out) in STABLECOINS:
             try: path = self.get_path_to_stables(token_in, block)
-            except CantFindSwapPath: pass
+            except CantFindSwapPath: path = None
 
-        if path is None: path = self.smol_brain_path_selector(token_in, token_out, paired_against)
-
-        if type(path[-1]) == int: # TODO debug why this happens and address it at the root
-            last_step = path.pop([-1])
-            path.append(HexBytes(last_step))
+        if path is None:
+            path = self.smol_brain_path_selector(token_in, token_out, paired_against)
 
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
