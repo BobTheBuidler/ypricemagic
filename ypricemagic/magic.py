@@ -110,7 +110,7 @@ def _get_price(
         new_price = balancer.get_price(token, block=block)
         if new_price: price = new_price
 
-    if price is None: price: _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
+    if price is None: _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
     if price: _sense_check(token, price)
     return price
 
