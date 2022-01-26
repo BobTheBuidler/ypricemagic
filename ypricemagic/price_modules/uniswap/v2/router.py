@@ -40,7 +40,7 @@ class UniswapRouterV2:
 
     @ttl_cache(ttl=36000)
     @log(logger)
-    def get_price(self, token_in: str, token_out: str = usdc.address, block: int = None, paired_against = WRAPPED_GAS_COIN):
+    def get_price(self, token_in: str, block: int = None, token_out: str = usdc.address, paired_against = WRAPPED_GAS_COIN):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -51,8 +51,10 @@ class UniswapRouterV2:
         # for debugging
         if not token_out.startswith('0x'):
             if token_out == usdc.address: token_out = [address for address, symbol in STABLECOINS.items() if symbol == 'usdc'][0]
-            else: raise # TODO figure out why this is happening and fix root cause
-            
+            # TODO figure out why this is happening and fix root cause
+            # NOTE works fine on one machine, fails on second machine
+            else: raise 
+
         assert token_out.startswith('0x'), f"token_out doesn't start with 0x, you passed {token_out}"
 
         if chain.id == Network.BinanceSmartChain and token_out == usdc.address:
