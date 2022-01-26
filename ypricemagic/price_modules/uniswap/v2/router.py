@@ -71,7 +71,7 @@ class UniswapRouterV2:
         
         # for debugging
         for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] , f'ix path[{i}] type is not str, you passed {type(step)} {step}'
+            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
 
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
@@ -84,10 +84,10 @@ class UniswapRouterV2:
     @continue_on_revert
     @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
-        
+
         # for debugging
         for i, step in enumerate(path):
-            assert type(step) in [str,EthAddress] , f'ix path[{i}] type is not str, you passed {type(step)} {step}'
+            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
 
         if self._verified:
             try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
@@ -119,6 +119,10 @@ class UniswapRouterV2:
             if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
             else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
 
+        # for debugging
+        for i, step in enumerate(path):
+            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
+            
         return path
     
 
@@ -209,13 +213,13 @@ class UniswapRouterV2:
         deepest_pool = self.deepest_pool(token_address, block)
         deepest_stable_pool = self.deepest_stable_pool(token_address, block)
         if deepest_pool and deepest_stable_pool and deepest_pool == deepest_stable_pool:
-            return [token_address, self.pool_mapping[token_address][deepest_pool]]
+            path = [token_address, self.pool_mapping[token_address][deepest_pool]]
         elif self.pool_mapping[token_address][deepest_pool] == WRAPPED_GAS_COIN:
             deepest_stable_pool_wrapped_gas = self.deepest_stable_pool(WRAPPED_GAS_COIN, block)
-            return [token_address, WRAPPED_GAS_COIN, self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]]
+            path = [token_address, WRAPPED_GAS_COIN, self.pool_mapping[WRAPPED_GAS_COIN][deepest_stable_pool_wrapped_gas]]
         elif self.pool_mapping[token_address][deepest_pool] == weth.address:
             deepest_stable_pool_weth = self.deepest_stable_pool(weth.address, block)
-            return [token_address, weth.address, self.pool_mapping[weth.address][deepest_stable_pool_weth]]
+            path = [token_address, weth.address, self.pool_mapping[weth.address][deepest_stable_pool_weth]]
         
         # some routers do their own thing and pair tokens against their own token
         elif chain.id == Network.BinanceSmartChain:
@@ -230,6 +234,11 @@ class UniswapRouterV2:
             path = [token_address].extend(self.get_path_to_stables(paired_with))
 
         if path is None: raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')
+
+        # for debugging
+        for i, step in enumerate(path):
+            assert type(step) in [str,EthAddress] and step.startswith('0x'), f'ix path[{i}] type is not str, you passed {type(step)} {step}'
+
         return path
 
             
