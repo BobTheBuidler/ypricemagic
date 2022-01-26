@@ -221,7 +221,7 @@ class UniswapRouterV2:
         deepest_stable_pool = self.deepest_stable_pool(token_address, block)
         if deepest_pool:
             paired_with = self.pool_mapping[token_address][deepest_pool]
-            if deepest_pool == deepest_stable_pool:
+            if deepest_stable_pool and deepest_pool == deepest_stable_pool:
                 last_step = self.pool_mapping[token_address][deepest_pool]
                 path.append(last_step)
 
@@ -234,7 +234,7 @@ class UniswapRouterV2:
                 try: path.extend(self.get_path_to_stables(weth.address, block=block, _loop_count=_loop_count+1))
                 except CantFindSwapPath: pass
             '''
-            
+
             # deepest pool doesn't pair against any of the acceptable pair tokens, let's try something else
             if path == [token_address]:
                 try: path.extend(self.get_path_to_stables(paired_with, block=block, _loop_count=_loop_count+1))
