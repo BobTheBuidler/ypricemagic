@@ -1,10 +1,13 @@
 import logging
 from functools import lru_cache
 
+from brownie import web3
+from multicall import Call, Multicall
 from y.contracts import Contract, has_methods
 from y.decorators import log
 from y.exceptions import ContractNotVerified
 from ypricemagic.utils.multicall import fetch_multicall
+from ypricemagic.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
 
@@ -42,6 +45,23 @@ def get_price(token, block=None):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
+
+    share_price_methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
+    calls = [Call(token, [method], [[method, None]]) for method in share_price_methods]
+    results = [result for result in Multicall(calls, _w3=web3, block_id=block)().values() if result is not None]
+    assert len(results) == 1, 'Something is going wrong in yearn vault calculations. Must debug'
+    share_price = results[0]
+
+    underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)']
+    calls = [Call(token, [method], [[method, None]]) for method in underlying_methods]
+    results = [result for result in Multicall(calls, _w3=web3, block_id=block)().values() if result is not None]
+    assert len(results) == 1, 'Something is going wrong in yearn vault calculations. Must debug'
+    underlying = results[0]
+
+    decimals = _decimals(token)
+
+    # saving for later
+    '''
     vault = Contract(token)
     if hasattr(vault, 'pricePerShare'):
         share_price, underlying, decimals = fetch_multicall(
@@ -113,7 +133,7 @@ def get_price(token, block=None):
             block=block
         )
         share_price = vault.getSharesToUnderlying(10 ** decimals,block_identifier=block)
-        
+    '''
     ''' might need this later for goofy L1s w/o multicall2        
     else:
         if hasattr(vault, 'pricePerShare'):
@@ -144,8 +164,8 @@ def get_price(token, block=None):
 
     try:
         price = [share_price / 10 ** decimals, underlying]
-    except TypeError: # when getPricePerShare() reverts due to divide by zero
-        price = [1, underlying]
+    #except TypeError: # when getPricePerShare() reverts due to divide by zero
+    #    price = [1, underlying]
     except UnboundLocalError: # not supported
         price = None
     
