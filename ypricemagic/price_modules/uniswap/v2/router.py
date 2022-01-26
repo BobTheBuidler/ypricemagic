@@ -121,9 +121,9 @@ class UniswapRouterV2:
         events = decode_logs(get_logs_asap(self.factory, PairCreated))
         pairs = {
             event['']: {
-                event['pair']: {
-                    'token0':event['token0'],
-                    'token1':event['token1']
+                convert.to_address(event['pair']): {
+                    'token0':convert.to_address(event['token0']),
+                    'token1':convert.to_address(event['token1']),
                 }
             }
             for event in events
@@ -142,9 +142,9 @@ class UniswapRouterV2:
             calls = [Call(pool, ['token1()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
             token1s = Multicall(calls,_w3=web3)().values()
             pools_your_node_couldnt_get = {
-                pool: {
-                    'token0':token0,
-                    'token1':token1,
+                convert.to_address(pool): {
+                    'token0':convert.to_address(token0),
+                    'token1':convert.to_address(token1),
                 }
             for pool, token0, token1 in zip(pools_your_node_couldnt_get,token0s,token1s)}
             pools.update(pools_your_node_couldnt_get)
@@ -169,7 +169,7 @@ class UniswapRouterV2:
 
 
     @log(logger)
-    def deepest_pool(self, token_address, block = None):
+    def deepest_pool(self, token_address, block = None, _ignore_pools: List[str] = [] ):
         token_address = convert.to_address(token_address)
 
         try: pools = self.pool_mapping[token_address]
@@ -181,7 +181,7 @@ class UniswapRouterV2:
         deepest_pool = None
         deepest_pool_balance = 0
         for pool, reserves in zip(pools.keys(),reserves):
-            if reserves is None: continue
+            if reserves is None or pool in _ignore_pools: continue
             if token_address == self.pools[pool]['token0']: reserve = reserves[0]
             elif token_address == self.pools[pool]['token1']: reserve = reserves[1]
             if reserve > deepest_pool_balance: 
@@ -213,31 +213,29 @@ class UniswapRouterV2:
 
 
     @log(logger)
-    def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0):
+    def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0, _ignore_pools: List[str] = [] ):
         if _loop_count > 10: raise CantFindSwapPath
         token_address = convert.to_address(token_address)
         path = [token_address]
-        deepest_pool = self.deepest_pool(token_address, block)
-        deepest_stable_pool = self.deepest_stable_pool(token_address, block)
+        deepest_pool = self.deepest_pool(token_address, block, _ignore_pools)
         if deepest_pool:
             paired_with = self.pool_mapping[token_address][deepest_pool]
+            deepest_stable_pool = self.deepest_stable_pool(token_address, block)
             if deepest_stable_pool and deepest_pool == deepest_stable_pool:
-                last_step = self.pool_mapping[token_address][deepest_pool]
+                last_step = self.pool_mapping[token_address][deepest_stable_pool]
                 path.append(last_step)
+                return path
 
-            ''' can probably get rid of these 2 sections, testing
-            elif paired_with == WRAPPED_GAS_COIN:
-                try: path.extend(self.get_path_to_stables(WRAPPED_GAS_COIN, block=block, _loop_count=_loop_count+1))
-                except CantFindSwapPath: pass
 
-            elif paired_with == weth.address:
-                try: path.extend(self.get_path_to_stables(weth.address, block=block, _loop_count=_loop_count+1))
-                except CantFindSwapPath: pass
-            '''
-
-            # deepest pool doesn't pair against any of the acceptable pair tokens, let's try something else
             if path == [token_address]:
-                try: path.extend(self.get_path_to_stables(paired_with, block=block, _loop_count=_loop_count+1))
+                try: path.extend(
+                        self.get_path_to_stables(
+                            paired_with,
+                            block=block, 
+                            _loop_count=_loop_count+1, 
+                            _ignore_pools=_ignore_pools + [deepest_pool]
+                        )
+                    )
                 except CantFindSwapPath: pass
 
         if path == [token_address]: raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')
