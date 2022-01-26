@@ -32,7 +32,7 @@ def is_yearn_vault(token):
                 hasattr(contract,'pricePerShare'),
                 hasattr(contract,'getPricePerShare'),
                 hasattr(contract,'getPricePerFullShare'),
-                hasattr(contract, 'getSharesToUnderlying'),
+                hasattr(contract,'getSharesToUnderlying'),
             ])
         except ContractNotVerified: pass
 
@@ -49,14 +49,14 @@ def get_price(token, block=None):
     share_price_methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
     calls = [Call(token, [method], [[method, None]]) for method in share_price_methods]
     results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
-    assert len(results) == 1, 'Something is going wrong in yearn vault calculations. Must debug'
-    share_price = results[0]
+    assert len(results) in [1,0], 'Something is going wrong in yearn vault calculations. Must debug'
+    if len(results) == 1: share_price = results[0]
 
     underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)']
     calls = [Call(token, [method], [[method, None]]) for method in underlying_methods]
     results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
-    assert len(results) == 1, 'Something is going wrong in yearn vault calculations. Must debug'
-    underlying = results[0]
+    assert len(results) in [1,0], 'Something is going wrong in yearn vault calculations. Must debug'
+    if len(results) == 1: underlying = results[0]
 
     decimals = _decimals(token)
 
