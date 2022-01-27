@@ -6,7 +6,8 @@ from brownie import chain, web3
 from multicall import Call, Multicall
 from y.contracts import Contract
 from y.decorators import log
-from y.exceptions import NotAUniswapV2Pool, call_reverted
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+                          NotAUniswapV2Pool, call_reverted)
 from y.networks import Network
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import _decimals, raw_call
@@ -36,7 +37,15 @@ class UniswapPoolV2:
     def get_pool_details(self, block=None):
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
-        token0, token1, supply, reserves = Multicall(calls, _w3=web3, block_id=block)().values()
+        try: token0, token1, supply, reserves = Multicall(calls, _w3=web3, block_id=block)().values()
+        except Exception as e:
+            if not call_reverted(e): raise
+            # if call reverted, let's try with brownie. Sometimes this works, not sure why
+            try:
+                contract = Contract(self.address)
+                token0, token1, supply, reserves = fetch_multicall([contract,'token0'],[contract,'token1'],[contract,'totalSupply'],[contract,'getReserves'],block=block)
+            except (ContractNotVerified, MessedUpBrownieContract):
+                raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
         return token0, token1, supply, reserves
 
         ''' Saving this code for chains without multicall
