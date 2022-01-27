@@ -52,6 +52,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xc4AD29ba4B3c580e6D59105FFf484999997675Ff", # crv3crypto
         "0xd075e95423C5c4BA1E122CaE0f4CdFA19b82881b", # wPE
         "0xe9F84dE264E91529aF07Fa2C746e934397810334", # sak3
+        "0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83", # yfii
         # nfts
         "0x641927E970222B10b2E8CDBC96b1B4F427316f16", # meeb
         "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
@@ -82,12 +83,17 @@ ACCEPTABLE_HIGH_PRICES = {
         weth.address,
         # btc and btc-like
         wbtc.address,
+        # other
+        "0x29b0Da86e484E1C0029B56e817912d778aC0EC69", # yfi
     ],
     Network.Avalanche: [
         # eth and eth-like
         weth.address,
         # btc and btc-like
         wbtc.address,
+        "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501", # renbtc
+
+        "0xd6070ae98b8069de6B494332d1A1a81B6179D960", # bifi
     ]
 }.get(chain.id, [])
 
