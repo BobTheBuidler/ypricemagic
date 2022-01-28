@@ -48,6 +48,7 @@ UNISWAPS = {
         "polyzap":          {"factory": "0x34De5ce6c9a395dB5710119419A7a29baa435C88", "router": "0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"},
         "cafeswap":         {"factory": "0x5eDe3f4e7203Bf1F12d57aF1810448E5dB20f46C", "router": "0x9055682E58C74fc8DdBFC55Ad2428aB1F96098Fc"},
         "polycat":          {"factory": "0x477Ce834Ae6b7aB003cCe4BC4d8697763FF456FA", "router": "0x94930a328162957FF1dd48900aF67B5439336cBD"},
+        "elk":              {"factory": "0xE3BD06c7ac7E1CeB17BdD2E5BA83E40D1515AF2a", "router": "0xf38a7A7Ac2D745E2204c13F824c00139DF831FFf"},
     },
     Network.Fantom: {
         "sushi":            {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
