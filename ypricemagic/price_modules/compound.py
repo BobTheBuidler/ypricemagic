@@ -44,7 +44,7 @@ class Comptroller:
         assert not (address and key),   'Must provide either an address or a key, not both'
 
         if key: address = TROLLERS[key]
-        else: key = [key for key in TROLLERS if self.address == TROLLERS[key]][0]
+        else: key = [key for key in TROLLERS if address == TROLLERS[key]][0]
 
         self.address = convert.to_address(address)
         self.key = key
