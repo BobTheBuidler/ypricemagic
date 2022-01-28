@@ -164,7 +164,7 @@ class UniswapRouterV2:
             try: pool_mapping[token1][pool] = token0
             except KeyError: pool_mapping[token1] = {pool: token0}
         
-        logger.info(f'Loaded {len(pool_mapping)} tokens on {self.label}')
+        logger.info(f'Loaded {len(self.pools)} pools supporting {len(pool_mapping)} tokens on {self.label}')
         return pool_mapping
 
 
