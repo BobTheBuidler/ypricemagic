@@ -27,6 +27,10 @@ TROLLERS = {
     },
     Network.Fantom: {
         "cream":            "0x4250A6D3BD57455d7C6821eECb6206F507576cD2",
+    },
+    Network.Avalanche: {
+        "vee":              "0xA67DFeD73025b0d61F2515c531dd8D25D4Cfd0Db",
+        "vee2":             "0x43AAd7d8Bc661dfA70120865239529ED92Faa054",
     }
 }.get(chain.id, {})
 
