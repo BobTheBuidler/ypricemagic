@@ -1,11 +1,11 @@
 import logging
-from functools import lru_cache
 
 from brownie import web3
 from multicall import Call, Multicall
 from y.contracts import Contract, has_methods
 from y.decorators import log
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract
+from y.utils.cache import memory
 from ypricemagic.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 # NOTE: Yearn and Yearn-like
 
 @log(logger)
-@lru_cache(maxsize=None)
+@memory.cache()
 def is_yearn_vault(token):
     logger.debug(f'Checking `is_yearn_vault({token})')
     # Yearn-like contracts can use these formats
