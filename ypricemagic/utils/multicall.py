@@ -36,6 +36,7 @@ MULTICALL2 = {
     Network.Moonriver:          "0xaeF00A0Cf402D9DEdd54092D9cA179Be6F9E5cE3",
     Network.Polygon:            "0xc8E51042792d7405184DfCa245F2d27B94D013b6",
     Network.xDai:               "0x9903f30c1469d8A2f415D4E8184C93BD26992573",
+    Network.Aurora:             "0xe0e3887b158F7F9c80c835a61ED809389BC08d1b",
 }.get(chain.id, None)
 
 multicall = None

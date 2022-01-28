@@ -53,14 +53,14 @@ elif chain.id == Network.Arbitrum:
     weth = Contract('0x82aF49447D8a07e3bd95BD0d56f35241523fBab1')
     # for some reason wbtc unverified on arbi
     wbtc = _Contract.from_abi("wbtc",'0x2f2a2543B76A4166549F7aaB2e75Bef0aefC5B0f',ERC20ABI)
-    dai = Contract('0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1')
+    dai =  Contract('0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1')
     usdc = Contract('0xFF970A61A04b1cA14834A43f5dE4533eBDDB5CC8')
     usdt = Contract('0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9')
 
 elif chain.id == Network.Avalanche:
-    weth = Contract('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB')
+    weth = Contract('0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB') # weth.e
     wbtc = Contract('0x50b7545627a5162F82A992c33b87aDc75187B218')
-    dai = Contract('0xd586E7F844cEa2F87f50152665BCbc2C279D8d70')
+    dai =  Contract('0xd586E7F844cEa2F87f50152665BCbc2C279D8d70')
     usdc = Contract('0xA7D7079b0FEaD91F3e65f86E8915Cb59c1a4C664') # usdc.e
     usdt = Contract('0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7')
 
@@ -84,6 +84,13 @@ elif chain.id == Network.Harmony:
     dai  = Contract('0xEf977d2f931C1978Db5F6747666fa1eACB0d0339')
     usdc = Contract('0x985458E523dB3d53125813eD68c274899e9DfAb4')
     usdt = Contract('0x3C2B8Be99c50593081EAA2A724F0B8285F5aba8f')
+
+elif chain.id == Network.Aurora:
+    weth = Contract('0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB')
+    wbtc = Contract('0xF4eB217Ba2454613b15dBdea6e5f22276410e89e')
+    dai  = Contract('0xe3520349F477A5F6EB06107066048508498A291b')
+    usdc = Contract('0xB12BFcA5A55806AaF64E99521918A4bf0fC40802')
+    usdt = Contract('0x4988a896b1227218e4A686fdE5EabdcAbd91571f')
 
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
