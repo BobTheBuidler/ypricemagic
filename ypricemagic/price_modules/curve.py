@@ -99,7 +99,8 @@ class CurveRegistry(metaclass=Singleton):
 
         self.pools = {pool for pools in self.metapools_by_factory.values() for pool in pools}
 
-        ''' will probably get rid of
+        num_pools_from_mbf = len(self.pools)
+
         # fetch pools from the latest registry
         log_filter = create_filter(str(self.registry))
         new_entries = log_filter.get_new_entries()
@@ -110,7 +111,11 @@ class CurveRegistry(metaclass=Singleton):
         for event in decode_logs(new_entries):
             if event.name == 'PoolAdded':
                 self.pools.add(event['pool'])
-        '''
+
+        num_pools_final = len(self.pools)
+        if num_pools_final - num_pools_from_mbf > 0:
+            logger.warn('first method missed a few pools, but we have them now. Investigate')
+        
         logger.info(f'loaded {len(self.pools)} pools')
 
     def __str__(self) -> str:
