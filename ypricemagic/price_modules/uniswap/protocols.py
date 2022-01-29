@@ -71,6 +71,9 @@ UNISWAPS = {
     Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
     },
+    Network.Aurora: {
+        "trisolaris":       {"factory": "0xc66F594268041dB60507F00703b152492fb176E7", "router": "0x2CB45Edb4517d5947aFdE3BEAbF95A582506858B"},
+    }
 }.get(chain.id, {})
 
 
