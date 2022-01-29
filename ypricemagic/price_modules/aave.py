@@ -45,16 +45,20 @@ class Aave:
         if len(v2_pools):
             calls_v2 = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
             reserves_v2 = {pool: reserves for pool, reserves in Multicall(calls_v2, _w3=web3)().items()}
-            calls_v2 = [
-                Call(
-                    v2_pool,
-                    ['getReserveData(address)((uint,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
-                    [[v2_pool + reserve, None]]
-                )
-                for v2_pool, reserves in reserves_v2.items() for reserve in reserves
-            ]
-            self.atokens_v2 = [reserve[7] for reserve in Multicall(calls_v2, _w3=web3)().values()]
-            logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
+
+            try:
+                calls_v2 = [
+                    Call(
+                        v2_pool,
+                        ['getReserveData(address)((uint,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
+                        [[v2_pool + reserve, None]]
+                    )
+                    for v2_pool, reserves in reserves_v2.items() for reserve in reserves
+                ]
+                self.atokens_v2 = [reserve_data[7] for reserve_data in Multicall(calls_v2, _w3=web3)().values()]
+                logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
+            except TypeError: # TODO figure out what to do about non verified aave markets
+                self.atokens_v2 = []
 
     @log(logger)
     @lru_cache
