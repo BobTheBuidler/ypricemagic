@@ -4,7 +4,7 @@ import logging
 from functools import cached_property
 from typing import Dict, List
 
-from brownie import chain, convert, web3
+from brownie import chain, convert, web3, Contract as _Contract
 from brownie.convert.datatypes import EthAddress, HexBytes
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
@@ -14,6 +14,7 @@ from y.decorators import continue_on_revert, log
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           NonStandardERC20)
 from y.networks import Network
+from ypricemagic.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from ypricemagic.price_modules.uniswap.protocols import (ROUTER_TO_FACTORY,
                                                          ROUTER_TO_PROTOCOL,
                                                          special_paths)
@@ -29,6 +30,11 @@ class UniswapRouterV2:
     def __init__(self, router_address) -> None:
         self.address = convert.to_address(router_address)
         self.factory = ROUTER_TO_FACTORY[self.address]
+
+        # we need the contract object cached in brownie so we can decode logs properly
+        try: Contract(self.factory)
+        except ContractNotVerified: _Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
+
         self.label = ROUTER_TO_PROTOCOL[self.address]
         self.special_paths = special_paths(self.address)
         try:
