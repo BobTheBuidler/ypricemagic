@@ -120,7 +120,7 @@ class CurveRegistry(metaclass=Singleton):
     @log(logger)
     def registry(self):
         try: return Contract(self.identifiers[0][-1])
-        except IndexError: return raw_call(self.address_provider, 'get_registry()', output='address')
+        except IndexError: return Contract(raw_call(self.address_provider, 'get_registry()', output='address'))
 
     @property
     @ttl_cache(ttl=3600)
