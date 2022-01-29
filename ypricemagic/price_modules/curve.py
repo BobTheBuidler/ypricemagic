@@ -4,6 +4,7 @@ from functools import lru_cache
 from itertools import islice
 
 from brownie import ZERO_ADDRESS, chain
+from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from y.constants import dai
 from y.contracts import Contract, Singleton
@@ -69,7 +70,7 @@ OVERRIDES = {
 class CurveRegistry(metaclass=Singleton):
     def __init__(self):
         try: self.address_provider = Contract(ADDRESS_PROVIDER)
-        except ContractNotVerified:
+        except (ContractNotFound, ContractNotVerified):
             raise UnsupportedNetwork("curve is not supported on this network")
 
         if chain.id == Network.Mainnet:
@@ -99,8 +100,6 @@ class CurveRegistry(metaclass=Singleton):
 
         self.pools = {pool for pools in self.metapools_by_factory.values() for pool in pools}
 
-        num_pools_from_mbf = len(self.pools)
-
         # fetch pools from the latest registry
         log_filter = create_filter(str(self.registry))
         new_entries = log_filter.get_new_entries()
@@ -112,8 +111,7 @@ class CurveRegistry(metaclass=Singleton):
             if event.name == 'PoolAdded':
                 self.pools.add(event['pool'])
 
-        num_pools_final = len(self.pools)
-        if num_pools_final - num_pools_from_mbf > 0:
+        if len(self.pools) - sum(len(pools) for pools in self.metapools_by_factory.values()) > 0:
             logger.warn('first method missed a few pools, but we have them now. Investigate')
         
         logger.info(f'loaded {len(self.pools)} pools')
@@ -124,7 +122,8 @@ class CurveRegistry(metaclass=Singleton):
     @property
     @log(logger)
     def registry(self):
-        return Contract(self.identifiers[0][-1])
+        try: return Contract(self.identifiers[0][-1])
+        except IndexError: return raw_call(self.address_provider, 'get_registry()', output='address')
 
     @property
     @ttl_cache(ttl=3600)
