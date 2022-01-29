@@ -68,6 +68,9 @@ UNISWAPS = {
         "yeti":             {"factory": "0x58C8CD291Fa36130119E6dEb9E520fbb6AcA1c3a", "router": "0x262DcFB36766C88E6A7a2953c16F8defc40c378A"},
         "canary":           {"factory": "0xCFBA329d49C24b70F3a8b9CC0853493d4645436b", "router": "0x06f8ED60393AC6A4B16900273C9313222dfe9940"},
     },
+    Network.Arbitrum: {
+        "sushiswap":        {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
+    },
     Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
     },
