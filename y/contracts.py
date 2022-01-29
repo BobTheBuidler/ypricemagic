@@ -5,7 +5,7 @@ from typing import List, Union
 
 from brownie import Contract as _Contract
 from brownie import chain, web3
-from brownie.exceptions import CompilerError
+from brownie.exceptions import CompilerError, ContractNotFound
 from multicall import Call, Multicall
 from ypricemagic.interfaces.ERC20 import ERC20ABI
 
@@ -48,8 +48,10 @@ def contract_creation_block(address) -> int:
         except ValueError as e:
             if 'missing trie node' in str(e):
                 logger.critical('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
-                lo = mid
+            elif 'Server error: account aurora does not exist while viewing' in str(e):
+                logger.critical(str(e))
             else: raise
+            lo = mid
     return hi if hi != height else None
 
 class Singleton(type):
@@ -72,12 +74,17 @@ def Contract(address):
     with _contract_lock:
         try: return _contract(address)
         except CompilerError as e: raise MessedUpBrownieContract(address, str(e))
+        except ConnectionError as e:
+            if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
+                if web3.eth.get_code(address): raise ContractNotVerified(address)
+                else: raise ContractNotFound(address)
+            else: raise
         except IndexError as e:
             if 'list index out of range' in str(e): raise MessedUpBrownieContract(address, str(e))
             else: raise
         except ValueError as e:
             if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
-            if "invalid literal for int() with base 16" in str(e): raise MessedUpBrownieContract(address, str(e))
+            elif "invalid literal for int() with base 16" in str(e): raise MessedUpBrownieContract(address, str(e))
             else: raise
 
 @log(logger)
