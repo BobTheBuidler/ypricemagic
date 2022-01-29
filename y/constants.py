@@ -87,10 +87,10 @@ elif chain.id == Network.Harmony:
 
 elif chain.id == Network.Aurora:
     weth = Contract('0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB')
-    wbtc = Contract('0xF4eB217Ba2454613b15dBdea6e5f22276410e89e')
-    dai  = Contract('0xe3520349F477A5F6EB06107066048508498A291b')
-    usdc = Contract('0xB12BFcA5A55806AaF64E99521918A4bf0fC40802')
-    usdt = Contract('0x4988a896b1227218e4A686fdE5EabdcAbd91571f')
+    wbtc = _Contract.from_abi('ERC20 [forced]','0xF4eB217Ba2454613b15dBdea6e5f22276410e89e',ERC20ABI)
+    dai  = _Contract.from_abi('ERC20 [forced]','0xe3520349F477A5F6EB06107066048508498A291b',ERC20ABI)
+    usdc = _Contract.from_abi('ERC20 [forced]','0xB12BFcA5A55806AaF64E99521918A4bf0fC40802',ERC20ABI)
+    usdt = _Contract.from_abi('ERC20 [forced]','0x4988a896b1227218e4A686fdE5EabdcAbd91571f',ERC20ABI)
 
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
