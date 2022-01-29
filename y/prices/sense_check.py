@@ -94,6 +94,12 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501", # renbtc
 
         "0xd6070ae98b8069de6B494332d1A1a81B6179D960", # bifi
+    ],
+    Network.Arbitrum: [
+        # eth and eth-like
+        weth.address,
+        # btc and btc-like
+        wbtc.address,
     ]
 }.get(chain.id, [])
 
