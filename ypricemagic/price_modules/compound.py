@@ -63,7 +63,6 @@ class Comptroller:
 
 class Compound:
     def __init__(self) -> None:
-        if len(TROLLERS) == 0: return 
         self.trollers = {
             protocol: Comptroller(troller)
             for protocol, troller
