@@ -153,7 +153,7 @@ WRAPPED_GAS_COIN = {
     Network.BinanceSmartChain:  "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c",
     Network.Polygon:            "0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270",
     Network.Fantom:             "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
-    #Network.Arbitrum:          "",
+    Network.Arbitrum:           "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
     Network.Avalanche:          "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
 }.get(chain.id)
 
