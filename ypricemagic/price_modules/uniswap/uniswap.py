@@ -90,6 +90,7 @@ class Uniswap:
     def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
         token_in = convert.to_address(token_in)
         deepest_pool_by_router = self.deepest_routers(token_in, block=block)
+        if len(deepest_pool_by_router) == 0: return
 
         deepest_router = None
         deepest_router_balance = 0
