@@ -73,7 +73,8 @@ def call_reverted(e: Exception) -> bool:
         'No data was returned - the call likely reverted',
         'invalid opcode: opcode 0xfe not defined',
         'Tried to read 32 bytes.  Only got 0 bytes',
-        'invalid jump destination'
+        'invalid jump destination',
+        'error processing call Revert',
     ]
     return any(trigger in str(e) for trigger in triggers)
 
