@@ -110,9 +110,6 @@ class CurveRegistry(metaclass=Singleton):
         for event in decode_logs(new_entries):
             if event.name == 'PoolAdded':
                 self.pools.add(event['pool'])
-
-        if len(self.pools) - sum(len(pools) for pools in self.metapools_by_factory.values()) > 0:
-            logger.warn('first method missed a few pools, but we have them now. Investigate')
         
         logger.info(f'loaded {len(self.pools)} pools')
 
