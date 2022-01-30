@@ -21,8 +21,11 @@ v1_pools = {
 
 v2_pools = {
     Network.Mainnet: [
-        "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9", # aave v2
-        "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB", # aave amm v2
+        "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9", # aave
+        "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB", # aave amm
+    ],
+    Network.Polygon: [
+        "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf", # aave
     ],
     Network.Avalanche: [
         "0x70BbE4A294878a14CB3CDD9315f5EB490e346163", # blizz
