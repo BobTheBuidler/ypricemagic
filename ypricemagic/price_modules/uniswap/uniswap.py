@@ -84,7 +84,16 @@ class Uniswap:
         # if known routers do not support `token_in`
         if router is None: return None
 
-        return router.get_price(token_in, block=block)
+        price = router.get_price(token_in, block=block)
+        if price: return price
+
+        # if for some reason we fail to fetch price from deepest router, try other routers for price
+        # TODO figure out why this is happening in the first place, this could be handled better
+        if price is None:
+            for router in self.deepest_routers(token_in, block=block):
+                price = router.get_price(token_in, block=block)
+                if price: return price
+
     
 
     def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
