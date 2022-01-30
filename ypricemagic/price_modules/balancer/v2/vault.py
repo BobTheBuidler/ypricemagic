@@ -1,3 +1,4 @@
+from functools import lru_cache
 import logging
 
 from y.contracts import Contract, build_name
@@ -18,6 +19,7 @@ class BalancerV2Vault:
         return self.contract.getPoolTokens(pool_id, block_identifier = block)
 
     @log(logger)
+    @lru_cache
     def list_pools(self, block=None):
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
         events = decode_logs(get_logs_asap(self.address, topics, to_block=block))
