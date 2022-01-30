@@ -24,7 +24,7 @@ v2_pools = {
         "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9", # aave v2
         "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB", # aave amm v2
     ],
-    Network.Arbitrum: [
+    Network.Avalanche: [
         "0x70BbE4A294878a14CB3CDD9315f5EB490e346163", # blizz
     ]
 }.get(chain.id, [])
