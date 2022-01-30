@@ -40,7 +40,7 @@ UNISWAPS = {
     Network.Polygon: {
         "quickswap":        {"factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32", "router": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"},
         "sushi":            {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
-        "dfyn":             {"factory": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B", "router": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"},
+        "dfyn":             {"factory": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B", "router": "0xA102072A4C07F06EC3B4900FDC4C7B80b6c57429"},
         "wault":            {"factory": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef", "router": "0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"},
         "cometh":           {"factory": "0x800b052609c355cA8103E06F022aA30647eAd60a", "router": "0x93bcDc45f7e62f89a8e901DC4A0E2c6C427D9F25"},
         "apeswap":          {"factory": "0xCf083Be4164828f00cAE704EC15a36D711491284", "router": "0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"},
