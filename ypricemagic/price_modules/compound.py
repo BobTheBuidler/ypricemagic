@@ -33,6 +33,10 @@ TROLLERS = {
     Network.Avalanche: {
         "vee":              "0xA67DFeD73025b0d61F2515c531dd8D25D4Cfd0Db",
         "vee2":             "0x43AAd7d8Bc661dfA70120865239529ED92Faa054",
+    },
+    Network.Arbitrum: {
+        "cream":            "0xbadaC56c9aca307079e8B8FC699987AAc89813ee",
+        "neku":             "0xD5B649c7d27C13a2b80425daEe8Cb6023015Dc6B",
     }
 }.get(chain.id, {})
 
