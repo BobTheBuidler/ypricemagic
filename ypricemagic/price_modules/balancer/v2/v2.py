@@ -16,6 +16,12 @@ BALANCER_V2_VAULTS = {
     Network.Fantom: [
         '0x20dd72Ed959b6147912C2e529F0a0C651c33c9ce',
     ],
+    Network.Polygon: [
+        '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
+    ],
+    Network.Arbitrum: [
+        '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
+    ],
 }
 
 BALANCER_V2_VAULTS = [BalancerV2Vault(vault) for vault in BALANCER_V2_VAULTS.get(chain.id, [])]
