@@ -58,6 +58,7 @@ UNISWAPS = {
         "jetswap":          {"factory": "0xf6488205957f0b4497053d6422F49e27944eE3Dd", "router": "0x845E76A8691423fbc4ECb8Dd77556Cb61c09eE25"},
         "wakaswap":         {"factory": "0xB2435253C71FcA27bE41206EB2793E44e1Df6b6D", "router": "0x7B17021FcB7Bc888641dC3bEdfEd3734fCaf2c87"},
         "hyperswap":        {"factory": "0x991152411A7B5A14A8CF0cDDE8439435328070dF", "router": "0x53c153a0df7E050BbEFbb70eE9632061f12795fB"},
+        "dfyn":             {"factory": "0xd9820a17053d6314B20642E465a84Bf01a3D64f5", "router": "0x2724B9497b2cF3325C6BE3ea430b3cec34B5Ef2d"},
     },
     Network.Avalanche: {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
@@ -70,12 +71,16 @@ UNISWAPS = {
     },
     Network.Arbitrum: {
         "sushiswap":        {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
+        "dfyn":             {"factory": "0xA102072A4C07F06EC3B4900FDC4C7B80b6c57429", "router": "0xaedE1EFe768bD8A1663A7608c63290C60B85e71c"},
     },
     Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
     },
     Network.Aurora: {
         "trisolaris":       {"factory": "0xc66F594268041dB60507F00703b152492fb176E7", "router": "0x2CB45Edb4517d5947aFdE3BEAbF95A582506858B"},
+    },
+    Network.OKEx: {
+        "dfyn":             {"factory": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B", "router": "0x34686CBF7229ed0bff2Fbe7ED2CFC916317764f6"},
     }
 }.get(chain.id, {})
 
