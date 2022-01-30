@@ -43,7 +43,8 @@ class BalancerV2Vault:
 
         return deepest_pool['pool'], deepest_pool['balance']
 
-    
+
+@log(logger) 
 def _is_standard_pool(pool: str):
     '''
     Returns `False` if `build_name(pool) in ['ConvergentCurvePool','MetaStablePool']`, else `True`
@@ -51,4 +52,4 @@ def _is_standard_pool(pool: str):
     
     # With `return_None_on_failure=True`, if `build_name(pool)` fails,
     # we can't know for sure that its a standard pool, but... it probably is.
-    build = build_name(pool, return_None_on_failure=True) not in ['ConvergentCurvePool','MetaStablePool']
+    return build_name(pool, return_None_on_failure=True) not in ['ConvergentCurvePool','MetaStablePool']
