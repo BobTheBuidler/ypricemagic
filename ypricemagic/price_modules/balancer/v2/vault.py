@@ -36,7 +36,8 @@ class BalancerV2Vault:
             ct_tokens = len(info[0])
             pool_balances = {info[0][i]: info[1][i] for i in range(ct_tokens)}
             pool_balance = [balance for token, balance in pool_balances.items() if token == token_address]
-
+            if len(pool_balance) == 0: continue
+            
             assert len(pool_balance) == 1
             pool_balance = pool_balance[0]
 
