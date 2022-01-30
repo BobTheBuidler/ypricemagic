@@ -5,6 +5,8 @@ from y import Network
 FAKE_TOKENS = {
     Network.Mainnet: [
         "0xB1D75F4Fb67c7e93f05890f5eEAC2F3884991FF9", # fake weth
+        "0xcD545222eBf01143c1188bF712ee5e89c4278Afa", # fake dai
+        "0x6B2751Cd339217B2CAeD3485fc7a92256681053F", # fake tusd
         "0x224e13dF4b4DbF41820ec848B19bB6f015F8bf7b", # fake musd
         "0x719A75aa3Dc05DEF57Be2F3eC0f4098475631D1c", # fake mta
     ],
