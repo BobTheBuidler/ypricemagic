@@ -26,6 +26,7 @@ TROLLERS = {
     },
     Network.Polygon: {
         "easyfi":           "0xcb3fA413B23b12E402Cfcd8FA120f983FB70d8E8",
+        "apple":            "0x2840AF6f287d329237c8addc5500C349E041C5BB",
     },
     Network.Fantom: {
         "cream":            "0x4250A6D3BD57455d7C6821eECb6206F507576cD2",
