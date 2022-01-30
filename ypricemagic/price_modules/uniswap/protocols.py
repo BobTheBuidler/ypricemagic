@@ -42,7 +42,7 @@ UNISWAPS = {
         "sushi":            {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
         "dfyn":             {"factory": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B", "router": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff"},
         "wault":            {"factory": "0xa98ea6356A316b44Bf710D5f9b6b4eA0081409Ef", "router": "0x3a1D87f206D12415f5b0A33E786967680AAb4f6d"},
-        "cometh":           {"factory": "0x800b052609c355cA8103E06F022aA30647eAd60a", "router": "0x28E73C83C0f85784543300B96A1A3c2e900F7a35"},
+        "cometh":           {"factory": "0x800b052609c355cA8103E06F022aA30647eAd60a", "router": "0x93bcDc45f7e62f89a8e901DC4A0E2c6C427D9F25"},
         "apeswap":          {"factory": "0xCf083Be4164828f00cAE704EC15a36D711491284", "router": "0xC0788A3aD43d79aa53B09c2EaCc313A787d1d607"},
         "jetswap":          {"factory": "0x668ad0ed2622C62E24f0d5ab6B6Ac1b9D2cD4AC7", "router": "0x5C6EC38fb0e2609672BDf628B1fD605A523E5923"},
         "polyzap":          {"factory": "0x34De5ce6c9a395dB5710119419A7a29baa435C88", "router": "0x4aAEC1FA8247F85Dc3Df20F4e03FEAFdCB087Ae9"},
