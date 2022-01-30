@@ -78,45 +78,44 @@ class Uniswap:
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
         """
-        if protocol: router = self.routers[protocol]
-        else: router = self.deepest_router(token_in, block)
+        token_in = convert.to_address(token_in)
 
-        # if known routers do not support `token_in`
-        if router is None: return None
+        if protocol:
+            return self.routers[protocol].get_price(token_in, block=block)
 
-        price = router.get_price(token_in, block=block)
-        if price: return price
-
-        # if for some reason we fail to fetch price from deepest router, try other routers for price
-        # TODO figure out why this is happening in the first place, this could be handled better
-        if price is None:
-            for router in self.deepest_routers(token_in, block=block):
-                price = router.get_price(token_in, block=block)
-                if price: return price
-
+        for router in self.deepest_routers(token_in, block=block):
+            # tries each known router from most to least liquid
+            # returns the first price we get back, almost always from the deepest router
+            price = router.get_price(token_in, block=block)
+            if price: return price
     
 
+    @log(logger)
     def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
         token_in = convert.to_address(token_in)
-        deepest_pool_by_router = self.deepest_routers(token_in, block=block)
-        if len(deepest_pool_by_router) == 0: return
 
-        deepest_router = None
-        deepest_router_balance = 0
-        reserves = multicall_same_func_no_input(deepest_pool_by_router.values(), 'getReserves()((uint112,uint112,uint32))', block=block)
-        for router, pool, reserves in zip(deepest_pool_by_router.keys(),deepest_pool_by_router.values(),reserves):
-            if reserves is None: continue
-            if token_in == router.pools[pool]['token0']: reserve = reserves[0]
-            elif token_in == router.pools[pool]['token1']: reserve = reserves[1]
-            if reserve > deepest_router_balance: 
-                deepest_router = router
-                deepest_router_balance = reserve
-        return deepest_router
-    
+        for router in self.deepest_routers(token_in, block=block):
+            return router # will return first router in the dict, or None if no supported routers
 
+
+    @log(logger)
     def deepest_routers(self, token_in: str, block: int = None) -> Dict[UniswapRouterV2,str]:
-        deepest_routers = {router: router.deepest_pool(token_in, block) for router in self.routers.values()}
-        return {router: pool for router, pool in deepest_routers.items() if pool is not None}
+        token_in = convert.to_address(token_in)
+        deepest_pool_by_router = {router: router.deepest_pool(token_in, block) for router in self.routers.values()}
+        deepest_pool_by_router = {router: pool for router, pool in deepest_pool_by_router.items() if pool is not None}
+        reserves = multicall_same_func_no_input(deepest_pool_by_router.values(), 'getReserves()((uint112,uint112,uint32))', block=block)
+        routers_by_depth = {}
+        for router, pool, reserves in zip(deepest_pool_by_router.keys(), deepest_pool_by_router.values(), reserves):
+            if reserves is None: continue
+            if token_in == router.pools[pool]['token0']:
+                routers_by_depth[reserves[0]] = router
+            elif token_in == router.pools[pool]['token1']:
+                routers_by_depth[reserves[1]] = router
+        return {
+            routers_by_depth[balance]: deepest_pool_by_router[routers_by_depth[balance]]
+            for balance in sorted(routers_by_depth.keys(), reverse=True)
+        }
+
 
 uniswap = Uniswap()
 
