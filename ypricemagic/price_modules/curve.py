@@ -63,6 +63,9 @@ OVERRIDES = {
     },
     Network.Fantom: {
         "0x58e57cA18B7A47112b877E31929798Cd3D703b0f": "0x3a1659ddcf2339be3aea159ca010979fb49155ff", # crv3crypto
+    },
+    Network.Arbitrum: {
+        "0x3dFe1324A0ee9d86337d06aEB829dEb4528DB9CA": "0xA827a652Ead76c6B0b3D19dba05452E06e25c27e", # crvEURSUSD
     }
 }.get(chain.id, {})
 
