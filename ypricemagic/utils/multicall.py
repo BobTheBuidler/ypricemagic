@@ -53,12 +53,13 @@ def multicall_same_func_no_input(
     addresses: list,
     method: str, 
     block = None,
-    apply_func = None
+    apply_func = None,
+    return_None_on_failure: bool = False
     ):
 
     addresses = _clean_addresses(addresses)
     calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
-    return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
+    return [result for result in Multicall(calls, block_id=block, _w3=web3, require_success=(not return_None_on_failure))().values()]
 
 
 @log(logger)
