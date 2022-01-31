@@ -53,7 +53,7 @@ class Aave:
                 calls_v2 = [
                     Call(
                         v2_pool,
-                        ['getReserveData(address)((uint,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
+                        ['getReserveData(address)((uint256,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
                         [[v2_pool + reserve, None]]
                     )
                     for v2_pool, reserves in reserves_v2.items() for reserve in reserves
