@@ -182,7 +182,7 @@ class UniswapRouterV2:
         except KeyError: return None
 
         if token_address == WRAPPED_GAS_COIN: return self.deepest_stable_pool(token_address)
-        reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block)
+        reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
 
         deepest_pool = None
         deepest_pool_balance = 0
