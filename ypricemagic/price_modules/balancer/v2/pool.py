@@ -5,7 +5,7 @@ from functools import cached_property
 from brownie import web3
 from joblib import Parallel, delayed
 from multicall import Call
-from y.constants import usdc, weth
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, usdc
 from y.decorators import log
 from ypricemagic import magic
 from ypricemagic.classes import ERC20
@@ -53,9 +53,9 @@ class BalancerV2Pool(ERC20):
         pool_tokens = list(zip(token_balances.keys(),token_balances.values(), weights))
         wethBal, usdcBal, pairedTokenBal = None, None, None
         for pool_token, balance, weight in pool_tokens:
-            if pool_token == usdc:
+            if pool_token in STABLECOINS:
                 usdcBal, usdcWeight = balance, weight
-            if pool_token == weth:
+            if pool_token == WRAPPED_GAS_COIN:
                 wethBal, wethWeight = balance, weight
             if pool_token == token_address:
                 tokenBal, tokenWeight = balance, weight
@@ -68,7 +68,7 @@ class BalancerV2Pool(ERC20):
             tokenValueUSD = usdcValueUSD / usdcWeight * tokenWeight
             tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
         elif wethBal:
-            wethValueUSD = (wethBal / 10 ** 18) * magic.get_price(weth, block)
+            wethValueUSD = (wethBal / 10 ** 18) * magic.get_price(WRAPPED_GAS_COIN, block)
             tokenValueUSD = wethValueUSD / wethWeight * tokenWeight
             tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
         elif pairedTokenBal:
