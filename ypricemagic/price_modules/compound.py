@@ -40,6 +40,7 @@ TROLLERS = {
     Network.Arbitrum: {
         "cream":            "0xbadaC56c9aca307079e8B8FC699987AAc89813ee",
         "neku":             "0xD5B649c7d27C13a2b80425daEe8Cb6023015Dc6B",
+        "hund":             "0x3C13b172bf8BE5b873EB38553feC50F78c826284",
     }
 }.get(chain.id, {})
 
