@@ -2,10 +2,12 @@ import logging
 from collections import defaultdict
 from functools import lru_cache
 from itertools import islice
+from typing import Dict, List
 
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
+from y.classes.erc20 import ERC20
 from y.classes.singleton import Singleton
 from y.constants import dai
 from y.contracts import Contract
@@ -121,7 +123,7 @@ class CurveRegistry(metaclass=Singleton):
         
         logger.info(f'loaded {len(self.pools)} pools')
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return "CurveRegistry()"
 
     @property
@@ -171,16 +173,16 @@ class CurveRegistry(metaclass=Singleton):
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def _pool_from_lp_token(self, token):
+    def _pool_from_lp_token(self, token: str) -> str:
         return self.registry.get_pool_from_lp_token(token)
 
     @log(logger)
-    def __contains__(self, token):
+    def __contains__(self, token: str) -> bool:
         return self.get_pool(token) is not None
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def get_pool(self, token):
+    def get_pool(self, token: str) -> str:
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
@@ -210,7 +212,7 @@ class CurveRegistry(metaclass=Singleton):
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def get_coins(self, pool):
+    def get_coins(self, pool) -> List[ERC20]:
         """
         Get coins of pool.
         """
@@ -230,11 +232,11 @@ class CurveRegistry(metaclass=Singleton):
                 return_None_on_failure=True
                 )
 
-        return [coin for coin in coins if coin not in {None, ZERO_ADDRESS}]
+        return [ERC20(coin) for coin in coins if coin not in {None, ZERO_ADDRESS}]
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def get_underlying_coins(self, pool):
+    def get_underlying_coins(self, pool: str) -> List[ERC20]:
         factory = self.get_factory(pool)
         
         if factory:
@@ -251,24 +253,23 @@ class CurveRegistry(metaclass=Singleton):
         if set(coins) == {ZERO_ADDRESS}:
             return self.get_coins(pool)
 
-        return [coin for coin in coins if coin != ZERO_ADDRESS]
+        return [ERC20(str(coin)) for coin in coins if coin != ZERO_ADDRESS]
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def get_coins_decimals(self, pool):
+    def get_coins_decimals(self, pool: str) -> List[int]:
         factory = self.get_factory(pool)
         source = Contract(factory) if factory else self.registry
         coins_decimals = source.get_decimals(pool)
 
         # pool not in registry
         if not any(coins_decimals):
-            coins = self.get_coins(pool)
-            coins_decimals = decimals(coins)
+            coins_decimals = decimals(self.get_coins(pool))
         
         return [dec for dec in coins_decimals if dec != 0]
 
     @log(logger)
-    def get_balances(self, pool, block=None):
+    def get_balances(self, pool: str, block=None) -> Dict[ERC20, int]:
         """
         Get {token: balance} of liquidity in the pool.
         """
@@ -300,8 +301,7 @@ class CurveRegistry(metaclass=Singleton):
         Get total value in Curve pool.
         """
         balances = self.get_balances(pool, block=block)
-        if balances is None:
-            return None
+        if balances is None: return None
 
         return sum(
             balances[coin] * magic.get_price(coin, block=block) for coin in balances
@@ -309,37 +309,50 @@ class CurveRegistry(metaclass=Singleton):
 
     @log(logger)
     @ttl_cache(maxsize=None, ttl=600)
-    def get_price(self, token, block=None):
+    def get_price(self, token: str, block: int = None) -> float:
         pool = self.get_pool(token)
 
         # crypto pools can have different tokens, use slow method
-        if self.oracle(pool):
-            tvl = self.get_tvl(pool, block=block)
-            if tvl is None:
-                return None
-            supply = _totalSupply(token, block) / 1e18
-            price = tvl / supply
-            logger.debug("curve lp -> %s", price)
-            return price
+        if self.oracle(pool): return self.get_price_full(token, block)
 
         # approximate by using the most common base token we find
         coins = self.get_underlying_coins(pool)
-        try:
-            coin = (set(coins) & BASIC_TOKENS).pop()
-        except KeyError:
-            coin = coins[0]
+        try: coin = (set(coins) & BASIC_TOKENS).pop()
+        except KeyError: coin = None
 
-        try: virtual_price = Contract(pool).get_virtual_price(block_identifier=block) / 1e18
+        virtual_price = self.virtual_price_readable(token, block)
+        if virtual_price and coin: return virtual_price * magic.get_price(coin, block)
+        else: return self.get_price_full(token, block)
+    
+    @log(logger)
+    def get_price_full(self, token: str, block: int = None) -> float:
+        pool = self.get_pool(token)
+        tvl = self.get_tvl(pool, block=block)
+        if tvl is None: return None
+        return tvl / ERC20(token).total_supply_readable(block)
+
+    @log(logger)
+    def virtual_price(self, token: str, block: int = None) -> int:
+        pool = self.get_pool(token)
+        try: return Contract(pool).get_virtual_price(block_identifier=block)
         except Exception as e:
-            # get_virtual_price can revert if totalSupply == 0
-            if call_reverted(e) and _totalSupply(pool) == 0: virtual_price = False
+            if call_reverted(e): return False
             else: raise
-        
-        # if `get_virtual_price` reverted, totalSupply == 0, which means tvl == 0 and price == 0
-        price = 0 if not virtual_price else virtual_price * magic.get_price(coin, block)
 
-        logger.debug("curve lp -> %s", price)
-        return price
+    @log(logger)
+    def virtual_price_readable(self, token: str, block: int = None) -> float:
+        virtual_price = self.virtual_price(token, block)
+        if virtual_price is None: return None
+        return virtual_price / 1e18
+    
+    @log(logger)
+    def oracle(self, pool):
+        '''
+        If `pool` has method `price_oracle`, returns price_oracle address.
+        Else, returns `None`.
+        '''
+        response = raw_call(pool, 'price_oracle()', output='address', return_None_on_failure=True)
+        return response if response != ZERO_ADDRESS else None
 
     @log(logger)
     def calculate_boost(self, gauge, addr, block=None):
@@ -411,15 +424,6 @@ class CurveRegistry(metaclass=Singleton):
             "crv apy": rate * crv_price,
             "token price": token_price,
         }
-    
-    @log(logger)
-    def oracle(self, pool):
-        '''
-        If `pool` has method `price_oracle`, returns price_oracle address.
-        Else, returns `None`.
-        '''
-        response = raw_call(pool, 'price_oracle()', output='address', return_None_on_failure=True)
-        return response if response != ZERO_ADDRESS else None
 
 
 try: curve = CurveRegistry()
