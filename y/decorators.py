@@ -26,7 +26,7 @@ def log(logger):
             fn_name = func.__name__
 
             if len(kwargs) == 0: describer_string = f'{fn_name}{tuple([*args])}'
-            else: describer_string = f'{fn_name}{tuple([*args])}, kwargs: {[*kwargs]}'
+            else: describer_string = f'{fn_name}{tuple([*args])}, kwargs: {[*kwargs.items()]}'
             
             logger.debug(f'Fetching {describer_string}')
             func_returns = func(*args,**kwargs)
