@@ -5,11 +5,12 @@ from typing import Tuple
 
 from brownie import web3
 from multicall import Call, Multicall
+from y.classes.common import WeiBalance
 from y.contracts import Contract
 from y.decorators import log
 from y.erc20 import ERC20
-from y.exceptions import (ContractNotVerified, MessedUpBrownieContract, NonStandardERC20,
-                          NotAUniswapV2Pool, call_reverted)
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+                          NonStandardERC20, NotAUniswapV2Pool, call_reverted)
 from ypricemagic.utils.multicall import fetch_multicall
 from ypricemagic.utils.raw_calls import raw_call
 
@@ -63,7 +64,7 @@ class UniswapPoolV2(ERC20):
     @log(logger)
     def tvl(self, block: int = None) -> float:
         prices = [token.price(block=block, return_None_on_failure=True) for token in self.tokens]
-        vals = [None if price is None else reserve * price for reserve, price in zip(self.reserves(block=block), prices)]
+        vals = [None if price is None else reserve.readable * price for reserve, price in zip(self.reserves(block=block), prices)]
         if not vals[0] or not vals[1]: vals = _extrapolate_value(vals)
         return sum(vals)
 
