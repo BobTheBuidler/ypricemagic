@@ -3,9 +3,8 @@
 import logging
 from functools import cached_property
 from typing import Dict, List
-
+from collections import defaultdict
 from brownie import chain, convert, web3, Contract as _Contract
-from brownie.convert.datatypes import EthAddress, HexBytes
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
@@ -160,16 +159,11 @@ class UniswapRouterV2:
 
     @cached_property
     def pool_mapping(self) -> Dict[str,Dict[str,str]]:
-        pool_mapping = {}
+        pool_mapping = defaultdict(dict)
         for pool, tokens in self.pools.items():
-            token0, token1 = tokens['token0'], tokens['token1']
-
-            try: pool_mapping[token0][pool] = token1
-            except KeyError: pool_mapping[token0] = {pool: token1}
-
-            try: pool_mapping[token1][pool] = token0
-            except KeyError: pool_mapping[token1] = {pool: token0}
-        
+            token0, token1 = tokens.values()
+            pool_mapping[token0][pool] = token1
+            pool_mapping[token1][pool] = token0
         logger.info(f'Loaded {len(self.pools)} pools supporting {len(pool_mapping)} tokens on {self.label}')
         return pool_mapping
 

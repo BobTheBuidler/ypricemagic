@@ -1,31 +1,35 @@
 
 import logging
-from functools import lru_cache
+from functools import cached_property
+from typing import List, Tuple
 
-from brownie import chain, web3
+from brownie import web3
 from multicall import Call, Multicall
 from y.contracts import Contract
 from y.decorators import log
-from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+from y.erc20 import ERC20
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract, NonStandardERC20,
                           NotAUniswapV2Pool, call_reverted)
-from y.networks import Network
 from ypricemagic.utils.multicall import fetch_multicall
-from ypricemagic.utils.raw_calls import _decimals, raw_call
+from ypricemagic.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
-@lru_cache(maxsize=None)
-class UniswapPoolV2:
-    def __init__(self, pool_address: str) -> None:
-        self.address = pool_address
-        self.decimals = _decimals(self.address, return_None_on_failure=True)
-        if self.decimals is None: raise NotAUniswapV2Pool
-        self.scale = 10 ** self.decimals
-        try: self.factory = raw_call(self.address, 'factory()', output='address')
+
+class UniswapPoolV2(ERC20):
+    def __init__(self, address: str) -> None:
+        super().__init__(address)
+        try: self.decimals
+        except NonStandardERC20: raise NotAUniswapV2Pool        
+    
+    @cached_property
+    @log(logger)
+    def factory(self) -> str:
+        try: raw_call(self.address, 'factory()', output='address')
         except ValueError as e:
             if call_reverted(e): raise NotAUniswapV2Pool
             # `is not a valid ETH address` means we got some kind of response from the chain.
-            # but couldn't convert to address. If there happens to be a goofy but
+            # but couldn't convert to address. If it happens to be a goofy but
             # verified uni fork, maybe we can get factory this way
             okay_errors = ['is not a valid ETH address','invalid opcode','invalid jump destination']
             if any([msg in str(e) for msg in okay_errors]):
@@ -33,8 +37,43 @@ class UniswapPoolV2:
                 except AttributeError: raise NotAUniswapV2Pool
             else: raise
 
+    @cached_property
     @log(logger)
-    def get_pool_details(self, block=None):
+    def tokens(self) -> List[ERC20, ERC20]:
+        token0, token1, supply, reserves = self.get_pool_details()
+        return [ERC20(token0), ERC20(token1)]
+    
+    @log(logger)
+    def token0(self) -> ERC20:
+        return self.tokens[0]
+
+    @log(logger)
+    def token1(self) -> ERC20:
+        return self.tokens[1]
+    
+    @log(logger)
+    def get_price(self, block: int = None) -> float:
+        return self.tvl(block=block) / self.total_supply_readable(block=block)
+    
+    @log(logger)
+    def reserves(self, block: int = None) -> List[int, int]:
+        token0, token1, total_supply, reserves = self.get_pool_details(block)
+        return list(reserves)
+
+    @log(logger)
+    def reserves_readable(self, block: int = None) -> List[float, float]:
+        reserves = self.reserves(block=block)
+        return [reserve / token.scale(block=block) for token, reserve in zip(self.tokens, reserves)]
+
+    @log(logger)
+    def tvl(self, block: int = None) -> float:
+        prices = [token.price(block=block, return_None_on_failure=True) for token in self.tokens]
+        vals = [None if price is None else reserve * price for reserve, price in zip(self.reserves(block=block), prices)]
+        if not vals[0] or not vals[1]: vals = _extrapolate_value(vals)
+        return sum(vals)
+
+    @log(logger)
+    def get_pool_details(self, block: int = None) -> Tuple[str, str, int, Tuple[int, int, int]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
         try: token0, token1, supply, reserves = Multicall(calls, _w3=web3, block_id=block)().values()
@@ -48,10 +87,8 @@ class UniswapPoolV2:
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
         return token0, token1, supply, reserves
 
-        ''' Saving this code for chains without multicall
-         # if your chain does not support multicall
-            token0 = pair.token0(block_identifier = block)
-            token1 = pair.token1(block_identifier = block)
-            supply = pair.totalSupply(block_identifier = block)
-            reserves = pair.getReserves(block_identifier = block)
-        '''
+@log(logger)
+def _extrapolate_value(vals: List[float, float]) -> List[float, float]:
+    if vals[0] and not vals[1]: vals[1] = vals[0]
+    if vals[1] and not vals[0]: vals[0] = vals[1]
+    return vals

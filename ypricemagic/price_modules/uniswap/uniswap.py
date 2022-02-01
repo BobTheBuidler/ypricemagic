@@ -4,15 +4,13 @@ from typing import Dict
 from brownie import convert
 from cachetools.func import ttl_cache
 from y.decorators import log
-from y.exceptions import PriceError, contract_not_verified
-from ypricemagic import magic
+from y.exceptions import contract_not_verified
 from ypricemagic.price_modules.uniswap.protocols import UNISWAPS
 from ypricemagic.price_modules.uniswap.v1 import UniswapV1
 from ypricemagic.price_modules.uniswap.v2.pool import (NotAUniswapV2Pool,
                                                        UniswapPoolV2)
 from ypricemagic.price_modules.uniswap.v2.router import UniswapRouterV2
 from ypricemagic.utils.multicall import multicall_same_func_no_input
-from ypricemagic.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
 
@@ -36,44 +34,18 @@ class Uniswap:
         except NotAUniswapV2Pool: return False
 
     @log(logger)
-    def get_price_v1(self, token_address, block=None):
+    def get_price_v1(self, token_address: str, block: int = None):
         return self.v1.get_price(token_address, block)
     
     @log(logger)
     @ttl_cache(ttl=600)
-    def lp_price(self, token_address: str, block=None):
+    def lp_price(self, token_address: str, block: int = None) -> float:
         """ Get Uniswap/Sushiswap LP token price. """
-        pool = UniswapPoolV2(token_address)
-        token0, token1, supply, reserves = pool.get_pool_details(block)
-        
-        price0 = self.get_price(token0, block=block)
-        price1 = self.get_price(token1, block=block)
-        prices = [price0,price1]
-        scales = [10 ** _decimals(token,block) for token in [token0, token1]]
-        supply = supply / 1e18
-        try: balances = [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
-        except TypeError: # If can't get price via router, try to get from elsewhere
-            if price0 is None:
-                try: price0 = magic.get_price(token0, block)
-                except PriceError: pass
-            if price1 is None:
-                try: price1 = magic.get_price(token1, block)
-                except PriceError: pass
-            prices = [price0,price1]
-            balances = [None,None] # [res / scale * price for res, scale, price in zip(reserves, scales, prices)]
-            if price0:
-                balances[0] = reserves[0] / scales[0] * price0
-            if price1:
-                balances[1] = reserves[1] / scales[1] * price1
-        balances = _extrapolate_balance_if_needed(balances)
-        try: return sum(balances) / supply
-        except TypeError as e:
-            if "unsupported operand type(s) for +: 'int' and 'NoneType'" in str(e): return None
-            else: raise
+        return UniswapPoolV2(token_address).get_price(block=block)
     
     @log(logger)
     @ttl_cache(ttl=36000)
-    def get_price(self, token_in, block=None, protocol=None):
+    def get_price(self, token_in: str, block: int = None, protocol: str = None) -> float:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
@@ -118,14 +90,3 @@ class Uniswap:
 
 
 uniswap = Uniswap()
-
-@log(logger)
-def _extrapolate_balance_if_needed(balances):
-    logger.debug('Attempting to extrapolate balance from one side of the pool to the other')
-    logger.debug(f'Balances: {balances}')
-    if balances[0] and not balances[1]:
-        balances[1] = balances[0]
-    if balances[1] and not balances[0]:
-        balances[0] = balances[1]
-    logger.debug(f'Extrapolated balances: {balances}')
-    return balances
