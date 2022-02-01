@@ -1,7 +1,7 @@
 
 import logging
 from functools import cached_property
-from typing import List, Tuple
+from typing import Tuple
 
 from brownie import web3
 from multicall import Call, Multicall
@@ -39,9 +39,9 @@ class UniswapPoolV2(ERC20):
 
     @cached_property
     @log(logger)
-    def tokens(self) -> List[ERC20, ERC20]:
+    def tokens(self) -> Tuple[ERC20, ERC20]:
         token0, token1, supply, reserves = self.get_pool_details()
-        return [ERC20(token0), ERC20(token1)]
+        return ERC20(token0), ERC20(token1)
     
     @log(logger)
     def token0(self) -> ERC20:
@@ -56,14 +56,9 @@ class UniswapPoolV2(ERC20):
         return self.tvl(block=block) / self.total_supply_readable(block=block)
     
     @log(logger)
-    def reserves(self, block: int = None) -> List[int, int]:
+    def reserves(self, block: int = None) -> Tuple[WeiBalance, WeiBalance]:
         token0, token1, total_supply, reserves = self.get_pool_details(block)
-        return list(reserves)
-
-    @log(logger)
-    def reserves_readable(self, block: int = None) -> List[float, float]:
-        reserves = self.reserves(block=block)
-        return [reserve / token.scale(block=block) for token, reserve in zip(self.tokens, reserves)]
+        return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, self.tokens))
 
     @log(logger)
     def tvl(self, block: int = None) -> float:
@@ -88,7 +83,7 @@ class UniswapPoolV2(ERC20):
         return token0, token1, supply, reserves
 
 @log(logger)
-def _extrapolate_value(vals: List[float, float]) -> List[float, float]:
+def _extrapolate_value(vals: Tuple[float, float]) -> Tuple[float, float]:
     if vals[0] and not vals[1]: vals[1] = vals[0]
     if vals[1] and not vals[0]: vals[0] = vals[1]
     return vals
