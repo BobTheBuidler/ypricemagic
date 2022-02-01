@@ -3,7 +3,7 @@ import logging
 from functools import lru_cache
 
 from brownie import convert
-from y.classes.singleton import Singleton
+from y.classes.singleton import SingletonERC20
 from y.decorators import log
 from y.erc20 import decimals, totalSupply
 from ypricemagic import magic
@@ -11,10 +11,10 @@ from ypricemagic import magic
 logger = logging.getLogger(__name__)
 
 
-class ERC20(metaclass=Singleton):
+class ERC20(metaclass=SingletonERC20):
     def __init__(self, address: str, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self.address = convert.to_address(address)
+        super().__init__(*args, **kwargs)
         pass
 
     @log(logger)
