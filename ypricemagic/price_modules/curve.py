@@ -6,8 +6,9 @@ from itertools import islice
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
+from y.classes.singleton import Singleton
 from y.constants import dai
-from y.contracts import Contract, Singleton
+from y.contracts import Contract
 from y.decorators import log
 from y.erc20 import decimals
 from y.exceptions import ContractNotVerified, UnsupportedNetwork, call_reverted

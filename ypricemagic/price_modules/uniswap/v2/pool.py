@@ -6,9 +6,9 @@ from typing import Tuple
 from brownie import web3
 from multicall import Call, Multicall
 from y.classes.common import WeiBalance
+from y.classes.erc20 import ERC20
 from y.contracts import Contract
 from y.decorators import log
-from y.erc20 import ERC20
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20, NotAUniswapV2Pool, call_reverted)
 from ypricemagic.utils.multicall import fetch_multicall

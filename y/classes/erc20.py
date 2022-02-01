@@ -3,14 +3,17 @@ import logging
 from functools import lru_cache
 
 from brownie import convert
-from decorators import log
+from y.classes.singleton import Singleton
+from y.decorators import log
 from y.erc20 import decimals, totalSupply
 from ypricemagic import magic
 
 logger = logging.getLogger(__name__)
 
-class ERC20:
-    def __init__(self, address: str) -> None:
+
+class ERC20(metaclass=Singleton):
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.address = convert.to_address(address)
         pass
 
@@ -39,3 +42,9 @@ class ERC20:
             block=block, 
             fail_to_None=return_None_on_failure
         )
+
+    def __str__(self) -> str:
+        return self.address
+    
+    def __repr__(self) -> str:
+        return f"<ERC20 '{self.address}'>"

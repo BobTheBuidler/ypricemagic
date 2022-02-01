@@ -9,6 +9,7 @@ from y.decorators import log
 
 logger = logging.getLogger(__name__)
 
+
 class WeiBalance:
     def __init__(self, balance: int, token: Union[str, brownie.Contract, ERC20], block: int = None) -> None:
         self.balance = balance
