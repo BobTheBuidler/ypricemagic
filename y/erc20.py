@@ -53,38 +53,6 @@ def totalSupplyReadable(
         decimal = token_decimals
         return supply / 10 ** decimal
     return [supply / 10 ** decimal for supply, decimal in zip(token_supplys, token_decimals)]
-        
-
-def _choose_appropriate_fn(
-    input: Any,
-    singlecall_fn: Callable,
-    multicall_fn: Callable
-    ):
-
-    input_type = _input_type(input)
-    if input_type == 'single': return singlecall_fn
-    elif input_type == 'multi': return multicall_fn
-
-
-def _input_type(
-    input: Any
-    ) -> str:
-    
-    if type(input) in [list, tuple] or isinstance(input, KeysView): 
-        for value in input: _check_if_supported(value)
-        return 'multi'
-    
-    else:
-        _check_if_supported(input)
-        return 'single'
-
-
-def _check_if_supported(
-    input: Any
-    ) -> bool:
-    
-    if type(input) not in SUPPORTED_INPUT_TYPES:
-        raise TypeError(f'Unsupported input type: {type(input)}')
 
 
 class ERC20:
@@ -117,3 +85,35 @@ class ERC20:
             block=block, 
             fail_to_None=return_None_on_failure
         )
+
+
+def _choose_appropriate_fn(
+    input: Any,
+    singlecall_fn: Callable,
+    multicall_fn: Callable
+    ):
+
+    input_type = _input_type(input)
+    if input_type == 'single': return singlecall_fn
+    elif input_type == 'multi': return multicall_fn
+
+
+def _input_type(
+    input: Any
+    ) -> str:
+    
+    if type(input) in [list, tuple] or isinstance(input, KeysView): 
+        for value in input: _check_if_supported(value)
+        return 'multi'
+    
+    else:
+        _check_if_supported(input)
+        return 'single'
+
+
+def _check_if_supported(
+    input: Any
+    ) -> bool:
+    
+    if type(input) not in SUPPORTED_INPUT_TYPES:
+        raise TypeError(f'Unsupported input type: {type(input)}')
