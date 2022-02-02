@@ -1,13 +1,9 @@
 import logging
-from functools import cached_property, lru_cache
 from typing import Any, Callable, KeysView, List, Tuple, Union
 
 import brownie
-from brownie import convert
-from y.decorators import log
 from brownie.convert.datatypes import EthAddress
 from eth_typing.evm import Address, BlockNumber
-from ypricemagic import magic
 from ypricemagic.utils.multicall import (multicall_decimals,
                                          multicall_totalSupply)
 from ypricemagic.utils.raw_calls import _decimals, _totalSupply
