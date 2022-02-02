@@ -154,6 +154,19 @@ def has_methods(
 
 
 @log(logger)
+def probe(
+    address: str, 
+    methods: List[str],
+    block: int = None
+) -> Any:
+    calls = [Call(address, [method], [[method, None]]) for method in methods]
+    results = Multicall(calls, block_id=block, _w3=web3, require_success=False)().values()
+    results = [result for result in results if result is not None]
+    assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
+    if len(results) == 1: return results[0]
+
+
+@log(logger)
 @memory.cache()
 def build_name(address: str, return_None_on_failure: bool = False) -> str:
     try:
