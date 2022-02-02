@@ -85,7 +85,7 @@ class UniswapRouterV2(ContractBase):
     @log(logger)
     def get_quote(self, amount_in: int, path: List[str], block=None):
 
-        if self._verified:
+        if self._is_cached:
             try: return self.contract.getAmountsOut(amount_in, path, block_identifier=block)
             # TODO figure out how to best handle uni forks with slight modifications
             except ValueError as e:
