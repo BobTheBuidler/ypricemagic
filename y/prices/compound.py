@@ -33,6 +33,7 @@ TROLLERS = {
     Network.Fantom: {
         "cream":            "0x4250A6D3BD57455d7C6821eECb6206F507576cD2",
         "scream":           "0x260E596DAbE3AFc463e75B6CC05d8c46aCAcFB09",
+        "ola":              "0xD65eB596cFb5DE402678a12df651E0e588Dc3A81",
     },
     Network.Avalanche: {
         "vee":              "0xA67DFeD73025b0d61F2515c531dd8D25D4Cfd0Db",
