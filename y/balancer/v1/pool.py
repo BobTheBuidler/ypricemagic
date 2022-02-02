@@ -25,7 +25,7 @@ class BalancerV1Pool(ERC20):
 
     @log(logger)
     def get_tvl(self, block: int = None) -> float:
-        return sum(balance * token.price(block=block) for token, balance in self.get_balances.items())
+        return sum(balance * token.price(block=block) for token, balance in self.get_balances().items())
 
     @log(logger)
     def get_balances(self, block: int = None) -> Dict[ERC20, float]:
