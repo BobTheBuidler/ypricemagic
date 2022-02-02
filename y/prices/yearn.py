@@ -4,7 +4,7 @@ from functools import cached_property, lru_cache
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods, probe
 from y.decorators import log
-from y.exceptions import ContractNotVerified, MessedUpBrownieContract
+from y.exceptions import ContractNotVerified, MessedUpBrownieContract, CantFetchParam
 from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
@@ -50,26 +50,30 @@ class YearnInspiredVault(ERC20):
     def __init__(self, address: str, *args, **kwargs):
         super().__init__(address, *args, **kwargs)
     
+    def __repr__(self) -> str:
+        if self.symbol:
+            return f"<YearnInspiredVault {self.symbol} '{self.address}'>"
+    
     @cached_property
     @log(logger)
     def underlying(self) -> ERC20:
-        underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
-        underlying = probe(self.address, underlying_methods)
+        methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
+        underlying = probe(self.address, methods)
         if underlying: return ERC20(underlying)
+        else: raise CantFetchParam(f'underlying for {self.__repr__()}')
 
     @log(logger)
     @lru_cache
     def share_price(self, block: int = None) -> WeiBalance:
-        share_price_methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
-        share_price = probe(self.address, share_price_methods, block=block)
-        if share_price:
-            return WeiBalance(share_price, self.underlying, block=block)
+        methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
+        share_price = probe(self.address, methods, block=block)
+        if share_price: return WeiBalance(share_price, self.underlying, block=block)
+        else: raise CantFetchParam(f'share_price for {self.__repr__()}')
     
     @log(logger)
     @lru_cache
     def price(self, block: int = None) -> float:
-        underlying = self.underlying(block=block)
-        return self.share_price(block=block).readable * underlying.price(block=block)
+        return self.share_price(block=block).readable * self.underlying.price(block=block)
 
     # saving for later
     '''

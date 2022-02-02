@@ -16,6 +16,9 @@ class UnsupportedNetwork(Exception):
 class NonStandardERC20(Exception):
     pass
 
+class CantFetchParam(Exception):
+    pass
+
 
 # Contracts
 
