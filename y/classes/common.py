@@ -58,8 +58,12 @@ class ERC20(ContractBase):
         return decimals(self.address, block=block)
     
     @log(logger)
-    def scale(self, block: int = None) -> int:
-        return 10 ** self.decimals(block=block)
+    def scale(self) -> int:
+        return 10 ** self.decimals
+    
+    @log(logger)
+    def _scale(self, block: int = None) -> int:
+        return 10 ** self._decimals(block=block)
 
     @log(logger)
     @lru_cache
@@ -68,7 +72,7 @@ class ERC20(ContractBase):
     
     @log(logger)
     def total_supply_readable(self, block: int = None) -> float:
-        return self.total_supply(block=block) / self.scale(block=block)
+        return self.total_supply(block=block) / self._scale(block=block)
 
     @log(logger)
     def price(self, block: int = None, return_None_on_failure: bool = False) -> float:
@@ -93,4 +97,4 @@ class WeiBalance:
     
     @cached_property
     def readable(self) -> float:
-        return self.balance / self.token.scale(block=self.block)
+        return self.balance / self.token._scale(block=self.block)

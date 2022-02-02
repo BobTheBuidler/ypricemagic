@@ -64,7 +64,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     def get_dy(self, token_in: str, token_out: str, block: int = None) -> WeiBalance:
         ix_in = self.get_coin_index(token_in)
         ix_out = self.get_coin_index(token_out)
-        amount_in = ERC20(token_in).scale(block=block)
+        amount_in = ERC20(token_in).scale
         amount_out = self.get_dy(ix_in, ix_out, amount_in)
         return WeiBalance(amount_out, token_out, block=block)
     
