@@ -5,6 +5,7 @@ from multicall import Call, Multicall
 from y.constants import EEE_ADDRESS
 from y.contracts import has_methods
 from y.decorators import log
+from y.exceptions import call_reverted
 from y.networks import Network
 from y.utils.logging import gh_issue_request
 from y.utils.raw_calls import _decimals, raw_call
@@ -61,11 +62,17 @@ class Comptroller:
 
         self.address = convert.to_address(address)
         self.key = key
-        self.markets = {
-            convert.to_address(market)
-            for market
-            in Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
-        }
+        try:
+            self.markets = {
+                convert.to_address(market)
+                for market
+                in Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
+            }
+        except Exception as e:
+            if call_reverted(e): 
+                self.markets = {}
+            else:
+                raise
         logger.info(f"loaded {len(self.markets)} lending markets on {self.key}")
     
 
