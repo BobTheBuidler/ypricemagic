@@ -1,7 +1,10 @@
+from functools import cached_property
 import logging
+from typing import Set
 
 from brownie import chain, convert, web3
 from multicall import Call, Multicall
+from y.classes.common import ContractBase
 from y.constants import EEE_ADDRESS
 from y.contracts import has_methods
 from y.decorators import log
@@ -51,9 +54,8 @@ TROLLERS = {
 }.get(chain.id, {})
 
 
-class Comptroller:
+class Comptroller(ContractBase):
     def __init__(self, address: str = None, key: str = None) -> None:
-
         assert address or key,          'Must provide either an address or a key'
         assert not (address and key),   'Must provide either an address or a key, not both'
 
@@ -62,23 +64,30 @@ class Comptroller:
 
         self.address = convert.to_address(address)
         self.key = key
-        try:
-            self.markets = {
-                convert.to_address(market)
-                for market
-                in Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
-            }
-        except Exception as e:
-            if call_reverted(e): 
-                self.markets = {}
-            else:
-                raise
-        logger.info(f"loaded {len(self.markets)} lending markets on {self.key}")
     
+    def __str__(self) -> str:
+        return f"<Comptroller {self.key} '{self.address}'>"
 
     @log(logger)
     def __contains__(self, token_address: str) -> bool:
         return convert.to_address(token_address) in self.markets
+    
+    @cached_property
+    def markets(self) -> Set[str]:
+        try:
+            response = Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
+        except Exception as e:
+            if not call_reverted(e): raise
+            logger.error(f'had trouble loading markets for {self}')
+            response = set()
+            
+        logger.info(f"loaded {len(response)} lending markets for {self}")
+        return {
+            convert.to_address(market)
+            for market
+            in response
+        }
+
 
 
 class Compound:
