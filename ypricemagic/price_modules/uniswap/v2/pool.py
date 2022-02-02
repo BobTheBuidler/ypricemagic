@@ -20,7 +20,10 @@ class UniswapPoolV2(ERC20):
     def __init__(self, address: str) -> None:
         super().__init__(address)
         try: self.decimals
-        except NonStandardERC20: raise NotAUniswapV2Pool        
+        except NonStandardERC20: raise NotAUniswapV2Pool    
+
+    def __repr__(self) -> str:
+        return f"<UniswapPoolV2 {self.symbol} {self.address}"    
     
     @cached_property
     @log(logger)
