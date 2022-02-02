@@ -34,7 +34,10 @@ class ERC20(ContractBase):
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
-        return f"<ERC20 {self.symbol} '{self.address}'>"
+        if self.symbol is None:
+            return f"<ERC20 '{self.address}'>"
+        else:
+            return f"<ERC20 {self.symbol} '{self.address}'>"
     
     @cached_property
     def symbol(self) -> str:
