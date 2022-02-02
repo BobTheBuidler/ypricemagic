@@ -1,5 +1,5 @@
 import logging
-from brownie import Contract
+from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
 from y.decorators import log
 
@@ -26,7 +26,7 @@ class MessedUpBrownieContract(Exception):
     def __init__(self, address, *args: object) -> None:
         super().__init__(*args)
         # try to recache the contract
-        try: Contract.from_explorer(address)
+        try: BrownieContract.from_explorer(address)
         except CompilerError: pass # didn't work, oh well
         except Exception as e:
             if "invalid literal for int() with base 16: ''" in str(e): pass # didn't work, oh well
