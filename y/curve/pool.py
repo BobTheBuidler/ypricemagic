@@ -89,7 +89,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             else:
                 coins = self.factory.get_coins(self.address)
         else:
-            coins = self.registry.get_underlying_coins(self.address)
+            coins = curve.registry.get_underlying_coins(self.address)
         
         # pool not in registry, not checking for underlying_coins here
         if set(coins) == {ZERO_ADDRESS}:
