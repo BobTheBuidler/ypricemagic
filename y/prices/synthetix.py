@@ -54,7 +54,7 @@ class Synthetix(metaclass=Singleton):
         Check if a token is a synth.
         """
         target = has_method(token, 'target()(address)', return_response=True)
-        return target in self.synths and Contract(target).proxy() == token
+        return target and target in self.synths and Contract(target).proxy() == token
 
     @lru_cache(maxsize=None)
     def get_currency_key(self, token):
