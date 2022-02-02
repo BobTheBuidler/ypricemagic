@@ -1,16 +1,23 @@
+from functools import lru_cache
 import logging
 
 from brownie import web3
 from multicall import Call, Multicall
-from y.contracts import Contract, has_methods
+from yarl import cached_property
+from y.classes.common import ERC20, WeiBalance
+from y.contracts import Contract, has_methods, probe
 from y.decorators import log
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract
 from y.utils.cache import memory
-from y.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
 
-# NOTE: Yearn and Yearn-like
+# NOTE: Yearn and Yearn-inspired
+
+@log(logger)
+def get_price(token: str, block=None):
+    return YearnInspiredVault(token).price(block=block)
+
 
 @log(logger)
 @memory.cache()
@@ -39,36 +46,40 @@ def is_yearn_vault(token):
     return result
 
 
-@log(logger)
-def get_price(token, block=None):
+class YearnInspiredVault(ERC20):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(address, *args, **kwargs)
+    
+    @cached_property
+    @log(logger)
+    def underlying(self) -> ERC20:
+        underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
+        underlying = probe(self.address, underlying_methods)
+        if underlying: return ERC20(underlying)
 
-    share_price_methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
-    calls = [Call(token, [method], [[method, None]]) for method in share_price_methods]
-    results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
-    assert len(results) in [1,0], 'Something is going wrong in yearn vault calculations. Must debug'
-    if len(results) == 1: share_price = results[0]
-
-    underlying_methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
-    calls = [Call(token, [method], [[method, None]]) for method in underlying_methods]
-    results = [result for result in Multicall(calls, _w3=web3, block_id=block, require_success=False)().values() if result is not None]
-    assert len(results) in [1,0], 'Something is going wrong in yearn vault calculations. Must debug'
-    if len(results) == 1: underlying = results[0]
-
-    decimals = _decimals(token)
+    @log(logger)
+    @lru_cache
+    def share_price(self, block: int = None) -> WeiBalance:
+        share_price_methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
+        share_price = probe(self.address, share_price_methods, block=block)
+        if share_price:
+            return WeiBalance(share_price, self.underlying, block=block)
+    
+    @log(logger)
+    @lru_cache
+    def price(self, block: int = None) -> float:
+        try:
+            return [self.share_price(block=block) / self.scale, self.underlying(block=block)]
+        #except TypeError: # when getPricePerShare() reverts due to divide by zero
+        #    price = [1, underlying]
+        except UnboundLocalError: # not supported, try another way
+            return None
 
     # saving for later
     '''
-    vault = Contract(token)
-    if hasattr(vault, 'pricePerShare'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'pricePerShare'],
-            [vault, 'token'],
-            [vault, 'decimals'],
-            block=block
-        )
     elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
         share_price, underlying = fetch_multicall(
             [vault, 'getPricePerFullShare'],
@@ -76,27 +87,7 @@ def get_price(token, block=None):
             block=block
         )
         decimals = 18
-    elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'underlying'],
-            [vault, 'decimals'],
-            block=block
-        )
-    elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'native'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'native'],
-            [vault, 'decimals'],
-            block=block
-        )
-    elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'want'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'want'],
-            [vault, 'decimals'],
-            block=block
-        )
+        
     elif vault.__dict__['_build']['contractName'] == 'BeefyVaultV6Matic':
         share_price, underlying, decimals = fetch_multicall(
             [vault, 'getPricePerFullShare'],
@@ -111,20 +102,7 @@ def get_price(token, block=None):
             [vault, 'decimals'],
             block=block
         )
-    elif hasattr(vault, 'getPricePerShare'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerShare'],
-            [vault, 'token'],
-            [vault, 'decimals'],
-            block=block
-        )
-    elif hasattr(vault,'exchangeRate'):
-        share_price, underlying, decimals = fetch_multicall(
-            [vault,'exchangeRate'],
-            [vault,'underlying'],
-            [vault,'decimals'],
-            block=block
-        )
+        
     elif hasattr(vault,'getSharesToUnderlying'):
         underlying, decimals = fetch_multicall(
             [vault,'token'],
@@ -133,40 +111,3 @@ def get_price(token, block=None):
         )
         share_price = vault.getSharesToUnderlying(10 ** decimals,block_identifier=block)
     '''
-    ''' might need this later for goofy L1s w/o multicall2        
-    else:
-        if hasattr(vault, 'pricePerShare'):
-            share_price = vault.pricePerShare(block_identifier = block)
-            underlying = vault.token(block_identifier = block)
-            decimals = vault.decimals(block_identifier = block)
-        elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
-            share_price = vault.getPricePerFullShare(block_identifier = block)
-            underlying = vault.token(block_identifier = block)
-            decimals = 18
-        elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'underlying'):
-            share_price = vault.getPricePerFullShare(block_identifier = block)
-            underlying = vault.underlying(block_identifier = block)
-            decimals = vault.decimals(block_identifier = block)
-        elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'want'):
-            share_price = vault.getPricePerFullShare(block_identifier = block)
-            underlying = vault.want(block_identifier = block)
-            decimals = vault.decimals(block_identifier = block)
-        elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'native'):
-            share_price = vault.getPricePerFullShare(block_identifier=block)
-            underlying = vault.native(block_identifier=block)
-            decimals = vault.decimals(block_identifier=block)
-        elif hasattr(vault, 'getPricePerShare'):
-            share_price = vault.getPricePerShare(block_identifier = block)
-            underlying = vault.token(block_identifier = block)
-            decimals = vault.decimals(block_identifier = block)
-            '''
-
-    try:
-        price = [share_price / 10 ** decimals, underlying]
-    #except TypeError: # when getPricePerShare() reverts due to divide by zero
-    #    price = [1, underlying]
-    except UnboundLocalError: # not supported, try another way
-        price = None
-    
-    if price: logger.debug("yearn -> %s", price)
-    return price
