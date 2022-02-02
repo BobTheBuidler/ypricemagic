@@ -81,7 +81,7 @@ class Comptroller(ContractBase):
             logger.error(f'had trouble loading markets for {self.__repr__()}')
             response = set()
             
-        logger.info(f"loaded {len(response)} markets for {self.__repr__}")
+        logger.info(f"loaded {len(response)} markets for {self.__repr__()}")
         return {
             convert.to_address(market)
             for market
