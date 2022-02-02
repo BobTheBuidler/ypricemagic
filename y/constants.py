@@ -1,7 +1,8 @@
-from brownie import chain, Contract as _Contract
-from ypricemagic.interfaces.ERC20 import ERC20ABI
+from brownie import Contract as _Contract
+from brownie import chain
 
 from y.contracts import Contract
+from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 
 EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"

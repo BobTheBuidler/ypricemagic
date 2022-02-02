@@ -1,13 +1,6 @@
 import os
 
 from brownie import network
-from ypricemagic import magic
-from ypricemagic.magic import get_price, get_prices
-from ypricemagic.utils.multicall import fetch_multicall
-from ypricemagic.utils.raw_calls import _balanceOf as balanceOf
-from ypricemagic.utils.raw_calls import _balanceOfReadable as balanceOfReadable
-from ypricemagic.utils.raw_calls import _symbol as symbol
-from ypricemagic.utils.raw_calls import raw_call
 
 from y import time
 from y.constants import dai, usdc, wbtc, weth
@@ -18,6 +11,13 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
                           NonStandardERC20, NotABalancerV2Pool,
                           NotAUniswapV2Pool, PriceError, UnsupportedNetwork)
 from y.networks import Network
+from y.prices import magic
+from y.prices.magic import get_price, get_prices
+from y.utils.multicall import fetch_multicall
+from y.utils.raw_calls import _balanceOf as balanceOf
+from y.utils.raw_calls import _balanceOfReadable as balanceOfReadable
+from y.utils.raw_calls import _symbol as symbol
+from y.utils.raw_calls import raw_call
 
 __all__ = [
     ### you can reach the below functions, classes, and variables using ###

@@ -1,13 +1,14 @@
 import logging
 import threading
 from functools import lru_cache
-from typing import List, Union
+from typing import Any, List, Optional, Union
 
 from brownie import Contract as _Contract
 from brownie import chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
+from brownie.typing import AccountsType
 from multicall import Call, Multicall
-from ypricemagic.interfaces.ERC20 import ERC20ABI
+from y.interfaces.ERC20 import ERC20ABI
 
 from y.decorators import log
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
@@ -56,24 +57,46 @@ def contract_creation_block(address) -> int:
 
 # cached Contract instance, saves about 20ms of init time
 _contract_lock = threading.Lock()
-_contract = lru_cache(maxsize=None)(_Contract)
 
-def Contract(address):
-    with _contract_lock:
-        try: return _contract(address)
-        except CompilerError as e: raise MessedUpBrownieContract(address, str(e))
-        except ConnectionError as e:
-            if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
-                if web3.eth.get_code(address): raise ContractNotVerified(address)
-                else: raise ContractNotFound(address)
-            else: raise
-        except IndexError as e:
-            if 'list index out of range' in str(e): raise MessedUpBrownieContract(address, str(e))
-            else: raise
-        except ValueError as e:
-            if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
-            elif "invalid literal for int() with base 16" in str(e): raise MessedUpBrownieContract(address, str(e))
-            else: raise
+@lru_cache
+class Contract(_Contract):
+    def __init__(self, address: str, *args: Any, owner: Optional[AccountsType] = None, require_success: bool = True, **kwargs: Any) -> None:
+        with _contract_lock:
+            try:
+                try: 
+                    super().__init__(address, *args, owner=owner, **kwargs)
+                    self._verified = True
+                except CompilerError as e: raise MessedUpBrownieContract(address, str(e))
+                except ConnectionError as e:
+                    if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
+                        if web3.eth.get_code(address): raise ContractNotVerified(address)
+                        else: raise ContractNotFound(address)
+                    else: raise
+                except IndexError as e:
+                    if 'list index out of range' in str(e): raise MessedUpBrownieContract(address, str(e))
+                    else: raise
+                except ValueError as e:
+                    if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
+                    elif "Unknown contract address:" in str(e): raise ContractNotVerified(str(e)) # avax snowtrace
+                    elif "invalid literal for int() with base 16" in str(e): raise MessedUpBrownieContract(address, str(e))
+                    else: raise
+            except (ContractNotFound, ContractNotVerified, MessedUpBrownieContract) as e:
+                if require_success: raise
+                if type(e) == ContractNotVerified: self._verified = False
+                else: self._verified = None
+
+    def has_method(self, method: str, return_response: bool = False) -> bool:
+        return has_method(self.address, method, return_response=return_response)
+
+    def has_methods(
+        self, 
+        methods: List[str],
+        func: Union[any, all] = all
+    ) -> bool:
+        return has_methods(self.address, methods, func)
+
+    def build_name(self, return_None_on_failure: bool = False) -> str:
+        return build_name(self.address, return_None_on_failure=return_None_on_failure)
 
 @log(logger)
 @memory.cache()

@@ -3,12 +3,18 @@ import logging
 from functools import cached_property, lru_cache
 from typing import Union
 
-from brownie import Contract, convert
+from brownie import Contract as BrownieContract
+from brownie import convert
+from brownie.convert.datatypes import EthAddress
+from brownie.exceptions import ContractNotFound
+from eth_typing.evm import Address
 from y.classes.singleton import ContractSingleton
+from y.contracts import Contract
 from y.decorators import log
 from y.erc20 import decimals, totalSupply
-from ypricemagic import magic
-from ypricemagic.utils.raw_calls import _symbol, _name
+from y.exceptions import ContractNotVerified, MessedUpBrownieContract
+from y.prices import magic
+from y.utils.raw_calls import _name, _symbol
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +25,7 @@ class ContractBase(metaclass=ContractSingleton):
         super().__init__(*args, **kwargs)
     
     def __str__(self) -> str:
-        return self.address
+        return f'{self.address}'
     
     def __eq__(self, __o: object) -> bool:
         try: return convert.to_address(__o) == self.address
@@ -27,6 +33,20 @@ class ContractBase(metaclass=ContractSingleton):
     
     def __hash__(self) -> int:
         return hash(self.address)
+    
+    @cached_property
+    def contract(self) -> BrownieContract:
+        return Contract(self.address)
+    
+    @cached_property
+    def _is_cached(self) -> bool:
+        try:
+            self.contract
+            return True
+        except (ContractNotVerified):
+            return False
+        except (ContractNotFound, MessedUpBrownieContract):
+            return None
 
 
 class ERC20(ContractBase):
@@ -83,7 +103,12 @@ class ERC20(ContractBase):
         )
 
 class WeiBalance:
-    def __init__(self, balance: int, token: Union[str, Contract, ERC20], block: int = None) -> None:
+    def __init__(
+        self, balance: int,
+        token: Union[str, Address, BrownieContract, ContractBase, ERC20, EthAddress],
+        block: int = None
+        ) -> None:
+
         self.balance = balance
         self.token = ERC20(str(token))
         self.block = block

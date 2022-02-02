@@ -1,9 +1,8 @@
 from decimal import Decimal
-from functools import cached_property, lru_cache
+from functools import cached_property
 
 from y.contracts import Contract, build_name
-
-from ypricemagic.utils.raw_calls import _name, _symbol, _totalSupplyReadable
+from y.utils.raw_calls import _name, _symbol, _totalSupplyReadable
 
 
 # WIP

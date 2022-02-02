@@ -4,11 +4,10 @@ from typing import Any, Callable, KeysView, List, Tuple, Union
 import brownie
 from brownie.convert.datatypes import EthAddress
 from eth_typing.evm import Address, BlockNumber
-from ypricemagic.utils.multicall import (multicall_decimals,
-                                         multicall_totalSupply)
-from ypricemagic.utils.raw_calls import _decimals, _totalSupply
 
 from y.contracts import Contract
+from y.utils.multicall import multicall_decimals, multicall_totalSupply
+from y.utils.raw_calls import _decimals, _totalSupply
 
 logger = logging.getLogger(__name__)
 

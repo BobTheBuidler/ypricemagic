@@ -14,11 +14,11 @@ class Singleton(type):
 
 class ContractSingleton(type):
     def __init__(self, address: str, *args, **kwargs):
-        self.__instances = defaultdict(dict)
+        self.__instances = {}
         super().__init__(address, *args, **kwargs)
 
     def __call__(self, address: str, *args, **kwargs):
-        try: return self.__instances[type(self)][address]
+        try: return self.__instances[address]
         except KeyError:
-            self.__instances[type(self)][address] = super().__call__(address, *args, **kwargs)
-            return self.__instances[type(self)][address]
+            self.__instances[address] = super().__call__(address, *args, **kwargs)
+            return self.__instances[address]
