@@ -4,7 +4,7 @@ from brownie import chain
 from cachetools.func import lru_cache, ttl_cache
 from eth_abi import encode_single
 from y.classes.singleton import Singleton
-from y.contracts import Contract
+from y.contracts import Contract, has_method
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.multicall import fetch_multicall
@@ -49,17 +49,12 @@ class Synthetix(metaclass=Singleton):
         )
 
     @lru_cache(maxsize=None)
-    def __contains__(self, token):
+    def __contains__(self, token: str) -> bool:
         """
         Check if a token is a synth.
         """
-        token = Contract(token)
-        if not hasattr(token, 'target'):
-            return False
-        target = token.target()
-        if target in self.synths and Contract(target).proxy() == token:
-            return True
-        return False
+        target = has_method(token, 'target()(address)', return_response=True)
+        return target in self.synths and Contract(target).proxy() == token
 
     @lru_cache(maxsize=None)
     def get_currency_key(self, token):
