@@ -77,6 +77,7 @@ class ERC20(ContractBase):
         '''used to fetch decimals at specific block'''
         return decimals(self.address, block=block)
     
+    @cached_property
     @log(logger)
     def scale(self) -> int:
         return 10 ** self.decimals
