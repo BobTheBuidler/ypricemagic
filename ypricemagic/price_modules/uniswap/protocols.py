@@ -59,6 +59,9 @@ UNISWAPS = {
         "wakaswap":         {"factory": "0xB2435253C71FcA27bE41206EB2793E44e1Df6b6D", "router": "0x7B17021FcB7Bc888641dC3bEdfEd3734fCaf2c87"},
         "hyperswap":        {"factory": "0x991152411A7B5A14A8CF0cDDE8439435328070dF", "router": "0x53c153a0df7E050BbEFbb70eE9632061f12795fB"},
         "dfyn":             {"factory": "0xd9820a17053d6314B20642E465a84Bf01a3D64f5", "router": "0x2724B9497b2cF3325C6BE3ea430b3cec34B5Ef2d"},
+        'shiba':            {"factory": "0xeAcC845E4db0aB59A326513347a37ed4E999aBD8", "router": "0xB6f7b3d8CD9dBf30805C0dd79809dace5603Ce6A"},
+        "zdex":             {"factory": "0x6178C3B21F7cA1adD84c16AD35452c85a85F5df4", "router": "0x40b12a3E261416fF0035586ff96e23c2894560f2"},
+        "bomb":             {"factory": "0xD9473A05b2edf4f614593bA5D1dBd3021d8e0Ebe", "router": "0xb9799De71100e20aC1cdbCc63C69ddA2D0D81710"},
     },
     Network.Avalanche: {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
