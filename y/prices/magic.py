@@ -22,6 +22,7 @@ from y.prices import (belt, cream, froyo, gelato, ib, mooniswap,
                       yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
+from y.prices.synthetix import synthetix
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
 from y.uniswap.uniswap import uniswap
@@ -146,13 +147,15 @@ def _exit_early_for_known_tokens(
     elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
     elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
     elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
-    elif bucket == 'stable usd':            price = 1
 
+    elif bucket == 'stable usd':            price = 1
+    elif bucket == 'synthetix':             price = synthetix.get_price(token_address, block)
     elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
+
     elif bucket == 'uni or uni-like lp':    price = uniswap.lp_price(token_address, block)
     elif bucket == 'wrapped gas coin':      price = get_price(WRAPPED_GAS_COIN, block)
-
     elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
+
     elif bucket == 'yearn or yearn-like':   price = yearn.get_price(token_address, block)
 
     return price

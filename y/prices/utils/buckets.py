@@ -15,6 +15,7 @@ from y.prices import (belt, cream, ellipsis, froyo, gelato, ib, mooniswap,
                       yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
+from y.prices.synthetix import synthetix
 from y.uniswap.uniswap import uniswap
 
 logger = logging.getLogger(__name__)
@@ -50,7 +51,7 @@ def check_bucket(
 
     elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
     elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
-    elif saddle.is_saddle_lp(token_address):                              return 'saddle'
+    elif saddle.is_saddle_lp(token_address):                                return 'saddle'
 
     # these require both calls and contract initializations
     elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
@@ -58,3 +59,4 @@ def check_bucket(
     elif token_address in compound:                                         return 'compound'
     elif token_address in curve:                                            return 'curve lp'
     elif token_address in chainlink:                                        return 'chainlink feed'
+    elif token_address in synthetix:                                        return 'synthetix'
