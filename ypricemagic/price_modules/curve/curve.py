@@ -6,7 +6,7 @@ from itertools import islice
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
-from y.classes.erc20 import ERC20
+from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.constants import STABLECOINS, dai
 from y.contracts import Contract
@@ -92,6 +92,9 @@ class CurveRegistry(metaclass=Singleton):
         self.pools = set()
         self.identifiers = defaultdict(list)
         self.watch_events()
+    
+    def __repr__(self) -> str:
+        return "<CurveRegistry>"
 
     def watch_events(self):
         # TODO keep fresh in background
@@ -124,14 +127,13 @@ class CurveRegistry(metaclass=Singleton):
         
         logger.info(f'loaded {len(self.pools)} pools')
 
-    def __repr__(self) -> str:
-        return "CurveRegistry()"
-
     @property
     @log(logger)
     def registry(self):
-        try: return Contract(self.identifiers[0][-1])
-        except IndexError: return Contract(raw_call(self.address_provider, 'get_registry()', output='address'))
+        try:
+            return Contract(self.identifiers[0][-1])
+        except IndexError: # if we couldn't get the registry via logs
+            return Contract(raw_call(self.address_provider, 'get_registry()', output='address'))
 
     @property
     @ttl_cache(ttl=3600)
@@ -234,77 +236,6 @@ class CurveRegistry(metaclass=Singleton):
         virtual_price = self.virtual_price(token, block)
         if virtual_price is None: return None
         return virtual_price / 1e18
-
-    @log(logger)
-    def calculate_boost(self, gauge, addr, block=None):
-        results = fetch_multicall(
-            [gauge, "balanceOf", addr],
-            [gauge, "totalSupply"],
-            [gauge, "working_balances", addr],
-            [gauge, "working_supply"],
-            [self.voting_escrow, "balanceOf", addr],
-            [self.voting_escrow, "totalSupply"],
-            block=block,
-        )
-        results = [x / 1e18 for x in results]
-        gauge_balance, gauge_total, working_balance, working_supply, vecrv_balance, vecrv_total = results
-        try:
-            boost = working_balance / gauge_balance * 2.5
-        except ZeroDivisionError:
-            boost = 1
-
-        min_vecrv = vecrv_total * gauge_balance / gauge_total
-        lim = gauge_balance * 0.4 + gauge_total * min_vecrv / vecrv_total * 0.6
-        lim = min(gauge_balance, lim)
-
-        _working_supply = working_supply + lim - working_balance
-        noboost_lim = gauge_balance * 0.4
-        noboost_supply = working_supply + noboost_lim - working_balance
-        try:
-            max_boost_possible = (lim / _working_supply) / (noboost_lim / noboost_supply)
-        except ZeroDivisionError:
-            max_boost_possible = 1
-
-        return {
-            "gauge balance": gauge_balance,
-            "gauge total": gauge_total,
-            "vecrv balance": vecrv_balance,
-            "vecrv total": vecrv_total,
-            "working balance": working_balance,
-            "working total": working_supply,
-            "boost": boost,
-            "max boost": max_boost_possible,
-            "min vecrv": min_vecrv,
-        }
-
-    @log(logger)
-    def calculate_apy(self, gauge, lp_token, block=None):
-        crv_price = magic.get_price(self.crv)
-        pool = Contract(self.get_pool(lp_token))
-        results = fetch_multicall(
-            [gauge, "working_supply"],
-            [self.gauge_controller, "gauge_relative_weight", gauge],
-            [gauge, "inflation_rate"],
-            [pool, "get_virtual_price"],
-            block=block,
-        )
-        results = [x / 1e18 for x in results]
-        working_supply, relative_weight, inflation_rate, virtual_price = results
-        token_price = magic.get_price(lp_token, block=block)
-        try:
-            rate = (inflation_rate * relative_weight * 86400 * 365 / working_supply * 0.4) / token_price
-        except ZeroDivisionError:
-            rate = 0
-
-        return {
-            "crv price": crv_price,
-            "relative weight": relative_weight,
-            "inflation rate": inflation_rate,
-            "virtual price": virtual_price,
-            "crv reward rate": rate,
-            "crv apy": rate * crv_price,
-            "token price": token_price,
-        }
     
     # wip
     def find_pool_for_coin(self, token_in: str, block: int = None) -> str:

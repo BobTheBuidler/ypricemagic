@@ -3,34 +3,38 @@ import logging
 from functools import cached_property, lru_cache
 from typing import Dict, List
 
-from brownie import ZERO_ADDRESS
-from y.classes.common import WeiBalance
-from y.classes.erc20 import ERC20
+from brownie import ZERO_ADDRESS, chain
+from y.classes.common import ERC20
 from y.contracts import Contract
 from y.decorators import log
+from y.exceptions import UnsupportedNetwork
+from y.networks import Network
 from ypricemagic import magic
 from ypricemagic.utils.multicall import (
     fetch_multicall, multicall_same_func_same_contract_different_inputs)
 from ypricemagic.utils.raw_calls import raw_call
+from y.classes.common import WeiBalance
 
 logger = logging.getLogger(__name__)
 
 
-class CurvePool(ERC20):
+class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
     def __init__(self, address: str, *args, **kwargs):
         super().__init__(address, *args, **kwargs)
+    
+    def __repr__(self) -> str:
+        return f"<CurvePool '{self.address}'>"
     
     @cached_property
     def contract(self) -> Contract:
         return Contract(self.address)
     
-    @log(logger)
     @cached_property
     def factory(self) -> Contract:
         return curve.get_factory(self)
 
-    @log(logger)
     @cached_property
+    @log(logger)
     def get_coins(self) -> List[ERC20]:
         """
         Get coins of pool.
@@ -64,20 +68,20 @@ class CurvePool(ERC20):
         amount_out = self.get_dy(ix_in, ix_out, amount_in)
         return WeiBalance(amount_out, token_out, block=block)
     
-    @log(logger)
     @cached_property
-    def get_coins_decimals(self, pool: str) -> List[int]:
+    @log(logger)
+    def get_coins_decimals(self) -> List[int]:
         source = self.factory if self.factory else curve.registry
-        coins_decimals = source.get_decimals(pool)
+        coins_decimals = source.get_decimals(self.address)
 
         # pool not in registry
         if not any(coins_decimals):
-            coins_decimals = [coin.decimals() for coin in self.get_coins]
+            coins_decimals = [coin.decimals for coin in self.get_coins]
         
         return [dec for dec in coins_decimals if dec != 0]
     
-    @log(logger)
     @cached_property
+    @log(logger)
     def get_underlying_coins(self) -> List[ERC20]:        
         if self.factory:
             # new factory reverts for non-meta pools
@@ -130,8 +134,8 @@ class CurvePool(ERC20):
             balances[coin] * magic.get_price(coin, block=block) for coin in balances
         )
     
-    @log(logger)
     @cached_property
+    @log(logger)
     def oracle(self) -> str:
         '''
         If `pool` has method `price_oracle`, returns price_oracle address.
@@ -144,22 +148,94 @@ class CurvePool(ERC20):
     
     @log(logger)
     @lru_cache(maxsize=None)
-    def get_gauge(self, pool):
+    def gauge(self) -> Contract:
         """
         Get liquidity gauge address by pool.
         """
         if self.factory and hasattr(self.factory, 'get_gauge'):
-            gauge = self.factory.get_gauge(pool)
+            gauge = self.factory.get_gauge(self.address)
             if gauge != ZERO_ADDRESS:
-                return gauge
+                return Contract(gauge)
 
-        gauges, types = curve.registry.get_gauges(pool)
+        gauges, types = curve.registry.get_gauges(self.address)
         if gauges[0] != ZERO_ADDRESS:
-            return gauges[0]
+            return Contract(gauges[0])
     
+    @log(logger)
+    def calculate_apy(self, lp_token: str, block: int = None) -> float:
+        if not chain.id == Network.Mainnet:
+            raise UnsupportedNetwork(f'apy calculations only available on Mainnet')
 
-    def __str__(self) -> str:
-        return self.address
+        crv_price = magic.get_price(curve.crv)
+        results = fetch_multicall(
+            [self.gauge, "working_supply"],
+            [curve.gauge_controller, "gauge_relative_weight", self.gauge],
+            [self.gauge, "inflation_rate"],
+            [self.contract, "get_virtual_price"],
+            block=block,
+        )
+        results = [x / 1e18 for x in results]
+        working_supply, relative_weight, inflation_rate, virtual_price = results
+        token_price = magic.get_price(lp_token, block=block)
+        try:
+            rate = (inflation_rate * relative_weight * 86400 * 365 / working_supply * 0.4) / token_price
+        except ZeroDivisionError:
+            rate = 0
+
+        return {
+            "crv price": crv_price,
+            "relative weight": relative_weight,
+            "inflation rate": inflation_rate,
+            "virtual price": virtual_price,
+            "crv reward rate": rate,
+            "crv apy": rate * crv_price,
+            "token price": token_price,
+        }
+    
+    @log(logger)
+    def calculate_boost(self, addr: str, block=None):
+        if not chain.id == Network.Mainnet:
+            raise UnsupportedNetwork(f'boost calculations only available on Mainnet')
+
+        results = fetch_multicall(
+            [self.gauge, "balanceOf", addr],
+            [self.gauge, "totalSupply"],
+            [self.gauge, "working_balances", addr],
+            [self.gauge, "working_supply"],
+            [curve.voting_escrow, "balanceOf", addr],
+            [curve.voting_escrow, "totalSupply"],
+            block=block,
+        )
+        results = [x / 1e18 for x in results]
+        gauge_balance, gauge_total, working_balance, working_supply, vecrv_balance, vecrv_total = results
+        try:
+            boost = working_balance / gauge_balance * 2.5
+        except ZeroDivisionError:
+            boost = 1
+
+        min_vecrv = vecrv_total * gauge_balance / gauge_total
+        lim = gauge_balance * 0.4 + gauge_total * min_vecrv / vecrv_total * 0.6
+        lim = min(gauge_balance, lim)
+
+        _working_supply = working_supply + lim - working_balance
+        noboost_lim = gauge_balance * 0.4
+        noboost_supply = working_supply + noboost_lim - working_balance
+        try:
+            max_boost_possible = (lim / _working_supply) / (noboost_lim / noboost_supply)
+        except ZeroDivisionError:
+            max_boost_possible = 1
+
+        return {
+            "gauge balance": gauge_balance,
+            "gauge total": gauge_total,
+            "vecrv balance": vecrv_balance,
+            "vecrv total": vecrv_total,
+            "working balance": working_balance,
+            "working total": working_supply,
+            "boost": boost,
+            "max boost": max_boost_possible,
+            "min vecrv": min_vecrv,
+        }
 
 from ypricemagic.price_modules.curve.curve import CurveRegistry
 
