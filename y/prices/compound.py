@@ -65,7 +65,7 @@ class Comptroller(ContractBase):
         self.address = convert.to_address(address)
         self.key = key
     
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f"<Comptroller {self.key} '{self.address}'>"
 
     @log(logger)
@@ -78,10 +78,10 @@ class Comptroller(ContractBase):
             response = Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
         except Exception as e:
             if not call_reverted(e): raise
-            logger.error(f'had trouble loading markets for {self}')
+            logger.error(f'had trouble loading markets for {self.__repr__()}')
             response = set()
             
-        logger.info(f"loaded {len(response)} lending markets for {self}")
+        logger.info(f"loaded {len(response)} markets for {self.__repr__}")
         return {
             convert.to_address(market)
             for market

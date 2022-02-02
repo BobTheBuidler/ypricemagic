@@ -1,13 +1,10 @@
 
 import logging
+from typing import Dict, List
 
-from y.contracts import has_methods
+from y.classes.common import ERC20
 from y.decorators import log
-from y.exceptions import PriceError
-from y.prices import magic
 from y.utils.multicall import fetch_multicall, multicall_decimals
-from y.utils.raw_calls import _totalSupplyReadable
-from ypricemagic.classes import ERC20
 
 logger = logging.getLogger(__name__)
 
@@ -16,31 +13,24 @@ class BalancerV1Pool(ERC20):
         super().__init__(pool_address)
 
     @log(logger)
-    def tokens(self, block=None):
-        return self.contract.getCurrentTokens(block_identifier=block)
+    def tokens(self, block=None) -> List[ERC20]:
+        tokens = self.contract.getCurrentTokens(block_identifier=block)
+        return [ERC20(token) for token in tokens]
 
     @log(logger)
-    def get_pool_price(self, block=None):
-        supply = _totalSupplyReadable(self.contract, block)
+    def get_pool_price(self, block: int = None) -> float:
+        supply = self.total_supply_readable(block=block)
         if supply == 0: return 0
         return self.get_tvl(block=block) / supply
 
     @log(logger)
-    def get_tvl(self, block=None):
-        balances = self.get_balances(block)
-        prices = [_get_price(token, block=block) for token in balances]
-        return sum(balance * price for balance, price in zip(balances.values(), prices) if price)
+    def get_tvl(self, block: int = None) -> float:
+        return sum(balance * token.price(block=block) for token, balance in self.get_balances.items())
 
     @log(logger)
-    def get_balances(self, block=None):
+    def get_balances(self, block: int = None) -> Dict[ERC20, float]:
         tokens = self.tokens(block=block)
         balances = fetch_multicall(*[[self.contract, "getBalance", token] for token in tokens], block=block)
-        for position, balance in enumerate(balances):
-            if balance is None: balances[position] = 0
+        balances = [balance if balance else 0 for balance in balances]
         decimals = multicall_decimals(tokens, block)
         return {token:balance / 10 ** decimal for token, balance, decimal in zip(tokens,balances,decimals)}
-
-@log(logger)
-def _get_price(token_address, block=None):
-    try: return magic.get_price(token_address, block)
-    except PriceError: return None

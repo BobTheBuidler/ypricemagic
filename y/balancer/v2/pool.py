@@ -1,17 +1,17 @@
 
 import logging
 from functools import cached_property
+from typing import Dict, List
 
 from brownie import web3
-from joblib import Parallel, delayed
 from multicall import Call
 from y.balancer.v2.vault import BalancerV2Vault
+from y.classes.common import ERC20
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, usdc
 from y.decorators import log
 from y.prices import magic
 from y.utils.multicall import multicall_decimals
 from y.utils.raw_calls import _decimals, raw_call
-from ypricemagic.classes import ERC20
 
 logger = logging.getLogger(__name__)
 
@@ -32,13 +32,11 @@ class BalancerV2Pool(ERC20):
 
     @log(logger)
     def get_pool_price(self, block=None):
-        return self.get_tvl(block=block) / self.total_supply(block=block)
+        return self.get_tvl(block=block) / self.total_supply_readable(block=block)
 
     @log(logger)
     def get_tvl(self, block=None):
-        balances = self.get_balances(block=block)
-        prices = Parallel(4,'threading')(delayed(magic.get_price)(token, block) for token in balances.keys())
-        return sum(balance * price for balance, price in zip(balances.values(), prices))
+        return sum(balance * token.price(block=block) for token, balance in self.get_balances(block=block))
 
     @log(logger)
     def get_balances(self, block=None):
@@ -47,7 +45,7 @@ class BalancerV2Pool(ERC20):
         return {token: balance / 10 ** decimal for token, balance, decimal in zip(token_balances.keys(), token_balances.values(), decimals)}
 
     @log(logger)
-    def get_token_price(self, token_address, block=None):
+    def get_token_price(self, token_address: str, block=None) -> float:
         token_balances = self.tokens(block=block)
         weights = self.weights(block=block)
         pool_tokens = list(zip(token_balances.keys(),token_balances.values(), weights))
@@ -78,12 +76,12 @@ class BalancerV2Pool(ERC20):
         return tokenPrice
     
     @log(logger)
-    def tokens(self, block=None):
+    def tokens(self, block=None) -> Dict[ERC20, float]:
         tokens, balances, lastChangedBlock = self.vault.get_pool_tokens(self.id, block=block)
         return {token: balance for token, balance in zip(tokens, balances)}        
 
     @log(logger)
-    def weights(self, block=None):
+    def weights(self, block=None) -> List[int]:
         try:
             return self.contract.getNormalizedWeights(block_identifier = block)
         except (AttributeError,ValueError):

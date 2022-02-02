@@ -1,7 +1,8 @@
 import logging
 from functools import lru_cache
 
-from y.contracts import Contract, build_name
+from y.classes.common import ContractBase
+from y.contracts import build_name
 from y.decorators import log
 from y.utils.events import decode_logs, get_logs_asap
 from y.utils.multicall import fetch_multicall
@@ -9,10 +10,9 @@ from y.utils.multicall import fetch_multicall
 logger = logging.getLogger(__name__)
 
 
-class BalancerV2Vault:
-    def __init__(self, vault_address) -> None:
-        self.address = vault_address
-        self.contract = Contract(self.address)
+class BalancerV2Vault(ContractBase):
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(address, *args, **kwargs)
     
     @log(logger)
     def get_pool_tokens(self, pool_id: int, block=None):
