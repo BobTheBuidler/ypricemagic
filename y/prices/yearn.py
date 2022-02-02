@@ -6,6 +6,7 @@ from y.contracts import Contract, has_methods, probe
 from y.decorators import log
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract, CantFetchParam
 from y.utils.cache import memory
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
@@ -57,8 +58,19 @@ class YearnInspiredVault(ERC20):
     @cached_property
     @log(logger)
     def underlying(self) -> ERC20:
-        methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
-        underlying = probe(self.address, methods)
+        try:
+            methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
+            underlying = probe(self.address, methods)
+        except AssertionError:
+            # special handler for some strange beefy vaults
+            method = {
+                "BeefyVaultV6Matic": "wmatic()",
+                "BeefyVenusVaultBNB": "wbnb()",
+            }.get(self.build_name, None)
+            
+            if not method: raise
+            underlying = raw_call(self.address, method, output='address')
+
         if underlying: return ERC20(underlying)
         else: raise CantFetchParam(f'underlying for {self.__repr__()}')
 
@@ -67,6 +79,16 @@ class YearnInspiredVault(ERC20):
     def share_price(self, block: int = None) -> WeiBalance:
         methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
         share_price = probe(self.address, methods, block=block)
+
+        if share_price is None:
+            # this is for element vaults, probe fails because method requires input
+            try:
+                contract = self.contract
+                if hasattr(contract, 'getSharesToUnderlying'):
+                    share_price = contract.getSharesToUnderlying(self.scale,block_identifier=block)
+            except ContractNotVerified:
+                pass
+
         if share_price: return WeiBalance(share_price, self.underlying, block=block)
         else: raise CantFetchParam(f'share_price for {self.__repr__()}')
     
@@ -84,27 +106,4 @@ class YearnInspiredVault(ERC20):
             block=block
         )
         decimals = 18
-        
-    elif vault.__dict__['_build']['contractName'] == 'BeefyVaultV6Matic':
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'wmatic'],
-            [vault, 'decimals'],
-            block=block
-        )
-    elif vault.__dict__['_build']['contractName'] == 'BeefyVenusVaultBNB':
-        share_price, underlying, decimals = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'wbnb'],
-            [vault, 'decimals'],
-            block=block
-        )
-        
-    elif hasattr(vault,'getSharesToUnderlying'):
-        underlying, decimals = fetch_multicall(
-            [vault,'token'],
-            [vault,'decimals'],
-            block=block
-        )
-        share_price = vault.getSharesToUnderlying(10 ** decimals,block_identifier=block)
     '''

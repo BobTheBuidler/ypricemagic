@@ -157,13 +157,17 @@ def has_methods(
 def probe(
     address: str, 
     methods: List[str],
-    block: int = None
+    block: int = None,
+    return_method: bool = False
 ) -> Any:
     calls = [Call(address, [method], [[method, None]]) for method in methods]
-    results = Multicall(calls, block_id=block, _w3=web3, require_success=False)().values()
-    results = [result for result in results if result is not None]
+    results = Multicall(calls, block_id=block, _w3=web3, require_success=False)()
+    results = [(method, result) for method, result in results.items() if result is not None]
     assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
-    if len(results) == 1: return results[0]
+    if len(results) == 1:
+        method, result = results[0]
+        if not return_method: return result
+        else: return method, result
 
 
 @log(logger)
