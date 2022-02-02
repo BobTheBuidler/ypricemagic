@@ -26,7 +26,7 @@ class UniswapPoolV2(ERC20):
     @cached_property
     @log(logger)
     def factory(self) -> str:
-        try: raw_call(self.address, 'factory()', output='address')
+        try: return raw_call(self.address, 'factory()', output='address')
         except ValueError as e:
             if call_reverted(e): raise NotAUniswapV2Pool
             # `is not a valid ETH address` means we got some kind of response from the chain.
