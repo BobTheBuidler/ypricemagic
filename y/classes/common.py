@@ -38,11 +38,11 @@ class ERC20(ContractBase):
     
     @cached_property
     def symbol(self) -> str:
-        return _symbol(self.address)
+        return _symbol(self.address, return_None_on_failure=True)
     
     @cached_property
     def name(self) -> str:
-        return _name(self.address)
+        return _name(self.address, return_None_on_failure=True)
     
     @cached_property
     def decimals(self) -> int:
