@@ -1,12 +1,12 @@
 import logging
-from functools import lru_cache
+from functools import cached_property, lru_cache
+from typing import List, Union
 
-from brownie import chain, web3
+from brownie import chain, convert, web3
 from multicall import Call, Multicall
-from y.contracts import Contract
+from y.classes.common import ERC20, ContractBase
 from y.decorators import log
 from y.networks import Network
-from y.prices import magic
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
@@ -30,81 +30,112 @@ v2_pools = {
     Network.Avalanche: [
         "0x70BbE4A294878a14CB3CDD9315f5EB490e346163", # blizz
     ]
-}.get(chain.id, [])
+}.get(chain.id, [])        
 
 
-class Aave:
+class AaveMarketBase(ContractBase):
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(address, *args, **kwargs)
+    
+    def __contains__(self, __o: object) -> bool:
+        return convert.to_address(__o) in self.atokens
+
+
+class AaveMarketV1(AaveMarketBase):
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(address, *args, **kwargs)
+    
+    def __repr__(self) -> str:
+        return f"<AaveMarketV1 '{self.address}'>"
+    
+    @log(logger)
+    @lru_cache
+    def underlying(self, token_address: str) -> ERC20:
+        return ERC20(raw_call(token_address, 'underlyingAssetAddress()',output='address'))
+    
+    @cached_property
+    @log(logger)
+    def atokens(self) -> List[ERC20]:
+        reserves_data = Call(self.address, ['getReserves()(address[])'], [[self.address,None]], _w3=web3)()[self.address]
+        reserves_data = fetch_multicall(*[[self.contract, 'getReserveData', reserve] for reserve in reserves_data])
+        atokens = [ERC20(reserve['aTokenAddress']) for reserve in reserves_data]
+        logger.info(f'loaded {len(atokens)} v1 atokens for {self.__repr__()}')
+        return atokens
+
+
+class AaveMarketV2(AaveMarketBase):
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(address, *args, **kwargs)
+    
+    def __repr__(self) -> str:
+        return f"<AaveMarketV2 '{self.address}'>"
+    
+    @log(logger)
+    @lru_cache
+    def underlying(self, token_address: str) -> ERC20:
+        return ERC20(raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address'))
+
+    @cached_property
+    @log(logger)
+    def atokens(self) -> List[ERC20]:
+        reserves = Call(self.address, ['getReservesList()(address[])'], [[self.address,None]], _w3=web3)()[self.address]
+        calls = [
+            Call(
+                self.address,
+                ['getReserveData(address)((uint256,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
+                [[reserve, None]]
+            )
+            for reserve in reserves
+        ]
+
+        try:
+            atokens = [ERC20(reserve_data[7]) for reserve_data in Multicall(calls, _w3=web3)().values()]
+            logger.info(f'loaded {len(atokens)} v2 atokens for {self.__repr__()}')
+            return atokens
+        except TypeError: # TODO figure out what to do about non verified aave markets
+            logger.error(f'failed to load tokens for {self.__repr__()}')
+            return []
+
+
+class AaveRegistry:
     def __init__(self) -> None:
-        if len(v1_pools):
-            calls_v1 = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
-            reserves_v1 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v1, _w3=web3)().items()}
-            multicall_v1 = fetch_multicall(*[
-                [v1_pool, 'getReserveData', reserve]
-                for v1_pool, reserves in reserves_v1.items() for reserve in reserves
-            ])
-            self.atokens_v1 = [reserve['aTokenAddress'] for reserve in multicall_v1]
-            logger.info(f'loaded {len(self.atokens_v1)} v1 atokens')
+        pass
 
-        if len(v2_pools):
-            calls_v2 = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
-            reserves_v2 = {pool: reserves for pool, reserves in Multicall(calls_v2, _w3=web3)().items()}
+    @cached_property
+    def pools(self) -> List[Union[AaveMarketV1, AaveMarketV2]]:
+        return self.pools_v1 + self.pools_v2
+    
+    @cached_property
+    def pools_v1(self) -> List[AaveMarketV1]:
+        return [AaveMarketV1(pool) for pool in v1_pools]
+    
+    @cached_property
+    def pools_v2(self) -> List[AaveMarketV2]:
+        return [AaveMarketV2(pool) for pool in v2_pools]
+    
+    @log(logger)
+    def pool_for_token(self, token_address: str) -> Union[AaveMarketV1, AaveMarketV2]:
+        for pool in self.pools:
+            if token_address in pool:
+                return pool
 
-            try:
-                calls_v2 = [
-                    Call(
-                        v2_pool,
-                        ['getReserveData(address)((uint256,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
-                        [[v2_pool + reserve, None]]
-                    )
-                    for v2_pool, reserves in reserves_v2.items() for reserve in reserves
-                ]
-                self.atokens_v2 = [reserve_data[7] for reserve_data in Multicall(calls_v2, _w3=web3)().values()]
-                logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
-            except TypeError: # TODO figure out what to do about non verified aave markets
-                self.atokens_v2 = []
+    def __contains__(self, __o: object) -> bool:
+        return any(__o in pool for pool in self.pools)
 
     @log(logger)
     @lru_cache
     def is_atoken(self,token_address: str):
-        logger.debug(f'Checking `is_atoken({token_address})')
-        result = self.is_atoken_v2(token_address) or self.is_atoken_v1(token_address)
-        logger.debug(f'`is_atoken({token_address}` returns `{result}`')
-        return result
-
+        return token_address in self
+    
+    @log(logger)
+    @lru_cache
+    def underlying(self, token_address: str) -> ERC20:
+        pool = self.pool_for_token(token_address)
+        return pool.underlying(token_address)
+    
     @log(logger)
     def get_price(self, token_address: str, block=None):
-        logger.debug(f'Checking `aave.get_price({token_address}, {block})`')
-        if self.is_atoken_v1(token_address):
-            price = self.get_price_v1(token_address, block)
-        if self.is_atoken_v2(token_address):
-            price = self.get_price_v2(token_address, block)
-        logger.debug(f'`aave.get_price({token_address}, {block})` returns `{price}`')
-        return price
+        return self.underlying(token_address).price(block)
 
-    @log(logger)
-    def is_atoken_v1(self,token_address):
-        logger.debug(f'Checking `is_atoken_v1({token_address})')
-        if not hasattr(self, 'atokens_v1'): result = False
-        else: result = token_address in self.atokens_v1
-        logger.debug(f'`is_atoken_v1({token_address}` returns `{result}`')
-        return result
 
-    @log(logger)
-    def is_atoken_v2(self,token_address: str):
-        logger.debug(f'Checking `is_atoken_v2({token_address})')
-        if not hasattr(self, 'atokens_v2'): result = False
-        else: result = token_address in self.atokens_v2
-        logger.debug(f'`is_atoken_v2({token_address}` returns `{result}`')
-        return result
-
-    @log(logger)
-    def get_price_v1(self,token_address: str, block=None):
-        underlying = raw_call(token_address, 'underlyingAssetAddress()', block=block, output='address')
-        return magic.get_price(underlying, block=block)
-
-    @log(logger)
-    def get_price_v2(self,token_address: str, block=None):
-        underlying = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',block=block,output='address')
-        return magic.get_price(underlying, block=block)
-
-aave = Aave()
+aave = AaveRegistry()
