@@ -1,9 +1,6 @@
-from functools import lru_cache
 import logging
+from functools import cached_property, lru_cache
 
-from brownie import web3
-from multicall import Call, Multicall
-from yarl import cached_property
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods, probe
 from y.decorators import log
