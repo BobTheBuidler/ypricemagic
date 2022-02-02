@@ -1,8 +1,11 @@
 import logging
+from functools import cached_property
+from typing import Dict
 
-from brownie import ZERO_ADDRESS, chain
+from brownie import ZERO_ADDRESS, chain, convert
 from cachetools.func import ttl_cache
 from y.chainlink.feeds import FEEDS
+from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract
 from y.decorators import log
@@ -29,12 +32,12 @@ class Chainlink(metaclass=Singleton):
         if chain.id not in registries and len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
 
-        if chain.id in registries: self.registry = Contract(registries[chain.id])
+        if chain.id in registries:
+            self.registry = Contract(registries[chain.id])
         
-        self.load_feeds()
-
+    @cached_property
     @log(logger)
-    def load_feeds(self):
+    def feeds(self) -> Dict[ERC20, str]:
         if chain.id in registries:
             try:
                 log_filter = create_filter(str(self.registry), [self.registry.topics['FeedConfirmed']])
@@ -45,16 +48,18 @@ class Chainlink(metaclass=Singleton):
                 new_entries = get_logs_asap(str(self.registry), [self.registry.topics['FeedConfirmed']])
 
             logs = decode_logs(new_entries)
-            self.feeds = {
+            feeds = {
                 log['asset']: log['latestAggregator']
                 for log in logs
                 if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS
             }
-        else: self.feeds = {}
+        else: feeds = {}
         # for mainnet, we have some extra feeds to pull in
         # for non-mainnet, we have no registry so must get feeds manually
-        self.feeds.update(FEEDS)
-        logger.info(f'loaded {len(self.feeds)} feeds')
+        feeds.update(FEEDS)
+        feeds = {ERC20(token): feed for token, feed in feeds.items()}
+        logger.info(f'loaded {len(feeds)} feeds')
+        return feeds
 
     @log(logger)
     def get_feed(self, asset):
@@ -62,7 +67,7 @@ class Chainlink(metaclass=Singleton):
 
     @log(logger)
     def __contains__(self, asset):
-        return asset in self.feeds
+        return convert.to_address(asset) in self.feeds
 
     @ttl_cache(maxsize=None, ttl=600)
     @log(logger)
