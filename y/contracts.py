@@ -58,8 +58,8 @@ def contract_creation_block(address) -> int:
 # cached Contract instance, saves about 20ms of init time
 _contract_lock = threading.Lock()
 
+@lru_cache
 class Contract(_Contract):
-    @lru_cache
     def __init__(self, address: str, *args: Any, owner: Optional[AccountsType] = None, require_success: bool = True, **kwargs: Any) -> None:
         with _contract_lock:
             try:
