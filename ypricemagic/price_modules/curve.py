@@ -264,7 +264,7 @@ class CurveRegistry(metaclass=Singleton):
 
         # pool not in registry
         if not any(coins_decimals):
-            coins_decimals = decimals(self.get_coins(pool))
+            coins_decimals = [coin.decimals() for coin in self.get_coins(pool)]
         
         return [dec for dec in coins_decimals if dec != 0]
 
