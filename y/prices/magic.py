@@ -155,15 +155,7 @@ def _exit_early_for_known_tokens(
     elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
     elif bucket == 'yearn or yearn-like':   price = yearn.get_price(token_address, block)
 
-    # if type(price) == list, this will output final price
-    if isinstance(price, list):
-        price, underlying = price
-        logger.debug("peel %s %s", price, underlying)
-        price *= get_price(underlying, block=block)
-
-    logger.debug(f"{bucket} -> ${price}")
-
-    return price if price is not None else None
+    return price
 
          
 def _fail_appropriately(

@@ -68,12 +68,8 @@ class YearnInspiredVault(ERC20):
     @log(logger)
     @lru_cache
     def price(self, block: int = None) -> float:
-        try:
-            return [self.share_price(block=block) / self.scale, self.underlying(block=block)]
-        #except TypeError: # when getPricePerShare() reverts due to divide by zero
-        #    price = [1, underlying]
-        except UnboundLocalError: # not supported, try another way
-            return None
+        underlying = self.underlying(block=block)
+        return self.share_price(block=block).readable * underlying.price(block=block)
 
     # saving for later
     '''
