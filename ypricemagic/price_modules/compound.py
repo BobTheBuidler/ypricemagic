@@ -38,6 +38,7 @@ TROLLERS = {
         "vee":              "0xA67DFeD73025b0d61F2515c531dd8D25D4Cfd0Db",
         "vee2":             "0x43AAd7d8Bc661dfA70120865239529ED92Faa054",
         "vee3":             "0xeEf69Cab52480D2BD2D4A3f3E8F5CcfF2923f6eF",
+        "cream":            "0x2eE80614Ccbc5e28654324a66A396458Fa5cD7Cc",
     },
     Network.Arbitrum: {
         "cream":            "0xbadaC56c9aca307079e8B8FC699987AAc89813ee",
