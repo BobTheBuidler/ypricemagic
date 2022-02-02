@@ -2,25 +2,23 @@ import logging
 from collections import defaultdict
 from functools import lru_cache
 from itertools import islice
-from typing import Dict, List
 
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from y.classes.erc20 import ERC20
 from y.classes.singleton import Singleton
-from y.constants import dai
+from y.constants import STABLECOINS, dai
 from y.contracts import Contract
 from y.decorators import log
-from y.erc20 import decimals
 from y.exceptions import ContractNotVerified, UnsupportedNetwork, call_reverted
 from y.networks import Network
 from y.utils.middleware import ensure_middleware
 from ypricemagic import magic
+from ypricemagic.price_modules.curve.pool import CurvePool
 from ypricemagic.utils.events import create_filter, decode_logs, get_logs_asap
-from ypricemagic.utils.multicall import (
-    fetch_multicall, multicall_same_func_same_contract_different_inputs)
-from ypricemagic.utils.raw_calls import _totalSupply, raw_call
+from ypricemagic.utils.multicall import fetch_multicall
+from ypricemagic.utils.raw_calls import raw_call
 
 ensure_middleware()
 
@@ -73,6 +71,9 @@ OVERRIDES = {
     },
     Network.Arbitrum: {
         "0x3dFe1324A0ee9d86337d06aEB829dEb4528DB9CA": "0xA827a652Ead76c6B0b3D19dba05452E06e25c27e", # crvEURSUSD
+    },
+    Network.Avalanche: {
+        "0x1daB6560494B04473A0BE3E7D83CF3Fdf3a51828": "0xB755B949C126C04e0348DD881a5cF55d424742B2", # crvUSDBTCETH
     }
 }.get(chain.id, {})
 
@@ -158,16 +159,17 @@ class CurveRegistry(metaclass=Singleton):
         }
 
     @log(logger)
-    def get_factory(self, pool):
+    def get_factory(self, pool: str) -> Contract:
         """
         Get metapool factory that has spawned a pool.
         """
         try:
-            return next(
+            factory = next(
                 factory
                 for factory, factory_pools in self.metapools_by_factory.items()
                 if str(pool) in factory_pools
             )
+            return Contract(factory)
         except StopIteration:
             return None
 
@@ -179,145 +181,17 @@ class CurveRegistry(metaclass=Singleton):
     @log(logger)
     def __contains__(self, token: str) -> bool:
         return self.get_pool(token) is not None
-
-    @log(logger)
-    @lru_cache(maxsize=None)
-    def get_pool(self, token: str) -> str:
-        """
-        Get Curve pool (swap) address by LP token address. Supports factory pools.
-        """
-        if self.get_factory(token): return token
-            
-        if token in OVERRIDES: pool = OVERRIDES[token]
-
-        else: pool = self._pool_from_lp_token(token)
-
-        if pool != ZERO_ADDRESS: return pool
-            
-    @log(logger)
-    @lru_cache(maxsize=None)
-    def get_gauge(self, pool):
-        """
-        Get liquidity gauge address by pool.
-        """
-        factory = self.get_factory(pool)
-        if factory and hasattr(Contract(factory), 'get_gauge'):
-            gauge = Contract(factory).get_gauge(pool)
-            if gauge != ZERO_ADDRESS:
-                return gauge
-
-        gauges, types = self.registry.get_gauges(pool)
-        if gauges[0] != ZERO_ADDRESS:
-            return gauges[0]
-
-    @log(logger)
-    @lru_cache(maxsize=None)
-    def get_coins(self, pool) -> List[ERC20]:
-        """
-        Get coins of pool.
-        """
-        factory = self.get_factory(pool)
-
-        if factory:
-            coins = Contract(factory).get_coins(pool)
-        else:
-            coins = self.registry.get_coins(pool)
-        
-        # pool not in registry
-        if set(coins) == {ZERO_ADDRESS}:
-            coins = multicall_same_func_same_contract_different_inputs(
-                pool, 
-                'coins(uint256)(address)', 
-                inputs = [i for i in range(8)],
-                return_None_on_failure=True
-                )
-
-        return [ERC20(coin) for coin in coins if coin not in {None, ZERO_ADDRESS}]
-
-    @log(logger)
-    @lru_cache(maxsize=None)
-    def get_underlying_coins(self, pool: str) -> List[ERC20]:
-        factory = self.get_factory(pool)
-        
-        if factory:
-            factory = Contract(factory)
-            # new factory reverts for non-meta pools
-            if not hasattr(factory, 'is_meta') or factory.is_meta(pool):
-                coins = factory.get_underlying_coins(pool)
-            else:
-                coins = factory.get_coins(pool)
-        else:
-            coins = self.registry.get_underlying_coins(pool)
-        
-        # pool not in registry, not checking for underlying_coins here
-        if set(coins) == {ZERO_ADDRESS}:
-            return self.get_coins(pool)
-
-        return [ERC20(str(coin)) for coin in coins if coin != ZERO_ADDRESS]
-
-    @log(logger)
-    @lru_cache(maxsize=None)
-    def get_coins_decimals(self, pool: str) -> List[int]:
-        factory = self.get_factory(pool)
-        source = Contract(factory) if factory else self.registry
-        coins_decimals = source.get_decimals(pool)
-
-        # pool not in registry
-        if not any(coins_decimals):
-            coins_decimals = [coin.decimals() for coin in self.get_coins(pool)]
-        
-        return [dec for dec in coins_decimals if dec != 0]
-
-    @log(logger)
-    def get_balances(self, pool: str, block=None) -> Dict[ERC20, int]:
-        """
-        Get {token: balance} of liquidity in the pool.
-        """
-        factory = self.get_factory(pool)
-        coins = self.get_coins(pool)
-        decimals = self.get_coins_decimals(pool)
-
-        try:
-            source = Contract(factory) if factory else self.registry
-            balances = source.get_balances(pool, block_identifier=block)
-        # fallback for historical queries
-        except ValueError:
-            balances = fetch_multicall(
-                *[[Contract(pool), 'balances', i] for i, _ in enumerate(coins)]
-            )
-
-        if not any(balances):
-            raise ValueError(f'could not fetch balances {pool} at {block}')
-
-        return {
-            coin: balance / 10 ** dec
-            for coin, balance, dec in zip(coins, balances, decimals)
-            if coin != ZERO_ADDRESS
-        }
-
-    @log(logger)
-    def get_tvl(self, pool, block=None):
-        """
-        Get total value in Curve pool.
-        """
-        balances = self.get_balances(pool, block=block)
-        if balances is None: return None
-
-        return sum(
-            balances[coin] * magic.get_price(coin, block=block) for coin in balances
-        )
-
+    
     @log(logger)
     @ttl_cache(maxsize=None, ttl=600)
     def get_price(self, token: str, block: int = None) -> float:
         pool = self.get_pool(token)
 
         # crypto pools can have different tokens, use slow method
-        if self.oracle(pool): return self.get_price_full(token, block)
+        if pool.oracle: return self.get_price_full(token, block)
 
         # approximate by using the most common base token we find
-        coins = self.get_underlying_coins(pool)
-        try: coin = (set(coins) & BASIC_TOKENS).pop()
+        try: coin = (set(pool.get_underlying_coins) & BASIC_TOKENS).pop()
         except KeyError: coin = None
 
         virtual_price = self.virtual_price_readable(token, block)
@@ -326,15 +200,31 @@ class CurveRegistry(metaclass=Singleton):
     
     @log(logger)
     def get_price_full(self, token: str, block: int = None) -> float:
-        pool = self.get_pool(token)
-        tvl = self.get_tvl(pool, block=block)
+        tvl = self.get_pool(token).get_tvl(block=block)
         if tvl is None: return None
         return tvl / ERC20(token).total_supply_readable(block)
 
     @log(logger)
+    @lru_cache(maxsize=None)
+    def get_pool(self, token: str) -> CurvePool:
+        """
+        Get Curve pool (swap) address by LP token address. Supports factory pools.
+        """
+        if self.get_factory(token):
+            return CurvePool(token)
+            
+        if token in OVERRIDES:
+            pool = OVERRIDES[token]
+        else:
+            pool = self._pool_from_lp_token(token)
+
+        if pool != ZERO_ADDRESS:
+            return CurvePool(pool)
+
+    @log(logger)
     def virtual_price(self, token: str, block: int = None) -> int:
         pool = self.get_pool(token)
-        try: return Contract(pool).get_virtual_price(block_identifier=block)
+        try: return pool.contract.get_virtual_price(block_identifier=block)
         except Exception as e:
             if call_reverted(e): return False
             else: raise
@@ -344,15 +234,6 @@ class CurveRegistry(metaclass=Singleton):
         virtual_price = self.virtual_price(token, block)
         if virtual_price is None: return None
         return virtual_price / 1e18
-    
-    @log(logger)
-    def oracle(self, pool):
-        '''
-        If `pool` has method `price_oracle`, returns price_oracle address.
-        Else, returns `None`.
-        '''
-        response = raw_call(pool, 'price_oracle()', output='address', return_None_on_failure=True)
-        return response if response != ZERO_ADDRESS else None
 
     @log(logger)
     def calculate_boost(self, gauge, addr, block=None):
@@ -424,6 +305,15 @@ class CurveRegistry(metaclass=Singleton):
             "crv apy": rate * crv_price,
             "token price": token_price,
         }
+    
+    # wip
+    def find_pool_for_coin(self, token_in: str, block: int = None) -> str:
+        for stable in STABLECOINS:
+            pool = self.registry.find_pool_for_coins(token_in, stable, block_identifier = block)
+            if pool != ZERO_ADDRESS: return pool
+
+    def get_price_underlying(self, token_in: str, block: int = None) -> float:
+        pool = self.find_pool_for_coin(token_in)
 
 
 try: curve = CurveRegistry()

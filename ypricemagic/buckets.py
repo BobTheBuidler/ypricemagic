@@ -13,7 +13,7 @@ from ypricemagic.price_modules.aave import aave
 from ypricemagic.price_modules.balancer.balancer import balancer
 from ypricemagic.price_modules.chainlink.chainlink import chainlink
 from ypricemagic.price_modules.compound import compound
-from ypricemagic.price_modules.curve import curve
+from ypricemagic.price_modules.curve.curve import curve
 from ypricemagic.price_modules.uniswap.uniswap import uniswap
 
 logger = logging.getLogger(__name__)
