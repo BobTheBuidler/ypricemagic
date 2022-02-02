@@ -64,7 +64,7 @@ class Comptroller:
         self.markets = {
             convert.to_address(market)
             for market
-            in Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
+            in Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]])()['markets']
         }
         logger.info(f"loaded {len(self.markets)} lending markets on {self.key}")
     
@@ -103,7 +103,7 @@ class Compound:
     def get_price(self, token_address: str, block=None):
         methods = 'underlying()(address)','exchangeRateCurrent()(uint)','decimals()(uint)'
         calls = [Call(token_address, [method], [[i,None]]) for i, method in enumerate(methods)]
-        underlying, exchange_rate, decimals = Multicall(calls, block_id=block, _w3=web3, require_success=False)().values()
+        underlying, exchange_rate, decimals = Multicall(calls, block_id=block, require_success=False)().values()
 
         # this will run for gas coin markets like cETH, crETH
         if underlying is None: underlying, under_decimals = EEE_ADDRESS, 18
