@@ -14,6 +14,7 @@ class WeiBalance:
     def __init__(self, balance: int, token: Union[str, brownie.Contract, ERC20], block: int = None) -> None:
         self.balance = balance
         self.token = ERC20(str(token))
+        self.block = block
         super().__init__()
 
     def __str__(self) -> str:
