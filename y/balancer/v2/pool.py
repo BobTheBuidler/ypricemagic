@@ -22,7 +22,7 @@ class BalancerV2Pool(ERC20):
     @cached_property
     @log(logger)
     def id(self):
-        return Call(self.address, ['getPoolId()(bytes32)'], [['id',None]])()['id']
+        return Call(self.address, ['getPoolId()(bytes32)'], [['id',None]], _w3=web3)()['id']
     
     @cached_property
     @log(logger)

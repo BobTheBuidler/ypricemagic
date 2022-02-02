@@ -37,7 +37,7 @@ class Aave:
     def __init__(self) -> None:
         if len(v1_pools):
             calls_v1 = [Call(v1_pool, ['getReserves()(address[])'], [[v1_pool,None]]) for v1_pool in v1_pools]
-            reserves_v1 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v1)().items()}
+            reserves_v1 = {Contract(pool): reserves for pool, reserves in Multicall(calls_v1, _w3=web3)().items()}
             multicall_v1 = fetch_multicall(*[
                 [v1_pool, 'getReserveData', reserve]
                 for v1_pool, reserves in reserves_v1.items() for reserve in reserves
@@ -47,7 +47,7 @@ class Aave:
 
         if len(v2_pools):
             calls_v2 = [Call(v2_pool, ['getReservesList()(address[])'], [[v2_pool,None]]) for v2_pool in v2_pools]
-            reserves_v2 = {pool: reserves for pool, reserves in Multicall(calls_v2)().items()}
+            reserves_v2 = {pool: reserves for pool, reserves in Multicall(calls_v2, _w3=web3)().items()}
 
             try:
                 calls_v2 = [
@@ -58,7 +58,7 @@ class Aave:
                     )
                     for v2_pool, reserves in reserves_v2.items() for reserve in reserves
                 ]
-                self.atokens_v2 = [reserve_data[7] for reserve_data in Multicall(calls_v2)().values()]
+                self.atokens_v2 = [reserve_data[7] for reserve_data in Multicall(calls_v2, _w3=web3)().values()]
                 logger.info(f'loaded {len(self.atokens_v2)} v2 atokens')
             except TypeError: # TODO figure out what to do about non verified aave markets
                 self.atokens_v2 = []
