@@ -75,7 +75,7 @@ class CToken(ERC20):
     @log(logger)
     @lru_cache
     def underlying_per_ctoken(self, block: int = None) -> float:
-        self.exchange_rate(block=block) * 10 ** (self.decimals - self.underlying.decimals)
+        return self.exchange_rate(block=block) * 10 ** (self.decimals - self.underlying.decimals)
     
     @log(logger)
     @lru_cache
