@@ -2,7 +2,7 @@ import logging
 from functools import cached_property, lru_cache
 
 from y.classes.common import ERC20, WeiBalance
-from y.contracts import Contract, has_methods, probe
+from y.contracts import Contract, has_methods, probe, has_method
 from y.decorators import log
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract, CantFetchParam
 from y.utils.cache import memory
@@ -70,6 +70,12 @@ class YearnInspiredVault(ERC20):
 
             if not method: raise
             underlying = raw_call(self.address, method, output='address')
+        
+        if not underlying:
+            # certain reaper vaults
+            lend_platform = self.has_method('lendPlatform()(address)', return_response=True)
+            if lend_platform:
+                underlying = has_method(lend_platform, 'underlying()(address)', return_response=True)
 
         if underlying: return ERC20(underlying)
         else: raise CantFetchParam(f'underlying for {self.__repr__()}')
