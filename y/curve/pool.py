@@ -108,9 +108,8 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             balances = source.get_balances(self.address, block_identifier=block)
         # fallback for historical queries
         except ValueError:
-            balances = fetch_multicall(
-                *[[self.contract, 'balances', i] for i, _ in enumerate(self.get_coins)]
-            )
+            balances = multicall_same_func_same_contract_different_inputs(
+                self.address, 'balances(uint256)(uint256)', inputs = (i for i, _ in enumerate(self.get_coins)), block=block)
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
