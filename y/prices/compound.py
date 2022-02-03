@@ -1,12 +1,13 @@
-from functools import cached_property
 import logging
-from typing import Set
+from functools import cached_property, lru_cache
+from typing import Set, Tuple
 
 from brownie import chain, convert, web3
 from multicall import Call, Multicall
-from y.classes.common import ContractBase
+from y.classes.common import ERC20, ContractBase
+from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
-from y.contracts import has_methods
+from y.contracts import has_method, has_methods
 from y.decorators import log
 from y.exceptions import call_reverted
 from y.networks import Network
@@ -54,6 +55,36 @@ TROLLERS = {
 }.get(chain.id, {})
 
 
+class CToken(ERC20):
+    def __init__(self, address: str, *args, **kwargs):
+        super().__init__(address, *args, **kwargs)
+    
+    def get_price(self, block: int = None) -> float:
+        return self.underlying_per_ctoken(block=block) * self.underlying.price(block=block)
+    
+    @cached_property
+    @log(logger)
+    def underlying(self) -> ERC20:
+        underlying = self.has_method('underlying()(address)', return_response=True)
+
+        # this will run for gas coin markets like cETH, crETH
+        if not underlying: underlying = EEE_ADDRESS
+
+        return ERC20(underlying)
+    
+    @log(logger)
+    @lru_cache
+    def underlying_per_ctoken(self, block: int = None) -> float:
+        self.exchange_rate(block=block) * 10 ** (self.decimals - self.underlying.decimals)
+    
+    @log(logger)
+    @lru_cache
+    def exchange_rate(self, block: int = None) -> int:
+        method = 'exchangeRateCurrent()(uint)'
+        exchange_rate = Call(self.address, [method], [[method,None]], block_id=block)()[method]
+        return exchange_rate / 1e18
+    
+
 class Comptroller(ContractBase):
     def __init__(self, address: str = None, key: str = None) -> None:
         assert address or key,          'Must provide either an address or a key'
@@ -70,34 +101,26 @@ class Comptroller(ContractBase):
 
     @log(logger)
     def __contains__(self, token_address: str) -> bool:
-        return convert.to_address(token_address) in self.markets
+        return token_address in self.markets
     
     @cached_property
     def markets(self) -> Set[str]:
-        try:
-            response = Call(self.address, ["getAllMarkets()(address[])"],[['markets',None]], _w3=web3)()['markets']
-        except Exception as e:
-            if not call_reverted(e): raise
+        response = self.has_method("getAllMarkets()(address[])", return_response=True)
+        if not response:
             logger.error(f'had trouble loading markets for {self.__repr__()}')
             response = set()
-            
-        logger.info(f"loaded {len(response)} markets for {self.__repr__()}")
-        return {
-            convert.to_address(market)
-            for market
-            in response
-        }
+        markets = {CToken(market) for market in response}
+        logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
+        return response
 
 
-
-class Compound:
+class Compound(metaclass = Singleton):
     def __init__(self) -> None:
         self.trollers = {
             protocol: Comptroller(troller)
             for protocol, troller
             in TROLLERS.items()
         }
-
 
     @log(logger)
     def is_compound_market(self, token_address: str) -> bool:
@@ -106,39 +129,19 @@ class Compound:
 
         # NOTE: Workaround for pools that have since been revoked
         result = has_methods(token_address, ['isCToken()(bool)','comptroller()(address)','underlying()(address)'])
-        if result is True: self.notify_if_unknown_comptroller(token_address)
+        if result is True: self.__notify_if_unknown_comptroller(token_address)
         return result
     
+    @log(logger)
+    def get_price(self, token_address: str, block=None):
+        return CToken(token_address).get_price(block=block)
 
     @log(logger)
     def __contains__(self, token_address: str) -> bool:
         return self.is_compound_market(token_address)
-    
 
     @log(logger)
-    def get_price(self, token_address: str, block=None):
-        methods = 'underlying()(address)','exchangeRateCurrent()(uint)','decimals()(uint)'
-        calls = [Call(token_address, [method], [[i,None]]) for i, method in enumerate(methods)]
-        underlying, exchange_rate, decimals = Multicall(calls, block_id=block, _w3=web3, require_success=False)().values()
-
-        # this will run for gas coin markets like cETH, crETH
-        if underlying is None: underlying, under_decimals = EEE_ADDRESS, 18
-        else: under_decimals = _decimals(underlying,block)
-        
-        exchange_rate /= 1e18
-
-        return [exchange_rate * 10 ** (decimals - under_decimals), underlying]
-
-
-    @log(logger)
-    def notify_if_unknown_comptroller(self, token_address: str) -> None:
-        '''
-        If the `comptroller` for token `token_address` is not known to ypricemagic, log a message:
-        - `logger.warn(f'Comptroller {comptroller} is unknown to ypricemagic.')`
-        - `logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')`
-        - `logger.warn(f'In your issue, please include the network {network_details} and the comptroller address')`
-        - `logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')`
-        '''
+    def __notify_if_unknown_comptroller(self, token_address: str) -> None:
         comptroller = raw_call(token_address,'comptroller()',output='address')
         if comptroller not in self.trollers.values():
             gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
