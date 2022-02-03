@@ -56,7 +56,9 @@ class UniswapPoolV2(ERC20):
     
     @log(logger)
     def get_price(self, block: int = None) -> float:
-        return self.tvl(block=block) / self.total_supply_readable(block=block)
+        tvl = self.tvl(block=block)
+        if tvl is not None:
+            return tvl / self.total_supply_readable(block=block)
     
     @log(logger)
     def reserves(self, block: int = None) -> Tuple[WeiBalance, WeiBalance]:
@@ -67,8 +69,13 @@ class UniswapPoolV2(ERC20):
     def tvl(self, block: int = None) -> float:
         prices = [token.price(block=block, return_None_on_failure=True) for token in self.tokens]
         vals = [None if price is None else reserve.readable * price for reserve, price in zip(self.reserves(block=block), prices)]
-        if not vals[0] or not vals[1]: vals = _extrapolate_value(vals)
-        return sum(vals)
+        
+        if not vals[0] or not vals[1]:
+            if vals[0] is not None and not vals[1]: vals[1] = vals[0]
+            if vals[1] is not None and not vals[0]: vals[0] = vals[1]
+
+        if vals[0] is not None and vals[1] is not None:
+            return sum(vals)
 
     @log(logger)
     def get_pool_details(self, block: int = None) -> Tuple[str, str, int, Tuple[int, int, int]]:
@@ -84,9 +91,3 @@ class UniswapPoolV2(ERC20):
             except (ContractNotVerified, MessedUpBrownieContract):
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
         return token0, token1, supply, reserves
-
-@log(logger)
-def _extrapolate_value(vals: Tuple[float, float]) -> Tuple[float, float]:
-    if vals[0] and not vals[1]: vals[1] = vals[0]
-    if vals[1] and not vals[0]: vals[0] = vals[1]
-    return vals
