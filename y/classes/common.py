@@ -74,19 +74,27 @@ class ERC20(ContractBase):
     
     @cached_property
     def symbol(self) -> str:
+        if self.address == EEE_ADDRESS:
+            return "ETH"
         return _symbol(self.address, return_None_on_failure=True)
     
     @cached_property
     def name(self) -> str:
+        if self.address == EEE_ADDRESS:
+            return "Ethereum"
         return _name(self.address, return_None_on_failure=True)
     
     @cached_property
     def decimals(self) -> int:
+        if self.address == EEE_ADDRESS:
+            return 18
         return decimals(self.address)
 
     @log(logger)
     @lru_cache
     def _decimals(self, block: int = None) -> int:
+        if self.address == EEE_ADDRESS:
+            return 18
         '''used to fetch decimals at specific block'''
         return decimals(self.address, block=block)
     
