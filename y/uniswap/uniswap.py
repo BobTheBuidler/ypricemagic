@@ -9,6 +9,7 @@ from y.uniswap.protocols import UNISWAPS
 from y.uniswap.v1 import UniswapV1
 from y.uniswap.v2.pool import NotAUniswapV2Pool, UniswapPoolV2
 from y.uniswap.v2.router import UniswapRouterV2
+from y.utils.logging import gh_issue_request
 from y.utils.multicall import multicall_same_func_no_input
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,14 @@ class Uniswap:
 
     @log(logger)
     def is_uniswap_pool(self, token_address: str) -> bool:
-        try: return UniswapPoolV2(token_address).factory in self.factories
+        try:
+            pool = UniswapPoolV2(token_address)
+            is_pool = all(pool.get_pool_details())
+            if is_pool and pool.factory not in self.factories:
+                gh_issue_request(f'UniClone Factory {pool.factory} is unknown to ypricemagic.', logger)
+                self.factories.append(pool.factory)
+            return is_pool
+
         except NotAUniswapV2Pool: return False
 
     @log(logger)

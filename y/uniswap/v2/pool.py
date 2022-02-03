@@ -88,6 +88,6 @@ class UniswapPoolV2(ERC20):
             try:
                 contract = Contract(self.address)
                 token0, token1, supply, reserves = fetch_multicall([contract,'token0'],[contract,'token1'],[contract,'totalSupply'],[contract,'getReserves'],block=block)
-            except (ContractNotVerified, MessedUpBrownieContract):
+            except (AttributeError, ContractNotVerified, MessedUpBrownieContract):
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
         return token0, token1, supply, reserves
