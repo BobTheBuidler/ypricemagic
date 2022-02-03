@@ -228,18 +228,4 @@ def _clean_addresses(
     addresses: Sequence[Any]
 ):
 
-    return [_clean_address(address) for address in addresses]
-
-
-@log(logger)
-def _clean_address(
-    address: Any
-    ):
-
-    if type(address) not in SUPPORTED_INPUT_TYPES:
-        raise TypeError(f'Unsupported input type: {type(address)}')
-    
-    if type(address) != str: 
-        address = str(address)
-
-    return convert.to_address(address)
+    return [convert.to_address(address) for address in addresses]
