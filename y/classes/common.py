@@ -9,7 +9,8 @@ from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound
 from eth_typing.evm import Address
 from y.classes.singleton import ContractSingleton
-from y.contracts import Contract, build_name
+from y.constants import EEE_ADDRESS
+from y.contracts import Contract, build_name, has_method
 from y.decorators import log
 from y.erc20 import decimals, totalSupply
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract
@@ -39,6 +40,7 @@ class ContractBase(metaclass=ContractSingleton):
         return Contract(self.address)
     
     @cached_property
+    @log(logger)
     def _is_cached(self) -> bool:
         try:
             self.contract
@@ -49,8 +51,15 @@ class ContractBase(metaclass=ContractSingleton):
             return None
     
     @cached_property
+    @log(logger)
     def build_name(self):
         return build_name(self.address)
+    
+    @log(logger)
+    @lru_cache
+    def has_method(self, method: str, return_response: bool = False):
+        return has_method(self.address, method, return_response=return_response)
+
 
 
 class ERC20(ContractBase):
