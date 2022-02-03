@@ -88,7 +88,7 @@ def multicall_same_func_same_contract_different_inputs(
     ):
 
     assert inputs
-    address = _clean_address(address)
+    address = convert.to_address(address)
     calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
     return [result for result in Multicall(calls, block_id=block, _w3=web3, require_success = not return_None_on_failure)().values()]
 
