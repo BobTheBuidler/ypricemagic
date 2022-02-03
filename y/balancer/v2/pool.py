@@ -36,7 +36,7 @@ class BalancerV2Pool(ERC20):
 
     @log(logger)
     def get_tvl(self, block=None):
-        return sum(balance * token.price(block=block) for token, balance in self.get_balances(block=block))
+        return sum(balance * token.price(block=block) for token, balance in self.get_balances(block=block).items())
 
     @log(logger)
     def get_balances(self, block=None):
