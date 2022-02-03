@@ -67,7 +67,7 @@ class YearnInspiredVault(ERC20):
                 "BeefyVaultV6Matic": "wmatic()",
                 "BeefyVenusVaultBNB": "wbnb()",
             }.get(self.build_name, None)
-            
+
             if not method: raise
             underlying = raw_call(self.address, method, output='address')
 
@@ -89,7 +89,7 @@ class YearnInspiredVault(ERC20):
             except ContractNotVerified:
                 pass
 
-        if share_price: return WeiBalance(share_price, self.underlying, block=block)
+        if share_price is not None: return WeiBalance(share_price, self.underlying, block=block)
         else: raise CantFetchParam(f'share_price for {self.__repr__()}')
     
     @log(logger)
