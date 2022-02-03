@@ -22,13 +22,11 @@ BALANCER_V2_VAULTS = {
     Network.Arbitrum: [
         '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
     ],
-}
-
-BALANCER_V2_VAULTS = [BalancerV2Vault(vault) for vault in BALANCER_V2_VAULTS.get(chain.id, [])]
+}.get(chain.id, [])
 
 class BalancerV2:
     def __init__(self) -> None:
-        self.vaults = BALANCER_V2_VAULTS
+        self.vaults = [BalancerV2Vault(vault) for vault in BALANCER_V2_VAULTS]
     
     def __str__(self) -> str:
         return "BalancerV2()"

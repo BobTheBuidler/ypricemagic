@@ -13,6 +13,9 @@ logger = logging.getLogger(__name__)
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: str, *args, **kwargs):
         super().__init__(address, *args, **kwargs)
+        if not self._is_cached:
+            # we need the contract cached so we can decode logs correctly
+            self.contract
     
     @log(logger)
     def get_pool_tokens(self, pool_id: int, block=None):
