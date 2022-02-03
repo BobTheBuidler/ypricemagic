@@ -1,4 +1,5 @@
 
+from itertools import count
 import logging
 from typing import Dict, List
 
@@ -25,7 +26,18 @@ class BalancerV1Pool(ERC20):
 
     @log(logger)
     def get_tvl(self, block: int = None) -> float:
-        return sum(balance * token.price(block=block) for token, balance in self.get_balances().items())
+        token_balances = self.get_balances()
+        good_balances = {
+            token: balance
+            for token, balance
+            in token_balances.items()
+            if token.price(block=block, return_None_on_failure=True) is not None
+        }
+        
+        # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
+        good_value = sum(balance * token.price(block=block, return_None_on_failure=True) for token, balance in good_balances.items())
+        if len(good_balances):
+            return good_value / len(good_balances) * len(token_balances)
 
     @log(logger)
     def get_balances(self, block: int = None) -> Dict[ERC20, float]:
