@@ -6,12 +6,10 @@ from typing import Dict, List
 from brownie import web3
 from multicall import Call
 from y.balancer.v2.vault import BalancerV2Vault
-from y.classes.common import ERC20
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN, usdc
+from y.classes.common import ERC20, WeiBalance
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN
 from y.decorators import log
-from y.prices import magic
-from y.utils.multicall import multicall_decimals
-from y.utils.raw_calls import _decimals, raw_call
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
@@ -36,49 +34,42 @@ class BalancerV2Pool(ERC20):
 
     @log(logger)
     def get_tvl(self, block=None):
-        return sum(balance * token.price(block=block) for token, balance in self.get_balances(block=block).items())
+        return sum(balance.readable * token.price(block=block) for token, balance in self.get_balances(block=block).items())
 
     @log(logger)
-    def get_balances(self, block=None):
-        token_balances = self.tokens(block=block)
-        decimals = multicall_decimals(token_balances.keys(), block)
-        return {token: balance / 10 ** decimal for token, balance, decimal in zip(token_balances.keys(), token_balances.values(), decimals)}
+    def get_balances(self, block=None) -> Dict[ERC20, WeiBalance]:
+        return {token: balance for token, balance in self.tokens(block=block).items()}
 
     @log(logger)
     def get_token_price(self, token_address: str, block=None) -> float:
-        token_balances = self.tokens(block=block)
-        weights = self.weights(block=block)
-        pool_tokens = list(zip(token_balances.keys(),token_balances.values(), weights))
-        wethBal, usdcBal, pairedTokenBal = None, None, None
-        for pool_token, balance, weight in pool_tokens:
-            if pool_token in STABLECOINS:
-                usdcBal, usdcWeight = balance, weight
-            if pool_token == WRAPPED_GAS_COIN:
-                wethBal, wethWeight = balance, weight
+        token_balances = self.get_balances(block=block)
+        pool_token_info = list(zip(token_balances.keys(),token_balances.values(), self.weights(block=block)))
+        for pool_token, balance, weight in pool_token_info:
             if pool_token == token_address:
-                tokenBal, tokenWeight = balance, weight
-            if len(pool_tokens) == 2 and pool_token != token_address:
-                pairedTokenBal, pairedTokenWeight, pairedToken = balance, weight, pool_token
+                token_balance, token_weight = balance, weight
 
-        tokenPrice = None
-        if usdcBal:
-            usdcValueUSD = (usdcBal / 10 ** 6) * magic.get_price(usdc, block)
-            tokenValueUSD = usdcValueUSD / usdcWeight * tokenWeight
-            tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
-        elif wethBal:
-            wethValueUSD = (wethBal / 10 ** 18) * magic.get_price(WRAPPED_GAS_COIN, block)
-            tokenValueUSD = wethValueUSD / wethWeight * tokenWeight
-            tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
-        elif pairedTokenBal:
-            pairedTokenValueUSD = (pairedTokenBal / 10 ** _decimals(pairedToken,block)) * magic.get_price(pairedToken, block)
-            tokenValueUSD = pairedTokenValueUSD / pairedTokenWeight * tokenWeight
-            tokenPrice = tokenValueUSD / (tokenBal / 10 ** _decimals(token_address,block))
-        return tokenPrice
+        for pool_token, balance, weight in pool_token_info:
+            if pool_token in STABLECOINS:
+                paired_token_balance, paired_token_weight = balance, weight
+                break
+            elif pool_token == WRAPPED_GAS_COIN:
+                paired_token_balance, paired_token_weight = balance, weight
+                break
+            elif len(pool_token_info) == 2 and pool_token != token_address:
+                paired_token_balance, paired_token_weight = balance, weight
+                break
+
+        try:
+            token_value_in_pool = paired_token_balance.value_usd / paired_token_weight * token_weight
+            token_price = token_value_in_pool / token_balance.readable
+            return token_price
+        except UnboundLocalError:
+            return None
     
     @log(logger)
-    def tokens(self, block=None) -> Dict[ERC20, float]:
+    def tokens(self, block=None) -> Dict[ERC20, WeiBalance]:
         tokens, balances, lastChangedBlock = self.vault.get_pool_tokens(self.id, block=block)
-        return {token: balance for token, balance in zip(tokens, balances)}        
+        return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
     @log(logger)
     def weights(self, block=None) -> List[int]:
