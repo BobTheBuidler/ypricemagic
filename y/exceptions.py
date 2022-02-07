@@ -33,7 +33,8 @@ class MessedUpBrownieContract(Exception):
         except CompilerError: pass # didn't work, oh well
         except Exception as e:
             if "invalid literal for int() with base 16: ''" in str(e): pass # didn't work, oh well
-            elif "list index out of range" in str(e): pass  # didn't work, oh well
+            elif "list index out of range" in str(e): pass # didn't work, oh well
+            elif "pop from an empty deque" in str(e): pass # didn't work, oh well
             elif contract_not_verified(e): pass # not verified, won't work
             else: raise
 
