@@ -12,10 +12,24 @@ logger = logging.getLogger(__name__)
 
 # NOTE: Yearn and Yearn-inspired
 
-@log(logger)
-def get_price(token: str, block=None):
-    return YearnInspiredVault(token).price(block=block)
+underlying_methods = [
+    'token()(address)',
+    'underlying()(address)',
+    'native()(address)',
+    'want()(address)',
+    'input()(address)'
+    'wmatic()(address)',
+    'wbnb()(address)',
+    'based()(address)',
+]
 
+share_price_methods = [
+    'pricePerShare()(uint)',
+    'getPricePerShare()(uint)',
+    'getPricePerFullShare()(uint)',
+    'getSharesToUnderlying()(uint)',
+    'exchangeRate()(uint)'
+]
 
 @log(logger)
 @memory.cache()
@@ -43,6 +57,9 @@ def is_yearn_vault(token):
     logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
     return result
 
+@log(logger)
+def get_price(token: str, block=None):
+    return YearnInspiredVault(token).price(block=block)
 
 class YearnInspiredVault(ERC20):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
@@ -59,8 +76,7 @@ class YearnInspiredVault(ERC20):
     @log(logger)
     def underlying(self) -> ERC20:
         try:
-            methods = ['token()(address)','underlying()(address)','native()(address)','want()(address)','wmatic()(address)','wbnb()(address)','based()(address)']
-            underlying = probe(self.address, methods)
+            underlying = probe(self.address, underlying_methods)
         except AssertionError:
             # special handler for some strange beefy vaults
             method = {
@@ -83,8 +99,7 @@ class YearnInspiredVault(ERC20):
     @log(logger)
     @lru_cache
     def share_price(self, block: int = None) -> WeiBalance:
-        methods = ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)','exchangeRate()(uint)']
-        share_price = probe(self.address, methods, block=block)
+        share_price = probe(self.address, share_price_methods, block=block)
 
         if share_price is None:
             # this is for element vaults, probe fails because method requires input
@@ -102,14 +117,3 @@ class YearnInspiredVault(ERC20):
     @lru_cache
     def price(self, block: int = None) -> float:
         return self.share_price(block=block).readable * self.underlying.price(block=block)
-
-    # saving for later
-    '''
-    elif hasattr(vault, 'getPricePerFullShare') and hasattr(vault, 'token'):
-        share_price, underlying = fetch_multicall(
-            [vault, 'getPricePerFullShare'],
-            [vault, 'token'],
-            block=block
-        )
-        decimals = 18
-    '''
