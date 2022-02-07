@@ -74,7 +74,7 @@ class Contract(_Contract):
                     else: raise
                 except IndexError as e:
                     if 'list index out of range' in str(e): raise MessedUpBrownieContract(address, str(e))
-                    elif "pop from empty deque" in str(e): raise MessedUpBrownieContract(address, str(e))
+                    elif "pop from an empty deque" in str(e): raise MessedUpBrownieContract(address, str(e))
                     else: raise
                 except ValueError as e:
                     if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
