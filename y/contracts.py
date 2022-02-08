@@ -66,12 +66,17 @@ class Contract(_Contract):
                 try: 
                     super().__init__(address, *args, owner=owner, **kwargs)
                     self._verified = True
-                except CompilerError as e: raise MessedUpBrownieContract(address, str(e))
+                except AttributeError as e:
+                    if "" in str(e):
+                        raise MessedUpBrownieContract(address, str(e))
+                    raise
+                except CompilerError as e:
+                    raise MessedUpBrownieContract(address, str(e))
                 except ConnectionError as e:
                     if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
                         if web3.eth.get_code(address): raise ContractNotVerified(address)
                         else: raise ContractNotFound(address)
-                    else: raise
+                    raise
                 except IndexError as e:
                     if 'list index out of range' in str(e): raise MessedUpBrownieContract(address, str(e))
                     elif "pop from an empty deque" in str(e): raise MessedUpBrownieContract(address, str(e))
