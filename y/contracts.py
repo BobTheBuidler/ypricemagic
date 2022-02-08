@@ -67,7 +67,7 @@ class Contract(_Contract):
                     super().__init__(address, *args, owner=owner, **kwargs)
                     self._verified = True
                 except AttributeError as e:
-                    if "" in str(e):
+                    if "'UsingForDirective' object has no attribute 'typeName'" in str(e):
                         raise MessedUpBrownieContract(address, str(e))
                     raise
                 except CompilerError as e:
