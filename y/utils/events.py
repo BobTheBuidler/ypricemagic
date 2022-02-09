@@ -97,13 +97,25 @@ def _get_logs(address, topics, start, end):
 
 def _get_logs_no_cache(address, topics, start, end):
     logger.debug(f'fetching logs {start} to {end}')
-    if address is None:
-        response = web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
-    elif topics is None:
-        response = web3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
-    else:
-        response = web3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
-    logger.debug(f'finished fetching logs {start} to {end}')
+    try:
+        if address is None:
+            response = web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+        elif topics is None:
+            response = web3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+        else:
+            response = web3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+    except Exception as e:
+        if "Service Unavailable for url:" in str(e):
+            logger.debug('your node is having trouble, breaking batch in half')
+            batch_size = (end - start + 1)
+            half_of_batch = batch_size // 2
+            batch1_end = start + half_of_batch
+            batch2_start = batch1_end + 1
+            batch1 = _get_logs_no_cache(address, topics, start, batch1_end)
+            batch2 = _get_logs_no_cache(address, topics, batch2_start, end)
+            response = batch1 + batch2
+        else:
+            raise
     return response
 
 
