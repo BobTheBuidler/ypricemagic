@@ -2,6 +2,7 @@ import logging
 
 from brownie import chain
 from y.balancer.v1.pool import BalancerV1Pool
+from y.classes.singleton import Singleton
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, has_methods
 from y.decorators import log
@@ -15,7 +16,7 @@ EXCHANGE_PROXY = {
 
 logger = logging.getLogger(__name__)
 
-class BalancerV1:
+class BalancerV1(metaclass=Singleton):
     def __init__(self) -> None:
         self.exchange_proxy = Contract(EXCHANGE_PROXY) if EXCHANGE_PROXY else None
     

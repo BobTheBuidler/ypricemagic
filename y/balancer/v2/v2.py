@@ -3,6 +3,7 @@ import logging
 from brownie import chain
 from y.balancer.v2.pool import BalancerV2Pool
 from y.balancer.v2.vault import BalancerV2Vault
+from y.classes.singleton import Singleton
 from y.contracts import has_methods
 from y.decorators import log
 from y.networks import Network
@@ -24,7 +25,7 @@ BALANCER_V2_VAULTS = {
     ],
 }.get(chain.id, [])
 
-class BalancerV2:
+class BalancerV2(metaclass=Singleton):
     def __init__(self) -> None:
         self.vaults = [BalancerV2Vault(vault) for vault in BALANCER_V2_VAULTS]
     
