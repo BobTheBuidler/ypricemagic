@@ -237,4 +237,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
 from y.curve.curve import CurveRegistry
 
-curve = CurveRegistry()
+try:
+    curve = CurveRegistry()
+except UnsupportedNetwork:
+    curve = set()
