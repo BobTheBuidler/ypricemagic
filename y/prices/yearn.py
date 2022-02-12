@@ -34,7 +34,6 @@ share_price_methods = [
 @log(logger)
 @memory.cache()
 def is_yearn_vault(token):
-    logger.debug(f'Checking `is_yearn_vault({token})')
     # Yearn-like contracts can use these formats
     result = any([
         has_methods(token, ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'], any),
@@ -54,7 +53,6 @@ def is_yearn_vault(token):
             ])
         except (ContractNotVerified, MessedUpBrownieContract): pass
 
-    logger.debug(f'`is_yearn_vault({token})` returns `{result}`')
     return result
 
 @log(logger)
