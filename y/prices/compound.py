@@ -81,7 +81,13 @@ class CToken(ERC20):
     @lru_cache
     def exchange_rate(self, block: int = None) -> int:
         method = 'exchangeRateCurrent()(uint)'
-        exchange_rate = Call(self.address, [method], [[method,None]], block_id=block)()[method]
+        try:
+            exchange_rate = Call(self.address, [method], [[method,None]], block_id=block)()[method]
+        except Exception as e:
+            if call_reverted(e):
+                exchange_rate = 0
+            else:
+                raise
         return exchange_rate / 1e18
     
 
