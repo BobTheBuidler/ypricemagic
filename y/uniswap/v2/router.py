@@ -14,7 +14,7 @@ from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert, log
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
-                          NonStandardERC20)
+                          NonStandardERC20, call_reverted)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.uniswap.protocols import (ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL,
@@ -175,7 +175,12 @@ class UniswapRouterV2(ContractBase):
         except KeyError: return None
 
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS: return self.deepest_stable_pool(token_address)
-        reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
+        try:
+            reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
+        except Exception as e:
+            if call_reverted(e):
+                return None
+            raise
 
         deepest_pool = None
         deepest_pool_balance = 0
