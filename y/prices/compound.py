@@ -84,7 +84,7 @@ class CToken(ERC20):
         try:
             exchange_rate = Call(self.address, [method], [[method,None]], block_id=block)()[method]
         except Exception as e:
-            if call_reverted(e):
+            if 'borrow rate is absurdly high' in str(e):
                 exchange_rate = 0
             else:
                 raise
