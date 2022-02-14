@@ -71,7 +71,7 @@ class UniswapV3(metaclass=Singleton):
 
         results = fetch_multicall(
             *[
-                [self.quoter, 'quoteExactInput', self.encode_path(path), scale]
+                [self.quoter.address, 'quoteExactInput', self.encode_path(path), scale]
                 for path in paths
             ],
             block=block,
