@@ -144,7 +144,11 @@ class WeiBalance:
     
     @cached_property
     def readable(self) -> float:
+        if self.balance == 0:
+            return 0
         return self.balance / self.token._scale(block=self.block)
     
     def value_usd(self) -> float:
+        if self.balance == 0:
+            return 0
         return self.readable * self.token.price(block=self.block)
