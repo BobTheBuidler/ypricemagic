@@ -106,6 +106,8 @@ def _get_price(
     price = _exit_early_for_known_tokens(token, block=block)
     if price is not None: return price
 
+    if price is None: price = curve.get_price_underlying(token, block=block)
+
     if price is None: price = uniswap.get_price(token, block=block)
 
     # if price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin
