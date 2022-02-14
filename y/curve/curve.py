@@ -189,21 +189,6 @@ class CurveRegistry(metaclass=Singleton):
     @log(logger)
     @ttl_cache(maxsize=None, ttl=600)
     def get_price(self, token: str, block: int = None) -> float:
-        pool = self.get_pool(token)
-
-        # crypto pools can have different tokens, use slow method
-        if pool.oracle: return self.get_price_full(token, block)
-
-        # approximate by using the most common base token we find
-        try: coin = (set(pool.get_underlying_coins) & BASIC_TOKENS).pop()
-        except KeyError: coin = None
-
-        virtual_price = self.virtual_price_readable(token, block)
-        if virtual_price and coin: return virtual_price * magic.get_price(coin, block)
-        else: return self.get_price_full(token, block)
-    
-    @log(logger)
-    def get_price_full(self, token: str, block: int = None) -> float:
         tvl = self.get_pool(token).get_tvl(block=block)
         if tvl is None: return None
         return tvl / ERC20(token).total_supply_readable(block)
