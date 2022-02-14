@@ -53,17 +53,17 @@ class UniswapV3(metaclass=Singleton):
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
 
-    def get_price(self, token, block=None):
+    def get_price(self, token: str, block=None):
         if block and block < contract_creation_block(UNISWAP_V3_QUOTER):
             return None
 
         paths = []
         if token != weth:
             paths += [
-                [token.address, fee, weth.address, self.fee_tiers[0], usdc.address] for fee in self.fee_tiers
+                [token, fee, weth.address, self.fee_tiers[0], usdc.address] for fee in self.fee_tiers
             ]
 
-        paths += [[token.address, fee, usdc.address] for fee in self.fee_tiers]
+        paths += [[token, fee, usdc.address] for fee in self.fee_tiers]
 
         results = fetch_multicall(
             *[
