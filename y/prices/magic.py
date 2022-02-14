@@ -20,6 +20,7 @@ from y.networks import Network
 from y.prices import (belt, cream, froyo, gelato, ib, mooniswap,
                       mstablefeederpool, piedao, saddle, tokensets, wsteth,
                       yearn)
+from y.uniswap.v3 import uniswap_v3
 from y.prices.aave import aave
 from y.prices.compound import compound
 from y.prices.synthetix import synthetix
@@ -109,6 +110,9 @@ def _get_price(
 
     if price is None:
         price = curve.get_price_for_underlying(token, block=block)
+    
+    if price is None and uniswap_v3:
+        price = uniswap_v3.get_price(token, block=block)
 
     if price is None:
         price = uniswap.get_price(token, block=block)
