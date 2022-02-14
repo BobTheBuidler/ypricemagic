@@ -240,8 +240,12 @@ class CurveRegistry(metaclass=Singleton):
         return virtual_price / 1e18
 
     @log(logger)
-    def get_price_underlying(self, token_in: str, block: int = None) -> float:
-        pools = self.coin_to_pools[token_in]
+    def get_price_for_underlying(self, token_in: str, block: int = None) -> float:
+        try:
+            pools = self.coin_to_pools[token_in]
+        except KeyError:
+            return None
+
         if len(pools) == 1:
             pool = pools[0]
         else:
@@ -257,7 +261,10 @@ class CurveRegistry(metaclass=Singleton):
             token_in_ix = pool.get_coin_index(token_in)
             token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
             dy = pool.get_dy(token_in_ix, token_out_ix, block = block)
-            return dy.value_usd()
+            try:
+                return dy.value_usd()
+            except RecursionError:
+                return None
         else:
             # TODO: handle this sitch if necessary
             return
