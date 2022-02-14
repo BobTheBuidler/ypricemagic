@@ -3,6 +3,7 @@ from itertools import cycle
 
 from brownie import chain
 from eth_abi.packed import encode_abi_packed
+from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block
@@ -56,22 +57,17 @@ class UniswapV3(metaclass=Singleton):
         if block and block < contract_creation_block(UNISWAP_V3_QUOTER):
             return None
 
-        if token == usdc:
-            return 1
-
         paths = []
         if token != weth:
             paths += [
-                [token, fee, weth, self.fee_tiers[0], usdc] for fee in self.fee_tiers
+                [token.address, fee, weth.address, self.fee_tiers[0], usdc.address] for fee in self.fee_tiers
             ]
 
-        paths += [[token, fee, usdc] for fee in self.fee_tiers]
-
-        scale = 10 ** Contract(token).decimals()
+        paths += [[token.address, fee, usdc.address] for fee in self.fee_tiers]
 
         results = fetch_multicall(
             *[
-                [self.quoter.address, 'quoteExactInput', self.encode_path(path), scale]
+                [self.quoter.address, 'quoteExactInput', self.encode_path(path), ERC20(token).scale]
                 for path in paths
             ],
             block=block,
