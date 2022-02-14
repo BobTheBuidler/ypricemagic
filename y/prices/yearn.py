@@ -79,7 +79,7 @@ class YearnInspiredVault(ERC20):
     def underlying(self) -> ERC20:
         # special cases
         if chain.id == Network.Arbitrum and self.address == '0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7':
-            return raw_call(self.address, 'usdl()', output='address')
+            return ERC20(raw_call(self.address, 'usdl()', output='address'))
 
 
         try:
