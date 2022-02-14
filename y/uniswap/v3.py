@@ -67,7 +67,7 @@ class UniswapV3(metaclass=Singleton):
 
         results = fetch_multicall(
             *[
-                [self.quoter.address, 'quoteExactInput', self.encode_path(path), ERC20(token).scale]
+                [self.quoter, 'quoteExactInput', self.encode_path(path), ERC20(token).scale]
                 for path in paths
             ],
             block=block,
