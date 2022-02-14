@@ -1,6 +1,10 @@
 import logging
 from functools import cached_property, lru_cache
 
+from brownie import chain
+
+from y import Network
+
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods, probe, has_method
 from y.decorators import log
@@ -73,6 +77,11 @@ class YearnInspiredVault(ERC20):
     @cached_property
     @log(logger)
     def underlying(self) -> ERC20:
+        # special cases
+        if chain.id == Network.Arbitrum and self.address == '0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7':
+            return raw_call(self.address, 'usdl()', output='address')
+
+
         try:
             underlying = probe(self.address, underlying_methods)
         except AssertionError:
