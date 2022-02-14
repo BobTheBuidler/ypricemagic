@@ -108,8 +108,12 @@ class YearnInspiredVault(ERC20):
             except ContractNotVerified:
                 pass
 
-        if share_price is not None: return WeiBalance(share_price, self.underlying, block=block)
-        else: raise CantFetchParam(f'share_price for {self.__repr__()}')
+        if share_price is not None:
+            return WeiBalance(share_price, self.underlying, block=block)
+        elif raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
+            return WeiBalance(0, self.underlying, block=block)
+        else:
+            raise CantFetchParam(f'share_price for {self.__repr__()}')
     
     @log(logger)
     @lru_cache
