@@ -1,14 +1,15 @@
 import logging
 from collections import defaultdict
-from functools import lru_cache
+from functools import cached_property, lru_cache
 from itertools import islice
+from typing import Dict, List
 
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
-from y.constants import STABLECOINS, dai
+from y.constants import dai
 from y.contracts import Contract
 from y.curve.pool import CurvePool
 from y.decorators import log
@@ -237,16 +238,39 @@ class CurveRegistry(metaclass=Singleton):
         virtual_price = self.virtual_price(token, block)
         if virtual_price is None: return None
         return virtual_price / 1e18
-    
-    # wip
-    def find_pool_for_coin(self, token_in: str, block: int = None) -> str:
-        for stable in STABLECOINS:
-            pool = self.registry.find_pool_for_coins(token_in, stable, block_identifier = block)
-            if pool != ZERO_ADDRESS: return pool
 
+    @log(logger)
     def get_price_underlying(self, token_in: str, block: int = None) -> float:
-        pool = self.find_pool_for_coin(token_in)
+        pools = self.coin_to_pools[token_in]
+        if len(pools) == 1:
+            pool = pools[0]
+        else:
+            # TODO: handle this sitch
+            return
+            #for pool in self.coin_to_pools[token_in]:
+            #    for stable in STABLECOINS:
+            #        if stable != token_in and stable in pool.get_coins:
+            #            pool = pool
+        
+        if len(pool.get_coins) == 2:
+            # this works for most typical metapools
+            token_in_ix = pool.get_coin_index(token_in)
+            token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
+            dy = pool.get_dy(token_in_ix, token_out_ix, block = block)
+            return dy.value_usd()
+        else:
+            # TODO: handle this sitch if necessary
+            return
 
+
+    @cached_property
+    def coin_to_pools(self) -> Dict[str, List[CurvePool]]:
+        mapping = defaultdict(set)
+        pools = {CurvePool(pool) for pools in self.metapools_by_factory.values() for pool in pools}
+        for pool in pools:
+            for coin in pool.get_coins:
+                mapping[coin].add(pool)
+        return {coin: list(pools) for coin, pools in mapping.items()}
 
 try: curve = CurveRegistry()
 except UnsupportedNetwork: curve = set()

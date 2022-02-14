@@ -57,15 +57,19 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     @log(logger)
     @lru_cache
     def get_coin_index(self, coin: str) -> int:
-        return [i for i in enumerate(self.get_coins) if coin == coin][0]
+        return [i for i, coin in enumerate(self.get_coins) if coin == coin][0]
+    
+    @cached_property
+    @log(logger)
+    def num_coins(self) -> int:
+        return len(self.get_coins)
     
     @log(logger)
-    def get_dy(self, token_in: str, token_out: str, block: int = None) -> WeiBalance:
-        ix_in = self.get_coin_index(token_in)
-        ix_out = self.get_coin_index(token_out)
-        amount_in = ERC20(token_in).scale
-        amount_out = self.get_dy(ix_in, ix_out, amount_in)
-        return WeiBalance(amount_out, token_out, block=block)
+    def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: int = None) -> WeiBalance:
+        token_in = self.get_coins[coin_ix_in]
+        amount_in = token_in.scale
+        amount_out = self.contract.get_dy(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
+        return WeiBalance(amount_out, self.get_coins[coin_ix_out], block=block)
     
     @cached_property
     @log(logger)
