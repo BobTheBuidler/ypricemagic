@@ -7,6 +7,7 @@ from typing import Dict, List
 
 from brownie import Contract as _Contract
 from brownie import chain, convert, web3
+from brownie.exceptions import EventLookupError
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
 from y.classes.common import ContractBase
@@ -123,16 +124,20 @@ class UniswapRouterV2(ContractBase):
         logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
         PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
         events = decode_logs(get_logs_asap(self.factory, PairCreated))
-        pairs = {
-            event['']: {
-                convert.to_address(event['pair']): {
-                    'token0':convert.to_address(event['token0']),
-                    'token1':convert.to_address(event['token1']),
+        try:
+            pairs = {
+                event['']: {
+                    convert.to_address(event['pair']): {
+                        'token0':convert.to_address(event['token0']),
+                        'token1':convert.to_address(event['token1']),
+                    }
                 }
+                for event in events
             }
-            for event in events
-        }
-        pools = {pool: tokens for i, pair in pairs.items() for pool, tokens in pair.items()}
+            pools = {pool: tokens for i, pair in pairs.items() for pool, tokens in pair.items()}
+        except EventLookupError:
+            pairs, pools = {}, {}
+        
         all_pairs_len = raw_call(self.factory,'allPairsLength()',output='int')
         if len(pairs) < all_pairs_len:
             logger.debug("Oh no! looks like your node can't look back that far. Checking for the missing pools...")
