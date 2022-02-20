@@ -108,7 +108,7 @@ def _get_price(
     if price is not None:
         return price
 
-    if price is None:
+    if price is None and curve:
         price = curve.get_price_for_underlying(token, block=block)
     
     if price is None and uniswap_v3:
