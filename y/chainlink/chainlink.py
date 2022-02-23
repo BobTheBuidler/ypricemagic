@@ -4,7 +4,7 @@ from typing import Dict
 
 from brownie import ZERO_ADDRESS, chain, convert
 from cachetools.func import ttl_cache
-from y.chainlink.feeds import FEEDS
+from y.chainlink.feeds import DECIMALS, FEEDS
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract
@@ -75,11 +75,24 @@ class Chainlink(metaclass=Singleton):
         if asset == ZERO_ADDRESS:
             return None
         try:
-            price = self.get_feed(asset).latestAnswer(block_identifier=block) / 1e8
+            price = self.get_feed(asset).latestAnswer(block_identifier=block) / self.feed_decimals(asset)
             logger.debug("chainlink -> %s", price)
             return price
         except ValueError:
             return None
+    
+    def feed_decimals(self, asset):
+        '''
+        This only works for USD denominated feeds
+        '''
+        asset = convert.to_address(asset)
+        return DECIMALS.get(asset, 8)
+    
+    def feed_scale(self, asset):
+        '''
+        This only works for USD denominated feeds
+        '''
+        return 10 ** self.feed_decimals(asset)
 
 
 try: chainlink = Chainlink()
