@@ -23,6 +23,7 @@ v2_pools = {
     Network.Mainnet: [
         "0x7d2768dE32b0b80b7a3454c06BdAc94A69DDc7A9", # aave
         "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB", # aave amm
+        "0xcE744a9BAf573167B2CF138114BA32ed7De274Fa", # umee
     ],
     Network.Polygon: [
         "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf", # aave
