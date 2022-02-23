@@ -5,6 +5,7 @@ from typing import List, Union
 from brownie import chain, convert, web3
 from multicall import Call, Multicall
 from y.classes.common import ERC20, ContractBase
+from y.classes.singleton import Singleton
 from y.decorators import log
 from y.networks import Network
 from y.utils.multicall import fetch_multicall
@@ -98,7 +99,7 @@ class AaveMarketV2(AaveMarketBase):
             return []
 
 
-class AaveRegistry:
+class AaveRegistry(metaclass = Singleton):
     def __init__(self) -> None:
         pass
 
