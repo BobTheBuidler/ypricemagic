@@ -97,11 +97,3 @@ FEEDS = {
         "0xD22a58f79e9481D1a88e00c343885A588b34b68B": "0xA14d53bC1F1c0F31B4aA3BD109344E5009051a84",  # eurs -> EUR
     }
 }.get(chain.id, {})
-
-DECIMALS = {
-    Network.Mainnet: {
-        "0xD46bA6D942050d489DBd938a2C909A5d5039A161": 18,
-    }
-}.get(chain.id, {})
-
-

@@ -62,7 +62,7 @@ class Chainlink(metaclass=Singleton):
         return feeds
 
     @log(logger)
-    def get_feed(self, asset):
+    def get_feed(self, asset) -> Contract:
         return Contract(self.feeds[asset])
 
     @log(logger)
@@ -82,16 +82,11 @@ class Chainlink(metaclass=Singleton):
             return None
     
     def feed_decimals(self, asset):
-        '''
-        This only works for USD denominated feeds
-        '''
         asset = convert.to_address(asset)
-        return DECIMALS.get(asset, 8)
+        feed = self.get_feed(asset)
+        return feed.decimals()
     
     def feed_scale(self, asset):
-        '''
-        This only works for USD denominated feeds
-        '''
         return 10 ** self.feed_decimals(asset)
 
 
