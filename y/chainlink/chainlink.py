@@ -75,7 +75,7 @@ class Chainlink(metaclass=Singleton):
         if asset == ZERO_ADDRESS:
             return None
         try:
-            price = self.get_feed(asset).latestAnswer(block_identifier=block) / self.feed_decimals(asset)
+            price = self.get_feed(asset).latestAnswer(block_identifier=block) / self.feed_scale(asset)
             logger.debug("chainlink -> %s", price)
             return price
         except ValueError:
