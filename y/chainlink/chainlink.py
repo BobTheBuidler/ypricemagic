@@ -4,7 +4,7 @@ from typing import Dict
 
 from brownie import ZERO_ADDRESS, chain, convert
 from cachetools.func import ttl_cache
-from y.chainlink.feeds import DECIMALS, FEEDS
+from y.chainlink.feeds import FEEDS
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract
