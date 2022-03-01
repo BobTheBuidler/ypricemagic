@@ -68,7 +68,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: int = None) -> WeiBalance:
         token_in = self.get_coins[coin_ix_in]
         amount_in = token_in.scale
-        amount_out = self.contract.get_dy(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
+        amount_out = self.contract.get_dy.call(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
         return WeiBalance(amount_out, self.get_coins[coin_ix_out], block=block)
     
     @cached_property
