@@ -147,6 +147,16 @@ STABLECOINS = {
         "0xd586E7F844cEa2F87f50152665BCbc2C279D8d70": "dai.e",
         "0x130966628846BFd36ff31a822705796e8cb8C18D": "mim",
         "0xaEb044650278731Ef3DC244692AB9F64C78FfaEA": "busd",
+    },
+    Network.Heco: {
+        "0xa71EdC38d189767582C38A3145b5873052c3e47a": "usdt",
+        "0x9362Bbef4B8313A8Aa9f0c9808B80577Aa26B73B": "usdc",
+        "0x3D760a45D0887DFD89A2F5385a236B29Cb46ED2a": "dai",
+    },
+    Network.Harmony: {
+        "0x3C2B8Be99c50593081EAA2A724F0B8285F5aba8f": "usdt",
+        "0x985458E523dB3d53125813eD68c274899e9DfAb4": "usdc",
+        "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339": "dai",
     }
 }.get(chain.id, {})
 
@@ -158,6 +168,8 @@ WRAPPED_GAS_COIN = {
     Network.Fantom:             "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83",
     Network.Arbitrum:           "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1",
     Network.Avalanche:          "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
+    Network.Heco:               "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
+    Network.Harmony:            "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
 }.get(chain.id)
 
 
