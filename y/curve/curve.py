@@ -13,7 +13,7 @@ from y.constants import dai
 from y.contracts import Contract
 from y.curve.pool import CurvePool
 from y.decorators import log
-from y.exceptions import ContractNotVerified, UnsupportedNetwork, call_reverted
+from y.exceptions import ContractNotVerified, MessedUpBrownieContract, UnsupportedNetwork, call_reverted
 from y.networks import Network
 from y.prices import magic
 from y.utils.events import create_filter, decode_logs, get_logs_asap
@@ -85,6 +85,11 @@ class CurveRegistry(metaclass=Singleton):
         try: self.address_provider = Contract(ADDRESS_PROVIDER)
         except (ContractNotFound, ContractNotVerified):
             raise UnsupportedNetwork("curve is not supported on this network")
+        except MessedUpBrownieContract:
+            if chain.id == Network.Cronos:
+                raise UnsupportedNetwork("curve is not supported on this network")
+            else:
+                raise
 
         if chain.id == Network.Mainnet:
             self.crv = Contract(CURVE_MAINNET_CONTRACTS['crv'])
