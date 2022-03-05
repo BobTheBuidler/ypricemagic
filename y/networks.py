@@ -17,6 +17,7 @@ class Network(IntEnum):
     Harmony = 1666600000
     Aurora = 1313161554
     OKEx = 66
+    Cronos = 25
 
     @staticmethod
     def label(chain_id = None):
@@ -34,6 +35,7 @@ class Network(IntEnum):
         elif chain_id == Network.Harmony:               return 'ONE'
         elif chain_id == Network.Aurora:                return 'AURORA'
         elif chain_id == Network.OKEx:                  return 'OKEX'
+        elif chain_id == Network.Cronos:                return 'CRO'
     
     @staticmethod
     def name(chain_id = None):
@@ -51,6 +53,7 @@ class Network(IntEnum):
         elif chain_id == Network.Harmony:               return "HarmonyOne Shard 0"
         elif chain_id == Network.Aurora:                return 'Aurora'
         elif chain_id == Network.OKEx:                  return 'OKEx'
+        elif chain_id == Network.Cronos:                return 'Cronos'
 
     @staticmethod
     def printable(chain_id = None):

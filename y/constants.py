@@ -93,6 +93,13 @@ elif chain.id == Network.Aurora:
     usdc = _Contract.from_abi('ERC20 [forced]','0xB12BFcA5A55806AaF64E99521918A4bf0fC40802',ERC20ABI)
     usdt = _Contract.from_abi('ERC20 [forced]','0x4988a896b1227218e4A686fdE5EabdcAbd91571f',ERC20ABI)
 
+elif chain.id == Network.Cronos:
+    weth = Contract('0xe44Fd7fCb2b1581822D0c862B68222998a0c299a')
+    wbtc = Contract('0x062E66477Faf219F25D27dCED647BF57C3107d52')
+    dai  = Contract('0xF2001B145b43032AAF5Ee2884e456CCd805F677D')
+    usdc = Contract('0xc21223249CA28397B4B6541dfFaEcC539BfF0c59')
+    usdt = Contract('0x66e428c3f67a68878562e79A0234c1F83c208770')
+
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {
@@ -157,7 +164,12 @@ STABLECOINS = {
         "0x3C2B8Be99c50593081EAA2A724F0B8285F5aba8f": "usdt",
         "0x985458E523dB3d53125813eD68c274899e9DfAb4": "usdc",
         "0xEf977d2f931C1978Db5F6747666fa1eACB0d0339": "dai",
-    }
+    },
+    Network.Cronos: {
+        "0x66e428c3f67a68878562e79A0234c1F83c208770": "usdt",
+        "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59": "usdc",
+        "0xF2001B145b43032AAF5Ee2884e456CCd805F677D": "dai",
+    },
 }.get(chain.id, {})
 
 
@@ -170,6 +182,7 @@ WRAPPED_GAS_COIN = {
     Network.Avalanche:          "0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7",
     Network.Heco:               "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
     Network.Harmony:            "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
+    Network.Cronos:             "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
 }.get(chain.id)
 
 
