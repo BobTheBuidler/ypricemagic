@@ -251,9 +251,11 @@ class CurveRegistry(metaclass=Singleton):
             token_in_ix = pool.get_coin_index(token_in)
             token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
             dy = pool.get_dy(token_in_ix, token_out_ix, block = block)
+            if dy is None:
+                return None
             try:
                 return dy.value_usd()
-            except RecursionError:
+            except RecursionError: # TODO handle this case better
                 return None
         else:
             # TODO: handle this sitch if necessary
