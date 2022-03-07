@@ -49,11 +49,8 @@ class TokenSet(ERC20):
             ])
         return [WeiBalance(balance, component, block=block) for component, balance in zip(self.components(block=block), balances)]
 
-    def tvl(self, block: int = None) -> float:
-        return sum(balance.value_usd() for balance in self.balances(block=block))
-    
     def get_price(self, block: int = None) -> float:
         total_supply = self.total_supply_readable(block=block)
         if total_supply == 0:
             return 0
-        return self.tvl(block=block) / total_supply
+        return sum(balance.value_usd() for balance in self.balances(block=block))
