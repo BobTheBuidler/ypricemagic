@@ -7,15 +7,14 @@ from typing import Dict, List
 
 from brownie import Contract as _Contract
 from brownie import chain, convert, web3
-from brownie.exceptions import EventLookupError
+from brownie.exceptions import EventLookupError, VirtualMachineError
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
 from y.classes.common import ContractBase
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert, log
-from y.exceptions import (CantFindSwapPath, ContractNotVerified,
-                          NonStandardERC20, call_reverted)
+from y.exceptions import CantFindSwapPath, NonStandardERC20, call_reverted
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.uniswap.protocols import (ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL,
@@ -90,9 +89,16 @@ class UniswapRouterV2(ContractBase):
             try: return self.contract.getAmountsOut.call(amount_in, path, block_identifier=block)
             # TODO figure out how to best handle uni forks with slight modifications
             except ValueError as e:
-                if 'Sequence has incorrect length' in str(e): return 
+                if 'Sequence has incorrect length' in str(e):
+                    return 
                 #if 'is not a valid ETH address' in str(e): pass # TODO figure out why this happens and fix root cause
-                else: raise
+                raise
+            except VirtualMachineError as e:
+                if 'INSUFFICIENT_INPUT_AMOUNT' in str(e):
+                    return
+                if 'INSUFFICIENT_LIQUIDITY' in str(e):
+                    return
+                raise
 
         else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],_w3=web3,block_id=block)()['amounts']
 
