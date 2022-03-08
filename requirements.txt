@@ -1,4 +1,4 @@
 cachetools>=4.1.1
 eth-brownie>=1.18.1
 joblib>=1.0.1
-git+https://github.com/BobTheBuidler/multicall.py.git@f1ffacf3cc3f7415da2f9817412438b5ea3dd1bc
+git+https://github.com/BobTheBuidler/multicall.py.git@774590fb71825ff14c6c34da9ce04832c2d1c47d
