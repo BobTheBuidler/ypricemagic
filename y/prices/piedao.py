@@ -27,7 +27,7 @@ def get_price(pie_address: str, block=None):
 
 @log(logger)
 def get_tokens(pie_address: str, block: int = None):
-    return Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], _w3=web3, block_id=block)()['tokens']
+    return Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], block_id=block)()['tokens']
 
 @log(logger)
 def get_bpool(pie_address: str, block: int = None):

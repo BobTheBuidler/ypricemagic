@@ -58,7 +58,7 @@ class AaveMarketV1(AaveMarketBase):
     @cached_property
     @log(logger)
     def atokens(self) -> List[ERC20]:
-        reserves_data = Call(self.address, ['getReserves()(address[])'], [[self.address,None]], _w3=web3)()[self.address]
+        reserves_data = Call(self.address, ['getReserves()(address[])'], [[self.address,None]])()[self.address]
         reserves_data = fetch_multicall(*[[self.contract, 'getReserveData', reserve] for reserve in reserves_data])
         atokens = [ERC20(reserve['aTokenAddress']) for reserve in reserves_data]
         logger.info(f'loaded {len(atokens)} v1 atokens for {self.__repr__()}')
@@ -80,7 +80,7 @@ class AaveMarketV2(AaveMarketBase):
     @cached_property
     @log(logger)
     def atokens(self) -> List[ERC20]:
-        reserves = Call(self.address, ['getReservesList()(address[])'], [[self.address,None]], _w3=web3)()[self.address]
+        reserves = Call(self.address, ['getReservesList()(address[])'], [[self.address,None]])()[self.address]
         calls = [
             Call(
                 self.address,
@@ -91,7 +91,7 @@ class AaveMarketV2(AaveMarketBase):
         ]
 
         try:
-            atokens = [ERC20(reserve_data[7]) for reserve_data in Multicall(calls, _w3=web3)().values()]
+            atokens = [ERC20(reserve_data[7]) for reserve_data in Multicall(calls)().values()]
             logger.info(f'loaded {len(atokens)} v2 atokens for {self.__repr__()}')
             return atokens
         except TypeError: # TODO figure out what to do about non verified aave markets

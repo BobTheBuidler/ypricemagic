@@ -81,7 +81,7 @@ class UniswapPoolV2(ERC20):
     def get_pool_details(self, block: int = None) -> Tuple[str, str, int, Tuple[int, int, int]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
-        try: token0, token1, supply, reserves = Multicall(calls, _w3=web3, block_id=block)().values()
+        try: token0, token1, supply, reserves = Multicall(calls, block_id=block)().values()
         except Exception as e:
             if not call_reverted(e): raise
             # if call reverted, let's try with brownie. Sometimes this works, not sure why

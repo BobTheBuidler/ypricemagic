@@ -100,7 +100,7 @@ class UniswapRouterV2(ContractBase):
                     return
                 raise
 
-        else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],_w3=web3,block_id=block)()['amounts']
+        else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],block_id=block)()['amounts']
 
 
     @log(logger)
@@ -153,9 +153,9 @@ class UniswapRouterV2(ContractBase):
             pools_your_node_couldnt_get = multicall_same_func_same_contract_different_inputs(
                 self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get])
             calls = [Call(pool, ['token0()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
-            token0s = Multicall(calls,_w3=web3)().values()
+            token0s = Multicall(calls)().values()
             calls = [Call(pool, ['token1()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
-            token1s = Multicall(calls,_w3=web3)().values()
+            token1s = Multicall(calls)().values()
             pools_your_node_couldnt_get = {
                 convert.to_address(pool): {
                     'token0':convert.to_address(token0),

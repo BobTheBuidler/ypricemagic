@@ -60,7 +60,7 @@ def multicall_same_func_no_input(
 
     addresses = _clean_addresses(addresses)
     calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
-    return [result for result in Multicall(calls, block_id=block, _w3=web3, require_success=(not return_None_on_failure))().values()]
+    return [result for result in Multicall(calls, block_id=block, require_success=(not return_None_on_failure))().values()]
 
 
 @log(logger)
@@ -75,7 +75,7 @@ def multicall_same_func_different_contracts_same_input(
     assert input
     addresses = _clean_addresses(addresses)
     calls = [Call(address, [method, input], [[address,apply_func]]) for address in addresses]
-    return [result for result in Multicall(calls, block_id=block, _w3=web3)().values()]
+    return [result for result in Multicall(calls, block_id=block)().values()]
 
 
 @log(logger)
@@ -91,7 +91,7 @@ def multicall_same_func_same_contract_different_inputs(
     assert inputs
     address = convert.to_address(address)
     calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
-    return [result for result in Multicall(calls, block_id=block, _w3=web3, require_success = not return_None_on_failure)().values()]
+    return [result for result in Multicall(calls, block_id=block, require_success = not return_None_on_failure)().values()]
 
 
 @log(logger)
