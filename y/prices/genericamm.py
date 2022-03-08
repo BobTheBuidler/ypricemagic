@@ -3,20 +3,21 @@ from functools import lru_cache
 from y import Contract
 from y.classes.common import WeiBalance
 from y.exceptions import ContractNotVerified
+from y.utils.cache import memory
 from y.utils.multicall import fetch_multicall
 
 
+@memory.cache()
+def is_generic_amm(self, lp_token_address: str) -> bool:
+    try:
+        token_contract = Contract(lp_token_address)
+        return all(hasattr(token_contract, attr) for attr in ['getReserves','token0','token1'])
+    except ContractNotVerified:
+        return False
+        
 class GenericAmm:
     def __contains__(self, lp_token_address: str) -> bool:
-        return self.is_generic_amm(lp_token_address)
-
-    @lru_cache(maxsize=None)
-    def is_generic_amm(self, lp_token_address: str) -> bool:
-        try:
-            token_contract = Contract(lp_token_address)
-            return all(hasattr(token_contract, attr) for attr in ['getReserves','token0','token1'])
-        except ContractNotVerified:
-            return False
+        return is_generic_amm(lp_token_address)
     
     def get_price(self, lp_token_address: str, block: int = None) -> float:
         lp_token_contract = Contract(lp_token_address)
