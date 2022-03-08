@@ -8,7 +8,7 @@ from y.utils.multicall import fetch_multicall
 
 
 @memory.cache()
-def is_generic_amm(self, lp_token_address: str) -> bool:
+def is_generic_amm(lp_token_address: str) -> bool:
     try:
         token_contract = Contract(lp_token_address)
         return all(hasattr(token_contract, attr) for attr in ['getReserves','token0','token1'])
