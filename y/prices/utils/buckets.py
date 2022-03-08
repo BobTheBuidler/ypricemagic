@@ -16,6 +16,7 @@ from y.prices import (belt, cream, ellipsis, froyo, gelato, ib, mooniswap,
 from y.prices.aave import aave
 from y.prices.compound import compound
 from y.prices.synthetix import synthetix
+from y.prices.genericamm import generic_amm
 from y.uniswap.uniswap import uniswap
 
 logger = logging.getLogger(__name__)
@@ -52,6 +53,9 @@ def check_bucket(
     elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
     elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
     elif saddle.is_saddle_lp(token_address):                                return 'saddle'
+
+    # these just require contract initialization
+    elif token_address in generic_amm:                                      return 'generic amm'
 
     # these require both calls and contract initializations
     elif uniswap.is_uniswap_pool(token_address):                            return 'uni or uni-like lp'
