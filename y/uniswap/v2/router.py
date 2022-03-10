@@ -98,6 +98,8 @@ class UniswapRouterV2(ContractBase):
                     return
                 if 'INSUFFICIENT_LIQUIDITY' in str(e):
                     return
+                if 'INSUFFICIENT_OUT_LIQUIDITY' in str(e):
+                    return
                 raise
 
         else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],block_id=block)()['amounts']
