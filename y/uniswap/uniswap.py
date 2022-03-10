@@ -1,5 +1,5 @@
 import logging
-from typing import Dict
+from typing import Dict, List
 
 from brownie import convert
 from cachetools.func import ttl_cache
@@ -78,22 +78,23 @@ class Uniswap:
 
 
     @log(logger)
-    def deepest_routers(self, token_in: str, block: int = None) -> Dict[UniswapRouterV2,str]:
+    def routers_by_depth(self, token_in: str, block: int = None) -> Dict[UniswapRouterV2,str]:
+        '''
+        Returns a dict {router: pool} ordered by liquidity depth, greatest to least
+        '''
         token_in = convert.to_address(token_in)
-        deepest_pool_by_router = {router: router.deepest_pool(token_in, block) for router in self.routers.values()}
-        deepest_pool_by_router = {router: pool for router, pool in deepest_pool_by_router.items() if pool is not None}
-        reserves = multicall_same_func_no_input(deepest_pool_by_router.values(), 'getReserves()((uint112,uint112,uint32))', block=block)
+
+        pools_to_routers = {pool: router for router in self.routers.values() for pool in router.pools_for_token(token_in)}
+        reserves = multicall_same_func_no_input(pools_to_routers, 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
         routers_by_depth = {}
-        for router, pool, reserves in zip(deepest_pool_by_router.keys(), deepest_pool_by_router.values(), reserves):
-            if reserves is None: continue
+        for router, pool, reserves in zip(pools_to_routers.values(), pools_to_routers.keys(), reserves):
+            if reserves is None:
+                continue
             if token_in == router.pools[pool]['token0']:
-                routers_by_depth[reserves[0]] = router
+                routers_by_depth[reserves[0]] = {router: pool}
             elif token_in == router.pools[pool]['token1']:
-                routers_by_depth[reserves[1]] = router
-        return {
-            routers_by_depth[balance]: deepest_pool_by_router[routers_by_depth[balance]]
-            for balance in sorted(routers_by_depth.keys(), reverse=True)
-        }
+                routers_by_depth[reserves[1]] = {router: pool}
+        return {router: pool for balance in sorted(routers_by_depth, reverse=True) for router, pool in routers_by_depth[balance].items()}
 
 
 uniswap = Uniswap()
