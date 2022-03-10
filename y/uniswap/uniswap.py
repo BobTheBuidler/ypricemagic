@@ -62,7 +62,7 @@ class Uniswap:
         if protocol:
             return self.routers[protocol].get_price(token_in, block=block)
 
-        for router in self.deepest_routers(token_in, block=block):
+        for router in self.routers_by_depth(token_in, block=block):
             # tries each known router from most to least liquid
             # returns the first price we get back, almost always from the deepest router
             price = router.get_price(token_in, block=block)
@@ -73,7 +73,7 @@ class Uniswap:
     def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
         token_in = convert.to_address(token_in)
 
-        for router in self.deepest_routers(token_in, block=block):
+        for router in self.routers_by_depth(token_in, block=block):
             return router # will return first router in the dict, or None if no supported routers
 
 
