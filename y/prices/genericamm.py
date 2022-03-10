@@ -1,8 +1,9 @@
 from functools import lru_cache
 
+from brownie.exceptions import ContractNotFound
 from y import Contract
 from y.classes.common import WeiBalance
-from y.exceptions import ContractNotVerified
+from y.exceptions import ContractNotVerified, MessedUpBrownieContract
 from y.utils.cache import memory
 from y.utils.multicall import fetch_multicall
 
@@ -12,7 +13,10 @@ def is_generic_amm(lp_token_address: str) -> bool:
     try:
         token_contract = Contract(lp_token_address)
         return all(hasattr(token_contract, attr) for attr in ['getReserves','token0','token1'])
-    except ContractNotVerified:
+    except (ContractNotFound, ContractNotVerified):
+        return False
+    except MessedUpBrownieContract:
+        # probably false
         return False
         
 class GenericAmm:
