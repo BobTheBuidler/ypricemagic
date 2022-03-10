@@ -148,10 +148,9 @@ class UniswapRouterV2(ContractBase):
         
         all_pairs_len = raw_call(self.factory,'allPairsLength()',output='int')
         if len(pairs) < all_pairs_len:
-            logger.debug("Oh no! looks like your node can't look back that far. Checking for the missing pools...")
+            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing pools...")
             pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in pairs]
             logger.debug(f'pools: {pools_your_node_couldnt_get}')
-            calls = [Call(self.address,['allPairs(uint)(address)',i],[[i, None]]) for i in pools_your_node_couldnt_get]
             pools_your_node_couldnt_get = multicall_same_func_same_contract_different_inputs(
                 self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get])
             calls = [Call(pool, ['token0()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
@@ -163,7 +162,9 @@ class UniswapRouterV2(ContractBase):
                     'token0':convert.to_address(token0),
                     'token1':convert.to_address(token1),
                 }
-            for pool, token0, token1 in zip(pools_your_node_couldnt_get,token0s,token1s)}
+                for pool, token0, token1
+                in zip(pools_your_node_couldnt_get,token0s,token1s)
+            }
             pools.update(pools_your_node_couldnt_get)
 
         return pools
@@ -180,16 +181,21 @@ class UniswapRouterV2(ContractBase):
         return pool_mapping
 
 
+    def pools_for_token(self, token_address: str) -> Dict[str,str]:
+        try: 
+            return self.pool_mapping[token_address]
+        except KeyError:
+            return {}
+
     @log(logger)
     def deepest_pool(self, token_address, block = None, _ignore_pools: List[str] = [] ):
         token_address = convert.to_address(token_address)
+        if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
+            return self.deepest_stable_pool(token_address)
+        pools = self.pools_for_token(token_address)
 
-        try: pools = self.pool_mapping[token_address]
-        except KeyError: return None
-
-        if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS: return self.deepest_stable_pool(token_address)
         try:
-            reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
+            reserves = multicall_same_func_no_input(pools, 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
         except Exception as e:
             if call_reverted(e):
                 return None
@@ -197,7 +203,7 @@ class UniswapRouterV2(ContractBase):
 
         deepest_pool = None
         deepest_pool_balance = 0
-        for pool, reserves in zip(pools.keys(),reserves):
+        for pool, reserves in zip(pools,reserves):
             if reserves is None or pool in _ignore_pools: continue
             if token_address == self.pools[pool]['token0']: reserve = reserves[0]
             elif token_address == self.pools[pool]['token1']: reserve = reserves[1]
@@ -210,17 +216,14 @@ class UniswapRouterV2(ContractBase):
     @log(logger)
     def deepest_stable_pool(self, token_address: str, block: int = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
-
-        try: pools = self.pool_mapping[token_address]
-        except KeyError: return None
-
-        pools = {pool: paired_with for pool, paired_with in pools.items() if paired_with in STABLECOINS}
+        pools = {pool: paired_with for pool, paired_with in self.pools_for_token(token_address).items() if paired_with in STABLECOINS}
         reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block)
 
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        for pool, reserves in zip(pools.keys(), reserves):
-            if reserves is None: continue
+        for pool, reserves in zip(pools, reserves):
+            if reserves is None:
+                continue
             if token_address == self.pools[pool]['token0']: reserve = reserves[0]
             elif token_address == self.pools[pool]['token1']: reserve = reserves[1]
             if reserve > deepest_stable_pool_balance:
@@ -242,7 +245,6 @@ class UniswapRouterV2(ContractBase):
                 last_step = self.pool_mapping[token_address][deepest_stable_pool]
                 path.append(last_step)
                 return path
-
 
             if path == [token_address]:
                 try: path.extend(
