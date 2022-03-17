@@ -24,6 +24,10 @@ def is_saddle_lp(token_address: str) -> bool:
 @lru_cache
 @log(logger)
 def get_pool(token_address: str) -> str:
+    if token_address == '0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368': # saddle aleth doesn't have swap() function
+        return '0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a'
+    elif token_address == '0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A': # saddle d4
+        return '0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6'
     pool = has_method(token_address, 'swap()(address)', return_response=True)
     return pool or None
 
