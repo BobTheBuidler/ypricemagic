@@ -17,6 +17,7 @@ from y.decorators import continue_on_revert, log
 from y.exceptions import CantFindSwapPath, NonStandardERC20, call_reverted
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
+from y.prices import magic
 from y.uniswap.protocols import (ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL,
                                  special_paths)
 from y.utils.events import decode_logs, get_logs_asap
@@ -68,7 +69,20 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('smrt')
             except CantFindSwapPath:
                 pass
+        
+        # If we can't find a good path to stables, we might still be able to determine price from price of paired token
+        if path is None and len(self.pool_mapping[token_in]) == 1:
+            pool = self.pool_mapping[token_in]
+            paired_with = pool[list(pool.keys())[0]]
+            path = [token_in,paired_with]
+            quote = self.get_quote(amount_in, path, block=block)
+            if quote is not None:
+                amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
+                fees = 0.997 ** (len(path) - 1)
+                amount_out /= fees
+                return amount_out * magic.get_price(paired_with, block)
 
+        # If we still don't have a workable path, try this smol brain method
         if path is None:
             path = self.smol_brain_path_selector(token_in, token_out, paired_against)
             logger.debug('smol')
