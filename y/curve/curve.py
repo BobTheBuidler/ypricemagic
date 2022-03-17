@@ -13,9 +13,9 @@ from y.constants import dai
 from y.contracts import Contract
 from y.curve.pool import CurvePool
 from y.decorators import log
-from y.exceptions import ContractNotVerified, MessedUpBrownieContract, UnsupportedNetwork, call_reverted
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+                          PriceError, UnsupportedNetwork, call_reverted)
 from y.networks import Network
-from y.prices import magic
 from y.utils.events import create_filter, decode_logs, get_logs_asap
 from y.utils.middleware import ensure_middleware
 from y.utils.multicall import fetch_multicall
@@ -255,7 +255,7 @@ class CurveRegistry(metaclass=Singleton):
                 return None
             try:
                 return dy.value_usd()
-            except RecursionError: # TODO handle this case better
+            except (PriceError,RecursionError): # TODO handle this case better
                 return None
         else:
             # TODO: handle this sitch if necessary
