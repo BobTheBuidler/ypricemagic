@@ -70,8 +70,8 @@ class Uniswap:
             if price:
                 return price
         
-        if chain.id == Network.Mainnet
-        return self.get_price_v1(token_in, block)
+        if chain.id == Network.Mainnet:
+            return self.get_price_v1(token_in, block)
     
 
     @log(logger)
