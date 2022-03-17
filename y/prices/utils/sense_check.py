@@ -23,6 +23,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x53a901d48795C58f485cBB38df08FA96a24669D5", # rcrv
         "0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e", # alETH+ETH-f
         "0x06325440D014e39736583c165C2963BA99fAf14E", # stecrv
+        "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb", # sETH
         # btc and btc-like
         wbtc.address,
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
