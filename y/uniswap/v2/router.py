@@ -77,9 +77,9 @@ class UniswapRouterV2(ContractBase):
                 pass
         
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
-        if path is None and len(self.pool_mapping[token_in]) == 1:
-            pool = self.pool_mapping[token_in]
-            paired_with = pool[list(pool.keys())[0]]
+        deepest_pool = self.deepest_pool(token_in, block)
+        if path is None and deepest_pool:
+            paired_with = self.pool_mapping[token_in][deepest_pool]
             path = [token_in,paired_with]
             quote = self.get_quote(amount_in, path, block=block)
             if quote is not None:
