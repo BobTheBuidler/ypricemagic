@@ -10,9 +10,9 @@ from y.constants import STABLECOINS
 from y.contracts import Contract
 from y.curve.curve import curve
 from y.decorators import log
-from y.prices import (basketdao, belt, cream, ellipsis, froyo, gelato, ib,
-                      mooniswap, mstablefeederpool, piedao, saddle, tokensets,
-                      wsteth, yearn)
+from y.prices import (basketdao, belt, convex, cream, ellipsis, froyo, gelato,
+                      ib, mooniswap, mstablefeederpool, piedao, saddle,
+                      tokensets, wsteth, yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
 from y.prices.genericamm import generic_amm
@@ -39,7 +39,8 @@ def check_bucket(
     elif belt.is_belt_lp(token_address):                                    return 'belt lp'
 
     elif froyo.is_froyo(token_address):                                     return 'froyo'
-    elif aave.is_atoken(token_address):                                     return 'atoken' 
+    elif aave.is_atoken(token_address):                                     return 'atoken'
+    elif convex.is_convex_lp(token_address):                                return 'convex'
 
     # these just require calls
     elif balancer.is_balancer_pool(token_address):                          return 'balancer pool'
