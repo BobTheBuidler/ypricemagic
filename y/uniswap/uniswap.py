@@ -1,10 +1,11 @@
 import logging
-from typing import Dict, List
+from typing import Dict
 
-from brownie import convert
+from brownie import chain, convert
 from cachetools.func import ttl_cache
 from y.decorators import log
 from y.exceptions import contract_not_verified
+from y.networks import Network
 from y.uniswap.protocols import UNISWAPS
 from y.uniswap.v1 import UniswapV1
 from y.uniswap.v2.pool import NotAUniswapV2Pool, UniswapPoolV2
@@ -69,6 +70,7 @@ class Uniswap:
             if price:
                 return price
         
+        if chain.id == Network.Mainnet
         return self.get_price_v1(token_in, block)
     
 
