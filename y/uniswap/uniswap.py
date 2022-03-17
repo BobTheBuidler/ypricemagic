@@ -66,7 +66,10 @@ class Uniswap:
             # tries each known router from most to least liquid
             # returns the first price we get back, almost always from the deepest router
             price = router.get_price(token_in, block=block)
-            if price: return price
+            if price:
+                return price
+        
+        return self.get_price_v1(token_in, block)
     
 
     @log(logger)
