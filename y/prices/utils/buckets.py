@@ -10,13 +10,13 @@ from y.constants import STABLECOINS
 from y.contracts import Contract
 from y.curve.curve import curve
 from y.decorators import log
-from y.prices import (belt, cream, ellipsis, froyo, gelato, ib, mooniswap,
-                      mstablefeederpool, piedao, saddle, tokensets, wsteth,
-                      yearn)
+from y.prices import (basketdao, belt, cream, ellipsis, froyo, gelato, ib,
+                      mooniswap, mstablefeederpool, piedao, saddle, tokensets,
+                      wsteth, yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
-from y.prices.synthetix import synthetix
 from y.prices.genericamm import generic_amm
+from y.prices.synthetix import synthetix
 from y.uniswap.uniswap import uniswap
 
 logger = logging.getLogger(__name__)
@@ -53,6 +53,8 @@ def check_bucket(
     elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
     elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
     elif saddle.is_saddle_lp(token_address):                                return 'saddle'
+
+    elif basketdao.is_basketdao_index(token_address):                       return 'basketdao'
 
     # these just require contract initialization
     elif token_address in generic_amm:                                      return 'generic amm'

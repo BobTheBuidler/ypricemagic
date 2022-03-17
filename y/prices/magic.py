@@ -17,7 +17,7 @@ from y.curve.curve import curve
 from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
-from y.prices import (belt, cream, froyo, gelato, ib, mooniswap,
+from y.prices import (basketdao, belt, cream, froyo, gelato, ib, mooniswap,
                       mstablefeederpool, piedao, saddle, tokensets, wsteth,
                       yearn)
 from y.prices.aave import aave
@@ -142,32 +142,33 @@ def _exit_early_for_known_tokens(
 
     if bucket == 'atoken':                  price = aave.get_price(token_address, block=block)
     elif bucket == 'balancer pool':         price = balancer.get_price(token_address, block)
-    elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
+    elif bucket == 'basketdao':             price = basketdao.get_price(token_address, block)
 
+    elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
     elif bucket == 'chainlink feed':        price = chainlink.get_price(token_address, block)
     elif bucket == 'compound':              price = compound.get_price(token_address, block=block)
-    elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
 
+    elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
     elif bucket == 'curve lp':              price = curve.get_price(token_address, block)
     elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
-    elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
 
+    elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
     elif bucket == 'gelato':                price = gelato.get_price(token_address, block=block)
     elif bucket == 'generic amm':           price = generic_amm.get_price(token_address, block=block)
-    elif bucket == 'ib token':              price = ib.get_price(token_address,block=block)
 
+    elif bucket == 'ib token':              price = ib.get_price(token_address,block=block)
     elif bucket == 'mooniswap lp':          price = mooniswap.get_pool_price(token_address, block=block)
     elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
-    elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
 
+    elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
     elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
     elif bucket == 'stable usd':            price = 1
-    elif bucket == 'synthetix':             price = synthetix.get_price(token_address, block)
 
+    elif bucket == 'synthetix':             price = synthetix.get_price(token_address, block)
     elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
     elif bucket == 'uni or uni-like lp':    price = uniswap.lp_price(token_address, block)
+
     elif bucket == 'wrapped gas coin':      price = get_price(WRAPPED_GAS_COIN, block)
-    
     elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
     elif bucket == 'yearn or yearn-like':   price = yearn.get_price(token_address, block)
 
