@@ -11,7 +11,7 @@ from y.contracts import Contract
 from y.curve.curve import curve
 from y.decorators import log
 from y.prices import (basketdao, belt, convex, cream, ellipsis, froyo, gelato,
-                      ib, mooniswap, mstablefeederpool, piedao, saddle,
+                      ib, mooniswap, mstablefeederpool, one_to_one, piedao, saddle,
                       tokensets, wsteth, yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
@@ -33,7 +33,8 @@ def check_bucket(
     # these require neither calls to the chain nor contract initialization
     if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
     elif token_address in STABLECOINS:                                      return 'stable usd'
-
+    elif one_to_one.is_one_to_one_token(token_address):                     return 'one to one'
+    
     elif wsteth.is_wsteth(token_address):                                   return 'wsteth'
     elif cream.is_creth(token_address):                                     return 'creth'
     elif belt.is_belt_lp(token_address):                                    return 'belt lp'

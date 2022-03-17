@@ -18,7 +18,7 @@ from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
 from y.prices import (basketdao, belt, convex, cream, froyo, gelato, ib,
-                      mooniswap, mstablefeederpool, piedao, saddle, tokensets,
+                      mooniswap, mstablefeederpool, one_to_one, piedao, saddle, tokensets,
                       wsteth, yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
@@ -161,17 +161,18 @@ def _exit_early_for_known_tokens(
     elif bucket == 'mooniswap lp':          price = mooniswap.get_pool_price(token_address, block=block)
 
     elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
+    elif bucket == 'one to one':            price = one_to_one.get_price(token_address, block)
     elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
-    elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
 
+    elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
     elif bucket == 'stable usd':            price = 1
     elif bucket == 'synthetix':             price = synthetix.get_price(token_address, block)
-    elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
 
+    elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
     elif bucket == 'uni or uni-like lp':    price = uniswap.lp_price(token_address, block)
     elif bucket == 'wrapped gas coin':      price = get_price(WRAPPED_GAS_COIN, block)
+
     elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
-    
     elif bucket == 'yearn or yearn-like':   price = yearn.get_price(token_address, block)
 
     return price
