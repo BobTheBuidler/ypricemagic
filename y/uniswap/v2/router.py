@@ -10,7 +10,7 @@ from brownie import chain, convert, web3
 from brownie.exceptions import EventLookupError, VirtualMachineError
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
-from y.classes.common import ContractBase
+from y.classes.common import ERC20, ContractBase
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.decorators import continue_on_revert, log
@@ -57,8 +57,10 @@ class UniswapRouterV2(ContractBase):
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
-        try: amount_in = 10 ** _decimals(token_in,block)
-        except NonStandardERC20: return None
+        try:
+            amount_in = ERC20(token_in).scale
+        except NonStandardERC20:
+            return None
 
         if str(token_in) in STABLECOINS:
             return 1
@@ -77,7 +79,7 @@ class UniswapRouterV2(ContractBase):
             path = [token_in,paired_with]
             quote = self.get_quote(amount_in, path, block=block)
             if quote is not None:
-                amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
+                amount_out = quote[-1] / ERC20(path[-1]).scale 
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
                 return amount_out * magic.get_price(paired_with, block)
@@ -91,7 +93,7 @@ class UniswapRouterV2(ContractBase):
         logger.debug(f'router: {self.label}     path: {path}')
         quote = self.get_quote(amount_in, path, block=block)
         if quote is not None:
-            amount_out = quote[-1] / 10 ** _decimals(str(path[-1]),block)
+            amount_out = quote[-1] / ERC20(path[-1]).scale
             return amount_out / fees
 
 
