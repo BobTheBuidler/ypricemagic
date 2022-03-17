@@ -43,6 +43,10 @@ class UniswapRouterV2(ContractBase):
             _Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
     
 
+    def __repr__(self) -> str:
+        return f"<UniswapV2Router {self.label} '{self.address}'>"
+
+
     @ttl_cache(ttl=36000)
     @log(logger)
     def get_price(self, token_in: str, block: int = None, token_out: str = usdc.address, paired_against = WRAPPED_GAS_COIN):
@@ -220,9 +224,12 @@ class UniswapRouterV2(ContractBase):
         deepest_pool = None
         deepest_pool_balance = 0
         for pool, reserves in zip(pools,reserves):
-            if reserves is None or pool in _ignore_pools: continue
-            if token_address == self.pools[pool]['token0']: reserve = reserves[0]
-            elif token_address == self.pools[pool]['token1']: reserve = reserves[1]
+            if reserves is None or pool in _ignore_pools:
+                continue
+            if token_address == self.pools[pool]['token0']:
+                reserve = reserves[0]
+            elif token_address == self.pools[pool]['token1']:
+                reserve = reserves[1]
             if reserve > deepest_pool_balance: 
                 deepest_pool = pool
                 deepest_pool_balance = reserve
@@ -250,7 +257,8 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0, _ignore_pools: List[str] = [] ):
-        if _loop_count > 10: raise CantFindSwapPath
+        if _loop_count > 10:
+            raise CantFindSwapPath
         token_address = convert.to_address(token_address)
         path = [token_address]
         deepest_pool = self.deepest_pool(token_address, block, _ignore_pools)
