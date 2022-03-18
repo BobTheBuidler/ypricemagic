@@ -86,7 +86,9 @@ class UniswapRouterV2(ContractBase):
                 amount_out = quote[-1] / ERC20(path[-1]).scale 
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
-                return amount_out * magic.get_price(paired_with, block)
+                paired_with_price = magic.get_price(paired_with, block, fail_to_None=True)
+                if paired_with_price:
+                    return amount_out * paired_with_price
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
