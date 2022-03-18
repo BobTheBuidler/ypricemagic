@@ -26,6 +26,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb", # sETH
         "0xae78736Cd615f374D3085123A210448E74Fc6393", # rETH
         "0xE95A203B1a91a908F9B9CE46459d101078c2c3cb", # aETHc
+        "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", # stETH
         # btc and btc-like
         wbtc.address,
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
