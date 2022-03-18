@@ -6,7 +6,7 @@ from functools import cached_property, lru_cache
 from typing import Dict, List
 
 from brownie import Contract as _Contract
-from brownie import chain, convert, web3
+from brownie import chain, convert
 from brownie.exceptions import EventLookupError, VirtualMachineError
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
@@ -24,7 +24,7 @@ from y.utils.events import decode_logs, get_logs_asap
 from y.utils.multicall import (
     multicall_same_func_no_input,
     multicall_same_func_same_contract_different_inputs)
-from y.utils.raw_calls import _decimals, raw_call
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -112,7 +112,7 @@ class UniswapRouterV2(ContractBase):
             # TODO figure out how to best handle uni forks with slight modifications
             except ValueError as e:
                 if 'Sequence has incorrect length' in str(e):
-                    return 
+                    return
                 #if 'is not a valid ETH address' in str(e): pass # TODO figure out why this happens and fix root cause
                 raise
             except VirtualMachineError as e:
@@ -167,6 +167,7 @@ class UniswapRouterV2(ContractBase):
             pools = {pool: tokens for i, pair in pairs.items() for pool, tokens in pair.items()}
         except EventLookupError:
             pairs, pools = {}, {}
+        del events
         
         all_pairs_len = raw_call(self.factory,'allPairsLength()',output='int')
         if len(pairs) < all_pairs_len:
