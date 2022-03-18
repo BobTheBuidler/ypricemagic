@@ -2,7 +2,7 @@
 
 import logging
 from collections import defaultdict
-from functools import cached_property
+from functools import cached_property, lru_cache
 from typing import Dict, List
 
 from brownie import Contract as _Contract
@@ -210,6 +210,7 @@ class UniswapRouterV2(ContractBase):
             return {}
 
     @log(logger)
+    @lru_cache(maxsize=500)
     def deepest_pool(self, token_address, block = None, _ignore_pools: List[str] = [] ):
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
@@ -239,6 +240,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @log(logger)
+    @lru_cache(maxsize=500)
     def deepest_stable_pool(self, token_address: str, block: int = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
         pools = {pool: paired_with for pool, paired_with in self.pools_for_token(token_address).items() if paired_with in STABLECOINS}
@@ -258,6 +260,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @log(logger)
+    @lru_cache(maxsize=500)
     def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0, _ignore_pools: List[str] = [] ):
         if _loop_count > 10:
             raise CantFindSwapPath
