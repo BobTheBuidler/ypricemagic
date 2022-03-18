@@ -114,7 +114,7 @@ class ERC20(ContractBase):
     
     @log(logger)
     def total_supply_readable(self, block: int = None) -> float:
-        return self.total_supply(block=block) / self._scale(block=block)
+        return self.total_supply(block=block) / self.scale
 
     @log(logger)
     def price(self, block: int = None, return_None_on_failure: bool = False) -> float:
@@ -146,7 +146,7 @@ class WeiBalance:
     def readable(self) -> float:
         if self.balance == 0:
             return 0
-        return self.balance / self.token._scale(block=self.block)
+        return self.balance / self.token.scale(block=self.block)
     
     def value_usd(self) -> float:
         if self.balance == 0:
