@@ -8,3 +8,4 @@ ypricemagic/old
 /cache
 __pycache__/
 /.vscode
+.mypy_cache
