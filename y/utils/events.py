@@ -55,6 +55,8 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     
     for batch in batches:
         logs.extend(batch)
+        del batch
+    del batches
 
     return logs
 
