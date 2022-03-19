@@ -3,7 +3,7 @@
 import logging
 from collections import defaultdict
 from functools import cached_property, lru_cache
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from brownie import Contract as _Contract
 from brownie import chain, convert
@@ -212,7 +212,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def deepest_pool(self, token_address, block = None, _ignore_pools: List[str] = [] ):
+    def deepest_pool(self, token_address, block = None, _ignore_pools: Tuple[str,...] = () ):
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return self.deepest_stable_pool(token_address)
@@ -262,7 +262,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0, _ignore_pools: List[str] = [] ):
+    def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0, _ignore_pools: Tuple[str,...] = () ):
         if _loop_count > 10:
             raise CantFindSwapPath
         token_address = convert.to_address(token_address)
@@ -282,7 +282,7 @@ class UniswapRouterV2(ContractBase):
                             paired_with,
                             block=block, 
                             _loop_count=_loop_count+1, 
-                            _ignore_pools=_ignore_pools + [deepest_pool]
+                            _ignore_pools=tuple(list(_ignore_pools) + [deepest_pool])
                         )
                     )
                 except CantFindSwapPath: pass
