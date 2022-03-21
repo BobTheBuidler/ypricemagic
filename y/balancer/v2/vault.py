@@ -32,13 +32,13 @@ class BalancerV2Vault(ContractBase):
         return {event['poolId'].hex():event['poolAddress'] for event in events}
     
     @lru_cache(maxsize=10)
-    def get_pool_info(self, poolids: List[HexBytes], block: int = None):
+    def get_pool_info(self, poolids: Tuple[HexBytes,...], block: int = None):
         return fetch_multicall(*[[self.contract,'getPoolTokens',poolId] for poolId in poolids], block=block)
 
     @log(logger)
     def deepest_pool_for(self, token_address: EthAddress, block: int = None) -> Tuple[EthAddress,int]:
         pools = self.list_pools(block=block)
-        poolids = [poolid for poolid, pool in pools.items() if _is_standard_pool(pool)]
+        poolids = (poolid for poolid, pool in pools.items() if _is_standard_pool(pool))
         pools_info = self.get_pool_info(poolids, block=block)
         pools_info = {self.list_pools(block=block)[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}
         
