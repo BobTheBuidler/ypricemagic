@@ -11,7 +11,10 @@ from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = 10000
+BATCH_SIZE = (
+    2_000 if 'moralis' in web3.provider.endpoint_uri
+    else 10_000
+)
 CACHED_CALLS = [
     "name()",
     "symbol()",
