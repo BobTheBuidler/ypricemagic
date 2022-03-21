@@ -1,6 +1,6 @@
 import logging
 
-from brownie import web3 as w3
+from brownie import web3
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 from requests import Session
@@ -30,7 +30,7 @@ def should_cache(method, params):
     return False
 
 
-def cache_middleware(make_request, w3):
+def cache_middleware(make_request, web3):
     def middleware(method, params):
         logger.debug("%s %s", method, params)
 
@@ -46,22 +46,22 @@ def cache_middleware(make_request, w3):
 
 def setup_middleware():
     # patch web3 provider with more connections and higher timeout
-    if w3.provider:
+    if web3.provider:
         try:
-            assert w3.provider.endpoint_uri.startswith("http"), "only http and https providers are supported"
+            assert web3.provider.endpoint_uri.startswith("http"), "only http and https providers are supported"
             adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
             session = Session()
             session.mount("http://", adapter)
             session.mount("https://", adapter)
-            w3.provider = HTTPProvider(w3.provider.endpoint_uri, {"timeout": 600}, session)
+            web3.provider = HTTPProvider(web3.provider.endpoint_uri, {"timeout": 600}, session)
         except AttributeError as e:
             if "'IPCProvider' object has no attribute 'endpoint_uri'" in str(e): pass 
             else: raise
 
     # patch and inject local filter middleware
     filter.MAX_BLOCK_REQUEST = BATCH_SIZE
-    w3.middleware_onion.add(filter.local_filter_middleware)
-    w3.middleware_onion.add(cache_middleware)
+    web3.middleware_onion.add(filter.local_filter_middleware)
+    web3.middleware_onion.add(cache_middleware)
 
 def ensure_middleware():
     setup_middleware()
