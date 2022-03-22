@@ -28,7 +28,12 @@ class BalancerV2Vault(ContractBase):
     @lru_cache(maxsize=10)
     def list_pools(self, block: int = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
-        events = decode_logs(get_logs_asap(self.address, topics, to_block=block))
+        try:
+            events = decode_logs(get_logs_asap(self.address, topics, to_block=block))
+        except TypeError as e:
+            if "Start must be less than or equal to stop" in str(e):
+                return {}
+            raise
         return {event['poolId'].hex():event['poolAddress'] for event in events}
     
     @lru_cache(maxsize=10)
