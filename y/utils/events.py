@@ -43,7 +43,11 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     logs = []
 
     if from_block is None:
-        from_block = 1 if address is None else contract_creation_block(address)
+        from_block = (
+            0 if address is None
+            or contract_creation_block(address) is None # This shouldn't return `None`, but sometimes it does. No pattern noticed so far. 
+            else contract_creation_block(address)
+        )
     if to_block is None:
         to_block = chain.height
 
