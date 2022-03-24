@@ -3,17 +3,17 @@ from functools import cached_property
 from typing import List, Optional, Union
 
 from brownie import chain
-from y.balancer.v1.v1 import BalancerV1
-from y.balancer.v2.v2 import BalancerV2
 from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
+from y.prices.dex.balancer.v1 import BalancerV1
+from y.prices.dex.balancer.v2 import BalancerV2
 from y.typing import Block
 
 logger = logging.getLogger(__name__)
 
 
-class Balancer:
+class BalancerMultiplexer:
     def __init__(self) -> None:
         pass
     
@@ -67,4 +67,4 @@ class Balancer:
                 return price
         
 
-balancer = Balancer()
+balancer_multiplexer = BalancerMultiplexer()

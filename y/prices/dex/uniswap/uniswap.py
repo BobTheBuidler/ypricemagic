@@ -8,11 +8,11 @@ from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import contract_not_verified
 from y.networks import Network
+from y.prices.dex.uniswap.v1 import UniswapV1
+from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapPoolV2,
+                                     UniswapRouterV2)
+from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.typing import Address, AnyAddressType, Block
-from y.uniswap.protocols import UNISWAPS
-from y.uniswap.v1 import UniswapV1
-from y.uniswap.v2.pool import NotAUniswapV2Pool, UniswapPoolV2
-from y.uniswap.v2.router import UniswapRouterV2
 from y.utils.logging import gh_issue_request
 from y.utils.multicall import multicall_same_func_no_input
 
@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 # NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.
 #       Please add a viable swap path to ..protocols to fetch price data successfully.
 
-class Uniswap:
+class UniswapMultiplexer:
     def __init__(self) -> None:
         self.routers = {}
         for name in UNISWAPS:
@@ -109,4 +109,4 @@ class Uniswap:
         return {router: pool for balance in sorted(routers_by_depth, reverse=True) for router, pool in routers_by_depth[balance].items()}
 
 
-uniswap = Uniswap()
+uniswap_multiplexer = UniswapMultiplexer()

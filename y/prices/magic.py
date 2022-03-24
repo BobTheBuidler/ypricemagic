@@ -7,26 +7,29 @@ from brownie.exceptions import ContractNotFound
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
 from y import convert
-from y.balancer.balancer import balancer
-from y.chainlink.chainlink import chainlink
 from y.constants import WRAPPED_GAS_COIN
-from y.curve.curve import curve
 from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
-from y.prices import (basketdao, belt, convex, cream, froyo, gelato, ib,
-                      mooniswap, mstablefeederpool, one_to_one, piedao, saddle,
-                      tokensets, wsteth, yearn)
-from y.prices.aave import aave
-from y.prices.compound import compound
-from y.prices.genericamm import generic_amm
+from y.prices import convex, one_to_one, yearn
+from y.prices.chainlink import chainlink
+from y.prices.dex import mooniswap
+from y.prices.dex.balancer import balancer_multiplexer
+from y.prices.dex.genericamm import generic_amm
+from y.prices.dex.uniswap import uniswap
+from y.prices.dex.uniswap.v3 import uniswap_v3
+from y.prices.eth_derivs import creth, wsteth
+from y.prices.lending import ib
+from y.prices.lending.aave import aave
+from y.prices.lending.compound import compound
+from y.prices.stable_swap import belt, froyo, mstablefeederpool, saddle
+from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
+from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
 from y.typing import AnyAddressType, Block
-from y.uniswap.uniswap import uniswap
-from y.uniswap.v3 import uniswap_v3
 from y.utils.raw_calls import _symbol
 
 logger = logging.getLogger(__name__)
@@ -145,7 +148,7 @@ def _exit_early_for_known_tokens(
     elif bucket == 'compound':              price = compound.get_price(token_address, block=block)
 
     elif bucket == 'convex':                price = convex.get_price(token_address,block)
-    elif bucket == 'creth':                 price = cream.get_price_creth(token_address, block)
+    elif bucket == 'creth':                 price = creth.get_price_creth(token_address, block)
     elif bucket == 'curve lp':              price = curve.get_price(token_address, block)
 
     elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
