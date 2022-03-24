@@ -138,7 +138,7 @@ def _get_logs_no_cache(
 
 @memory.cache()
 def _get_logs_batch_cached(
-    address: Optional[ChecksumAddress],
+    address: Optional[str],
     topics: Optional[List[str]],
     start: Block,
     end: Block
