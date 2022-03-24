@@ -1,15 +1,16 @@
 import logging
 from functools import cached_property, lru_cache
-from typing import Optional
+from typing import Any, Optional
 
 from brownie import chain
 from y import Network
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_method, has_methods, probe
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
-from y.typing import Block
+from y.typing import AnyAddressType, Block
 from y.utils.cache import memory
 from y.utils.raw_calls import raw_call
 
@@ -38,7 +39,7 @@ share_price_methods = [
 
 @log(logger)
 @memory.cache()
-def is_yearn_vault(token):
+def is_yearn_vault(token: AnyAddressType) -> bool:
     # Yearn-like contracts can use these formats
     result = any([
         has_methods(token, ['pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'], any),
@@ -61,14 +62,14 @@ def is_yearn_vault(token):
     return result
 
 @log(logger)
-def get_price(token: str, block: Optional[Block] = None):
+def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return YearnInspiredVault(token).price(block=block)
 
 class YearnInspiredVault(ERC20):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -127,5 +128,5 @@ class YearnInspiredVault(ERC20):
     
     @log(logger)
     @lru_cache
-    def price(self, block: Optional[Block] = None) -> float:
-        return self.share_price(block=block).readable * self.underlying.price(block=block)
+    def price(self, block: Optional[Block] = None) -> UsdPrice:
+        return UsdPrice(self.share_price(block=block).readable * self.underlying.price(block=block))
