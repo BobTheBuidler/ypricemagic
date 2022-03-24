@@ -36,6 +36,7 @@ logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
 Path = List[AddressOrContract]
+Reserves = Tuple[int,int,int]
 
 
 class UniswapPoolV2(ERC20):
@@ -106,7 +107,7 @@ class UniswapPoolV2(ERC20):
             return sum(vals)
 
     @log(logger)
-    def get_pool_details(self, block: Optional[Block] = None) -> Tuple[ERC20, ERC20, int, Tuple[int, int, int]]:
+    def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
         try: token0, token1, supply, reserves = Multicall(calls, block_id=block)().values()
@@ -119,8 +120,11 @@ class UniswapPoolV2(ERC20):
                 token0, token1, supply, reserves = fetch_multicall([contract,'token0'],[contract,'token1'],[contract,'totalSupply'],[contract,'getReserves'],block=block)
             except (AttributeError, ContractNotVerified, MessedUpBrownieContract):
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
-        token0 = ERC20(token0)
-        token1 = ERC20(token1)
+        
+        if token0:
+            token0 = ERC20(token0)
+        if token1:
+            token1 = ERC20(token1)
         self.tokens = token0, token1
         return token0, token1, supply, reserves
 
