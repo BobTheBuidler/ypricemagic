@@ -97,11 +97,16 @@ class UniswapPoolV2(ERC20):
     @log(logger)
     def tvl(self, block: Optional[Block] = None) -> Optional[float]:
         prices = [token.price(block=block, return_None_on_failure=True) for token in self.tokens]
-        vals = [None if price is None else reserve.readable * price for reserve, price in zip(self.reserves(block=block), prices)]
+        vals = [
+            None if price is None else reserve.readable * price
+            for reserve, price in zip(self.reserves(block=block), prices)
+        ]
         
         if not vals[0] or not vals[1]:
-            if vals[0] is not None and not vals[1]: vals[1] = vals[0]
-            if vals[1] is not None and not vals[0]: vals[0] = vals[1]
+            if vals[0] is not None and not vals[1]:
+                vals[1] = vals[0]
+            if vals[1] is not None and not vals[0]:
+                vals[0] = vals[1]
 
         if vals[0] is not None and vals[1] is not None:
             return sum(vals)
@@ -110,7 +115,8 @@ class UniswapPoolV2(ERC20):
     def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
-        try: token0, token1, supply, reserves = Multicall(calls, block_id=block)().values()
+        try:
+            token0, token1, supply, reserves = Multicall(calls, block_id=block)().values()
         except Exception as e:
             if not call_reverted(e):
                 raise
