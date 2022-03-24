@@ -1,12 +1,15 @@
 import logging
+from typing import Optional
 
 from brownie import chain
 from y.balancer.v2.pool import BalancerV2Pool
 from y.balancer.v2.vault import BalancerV2Vault
 from y.classes.singleton import Singleton
 from y.contracts import has_methods
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
+from y.typing import AnyAddressType, Block
 
 logger = logging.getLogger(__name__)
 
@@ -33,25 +36,27 @@ class BalancerV2(metaclass=Singleton):
         return "BalancerV2()"
 
     @log(logger)
-    def is_pool(self, token_address):
-        return has_methods(token_address, ['getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)'])
+    def is_pool(self, token_address: AnyAddressType) -> bool:
+        methods = ['getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)']
+        return has_methods(token_address, methods)
     
     @log(logger)
-    def get_pool_price(self, pool_address, block=None):
+    def get_pool_price(self, pool_address, block: Optional[Block] = None) -> UsdPrice:
         return BalancerV2Pool(pool_address).get_pool_price(block=block)
 
     @log(logger)
-    def get_token_price(self, token_address, block=None):
+    def get_token_price(self, token_address, block: Optional[Block] = None) -> UsdPrice:
         deepest_pool = self.deepest_pool_for(token_address, block=block)
         if deepest_pool is None: return
         return deepest_pool.get_token_price(token_address, block)
     
     @log(logger)
-    def deepest_pool_for(self, token_address, block=None):
+    def deepest_pool_for(self, token_address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         deepest_pools = {vault.address: vault.deepest_pool_for(token_address, block=block) for vault in self.vaults}
         deepest_pools = {vault: deepest_pool for vault,deepest_pool in deepest_pools.items() if deepest_pool is not None}
         deepest_pool_balance = max(pool_balance for pool_address, pool_balance in deepest_pools.values())
         for pool_address, pool_balance in deepest_pools.values():
-            if pool_balance == deepest_pool_balance and pool_address: return BalancerV2Pool(pool_address)
+            if pool_balance == deepest_pool_balance and pool_address:
+                return BalancerV2Pool(pool_address)
 
 balancer = BalancerV2()

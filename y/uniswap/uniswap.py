@@ -1,11 +1,14 @@
 import logging
-from typing import Dict
+from typing import Dict, Optional
 
-from brownie import chain, convert
+from brownie import chain
 from cachetools.func import ttl_cache
+from y import convert
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import contract_not_verified
 from y.networks import Network
+from y.typing import Address, AnyAddressType, Block
 from y.uniswap.protocols import UNISWAPS
 from y.uniswap.v1 import UniswapV1
 from y.uniswap.v2.pool import NotAUniswapV2Pool, UniswapPoolV2
@@ -24,13 +27,14 @@ class Uniswap:
         for name in UNISWAPS:
             try: self.routers[name] = UniswapRouterV2(UNISWAPS[name]['router'])
             except ValueError as e: # TODO do this better
-                if contract_not_verified(e): continue
-                else: raise
+                if not contract_not_verified(e):
+                    raise
         self.factories = [UNISWAPS[name]['factory'] for name in UNISWAPS]
         self.v1 = UniswapV1()
 
     @log(logger)
-    def is_uniswap_pool(self, token_address: str) -> bool:
+    def is_uniswap_pool(self, token_address: AnyAddressType) -> bool:
+        token_address = convert.to_address(token_address)
         try:
             pool = UniswapPoolV2(token_address)
             is_pool = all(pool.get_pool_details())
@@ -42,18 +46,18 @@ class Uniswap:
         except NotAUniswapV2Pool: return False
 
     @log(logger)
-    def get_price_v1(self, token_address: str, block: int = None):
+    def get_price_v1(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         return self.v1.get_price(token_address, block)
     
     @log(logger)
     @ttl_cache(ttl=600)
-    def lp_price(self, token_address: str, block: int = None) -> float:
+    def lp_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         """ Get Uniswap/Sushiswap LP token price. """
         return UniswapPoolV2(token_address).get_price(block=block)
     
     @log(logger)
     @ttl_cache(ttl=36000)
-    def get_price(self, token_in: str, block: int = None, protocol: str = None) -> float:
+    def get_price(self, token_in: AnyAddressType, block: Optional[Block] = None, protocol: Optional[str] = None) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
@@ -72,18 +76,21 @@ class Uniswap:
         
         if chain.id == Network.Mainnet:
             return self.get_price_v1(token_in, block)
+        
+        return None
     
 
     @log(logger)
-    def deepest_router(self, token_in: str, block: int = None) -> UniswapRouterV2:
+    def deepest_router(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UniswapRouterV2]:
         token_in = convert.to_address(token_in)
 
         for router in self.routers_by_depth(token_in, block=block):
             return router # will return first router in the dict, or None if no supported routers
+        return None
 
 
     @log(logger)
-    def routers_by_depth(self, token_in: str, block: int = None) -> Dict[UniswapRouterV2,str]:
+    def routers_by_depth(self, token_in: str, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
         '''

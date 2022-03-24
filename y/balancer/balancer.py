@@ -1,12 +1,14 @@
 import logging
 from functools import cached_property
-from typing import List, Union
+from typing import List, Optional, Union
 
 from brownie import chain
 from y.balancer.v1.v1 import BalancerV1
 from y.balancer.v2.v2 import BalancerV2
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
+from y.typing import Block
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +25,12 @@ class Balancer:
         return [v for v in [self.v1, self.v2] if v]
 
     @cached_property
-    def v1(self):
+    def v1(self) -> Optional[BalancerV1]:
         try: return BalancerV1()
         except ImportError: return None
     
     @cached_property
-    def v2(self):
+    def v2(self) -> Optional[BalancerV2]:
         try: return BalancerV2()
         except ImportError: return None
 
@@ -37,13 +39,15 @@ class Balancer:
         return any(v.is_pool(token_address) for v in self.versions)
     
     @log(logger)
-    def get_pool_price(self, token_address: str, block=None):
+    def get_pool_price(self, token_address: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
         for v in self.versions:
-            if v.is_pool(token_address): return v.get_pool_price(token_address, block)
+            if v.is_pool(token_address):
+                return UsdPrice(v.get_pool_price(token_address, block))
 
     @log(logger)
-    def get_price(self, token_address: str, block=None):
-        if self.is_balancer_pool(token_address): return self.get_pool_price(token_address, block=block)
+    def get_price(self, token_address: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        if self.is_balancer_pool(token_address):
+            return self.get_pool_price(token_address, block=block)
 
         price = None    
         

@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 @log(logger)
 @lru_cache(1)
-def get_ethereum_client():
+def get_ethereum_client() -> str:
     client = web3.clientVersion
     if client.startswith('TurboGeth'):
         return 'tg'

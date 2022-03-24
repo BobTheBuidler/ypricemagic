@@ -1,18 +1,19 @@
 import logging
 from functools import cached_property, lru_cache
-from typing import Set, Tuple
+from typing import Any, Optional, Set
 
-from brownie import chain, convert, web3
-from multicall import Call, Multicall
+from brownie import chain, convert
+from multicall import Call
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
-from y.contracts import has_method, has_methods
+from y.contracts import has_methods
+from y.datatypes import UsdPrice
 from y.decorators import log
-from y.exceptions import call_reverted
 from y.networks import Network
+from y.typing import Block
 from y.utils.logging import gh_issue_request
-from y.utils.raw_calls import _decimals, raw_call
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -56,11 +57,11 @@ TROLLERS = {
 
 
 class CToken(ERC20):
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
-    def get_price(self, block: int = None) -> float:
-        return self.underlying_per_ctoken(block=block) * self.underlying.price(block=block)
+    def get_price(self, block: Optional[Block] = None) -> UsdPrice:
+        return UsdPrice(self.underlying_per_ctoken(block=block) * self.underlying.price(block=block))
     
     @cached_property
     @log(logger)
@@ -74,12 +75,12 @@ class CToken(ERC20):
     
     @log(logger)
     @lru_cache
-    def underlying_per_ctoken(self, block: int = None) -> float:
+    def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         return self.exchange_rate(block=block) * 10 ** (self.decimals - self.underlying.decimals)
     
     @log(logger)
     @lru_cache
-    def exchange_rate(self, block: int = None) -> int:
+    def exchange_rate(self, block: Optional[Block] = None) -> float:
         method = 'exchangeRateCurrent()(uint)'
         try:
             exchange_rate = Call(self.address, [method], [[method,None]], block_id=block)()[method]
@@ -139,7 +140,7 @@ class Compound(metaclass = Singleton):
         return result
     
     @log(logger)
-    def get_price(self, token_address: str, block=None):
+    def get_price(self, token_address: str, block: Optional[Block] = None) -> UsdPrice:
         return CToken(token_address).get_price(block=block)
 
     @log(logger)

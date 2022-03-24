@@ -1,12 +1,13 @@
 import logging
 from functools import lru_cache
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from brownie.convert.datatypes import EthAddress
 from hexbytes import HexBytes
 from y.classes.common import ContractBase
 from y.contracts import build_name
 from y.decorators import log
+from y.typing import Block
 from y.utils.events import decode_logs, get_logs_asap
 from y.utils.multicall import fetch_multicall
 
@@ -14,19 +15,19 @@ logger = logging.getLogger(__name__)
 
 
 class BalancerV2Vault(ContractBase):
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
     
     @log(logger)
-    def get_pool_tokens(self, pool_id: int, block=None):
+    def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
         return self.contract.getPoolTokens(pool_id, block_identifier = block)
 
     @log(logger)
     @lru_cache(maxsize=10)
-    def list_pools(self, block: int = None) -> Dict[HexBytes,EthAddress]:
+    def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
         try:
             events = decode_logs(get_logs_asap(self.address, topics, to_block=block))
@@ -37,11 +38,11 @@ class BalancerV2Vault(ContractBase):
         return {event['poolId'].hex():event['poolAddress'] for event in events}
     
     @lru_cache(maxsize=10)
-    def get_pool_info(self, poolids: Tuple[HexBytes,...], block: int = None):
+    def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         return fetch_multicall(*[[self.contract,'getPoolTokens',poolId] for poolId in poolids], block=block)
 
     @log(logger)
-    def deepest_pool_for(self, token_address: EthAddress, block: int = None) -> Tuple[EthAddress,int]:
+    def deepest_pool_for(self, token_address: EthAddress, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         pools = self.list_pools(block=block)
         poolids = (poolid for poolid, pool in pools.items() if _is_standard_pool(pool))
         pools_info = self.get_pool_info(poolids, block=block)

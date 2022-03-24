@@ -1,13 +1,16 @@
 import logging
 from functools import cached_property, lru_cache
-from typing import List, Union
+from typing import Any, List, Optional, Union
 
-from brownie import chain, convert, web3
+from brownie import chain
 from multicall import Call, Multicall
+from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
+from y.typing import AnyAddressType, Block
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
@@ -36,7 +39,7 @@ v2_pools = {
 
 
 class AaveMarketBase(ContractBase):
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __contains__(self, __o: object) -> bool:
@@ -44,7 +47,7 @@ class AaveMarketBase(ContractBase):
 
 
 class AaveMarketV1(AaveMarketBase):
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -66,7 +69,7 @@ class AaveMarketV1(AaveMarketBase):
 
 
 class AaveMarketV2(AaveMarketBase):
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -126,7 +129,7 @@ class AaveRegistry(metaclass = Singleton):
 
     @log(logger)
     @lru_cache
-    def is_atoken(self,token_address: str):
+    def is_atoken(self, token_address: AnyAddressType) -> bool:
         return token_address in self
     
     @log(logger)
@@ -136,7 +139,7 @@ class AaveRegistry(metaclass = Singleton):
         return pool.underlying(token_address)
     
     @log(logger)
-    def get_price(self, token_address: str, block=None):
+    def get_price(self, token_address: str, block: Optional[Block] = None) -> UsdPrice:
         return self.underlying(token_address).price(block)
 
 

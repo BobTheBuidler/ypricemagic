@@ -1,20 +1,25 @@
 import logging
 from collections import Counter, defaultdict
 from itertools import zip_longest
+from typing import Any, Dict, List, Optional
 
 from brownie import chain, web3
+from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
+from eth_typing import ChecksumAddress
 from joblib import Parallel, delayed
 from toolz import groupby
 from web3.middleware.filter import block_ranges
+from web3.types import LogReceipt
 from y.contracts import contract_creation_block
+from y.typing import Address, Block
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
 logger = logging.getLogger(__name__)
 
 
-def decode_logs(logs) -> EventDict:
+def decode_logs(logs: List[LogReceipt]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
@@ -39,7 +44,7 @@ def create_filter(address, topics=None):
     return web3.eth.filter({"address": address, "fromBlock": start_block, "topics": topics})
 
 
-def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
+def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     logs = []
 
     if from_block is None:
@@ -61,7 +66,7 @@ def get_logs_asap(address, topics, from_block=None, to_block=None, verbose=0):
     return logs
 
 
-def logs_to_balance_checkpoints(logs):
+def logs_to_balance_checkpoints(logs) -> Dict[EthAddress,int]:
     """
     Convert Transfer logs to `{address: {from_block: balance}}` checkpoints.
     """
@@ -79,7 +84,7 @@ def logs_to_balance_checkpoints(logs):
     return checkpoints
 
 
-def checkpoints_to_weight(checkpoints, start_block, end_block):
+def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> float:
     total = 0
     for a, b in zip_longest(list(checkpoints), list(checkpoints)[1:]):
         if a < start_block or a > end_block:
@@ -89,7 +94,12 @@ def checkpoints_to_weight(checkpoints, start_block, end_block):
     return total
 
 
-def _get_logs(address, topics, start, end):
+def _get_logs(
+    address: Optional[ChecksumAddress],
+    topics: Optional[List[str]],
+    start: Block,
+    end: Block
+    ) -> List[LogReceipt]:
     if end - start == BATCH_SIZE - 1:
         response = _get_logs_batch_cached(address, topics, start, end)
     else:
@@ -97,7 +107,12 @@ def _get_logs(address, topics, start, end):
     return response
 
 
-def _get_logs_no_cache(address, topics, start, end):
+def _get_logs_no_cache(
+    address: Optional[ChecksumAddress],
+    topics: Optional[List[str]],
+    start: Block,
+    end: Block
+    ) -> List[LogReceipt]:
     logger.debug(f'fetching logs {start} to {end}')
     try:
         if address is None:
@@ -122,5 +137,10 @@ def _get_logs_no_cache(address, topics, start, end):
 
 
 @memory.cache()
-def _get_logs_batch_cached(address, topics, start, end):
+def _get_logs_batch_cached(
+    address: Optional[ChecksumAddress],
+    topics: Optional[List[str]],
+    start: Block,
+    end: Block
+    ) -> List[LogReceipt]:
     return _get_logs_no_cache(address, topics, start, end)

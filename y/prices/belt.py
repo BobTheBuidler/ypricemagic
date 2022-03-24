@@ -1,9 +1,13 @@
 
 import logging
+from typing import Optional
 
 from brownie import chain
+from y import convert
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
+from y.typing import AnyAddressType, Block
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -17,11 +21,13 @@ POOLS = {
 
 
 @log(logger)
-def is_belt_lp(token_address):
-    return token_address in POOLS
+def is_belt_lp(token: AnyAddressType) -> bool:
+    address = convert.to_address(token)
+    return address in POOLS
 
 
 @log(logger)
-def get_price(token_address, block=None):
-    pool = POOLS[token_address]
-    return raw_call(pool, 'get_virtual_price()', output='int', block=block) / 1e18
+def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    address = convert.to_address(token)
+    pool = POOLS[address]
+    return UsdPrice(raw_call(pool, 'get_virtual_price()', output='int', block=block) / 1e18)

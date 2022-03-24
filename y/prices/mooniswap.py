@@ -1,11 +1,15 @@
 
 import logging
+from typing import Optional
 
 from brownie import ZERO_ADDRESS, chain, multicall, web3
 from y.constants import weth
 from y.contracts import Contract
+from y.datatypes import UsdPrice
 from y.decorators import log
+from y import convert
 from y.prices import magic
+from y.typing import Block, AnyAddressType
 from y.utils.cache import memory
 from y.utils.multicall import multicall2
 from y.utils.raw_calls import _decimals, _totalSupplyReadable
@@ -24,18 +28,21 @@ else:
 
 @log(logger)
 @memory.cache()
-def is_mooniswap_pool(token):
-    if router is None: return False
-    return router.isPool(token)
+def is_mooniswap_pool(token: AnyAddressType) -> bool:
+    address = convert.to_address(token)
+    if router is None:
+        return False
+    return router.isPool(address)
 
 @log(logger)
-def get_pool_price(token_address, block=None):
-    token = Contract(token_address)
+def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    address = convert.to_address(token)
+    token = Contract(address)
     if block >= 12336033 and chain.id == 1:
         with multicall(address=multicall2.address, block_identifier = block):
             token0_address = token.token0()
             token1_address = token.token1()
-            totalSupply = _totalSupplyReadable(token_address,block)
+            totalSupply = _totalSupplyReadable(address,block)
             if token0_address == ZERO_ADDRESS:
                 token1 = Contract(token1_address)
                 bal0 = web3.eth.get_balance(token.address) / 10 ** 18
@@ -51,7 +58,7 @@ def get_pool_price(token_address, block=None):
     else:
         token0_address = token.token0(block_identifier = block)
         token1_address = token.token1(block_identifier = block)
-        totalSupply = _totalSupplyReadable(token_address,block)
+        totalSupply = _totalSupplyReadable(address,block)
         if token0_address == ZERO_ADDRESS:
             token1 = Contract(token1_address)
             bal0 = web3.eth.get_balance(token.address, block_identifier = block) / 10 ** 18

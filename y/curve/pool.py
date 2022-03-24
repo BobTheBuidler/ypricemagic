@@ -1,15 +1,18 @@
 
 import logging
 from functools import cached_property, lru_cache
-from typing import Dict, List
+from typing import Any, Dict, List, Optional
 
+import brownie
 from brownie import ZERO_ADDRESS, chain
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract
+from y.datatypes import UsdValue
 from y.decorators import log
 from y.exceptions import UnsupportedNetwork, call_reverted
 from y.networks import Network
 from y.prices import magic
+from y.typing import Address, Block
 from y.utils.multicall import (
     fetch_multicall, multicall_same_func_same_contract_different_inputs)
 from y.utils.raw_calls import raw_call
@@ -18,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
-    def __init__(self, address: str, *args, **kwargs):
+    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -65,7 +68,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         return len(self.get_coins)
     
     @log(logger)
-    def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: int = None) -> WeiBalance:
+    def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
         token_in = self.get_coins[coin_ix_in]
         amount_in = token_in.scale
         try:
@@ -108,7 +111,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     
     @log(logger)
     @lru_cache
-    def get_balances(self, block=None) -> Dict[ERC20, int]:
+    def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
         """
         Get {token: balance} of liquidity in the pool.
         """
@@ -130,20 +133,21 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         }
     
     @log(logger)
-    def get_tvl(self, block=None):
+    def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         """
         Get total value in Curve pool.
         """
         balances = self.get_balances(block=block)
-        if balances is None: return None
+        if balances is None:
+            return None
 
-        return sum(
-            balances[coin] * magic.get_price(coin, block=block) for coin in balances
+        return UsdValue(
+            sum(balances[coin] * magic.get_price(coin, block=block) for coin in balances)
         )
     
     @cached_property
     @log(logger)
-    def oracle(self) -> str:
+    def oracle(self) -> Optional[Address]:
         '''
         If `pool` has method `price_oracle`, returns price_oracle address.
         Else, returns `None`.
@@ -155,7 +159,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     
     @log(logger)
     @lru_cache(maxsize=None)
-    def gauge(self) -> Contract:
+    def gauge(self) -> Optional[brownie.Contract]:
         """
         Get liquidity gauge address by pool.
         """
@@ -167,9 +171,10 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         gauges, types = curve.registry.get_gauges(self.address)
         if gauges[0] != ZERO_ADDRESS:
             return Contract(gauges[0])
+        return None
     
     @log(logger)
-    def calculate_apy(self, lp_token: str, block: int = None) -> float:
+    def calculate_apy(self, lp_token: str, block: Optional[Block] = None) -> Dict[str,float]:
         if not chain.id == Network.Mainnet:
             raise UnsupportedNetwork(f'apy calculations only available on Mainnet')
 
@@ -200,7 +205,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         }
     
     @log(logger)
-    def calculate_boost(self, addr: str, block=None):
+    def calculate_boost(self, addr: str, block: Optional[Block] = None) -> Dict[str,float]:
         if not chain.id == Network.Mainnet:
             raise UnsupportedNetwork(f'boost calculations only available on Mainnet')
 

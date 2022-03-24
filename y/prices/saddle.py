@@ -1,14 +1,16 @@
 
 import logging
 from functools import lru_cache
-from typing import List
+from typing import List, Optional
 
 from brownie import chain
 from y.contracts import has_method, has_methods
+from y.datatypes import UsdPrice, UsdValue
 from y.decorators import log
 from y.erc20 import decimals
 from y.networks import Network
 from y.prices import magic
+from y.typing import Block
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import _totalSupplyReadable
@@ -38,12 +40,12 @@ def get_pool(token_address: str) -> str:
 
 
 @log(logger)
-def get_price(token_address: str, block: int = None) -> float:
-    return tvl(token_address, block) / _totalSupplyReadable(token_address, block)
+def get_price(token_address: str, block: Optional[Block] = None) -> UsdPrice:
+    return UsdPrice(tvl(token_address, block) / _totalSupplyReadable(token_address, block))
 
 
 @log(logger)
-def tvl(token_address: str, block: int = None) -> float:
+def tvl(token_address: str, block: Optional[Block] = None) -> UsdValue:
     tokens = get_tokens(token_address, block)
     pool = get_pool(token_address)
     balances = multicall_same_func_same_contract_different_inputs(
@@ -51,11 +53,11 @@ def tvl(token_address: str, block: int = None) -> float:
     tokens_decimals = decimals(tokens, block=block)
     balances = [balance / 10 ** decimal for balance, decimal in zip(balances, tokens_decimals)]
     prices = magic.get_prices(tokens, block, silent=True)
-    return sum(balance * price for balance, price in zip (balances, prices))
+    return UsdValue(sum(balance * price for balance, price in zip (balances, prices)))
 
 
 @log(logger)
-def get_tokens(token_address: str, block: int = None) -> List[str]:
+def get_tokens(token_address: str, block: Optional[Block] = None) -> List[str]:
     pool = get_pool(token_address)
     response = multicall_same_func_same_contract_different_inputs(
         pool, 'getToken(uint8)(address)', inputs=[*range(8)], block=block, return_None_on_failure=True)

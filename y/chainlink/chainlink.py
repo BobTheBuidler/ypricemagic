@@ -1,16 +1,19 @@
 import logging
-from functools import cached_property
-from typing import Dict
+from functools import cached_property, lru_cache
+from typing import Dict, Optional
 
-from brownie import ZERO_ADDRESS, chain, convert
+from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
+from y import convert
 from y.chainlink.feeds import FEEDS
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
+from y.typing import Address, AnyAddressType, Block
 from y.utils.events import create_filter, decode_logs, get_logs_asap
 
 logger = logging.getLogger(__name__)
@@ -28,7 +31,7 @@ registries = {
 
 
 class Chainlink(metaclass=Singleton):
-    def __init__(self):
+    def __init__(self) -> None:
         if chain.id not in registries and len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
 
@@ -62,16 +65,17 @@ class Chainlink(metaclass=Singleton):
         return feeds
 
     @log(logger)
-    def get_feed(self, asset) -> Contract:
+    def get_feed(self, asset: Address) -> Contract:
         return Contract(self.feeds[asset])
 
     @log(logger)
-    def __contains__(self, asset):
+    def __contains__(self, asset: AnyAddressType) -> bool:
         return convert.to_address(asset) in self.feeds
 
     @ttl_cache(maxsize=None, ttl=600)
     @log(logger)
-    def get_price(self, asset, block=None):
+    def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
+        asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
         try:
@@ -81,12 +85,13 @@ class Chainlink(metaclass=Singleton):
         except ValueError:
             return None
     
-    def feed_decimals(self, asset):
+    @lru_cache(maxsize=None)
+    def feed_decimals(self, asset: AnyAddressType) -> int:
         asset = convert.to_address(asset)
         feed = self.get_feed(asset)
         return feed.decimals()
     
-    def feed_scale(self, asset):
+    def feed_scale(self, asset: AnyAddressType) -> int:
         return 10 ** self.feed_decimals(asset)
 
 

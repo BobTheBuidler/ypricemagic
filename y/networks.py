@@ -1,5 +1,6 @@
 
 from enum import IntEnum
+from typing import Optional
 
 from brownie import chain
 
@@ -20,7 +21,7 @@ class Network(IntEnum):
     Cronos = 25
 
     @staticmethod
-    def label(chain_id = None):
+    def label(chain_id: Optional[int] = None) -> str:
         if not chain_id: chain_id = chain.id
 
         if chain_id == Network.Mainnet:                 return 'ETH'
@@ -38,7 +39,7 @@ class Network(IntEnum):
         elif chain_id == Network.Cronos:                return 'CRO'
     
     @staticmethod
-    def name(chain_id = None):
+    def name(chain_id: Optional[int] = None) -> str:
         if not chain_id: chain_id = chain.id
 
         if chain_id == Network.Mainnet:                 return 'Mainnet'
@@ -56,7 +57,7 @@ class Network(IntEnum):
         elif chain_id == Network.Cronos:                return 'Cronos'
 
     @staticmethod
-    def printable(chain_id = None):
+    def printable(chain_id: Optional[int] = None) -> str:
         # will always work to print a readable string that identifies the network, even if network not supported
         if chain_id is None: chain_id = chain.id
         return Network.name(chain_id) if Network.name(chain_id) else f"chain {chain_id}"

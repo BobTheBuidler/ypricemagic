@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 @log(logger)
 @memory.cache() 
-def get_block_timestamp(height):
+def get_block_timestamp(height: int) -> int:
     client = get_ethereum_client()
     if client in ['tg', 'erigon']:
         header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
@@ -22,7 +22,7 @@ def get_block_timestamp(height):
 
 @log(logger)
 @memory.cache() 
-def last_block_on_date(date_string):
+def last_block_on_date(date_string: str) -> int:
     logger.debug('last block on date %d', date_string)
     date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
     date = date.date()
@@ -42,7 +42,7 @@ def last_block_on_date(date_string):
 
 
 @memory.cache()
-def closest_block_after_timestamp(timestamp):
+def closest_block_after_timestamp(timestamp: int) -> int:
     logger.info('closest block after timestamp %d', timestamp)
     height = chain.height
     lo, hi = 0, height

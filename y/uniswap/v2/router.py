@@ -3,21 +3,24 @@
 import logging
 from collections import defaultdict
 from functools import cached_property, lru_cache
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
-from brownie import Contract as _Contract
-from brownie import chain, convert
+import brownie
+from brownie import chain
 from brownie.exceptions import EventLookupError, VirtualMachineError
 from cachetools.func import ttl_cache
 from multicall import Call, Multicall
+from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
+from y.datatypes import UsdPrice
 from y.decorators import continue_on_revert, log
 from y.exceptions import CantFindSwapPath, NonStandardERC20, call_reverted
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
+from y.typing import Address, AddressOrContract, AnyAddressType, Block
 from y.uniswap.protocols import (ROUTER_TO_FACTORY, ROUTER_TO_PROTOCOL,
                                  special_paths)
 from y.utils.events import decode_logs, get_logs_asap
@@ -30,8 +33,10 @@ logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
+Path = List[AddressOrContract]
+
 class UniswapRouterV2(ContractBase):
-    def __init__(self, router_address: str, *args, **kwargs):
+    def __init__(self, router_address: str, *args: Any, **kwargs: Any) -> None:
         super().__init__(router_address, *args, **kwargs)
 
         self.label = ROUTER_TO_PROTOCOL[self.address]
@@ -40,7 +45,7 @@ class UniswapRouterV2(ContractBase):
 
         # we need the factory contract object cached in brownie so we can decode logs properly
         if not ContractBase(self.factory)._is_cached:
-            _Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
+            brownie.Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
     
 
     def __repr__(self) -> str:
@@ -49,7 +54,13 @@ class UniswapRouterV2(ContractBase):
 
     @ttl_cache(ttl=36000)
     @log(logger)
-    def get_price(self, token_in: str, block: int = None, token_out: str = usdc.address, paired_against = WRAPPED_GAS_COIN):
+    def get_price(
+        self,
+        token_in: Address,
+        block: Optional[Block] = None,
+        token_out: Address = usdc.address,
+        paired_against: Address = WRAPPED_GAS_COIN
+        ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -100,15 +111,15 @@ class UniswapRouterV2(ContractBase):
         quote = self.get_quote(amount_in, path, block=block)
         if quote is not None:
             amount_out = quote[-1] / ERC20(path[-1]).scale
-            return amount_out / fees
+            return UsdPrice(amount_out / fees)
 
 
     @continue_on_revert
     @log(logger)
-    def get_quote(self, amount_in: int, path: List[str], block=None):
-
+    def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         if self._is_cached:
-            try: return self.contract.getAmountsOut.call(amount_in, path, block_identifier=block)
+            try:
+                return self.contract.getAmountsOut.call(amount_in, path, block_identifier=block)
             # TODO figure out how to best handle uni forks with slight modifications
             except ValueError as e:
                 if 'Sequence has incorrect length' in str(e):
@@ -128,7 +139,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @log(logger)
-    def smol_brain_path_selector(self, token_in: str, token_out: str, paired_against: str):
+    def smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
 
@@ -171,7 +182,7 @@ class UniswapRouterV2(ContractBase):
         
         all_pairs_len = raw_call(self.factory,'allPairsLength()',output='int')
         if len(pairs) < all_pairs_len:
-            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing pools...")
+            logger.debug(f"Oh no! Looks like your node can't look back that far. Checking for the missing {all_pairs_len - len(pairs)} pools...")
             pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in pairs]
             logger.debug(f'pools: {pools_your_node_couldnt_get}')
             pools_your_node_couldnt_get = multicall_same_func_same_contract_different_inputs(
@@ -212,7 +223,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def deepest_pool(self, token_address, block = None, _ignore_pools: Tuple[str,...] = () ):
+    def deepest_pool(self, token_address, block: Optional[Block] = None, _ignore_pools: Tuple[str,...] = ()) -> Address:
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return self.deepest_stable_pool(token_address)
@@ -242,7 +253,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def deepest_stable_pool(self, token_address: str, block: int = None) -> Dict[str, str]:
+    def deepest_stable_pool(self, token_address: str, block: Optional[Block] = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
         pools = {pool: paired_with for pool, paired_with in self.pools_for_token(token_address).items() if paired_with in STABLECOINS}
         reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block)
@@ -262,10 +273,10 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def get_path_to_stables(self, token_address: str, block: int = None, _loop_count: int = 0, _ignore_pools: Tuple[str,...] = () ):
+    def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[str,...] = ()) -> Path:
         if _loop_count > 10:
             raise CantFindSwapPath
-        token_address = convert.to_address(token_address)
+        token_address = convert.to_address(token)
         path = [token_address]
         deepest_pool = self.deepest_pool(token_address, block, _ignore_pools)
         if deepest_pool:

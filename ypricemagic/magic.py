@@ -1,11 +1,14 @@
 
 import logging
+from typing import Optional
 
 from y import magic
+from y.datatypes import UsdPrice
+from y.typing import Block
 
 logger = logging.getLogger(__name__)
 
-def get_price(token: str, block: int = None) -> float:
+def get_price(token: str, block: Optional[Block] = None) -> UsdPrice:
     logger.warn('ypricemagic is in the process of being migrated to y.'
                 'y can do all of the same old stuff you expect, plus some new stuff.'
                 'This method still works for now, but will be removed soon.'

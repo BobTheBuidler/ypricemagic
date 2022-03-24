@@ -1,6 +1,10 @@
 
+from typing import Optional
+
 from brownie.convert.datatypes import EthAddress
+from y.datatypes import UsdPrice
 from y.prices import magic
+from y.typing import Block
 
 MAPPING = {
     "0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C": "0x6c3F90f043a72FA612cbac8115EE7e52BDe6E490", # cvx3crv -> 3crv
@@ -12,5 +16,5 @@ MAPPING = {
 def is_convex_lp(token_address: EthAddress) -> bool:
     return token_address in MAPPING
 
-def get_price(token_address: EthAddress, block: int = None) -> float:
+def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
     return magic.get_price(MAPPING[token_address],block)

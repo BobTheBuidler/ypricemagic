@@ -1,6 +1,8 @@
 import logging
 from functools import lru_cache
+from typing import Dict, List
 from brownie import chain
+from eth_typing import Address
 from y.constants import dai, usdc, usdt, wbtc, weth
 from y.decorators import log
 from y.networks import Network
@@ -123,6 +125,6 @@ SPECIAL_PATHS = {
 
 @log(logger)
 @lru_cache
-def special_paths(router_address: str):
+def special_paths(router_address: str) -> Dict[str,Dict[Address,List[Address]]]:
     protocol = ROUTER_TO_PROTOCOL[router_address]
     return SPECIAL_PATHS.get(protocol, {})

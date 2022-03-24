@@ -1,50 +1,44 @@
 import logging
 from functools import lru_cache
-from typing import Sequence, Union
+from typing import Iterable, List, Optional
 
-import brownie
-from brownie import convert
+from brownie import chain
 from brownie.exceptions import ContractNotFound
-from eth_typing.evm import Address, BlockNumber
-from hexbytes import HexBytes
 from joblib.parallel import Parallel, delayed
 from tqdm import tqdm
+from y import convert
 from y.balancer.balancer import balancer
 from y.chainlink.chainlink import chainlink
 from y.constants import WRAPPED_GAS_COIN
-from y.contracts import Contract
 from y.curve.curve import curve
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
 from y.prices import (basketdao, belt, convex, cream, froyo, gelato, ib,
-                      mooniswap, mstablefeederpool, one_to_one, piedao, saddle, tokensets,
-                      wsteth, yearn)
+                      mooniswap, mstablefeederpool, one_to_one, piedao, saddle,
+                      tokensets, wsteth, yearn)
 from y.prices.aave import aave
 from y.prices.compound import compound
 from y.prices.genericamm import generic_amm
 from y.prices.synthetix import synthetix
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
+from y.typing import AnyAddressType, Block
 from y.uniswap.uniswap import uniswap
 from y.uniswap.v3 import uniswap_v3
 from y.utils.raw_calls import _symbol
 
 logger = logging.getLogger(__name__)
 
-
 @log(logger)
 @lru_cache(maxsize=None)
 def get_price(
-    token_address: Union[str, Address, brownie.Contract, Contract, int],
-        # Don't pass an int like `123` into `token_address` please, that's just silly/
-        # ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
-        # so you can save yourself some keystrokes while testing in a console
-        # (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")` )
-    block: Union[BlockNumber, int, None] = None, 
+    token_address: AnyAddressType,
+    block: Optional[Block] = None, 
     fail_to_None: bool = False, 
     silent: bool = False
-    ) -> float:
+    ) -> Optional[UsdPrice]:
     '''
     Don't pass an int like `123` into `token_address` please, that's just silly.
     - ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
@@ -57,25 +51,26 @@ def get_price(
     - If `fail_to_None == True`, ypricemagic will return `None`
     - If `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-
-    # see comments above to see why we do this
-    if type(token_address) == int:
-        token_address = HexBytes(token_address)
-
     token_address = convert.to_address(token_address)
-    try: return _get_price(token_address, block=block, fail_to_None=fail_to_None, silent=silent)
+    if block is None:
+        block = chain.height
+
+    try:
+        return _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
     except (ContractNotFound, NonStandardERC20, RecursionError):
-        if fail_to_None: return None
-        else: raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {Network.printable()}')
+        if fail_to_None:
+            return None
+        else:
+            raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {Network.printable()}')
 
 
 def get_prices(
-    token_addresses: Sequence[Union[str, Address, brownie.Contract, Contract]],
-    block: Union[int, BlockNumber, None] = None,
+    token_addresses: Iterable[AnyAddressType],
+    block: Optional[Block] = None,
     fail_to_None: bool = False,
     silent: bool = False,
     dop: int = 4
-    ):
+    ) -> List[Optional[float]]:
     '''
     In every case:
     - if `silent == True`, tqdm will not be used
@@ -85,16 +80,17 @@ def get_prices(
     - if `fail_to_None == True`, ypricemagic will return `None` for that token
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
-    if not silent: token_addresses = tqdm(token_addresses)
+    if not silent:
+        token_addresses = tqdm(token_addresses)
     return Parallel(dop, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
     
 def _get_price(
-    token: Union[str, Address, brownie.Contract, Contract], 
-    block: Union[int, BlockNumber, None] = None, 
+    token: AnyAddressType, 
+    block: Block, 
     fail_to_None: bool = False, 
     silent: bool = False
-    ):
+    ) -> Optional[UsdPrice]:
 
     symbol = _symbol(token, return_None_on_failure=True)
     token_string = f"{symbol} {token}" if symbol else token
@@ -133,8 +129,8 @@ def _get_price(
 @log(logger)
 def _exit_early_for_known_tokens(
     token_address: str,
-    block = None
-    ):
+    block: Block
+    ) -> Optional[UsdPrice]:
 
     bucket = check_bucket(token_address)
 
@@ -182,7 +178,7 @@ def _fail_appropriately(
     token_string: str, 
     fail_to_None: bool = False, 
     silent: bool = False
-    ):
+    ) -> None:
     '''
     dictates how `magic.get_price()` will handle failures
 

@@ -195,6 +195,8 @@ class CurveRegistry(metaclass=Singleton):
     @ttl_cache(maxsize=None, ttl=600)
     def get_price(self, token: str, block: int = None) -> float:
         tvl = self.get_pool(token).get_tvl(block=block)
+        if tvl is None:
+            return None
         if tvl is None: return None
         return tvl / ERC20(token).total_supply_readable(block)
 
@@ -239,8 +241,8 @@ class CurveRegistry(metaclass=Singleton):
         if len(pools) == 1:
             pool = pools[0]
         else:
-            # TODO: handle this sitch
-            return
+            # TODO: handle this sitch if/when needed
+            return None
             #for pool in self.coin_to_pools[token_in]:
             #    for stable in STABLECOINS:
             #        if stable != token_in and stable in pool.get_coins:

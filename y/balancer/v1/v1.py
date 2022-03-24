@@ -1,13 +1,16 @@
 import logging
+from typing import Optional
 
 from brownie import chain
 from y.balancer.v1.pool import BalancerV1Pool
 from y.classes.singleton import Singleton
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, has_methods
+from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
 from y.prices import magic
+from y.typing import Block
 from y.utils.raw_calls import _decimals
 
 EXCHANGE_PROXY = {
@@ -24,16 +27,16 @@ class BalancerV1(metaclass=Singleton):
         return "BalancerV1()"
     
     @log(logger)
-    def is_pool(self, token_address):
+    def is_pool(self, token_address) -> bool:
         return has_methods(token_address ,{"getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"})
     
     @log(logger)
-    def get_pool_price(self, token_address, block=None):
+    def get_pool_price(self, token_address, block: Optional[Block] = None) -> UsdPrice:
         assert self.is_pool(token_address)
         return BalancerV1Pool(token_address).get_pool_price(block=block)
 
     @log(logger)
-    def get_token_price(self, token_address, block=None):
+    def get_token_price(self, token_address, block: Optional[Block] = None) -> UsdPrice:
         out, totalOutput = self.get_some_output(token_address, block=block)
         if out: return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block)
         # Can we get an output if we try smaller size?
@@ -47,7 +50,7 @@ class BalancerV1(metaclass=Singleton):
         else: return
 
     @log(logger)
-    def check_liquidity_against(self, token_in, token_out, scale=1, block=None):
+    def check_liquidity_against(self, token_in, token_out, scale=1, block: Optional[Block] = None):
         output = self.exchange_proxy.viewSplitExactIn(
             token_in, token_out, 10 ** _decimals(token_in) * scale, 32 # NOTE: 32 is max
             , block_identifier = block
@@ -55,7 +58,7 @@ class BalancerV1(metaclass=Singleton):
         return token_out, output
 
     @log(logger)
-    def get_some_output(self, token_in, scale=1, block=None):
+    def get_some_output(self, token_in, scale=1, block: Optional[Block] = None):
         try:
             out, totalOutput = self.check_liquidity_against(token_in, weth, block=block)
         except ValueError:

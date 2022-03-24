@@ -8,30 +8,33 @@ def continue_on_revert(func: Callable) -> Any:
     '''
     from y.exceptions import continue_if_call_reverted
 
-    def wrap(*args, **kwargs):
+    def retry_wrap(*args: Any, **kwargs: Any):
 
-        try: return func(*args,**kwargs)
+        try:
+            return func(*args,**kwargs)
         except Exception as e:
             continue_if_call_reverted(e)
     
-    return wrap
+    return retry_wrap
 
 
 def log(logger):
 
-    def decorator(func):
+    def log_decorator(func):
         assert logger, 'To use @debug_logging decorator, you must pass in a logger.'
 
-        def wrap(*args, **kwargs):
+        def logging_wrap(*args: Any, **kwargs: Any):
             fn_name = func.__name__
 
-            if len(kwargs) == 0: describer_string = f'{fn_name}{tuple([*args])}'
-            else: describer_string = f'{fn_name}{tuple([*args])}, kwargs: {[*kwargs.items()]}'
+            if len(kwargs) == 0:
+                describer_string = f'{fn_name}{tuple([*args])}'
+            else:
+                describer_string = f'{fn_name}{tuple([*args])}, kwargs: {[*kwargs.items()]}'
             
             logger.debug(f'Fetching {describer_string}')
             func_returns = func(*args,**kwargs)
             logger.debug(f'{describer_string} returns: {func_returns}')
             return func_returns
 
-        return wrap
-    return decorator
+        return logging_wrap
+    return log_decorator

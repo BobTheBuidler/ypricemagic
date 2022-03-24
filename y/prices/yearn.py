@@ -1,14 +1,15 @@
 import logging
 from functools import cached_property, lru_cache
+from typing import Optional
 
 from brownie import chain
-
 from y import Network
-
 from y.classes.common import ERC20, WeiBalance
-from y.contracts import Contract, has_methods, probe, has_method
+from y.contracts import Contract, has_method, has_methods, probe
 from y.decorators import log
-from y.exceptions import ContractNotVerified, MessedUpBrownieContract, CantFetchParam
+from y.exceptions import (CantFetchParam, ContractNotVerified,
+                          MessedUpBrownieContract)
+from y.typing import Block
 from y.utils.cache import memory
 from y.utils.raw_calls import raw_call
 
@@ -60,7 +61,7 @@ def is_yearn_vault(token):
     return result
 
 @log(logger)
-def get_price(token: str, block=None):
+def get_price(token: str, block: Optional[Block] = None):
     return YearnInspiredVault(token).price(block=block)
 
 class YearnInspiredVault(ERC20):
@@ -105,7 +106,7 @@ class YearnInspiredVault(ERC20):
 
     @log(logger)
     @lru_cache
-    def share_price(self, block: int = None) -> WeiBalance:
+    def share_price(self, block: Optional[Block] = None) -> WeiBalance:
         share_price = probe(self.address, share_price_methods, block=block)
 
         if share_price is None:
@@ -126,5 +127,5 @@ class YearnInspiredVault(ERC20):
     
     @log(logger)
     @lru_cache
-    def price(self, block: int = None) -> float:
+    def price(self, block: Optional[Block] = None) -> float:
         return self.share_price(block=block).readable * self.underlying.price(block=block)
