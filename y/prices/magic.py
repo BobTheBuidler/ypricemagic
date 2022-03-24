@@ -17,7 +17,7 @@ from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
 from y.prices.dex.genericamm import generic_amm
-from y.prices.dex.uniswap import uniswap
+from y.prices.dex.uniswap import uniswap_multiplexer
 from y.prices.dex.uniswap.v3 import uniswap_v3
 from y.prices.eth_derivs import creth, wsteth
 from y.prices.lending import ib
@@ -115,11 +115,11 @@ def _get_price(
         price = uniswap_v3.get_price(token, block=block)
 
     if price is None:
-        price = uniswap.get_price(token, block=block)
+        price = uniswap_multiplexer.get_price(token, block=block)
 
     # if price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin
     if price is None or price == 0:
-        new_price = balancer.get_price(token, block=block)
+        new_price = balancer_multiplexer.get_price(token, block=block)
         if new_price: price = new_price
 
     if price is None:
@@ -140,7 +140,7 @@ def _exit_early_for_known_tokens(
     price = None
 
     if bucket == 'atoken':                  price = aave.get_price(token_address, block=block)
-    elif bucket == 'balancer pool':         price = balancer.get_price(token_address, block)
+    elif bucket == 'balancer pool':         price = balancer_multiplexer.get_price(token_address, block)
     elif bucket == 'basketdao':             price = basketdao.get_price(token_address, block)
 
     elif bucket == 'belt lp':               price = belt.get_price(token_address, block)
@@ -168,7 +168,7 @@ def _exit_early_for_known_tokens(
     elif bucket == 'synthetix':             price = synthetix.get_price(token_address, block)
 
     elif bucket == 'token set':             price = tokensets.get_price(token_address, block=block)
-    elif bucket == 'uni or uni-like lp':    price = uniswap.lp_price(token_address, block)
+    elif bucket == 'uni or uni-like lp':    price = uniswap_multiplexer.lp_price(token_address, block)
     elif bucket == 'wrapped gas coin':      price = get_price(WRAPPED_GAS_COIN, block)
 
     elif bucket == 'wsteth':                price = wsteth.wsteth.get_price(block)
