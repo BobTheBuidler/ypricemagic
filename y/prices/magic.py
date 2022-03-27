@@ -12,7 +12,7 @@ from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
-from y.prices import convex, one_to_one, yearn
+from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
@@ -162,6 +162,7 @@ def _exit_early_for_known_tokens(
     elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
     elif bucket == 'one to one':            price = one_to_one.get_price(token_address, block)
     elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
+    elif bucket == 'popsicle':              price = popsicle.get_price(token_address, block=block)
 
     elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
     elif bucket == 'stable usd':            price = 1
