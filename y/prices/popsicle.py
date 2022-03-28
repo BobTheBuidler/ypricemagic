@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 @lru_cache
 def is_popsicle_lp(token_address: AnyAddressType) -> bool:
     # NOTE: contract to check for reference (mainnet): 0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf
-    return has_methods(token_address, ['rerange()(uint)','rebalance()(uint)', 'userAmounts()(uint, uint)'])
+    return has_methods(token_address, ['token0()(address)','token1()(address)','usersAmounts()((uint,uint))'])
 
 @log(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
