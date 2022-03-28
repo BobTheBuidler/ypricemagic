@@ -3,6 +3,7 @@ from functools import lru_cache
 from typing import Optional
 
 import y.prices.magic
+from multicall import Call, Multicall
 from y import convert
 from y.contracts import has_methods
 from y.datatypes import UsdPrice
@@ -21,9 +22,9 @@ def is_popsicle_lp(token_address: AnyAddressType) -> bool:
 @log(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
-    token0 = raw_call(address,'token0()',block=block,output='address')
-    token1 = raw_call(address,'token1()',block=block,output='address')
-    (balance0, balance1) = raw_call(address,'userAmounts()',block=block,output='int')
+    methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
+    calls = [Call(address, method, [[method,None]]) for method in methods]
+    token0, token1, (balance0, balance1) = Multicall(calls, block_id=block)().values()
     balance0 /= 10 ** _decimals(token0,block)
     balance1 /= 10 ** _decimals(token1,block)
     totalSupply = _totalSupplyReadable(address,block)
