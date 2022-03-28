@@ -22,8 +22,7 @@ def is_popsicle_lp(token_address: AnyAddressType) -> bool:
 @log(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
-    balance0, balance1 = get_balances(token, block)
-    total_val = balance0.value_usd(block) + balance1.value_usd(block)
+    total_val = get_tvl(address, block)
     total_supply = _totalSupplyReadable(address,block)
     return UsdPrice(total_val / total_supply)
 
