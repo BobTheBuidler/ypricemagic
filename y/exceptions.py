@@ -7,6 +7,9 @@ logger = logging.getLogger(__name__)
 
 # General
 
+class NetworkNotSpecified(Exception):
+    pass
+
 class PriceError(Exception):
     pass
 
