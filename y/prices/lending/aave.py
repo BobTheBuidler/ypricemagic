@@ -119,7 +119,7 @@ class AaveRegistry(metaclass = Singleton):
         return [AaveMarketV2(pool) for pool in v2_pools]
     
     @log(logger)
-    def pool_for_token(self, token_address: str) -> Union[AaveMarketV1, AaveMarketV2]:
+    def pool_for_atoken(self, token_address: str) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
         for pool in self.pools:
             if token_address in pool:
                 return pool
@@ -135,7 +135,7 @@ class AaveRegistry(metaclass = Singleton):
     @log(logger)
     @lru_cache
     def underlying(self, token_address: str) -> ERC20:
-        pool = self.pool_for_token(token_address)
+        pool = self.pool_for_atoken(token_address)
         return pool.underlying(token_address)
     
     @log(logger)
