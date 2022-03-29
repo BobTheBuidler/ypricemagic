@@ -18,7 +18,6 @@ setup(
         'cachetools>=4.1.1',
         'eth-brownie>=1.18.1',
         'joblib>=1.0.1',
-        'multicall>=0.4.0'
     ],
     setup_requires=[
         'setuptools_scm',
