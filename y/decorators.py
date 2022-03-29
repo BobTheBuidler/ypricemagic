@@ -76,23 +76,28 @@ def auto_retry(func):
             try:
                 return func(*args, **kwargs)
             except ValueError as e:
-                if i > 10: raise
-                e = str(e)
-                if 'execution aborted (timeout = 5s)' in e: pass
-                elif 'Max rate limit reached' in e: pass
-                elif 'please use API Key for higher rate limit' in e: pass
-                # NOTE: occurs occasionally on avax
-                elif 'after last accepted block' in e: pass 
-                else: raise
-                retry_logger.warning(f'{e} [{i}]')
+                retry_on_errs = (
+                    # Occurs on any chain when making computationally intensive calls. Just retry.
+                    'execution aborted (timeout = 5s)',
+
+                    # Usually from block explorer while fetching contract source code. Just retry.
+                    'Max rate limit reached',
+                    'please use API Key for higher rate limit',
+
+                    # Occurs occasionally on AVAX when node is slow to sync. Just retry.
+                    'after last accepted block',
+                )
+                if 1 > 10 or not any([err in str(e) for err in retry_on_errs]):
+                    raise
             except (ConnectionError, HTTPError, TimeoutError, ReadTimeout) as e:
+                # This happens when we pass too large of a request to the node. Do not retry.
                 if 'Too Large' in str(e):
                     raise
-                retry_logger.warning(f'{str(e)} [{i}]')
-            except (OperationalError) as e:
+            except OperationalError as e:
+                # This happens when brownie's deployments.db gets locked. Just retry.
                 if 'database is locked' not in str(e):
                     raise
-                retry_logger.warning(f'{str(e)} [{i}]')
+            retry_logger.warning(f'{str(e)} [{i}]')
             i += 1
             sleep(i * sleep_time)
 
