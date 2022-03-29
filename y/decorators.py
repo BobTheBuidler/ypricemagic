@@ -1,6 +1,13 @@
 
+import logging
+from random import randrange
+from sqlite3 import OperationalError
+from time import sleep
 from typing import Any, Callable
 
+from requests.exceptions import HTTPError, ReadTimeout
+
+retry_logger = logging.getLogger('auto_retry')
 
 def continue_on_revert(func: Callable) -> Any:
     '''
@@ -8,8 +15,7 @@ def continue_on_revert(func: Callable) -> Any:
     '''
     from y.exceptions import continue_if_call_reverted
 
-    def retry_wrap(*args: Any, **kwargs: Any):
-
+    def retry_wrap(*args: Any, **kwargs: Any) -> Callable:
         try:
             return func(*args,**kwargs)
         except Exception as e:
@@ -18,12 +24,16 @@ def continue_on_revert(func: Callable) -> Any:
     return retry_wrap
 
 
-def log(logger):
+def log(logger: logging.Logger):
+    """
+    Decorates a function so both the inputs and outputs are logged with logger level DEBUG.
+    For convenience, also decorates the function with @auto_retry.
+    """
 
-    def log_decorator(func):
+    def log_decorator(func: Callable) -> Callable:
         assert logger, 'To use @debug_logging decorator, you must pass in a logger.'
 
-        def logging_wrap(*args: Any, **kwargs: Any):
+        def logging_wrap(*args: Any, **kwargs: Any) -> Any:
             fn_name = func.__name__
 
             if len(kwargs) == 0:
@@ -32,9 +42,58 @@ def log(logger):
                 describer_string = f'{fn_name}{tuple([*args])}, kwargs: {[*kwargs.items()]}'
             
             logger.debug(f'Fetching {describer_string}')
-            func_returns = func(*args,**kwargs)
+            func_returns = retry_wrap(*args,**kwargs)
             logger.debug(f'{describer_string} returns: {func_returns}')
             return func_returns
+        
+        @auto_retry
+        def retry_wrap(*args: Any, **kwargs: Any) -> Callable:
+            return func(*args, **kwargs)
 
         return logging_wrap
     return log_decorator
+
+def auto_retry(func):
+    '''
+    Decorator that will retry the function on:
+    - ConnectionError
+    - HTTPError
+    - TimeoutError
+    - ReadTimeout
+    
+    It will also retry on specific ValueError exceptions:
+    - Max rate limit reached
+    - please use API Key for higher rate limit
+    - execution aborted (timeout = 5s)
+    
+    On repeat errors, will retry in increasing intervals.
+    '''
+
+    def retry_wrap(*args, **kwargs):
+        i = 0
+        sleep_time = randrange(10,20)
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except ValueError as e:
+                if i > 10: raise
+                e = str(e)
+                if 'execution aborted (timeout = 5s)' in e: pass
+                elif 'Max rate limit reached' in e: pass
+                elif 'please use API Key for higher rate limit' in e: pass
+                # NOTE: occurs occasionally on avax
+                elif 'after last accepted block' in e: pass 
+                else: raise
+                retry_logger.warning(f'{e} [{i}]')
+            except (ConnectionError, HTTPError, TimeoutError, ReadTimeout) as e:
+                if 'Too Large' in str(e):
+                    raise
+                retry_logger.warning(f'{str(e)} [{i}]')
+            except (OperationalError) as e:
+                if 'database is locked' not in str(e):
+                    raise
+                retry_logger.warning(f'{str(e)} [{i}]')
+            i += 1
+            sleep(i * sleep_time)
+
+    return retry_wrap

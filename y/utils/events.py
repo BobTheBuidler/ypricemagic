@@ -12,6 +12,7 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 from y.contracts import contract_creation_block
+from y.decorators import auto_retry
 from y.typing import Address, Block
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
@@ -107,6 +108,7 @@ def _get_logs(
     return response
 
 
+@auto_retry
 def _get_logs_no_cache(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],
