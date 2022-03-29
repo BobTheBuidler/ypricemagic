@@ -5,18 +5,17 @@ from typing import Any, Callable, List, Optional, Union
 
 import brownie
 from brownie import chain, web3
-from brownie.convert.datatypes import HexBytes
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.typing import AccountsType
 from multicall import Call, Multicall
 
+from y import convert
 from y.decorators import log
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
-                          call_reverted, contract_not_verified, out_of_gas)
+                          NodeNotSynced, call_reverted, contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
-from y.typing import Address, AnyAddressType, Block
-from y import convert
+from y.typing import AnyAddressType, Block
 from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
@@ -48,17 +47,26 @@ def contract_creation_block(address: AnyAddressType) -> int:
     logger.info("contract creation block %s", address)
     height = chain.height
     lo, hi = 0, height
+
+    if hi == 0:
+        raise NodeNotSynced(f'''
+            `chain.height` returns 0 on your node, which implies it is not fully synced.
+            You can only run this function on a fully synced node.''')
+    
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         try:
-            if web3.eth.get_code(address, block_identifier=mid): hi = mid
-            else: lo = mid
+            if web3.eth.get_code(address, block_identifier=mid):
+                hi = mid
+            else:
+                lo = mid
         except ValueError as e:
             if 'missing trie node' in str(e):
                 logger.critical('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
             elif 'Server error: account aurora does not exist while viewing' in str(e):
                 logger.critical(str(e))
-            else: raise
+            else:
+                raise
             lo = mid
     return hi if hi != height else None
 

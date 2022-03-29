@@ -95,3 +95,8 @@ def continue_if_call_reverted(e: Exception) -> None:
 @log(logger)
 def out_of_gas(e: Exception) -> bool:
     return 'out of gas' in str(e) 
+
+# Rpc Exceptions:
+
+class NodeNotSynced(Exception):
+    pass
