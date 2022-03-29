@@ -15,13 +15,13 @@ def continue_on_revert(func: Callable) -> Any:
     '''
     from y.exceptions import continue_if_call_reverted
 
-    def retry_wrap(*args: Any, **kwargs: Any) -> Callable:
+    def continue_on_revert_wrap(*args: Any, **kwargs: Any) -> Callable:
         try:
             return func(*args,**kwargs)
         except Exception as e:
             continue_if_call_reverted(e)
     
-    return retry_wrap
+    return continue_on_revert_wrap
 
 
 def log(logger: logging.Logger):
@@ -42,12 +42,12 @@ def log(logger: logging.Logger):
                 describer_string = f'{fn_name}{tuple([*args])}, kwargs: {[*kwargs.items()]}'
             
             logger.debug(f'Fetching {describer_string}')
-            func_returns = retry_wrap(*args,**kwargs)
+            func_returns = retry_superwrap(*args,**kwargs)
             logger.debug(f'{describer_string} returns: {func_returns}')
             return func_returns
         
         @auto_retry
-        def retry_wrap(*args: Any, **kwargs: Any) -> Callable:
+        def retry_superwrap(*args: Any, **kwargs: Any) -> Callable:
             return func(*args, **kwargs)
 
         return logging_wrap
