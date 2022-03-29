@@ -1,7 +1,8 @@
 import logging
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 
 from brownie import chain
+from brownie.convert.datatypes import EthAddress
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.constants import dai, usdc, wbtc, weth
@@ -10,7 +11,7 @@ from y.datatypes import UsdPrice, UsdValue
 from y.decorators import log
 from y.networks import Network
 from y.prices import magic
-from y.typing import Block
+from y.typing import AddressOrContract, AnyAddressType, Block
 from y.utils.multicall import fetch_multicall, multicall_decimals
 from y.utils.raw_calls import _decimals
 
@@ -22,7 +23,7 @@ logger = logging.getLogger(__name__)
 
 
 class BalancerV1Pool(ERC20):
-    def __init__(self, pool_address) -> None:
+    def __init__(self, pool_address: AnyAddressType) -> None:
         super().__init__(pool_address)
 
     @log(logger)
@@ -70,30 +71,40 @@ class BalancerV1(metaclass=Singleton):
         return "BalancerV1()"
     
     @log(logger)
-    def is_pool(self, token_address) -> bool:
+    def is_pool(self, token_address: AnyAddressType) -> bool:
         return has_methods(token_address ,{"getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"})
     
     @log(logger)
-    def get_pool_price(self, token_address, block: Optional[Block] = None) -> UsdPrice:
+    def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         assert self.is_pool(token_address)
         return BalancerV1Pool(token_address).get_pool_price(block=block)
 
     @log(logger)
-    def get_token_price(self, token_address, block: Optional[Block] = None) -> UsdPrice:
+    def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         out, totalOutput = self.get_some_output(token_address, block=block)
-        if out: return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block)
+        if out:
+            return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block)
         # Can we get an output if we try smaller size?
         scale = 0.5
         out, totalOutput = self.get_some_output(token_address, block=block, scale=scale) 
-        if out: return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
+        if out:
+            return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
         # How about now? 
         scale = 0.1
         out, totalOutput = self.get_some_output(token_address, block=block, scale=scale)
-        if out: return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
-        else: return
+        if out:
+            return (totalOutput / 10 ** _decimals(out,block)) * magic.get_price(out, block) / scale
+        else:
+            return
 
     @log(logger)
-    def check_liquidity_against(self, token_in, token_out, scale=1, block: Optional[Block] = None):
+    def check_liquidity_against(
+        self,
+        token_in: AddressOrContract,
+        token_out: AddressOrContract,
+        scale: int = 1,
+        block: Optional[Block] = None
+        ) -> Tuple[EthAddress, int]:
         output = self.exchange_proxy.viewSplitExactIn(
             token_in, token_out, 10 ** _decimals(token_in) * scale, 32 # NOTE: 32 is max
             , block_identifier = block
@@ -101,7 +112,12 @@ class BalancerV1(metaclass=Singleton):
         return token_out, output
 
     @log(logger)
-    def get_some_output(self, token_in, scale=1, block: Optional[Block] = None):
+    def get_some_output(
+        self,
+        token_in: AddressOrContract,
+        scale: int = 1,
+        block: Optional[Block] = None
+        ) -> Tuple[EthAddress,int]:
         try:
             out, totalOutput = self.check_liquidity_against(token_in, weth, block=block)
         except ValueError:

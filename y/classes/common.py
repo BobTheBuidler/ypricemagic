@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 class ContractBase(metaclass=ContractSingleton):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         self.address = convert.to_address(address)
         super().__init__(*args, **kwargs)
     
@@ -63,7 +63,7 @@ class ContractBase(metaclass=ContractSingleton):
 
 
 class ERC20(ContractBase):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:

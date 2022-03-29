@@ -1,11 +1,11 @@
 import logging
-from typing import Any, Callable, KeysView, List, Tuple, Union
+from typing import Any, Callable, KeysView, List, Optional, Tuple, Union
 
 import brownie
 from brownie.convert.datatypes import EthAddress
-from eth_typing.evm import Address, BlockNumber
 
 from y.contracts import Contract
+from y.typing import Address, AddressOrContract, Block
 from y.utils.multicall import multicall_decimals, multicall_totalSupply
 from y.utils.raw_calls import _decimals, _totalSupply
 
@@ -15,8 +15,8 @@ SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, Contract
 
 
 def decimals(
-    contract_address_or_addresses: Union[str, Address, brownie.Contract, Contract, List[Union[str, Address, brownie.Contract, Contract]], Tuple[Union[str, Address, brownie.Contract, Contract]]],
-    block: Union[BlockNumber, int, None] = None, 
+    contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
+    block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ): 
 
@@ -25,8 +25,8 @@ def decimals(
 
 
 def totalSupply(
-    contract_address_or_addresses: Union[str, Address, brownie.Contract, Contract, List[Union[str, Address, brownie.Contract, Contract]], Tuple[Union[str, Address, brownie.Contract, Contract]]],
-    block: Union[BlockNumber, int, None] = None, 
+    contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
+    block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ):
 
@@ -35,8 +35,8 @@ def totalSupply(
 
 
 def totalSupplyReadable(
-    contract_address_or_addresses: Union[str, Address, brownie.Contract, Contract, List[Union[str, Address, brownie.Contract, Contract]], Tuple[Union[str, Address, brownie.Contract, Contract]]],
-    block: Union[BlockNumber, int, None] = None, 
+    contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
+    block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ):
 

@@ -18,7 +18,7 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           PriceError, UnsupportedNetwork, call_reverted)
 from y.networks import Network
 from y.prices import magic
-from y.typing import Address, Block
+from y.typing import Address, AddressOrContract, AnyAddressType, Block
 from y.utils.events import create_filter, decode_logs, get_logs_asap
 from y.utils.middleware import ensure_middleware
 from y.utils.multicall import (
@@ -87,7 +87,7 @@ OVERRIDES = {
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -125,7 +125,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     
     @log(logger)
     @lru_cache
-    def get_coin_index(self, coin: str) -> int:
+    def get_coin_index(self, coin: AnyAddressType) -> int:
         return [i for i, coin in enumerate(self.get_coins) if coin == coin][0]
     
     @cached_property
@@ -240,7 +240,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         return None
     
     @log(logger)
-    def calculate_apy(self, lp_token: str, block: Optional[Block] = None) -> Dict[str,float]:
+    def calculate_apy(self, lp_token: AnyAddressType, block: Optional[Block] = None) -> Dict[str,float]:
         if not chain.id == Network.Mainnet:
             raise UnsupportedNetwork(f'apy calculations only available on Mainnet')
 
@@ -271,7 +271,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         }
     
     @log(logger)
-    def calculate_boost(self, addr: str, block: Optional[Block] = None) -> Dict[str,float]:
+    def calculate_boost(self, addr: AddressOrContract, block: Optional[Block] = None) -> Dict[str,float]:
         if not chain.id == Network.Mainnet:
             raise UnsupportedNetwork(f'boost calculations only available on Mainnet')
 
@@ -407,7 +407,7 @@ class CurveRegistry(metaclass=Singleton):
         }
 
     @log(logger)
-    def get_factory(self, pool: str) -> Contract:
+    def get_factory(self, pool: AddressOrContract) -> Contract:
         """
         Get metapool factory that has spawned a pool.
         """
@@ -423,16 +423,16 @@ class CurveRegistry(metaclass=Singleton):
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def _pool_from_lp_token(self, token: str) -> str:
+    def _pool_from_lp_token(self, token: AddressOrContract) -> str:
         return self.registry.get_pool_from_lp_token(token)
 
     @log(logger)
-    def __contains__(self, token: str) -> bool:
+    def __contains__(self, token: Address) -> bool:
         return self.get_pool(token) is not None
     
     @log(logger)
     @ttl_cache(maxsize=None, ttl=600)
-    def get_price(self, token: str, block: Optional[Block] = None) -> Optional[float]:
+    def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
         tvl = self.get_pool(token).get_tvl(block=block)
         if tvl is None:
             return None
@@ -440,7 +440,7 @@ class CurveRegistry(metaclass=Singleton):
 
     @log(logger)
     @lru_cache(maxsize=None)
-    def get_pool(self, token: str) -> CurvePool:
+    def get_pool(self, token: Address) -> CurvePool:
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
@@ -456,7 +456,7 @@ class CurveRegistry(metaclass=Singleton):
             return CurvePool(pool)
 
     @log(logger)
-    def virtual_price(self, token: str, block: Optional[Block] = None) -> int:
+    def virtual_price(self, token: Address, block: Optional[Block] = None) -> int:
         pool = self.get_pool(token)
         try: return pool.contract.get_virtual_price(block_identifier=block)
         except Exception as e:
@@ -464,13 +464,13 @@ class CurveRegistry(metaclass=Singleton):
             else: raise
 
     @log(logger)
-    def virtual_price_readable(self, token: str, block: Optional[Block] = None) -> float:
+    def virtual_price_readable(self, token: Address, block: Optional[Block] = None) -> float:
         virtual_price = self.virtual_price(token, block)
         if virtual_price is None: return None
         return virtual_price / 1e18
 
     @log(logger)
-    def get_price_for_underlying(self, token_in: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         try:
             pools = self.coin_to_pools[token_in]
         except KeyError:

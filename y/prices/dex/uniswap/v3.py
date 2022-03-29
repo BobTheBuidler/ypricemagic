@@ -11,7 +11,7 @@ from y.contracts import Contract, contract_creation_block
 from y.datatypes import UsdPrice
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from y.typing import Block
+from y.typing import Address, Block
 from y.utils.multicall import fetch_multicall
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
@@ -56,7 +56,7 @@ class UniswapV3(metaclass=Singleton):
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
 
-    def get_price(self, token: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if block and block < contract_creation_block(UNISWAP_V3_QUOTER):
             return None
 

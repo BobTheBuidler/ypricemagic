@@ -13,7 +13,7 @@ from y.contracts import build_name, has_methods
 from y.datatypes import UsdPrice, UsdValue
 from y.decorators import log
 from y.networks import Network
-from y.typing import AnyAddressType, Block
+from y.typing import Address, AnyAddressType, Block
 from y.utils.events import decode_logs, get_logs_asap
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
@@ -37,12 +37,12 @@ BALANCER_V2_VAULTS = {
 
 
 class PoolId(int):
-    def __init__(self, v) -> None:
+    def __init__(self, v: int) -> None:
         super().__init__()
 
 
 class BalancerV2Vault(ContractBase):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
@@ -69,7 +69,7 @@ class BalancerV2Vault(ContractBase):
         return fetch_multicall(*[[self.contract,'getPoolTokens',poolId] for poolId in poolids], block=block)
 
     @log(logger)
-    def deepest_pool_for(self, token_address: EthAddress, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
+    def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         pools = self.list_pools(block=block)
         poolids = (poolid for poolid, pool in pools.items() if _is_standard_pool(pool))
         pools_info = self.get_pool_info(poolids, block=block)
@@ -91,7 +91,7 @@ class BalancerV2Vault(ContractBase):
 
 
 class BalancerV2Pool(ERC20):
-    def __init__(self, pool_address) -> None:
+    def __init__(self, pool_address: AnyAddressType) -> None:
         super().__init__(pool_address)
 
     @cached_property
@@ -124,7 +124,7 @@ class BalancerV2Pool(ERC20):
         return {token: balance for token, balance in self.tokens(block=block).items()}
 
     @log(logger)
-    def get_token_price(self, token_address: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         token_balances = self.get_balances(block=block)
         pool_token_info = list(zip(token_balances.keys(),token_balances.values(), self.weights(block=block)))
         for pool_token, balance, weight in pool_token_info:
@@ -186,17 +186,17 @@ class BalancerV2(metaclass=Singleton):
         return has_methods(token_address, methods)
     
     @log(logger)
-    def get_pool_price(self, pool_address, block: Optional[Block] = None) -> UsdPrice:
+    def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return BalancerV2Pool(pool_address).get_pool_price(block=block)
 
     @log(logger)
-    def get_token_price(self, token_address, block: Optional[Block] = None) -> UsdPrice:
+    def get_token_price(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         deepest_pool = self.deepest_pool_for(token_address, block=block)
         if deepest_pool is None: return
         return deepest_pool.get_token_price(token_address, block)
     
     @log(logger)
-    def deepest_pool_for(self, token_address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
+    def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         deepest_pools = {vault.address: vault.deepest_pool_for(token_address, block=block) for vault in self.vaults}
         deepest_pools = {vault: deepest_pool for vault,deepest_pool in deepest_pools.items() if deepest_pool is not None}
         deepest_pool_balance = max(pool_balance for pool_address, pool_balance in deepest_pools.values())

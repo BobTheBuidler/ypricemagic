@@ -5,7 +5,6 @@ from typing import Any, Callable, Optional, Union
 import brownie
 from brownie import ZERO_ADDRESS, convert, web3
 from brownie.convert.datatypes import EthAddress
-from eth_typing.evm import Address, BlockNumber
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 from y.contracts import Contract
@@ -13,7 +12,7 @@ from y.decorators import log
 from y.exceptions import (CalldataPreparationError, ContractNotVerified,
                           NonStandardERC20, call_reverted)
 from y.networks import Network
-from y.typing import AddressOrContract, Block
+from y.typing import Address, AddressOrContract, Block
 from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)

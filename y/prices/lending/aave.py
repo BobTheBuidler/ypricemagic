@@ -10,7 +10,7 @@ from y.classes.singleton import Singleton
 from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
-from y.typing import AnyAddressType, Block
+from y.typing import AddressOrContract, AnyAddressType, Block
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
@@ -39,7 +39,7 @@ v2_pools = {
 
 
 class AaveMarketBase(ContractBase):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __contains__(self, __o: object) -> bool:
@@ -47,7 +47,7 @@ class AaveMarketBase(ContractBase):
 
 
 class AaveMarketV1(AaveMarketBase):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -55,7 +55,7 @@ class AaveMarketV1(AaveMarketBase):
     
     @log(logger)
     @lru_cache
-    def underlying(self, token_address: str) -> ERC20:
+    def underlying(self, token_address: AddressOrContract) -> ERC20:
         return ERC20(raw_call(token_address, 'underlyingAssetAddress()',output='address'))
     
     @cached_property
@@ -69,7 +69,7 @@ class AaveMarketV1(AaveMarketBase):
 
 
 class AaveMarketV2(AaveMarketBase):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
@@ -77,7 +77,7 @@ class AaveMarketV2(AaveMarketBase):
     
     @log(logger)
     @lru_cache
-    def underlying(self, token_address: str) -> ERC20:
+    def underlying(self, token_address: AddressOrContract) -> ERC20:
         return ERC20(raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address'))
 
     @cached_property
@@ -119,7 +119,7 @@ class AaveRegistry(metaclass = Singleton):
         return [AaveMarketV2(pool) for pool in v2_pools]
     
     @log(logger)
-    def pool_for_atoken(self, token_address: str) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
+    def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
         for pool in self.pools:
             if token_address in pool:
                 return pool
@@ -134,12 +134,12 @@ class AaveRegistry(metaclass = Singleton):
     
     @log(logger)
     @lru_cache
-    def underlying(self, token_address: str) -> ERC20:
+    def underlying(self, token_address: AddressOrContract) -> ERC20:
         pool = self.pool_for_atoken(token_address)
         return pool.underlying(token_address)
     
     @log(logger)
-    def get_price(self, token_address: str, block: Optional[Block] = None) -> UsdPrice:
+    def get_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         return self.underlying(token_address).price(block)
 
 

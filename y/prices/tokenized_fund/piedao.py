@@ -41,7 +41,7 @@ def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
         return pie_address
 
 @log(logger)
-def tvl(pie_address: str, block: Optional[Block] = None) -> UsdValue:
+def tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
     tokens = get_tokens(pie_address, block)
     pool = get_bpool(pie_address, block)
     token_balances = multicall_balanceOf(tokens, pool, block=block)

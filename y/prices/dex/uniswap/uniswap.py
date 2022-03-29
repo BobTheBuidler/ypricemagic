@@ -90,7 +90,7 @@ class UniswapMultiplexer:
 
 
     @log(logger)
-    def routers_by_depth(self, token_in: str, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
+    def routers_by_depth(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
         '''

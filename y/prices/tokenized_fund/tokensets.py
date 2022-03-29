@@ -25,7 +25,7 @@ def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return TokenSet(token).get_price(block=block)
 
 class TokenSet(ERC20):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def components(self, block: Optional[Block] = None) -> List[ERC20]:

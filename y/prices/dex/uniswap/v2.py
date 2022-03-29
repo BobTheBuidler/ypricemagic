@@ -1,5 +1,4 @@
 
-
 import logging
 from collections import defaultdict
 from functools import cached_property, lru_cache
@@ -40,7 +39,7 @@ Reserves = Tuple[int,int,int]
 
 
 class UniswapPoolV2(ERC20):
-    def __init__(self, address: str) -> None:
+    def __init__(self, address: AnyAddressType) -> None:
         super().__init__(address)
         try:
             self.decimals
@@ -136,7 +135,7 @@ class UniswapPoolV2(ERC20):
 
 
 class UniswapRouterV2(ContractBase):
-    def __init__(self, router_address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, router_address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(router_address, *args, **kwargs)
 
         self.label = ROUTER_TO_PROTOCOL[self.address]
@@ -261,7 +260,7 @@ class UniswapRouterV2(ContractBase):
     
 
     @cached_property
-    def pools(self) -> Dict[str,Dict[str,str]]:
+    def pools(self) -> Dict[Address,Dict[Address,Address]]:
         logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
         PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
         events = decode_logs(get_logs_asap(self.factory, PairCreated))
@@ -305,7 +304,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @cached_property
-    def pool_mapping(self) -> Dict[str,Dict[str,str]]:
+    def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
         pool_mapping = defaultdict(dict)
         for pool, tokens in self.pools.items():
             token0, token1 = tokens.values()
@@ -315,7 +314,7 @@ class UniswapRouterV2(ContractBase):
         return pool_mapping
 
 
-    def pools_for_token(self, token_address: str) -> Dict[str,str]:
+    def pools_for_token(self, token_address: Address) -> Dict[Address,Address]:
         try: 
             return self.pool_mapping[token_address]
         except KeyError:
@@ -323,7 +322,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def deepest_pool(self, token_address, block: Optional[Block] = None, _ignore_pools: Tuple[str,...] = ()) -> Address:
+    def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return self.deepest_stable_pool(token_address)
@@ -353,7 +352,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def deepest_stable_pool(self, token_address: str, block: Optional[Block] = None) -> Dict[str, str]:
+    def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
         pools = {pool: paired_with for pool, paired_with in self.pools_for_token(token_address).items() if paired_with in STABLECOINS}
         reserves = multicall_same_func_no_input(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block)
@@ -363,8 +362,10 @@ class UniswapRouterV2(ContractBase):
         for pool, reserves in zip(pools, reserves):
             if reserves is None:
                 continue
-            if token_address == self.pools[pool]['token0']: reserve = reserves[0]
-            elif token_address == self.pools[pool]['token1']: reserve = reserves[1]
+            if token_address == self.pools[pool]['token0']:
+                reserve = reserves[0]
+            elif token_address == self.pools[pool]['token1']:
+                reserve = reserves[1]
             if reserve > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = reserve
@@ -373,7 +374,7 @@ class UniswapRouterV2(ContractBase):
 
     @log(logger)
     @lru_cache(maxsize=500)
-    def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[str,...] = ()) -> Path:
+    def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
         if _loop_count > 10:
             raise CantFindSwapPath
         token_address = convert.to_address(token)

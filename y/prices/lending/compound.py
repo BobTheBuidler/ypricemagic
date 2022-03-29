@@ -11,7 +11,7 @@ from y.contracts import has_methods
 from y.datatypes import UsdPrice
 from y.decorators import log
 from y.networks import Network
-from y.typing import Block
+from y.typing import AddressOrContract, AnyAddressType, Block
 from y.utils.logging import gh_issue_request
 from y.utils.raw_calls import raw_call
 
@@ -57,7 +57,7 @@ TROLLERS = {
 
 
 class CToken(ERC20):
-    def __init__(self, address: str, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
@@ -93,7 +93,7 @@ class CToken(ERC20):
     
 
 class Comptroller(ContractBase):
-    def __init__(self, address: str = None, key: str = None) -> None:
+    def __init__(self, address: Optional[AnyAddressType] = None, key: Optional[str] = None) -> None:
         assert address or key,          'Must provide either an address or a key'
         assert not (address and key),   'Must provide either an address or a key, not both'
 
@@ -107,7 +107,7 @@ class Comptroller(ContractBase):
         return f"<Comptroller {self.key} '{self.address}'>"
 
     @log(logger)
-    def __contains__(self, token_address: str) -> bool:
+    def __contains__(self, token_address: AnyAddressType) -> bool:
         return token_address in self.markets
     
     @cached_property
@@ -130,7 +130,7 @@ class Compound(metaclass = Singleton):
         }
 
     @log(logger)
-    def is_compound_market(self, token_address: str) -> bool:
+    def is_compound_market(self, token_address: AddressOrContract) -> bool:
         if any(token_address in troller for troller in self.trollers.values()):
             return True
 
@@ -140,15 +140,15 @@ class Compound(metaclass = Singleton):
         return result
     
     @log(logger)
-    def get_price(self, token_address: str, block: Optional[Block] = None) -> UsdPrice:
+    def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return CToken(token_address).get_price(block=block)
 
     @log(logger)
-    def __contains__(self, token_address: str) -> bool:
+    def __contains__(self, token_address: AddressOrContract) -> bool:
         return self.is_compound_market(token_address)
 
     @log(logger)
-    def __notify_if_unknown_comptroller(self, token_address: str) -> None:
+    def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         comptroller = raw_call(token_address,'comptroller()',output='address')
         if comptroller not in self.trollers.values():
             gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)

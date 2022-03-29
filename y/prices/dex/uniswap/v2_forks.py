@@ -1,11 +1,12 @@
 import logging
 from functools import lru_cache
 from typing import Dict, List
+
 from brownie import chain
-from eth_typing import Address
 from y.constants import dai, usdc, usdt, wbtc, weth
 from y.decorators import log
 from y.networks import Network
+from y.typing import Address
 
 logger = logging.getLogger(__name__)
 

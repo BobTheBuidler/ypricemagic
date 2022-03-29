@@ -147,8 +147,10 @@ def has_method(address: AnyAddressType, method: str, return_response: bool = Fal
             return False
         raise
     
-    if response is None: return False
-    if return_response: return response
+    if response is None:
+        return False
+    if return_response:
+        return response
     return True
 
 @log(logger)
@@ -192,16 +194,19 @@ def probe(
     assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
     if len(results) == 1:
         method, result = results[0]
-        if not return_method: return result
-        else: return method, result
+        if not return_method:
+            return result
+        else:
+            return method, result
 
 
 @log(logger)
 @memory.cache()
-def build_name(address: str, return_None_on_failure: bool = False) -> str:
+def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
         contract = Contract(address)
         return contract.__dict__['_build']['contractName']
     except ContractNotVerified:
-        if return_None_on_failure: return None
-        else: raise
+        if not return_None_on_failure:
+            raise
+        return None

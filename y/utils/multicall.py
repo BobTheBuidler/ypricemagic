@@ -8,7 +8,6 @@ import brownie
 import requests
 from brownie import chain, web3
 from eth_abi.exceptions import InsufficientDataBytes
-from eth_typing.evm import Address, BlockNumber
 from web3.exceptions import CannotHandleRequest
 from y import convert
 from y.contracts import Contract, contract_creation_block
@@ -16,7 +15,7 @@ from y.decorators import log
 from y.exceptions import continue_if_call_reverted
 from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
-from y.typing import AnyAddressType, Block
+from y.typing import Address, AddressOrContract, AnyAddressType, Block
 from y.utils.raw_calls import _decimals, _totalSupply
 
 from multicall import Call, Multicall
@@ -49,7 +48,7 @@ multicall_deploy_block = contract_creation_block(multicall2.address)
 
 @log(logger)
 def multicall_same_func_no_input(
-    addresses: list,
+    addresses: Iterable[AnyAddressType],
     method: str, 
     block: Optional[Block] = None,
     apply_func: Optional[Callable] = None,
@@ -63,10 +62,10 @@ def multicall_same_func_no_input(
 
 @log(logger)
 def multicall_same_func_different_contracts_same_input(
-    addresses: list, 
+    addresses: Iterable[AnyAddressType], 
     method: str, 
-    input = None, 
-    block: Union[int, BlockNumber, None] = None,
+    input: Any = None,
+    block: Optional[Block] = None,
     apply_func: Optional[Callable] = None
     ) -> List[Any]:
 
@@ -78,10 +77,10 @@ def multicall_same_func_different_contracts_same_input(
 
 @log(logger)
 def multicall_same_func_same_contract_different_inputs(
-    address: Union[str, Address, brownie.Contract, Contract], 
+    address: AnyAddressType, 
     method: str, 
     inputs: Union[List, Tuple],  
-    block: Union[int, BlockNumber, None] = None,
+    block: Optional[Block] = None,
     apply_func: Optional[Callable] = None,
     return_None_on_failure: bool = False
     ) -> List[Any]:
@@ -94,8 +93,8 @@ def multicall_same_func_same_contract_different_inputs(
 
 @log(logger)
 def multicall_decimals(
-    addresses: List[str], 
-    block: Union[int, BlockNumber, None] = None,
+    addresses: Iterable[AddressOrContract], 
+    block: Optional[Block] = None,
     return_None_on_failure: bool = True
     ) -> List[int]:
 
@@ -111,8 +110,8 @@ def multicall_decimals(
 
 @log(logger)
 def multicall_totalSupply(
-    addresses: List[str], 
-    block: Union[int, BlockNumber, None] = None,
+    addresses: Iterable[AddressOrContract], 
+    block: Optional[Block] = None,
     return_None_on_failure: bool = True
     ) -> List[int]:
 
@@ -124,16 +123,16 @@ def multicall_totalSupply(
 
 @log(logger)
 def multicall_balanceOf(
-    token_addresses: List[str], 
-    hodler_address: str, 
-    block: Union[int, BlockNumber, None] = None,
+    token_addresses: Iterable[AnyAddressType], 
+    hodler_address: Address, 
+    block: Optional[Block] = None,
     return_None_on_failure: bool = True # TODO: implement this kwarg
     ) -> List[int]:
     return multicall_same_func_different_contracts_same_input(token_addresses, 'balanceOf(address)(uint)', input=hodler_address, block=block)
 
 
 @log(logger)
-def fetch_multicall(*calls, block: Optional[Block] = None) -> List[Optional[Any]]:
+def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
     # https://github.com/makerdao/multicall
     multicall_input = []
     fn_list = []

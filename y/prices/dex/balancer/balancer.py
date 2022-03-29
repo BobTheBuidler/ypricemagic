@@ -8,7 +8,7 @@ from y.decorators import log
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
-from y.typing import Block
+from y.typing import AnyAddressType, Block
 
 logger = logging.getLogger(__name__)
 
@@ -35,17 +35,17 @@ class BalancerMultiplexer:
         except ImportError: return None
 
     @log(logger)
-    def is_balancer_pool(self, token_address: str) -> bool:
+    def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
         return any(v.is_pool(token_address) for v in self.versions)
     
     @log(logger)
-    def get_pool_price(self, token_address: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         for v in self.versions:
             if v.is_pool(token_address):
                 return UsdPrice(v.get_pool_price(token_address, block))
 
     @log(logger)
-    def get_price(self, token_address: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if self.is_balancer_pool(token_address):
             return self.get_pool_price(token_address, block=block)
 
