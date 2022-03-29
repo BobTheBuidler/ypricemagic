@@ -26,7 +26,7 @@ def mutate_address(address: Address) -> Tuple[str,str,str,EthAddress]:
     """
     return (
         address.lower(),
-        address.upper(),
+        address[:2] + address[2:].upper(),
         convert.to_address(address),
         EthAddress(address)
     )
