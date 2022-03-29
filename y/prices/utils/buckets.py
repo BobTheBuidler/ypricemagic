@@ -1,4 +1,3 @@
-from lib2to3.pgen2 import token
 import logging
 from functools import lru_cache
 from typing import Union
@@ -49,7 +48,7 @@ def check_bucket(
     elif convex.is_convex_lp(token_address):                                return 'convex'
 
     # these just require calls
-    elif balancer_multiplexer.is_balancer_pool(token_address):                          return 'balancer pool'
+    elif balancer_multiplexer.is_balancer_pool(token_address):              return 'balancer pool'
     elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
     elif ib.is_ib_token(token_address):                                     return 'ib token'
 

@@ -169,7 +169,7 @@ class Chainlink(metaclass=Singleton):
 
     @log(logger)
     def get_feed(self, asset: Address) -> Contract:
-        return Contract(self.feeds[asset])
+        return Contract(self.feeds[convert.to_address(asset)])
 
     @log(logger)
     def __contains__(self, asset: AnyAddressType) -> bool:
