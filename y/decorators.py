@@ -89,15 +89,17 @@ def auto_retry(func):
                 )
                 if 1 > 10 or not any([err in str(e) for err in retry_on_errs]):
                     raise
+                retry_logger.warning(f'{str(e)} [{i}]')
             except (ConnectionError, HTTPError, TimeoutError, ReadTimeout) as e:
                 # This happens when we pass too large of a request to the node. Do not retry.
                 if 'Too Large' in str(e):
                     raise
+                retry_logger.warning(f'{str(e)} [{i}]')
             except OperationalError as e:
                 # This happens when brownie's deployments.db gets locked. Just retry.
                 if 'database is locked' not in str(e):
                     raise
-            retry_logger.warning(f'{str(e)} [{i}]')
+                retry_logger.warning(f'{str(e)} [{i}]')
             i += 1
             sleep(i * sleep_time)
 
