@@ -20,12 +20,16 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
+      
+      - name: Setup venv
+        run: |
+          python3 -m venv env
+          source env/bin/activate
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
-      
-      - name: Install dev dependencies
-        run: pip install -r requirements-dev.txt
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
       
       - name: Setup brownie network
         run: |
@@ -36,6 +40,14 @@ jobs:
         with:
           key: brownie-deployments.db
           path: ~/.brownie/deployments.db
+      
+      - name: Cache the cache
+        uses: actions/cache@v3
+        with:
+          path: |
+            env
+            cache/*/joblib/web3/middleware/filter/middleware
+          key: venv-${{ hashFiles('requirements') }}
 
       - name: Run test suite
         env:
