@@ -9,8 +9,18 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     #timeout-minutes: 10
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        include:
+        - os: ubuntu-latest
+          path: ~/.cache/pip
+        - os: macos-latest
+          path: ~/Library/Caches/pip
+        - os: windows-latest
+          path: ~\AppData\Local\pip\Cache
 
     steps:
       - name: Check out repository code
