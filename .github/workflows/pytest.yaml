@@ -24,9 +24,12 @@ jobs:
       - name: Install dev dependencies
         run: |
           pip install -r requirements-dev.txt
+      
+      - name: Setup brownie network
+          run: brownie networks modify mainnet host=${{ secrets.WEB3_PROVIDER }}
 
       - name: Run test suite
         env:
-          WEB3_PROVIDER: ${{ secrets.WEB3_PROVIDER }}
+          BROWNIE_NETWORK_ID_MAINNET=mainnet
         run: |
           pytest
