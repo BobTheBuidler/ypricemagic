@@ -11,19 +11,16 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v2
 
-      # Setup Python (faster than using Python container)
-      - name: Setup Python
+      - name: Setup Python (faster than using Python container)
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
 
       - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
+        run: pip install -r requirements.txt
       
       - name: Install dev dependencies
-        run: |
-          pip install -r requirements-dev.txt
+        run: pip install -r requirements-dev.txt
       
       - name: Setup brownie network
         run: |
@@ -39,5 +36,4 @@ jobs:
         env:
           BROWNIE_NETWORK_ID_MAINNET: mainnet
           ETHERSCAN_TOKEN: ${{ secrets.ETHERSCAN_TOKEN }}
-        run: |
-          pytest
+        run: pytest
