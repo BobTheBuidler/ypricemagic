@@ -19,14 +19,14 @@ jobs:
     #timeout-minutes: 10
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest] #, windows-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
         - os: macos-latest
           path: ~/Library/Caches/pip
-        #- os: windows-latest
-        #  path: ~\AppData\Local\pip\Cache
+        - os: windows-latest
+          path: ~\AppData\Local\pip\Cache
 
     steps:
       - name: Check out repository code
@@ -56,6 +56,7 @@ jobs:
           brownie networks modify bsc-main host=${{ secrets.BSC_WEB3_PROVIDER }}
           brownie networks modify polygon-main host=${{ secrets.POLY_WEB3_PROVIDER }}
           brownie networks modify ftm-main host=${{ secrets.FTM_WEB3_PROVIDER }}
+        continue-on-error: true
 
       - name: Cache compilers and brownie deployments
         uses: actions/cache@v3
