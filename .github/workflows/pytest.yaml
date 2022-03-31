@@ -60,8 +60,8 @@ jobs:
           key: brownie-cache
           path: |
             ~/.brownie/deployments.db
-            /root/.solcx
-            /root/.vvm
+            ~/.solcx
+            ~/.vvm
 
       - name: Run test suite
         env:
