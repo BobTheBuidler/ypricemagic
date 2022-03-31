@@ -29,4 +29,4 @@ jobs:
         env:
           WEB3_PROVIDER: ${{ secrets.WEB3_PROVIDER }}
         run: |
-          pipenv run test -v
+          pytest
