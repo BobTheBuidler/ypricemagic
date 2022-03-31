@@ -35,7 +35,6 @@ from y.utils.raw_calls import _symbol
 logger = logging.getLogger(__name__)
 
 @log(logger)
-@lru_cache(maxsize=None)
 def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
@@ -88,6 +87,7 @@ def get_prices(
     return Parallel(dop, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
     
+@lru_cache(maxsize=None)
 def _get_price(
     token: AnyAddressType, 
     block: Block, 
