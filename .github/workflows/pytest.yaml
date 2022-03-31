@@ -2,7 +2,7 @@ name: PyTest
 
 on:
   push:
-    branches: [ master, dev ]
+    branch: dev
     paths:
       - '**.py'
       - '**/pytest.yaml'
