@@ -53,17 +53,15 @@ def get_price(
     - If `fail_to_None == True`, ypricemagic will return `None`
     - If `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
+    block = block or chain.height
     token_address = convert.to_address(token_address)
-    if block is None:
-        block = chain.height
 
     try:
         return _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
     except (ContractNotFound, NonStandardERC20, RecursionError):
         if fail_to_None:
             return None
-        else:
-            raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {Network.printable()}')
+        raise PriceError(f'could not fetch price for {_symbol(token_address)} {token_address} on {Network.printable()}')
 
 
 def get_prices(
@@ -82,11 +80,13 @@ def get_prices(
     - if `fail_to_None == True`, ypricemagic will return `None` for that token
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
-    if not silent:
-        token_addresses = tqdm(token_addresses)
-    return Parallel(dop, 'threading')(delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent) for token_address in token_addresses)
 
-    
+    return Parallel(dop, 'threading')(
+        delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent)
+        for token_address in (token_addresses if silent else tqdm(token_addresses))
+    )
+
+
 @lru_cache(maxsize=None)
 def _get_price(
     token: AnyAddressType, 
@@ -117,10 +117,11 @@ def _get_price(
     if price is None:
         price = uniswap_multiplexer.get_price(token, block=block)
 
-    # if price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin
+    # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price is None or price == 0:
         new_price = balancer_multiplexer.get_price(token, block=block)
-        if new_price: price = new_price
+        if new_price:
+            price = new_price
 
     if price is None:
         _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
