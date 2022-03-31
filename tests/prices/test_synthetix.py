@@ -1,11 +1,8 @@
 import pytest
-from tests.fixtures import mainnet_only
-from y.contracts import Contract
+from tests.fixtures import mainnet_only, mutate_tokens
 from y.prices.synthetix import synthetix
 
-SYNTHS = []
-if synthetix:
-    SYNTHS = synthetix.synths
+SYNTHS = mutate_tokens(synthetix.synths if synthetix else ())
 
 
 @mainnet_only

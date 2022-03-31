@@ -1,14 +1,13 @@
 import pytest
-from tests.fixtures import blocks_for_contract, mutate_address
+from tests.fixtures import blocks_for_contract, mutate_addresses
 from y.classes.common import ERC20
 from y.prices.lending.compound import CToken, compound
 
-CTOKENS = [
-    mutation
+CTOKENS = mutate_addresses([
+    ctoken.address
     for troller in compound.trollers.values()
-    for address in troller.markets
-    for mutation in mutate_address(address)
-]
+    for ctoken in troller.markets
+])
 
 @pytest.mark.parametrize('token',CTOKENS)
 def test_compound_pricing(token):

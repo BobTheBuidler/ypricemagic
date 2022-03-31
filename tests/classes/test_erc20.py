@@ -1,6 +1,6 @@
 import pytest
 from brownie import chain
-from tests.fixtures import blocks_for_contract, mutate_token
+from tests.fixtures import blocks_for_contract, mutate_tokens
 from y.classes.common import ERC20
 from y.networks import Network
 
@@ -77,7 +77,7 @@ ATOKENS = {
     ]
 }.get(chain.id, [])
 
-ATOKENS = [mutation for token in ATOKENS for mutation in mutate_token(token)]
+ATOKENS = mutate_tokens(ATOKENS)
 
 @pytest.mark.parametrize('token',ATOKENS)
 def test_erc20(token):

@@ -1,7 +1,7 @@
 
 import pytest
 from brownie import chain
-from tests.fixtures import blocks_for_contract, mutate_address
+from tests.fixtures import blocks_for_contract, mutate_addresses
 from y.networks import Network
 from y.prices import popsicle
 from y.constants import WRAPPED_GAS_COIN
@@ -38,7 +38,7 @@ POPSICLES = {
     ],
 }.get(chain.id, [])
 
-POPSICLES = [mutation for address in POPSICLES for mutation in mutate_address(address)]
+POPSICLES = mutate_addresses(POPSICLES)
 
 @pytest.mark.parametrize('token',POPSICLES)
 def test_popsicle_get_price(token):

@@ -1,6 +1,6 @@
 import pytest
 from brownie import chain
-from tests.fixtures import mutate_address
+from tests.fixtures import mutate_addresses
 from y.networks import Network
 from y.prices.lending.aave import aave
 
@@ -96,7 +96,7 @@ ATOKENS = {
     ]
 }.get(chain.id, [])
 
-ATOKENS = [mutation for token in ATOKENS for mutation in mutate_address(token)]
+ATOKENS = mutate_addresses(ATOKENS)
 
 supported_chains = pytest.mark.skipif(not (aave.pools or ATOKENS), reason='Not applicable on chains without known Aaves or forks')
 

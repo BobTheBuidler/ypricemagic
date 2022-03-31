@@ -1,6 +1,6 @@
 import pytest
 from brownie import chain
-from tests.fixtures import mutate_address
+from tests.fixtures import mutate_addresses
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap import v3
@@ -41,8 +41,8 @@ V2_TOKENS = {
     ],
 }.get(chain.id, [])
 
-V1_TOKENS = [mutation for address in V1_TOKENS for mutation in mutate_address(address)]
-V2_TOKENS = [mutation for address in V2_TOKENS for mutation in mutate_address(address)]
+V1_TOKENS = mutate_addresses(V1_TOKENS)
+V2_TOKENS = mutate_addresses(V2_TOKENS)
 
 @pytest.mark.parametrize('token', V1_TOKENS)
 def test_uniswap_v1(token):
