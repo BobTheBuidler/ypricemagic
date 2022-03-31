@@ -111,14 +111,14 @@ class Comptroller(ContractBase):
         return token_address in self.markets
     
     @cached_property
-    def markets(self) -> Set[str]:
+    def markets(self) -> Set[CToken]:
         response = self.has_method("getAllMarkets()(address[])", return_response=True)
         if not response:
             logger.error(f'had trouble loading markets for {self.__repr__()}')
             response = set()
         markets = {CToken(market) for market in response}
         logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
-        return response
+        return markets
 
 
 class Compound(metaclass = Singleton):
