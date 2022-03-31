@@ -31,6 +31,6 @@ jobs:
 
       - name: Run test suite
         env:
-          BROWNIE_NETWORK_ID_MAINNET=mainnet
+          BROWNIE_NETWORK_ID_MAINNET: mainnet
         run: |
           pytest
