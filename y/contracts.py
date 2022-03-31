@@ -128,9 +128,7 @@ class Contract(brownie.Contract):
 
     def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
         return build_name(self.address, return_None_on_failure=return_None_on_failure)
-    
-    def __hash__(self) -> int:
-        return super().__hash__()
+
 
 @log(logger)
 @memory.cache()
