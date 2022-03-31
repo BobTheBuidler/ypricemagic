@@ -28,6 +28,12 @@ jobs:
       - name: Setup brownie network
         run: |
           brownie networks modify mainnet host=${{ secrets.WEB3_PROVIDER }}
+      
+      - name: Cache brownie deployments
+        uses: actions/cache@v2
+        with:
+          key: brownie-deployments.db
+          path: ~/.brownie/deployments.db
 
       - name: Run test suite
         env:
