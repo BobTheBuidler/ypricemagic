@@ -1,10 +1,13 @@
 import logging
+from functools import cached_property
 from typing import List, Optional
 
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
-from cachetools.func import lru_cache, ttl_cache
+from cachetools.func import lru_cache
 from eth_abi import encode_single
+from multicall import Call
+from y import convert
 from y.classes.singleton import Singleton
 from y.contracts import Contract, has_method
 from y.datatypes import UsdPrice
@@ -25,9 +28,6 @@ class Synthetix(metaclass=Singleton):
         if chain.id not in addresses:
             raise UnsupportedNetwork("synthetix is not supported on this network")
 
-        self.synths = self.load_synths()
-        logger.info(f'loaded {len(self.synths)} synths')
-
     @lru_cache(maxsize=None)
     def get_address(self, name) -> Contract:
         """
@@ -39,36 +39,41 @@ class Synthetix(metaclass=Singleton):
         proxy = Contract(address)
         return Contract(proxy.target()) if hasattr(proxy, 'target') else proxy
 
-    def load_synths(self) -> List[EthAddress]:
+    @cached_property
+    def synths(self) -> List[EthAddress]:
         """
         Get target addresses of all synths.
         """
         proxy_erc20 = self.get_address('ProxyERC20')
-        return fetch_multicall(
+        synths = fetch_multicall(
             *[
                 [proxy_erc20, 'availableSynths', i]
                 for i in range(proxy_erc20.availableSynthCount())
             ]
         )
+        logger.info(f'loaded {len(synths)} synths')
+        return synths
 
-    @lru_cache(maxsize=None)
     def __contains__(self, token: AnyAddressType) -> bool:
         """
         Check if a token is a synth.
         """
-        target = has_method(token, 'target()(address)', return_response=True)
-        return target and target in self.synths and Contract(target).proxy() == token
+        token = Contract(token)
+        if synthetix.get_currency_key(token.address):
+            return True
+        target = token.has_method('target()(address)', return_response=True)
+        return target and target in synthetix.synths and Contract(target).proxy() == token
 
     @lru_cache(maxsize=None)
     def get_currency_key(self, token: Address) -> HexString:
         target = Contract(token).target()
         return Contract(target).currencyKey()
 
-    @ttl_cache(maxsize=None, ttl=600)
-    def get_price(self, token: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    def get_price(self, token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         """
         Get a price of a synth in dollars.
         """
+        token = convert.to_address(token)
         rates = self.get_address('ExchangeRates')
         key = self.get_currency_key(token)
         try:
@@ -77,5 +82,7 @@ class Synthetix(metaclass=Singleton):
             return None
 
 
-try: synthetix = Synthetix()
-except UnsupportedNetwork: synthetix = set()
+try:
+    synthetix = Synthetix()
+except UnsupportedNetwork:
+    synthetix = set()

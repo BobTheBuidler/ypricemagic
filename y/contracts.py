@@ -15,7 +15,7 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NodeNotSynced, call_reverted, contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
-from y.typing import AnyAddressType, Block
+from y.typing import Address, AnyAddressType, Block
 from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
@@ -128,6 +128,9 @@ class Contract(brownie.Contract):
 
     def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
         return build_name(self.address, return_None_on_failure=return_None_on_failure)
+    
+    def __hash__(self) -> int:
+        return super().__hash__()
 
 @log(logger)
 @memory.cache()
@@ -142,7 +145,7 @@ def is_contract(address: AnyAddressType) -> bool:
 
 @log(logger)
 @memory.cache()
-def has_method(address: AnyAddressType, method: str, return_response: bool = False) -> Union[bool,Any]:
+def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
     '''
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`

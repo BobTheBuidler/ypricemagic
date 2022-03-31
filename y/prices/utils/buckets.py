@@ -1,10 +1,8 @@
 import logging
 from functools import lru_cache
-from typing import Union
 
-import brownie
+from y import convert
 from y.constants import STABLECOINS
-from y.contracts import Contract
 from y.decorators import log
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.chainlink import chainlink
@@ -21,18 +19,17 @@ from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
-from y.typing import Address
+from y.typing import AnyAddressType
 
 logger = logging.getLogger(__name__)
 
 @log(logger)
 @lru_cache(maxsize=None)
 def check_bucket(
-    token_address: Union[str, Address, brownie.Contract, Contract]
-    ):
+    token_address: AnyAddressType
+    ) -> str:
 
-    if type(token_address) != str:
-        token_address = str(token_address)
+    token_address = convert.to_address(token_address)
 
     # these require neither calls to the chain nor contract initialization
     if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
