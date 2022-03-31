@@ -1,6 +1,7 @@
 
 import os
 
-from brownie import network
+import brownie
 
-network.connect(os.environ['BROWNIE_NETWORK_ID_MAINNET'])
+brownie.network.connect(os.environ['BROWNIE_NETWORK_ID_MAINNET'])
+brownie._config.CONFIG.settings['autofetch_sources'] = True
