@@ -3,13 +3,9 @@ import pytest
 from y.constants import STABLECOINS
 from y.prices import magic
 
-from tests.fixtures import blocks_for_contract, mutate_token
+from tests.fixtures import blocks_for_contract, mutate_tokens
 
-STABLECOINS = [
-    mutation
-    for address in STABLECOINS.keys()
-    for mutation in mutate_token(address)
-]
+STABLECOINS = mutate_tokens(STABLECOINS.keys())
 
 # TODO Implement this after imlementing non-stable stables to validate tokens' spots in `STABLECOINS`.
 @pytest.mark.parametrize('token',STABLECOINS)
