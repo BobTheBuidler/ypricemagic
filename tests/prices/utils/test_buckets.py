@@ -31,6 +31,10 @@ def test_check_bucket_compound(token):
 def test_check_bucket_popsicle(token):
     assert check_bucket(token) == 'popsicle'
 
+@pytest.mark.parametrize('token',STABLECOINS)
+def test_check_bucket_stablecoins(token):
+    assert check_bucket(token) == 'stable usd'
+
 @pytest.mark.parametrize('token',SYNTHS)
 def test_check_bucket_synthetix(token):
     assert check_bucket(token) == 'synthetix'
