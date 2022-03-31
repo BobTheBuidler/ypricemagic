@@ -34,7 +34,7 @@ jobs:
       - name: Cache dependencies and joblib middleware cache
         uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}-${{ hashFiles('**/middleware.py') }}
           path: |
             ${{ matrix.path }}
             ./cache/*/joblib/web3/middleware/filter/middleware
