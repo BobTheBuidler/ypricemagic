@@ -16,10 +16,8 @@ def test_synthetix_detection():
     assert sLINK in synthetix
 
 
-@mainnet_only
-@pytest.mark.parametrize('target', SYNTHS)
-def test_synthetix_price(target):
-    token = Contract(target).proxy()
+@pytest.mark.parametrize('token', SYNTHS)
+def test_synthetix_price(token):
     price = synthetix.get_price(token)
-    print(price, Contract(target).currencyKey().decode().rstrip('\x00'))
+    print(price)
     return price

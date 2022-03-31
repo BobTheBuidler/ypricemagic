@@ -9,11 +9,11 @@ from eth_abi import encode_single
 from multicall import Call
 from y import convert
 from y.classes.singleton import Singleton
-from y.contracts import Contract, has_method
+from y.contracts import Contract
 from y.datatypes import UsdPrice
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from y.typing import Address, AddressOrContract, AnyAddressType, Block
+from y.typing import Address, AnyAddressType, Block
 from y.utils.multicall import fetch_multicall
 
 logger = logging.getLogger(__name__)
@@ -65,9 +65,9 @@ class Synthetix(metaclass=Singleton):
         return target and target in synthetix.synths and Contract(target).proxy() == token
 
     @lru_cache(maxsize=None)
-    def get_currency_key(self, token: Address) -> HexString:
-        target = Contract(token).target()
-        return Contract(target).currencyKey()
+    def get_currency_key(self, token: Address) -> Optional[HexString]:
+        target = Call(token, ['target()(address)'])() if Contract(token).has_method('target()(address)') else token
+        return Call(target, ['currencyKey()(bytes32)'])() if Contract(target).has_method('currencyKey()(bytes32)') else None
 
     def get_price(self, token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         """
