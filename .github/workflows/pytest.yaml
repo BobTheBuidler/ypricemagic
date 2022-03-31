@@ -38,5 +38,6 @@ jobs:
       - name: Run test suite
         env:
           BROWNIE_NETWORK_ID_MAINNET: mainnet
+          ETHERSCAN_TOKEN: ${{ secrets.ETHERSCAN_TOKEN }}
         run: |
           pytest
