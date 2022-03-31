@@ -20,19 +20,3 @@ def test_compound_pricing(token):
         price = compound.get_price(token, block)
         assert price, 'Failed to fetch price.'
         print(f'                price = {price}')
-
-
-def test_compound_cap():
-    for comp in compound.trollers.values():
-        print(comp.key)
-        total = 0
-        for token in comp.markets:
-            if token == '0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0':
-                continue  # creth is broken
-            
-            price = compound.get_price(token)
-            supply = ERC20(token).total_supply_readable()
-            print(f'  {token.name} {supply:,.0f} x {price:,.2f} = {supply * price:,.0f}')
-            total += supply * price
-
-        print(f'{comp.key} = {total:,.0f}')
