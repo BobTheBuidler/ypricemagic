@@ -5,7 +5,7 @@ from y.contracts import contract_creation_block
 from y.networks import Network
 from y.prices.chainlink import FEEDS, chainlink
 
-FEEDS = list(FEEDS.values())
+FEEDS = list(FEEDS.keys())
 FEEDS.extend({
     # Add feeds that *should* come from registry
     Network.Mainnet: [
