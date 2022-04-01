@@ -346,12 +346,11 @@ class CurveRegistry(metaclass=Singleton):
         log_filter = create_filter(str(self.address_provider))
         try:
             new_entries = log_filter.get_new_entries()
-            if not len(new_entries): # if your setup is unable to correctly utilize filters
-                new_entries = get_logs_asap(str(self.address_provider), None)
-        except: # Some nodes have issues with filters
+        except: # Some nodes have issues with filters and/or rate limiting
+            new_entries = []
+        if not new_entries:
             new_entries = get_logs_asap(str(self.address_provider), None)
         
-
         for event in decode_logs(new_entries):
             if event.name == 'NewAddressIdentifier':
                 self.identifiers[event['id']].append(event['addr'])
@@ -362,9 +361,11 @@ class CurveRegistry(metaclass=Singleton):
 
         # fetch pools from the latest registry
         log_filter = create_filter(str(self.registry))
-        new_entries = log_filter.get_new_entries()
-        
-        if not len(new_entries): # if your setup is unable to correctly utilize filters
+        try:
+            new_entries = log_filter.get_new_entries()
+        except: # Some nodes have issues with filters and/or rate limiting
+            new_entries = []
+        if not new_entries:
             new_entries = get_logs_asap(str(self.registry), None)
 
         for event in decode_logs(new_entries):
