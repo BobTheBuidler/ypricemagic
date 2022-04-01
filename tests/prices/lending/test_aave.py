@@ -1,6 +1,6 @@
 import pytest
 from brownie import chain
-from tests.fixtures import mutate_addresses
+from tests.fixtures import mainnet_only, mutate_addresses
 from y.networks import Network
 from y.prices.lending.aave import aave
 
@@ -100,6 +100,7 @@ ATOKENS = mutate_addresses(ATOKENS)
 
 supported_chains = pytest.mark.skipif(not (aave.pools or ATOKENS), reason='Not applicable on chains without known Aaves or forks')
 
+@mainnet_only
 def test_adai():
     '''
     Simple test for a known underlying
