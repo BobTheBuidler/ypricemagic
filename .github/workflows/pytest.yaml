@@ -28,13 +28,13 @@ jobs:
           path: ~/Library/Caches/pip
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
-        - chain: mainnet
+        - network: mainnet
           provider: WEB3_PROVIDER
-        - chain: bsc-main
+        - network: bsc-main
           provider: BSC_WEB3_PROVIDER
-        - chain: polygon-main
+        - network: polygon-main
           provider: POLY_WEB3_PROVIDER
-        - chain: ftm-main
+        - network: ftm-main
           provider: FTM_WEB3_PROVIDER
 
 
