@@ -19,7 +19,8 @@ jobs:
     #timeout-minutes: 10
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os: [ ubuntu-latest, macos-latest, windows-latest ]
+        chain: [ mainnet, bsc-main, polygon-main, ftm-main ]
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
@@ -27,6 +28,19 @@ jobs:
           path: ~/Library/Caches/pip
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
+        - chain: mainnet
+          provider: ${{ secrets.WEB3_PROVIDER }}
+          explorer-token: ${{ secrets.ETHERSCAN_TOKEN }}
+        - chain: bsc-main
+          provider: ${{ secrets.BSC_WEB3_PROVIDER }}
+          explorer-token: ${{ secrets.BSCSCAN_TOKEN }}
+        - chain: polygon-main
+          provider: ${{ secrets.POLY_WEB3_PROVIDER }}
+          path: ${{ secrets.POLYGONSCAN_TOKEN }}
+        - chain: ftm-main
+          provider: ${{ secrets.FTM_WEB3_PROVIDER }}
+          explorer-token: ${{ secrets.FTMSCAN_TOKEN }}
+
 
     steps:
       - name: Check out repository code
@@ -52,10 +66,7 @@ jobs:
       
       - name: Setup brownie networks
         run: |
-          brownie networks modify mainnet host=${{ secrets.WEB3_PROVIDER }}
-          brownie networks modify bsc-main host=${{ secrets.BSC_WEB3_PROVIDER }}
-          brownie networks modify polygon-main host=${{ secrets.POLY_WEB3_PROVIDER }}
-          brownie networks modify ftm-main host=${{ secrets.FTM_WEB3_PROVIDER }}
+          brownie networks modify ${{ matrix.network }} host=${{ matrix.provider }}
         continue-on-error: true
 
       - name: Cache compilers and brownie deployments
@@ -69,29 +80,8 @@ jobs:
       
       - name: Run test suite
         env:
-          BROWNIE_NETWORK_ID_MAINNET: mainnet
-          ETHERSCAN_TOKEN: ${{ secrets.ETHERSCAN_TOKEN }}
-        run: pytest
-        continue-on-error: true
-        
-      - name: Run test suite
-        env:
-          BROWNIE_NETWORK_ID_MAINNET: bsc-main
-          BSCSCAN_TOKEN: ${{ secrets.BSCSCAN_TOKEN }}
-        run: pytest
-        continue-on-error: true
-      
-      - name: Run test suite
-        env:
-          BROWNIE_NETWORK_ID_MAINNET: polygon-main
-          POLYGONSCAN_TOKEN: ${{ secrets.POLYGONSCAN_TOKEN }}
-        run: pytest
-        continue-on-error: true
-      
-      - name: Run test suite
-        env:
-          BROWNIE_NETWORK_ID_MAINNET: ftm-main
-          FTMSCAN_TOKEN: ${{ secrets.FTMSCAN_TOKEN }}
+          BROWNIE_NETWORK: ${{ matrix.network }}
+          ETHERSCAN_TOKEN: ${{ matrix.explorer-token }}
         run: pytest
         continue-on-error: true
       
