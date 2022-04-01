@@ -7,10 +7,11 @@ import brownie
 from brownie import chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.typing import AccountsType
+from hexbytes import HexBytes
 from multicall import Call, Multicall
 
 from y import convert
-from y.decorators import log
+from y.decorators import auto_retry, log
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NodeNotSynced, call_reverted, contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
@@ -46,17 +47,17 @@ def contract_creation_block(address: AnyAddressType) -> int:
     address = convert.to_address(address)
     logger.info("contract creation block %s", address)
     height = chain.height
-    lo, hi = 0, height
 
-    if hi == 0:
+    if height == 0:
         raise NodeNotSynced(f'''
-            `chain.height` returns 0 on your node, which implies it is not fully synced.
-            You can only run this function on a fully synced node.''')
-    
+            `chain.height` returns 0 on your node, which means it is not fully synced.
+            You can only use this function on a fully synced node.''')
+
+    lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         try:
-            if web3.eth.get_code(address, block_identifier=mid):
+            if get_code(mid):
                 hi = mid
             else:
                 lo = mid
@@ -128,6 +129,9 @@ class Contract(brownie.Contract):
 
     def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
         return build_name(self.address, return_None_on_failure=return_None_on_failure)
+    
+    def get_code(self, block: Optional[Block] = None) -> HexBytes:
+        return get_code(self.address, block=block)
 
 
 @log(logger)
@@ -219,3 +223,10 @@ def build_name(address: AnyAddressType, return_None_on_failure: bool = False) ->
         if not return_None_on_failure:
             raise
         return None
+
+@auto_retry
+def get_code(address: AnyAddressType, block: Optional[Block]) -> HexBytes:
+    '''
+    A simple wrapper on web3.eth.get_code that helps prevent issues with rate limiting on certain RPCs.
+    '''
+    return web3.eth.get_code(convert.to_address(address), block_identifier=block)
