@@ -57,7 +57,7 @@ def contract_creation_block(address: AnyAddressType) -> int:
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         try:
-            if get_code(mid):
+            if get_code(address, mid):
                 hi = mid
             else:
                 lo = mid
