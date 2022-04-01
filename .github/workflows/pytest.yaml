@@ -30,16 +30,16 @@ jobs:
           path: ~\AppData\Local\pip\Cache
         - chain: mainnet
           provider: WEB3_PROVIDER
-          explorer-token: ETHERSCAN_TOKEN
+          explorertoken: ETHERSCAN_TOKEN
         - chain: bsc-main
           provider: BSC_WEB3_PROVIDER
-          explorer-token: BSCSCAN_TOKEN
+          explorertoken: BSCSCAN_TOKEN
         - chain: polygon-main
           provider: POLY_WEB3_PROVIDER
-          path: POLYGONSCAN_TOKEN
+          explorertoken: POLYGONSCAN_TOKEN
         - chain: ftm-main
           provider: FTM_WEB3_PROVIDER
-          explorer-token: FTMSCAN_TOKEN
+          explorertoken: FTMSCAN_TOKEN
 
 
     steps:
@@ -88,7 +88,7 @@ jobs:
       - name: Run test suite
         env:
           BROWNIE_NETWORK: ${{ matrix.network }}
-          ETHERSCAN_TOKEN: ${{ secrets[matrix.explorer-token] }}
+          ETHERSCAN_TOKEN: ${{ secrets[matrix.explorertoken] }}
         run: pytest
         continue-on-error: true
       
