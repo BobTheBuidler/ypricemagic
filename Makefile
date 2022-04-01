@@ -1,0 +1,1 @@
+test: pytest -W ignore

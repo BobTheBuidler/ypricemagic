@@ -89,6 +89,6 @@ jobs:
           BSCSCAN_TOKEN: ${{ secrets.BSCSCAN_TOKEN }}
           POLYGONSCAN_TOKEN: ${{ secrets.POLYGONSCAN_TOKEN }}
           FTMSCAN_TOKEN: ${{ secrets.FTMSCAN_TOKEN }}
-        run: pytest
+        run: make test
         continue-on-error: true
       
