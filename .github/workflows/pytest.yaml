@@ -51,12 +51,19 @@ jobs:
         with:
           python-version: "3.9"
 
-      - name: Cache dependencies and joblib middleware cache
+      - name: Cache dependencies
         uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}-${{ hashFiles('**/middleware.py') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
           path: |
             ${{ matrix.path }}
+      
+      - name: Cache joblib middleware cache
+        uses: actions/cache@v3
+        with:
+          # Include requirements.txt so we recache if web3 version changes
+          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
+          path: |
             ./cache/*/joblib/web3/middleware/filter/middleware
 
       - name: Install dependencies
