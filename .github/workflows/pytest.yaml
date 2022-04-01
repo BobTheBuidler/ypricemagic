@@ -29,17 +29,17 @@ jobs:
         - os: windows-latest
           path: ~\AppData\Local\pip\Cache
         - chain: mainnet
-          provider: ${{ secrets.WEB3_PROVIDER }}
-          explorer-token: ${{ secrets.ETHERSCAN_TOKEN }}
+          provider: WEB3_PROVIDER
+          explorer-token: ETHERSCAN_TOKEN
         - chain: bsc-main
-          provider: ${{ secrets.BSC_WEB3_PROVIDER }}
-          explorer-token: ${{ secrets.BSCSCAN_TOKEN }}
+          provider: BSC_WEB3_PROVIDER
+          explorer-token: BSCSCAN_TOKEN
         - chain: polygon-main
-          provider: ${{ secrets.POLY_WEB3_PROVIDER }}
-          path: ${{ secrets.POLYGONSCAN_TOKEN }}
+          provider: POLY_WEB3_PROVIDER
+          path: POLYGONSCAN_TOKEN
         - chain: ftm-main
-          provider: ${{ secrets.FTM_WEB3_PROVIDER }}
-          explorer-token: ${{ secrets.FTMSCAN_TOKEN }}
+          provider: FTM_WEB3_PROVIDER
+          explorer-token: FTMSCAN_TOKEN
 
 
     steps:
@@ -66,7 +66,7 @@ jobs:
       
       - name: Setup brownie networks
         run: |
-          brownie networks modify ${{ matrix.network }} host=${{ matrix.provider }}
+          brownie networks modify ${{ matrix.network }} host=${{ secrets[matrix.provider] }}
         continue-on-error: true
 
       - name: Cache compilers and brownie deployments
@@ -81,7 +81,7 @@ jobs:
       - name: Run test suite
         env:
           BROWNIE_NETWORK: ${{ matrix.network }}
-          ETHERSCAN_TOKEN: ${{ matrix.explorer-token }}
+          ETHERSCAN_TOKEN: ${{ secrets[matrix.explorer-token] }}
         run: pytest
         continue-on-error: true
       
