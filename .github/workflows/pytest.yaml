@@ -58,7 +58,7 @@ jobs:
         uses: actions/cache@v3
         with:
           # Include requirements.txt so we recache if web3 version changes
-          key: ${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
+          key: forceupdatedeletethislater-${{ runner.os }}-${{ matrix.network }}-${{ hashFiles('**/middleware.py') }}-${{ hashFiles('**/requirements.txt') }}
           path: |
             ./cache/*/joblib/web3/middleware/filter/middleware
 
@@ -75,7 +75,7 @@ jobs:
       - name: Cache compilers and brownie deployments
         uses: actions/cache@v3
         with:
-          key: ${{ runner.os }}-brownie-cache-${{ matrix.network }}
+          key: forceupdatedeletethislater-${{ runner.os }}-brownie-cache-${{ matrix.network }}
           path: |
             ~/.brownie/deployments.db
             ~/.solcx
