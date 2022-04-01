@@ -76,6 +76,7 @@ _contract_lock = threading.Lock()
 
 @lru_cache
 class Contract(brownie.Contract):
+    @auto_retry
     def __init__(
         self, 
         address: AnyAddressType, 
