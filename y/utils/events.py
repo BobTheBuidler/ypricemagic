@@ -32,6 +32,7 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     return decoded
 
 
+@auto_retry
 def create_filter(address, topics=None):
     """
     Create a log filter for one or more contracts.
