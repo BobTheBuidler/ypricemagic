@@ -16,6 +16,7 @@ mainnet_only = pytest.mark.skipif(
 )
 
 def blocks_for_contract(address: Address, count: int = 5) -> List[Block]:
+    address = convert.to_address(address)
     return [int(block) for block in np.linspace(contract_creation_block(address) + 10000, chain.height, count)]
 
 def mutate_address(address: Address) -> Tuple[str,str,str,EthAddress]:
