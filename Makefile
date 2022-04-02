@@ -1,1 +1,2 @@
-test: pytest -W ignore
+test: 
+	pytest -W ignore
