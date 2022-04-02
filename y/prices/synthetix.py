@@ -4,16 +4,14 @@ from typing import List, Optional
 
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
-from brownie.exceptions import ContractNotFound
 from cachetools.func import lru_cache
 from eth_abi import encode_single
 from multicall import Call
 from y import convert
 from y.classes.singleton import Singleton
-from y.contracts import Contract
+from y.contracts import Contract, has_method
 from y.datatypes import UsdPrice
-from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
-                          UnsupportedNetwork)
+from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.typing import Address, AnyAddressType, Block
 from y.utils.multicall import fetch_multicall
@@ -60,14 +58,13 @@ class Synthetix(metaclass=Singleton):
         """
         Check if a token is a synth.
         """
-        try:
-            token = Contract(token)
-            if synthetix.get_currency_key(token.address):
-                return True
-        except (ContractNotFound, ContractNotVerified, MessedUpBrownieContract):
-            return False
-        target = token.has_method('target()(address)', return_response=True)
-        return target and target in synthetix.synths and Contract(target).proxy() == token
+        token = convert.to_address(token)
+        if synthetix.get_currency_key(token):
+            return True
+        if has_method(token, 'target()(address)'):
+            target = Call(token.address, 'target()(address)')()
+            return target in synthetix.synths and Call(target, 'proxy()(address)')() == token
+        return False
 
     @lru_cache(maxsize=None)
     def get_currency_key(self, token: Address) -> Optional[HexString]:
