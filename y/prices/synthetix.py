@@ -62,10 +62,10 @@ class Synthetix(metaclass=Singleton):
         """
         try:
             token = Contract(token)
+            if synthetix.get_currency_key(token.address):
+                return True
         except (ContractNotFound, ContractNotVerified, MessedUpBrownieContract):
             return False
-        if synthetix.get_currency_key(token.address):
-            return True
         target = token.has_method('target()(address)', return_response=True)
         return target and target in synthetix.synths and Contract(target).proxy() == token
 
