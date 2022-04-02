@@ -45,6 +45,7 @@ def create_filter(address, topics=None):
     return web3.eth.filter({"address": address, "fromBlock": start_block, "topics": topics})
 
 
+@auto_retry
 def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     logs = []
 
