@@ -101,22 +101,36 @@ class Contract(brownie.Contract):
                     raise MessedUpBrownieContract(address, str(e))
                 except ConnectionError as e:
                     if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
-                        if web3.eth.get_code(address): raise ContractNotVerified(address)
-                        else: raise ContractNotFound(address)
+                        if chain.id == Network.xDai:
+                            raise ValueError(f'Rate limited by Blockscout. Please try again.')
+                        if web3.eth.get_code(address):
+                            raise ContractNotVerified(address)
+                        else:
+                            raise ContractNotFound(address)
                     raise
                 except IndexError as e:
-                    if 'list index out of range' in str(e): raise MessedUpBrownieContract(address, str(e))
-                    elif "pop from an empty deque" in str(e): raise MessedUpBrownieContract(address, str(e))
-                    else: raise
+                    if 'list index out of range' in str(e):
+                        raise MessedUpBrownieContract(address, str(e))
+                    elif "pop from an empty deque" in str(e):
+                        raise MessedUpBrownieContract(address, str(e))
+                    else:
+                        raise
                 except ValueError as e:
-                    if contract_not_verified(e): raise ContractNotVerified(f'{address} on {Network.printable()}')
-                    elif "Unknown contract address:" in str(e): raise ContractNotVerified(str(e)) # avax snowtrace
-                    elif "invalid literal for int() with base 16" in str(e): raise MessedUpBrownieContract(address, str(e))
-                    else: raise
+                    if contract_not_verified(e):
+                        raise ContractNotVerified(f'{address} on {Network.printable()}')
+                    elif "Unknown contract address:" in str(e):
+                        raise ContractNotVerified(str(e)) # avax snowtrace
+                    elif "invalid literal for int() with base 16" in str(e):
+                        raise MessedUpBrownieContract(address, str(e))
+                    else:
+                        raise
             except (ContractNotFound, ContractNotVerified, MessedUpBrownieContract) as e:
-                if require_success: raise
-                if type(e) == ContractNotVerified: self._verified = False
-                else: self._verified = None
+                if require_success:
+                    raise
+                if type(e) == ContractNotVerified:
+                    self._verified = False
+                else:
+                    self._verified = None
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return has_method(self.address, method, return_response=return_response)
