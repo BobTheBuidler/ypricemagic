@@ -39,7 +39,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
 
 @log(logger)
 @memory.cache()
-def contract_creation_block(address: AnyAddressType) -> int:
+def contract_creation_block(address: AnyAddressType, when_no_history_return_0: False) -> int:
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
@@ -64,8 +64,16 @@ def contract_creation_block(address: AnyAddressType) -> int:
         except ValueError as e:
             if 'missing trie node' in str(e):
                 logger.critical('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
+                if when_no_history_return_0:
+                    return 0
             elif 'Server error: account aurora does not exist while viewing' in str(e):
                 logger.critical(str(e))
+                if when_no_history_return_0:
+                    return 0
+            elif 'No state available for block' in str(e):
+                logger.critical(str(e))
+                if when_no_history_return_0:
+                    return 0
             else:
                 raise
             lo = mid
