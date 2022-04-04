@@ -253,3 +253,7 @@ def get_code(address: AnyAddressType, block: Optional[Block]) -> HexBytes:
     A simple wrapper on web3.eth.get_code that helps prevent issues with rate limiting on certain RPCs.
     '''
     return web3.eth.get_code(convert.to_address(address), block_identifier=block)
+
+@auto_retry
+def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
+    return probe(address, ['implementation()(address)','target()(address)'], block)
