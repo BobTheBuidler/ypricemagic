@@ -36,7 +36,13 @@ def get_balances(token: AnyAddressType, block: Optional[Block] = None) -> Tuple[
     address = convert.to_address(token)
     methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
     calls = [Call(address, method, [[method,None]]) for method in methods]
-    token0, token1, (balance0, balance1) = Multicall(calls, block_id=block)().values()
+    try:
+        token0, token1, (balance0, balance1) = Multicall(calls, block_id=block)().values()
+    except ValueError as e:
+        if str(e) == "not enough values to unpack (expected 3, got 2)":
+            # TODO determine if this is regular behavior when no tvl in pool or if this is bug to fix
+            return None
+        raise
     balance0 = WeiBalance(balance0, token0, block=block)
     balance1 = WeiBalance(balance1, token1, block=block)
     return balance0, balance1
