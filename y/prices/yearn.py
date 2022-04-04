@@ -107,8 +107,8 @@ class YearnInspiredVault(ERC20):
 
     @log(logger)
     @lru_cache
-    def share_price(self, block: Optional[Block] = None) -> float:
-        share_price = probe(self.address, share_price_methods, block=block)
+    def share_price(self, block: Optional[Block] = None) -> Optional[float]:
+        method, share_price = probe(self.address, share_price_methods, block=block, return_method=True)
 
         if share_price is None:
             # this is for element vaults, probe fails because method requires input
@@ -120,13 +120,14 @@ class YearnInspiredVault(ERC20):
                 pass
 
         if share_price is not None:
-            # NOTE This is weird but works for now. 
-            # TODO refactor
-            return share_price / 1e18
-            '''
-            elif raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
-                return WeiBalance(0, self.underlying, block=block)
-            '''
+            if method == 'getPricePerFullShare()(uint)':
+                # v1 vaults use getPricePerFullShare scaled to 18 decimals
+                return share_price / 1e18
+            return share_price ** self.underlying.scale
+            
+        elif raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
+            return None
+        
         else:
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
