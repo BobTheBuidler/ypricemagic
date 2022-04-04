@@ -67,7 +67,7 @@ class Synthetix(metaclass=Singleton):
         return False
 
     @lru_cache(maxsize=None)
-    def get_currency_key(self, token: Address) -> Optional[HexString]:
+    def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
         target = Call(token, ['target()(address)'])() if has_method(token,'target()(address)') else token
         return Call(target, ['currencyKey()(bytes32)'])() if has_method(token,'currencyKey()(bytes32)') else None
 

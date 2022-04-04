@@ -107,7 +107,7 @@ class YearnInspiredVault(ERC20):
 
     @log(logger)
     @lru_cache
-    def share_price(self, block: Optional[Block] = None) -> WeiBalance:
+    def share_price(self, block: Optional[Block] = None) -> float:
         share_price = probe(self.address, share_price_methods, block=block)
 
         if share_price is None:
@@ -120,13 +120,17 @@ class YearnInspiredVault(ERC20):
                 pass
 
         if share_price is not None:
-            return WeiBalance(share_price, self.underlying, block=block)
-        elif raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
-            return WeiBalance(0, self.underlying, block=block)
+            # NOTE This is weird but works for now. 
+            # TODO refactor
+            return share_price / 1e18
+            '''
+            elif raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
+                return WeiBalance(0, self.underlying, block=block)
+            '''
         else:
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
     @log(logger)
     @lru_cache
     def price(self, block: Optional[Block] = None) -> UsdPrice:
-        return UsdPrice(self.share_price(block=block).readable * self.underlying.price(block=block))
+        return UsdPrice(self.share_price(block=block) * self.underlying.price(block=block))
