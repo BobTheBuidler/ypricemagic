@@ -39,7 +39,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
 
 @log(logger)
 @memory.cache()
-def contract_creation_block(address: AnyAddressType, when_no_history_return_0: False) -> int:
+def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
