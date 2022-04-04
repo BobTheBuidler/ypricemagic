@@ -28,6 +28,9 @@ class CantFetchParam(Exception):
 class ContractNotVerified(Exception):
     pass
 
+class NoProxyImplementation(Exception):
+    pass
+
 class MessedUpBrownieContract(Exception):
     def __init__(self, address, *args: object) -> None:
         super().__init__(*args)
