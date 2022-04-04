@@ -155,6 +155,10 @@ def _symbol(
     symbol = raw_call(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
     if symbol is not None: return symbol
 
+    if Call(contract_address, 'implementation()(address)', [['implementation',None]],block_id=block)() == ZERO_ADDRESS:
+        raise NoProxyImplementation(f"""
+            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
+
     # we've failed to fetch
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
@@ -185,6 +189,10 @@ def _name(
     name = raw_call(contract_address, "getName()", block=block, output='str', return_None_on_failure=True)
     if name is not None: return name
 
+    if Call(contract_address, 'implementation()(address)', [['implementation',None]],block_id=block)() == ZERO_ADDRESS:
+        raise NoProxyImplementation(f"""
+            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
+            
     # we've failed to fetch
     if return_None_on_failure: return None
     raise NonStandardERC20(f'''
