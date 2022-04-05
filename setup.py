@@ -16,8 +16,8 @@ setup(
     license='MIT',
     install_requires=[
         'cachetools>=4.1.1',
-        'eth-brownie>=1.16.0',
-        'joblib>=1.0.1'
+        'eth-brownie>=1.18.1',
+        'joblib>=1.0.1',
     ],
     setup_requires=[
         'setuptools_scm',
