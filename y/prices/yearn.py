@@ -123,7 +123,7 @@ class YearnInspiredVault(ERC20):
             if method == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / 1e18
-            return share_price ** self.underlying.scale
+            return share_price / self.underlying.scale
             
         elif raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
             return None
