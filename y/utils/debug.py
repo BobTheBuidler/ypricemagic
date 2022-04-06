@@ -42,6 +42,7 @@ def _durations_dataframe() -> DataFrame:
             'average': average_duration(function_name),
             'median': median_duration(function_name),
             'max': max_duration(function_name),
+            'ct': len(durations(function_name))
         } for function_name in function_durations
     ])
     return dataframe.sort_values(by='average',ascending=False)
