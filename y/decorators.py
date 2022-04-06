@@ -1,11 +1,14 @@
 
 import logging
+import os
 from random import randrange
 from sqlite3 import OperationalError
-from time import sleep
+from time import sleep, time
 from typing import Any, Callable
 
 from requests.exceptions import HTTPError, ReadTimeout
+
+from y.utils.debug import record_duration
 
 retry_logger = logging.getLogger('auto_retry')
 
@@ -35,6 +38,7 @@ def log(logger: logging.Logger):
 
         def logging_wrap(*args: Any, **kwargs: Any) -> Any:
             fn_name = func.__name__
+            start = time()
 
             if len(kwargs) == 0:
                 describer_string = f'{fn_name}{tuple([*args])}'
@@ -44,6 +48,11 @@ def log(logger: logging.Logger):
             logger.debug(f'Fetching {describer_string}')
             func_returns = retry_superwrap(*args,**kwargs)
             logger.debug(f'{describer_string} returns: {func_returns}')
+
+            # record function duration for debug purposes
+            if os.environ.get('DEBUG',False):
+                record_duration(fn_name, describer_string, time() - start)
+                
             return func_returns
         
         @auto_retry
