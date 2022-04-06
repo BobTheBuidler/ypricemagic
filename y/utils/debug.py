@@ -1,4 +1,5 @@
 
+import os
 from collections import defaultdict
 from pprint import pprint
 from statistics import median
@@ -49,7 +50,9 @@ def _durations_dataframe() -> DataFrame:
 
 
 def export_durations() -> None:
-    _durations_dataframe().to_csv(f'debug/{chain.id}/function_durations.csv')
+    path = f'debug/{chain.id}/function_durations.csv'
+    __prepare_directory(path)
+    _durations_dataframe().to_csv(path)
     
 
 def record_duration(function_name: str, inputs: str, duration: float) -> None:
@@ -62,3 +65,19 @@ def record_duration(function_name: str, inputs: str, duration: float) -> None:
     num_recorded_durations += 1
     if num_recorded_durations % 1000 == 0:
         export_durations()
+
+def __prepare_directory(filepath: str) -> None:
+    num_steps = filepath.count('/')
+    for i in range(num_steps):
+        path = ""
+
+        # Split parts, put them back together.
+        for chunk in filepath.split('/')[:i+1]:
+            path += f'{chunk}/'
+
+        # Get rid of trailing '/'.
+        path = path[:-1]
+
+        # Create directory if doesn't exist.
+        if not os.path.exists(path):
+            os.makedirs(path)
