@@ -12,7 +12,7 @@ Inputs = str
 Duration = float
 
 function_durations: Dict[FunctionName,List[Dict[str,Union[Inputs,Duration]]]] = defaultdict(list)
-recorded_durations = 0
+recorded_durations = [0]
 
 
 def print_average_durations() -> None:
@@ -53,6 +53,7 @@ def export_durations() -> None:
     
 
 def record_duration(function_name: str, inputs: str, duration: float) -> None:
+    global recorded_durations
     event = {
         'inputs': inputs,
         'duration': duration,
