@@ -99,12 +99,12 @@ def auto_retry(func):
                     # Occurs occasionally on AVAX when node is slow to sync. Just retry.
                     'after last accepted block',
                 )
-                if 1 > 10 or not any([err in str(e) for err in retry_on_errs]):
+                if i > 10 or not any([err in str(e) for err in retry_on_errs]):
                     raise
                 retry_logger.warning(f'{str(e)} [{i}]')
             except (ConnectionError, HTTPError, TimeoutError, ReadTimeout) as e:
                 # This happens when we pass too large of a request to the node. Do not retry.
-                if 'Too Large' in str(e):
+                if 'Too Large' in str(e) or '404' in str(e):
                     raise
                 retry_logger.warning(f'{str(e)} [{i}]')
             except OperationalError as e:
