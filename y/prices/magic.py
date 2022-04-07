@@ -70,7 +70,7 @@ def get_prices(
     block: Optional[Block] = None,
     fail_to_None: bool = False,
     silent: bool = False,
-    dop: int = os.environ.get('DOP',4)
+    dop: int = int(os.environ.get('DOP',4))
     ) -> List[Optional[float]]:
     '''
     In every case:

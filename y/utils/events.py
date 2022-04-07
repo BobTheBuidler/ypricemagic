@@ -60,7 +60,7 @@ def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_
     if verbose > 0:
         logger.info('fetching %d batches', len(ranges))
     
-    batches = Parallel(os.environ.get('DOP',8), "threading", verbose=verbose)(delayed(_get_logs)(address, topics, start, end) for start, end in ranges)
+    batches = Parallel(int(os.environ.get('DOP',8)), "threading", verbose=verbose)(delayed(_get_logs)(address, topics, start, end) for start, end in ranges)
     
     for batch in batches:
         logs.extend(batch)
