@@ -230,10 +230,17 @@ def probe(
     assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
     if len(results) == 1:
         method, result = results[0]
-        if not return_method:
-            return result
-        else:
-            return method, result
+    else:
+        method, result = None, None
+    
+    if method:
+        assert result is not None
+
+    if not return_method:
+        return result
+    else:
+        return method, result
+    
 
 
 @log(logger)
