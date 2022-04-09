@@ -1,13 +1,17 @@
 
 import logging
+import os
 from random import randrange
 from sqlite3 import OperationalError
-from time import sleep
+from time import sleep, time
 from typing import Any, Callable
 
 from requests.exceptions import HTTPError, ReadTimeout
 
+from y.utils.debug import record_duration
+
 retry_logger = logging.getLogger('auto_retry')
+DEBUG = os.environ.get('YPRICEMAGIC_DEBUG', False)
 
 def continue_on_revert(func: Callable) -> Any:
     '''
@@ -35,6 +39,9 @@ def log(logger: logging.Logger):
 
         def logging_wrap(*args: Any, **kwargs: Any) -> Any:
             fn_name = func.__name__
+            
+            if DEBUG:
+                start = time()
 
             if len(kwargs) == 0:
                 describer_string = f'{fn_name}{tuple([*args])}'
@@ -44,6 +51,11 @@ def log(logger: logging.Logger):
             logger.debug(f'Fetching {describer_string}')
             func_returns = retry_superwrap(*args,**kwargs)
             logger.debug(f'{describer_string} returns: {func_returns}')
+
+            # record function duration for debug purposes
+            if DEBUG:
+                record_duration(fn_name, describer_string, time() - start)
+                
             return func_returns
         
         @auto_retry
@@ -87,12 +99,12 @@ def auto_retry(func):
                     # Occurs occasionally on AVAX when node is slow to sync. Just retry.
                     'after last accepted block',
                 )
-                if 1 > 10 or not any([err in str(e) for err in retry_on_errs]):
+                if i > 10 or not any([err in str(e) for err in retry_on_errs]):
                     raise
                 retry_logger.warning(f'{str(e)} [{i}]')
             except (ConnectionError, HTTPError, TimeoutError, ReadTimeout) as e:
                 # This happens when we pass too large of a request to the node. Do not retry.
-                if 'Too Large' in str(e):
+                if 'Too Large' in str(e) or '404' in str(e):
                     raise
                 retry_logger.warning(f'{str(e)} [{i}]')
             except OperationalError as e:
