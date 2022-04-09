@@ -39,7 +39,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
 
 @log(logger)
 @memory.cache()
-def contract_creation_block(address: AnyAddressType, when_no_history_return_0: False) -> int:
+def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
@@ -253,3 +253,7 @@ def get_code(address: AnyAddressType, block: Optional[Block]) -> HexBytes:
     A simple wrapper on web3.eth.get_code that helps prevent issues with rate limiting on certain RPCs.
     '''
     return web3.eth.get_code(convert.to_address(address), block_identifier=block)
+
+@auto_retry
+def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
+    return probe(address, ['implementation()(address)','target()(address)'], block)

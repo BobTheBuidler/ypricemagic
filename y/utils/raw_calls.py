@@ -7,13 +7,16 @@ from brownie import ZERO_ADDRESS, convert, web3
 from brownie.convert.datatypes import EthAddress
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
-from y.contracts import Contract
+from y.contracts import Contract, proxy_implementation
 from y.decorators import log
 from y.exceptions import (CalldataPreparationError, ContractNotVerified,
-                          NonStandardERC20, call_reverted)
+                          NonStandardERC20, NoProxyImplementation,
+                          call_reverted)
 from y.networks import Network
 from y.typing import Address, AddressOrContract, Block
 from y.utils.cache import memory
+
+from multicall import Call
 
 logger = logging.getLogger(__name__)
 
@@ -119,6 +122,11 @@ def _decimals(
     # we've failed to fetch
     if return_None_on_failure:
         return None
+
+    if proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+        raise NoProxyImplementation(f"""
+            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
+
     raise NonStandardERC20(f'''
         Unable to fetch `decimals` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
@@ -146,6 +154,10 @@ def _symbol(
     # method 3
     symbol = raw_call(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
     if symbol is not None: return symbol
+
+    if proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+        raise NoProxyImplementation(f"""
+            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
 
     # we've failed to fetch
     if return_None_on_failure: return None
@@ -176,6 +188,10 @@ def _name(
     # method 3
     name = raw_call(contract_address, "getName()", block=block, output='str', return_None_on_failure=True)
     if name is not None: return name
+
+    if proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+        raise NoProxyImplementation(f"""
+            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
 
     # we've failed to fetch
     if return_None_on_failure: return None
