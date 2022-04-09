@@ -12,7 +12,7 @@ from y.datatypes import UsdPrice
 from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
-from y.prices import convex, one_to_one, popsicle, yearn
+from y.prices import abracadabra, convex, one_to_one, popsicle, yearn
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
@@ -140,7 +140,8 @@ def _exit_early_for_known_tokens(
 
     price = None
 
-    if bucket == 'atoken':                  price = aave.get_price(token_address, block=block)
+    if bucket == 'abracadabra':             price = abracadabra.get_price(token_address, block=block)
+    elif bucket == 'atoken':                price = aave.get_price(token_address, block=block)
     elif bucket == 'balancer pool':         price = balancer_multiplexer.get_price(token_address, block)
     elif bucket == 'basketdao':             price = basketdao.get_price(token_address, block)
 

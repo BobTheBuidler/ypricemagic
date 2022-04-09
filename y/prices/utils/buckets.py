@@ -4,7 +4,7 @@ from functools import lru_cache
 from y import convert
 from y.constants import STABLECOINS
 from y.decorators import log
-from y.prices import convex, one_to_one, popsicle, yearn
+from y.prices import abracadabra, convex, one_to_one, popsicle, yearn
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
@@ -59,6 +59,7 @@ def check_bucket(
 
     elif basketdao.is_basketdao_index(token_address):                       return 'basketdao'
     elif popsicle.is_popsicle_lp(token_address):                            return 'popsicle'
+    elif abracadabra.is_cauldron(token_address):                            return 'abracadabra'
 
     # these just require contract initialization
     elif token_address in generic_amm:                                      return 'generic amm'
