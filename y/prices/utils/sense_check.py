@@ -133,7 +133,7 @@ def _sense_check(
     price_readable = round(price, 4)
     symbol = _symbol(token_address)
     network = Network.name(chain.id)
-    logger.warn(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+    logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
 
 @log(logger)

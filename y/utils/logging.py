@@ -16,15 +16,15 @@ def gh_issue_request(issue_request_details: Union[str, List[str]], _logger = Non
     if _logger is None: _logger = logger
 
     if type(issue_request_details) == str:
-        _logger.warn(issue_request_details)
+        _logger.warning(issue_request_details)
 
     elif type(issue_request_details) == list:
         for message in issue_request_details:
-            _logger.warn(message)
+            _logger.warning(message)
 
-    _logger.warn('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')
-    _logger.warn(f'In your issue, please include the network {NETWORK_DESCRIPTOR_FOR_ISSUE_REQ} and the detail shown above.')
-    _logger.warn('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')
+    _logger.warning('Please create an issue and/or create a PR at https://github.com/BobTheBuidler/ypricemagic')
+    _logger.warning(f'In your issue, please include the network {NETWORK_DESCRIPTOR_FOR_ISSUE_REQ} and the detail shown above.')
+    _logger.warning('and I will add it soon :). This will not prevent ypricemagic from fetching price for this asset.')
 
 
 def getLineInfo():
