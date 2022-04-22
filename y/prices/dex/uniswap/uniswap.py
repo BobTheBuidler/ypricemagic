@@ -1,8 +1,11 @@
 import logging
-from typing import Dict, Optional
+import os
+from typing import Dict, List, Optional, Tuple
 
 from brownie import chain
 from cachetools.func import ttl_cache
+from joblib import Parallel, delayed
+from multicall import Call, Multicall
 from y import convert
 from y.datatypes import UsdPrice
 from y.decorators import log
@@ -94,12 +97,25 @@ class UniswapMultiplexer:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
         '''
+        calls = self._routers_by_depth_calls(token_in)
+        reserves = Multicall(calls, block_id=block, require_success=False)().values()
+        return self._routers_by_depth_logic(token_in, reserves)
+
+
+    def _routers_by_depth_calls(self, token_in: AnyAddressType) -> List[Call]:
+        ''' Returns List[Calls] to use for multicall and bool to indicate whether to require success on the multicall. '''
         token_in = convert.to_address(token_in)
 
         pools_to_routers = {pool: router for router in self.routers.values() for pool in router.pools_for_token(token_in)}
-        reserves = multicall_same_func_no_input(pools_to_routers, 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
+        return [Call(pool, 'getReserves()((uint112,uint112,uint32))', [[self._next_uid(), None]]) for pool in pools_to_routers]
+    
+
+    def _routers_by_depth_logic(self, token_in: AnyAddressType, getReserves_call_responses: List[Tuple[int,int,int]]) -> Dict[UniswapRouterV2, str]:
+        ''' uses the results of a multicall built by `_routers_by_debth_calls` to output routers_by_depth. '''
+        pools_to_routers = {pool: router for router in self.routers.values() for pool in router.pools_for_token(token_in)}
+
         routers_by_depth = {}
-        for router, pool, reserves in zip(pools_to_routers.values(), pools_to_routers.keys(), reserves):
+        for router, pool, reserves in zip(pools_to_routers.values(), pools_to_routers.keys(), getReserves_call_responses):
             if reserves is None:
                 continue
             if token_in == router.pools[pool]['token0']:
@@ -108,5 +124,58 @@ class UniswapMultiplexer:
                 routers_by_depth[reserves[1]] = {router: pool}
         return {router: pool for balance in sorted(routers_by_depth, reverse=True) for router, pool in routers_by_depth[balance].items()}
 
+    def _next_uid(self) -> str:
+        try:
+            self._uid += 1
+        except AttributeError:
+            self._uid = 0
+        return f"call_{self._uid}"
+
+    def _get_prices(
+        self,
+        token_addresses: List[AnyAddressType],
+        block: Optional[Block] = None,
+        dop: int = int(os.environ.get('DOP',4))
+        ) -> List[Optional[UsdPrice]]:
+        ''' Get uniswap prices for multiple tokens at once, optimized for speed. '''
+
+        token_addresses = [convert.to_address(token) for token in token_addresses]
+        if block is None:
+            block = chain.height
+
+        # First we collect calls so we can evaluate `routers_by_depth` efficiently using multicall, for minimal total calls.
+        calls_dict = {
+            i: self._routers_by_depth_calls(token_addresses[i])
+            for i in range(len(token_addresses))
+        }
+
+        # Then we set up and execute the multicall.
+        calls = [call for i, calls in calls_dict.items() for call in calls]
+        responses = list(Multicall(calls, block_id=block, require_success=False)().values())
+        assert len(calls) == len(responses), f"There is an issue with your multicall. Must investigate. len(calls): {len(calls)}  len(reserves): {len(responses)}"
+
+        # Then we separate the results by input token and evaluate `routers_by_depth` logic with the results.
+        routers_by_depth = {}
+        done = 0
+        for i, calls in calls_dict.items():
+            start = done
+            end = start + len(calls)
+            reserves = responses[start:end]
+            routers_by_depth[i] = self._routers_by_depth_logic(token_addresses[i],reserves)
+            done = end
+
+        # Get prices for any token that has one
+        # TODO optimize this for speed
+        prices = Parallel(dop, 'threading')(delayed(self._get_price_from_routers)(token_addresses[i], routers, block) for i, routers in routers_by_depth.items())
+        assert len(token_addresses) == len(prices)
+        
+        return prices
+
+    def _get_price_from_routers(self, token: AnyAddressType, routers: Dict[UniswapRouterV2,str], block: Optional[Block] = None) -> Optional[UsdPrice]:
+        token = convert.to_address(token)
+        for router in routers:
+            price = router.get_price(token, block)
+            if price:
+                return price
 
 uniswap_multiplexer = UniswapMultiplexer()
