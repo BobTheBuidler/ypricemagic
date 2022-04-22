@@ -1,4 +1,5 @@
 import math
+from functools import lru_cache
 from itertools import cycle
 from typing import Optional
 
@@ -56,6 +57,7 @@ class UniswapV3(metaclass=Singleton):
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
 
+    @lru_cache(maxsize=None)
     def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if block and block < contract_creation_block(UNISWAP_V3_QUOTER):
             return None

@@ -69,7 +69,8 @@ class CToken(ERC20):
         underlying = self.has_method('underlying()(address)', return_response=True)
 
         # this will run for gas coin markets like cETH, crETH
-        if not underlying: underlying = EEE_ADDRESS
+        if not underlying:
+            underlying = EEE_ADDRESS
 
         return ERC20(underlying)
     

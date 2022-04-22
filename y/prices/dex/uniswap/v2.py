@@ -82,6 +82,7 @@ class UniswapPoolV2(ERC20):
         return self.tokens[1]
     
     @log(logger)
+    @lru_cache(maxsize=None)
     def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
         tvl = self.tvl(block=block)
         if tvl is not None:

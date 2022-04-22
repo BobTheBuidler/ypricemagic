@@ -1,5 +1,5 @@
 import logging
-from functools import cached_property
+from functools import cached_property, lru_cache
 from typing import List, Optional, Union
 
 from brownie import chain
@@ -45,6 +45,7 @@ class BalancerMultiplexer:
                 return UsdPrice(v.get_pool_price(token_address, block))
 
     @log(logger)
+    @lru_cache(maxsize=None)
     def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if self.is_balancer_pool(token_address):
             return self.get_pool_price(token_address, block=block)

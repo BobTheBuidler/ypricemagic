@@ -432,7 +432,7 @@ class CurveRegistry(metaclass=Singleton):
         return self.get_pool(token) is not None
     
     @log(logger)
-    @ttl_cache(maxsize=None, ttl=600)
+    @ttl_cache(maxsize=None)
     def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
         tvl = self.get_pool(token).get_tvl(block=block)
         if tvl is None:
@@ -471,6 +471,7 @@ class CurveRegistry(metaclass=Singleton):
         return virtual_price / 1e18
 
     @log(logger)
+    @lru_cache(maxsize=None)
     def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         try:
             pools = self.coin_to_pools[token_in]

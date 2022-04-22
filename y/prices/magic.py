@@ -1,11 +1,12 @@
 import logging
-from functools import lru_cache
 import os
+from functools import lru_cache
 from typing import Iterable, List, Optional
 
 from brownie import chain
 from brownie.exceptions import ContractNotFound
 from joblib.parallel import Parallel, delayed
+from multicall import Call, Multicall
 from tqdm import tqdm
 from y import convert
 from y.constants import WRAPPED_GAS_COIN
@@ -19,6 +20,7 @@ from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
 from y.prices.dex.genericamm import generic_amm
 from y.prices.dex.uniswap import uniswap_multiplexer
+from y.prices.dex.uniswap.uniswap import uniswap_multiplexer
 from y.prices.dex.uniswap.v3 import uniswap_v3
 from y.prices.eth_derivs import creth, wsteth
 from y.prices.lending import ib
@@ -73,6 +75,9 @@ def get_prices(
     dop: int = int(os.environ.get('DOP',4))
     ) -> List[Optional[float]]:
     '''
+    A more optimized way to fetch prices for multiple assets at the same block.
+
+    # NOTE silent kwarg is currently disabled.
     In every case:
     - if `silent == True`, tqdm will not be used
     - if `silent == False`, tqdm will be used
@@ -82,10 +87,73 @@ def get_prices(
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
 
-    return Parallel(dop, 'threading')(
-        delayed(get_price)(token_address, block, fail_to_None=fail_to_None, silent=silent)
-        for token_address in (token_addresses if silent else tqdm(token_addresses))
-    )
+    if block is None:
+        block = chain.height
+
+    token_addresses = [convert.to_address(token) for token in token_addresses]
+
+    # First we exit early for known token subtypes. There are too many of these to optimize right now.
+    early_exits = Parallel(dop,'threading')(delayed(_exit_early_for_known_tokens)(token, block) for token in tqdm(token_addresses))
+    early_exits = {i:price for i, price in enumerate(early_exits) if price is not None}
+
+    # Now lets try a few other things, some optimized for speed and some optimized for shit
+
+    ## CURVE
+    if curve:
+        try_curve = [i for i in range(len(token_addresses)) if i not in early_exits]
+        prices = Parallel(dop, 'threading')(delayed(curve.get_price_for_underlying)(token_addresses[i], block) for i  in tqdm(try_curve))
+        for i, price in zip(try_curve, prices):
+            if price is not None:
+                early_exits[i] = price
+
+    ## UNISWAP V3
+    if uniswap_v3:
+        try_uni_v3 = [i for i in range(len(token_addresses)) if i not in early_exits]
+        prices = Parallel(dop, 'threading')(delayed(uniswap_v3.get_price)(token_addresses[i], block) for i in tqdm(try_uni_v3))
+        for i, price in zip(try_uni_v3, prices):
+            if price is not None:
+                early_exits[i] = price
+
+    ## UNISWAP V2
+    try_uni_v2 = [i for i in range(len(token_addresses)) if i not in early_exits]
+    prices = uniswap_multiplexer._get_prices([token_addresses[i] for i in try_uni_v2], block, dop=dop)
+    for i, price in zip(try_uni_v2, prices):
+        if price:
+            early_exits[i] = price
+
+    ## UNISWAP V1
+    if chain.id == Network.Mainnet:
+        try_uni_v1 = [i for i in range(len(token_addresses)) if i not in early_exits]
+        prices = Parallel(dop, 'threading')(delayed(uniswap_multiplexer.get_price_v1)(token_addresses[i], block) for i in tqdm(try_uni_v1))
+        for i, price in zip(try_uni_v1, prices):
+            if price:
+                early_exits[i] = price
+    
+    ## BALANCER
+    try_balancer = [i for i in range(len(token_addresses)) if i not in early_exits]
+    prices = Parallel(dop, 'threading')(delayed(balancer_multiplexer.get_price)(token_addresses[i], block) for i in tqdm(try_balancer))
+    for i, price in zip(try_balancer, prices):
+        if price:
+            early_exits[i] = price
+    
+    # Do we need to raise a PriceError?
+    if not fail_to_None:
+        for i in range(len(token_addresses)):
+            if i not in early_exits:
+                raise PriceError('dev: fill this in with better deets')
+    
+    # Fill in missing prices with Nones.
+    for i in range(len(token_addresses)):
+        if i not in early_exits:
+            early_exits[i] = None
+    
+    # Sense check results.
+    for i, price in early_exits.items():
+        if price is not None:
+            token = token_addresses[i]
+            _sense_check(token, price)
+
+    return [early_exits[i] for i in sorted(early_exits.keys())]
 
 
 @lru_cache(maxsize=None)
