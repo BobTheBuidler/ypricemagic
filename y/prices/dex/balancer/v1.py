@@ -3,6 +3,7 @@ from typing import Dict, List, Optional, Tuple
 
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
+from brownie.exceptions import VirtualMachineError
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.constants import dai, usdc, wbtc, weth
@@ -105,6 +106,7 @@ class BalancerV1(metaclass=Singleton):
         scale: int = 1,
         block: Optional[Block] = None
         ) -> Tuple[EthAddress, int]:
+
         output = self.exchange_proxy.viewSplitExactIn(
             token_in, token_out, 10 ** _decimals(token_in) * scale, 32 # NOTE: 32 is max
             , block_identifier = block
@@ -120,16 +122,16 @@ class BalancerV1(metaclass=Singleton):
         ) -> Tuple[EthAddress,int]:
         try:
             out, totalOutput = self.check_liquidity_against(token_in, weth, block=block)
-        except ValueError:
+        except (ValueError, VirtualMachineError):
             try:
                 out, totalOutput = self.check_liquidity_against(token_in, dai, block=block)
-            except ValueError:
+            except (ValueError, VirtualMachineError):
                 try:
                     out, totalOutput = self.check_liquidity_against(token_in, usdc, block=block)
-                except ValueError:
+                except (ValueError, VirtualMachineError):
                     try:
                         out, totalOutput = self.check_liquidity_against(token_in, wbtc, block=block)
-                    except ValueError:
+                    except (ValueError, VirtualMachineError):
                         out = None
                         totalOutput = None
         return out, totalOutput
