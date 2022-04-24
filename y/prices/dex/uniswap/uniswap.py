@@ -1,5 +1,6 @@
 import logging
 import os
+import threading
 from typing import Dict, List, Optional, Tuple
 
 from brownie import chain
@@ -34,6 +35,7 @@ class UniswapMultiplexer:
                     raise
         self.factories = [UNISWAPS[name]['factory'] for name in UNISWAPS]
         self.v1 = UniswapV1()
+        self._uid_lock = threading.Lock()
 
     @log(logger)
     def is_uniswap_pool(self, token_address: AnyAddressType) -> bool:
@@ -125,11 +127,12 @@ class UniswapMultiplexer:
         return {router: pool for balance in sorted(routers_by_depth, reverse=True) for router, pool in routers_by_depth[balance].items()}
 
     def _next_uid(self) -> str:
-        try:
-            self._uid += 1
-        except AttributeError:
-            self._uid = 0
-        return f"call_{self._uid}"
+        with self._uid_lock:
+            try:
+                self._last_uid += 1
+            except AttributeError:
+                self._last_uid = 0
+            return f"call_{self._last_uid}"
 
     def _get_prices(
         self,
