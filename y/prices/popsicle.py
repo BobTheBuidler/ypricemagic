@@ -8,6 +8,7 @@ from y.classes.common import WeiBalance
 from y.contracts import has_methods
 from y.datatypes import UsdPrice, UsdValue
 from y.decorators import log
+from y.exceptions import call_reverted
 from y.typing import AnyAddressType, Block
 from y.utils.raw_calls import _totalSupplyReadable
 
@@ -44,7 +45,9 @@ def get_balances(token: AnyAddressType, block: Optional[Block] = None) -> Option
     try:
         token0, token1, (balance0, balance1) = Multicall(calls, block_id=block)().values()
     except ValueError as e:
-        if str(e) == "not enough values to unpack (expected 3, got 2)":
+        if call_reverted(e):
+            return None
+        elif str(e) == "not enough values to unpack (expected 3, got 2)":
             # TODO determine if this is regular behavior when no tvl in pool or if this is bug to fix
             return None
         raise
