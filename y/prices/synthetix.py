@@ -62,7 +62,7 @@ class Synthetix(metaclass=Singleton):
         if synthetix.get_currency_key(token):
             return True
         if has_method(token, 'target()(address)'):
-            target = Call(token.address, 'target()(address)')()
+            target = Call(token, 'target()(address)')()
             return target in synthetix.synths and Call(target, 'proxy()(address)')() == token
         return False
 
