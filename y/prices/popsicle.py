@@ -44,7 +44,7 @@ def get_balances(token: AnyAddressType, block: Optional[Block] = None) -> Option
     calls = [Call(address, method, [[method,None]]) for method in methods]
     try:
         token0, token1, (balance0, balance1) = Multicall(calls, block_id=block)().values()
-    except ValueError as e:
+    except Exception as e:
         if call_reverted(e):
             return None
         elif str(e) == "not enough values to unpack (expected 3, got 2)":
