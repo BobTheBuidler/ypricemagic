@@ -58,7 +58,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         try:
-            if get_code(address, mid):
+            if web3.eth.get_code(address, mid):
                 hi = mid
             else:
                 lo = mid
@@ -155,7 +155,7 @@ class Contract(brownie.Contract):
         return build_name(self.address, return_None_on_failure=return_None_on_failure)
     
     def get_code(self, block: Optional[Block] = None) -> HexBytes:
-        return get_code(self.address, block=block)
+        return web.eth.get_code(self.address, block=block)
 
 
 @yLazyLogger(logger)
