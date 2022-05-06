@@ -7,7 +7,7 @@ from y.classes.common import ERC20
 from y.constants import WRAPPED_GAS_COIN, wbtc
 from y.exceptions import NoProxyImplementation, call_reverted
 
-TOKENS = STABLECOINS + [WRAPPED_GAS_COIN, wbtc.address]
+TOKENS = list(STABLECOINS) + [WRAPPED_GAS_COIN, wbtc.address]
 
 TOKENS_BY_BLOCK = [
     (token, block)
