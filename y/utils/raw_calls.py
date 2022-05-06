@@ -16,8 +16,6 @@ from y.networks import Network
 from y.typing import Address, AddressOrContract, Block
 from y.utils.cache import memory
 
-from multicall import Call
-
 logger = logging.getLogger(__name__)
 
 """
