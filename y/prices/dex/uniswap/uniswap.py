@@ -9,7 +9,6 @@ from joblib import Parallel, delayed
 from multicall import Call, Multicall
 from y import convert
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.exceptions import contract_not_verified
 from y.networks import Network
 from y.prices.dex.uniswap.v1 import UniswapV1
@@ -17,7 +16,7 @@ from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapPoolV2,
                                      UniswapRouterV2)
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.typing import Address, AnyAddressType, Block
-from y.utils.logging import gh_issue_request
+from y.utils.logging import gh_issue_request, yLazyLogger
 from y.utils.multicall import multicall_same_func_no_input
 
 logger = logging.getLogger(__name__)
@@ -37,7 +36,7 @@ class UniswapMultiplexer:
         self.v1 = UniswapV1()
         self._uid_lock = threading.Lock()
 
-    @log(logger)
+    @yLazyLogger(logger)
     def is_uniswap_pool(self, token_address: AnyAddressType) -> bool:
         token_address = convert.to_address(token_address)
         try:
@@ -50,17 +49,17 @@ class UniswapMultiplexer:
 
         except NotAUniswapV2Pool: return False
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price_v1(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         return self.v1.get_price(token_address, block)
     
-    @log(logger)
+    @yLazyLogger(logger)
     @ttl_cache(ttl=600)
     def lp_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         """ Get Uniswap/Sushiswap LP token price. """
         return UniswapPoolV2(token_address).get_price(block=block)
     
-    @log(logger)
+    @yLazyLogger(logger)
     @ttl_cache(ttl=36000)
     def get_price(self, token_in: AnyAddressType, block: Optional[Block] = None, protocol: Optional[str] = None) -> Optional[UsdPrice]:
         """
@@ -85,7 +84,7 @@ class UniswapMultiplexer:
         return None
     
 
-    @log(logger)
+    @yLazyLogger(logger)
     def deepest_router(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UniswapRouterV2]:
         token_in = convert.to_address(token_in)
 
@@ -94,7 +93,7 @@ class UniswapMultiplexer:
         return None
 
 
-    @log(logger)
+    @yLazyLogger(logger)
     def routers_by_depth(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least

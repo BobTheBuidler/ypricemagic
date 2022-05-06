@@ -7,11 +7,11 @@ from y import Network
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
 from y.typing import AnyAddressType, Block
 from y.utils.cache import memory
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -37,7 +37,7 @@ share_price_methods = [
     'exchangeRate()(uint)'
 ]
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def is_yearn_vault(token: AnyAddressType) -> bool:
     # Yearn-like contracts can use these formats
@@ -61,7 +61,7 @@ def is_yearn_vault(token: AnyAddressType) -> bool:
 
     return result
 
-@log(logger)
+@yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return YearnInspiredVault(token).price(block=block)
 
@@ -77,7 +77,7 @@ class YearnInspiredVault(ERC20):
             return f"<YearnInspiredVault {self.symbol} '{self.address}'>"
     
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def underlying(self) -> ERC20:
         # special cases
         if chain.id == Network.Arbitrum and self.address == '0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7':
@@ -105,7 +105,7 @@ class YearnInspiredVault(ERC20):
         if underlying: return ERC20(underlying)
         else: raise CantFetchParam(f'underlying for {self.__repr__()}')
 
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def share_price(self, block: Optional[Block] = None) -> Optional[float]:
         method, share_price = probe(self.address, share_price_methods, block=block, return_method=True)
@@ -131,7 +131,7 @@ class YearnInspiredVault(ERC20):
         else:
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def price(self, block: Optional[Block] = None) -> UsdPrice:
         return UsdPrice(self.share_price(block=block) * self.underlying.price(block=block))

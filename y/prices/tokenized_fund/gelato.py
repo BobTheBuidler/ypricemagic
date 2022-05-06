@@ -6,18 +6,18 @@ import y.prices.magic
 from y import convert
 from y.contracts import has_methods
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.typing import AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals, _totalSupplyReadable, raw_call
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache
 def is_gelato_pool(token_address: AnyAddressType) -> bool:
     return has_methods(token_address, ['gelatoBalance0()(uint)','gelatoBalance1()(uint)'])
 
-@log(logger)
+@yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     token0 = raw_call(address,'token0()',block=block,output='address')

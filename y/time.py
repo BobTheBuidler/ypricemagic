@@ -2,14 +2,14 @@ import datetime
 import logging
 
 from brownie import chain, web3
-from y.decorators import log
 from y.utils.cache import memory
 from y.utils.client import get_ethereum_client
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache() 
 def get_block_timestamp(height: int) -> int:
     client = get_ethereum_client()
@@ -20,7 +20,7 @@ def get_block_timestamp(height: int) -> int:
         return chain[height].timestamp
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache() 
 def last_block_on_date(date_string: str) -> int:
     logger.debug('last block on date %d', date_string)

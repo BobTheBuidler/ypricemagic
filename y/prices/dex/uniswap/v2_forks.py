@@ -4,9 +4,9 @@ from typing import Dict, List
 
 from brownie import chain
 from y.constants import dai, usdc, usdt, wbtc, weth
-from y.decorators import log
 from y.networks import Network
 from y.typing import Address
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -124,7 +124,7 @@ SPECIAL_PATHS = {
     },
 }.get(chain.id, {})
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache
 def special_paths(router_address: str) -> Dict[str,Dict[Address,List[Address]]]:
     protocol = ROUTER_TO_PROTOCOL[router_address]

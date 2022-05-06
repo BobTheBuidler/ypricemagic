@@ -2,11 +2,11 @@ import logging
 
 from brownie import web3
 from cachetools.func import lru_cache
-from y.decorators import log
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache(1)
 def get_ethereum_client() -> str:
     client = web3.clientVersion

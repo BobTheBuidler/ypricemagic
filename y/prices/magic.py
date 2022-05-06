@@ -11,7 +11,6 @@ from tqdm import tqdm
 from y import convert
 from y.constants import WRAPPED_GAS_COIN
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
 from y.prices import convex, one_to_one, popsicle, yearn
@@ -33,11 +32,12 @@ from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
 from y.typing import AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _symbol
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
+@yLazyLogger(logger)
 def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
@@ -199,7 +199,7 @@ def _get_price(
     return price
 
 
-@log(logger)
+@yLazyLogger(logger)
 def _exit_early_for_known_tokens(
     token_address: str,
     block: Block

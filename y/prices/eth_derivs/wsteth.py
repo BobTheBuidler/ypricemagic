@@ -5,10 +5,10 @@ from brownie import chain
 from y import convert
 from y.constants import weth
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.networks import Network
 from y.prices import magic
 from y.typing import AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -22,14 +22,14 @@ class wstEth:
         except KeyError:
             self.address = None
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         share_price = raw_call(self.address, 'stEthPerToken()', output='int', block=block) / 1e18
         return UsdPrice(share_price * magic.get_price(weth, block))
 
 wsteth = wstEth()
 
-@log(logger)
+@yLazyLogger(logger)
 def is_wsteth(address: AnyAddressType) -> bool:
     if chain.id != Network.Mainnet:
         return False

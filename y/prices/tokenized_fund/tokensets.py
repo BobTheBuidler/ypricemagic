@@ -5,14 +5,14 @@ from typing import Any, List, Optional
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import has_methods
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.typing import AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache
 def is_token_set(token: AnyAddressType) -> bool:
     return any([
@@ -20,7 +20,7 @@ def is_token_set(token: AnyAddressType) -> bool:
         has_methods(token, {"getComponents()(address[])", "getModules()(address[])", "getPositions()(address[])"})
     ])
 
-@log(logger)
+@yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return TokenSet(token).get_price(block=block)
 

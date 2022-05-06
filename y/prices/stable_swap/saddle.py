@@ -7,11 +7,11 @@ from brownie import chain
 from y import convert
 from y.contracts import has_method, has_methods
 from y.datatypes import UsdPrice, UsdValue
-from y.decorators import log
 from y.erc20 import decimals
 from y.networks import Network
 from y.prices import magic
 from y.typing import Address, AddressOrContract, AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import _totalSupplyReadable
@@ -20,14 +20,14 @@ logger = logging.getLogger(__name__)
 
 
 @lru_cache
-@log(logger)
+@yLazyLogger(logger)
 def is_saddle_lp(token_address: AnyAddressType) -> bool:
     pool = get_pool(token_address)
     if pool: return has_methods(pool, ['getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'])
 
 
 @lru_cache
-@log(logger)
+@yLazyLogger(logger)
 def get_pool(token_address: AnyAddressType) -> Address:
     convert.to_address(token_address)
     if chain.id == Network.Mainnet:
@@ -41,12 +41,12 @@ def get_pool(token_address: AnyAddressType) -> Address:
     return pool or None
 
 
-@log(logger)
+@yLazyLogger(logger)
 def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
     return UsdPrice(tvl(token_address, block) / _totalSupplyReadable(token_address, block))
 
 
-@log(logger)
+@yLazyLogger(logger)
 def tvl(token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
     tokens = get_tokens(token_address, block)
     pool = get_pool(token_address)
@@ -58,7 +58,7 @@ def tvl(token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValu
     return UsdValue(sum(balance * price for balance, price in zip (balances, prices)))
 
 
-@log(logger)
+@yLazyLogger(logger)
 def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[Address]:
     pool = get_pool(token_address)
     response = multicall_same_func_same_contract_different_inputs(

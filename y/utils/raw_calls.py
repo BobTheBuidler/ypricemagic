@@ -8,13 +8,13 @@ from brownie.convert.datatypes import EthAddress
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 from y.contracts import Contract, proxy_implementation
-from y.decorators import log
 from y.exceptions import (CalldataPreparationError, ContractNotVerified,
                           NonStandardERC20, NoProxyImplementation,
                           call_reverted)
 from y.networks import Network
 from y.typing import Address, AddressOrContract, Block
 from y.utils.cache import memory
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 We use raw calls for commonly used functions because its much faster than using brownie Contracts
 """
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def _cached_call_fn(
     func: Callable,
@@ -37,7 +37,7 @@ def _cached_call_fn(
         return func(contract_address, required_arg, block=block)
 
 
-@log(logger)
+@yLazyLogger(logger)
 def decimals(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None, 
@@ -49,7 +49,7 @@ def decimals(
         return _cached_call_fn(_decimals,contract_address,block)
 
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache
 def _decimals(
     contract_address: AddressOrContract, 
@@ -132,7 +132,7 @@ def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache
 def _symbol(
     contract_address: AddressOrContract,
@@ -166,7 +166,7 @@ def _symbol(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache
 def _name(
     contract_address: AddressOrContract,
@@ -200,7 +200,7 @@ def _name(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def _totalSupply(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -233,7 +233,7 @@ def _totalSupply(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def _totalSupplyReadable(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -255,7 +255,7 @@ def _totalSupplyReadable(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def _balanceOf(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
@@ -290,7 +290,7 @@ def _balanceOf(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def _balanceOfReadable(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
@@ -315,7 +315,7 @@ def _balanceOfReadable(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def raw_call(
     contract_address: AddressOrContract, 
     method: str, 
@@ -350,7 +350,7 @@ def raw_call(
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def prepare_data(
     method, 
     inputs = Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract]
@@ -382,7 +382,7 @@ def prepare_data(
     '''
 
 
-@log(logger)
+@yLazyLogger(logger)
 def prepare_input(
     input: Union[
         bytes, # for bytes input

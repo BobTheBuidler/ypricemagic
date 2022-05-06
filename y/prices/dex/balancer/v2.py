@@ -11,10 +11,10 @@ from y.classes.singleton import Singleton
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN
 from y.contracts import build_name, has_methods
 from y.datatypes import UsdPrice, UsdValue
-from y.decorators import log
 from y.networks import Network
 from y.typing import Address, AnyAddressType, Block
 from y.utils.events import decode_logs, get_logs_asap
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
@@ -48,11 +48,11 @@ class BalancerV2Vault(ContractBase):
             # we need the contract cached so we can decode logs correctly
             self.contract
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
         return self.contract.getPoolTokens(pool_id, block_identifier = block)
 
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache(maxsize=10)
     def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
@@ -68,7 +68,7 @@ class BalancerV2Vault(ContractBase):
     def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         return fetch_multicall(*[[self.contract,'getPoolTokens',poolId] for poolId in poolids], block=block)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         pools = self.list_pools(block=block)
         poolids = (poolid for poolid, pool in pools.items() if _is_standard_pool(pool))
@@ -95,21 +95,21 @@ class BalancerV2Pool(ERC20):
         super().__init__(pool_address)
 
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def id(self) -> PoolId:
         return Call(self.address, ['getPoolId()(bytes32)'], [['id',PoolId]])()['id']
     
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def vault(self) -> BalancerV2Vault:
         vault = raw_call(self.address,'getVault()',output='address')
         return BalancerV2Vault(vault)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
         return UsdPrice(self.get_tvl(block=block) / self.total_supply_readable(block=block))
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> UsdValue:
         return UsdValue(
             sum(
@@ -119,11 +119,11 @@ class BalancerV2Pool(ERC20):
             )
         )
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         return {token: balance for token, balance in self.tokens(block=block).items()}
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         token_balances = self.get_balances(block=block)
         pool_token_info = list(zip(token_balances.keys(),token_balances.values(), self.weights(block=block)))
@@ -148,12 +148,12 @@ class BalancerV2Pool(ERC20):
         except UnboundLocalError:
             return None
     
-    @log(logger)
+    @yLazyLogger(logger)
     def tokens(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens, balances, lastChangedBlock = self.vault.get_pool_tokens(self.id, block=block)
         return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
-    @log(logger)
+    @yLazyLogger(logger)
     def weights(self, block: Optional[Block] = None) -> List[int]:
         try:
             return self.contract.getNormalizedWeights(block_identifier = block)
@@ -161,7 +161,7 @@ class BalancerV2Pool(ERC20):
             return [1 for _ in self.tokens(block=block).keys()]
 
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def _is_standard_pool(pool: EthAddress) -> bool:
     '''
@@ -180,22 +180,22 @@ class BalancerV2(metaclass=Singleton):
     def __str__(self) -> str:
         return "BalancerV2()"
 
-    @log(logger)
+    @yLazyLogger(logger)
     def is_pool(self, token_address: AnyAddressType) -> bool:
         methods = ['getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)']
         return has_methods(token_address, methods)
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return BalancerV2Pool(pool_address).get_pool_price(block=block)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_token_price(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         deepest_pool = self.deepest_pool_for(token_address, block=block)
         if deepest_pool is None: return
         return deepest_pool.get_token_price(token_address, block)
     
-    @log(logger)
+    @yLazyLogger(logger)
     def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         deepest_pools = {vault.address: vault.deepest_pool_for(token_address, block=block) for vault in self.vaults}
         deepest_pools = {vault: deepest_pool for vault,deepest_pool in deepest_pools.items() if deepest_pool is not None}

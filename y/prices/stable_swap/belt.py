@@ -5,9 +5,9 @@ from typing import Optional
 from brownie import chain
 from y import convert
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.networks import Network
 from y.typing import AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -20,13 +20,13 @@ POOLS = {
 }.get(chain.id, {})
 
 
-@log(logger)
+@yLazyLogger(logger)
 def is_belt_lp(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     return address in POOLS
 
 
-@log(logger)
+@yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     pool = POOLS[address]
