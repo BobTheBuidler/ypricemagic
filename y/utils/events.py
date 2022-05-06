@@ -13,7 +13,6 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 from y.contracts import contract_creation_block
-from y.decorators import auto_retry
 from y.typing import Address, Block
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
@@ -33,7 +32,6 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     return decoded
 
 
-@auto_retry
 def create_filter(address, topics=None):
     """
     Create a log filter for one or more contracts.
@@ -47,7 +45,6 @@ def create_filter(address, topics=None):
     return web3.eth.filter({"address": address, "fromBlock": start_block, "topics": topics})
 
 
-@auto_retry
 def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     logs = []
 
@@ -111,7 +108,6 @@ def _get_logs(
     return response
 
 
-@auto_retry
 def _get_logs_no_cache(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],

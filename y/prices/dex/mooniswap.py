@@ -3,13 +3,13 @@ import logging
 from typing import Optional
 
 from brownie import ZERO_ADDRESS, chain, multicall, web3
+from y import convert
 from y.constants import weth
 from y.contracts import Contract
 from y.datatypes import UsdPrice
 from y.decorators import log
-from y import convert
 from y.prices import magic
-from y.typing import Block, AnyAddressType
+from y.typing import AnyAddressType, Block
 from y.utils.cache import memory
 from y.utils.multicall import multicall2
 from y.utils.raw_calls import _decimals, _totalSupplyReadable

@@ -47,7 +47,7 @@ class UniswapPoolV2(ERC20):
             raise NotAUniswapV2Pool    
 
     def __repr__(self) -> str:
-        return f"<UniswapPoolV2 {self.symbol} {self.address}"    
+        return f"<UniswapPoolV2 {self.symbol} {self.address}>"    
     
     @cached_property
     @log(logger)

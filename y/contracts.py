@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Any, Callable, List, Optional, Union
 
 import brownie
+import eth_retry
 from brownie import chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.typing import AccountsType
@@ -11,7 +12,7 @@ from hexbytes import HexBytes
 from multicall import Call, Multicall
 
 from y import convert
-from y.decorators import auto_retry, log
+from y.decorators import log
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NodeNotSynced, call_reverted, contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
@@ -24,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 def Contract_erc20(address: AnyAddressType) -> brownie.Contract:
     address = convert.to_address(address)
-    return Contract.from_abi('ERC20',address,ERC20ABI)
+    return brownie.Contract.from_abi('ERC20',address,ERC20ABI)
 
 
 def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
@@ -84,7 +85,7 @@ _contract_lock = threading.Lock()
 
 @lru_cache
 class Contract(brownie.Contract):
-    @auto_retry
+    @eth_retry.auto_retry
     def __init__(
         self, 
         address: AnyAddressType, 
@@ -254,13 +255,5 @@ def build_name(address: AnyAddressType, return_None_on_failure: bool = False) ->
             raise
         return None
 
-@auto_retry
-def get_code(address: AnyAddressType, block: Optional[Block]) -> HexBytes:
-    '''
-    A simple wrapper on web3.eth.get_code that helps prevent issues with rate limiting on certain RPCs.
-    '''
-    return web3.eth.get_code(convert.to_address(address), block_identifier=block)
-
-@auto_retry
 def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
     return probe(address, ['implementation()(address)','target()(address)'], block)

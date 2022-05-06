@@ -1,6 +1,6 @@
 
 import pytest
-from tests.constants import STABLECOINS
+from tests.test_constants import STABLECOINS
 from tests.fixtures import mutate_address, mutate_contract
 from tests.prices.lending.test_aave import ATOKENS
 from tests.prices.lending.test_compound import CTOKENS
