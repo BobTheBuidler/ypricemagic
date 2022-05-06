@@ -9,10 +9,9 @@ from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
 from y.contracts import has_methods
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.networks import Network
 from y.typing import AddressOrContract, AnyAddressType, Block
-from y.utils.logging import gh_issue_request
+from y.utils.logging import gh_issue_request, yLazyLogger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -64,7 +63,7 @@ class CToken(ERC20):
         return UsdPrice(self.underlying_per_ctoken(block=block) * self.underlying.price(block=block))
     
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def underlying(self) -> ERC20:
         underlying = self.has_method('underlying()(address)', return_response=True)
 
@@ -74,12 +73,12 @@ class CToken(ERC20):
 
         return ERC20(underlying)
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         return self.exchange_rate(block=block) * 10 ** (self.decimals - self.underlying.decimals)
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def exchange_rate(self, block: Optional[Block] = None) -> float:
         method = 'exchangeRateCurrent()(uint)'
@@ -107,7 +106,7 @@ class Comptroller(ContractBase):
     def __repr__(self) -> str:
         return f"<Comptroller {self.key} '{self.address}'>"
 
-    @log(logger)
+    @yLazyLogger(logger)
     def __contains__(self, token_address: AnyAddressType) -> bool:
         return token_address in self.markets
     
@@ -130,7 +129,7 @@ class Compound(metaclass = Singleton):
             in TROLLERS.items()
         }
 
-    @log(logger)
+    @yLazyLogger(logger)
     def is_compound_market(self, token_address: AddressOrContract) -> bool:
         if any(token_address in troller for troller in self.trollers.values()):
             return True
@@ -140,15 +139,15 @@ class Compound(metaclass = Singleton):
         if result is True: self.__notify_if_unknown_comptroller(token_address)
         return result
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return CToken(token_address).get_price(block=block)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def __contains__(self, token_address: AddressOrContract) -> bool:
         return self.is_compound_market(token_address)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         comptroller = raw_call(token_address,'comptroller()',output='address')
         if comptroller not in self.trollers.values():

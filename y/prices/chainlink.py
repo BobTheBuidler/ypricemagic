@@ -9,11 +9,11 @@ from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.typing import Address, AnyAddressType, Block
 from y.utils.events import create_filter, decode_logs, get_logs_asap
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -138,7 +138,7 @@ class Chainlink(metaclass=Singleton):
             self.registry = Contract(registries[chain.id])
         
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def feeds(self) -> Dict[ERC20, str]:
         if chain.id in registries:
             try:
@@ -163,16 +163,16 @@ class Chainlink(metaclass=Singleton):
         logger.info(f'loaded {len(feeds)} feeds')
         return feeds
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_feed(self, asset: Address) -> Contract:
         return Contract(self.feeds[convert.to_address(asset)])
 
-    @log(logger)
+    @yLazyLogger(logger)
     def __contains__(self, asset: AnyAddressType) -> bool:
         return convert.to_address(asset) in self.feeds
 
     @ttl_cache(maxsize=None, ttl=600)
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:

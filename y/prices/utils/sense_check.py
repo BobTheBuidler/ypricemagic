@@ -3,9 +3,9 @@ import logging
 
 from brownie import chain
 from y.constants import wbtc, weth
-from y.decorators import log
 from y.networks import Network
 from y.prices.utils.buckets import check_bucket
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _symbol, raw_call
 
 logger = logging.getLogger(__name__)
@@ -136,7 +136,7 @@ def _sense_check(
     logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
 
-@log(logger)
+@yLazyLogger(logger)
 def _exit_sense_check(token_address: str) -> bool:
     '''
     For some token types, its normal to have a crazy high nominal price.

@@ -8,9 +8,9 @@ from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.networks import Network
 from y.typing import AddressOrContract, AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
@@ -53,13 +53,13 @@ class AaveMarketV1(AaveMarketBase):
     def __repr__(self) -> str:
         return f"<AaveMarketV1 '{self.address}'>"
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def underlying(self, token_address: AddressOrContract) -> ERC20:
         return ERC20(raw_call(token_address, 'underlyingAssetAddress()',output='address'))
     
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def atokens(self) -> List[ERC20]:
         reserves_data = Call(self.address, ['getReserves()(address[])'], [[self.address,None]])()[self.address]
         reserves_data = fetch_multicall(*[[self.contract, 'getReserveData', reserve] for reserve in reserves_data])
@@ -75,13 +75,13 @@ class AaveMarketV2(AaveMarketBase):
     def __repr__(self) -> str:
         return f"<AaveMarketV2 '{self.address}'>"
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def underlying(self, token_address: AddressOrContract) -> ERC20:
         return ERC20(raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address'))
 
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def atokens(self) -> List[ERC20]:
         reserves = Call(self.address, ['getReservesList()(address[])'], [[self.address,None]])()[self.address]
         calls = [
@@ -118,7 +118,7 @@ class AaveRegistry(metaclass = Singleton):
     def pools_v2(self) -> List[AaveMarketV2]:
         return [AaveMarketV2(pool) for pool in v2_pools]
     
-    @log(logger)
+    @yLazyLogger(logger)
     def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
         for pool in self.pools:
             if token_address in pool:
@@ -127,18 +127,18 @@ class AaveRegistry(metaclass = Singleton):
     def __contains__(self, __o: object) -> bool:
         return any(__o in pool for pool in self.pools)
 
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def is_atoken(self, token_address: AnyAddressType) -> bool:
         return token_address in self
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache
     def underlying(self, token_address: AddressOrContract) -> ERC20:
         pool = self.pool_for_atoken(token_address)
         return pool.underlying(token_address)
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         return self.underlying(token_address).price(block)
 

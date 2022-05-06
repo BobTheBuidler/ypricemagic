@@ -3,7 +3,6 @@ from functools import lru_cache
 
 from y import convert
 from y.constants import STABLECOINS
-from y.decorators import log
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -20,10 +19,11 @@ from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.typing import AnyAddressType
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
+@yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def check_bucket(
     token_address: AnyAddressType

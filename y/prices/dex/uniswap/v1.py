@@ -7,10 +7,10 @@ from brownie.exceptions import ContractNotFound
 from y.constants import usdc
 from y.contracts import Contract
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.typing import Address, Block
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ class UniswapV1:
     def __init__(self) -> None:
         self.factory = V1
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
         try:
             factory = Contract(self.factory)

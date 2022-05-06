@@ -9,10 +9,10 @@ from y.classes.singleton import Singleton
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, has_methods
 from y.datatypes import UsdPrice, UsdValue
-from y.decorators import log
 from y.networks import Network
 from y.prices import magic
 from y.typing import AddressOrContract, AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import fetch_multicall, multicall_decimals
 from y.utils.raw_calls import _decimals
 
@@ -27,19 +27,19 @@ class BalancerV1Pool(ERC20):
     def __init__(self, pool_address: AnyAddressType) -> None:
         super().__init__(pool_address)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def tokens(self, block: Optional[Block] = None) -> List[ERC20]:
         tokens = self.contract.getCurrentTokens(block_identifier=block)
         return [ERC20(token) for token in tokens]
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
         supply = self.total_supply_readable(block=block)
         if supply == 0:
             return 0
         return UsdPrice(self.get_tvl(block=block) / supply)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         token_balances = self.get_balances()
         good_balances = {
@@ -55,7 +55,7 @@ class BalancerV1Pool(ERC20):
             return good_value / len(good_balances) * len(token_balances)
         return None
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, float]:
         tokens = self.tokens(block=block)
         balances = fetch_multicall(*[[self.contract, "getBalance", token] for token in tokens], block=block)
@@ -71,16 +71,16 @@ class BalancerV1(metaclass=Singleton):
     def __str__(self) -> str:
         return "BalancerV1()"
     
-    @log(logger)
+    @yLazyLogger(logger)
     def is_pool(self, token_address: AnyAddressType) -> bool:
         return has_methods(token_address ,{"getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"})
     
-    @log(logger)
+    @yLazyLogger(logger)
     def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         assert self.is_pool(token_address)
         return BalancerV1Pool(token_address).get_pool_price(block=block)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         out, totalOutput = self.get_some_output(token_address, block=block)
         if out:
@@ -98,7 +98,7 @@ class BalancerV1(metaclass=Singleton):
         else:
             return
 
-    @log(logger)
+    @yLazyLogger(logger)
     def check_liquidity_against(
         self,
         token_in: AddressOrContract,
@@ -113,7 +113,7 @@ class BalancerV1(metaclass=Singleton):
         )['totalOutput']
         return token_out, output
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_some_output(
         self,
         token_in: AddressOrContract,

@@ -14,7 +14,7 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract
 from y.datatypes import UsdPrice
-from y.decorators import continue_on_revert, log
+from y.decorators import continue_on_revert
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           MessedUpBrownieContract, NonStandardERC20,
                           NotAUniswapV2Pool, call_reverted)
@@ -25,6 +25,7 @@ from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.typing import Address, AddressOrContract, AnyAddressType, Block
 from y.utils.events import decode_logs, get_logs_asap
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import (
     fetch_multicall, multicall_same_func_no_input,
     multicall_same_func_same_contract_different_inputs)
@@ -50,7 +51,7 @@ class UniswapPoolV2(ERC20):
         return f"<UniswapPoolV2 {self.symbol} {self.address}>"    
     
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def factory(self) -> Address:
         try: return raw_call(self.address, 'factory()', output='address')
         except ValueError as e:
@@ -66,22 +67,22 @@ class UniswapPoolV2(ERC20):
             else: raise
 
     @cached_property
-    @log(logger)
+    @yLazyLogger(logger)
     def tokens(self) -> Tuple[ERC20, ERC20]:
         methods = 'token0()(address)', 'token1()(address)'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
         token0, token1 = Multicall(calls)().values()
         return ERC20(token0), ERC20(token1)
     
-    @log(logger)
+    @yLazyLogger(logger)
     def token0(self) -> ERC20:
         return self.tokens[0]
 
-    @log(logger)
+    @yLazyLogger(logger)
     def token1(self) -> ERC20:
         return self.tokens[1]
     
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
         tvl = self.tvl(block=block)
@@ -89,12 +90,12 @@ class UniswapPoolV2(ERC20):
             return UsdPrice(tvl / self.total_supply_readable(block=block))
         return None
     
-    @log(logger)
+    @yLazyLogger(logger)
     def reserves(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
         reserves = Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block)()
         return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, self.tokens))
 
-    @log(logger)
+    @yLazyLogger(logger)
     def tvl(self, block: Optional[Block] = None) -> Optional[float]:
         prices = [token.price(block=block, return_None_on_failure=True) for token in self.tokens]
         vals = [
@@ -111,7 +112,7 @@ class UniswapPoolV2(ERC20):
         if vals[0] is not None and vals[1] is not None:
             return sum(vals)
 
-    @log(logger)
+    @yLazyLogger(logger)
     def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         calls = [Call(self.address, [method], [[method, None]]) for method in methods]
@@ -153,7 +154,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @ttl_cache(ttl=36000)
-    @log(logger)
+    @yLazyLogger(logger)
     def get_price(
         self,
         token_in: Address,
@@ -215,7 +216,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @continue_on_revert
-    @log(logger)
+    @yLazyLogger(logger)
     def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         if self._is_cached:
             try:
@@ -238,7 +239,7 @@ class UniswapRouterV2(ContractBase):
         else: return Call(self.address,['getAmountsOut(uint,address[])(uint[])',amount_in,path],[['amounts',None]],block_id=block)()['amounts']
 
 
-    @log(logger)
+    @yLazyLogger(logger)
     def smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
@@ -321,7 +322,7 @@ class UniswapRouterV2(ContractBase):
         except KeyError:
             return {}
 
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache(maxsize=500)
     def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
         token_address = convert.to_address(token_address)
@@ -351,7 +352,7 @@ class UniswapRouterV2(ContractBase):
         return deepest_pool
 
 
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache(maxsize=500)
     def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
@@ -373,7 +374,7 @@ class UniswapRouterV2(ContractBase):
         return deepest_stable_pool
 
 
-    @log(logger)
+    @yLazyLogger(logger)
     @lru_cache(maxsize=500)
     def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
         if _loop_count > 10:

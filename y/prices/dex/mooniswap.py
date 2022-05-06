@@ -7,10 +7,10 @@ from y import convert
 from y.constants import weth
 from y.contracts import Contract
 from y.datatypes import UsdPrice
-from y.decorators import log
 from y.prices import magic
 from y.typing import AnyAddressType, Block
 from y.utils.cache import memory
+from y.utils.logging import yLazyLogger
 from y.utils.multicall import multicall2
 from y.utils.raw_calls import _decimals, _totalSupplyReadable
 
@@ -26,7 +26,7 @@ else:
     router = None
     gas_coin = None
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def is_mooniswap_pool(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
@@ -34,7 +34,7 @@ def is_mooniswap_pool(token: AnyAddressType) -> bool:
         return False
     return router.isPool(address)
 
-@log(logger)
+@yLazyLogger(logger)
 def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     token = Contract(address)

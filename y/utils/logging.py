@@ -3,9 +3,12 @@ import inspect
 import logging
 from functools import lru_cache
 from typing import Any, List, Union
+from lazy_logging import LazyLoggerFactory
 
 from brownie import chain
 from y.networks import Network
+
+yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 
 logger = logging.getLogger(__name__)
 

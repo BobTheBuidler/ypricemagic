@@ -12,13 +12,13 @@ from hexbytes import HexBytes
 from multicall import Call, Multicall
 
 from y import convert
-from y.decorators import log
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NodeNotSynced, call_reverted, contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 from y.typing import Address, AnyAddressType, Block
 from y.utils.cache import memory
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
         return Contract_erc20(address)
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
@@ -58,7 +58,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         try:
-            if get_code(address, mid):
+            if web3.eth.get_code(address, mid):
                 hi = mid
             else:
                 lo = mid
@@ -155,10 +155,10 @@ class Contract(brownie.Contract):
         return build_name(self.address, return_None_on_failure=return_None_on_failure)
     
     def get_code(self, block: Optional[Block] = None) -> HexBytes:
-        return get_code(self.address, block=block)
+        return web.eth.get_code(self.address, block=block)
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def is_contract(address: AnyAddressType) -> bool:
     '''
@@ -169,7 +169,7 @@ def is_contract(address: AnyAddressType) -> bool:
     address = convert.to_address(address)
     return web3.eth.get_code(address) != '0x'
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
     '''
@@ -190,7 +190,7 @@ def has_method(address: Address, method: str, return_response: bool = False) -> 
         return response
     return True
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def has_methods(
     address: AnyAddressType, 
@@ -217,7 +217,7 @@ def has_methods(
         return False if func == all else any(has_method(address, method) for method in methods)
 
 
-@log(logger)
+@yLazyLogger(logger)
 def probe(
     address: AnyAddressType, 
     methods: List[str],
@@ -244,7 +244,7 @@ def probe(
     
 
 
-@log(logger)
+@yLazyLogger(logger)
 @memory.cache()
 def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
