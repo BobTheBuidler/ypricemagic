@@ -123,7 +123,12 @@ def _get_logs_no_cache(
         else:
             response = web3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
     except Exception as e:
-        if "Service Unavailable for url:" in str(e) or 'exceed maximum block range' in str(e):
+        errs = [
+            "Service Unavailable for url:",
+            "exceed maximum block range",
+            "block range is too wide",
+        ]
+        if any(err in str(e) for err in errs):
             logger.debug('your node is having trouble, breaking batch in half')
             batch_size = (end - start + 1)
             half_of_batch = batch_size // 2
