@@ -2,12 +2,13 @@ import logging
 from functools import cached_property, lru_cache
 from typing import List, Optional, Union
 
+from async_lru import alru_cache
 from brownie import chain
-from y.datatypes import UsdPrice
+from multicall.utils import await_awaitable, gather
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
-from y.typing import AnyAddressType, Block
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
@@ -36,19 +37,32 @@ class BalancerMultiplexer:
 
     @yLazyLogger(logger)
     def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
-        return any(v.is_pool(token_address) for v in self.versions)
+        return await_awaitable(self.is_balancer_pool_async(token_address))
+
+    @yLazyLogger(logger)
+    async def is_balancer_pool_async(self, token_address: AnyAddressType) -> bool:
+        return any(await gather([v.is_pool_async(token_address) for v in self.versions]))
     
     @yLazyLogger(logger)
-    def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        return await_awaitable(self.get_pool_price_async(token_address, block=block))
+
+    @yLazyLogger(logger)
+    async def get_pool_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         for v in self.versions:
-            if v.is_pool(token_address):
-                return UsdPrice(v.get_pool_price(token_address, block))
+            if await v.is_pool_async(token_address):
+                return UsdPrice(await v.get_pool_price_async(token_address, block))
 
     @yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        if self.is_balancer_pool(token_address):
-            return self.get_pool_price(token_address, block=block)
+        return await_awaitable(self.get_price_async(token_address, block=block))
+    
+    @yLazyLogger(logger)
+    @alru_cache(maxsize=None)
+    async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        if await self.is_balancer_pool_async(token_address):
+            return await self.get_pool_price_async(token_address, block=block)
 
         price = None    
         
@@ -56,13 +70,13 @@ class BalancerMultiplexer:
             (chain.id == Network.Mainnet and (not block or block > 12272146 + 100000))
             or (chain.id == Network.Fantom and (not block or block > 16896080))
             ): 
-            price = self.v2.get_token_price(token_address, block)
+            price = await self.v2.get_token_price_async(token_address, block)
             if price:
                 logger.debug(f"balancer v2 -> ${price}")
                 return price
 
         if not price and chain.id == Network.Mainnet:      
-            price = self.v1.get_token_price(token_address, block)
+            price = await self.v1.get_token_price_async(token_address, block)
             if price:
                 logger.debug(f"balancer v1 -> ${price}")
                 return price

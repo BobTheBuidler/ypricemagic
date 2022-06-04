@@ -2,14 +2,14 @@
 import logging
 from typing import Optional
 
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, multicall, web3
+from multicall.utils import await_awaitable
 from y import convert
 from y.constants import weth
 from y.contracts import Contract
-from y.datatypes import UsdPrice
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.prices import magic
-from y.typing import AnyAddressType, Block
-from y.utils.cache import memory
 from y.utils.logging import yLazyLogger
 from y.utils.multicall import multicall2
 from y.utils.raw_calls import _decimals, _totalSupplyReadable
@@ -27,12 +27,16 @@ else:
     gas_coin = None
 
 @yLazyLogger(logger)
-@memory.cache()
 def is_mooniswap_pool(token: AnyAddressType) -> bool:
+    return await_awaitable(is_mooniswap_pool_async(token))
+
+@yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_mooniswap_pool_async(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     if router is None:
         return False
-    return router.isPool(address)
+    return await router.isPool.coroutine(address)
 
 @yLazyLogger(logger)
 def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:

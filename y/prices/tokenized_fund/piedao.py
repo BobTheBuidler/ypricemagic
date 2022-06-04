@@ -1,15 +1,15 @@
 import logging
-from functools import lru_cache
 from typing import List, Optional
 
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS
 from multicall import Call
-from y.contracts import has_method
-from y.datatypes import UsdPrice, UsdValue
+from multicall.utils import await_awaitable
+from y.contracts import has_method_async
+from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.erc20 import decimals, totalSupplyReadable
 from y.exceptions import call_reverted
 from y.prices import magic
-from y.typing import Address, AnyAddressType, Block
 from y.utils.logging import yLazyLogger
 from y.utils.multicall import multicall_balanceOf
 from y.utils.raw_calls import raw_call
@@ -18,9 +18,13 @@ logger = logging.getLogger(__name__)
 
 
 @yLazyLogger(logger)
-@lru_cache
-def is_pie(token: AnyAddressType) -> bool:
-    return has_method(token, "getCap()(uint)")
+async def is_pie(token: AnyAddressType) -> bool:
+    return await_awaitable(is_pie_async(token))
+
+@yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_pie_async(token: AnyAddressType) -> bool:
+    return await has_method_async(token, "getCap()(uint)")
 
 @yLazyLogger(logger)
 def get_price(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:

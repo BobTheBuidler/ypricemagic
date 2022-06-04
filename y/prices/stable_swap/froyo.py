@@ -4,9 +4,8 @@ from typing import Any, Optional
 
 from brownie import chain
 from y import convert
-from y.datatypes import UsdPrice
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
-from y.typing import AnyAddressType, Block
 from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import raw_call
 

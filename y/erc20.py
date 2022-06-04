@@ -3,9 +3,10 @@ from typing import Any, Callable, KeysView, List, Optional, Tuple, Union
 
 import brownie
 from brownie.convert.datatypes import EthAddress
+from multicall.utils import await_awaitable
 
 from y.contracts import Contract
-from y.typing import Address, AddressOrContract, Block
+from y.datatypes import Address, AddressOrContract, Block
 from y.utils.multicall import multicall_decimals, multicall_totalSupply
 from y.utils.raw_calls import _decimals, _totalSupply
 
@@ -19,9 +20,19 @@ def decimals(
     block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ): 
+    return await_awaitable(
+        decimals_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    )
+
+
+async def decimals_async(
+    contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
+    block: Optional[Block] = None, 
+    return_None_on_failure: bool = False
+    ): 
 
     func = _choose_appropriate_fn(contract_address_or_addresses, _decimals, multicall_decimals)
-    return func(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    return await func(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
 
 
 def totalSupply(
@@ -29,12 +40,32 @@ def totalSupply(
     block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ):
+    return await_awaitable(
+        totalSupply_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    )
+
+
+async def totalSupply_async(
+    contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
+    block: Optional[Block] = None, 
+    return_None_on_failure: bool = False
+    ):
 
     func = _choose_appropriate_fn(contract_address_or_addresses, _totalSupply, multicall_totalSupply)
-    return func(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    return await func(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
 
 
 def totalSupplyReadable(
+    contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
+    block: Optional[Block] = None, 
+    return_None_on_failure: bool = False
+    ):
+    return await_awaitable(
+        totalSupplyReadable_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    )
+
+
+async def totalSupplyReadable_async(
     contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
     block: Optional[Block] = None, 
     return_None_on_failure: bool = False

@@ -3,12 +3,12 @@ import logging
 from typing import Optional
 
 from brownie import chain
+from multicall.utils import await_awaitable
 from y import convert
-from y.datatypes import UsdPrice
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
-from y.typing import AnyAddressType, Block
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import raw_call
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,11 @@ def is_belt_lp(token: AnyAddressType) -> bool:
 
 @yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    return await_awaitable(get_price_async(token, block=block))
+    
+@yLazyLogger(logger)
+async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     pool = POOLS[address]
-    return UsdPrice(raw_call(pool, 'get_virtual_price()', output='int', block=block) / 1e18)
+    virtual_price = await raw_call_async(pool, 'get_virtual_price()', output='int', block=block)
+    return UsdPrice(virtual_price / 1e18)
