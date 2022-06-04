@@ -1,6 +1,9 @@
+async_lru==1.0.3
+async_property==0.2.1
+bobs_lazy_logging==0.0.4
 cachetools>=4.1.1
-eth-brownie>=1.18.1
+dank_mids==0.0.7
+eth-brownie>=1.18.1,<1.19
+eth_retry>=0.1.1
 joblib>=1.0.1
-git+https://github.com/BobTheBuidler/multicall.py.git@a4464941c71b5d52a0efd4df1baf0f7de89dd05a
-eth_retry>=0.0.3
-bobs_lazy_logging>=0.0.2
+multicall>=0.5.1

@@ -1,22 +1,21 @@
 
 import logging
-from functools import lru_cache
 from typing import Optional
 
+from async_lru import alru_cache
 from y import convert
-from y.contracts import Contract, has_methods
-from y.datatypes import UsdPrice
+from y.contracts import Contract, has_methods_async
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.prices import magic
-from y.typing import AnyAddressType, Block
 from y.utils.logging import yLazyLogger
 from y.utils.multicall import fetch_multicall
 
 logger = logging.getLogger(__name__)
 
 @yLazyLogger(logger)
-@lru_cache
-def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
-    return has_methods(address, ['getPrice()((uint,uint))','mAsset()(address)'])
+@alru_cache(maxsize=None)
+async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
+    return await has_methods_async(address, ('getPrice()((uint,uint))','mAsset()(address)'))
 
 @yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:

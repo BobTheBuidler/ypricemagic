@@ -2,7 +2,7 @@
 from typing import Any, Dict
 
 from y import convert
-from y.typing import AnyAddressType
+from y.datatypes import AnyAddressType
 
 
 class Singleton(type):

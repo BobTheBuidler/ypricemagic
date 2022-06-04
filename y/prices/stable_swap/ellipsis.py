@@ -1,21 +1,25 @@
 
 import logging
-from functools import lru_cache
 from typing import Optional
 
-from y.contracts import Contract, has_methods
-from y.datatypes import UsdPrice
+from async_lru import alru_cache
+from multicall.utils import await_awaitable
+from y.contracts import Contract, has_methods_async
+from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.prices import magic
-from y.typing import AddressOrContract, AnyAddressType, Block
 from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals, _totalSupplyReadable, raw_call
 
 logger = logging.getLogger(__name__)
 
 @yLazyLogger(logger)
-@lru_cache
 def is_eps_rewards_pool(token_address: AnyAddressType) -> bool:
-    return has_methods(token_address, ['lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'])
+    return await_awaitable(is_eps_rewards_pool_async(token_address))
+
+@yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_eps_rewards_pool_async(token_address: AnyAddressType) -> bool:
+    return await has_methods_async(token_address, ('lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'))
 
 @yLazyLogger(logger)
 def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:

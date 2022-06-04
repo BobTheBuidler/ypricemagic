@@ -14,6 +14,7 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices
+from y.utils.dank_mids import dank_w3
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import _balanceOf as balanceOf
 from y.utils.raw_calls import _balanceOfReadable as balanceOfReadable

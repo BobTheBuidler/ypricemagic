@@ -1,20 +1,23 @@
 import logging
-from functools import lru_cache
 from typing import Any, Callable, Optional, Union
 
 import brownie
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, convert, web3
 from brownie.convert.datatypes import EthAddress
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 from y.contracts import Contract, proxy_implementation
+from y.datatypes import Address, AddressOrContract, Block
 from y.exceptions import (CalldataPreparationError, ContractNotVerified,
                           NonStandardERC20, NoProxyImplementation,
                           call_reverted)
 from y.networks import Network
-from y.typing import Address, AddressOrContract, Block
 from y.utils.cache import memory
+from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
+
+from multicall.utils import gather
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +26,8 @@ We use raw calls for commonly used functions because its much faster than using 
 """
 
 @yLazyLogger(logger)
-@lru_cache(maxsize=None)
-def _cached_call_fn(
+@alru_cache(maxsize=None)
+async def _cached_call_fn(
     func: Callable,
     contract_address: AddressOrContract, 
     # Only supports one required arg besides contract_address for now
@@ -32,26 +35,26 @@ def _cached_call_fn(
     required_arg = None,
     ) -> Any:
     if required_arg is None:
-        return func(contract_address, block=block)
+        return await func(contract_address, block=block)
     else:
-        return func(contract_address, required_arg, block=block)
+        return await func(contract_address, required_arg, block=block)
 
 
 @yLazyLogger(logger)
-def decimals(
+async def decimals(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ) -> int:
     if block is None or return_None_on_failure is True: 
-        return _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
+        return await _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
     else:
-        return _cached_call_fn(_decimals,contract_address,block)
+        return await _cached_call_fn(_decimals,contract_address,block)
 
 
 @yLazyLogger(logger)
-@lru_cache
-def _decimals(
+@alru_cache(maxsize=None)
+async def _decimals(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None, 
     return_None_on_failure: bool = False
@@ -61,12 +64,12 @@ def _decimals(
 
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
-    try: decimals = raw_call(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True)
+    try: decimals = await raw_call_async(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True)
     except OverflowError:
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch 
         # using the verified non standard abi as a fallback
-        try: decimals = Contract(contract_address).decimals(block_identifier=block)
+        try: decimals = await Contract(contract_address).decimals.coroutine(block_identifier=block)
         except ContractNotVerified:
             pass
         except AttributeError as e:
@@ -80,12 +83,12 @@ def _decimals(
         return decimals
 
     # method 2
-    try: decimals = raw_call(contract_address, "DECIMALS()", block=block, output='int', return_None_on_failure=True)
+    try: decimals = await raw_call_async(contract_address, "DECIMALS()", block=block, output='int', return_None_on_failure=True)
     except OverflowError: 
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
-        try: decimals = Contract(contract_address).DECIMALS(block_identifier=block)
+        try: decimals = await Contract(contract_address).DECIMALS.coroutine(block_identifier=block)
         except ContractNotVerified:
             pass
         except AttributeError as e:
@@ -99,12 +102,12 @@ def _decimals(
         return decimals
 
     # method 3
-    try: decimals = raw_call(contract_address, "getDecimals()", block=block, output='int', return_None_on_failure=True)
+    try: decimals = await raw_call_async(contract_address, "getDecimals()", block=block, output='int', return_None_on_failure=True)
     except OverflowError: 
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
-        try: decimals = Contract(contract_address).getDecimals(block_identifier=block)
+        try: decimals = await Contract(contract_address).getDecimals.coroutine(block_identifier=block)
         except ContractNotVerified:
             pass
         except AttributeError as e:
@@ -121,7 +124,7 @@ def _decimals(
     if return_None_on_failure:
         return None
 
-    if proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
         raise NoProxyImplementation(f"""
             Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
 
@@ -139,7 +142,7 @@ def _symbol(
     block: Optional[Block] = None,
     return_None_on_failure: bool = False
     ) -> Optional[str]:
-
+    
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
     symbol = raw_call(contract_address, "symbol()", block=block, output='str', return_None_on_failure=True)
@@ -151,14 +154,54 @@ def _symbol(
 
     # method 3
     symbol = raw_call(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
+    if symbol is not None:
+        return symbol
+
+    ''' # NOTE 
+    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+        raise NoProxyImplementation(f"""
+            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
+    '''
+
+    # we've failed to fetch
+    if return_None_on_failure:
+        return None
+    raise NonStandardERC20(f'''
+        Unable to fetch `symbol` for {contract_address} on {Network.printable()}
+        If the contract is verified, please check to see if it has a strangely named
+        `symbol` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+        with the contract address and correct method name so we can keep things going smoothly :)''')
+
+@yLazyLogger(logger)
+@alru_cache(maxsize=None)
+#@memory.cache
+async def _symbol_async(
+    contract_address: AddressOrContract,
+    block: Optional[Block] = None,
+    return_None_on_failure: bool = False
+    ) -> Optional[str]:
+
+    # method 1
+    # NOTE: this will almost always work, you will rarely proceed to further methods
+    symbol = await raw_call_async(contract_address, "symbol()", block=block, output='str', return_None_on_failure=True)
     if symbol is not None: return symbol
 
-    if proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+    # method 2
+    symbol = await raw_call_async(contract_address, "SYMBOL()", block=block, output='str', return_None_on_failure=True)
+    if symbol is not None: return symbol
+
+    # method 3
+    symbol = await raw_call_async(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
+    if symbol is not None:
+        return symbol
+
+    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
         raise NoProxyImplementation(f"""
             Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
 
     # we've failed to fetch
-    if return_None_on_failure: return None
+    if return_None_on_failure:
+        return None
     raise NonStandardERC20(f'''
         Unable to fetch `symbol` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
@@ -167,8 +210,9 @@ def _symbol(
 
 
 @yLazyLogger(logger)
-@memory.cache
-def _name(
+@alru_cache(maxsize=None)
+#@memory.cache
+async def _name(
     contract_address: AddressOrContract,
     block: Optional[Block] = None,
     return_None_on_failure: bool = False
@@ -176,23 +220,27 @@ def _name(
 
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
-    name = raw_call(contract_address, "name()", block=block, output='str', return_None_on_failure=True)
-    if name is not None: return name
+    name = await raw_call_async(contract_address, "name()", block=block, output='str', return_None_on_failure=True)
+    if name is not None:
+        return name
 
     # method 2
-    name = raw_call(contract_address, "NAME()", block=block, output='str', return_None_on_failure=True)
-    if name is not None: return name
+    name = await raw_call_async(contract_address, "NAME()", block=block, output='str', return_None_on_failure=True)
+    if name is not None:
+        return name
 
     # method 3
-    name = raw_call(contract_address, "getName()", block=block, output='str', return_None_on_failure=True)
-    if name is not None: return name
+    name = await raw_call_async(contract_address, "getName()", block=block, output='str', return_None_on_failure=True)
+    if name is not None:
+        return name
 
-    if proxy_implementation(contract_address, block) == ZERO_ADDRESS:
+    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
         raise NoProxyImplementation(f"""
             Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
 
     # we've failed to fetch
-    if return_None_on_failure: return None
+    if return_None_on_failure:
+        return None
     raise NonStandardERC20(f'''
         Unable to fetch `name` for {contract_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
@@ -201,19 +249,19 @@ def _name(
 
 
 @yLazyLogger(logger)
-def _totalSupply(
+async def _totalSupply(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
     return_None_on_failure: bool = False # TODO: implement this kwarg
     ) -> Optional[int]:
 
-    try: total_supply = raw_call(contract_address, "totalSupply()", block=block, output='int', return_None_on_failure=True)
+    try: total_supply = await raw_call_async(contract_address, "totalSupply()", block=block, output='int', return_None_on_failure=True)
     except OverflowError:
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch totalSupply 
         # using the verified non standard abi as a fallback
         try:
-            total_supply = Contract(contract_address).totalSupply(block_identifier=block)
+            total_supply = await Contract(contract_address).totalSupply.coroutine(block_identifier=block)
         except AttributeError as e:
             if "has no attribute 'totalSupply'" not in str(e):
                 raise
@@ -234,7 +282,7 @@ def _totalSupply(
 
 
 @yLazyLogger(logger)
-def _totalSupplyReadable(
+async def _totalSupplyReadable(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
     return_None_on_failure: bool = False
@@ -242,10 +290,13 @@ def _totalSupplyReadable(
 
     total_supply = _totalSupply(contract_address, block=block, return_None_on_failure=return_None_on_failure)
     decimals = _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
+    total_supply, decimals = await gather([total_supply, decimals])
 
-    if total_supply is not None and decimals is not None: return total_supply / 10 ** decimals
+    if total_supply is not None and decimals is not None:
+        return total_supply / 10 ** decimals
 
-    if total_supply is None and decimals is None and return_None_on_failure: return None
+    if total_supply is None and decimals is None and return_None_on_failure:
+        return None
 
     raise NonStandardERC20(f'''
         Unable to fetch `totalSupplyReadable` for {contract_address} on {Network.printable()}
@@ -256,7 +307,7 @@ def _totalSupplyReadable(
 
 
 @yLazyLogger(logger)
-def _balanceOf(
+async def _balanceOf(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -266,12 +317,12 @@ def _balanceOf(
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
     try:
-        balance = raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address, output='int', return_None_on_failure=True)
+        balance = await raw_call_async(call_address, "balanceOf(address)", block=block, inputs=input_address, output='int', return_None_on_failure=True)
     except OverflowError:
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch balanceOf 
         # using the verified non standard abi as a fallback
-        try: return Contract(call_address).balanceOf(input_address, block_identifier=block)
+        try: return await Contract(call_address).balanceOf.coroutine(input_address, block_identifier=block)
         except AttributeError as e:
             if "has no attribute 'balanceOf'" not in str(e):
                 raise
@@ -279,10 +330,12 @@ def _balanceOf(
             # maybe our cached contract definition is messed up. let's repull it
             balance = brownie.Contract.from_explorer(call_address).balanceOf(input_address, block_identifier=block)
     
-    if balance is not None: return balance
+    if balance is not None:
+        return balance
 
     # we've failed to fetch
-    if return_None_on_failure: return None
+    if return_None_on_failure:
+        return None
     raise NonStandardERC20(f'''
         Unable to fetch `balanceOf` for token: {call_address} holder: {input_address} on {Network.printable()}
         If the contract is verified, please check to see if it has a strangely named
@@ -291,7 +344,7 @@ def _balanceOf(
 
 
 @yLazyLogger(logger)
-def _balanceOfReadable(
+async def _balanceOfReadable(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -301,12 +354,15 @@ def _balanceOfReadable(
     # TODO _balanceOf return_None_on_failure
     balance = _balanceOf(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure)
     decimals = _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure)
-
-    if balance is not None and decimals is not None: return balance / 10 ** decimals
+    balance, decimals = await gather([balance, decimals])
+    if balance is not None and decimals is not None:
+        return balance / 10 ** decimals
 
     # we've failed to fetch
-    if return_None_on_failure: return None
-    else: raise NonStandardERC20(
+    if return_None_on_failure:
+        return None
+    else:
+        raise NonStandardERC20(
         f'''Unable to fetch `balanceOfReadable` for
         token: {call_address} holder: {input_address} on {Network.printable()}
         balanceOf: {balance} decimals: {decimals}
@@ -324,6 +380,37 @@ def raw_call(
     output: str = None,
     return_None_on_failure: bool = False
     ) -> Optional[Any]:
+
+    if type(contract_address) != str:
+        contract_address = str(contract_address)
+
+    data = {'to': convert.to_address(contract_address),'data': prepare_data(method,inputs)}
+
+    try: response = web3.eth.call(data,block_identifier=block)
+    except ValueError as e:
+        if return_None_on_failure is False:                 raise
+        if call_reverted(e):                                return None
+        if 'invalid opcode' in str(e):                      return None
+        else:                                               raise
+    
+    if output is None:                                      return response
+    elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
+    elif output == 'address':                               return convert.to_address(f'0x{response.hex()[-40:]}')
+    elif output in [int, 'int','uint','uint256']:           return convert.to_int(response)
+    elif output in [str, 'str']:                            return convert.to_string(response).replace('\x00','').strip()
+
+    else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
+
+
+@yLazyLogger(logger)
+async def raw_call_async(
+    contract_address: AddressOrContract, 
+    method: str, 
+    block: Optional[Block] = None, 
+    inputs = None, 
+    output: str = None,
+    return_None_on_failure: bool = False
+    ) -> Optional[Any]:
     '''
     call a contract with only address and method. Bypasses brownie Contract object formation to save time
     only works with 1 input, ie `balanceOf(address)` or `getPoolInfo(uint256)`
@@ -334,7 +421,7 @@ def raw_call(
 
     data = {'to': convert.to_address(contract_address),'data': prepare_data(method,inputs)}
 
-    try: response = web3.eth.call(data,block_identifier=block)
+    try: response = await dank_w3.eth.call(data,block_identifier=block)
     except ValueError as e:
         if return_None_on_failure is False:                 raise
         if call_reverted(e):                                return None

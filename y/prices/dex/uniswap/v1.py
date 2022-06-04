@@ -4,12 +4,12 @@ from typing import Optional
 
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
+from multicall.utils import await_awaitable
 from y.constants import usdc
 from y.contracts import Contract
-from y.datatypes import UsdPrice
-from y.exceptions import UnsupportedNetwork
+from y.datatypes import Address, Block, UsdPrice
+from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.networks import Network
-from y.typing import Address, Block
 from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals
 
@@ -25,6 +25,10 @@ class UniswapV1:
     
     @yLazyLogger(logger)
     def get_price(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
+        return await_awaitable(self.get_price_async(token_address, block=block))
+
+    @yLazyLogger(logger)
+    async def get_price_async(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
         try:
             factory = Contract(self.factory)
         except ValueError:
@@ -34,12 +38,12 @@ class UniswapV1:
             return None
         try:
             exchange = Contract(exchange)
-            eth_bought = exchange.getTokenToEthInputPrice(10 ** _decimals(token_address,block), block_identifier=block)
+            eth_bought = exchange.getTokenToEthInputPrice(10 ** await _decimals(token_address,block), block_identifier=block)
             exchange = Contract(factory.getExchange(usdc))
             usdc_bought = exchange.getEthToTokenInputPrice(eth_bought, block_identifier=block) / 1e6
             fees = 0.997 ** 2
             return UsdPrice(usdc_bought / fees)
-        except (ContractNotFound):
+        except (ContractNotFound, ContractNotVerified):
             pass
         except ValueError as e:
             if 'invalid jump destination' in str(e):

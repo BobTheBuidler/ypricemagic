@@ -2,7 +2,8 @@
 import brownie.convert
 from brownie.convert.datatypes import HexBytes
 
-from y.typing import AnyAddressType
+from y.datatypes import AnyAddressType
+
 
 def to_address(address: AnyAddressType) -> str:
     if type(address) == int:
