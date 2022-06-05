@@ -68,7 +68,7 @@ class TokenSet(ERC20):
         return await_awaitable(self.get_price_async(block=block))
     
     async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        total_supply = await self.total_supply_readable(block=block)
+        total_supply = await self.total_supply_readable_async(block=block)
         if total_supply == 0:
             return UsdPrice(0)
         return UsdPrice(sum(await gather([balance.value_usd_async for balance in self.balances(block=block)])))

@@ -118,15 +118,20 @@ class ERC20(ContractBase):
     async def _scale(self, block: Optional[Block] = None) -> int:
         return 10 ** await self._decimals(block=block)
 
+    def total_supply(self, block: Optional[Block] = None) -> int:
+        return await_awaitable(self.total_supply_async(block=block))
+
     @yLazyLogger(logger)
-    async def total_supply(self, block: Optional[Block] = None) -> int:
+    async def total_supply_async(self, block: Optional[Block] = None) -> int:
         return await totalSupply_async(self.address, block=block)
     
-    @yLazyLogger(logger)
-    async def total_supply_readable(self, block: Optional[Block] = None) -> float:
-        total_supply, scale = await gather([self.total_supply(block=block), self.scale])
-        return total_supply / scale
+    def total_supply_readable(self, block: Optional[Block] = None) -> float:
+        return await_awaitable(self.total_supply_readable_async(block=block))
 
+    @yLazyLogger(logger)
+    async def total_supply_readable_async(self, block: Optional[Block] = None) -> float:
+        total_supply, scale = await gather([self.total_supply_async(block=block), self.scale])
+        return total_supply / scale
 
     @yLazyLogger(logger)
     def price(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:

@@ -487,7 +487,7 @@ class CurveRegistry(metaclass=Singleton):
         tvl = await self.get_pool(token).get_tvl_async(block=block)
         if tvl is None:
             return None
-        return tvl / await ERC20(token).total_supply_readable(block)
+        return tvl / await ERC20(token).total_supply_readable_async(block)
 
     @yLazyLogger(logger)
     @lru_cache(maxsize=None)
