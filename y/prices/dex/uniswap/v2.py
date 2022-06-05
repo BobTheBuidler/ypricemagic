@@ -114,7 +114,7 @@ class UniswapPoolV2(ERC20):
     async def get_price_async(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
         tvl = await self.tvl_async(block=block)
         if tvl is not None:
-            return UsdPrice(tvl / await self.total_supply_readable(block=block))
+            return UsdPrice(tvl / await self.total_supply_readable_async(block=block))
         return None
     
     @yLazyLogger(logger)

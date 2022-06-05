@@ -33,7 +33,7 @@ class GenericAmm:
     async def get_price_async(self, lp_token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         tvl, total_supply = await gather([
             self.get_tvl_async(lp_token_address, block=block),
-            ERC20(lp_token_address).total_supply_readable(block=block),
+            ERC20(lp_token_address).total_supply_readable_async(block=block),
         ])
         if total_supply is None:
             return None

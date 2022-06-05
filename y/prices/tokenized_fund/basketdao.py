@@ -24,7 +24,7 @@ def get_price(address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
 async def get_price_async(address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
     balances, total_supply = await gather([
         Call(address, 'getAssetsAndBalances()(address[],uint[])',block_id=block).coroutine(),
-        ERC20(address).total_supply_readable(block=block),
+        ERC20(address).total_supply_readable_async(block=block),
     ])
 
     balances = [

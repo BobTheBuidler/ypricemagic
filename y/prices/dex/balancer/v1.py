@@ -44,7 +44,7 @@ class BalancerV1Pool(ERC20):
 
     @yLazyLogger(logger)
     async def get_pool_price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        supply = await self.total_supply_readable(block=block)
+        supply = await self.total_supply_readable_async(block=block)
         if supply == 0:
             return 0
         return UsdPrice(await self.get_tvl_async(block=block) / supply)
