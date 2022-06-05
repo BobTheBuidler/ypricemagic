@@ -45,8 +45,8 @@ force_false = {
     ],
 }.get(chain.id, [])
 
-@yLazyLogger(logger)
 @memory.cache()
+@yLazyLogger(logger)
 def is_yearn_vault(token: AnyAddressType) -> bool:
     return await_awaitable(is_yearn_vault_async(token))
 

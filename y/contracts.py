@@ -43,8 +43,8 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
         return Contract_erc20(address)
 
 
-@yLazyLogger(logger)
 @memory.cache()
+@yLazyLogger(logger)
 def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
@@ -173,8 +173,8 @@ class Contract(brownie.Contract):
         return web3.eth.get_code(self.address, block=block)
 
 
-@yLazyLogger(logger)
 @memory.cache()
+@yLazyLogger(logger)
 def is_contract(address: AnyAddressType) -> bool:
     '''
     Checks to see if the input address is a contract. Returns `True` if:
@@ -276,8 +276,8 @@ async def probe(
     
 
 
-@yLazyLogger(logger)
 @memory.cache()
+@yLazyLogger(logger)
 def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
         contract = Contract(address)
