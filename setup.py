@@ -19,7 +19,7 @@ setup(
         'async_property==0.2.1',
         'bobs_lazy_logging==0.0.4',
         'cachetools>=4.1.1',
-        'dank_mids==0.0.7',
+        'dank_mids==0.0.8',
         'eth-brownie>=1.18.1',
         'eth_retry>=0.1.0',
         'joblib>=1.0.1',
