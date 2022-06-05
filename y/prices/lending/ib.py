@@ -14,8 +14,8 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
 @memory.cache()
+@yLazyLogger(logger)
 def is_ib_token(token: AnyAddressType) -> bool:
     return await_awaitable(is_ib_token_async(token))
 

@@ -135,8 +135,8 @@ async def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@yLazyLogger(logger)
 @memory.cache
+@yLazyLogger(logger)
 def _symbol(
     contract_address: AddressOrContract,
     block: Optional[Block] = None,
