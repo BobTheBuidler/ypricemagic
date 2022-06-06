@@ -1,4 +1,5 @@
 
+import asyncio
 import logging
 import threading
 from functools import lru_cache
@@ -254,8 +255,8 @@ async def probe(
     return_method: bool = False
 ) -> Any:
     address = convert.to_address(address)
-    results = await gather([Call(address, [method], block_id=block).coroutine() for method in methods])
-    results = [(method, result) for method, result in results.items() if result is not None]
+    results = await asyncio.gather(*[Call(address, [method], block_id=block).coroutine() for method in methods], return_exceptions=True)
+    results = [(method, result) for method, result in zip(methods, results) if not isinstance(result, Exception)]
     assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
     if len(results) == 1:
         method, result = results[0]
