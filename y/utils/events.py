@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
@@ -52,7 +53,8 @@ def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_
         get_logs_asap_async(address, topics, from_block=from_block, to_block=to_block, verbose=verbose)
     )
 
-thread_pool_executor = ThreadPoolExecutor(max_workers=None)
+DOP = int(os.environ.get("DOP", 8))
+thread_pool_executor = ThreadPoolExecutor(max_workers=DOP)
 
 async def get_logs_asap_async(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     if from_block is None:
