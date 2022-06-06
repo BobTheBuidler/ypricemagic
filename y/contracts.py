@@ -12,7 +12,7 @@ from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.typing import AccountsType
 from dank_mids.brownie_patch import patch_contract
 from hexbytes import HexBytes
-from multicall import Call, Multicall
+from multicall import Call
 from multicall.utils import await_awaitable, gather
 
 from y import convert
@@ -232,9 +232,7 @@ async def has_methods_async(
     assert _func in [all, any], '`_func` must be either `any` or `all`'
 
     address = convert.to_address(address)
-    #calls = [Call(address, [method], [[method, None]]) for method in methods]
     try:
-        #response = (await Multicall(calls, require_success=False).coroutine()).values()
         return _func([
             False if call is None else True
             for call
@@ -256,9 +254,7 @@ async def probe(
     return_method: bool = False
 ) -> Any:
     address = convert.to_address(address)
-    calls = [Call(address, [method], [[method, None]]) for method in methods]
-    #results = await gather([Call(address, [method], [[method, None]]).coroutine() for method in methods])
-    results = await Multicall(calls, block_id=block, require_success=False).coroutine()
+    results = await gather([Call(address, [method], block_id=block).coroutine() for method in methods])
     results = [(method, result) for method, result in results.items() if result is not None]
     assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
     if len(results) == 1:
