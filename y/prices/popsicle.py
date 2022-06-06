@@ -3,7 +3,7 @@ from functools import lru_cache
 from typing import Optional, Tuple
 
 from async_lru import alru_cache
-from multicall import Call, Multicall
+from multicall import Call
 from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.common import WeiBalance
@@ -63,10 +63,8 @@ def get_balances(token: AnyAddressType, block: Optional[Block] = None) -> Option
 async def get_balances_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance,WeiBalance]]:
     address = convert.to_address(token)
     methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
-    calls = [Call(address, method, [[method,None]]) for method in methods]
     try:
-        results = await Multicall(calls, block_id=block).coroutine()
-        token0, token1, (balance0, balance1) = results.values()
+        token0, token1, (balance0, balance1) = await gather([Call(address, method, block_id=block).coroutine() for method in methods])
     except Exception as e:
         if call_reverted(e):
             return None

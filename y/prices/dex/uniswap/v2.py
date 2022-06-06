@@ -11,7 +11,7 @@ from async_property import async_cached_property
 from brownie import chain
 from brownie.exceptions import EventLookupError
 from cachetools.func import ttl_cache
-from multicall import Call, Multicall
+from multicall import Call
 from multicall.utils import await_awaitable, gather, raise_if_exception_in
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
@@ -32,8 +32,7 @@ from y.utils.events import (decode_logs, get_logs_asap_async,
                             thread_pool_executor)
 from y.utils.logging import yLazyLogger
 from y.utils.multicall import (
-    fetch_multicall, multicall_same_func_no_input_async,
-    multicall_same_func_same_contract_different_inputs_async)
+    fetch_multicall, multicall_same_func_same_contract_different_inputs_async)
 from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
@@ -174,12 +173,9 @@ class UniswapPoolV2(ERC20):
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         try:
             token0, token1, supply, reserves = await gather([
-                Call(self.address, [method],block_id=block).coroutine()
+                Call(self.address, [method], block_id=block).coroutine()
                 for method in methods
             ])
-
-            #Multicall(calls, block_id=block).coroutine()
-            #token0, token1, supply, reserves = responses.values()
         except Exception as e:
             if not call_reverted(e):
                 raise
@@ -412,10 +408,14 @@ class UniswapRouterV2(ContractBase):
             logger.debug(f'pools: {pools_your_node_couldnt_get}')
             pools_your_node_couldnt_get = await multicall_same_func_same_contract_different_inputs_async(
                 self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get])
-            calls = [Call(pool, ['token0()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
-            token0s = (await Multicall(calls).coroutine()).values()
-            calls = [Call(pool, ['token1()(address)'], [[pool,None]]) for pool in pools_your_node_couldnt_get]
-            token1s = (await Multicall(calls).coroutine()).values()
+            #calls = [Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]
+            #token0s = await gather(calls)
+            #calls = [Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]
+            #token1s = await gather(calls)
+            token0s, token1s = await gather([
+                gather([Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+                gather([Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get])
+            ])
             pools_your_node_couldnt_get = {
                 convert.to_address(pool): {
                     'token0':convert.to_address(token0),
@@ -468,7 +468,7 @@ class UniswapRouterV2(ContractBase):
         pools = await self.pools_for_token_async(token_address)
 
         try:
-            reserves = await multicall_same_func_no_input_async(pools, 'getReserves()((uint112,uint112,uint32))', block=block, return_None_on_failure=True)
+            reserves = await asyncio.gather(*[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools], return_exceptions=True)
         except Exception as e:
             if call_reverted(e):
                 return None
@@ -477,7 +477,7 @@ class UniswapRouterV2(ContractBase):
         deepest_pool = None
         deepest_pool_balance = 0
         for pool, reserves in zip(pools,reserves):
-            if reserves is None or pool in _ignore_pools:
+            if isinstance(reserves, Exception) or pool in _ignore_pools:
                 continue
             if token_address == (await self.pools_async)[pool]['token0']:
                 reserve = reserves[0]
@@ -503,12 +503,15 @@ class UniswapRouterV2(ContractBase):
             for pool, paired_with in (await self.pools_for_token_async(token_address)).items()
             if paired_with in STABLECOINS
         }
-        reserves = await multicall_same_func_no_input_async(pools.keys(), 'getReserves()((uint112,uint112,uint32))', block=block)
+        reserves = await asyncio.gather(
+            *[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools.keys()],
+            return_exceptions=True
+        )
 
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
         for pool, reserves in zip(pools, reserves):
-            if reserves is None:
+            if isinstance(reserves, Exception):
                 continue
             if token_address == (await self.pools_async)[pool]['token0']:
                 reserve = reserves[0]

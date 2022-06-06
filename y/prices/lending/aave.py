@@ -99,18 +99,16 @@ class AaveMarketV2(AaveMarketBase):
     @yLazyLogger(logger)
     def atokens(self) -> List[ERC20]:
         reserves = Call(self.address, ['getReservesList()(address[])'], [[self.address,None]])()[self.address]
-        calls = [
+        reserves_data = [
             Call(
                 self.address,
                 ['getReserveData(address)((uint256,uint128,uint128,uint128,uint128,uint128,uint40,address,address,address,address,uint8))',reserve],
-                [[reserve, None]]
             )()
             for reserve in reserves
         ]
 
         try:
-            #atokens = [ERC20(reserve_data[7]) for reserve_data in Multicall(calls)().values()]
-            atokens = [ERC20(reserve_data[7]) for response in calls for reserve, reserve_data in response.items()]
+            atokens = [ERC20(reserve_data[7]) for reserve_data in reserves_data]
             logger.info(f'loaded {len(atokens)} v2 atokens for {self.__repr__()}')
             return atokens
         except TypeError: # TODO figure out what to do about non verified aave markets
