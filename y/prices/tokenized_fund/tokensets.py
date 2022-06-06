@@ -39,9 +39,12 @@ class TokenSet(ERC20):
     def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         super().__init__(address, *args, **kwargs)
     
-    @lru_cache(maxsize=100)
     def components(self, block: Optional[Block] = None) -> List[ERC20]:
-        components = self.contract.getComponents(block_identifier = block)
+        return await_awaitable(self.components_async(block=block))
+
+    @alru_cache(maxsize=100)
+    async def components_async(self, block: Optional[Block] = None) -> List[ERC20]:
+        components = await self.contract.getComponents.coroutine(block_identifier = block)
         return [ERC20(component) for component in components]
     
     def balances(self, block: Optional[Block] = None) -> List[WeiBalance]:
@@ -52,17 +55,10 @@ class TokenSet(ERC20):
             balances = await self.contract.getUnits.coroutine(block_identifier = block)
         elif hasattr(self.contract, 'getTotalComponentRealUnits'):
             balances = await gather([
-                Call(self.address, ["getTotalComponentRealUnits(address)(uint)",component.address], [[component.address, None]], block_id=block).coroutine()
-                for component in self.components(block)
+                Call(self.address, ["getTotalComponentRealUnits(address)(uint)", component.address], block_id=block).coroutine()
+                for component in await self.components_async(block)
             ])
-            '''
-            balances = await multicall_same_func_same_contract_different_inputs_async(
-                self.address, 
-                "getTotalComponentRealUnits(address)(uint)", 
-                [component.address for component in self.components(block=block)
-            ])
-            '''
-        return [WeiBalance(balance, component, block=block) for component, balance in zip(self.components(block=block), balances)]
+        return [WeiBalance(balance, component, block=block) for component, balance in zip(await self.components_async(block=block), balances)]
 
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_async(block=block))
@@ -71,4 +67,4 @@ class TokenSet(ERC20):
         total_supply = await self.total_supply_readable_async(block=block)
         if total_supply == 0:
             return UsdPrice(0)
-        return UsdPrice(sum(await gather([balance.value_usd_async for balance in self.balances(block=block)])))
+        return UsdPrice(sum(await gather([balance.value_usd_async for balance in await self.balances_async(block=block)])))
