@@ -14,7 +14,7 @@ from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
 from y.utils.cache import memory
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import raw_call, raw_call_async
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -155,7 +155,7 @@ class YearnInspiredVault(ERC20):
             underlying = await self.underlying_async
             return share_price / await underlying.scale
             
-        elif await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
+        elif await raw_call_async(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
             return None
         
         else:

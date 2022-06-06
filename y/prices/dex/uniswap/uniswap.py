@@ -48,8 +48,8 @@ class UniswapMultiplexer:
             if is_pool:
                 factory = await pool.factory_async
                 if factory not in self.factories:
-                    gh_issue_request(f'UniClone Factory {pool.factory} is unknown to ypricemagic.', logger)
-                    self.factories.append(pool.factory)
+                    gh_issue_request(f'UniClone Factory {factory} is unknown to ypricemagic.', logger)
+                    self.factories.append(factory)
             return is_pool
         except NotAUniswapV2Pool:
             return False
