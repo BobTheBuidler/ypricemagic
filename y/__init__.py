@@ -3,6 +3,7 @@ import os
 from brownie import network
 
 from y import time
+from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, has_method, has_methods
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
@@ -13,7 +14,7 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
                           UnsupportedNetwork)
 from y.networks import Network
 from y.prices import magic
-from y.prices.magic import get_price, get_prices
+from y.prices.magic import get_price, get_prices, get_price_async, get_prices_async
 from y.utils.dank_mids import dank_w3
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import _balanceOf as balanceOf
