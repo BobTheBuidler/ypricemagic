@@ -3,7 +3,6 @@ import os
 from brownie import network
 
 from y import time
-from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, has_method, has_methods
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
