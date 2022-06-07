@@ -134,7 +134,7 @@ class UniswapMultiplexer:
 
         routers_by_depth = {}
         for router, pool, reserves in zip(pools_to_routers.values(), pools_to_routers.keys(), reserves):
-            if isinstance(reserves, Exception):
+            if reserves is None or isinstance(reserves, Exception):
                 continue
             if token_in == (await router.pools_async)[pool]['token0']:
                 routers_by_depth[reserves[0]] = {router: pool}
