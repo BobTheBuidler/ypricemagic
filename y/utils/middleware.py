@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 BATCH_SIZE = (
     2_000 if 'moralis' in web3.provider.endpoint_uri
+    else 2_000 if 'pokt' in web3.provider.endpoint_uri
     else 10_000
 )
 CACHED_CALLS = [
