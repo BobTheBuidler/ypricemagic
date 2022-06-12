@@ -225,7 +225,7 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
     elif bucket == 'popsicle':              price = await popsicle.get_price_async(token_address, block=block)
 
-    elif bucket == 'saddle':                price = saddle.get_price(token_address, block)
+    elif bucket == 'saddle':                price = await saddle.get_price_async(token_address, block)
     elif bucket == 'stable usd':            price = 1
     elif bucket == 'synthetix':             price = await synthetix.get_price_async(token_address, block)
 
