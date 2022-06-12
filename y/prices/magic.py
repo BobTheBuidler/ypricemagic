@@ -104,7 +104,7 @@ def get_prices(
     - if `fail_to_None == True`, ypricemagic will return `None` for that token
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
-    return await_awaitable(get_prices_async(token_addresses, block=block, fail_to_None=fail_to_None, silent=silent, dop=dop))
+    return await_awaitable(get_prices_async(token_addresses, block=block, fail_to_None=fail_to_None, silent=silent))
 
 async def get_prices_async(
     token_addresses: Iterable[AnyAddressType],
