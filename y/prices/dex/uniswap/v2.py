@@ -467,12 +467,20 @@ class UniswapRouterV2(ContractBase):
             return await self.deepest_stable_pool_async(token_address)
         pools = await self.pools_for_token_async(token_address)
 
-        try:
-            reserves = await asyncio.gather(*[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools], return_exceptions=True)
-        except Exception as e:
-            if call_reverted(e):
-                return None
-            raise
+        reserves = await asyncio.gather(*[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools], return_exceptions=True)
+
+        # DEVELOPMENT:
+        # some items in `reserves` will == None if the abi differs from the expected one.
+        async for i, (pool, reserve) in enumerate(zip(pools, reserves)):
+            if reserve is None or isinstance(i, Exception):
+                # TODO: Figure out which abi we should use for getReserves
+                try:
+                    pool = Contract(pool)
+                    reserves[i] = await pool.getReserves.coroutine(block_identifier=block)
+                    logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
+                except:
+                    logger.error(f'must debug getReserves for {pool}')
+                    continue
 
         deepest_pool = None
         deepest_pool_balance = 0
