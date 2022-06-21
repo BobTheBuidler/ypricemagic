@@ -222,7 +222,7 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == 'mstable feeder pool':   price = mstablefeederpool.get_price(token_address,block=block)
     elif bucket == 'one to one':            price = one_to_one.get_price(token_address, block)
-    elif bucket == 'piedao lp':             price = piedao.get_price(token_address, block=block)
+    elif bucket == 'piedao lp':             price = await piedao.get_price_async(token_address, block=block)
     elif bucket == 'popsicle':              price = await popsicle.get_price_async(token_address, block=block)
 
     elif bucket == 'saddle':                price = await saddle.get_price_async(token_address, block)
