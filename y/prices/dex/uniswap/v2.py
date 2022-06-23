@@ -28,7 +28,7 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
-from y.utils.aio import aenumerate
+from y.utils.aio import as_aiter
 from y.utils.events import (decode_logs, get_logs_asap_async,
                             thread_pool_executor)
 from y.utils.logging import yLazyLogger
@@ -472,7 +472,7 @@ class UniswapRouterV2(ContractBase):
 
         # DEVELOPMENT:
         # some items in `reserves` will == None if the abi differs from the expected one.
-        async for i, (pool, reserve) in aenumerate(zip(pools, reserves)):
+        async for i, (pool, reserve) in as_aiter(enumerate(zip(pools, reserves))):
             if reserve is None or isinstance(i, Exception):
                 # TODO: Figure out which abi we should use for getReserves
                 try:
