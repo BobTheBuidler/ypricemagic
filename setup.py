@@ -21,7 +21,7 @@ setup(
         'cachetools>=4.1.1',
         'dank_mids==0.0.11',
         'eth-brownie>=1.18.1',
-        'eth_retry>=0.1.0',
+        'eth_retry>=0.1.4',
         'joblib>=1.0.1',
     ],
     setup_requires=[
