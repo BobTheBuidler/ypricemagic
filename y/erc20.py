@@ -7,7 +7,7 @@ from multicall.utils import await_awaitable
 
 from y.contracts import Contract
 from y.datatypes import Address, AddressOrContract, Block
-from y.utils.multicall import multicall_decimals, multicall_totalSupply
+from y.utils.multicall import multicall_decimals_async, multicall_totalSupply
 from y.utils.raw_calls import _decimals, _totalSupply
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ async def decimals_async(
     return_None_on_failure: bool = False
     ): 
 
-    func = _choose_appropriate_fn(contract_address_or_addresses, _decimals, multicall_decimals)
+    func = _choose_appropriate_fn(contract_address_or_addresses, _decimals, multicall_decimals_async)
     return await func(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
 
 
