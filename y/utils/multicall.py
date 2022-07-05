@@ -141,13 +141,23 @@ def multicall_totalSupply(
     block: Optional[Block] = None,
     return_None_on_failure: bool = True
     ) -> List[int]:
+    return await_awaitable(
+        multicall_totalSupply_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
+    )
+
+@yLazyLogger(logger)
+async def multicall_totalSupply_async(
+    addresses: Iterable[AddressOrContract], 
+    block: Optional[Block] = None,
+    return_None_on_failure: bool = True
+    ) -> List[int]:
 
     try:
-        return multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block)
+        return await multicall_same_func_no_input_async(addresses, 'totalSupply()(uint256)', block=block)
     except (CannotHandleRequest,InsufficientDataBytes):
         pass
         
-    return [_totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
+    return [await _totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
 
 
 @yLazyLogger(logger)
