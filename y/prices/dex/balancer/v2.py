@@ -36,7 +36,7 @@ BALANCER_V2_VAULTS = {
 }.get(chain.id, [])
 
 
-class PoolId(int):
+class PoolId(bytes):
     def __init__(self, v: int) -> None:
         super().__init__()
 
@@ -129,24 +129,25 @@ class BalancerV2Pool(ERC20):
     @yLazyLogger(logger)
     async def get_pool_price_async(self, block: Optional[Block] = None) -> Awaitable[UsdPrice]:
         tvl, total_supply = await gather([
+            self.get_tvl_async(block=block),
             self.total_supply_readable_async(block=block),
-            self.vault.get_pool_tokens_async(self.id, block=block),
         ])
         return UsdPrice(tvl / total_supply)
 
-    @yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> UsdValue:
-        return UsdValue(
-            sum(
-                balance.readable * token.price(block=block)
-                for token, balance
-                in self.get_balances(block=block).items()
-            )
-        )
+        return await_awaitable(self.get_tvl_async(block=block))
+        
+    @yLazyLogger(logger)
+    async def get_tvl_async(self, block: Optional[Block] = None) -> Awaitable[UsdValue]:
+        balances = await self.get_balances_async(block=block)
+        return UsdValue(sum(await gather([balance.value_usd_async for balance in balances.values()])))
+
+    def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
+        return await_awaitable(self.get_balances_async(block=block))
 
     @yLazyLogger(logger)
-    def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
-        return {token: balance for token, balance in self.tokens(block=block).items()}
+    async def get_balances_async(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
+        return {token: balance for token, balance in (await self.tokens_async(block=block)).items()}
 
     @yLazyLogger(logger)
     def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
@@ -177,9 +178,12 @@ class BalancerV2Pool(ERC20):
         except UnboundLocalError:
             return None
     
-    @yLazyLogger(logger)
     def tokens(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
-        tokens, balances, lastChangedBlock = self.vault.get_pool_tokens(self.id, block=block)
+        return await_awaitable(self.tokens_async(block=block))
+
+    @yLazyLogger(logger)
+    async def tokens_async(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
+        tokens, balances, lastChangedBlock = await self.vault.get_pool_tokens_async(self.id, block=block)
         return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
     @yLazyLogger(logger)
