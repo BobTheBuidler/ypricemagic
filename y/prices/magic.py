@@ -218,7 +218,7 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == 'generic amm':           price = await generic_amm.get_price_async(token_address, block=block)
     elif bucket == 'ib token':              price = ib.get_price(token_address,block=block)
-    elif bucket == 'mooniswap lp':          price = mooniswap.get_pool_price(token_address, block=block)
+    elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price_async(token_address, block=block)
 
     elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price_async(token_address,block=block)
     elif bucket == 'one to one':            price = one_to_one.get_price(token_address, block)
