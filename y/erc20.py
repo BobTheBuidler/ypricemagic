@@ -3,17 +3,19 @@ from typing import Any, Callable, KeysView, List, Optional, Tuple, Union
 
 import brownie
 from brownie.convert.datatypes import EthAddress
-from multicall.utils import await_awaitable
+from multicall.utils import await_awaitable, gather
 
 from y.contracts import Contract
 from y.datatypes import Address, AddressOrContract, Block
-from y.utils.multicall import multicall_decimals_async, multicall_totalSupply, multicall_totalSupply_async
+from y.utils.multicall import (multicall_decimals_async, multicall_totalSupply,
+                               multicall_totalSupply_async)
 from y.utils.raw_calls import _decimals, _totalSupply
 
 logger = logging.getLogger(__name__)
 
 SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, Contract
 
+# These helpers can be used to fetch values for one or more tokens at once.
 
 def decimals(
     contract_address_or_addresses: Union[AddressOrContract,List[AddressOrContract],Tuple[AddressOrContract]],
@@ -71,8 +73,10 @@ async def totalSupplyReadable_async(
     return_None_on_failure: bool = False
     ):
 
-    token_supplys = totalSupply(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
-    token_decimals = decimals(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure)
+    token_supplys, token_decimals = await gather([
+        totalSupply_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure),
+        decimals_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure),
+    ])
 
     if type(token_supplys) == brownie.Wei: # if only fetching totalSupply for one token
         supply = token_supplys
