@@ -8,6 +8,7 @@ from brownie import chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import await_awaitable, raise_if_exception_in
 from y import convert
+from y.classes.common import ERC20
 from y.constants import WRAPPED_GAS_COIN
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError
@@ -31,7 +32,6 @@ from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils.buckets import check_bucket_async
 from y.prices.utils.sense_check import _sense_check
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import _symbol_async
 
 logger = logging.getLogger(__name__)
 
@@ -83,7 +83,7 @@ async def get_price_async(
     except (ContractNotFound, NonStandardERC20, RecursionError):
         if fail_to_None:
             return None
-        raise PriceError(f'could not fetch price for {await _symbol_async(token_address)} {token_address} on {Network.printable()}')
+        raise PriceError(f'could not fetch price for {await ERC20(token_address).symbol_async} {token_address} on {Network.printable()}')
 
 def get_prices(
     token_addresses: Iterable[AnyAddressType],
@@ -155,7 +155,10 @@ async def _get_price(
     silent: bool = False
     ) -> Optional[UsdPrice]:
 
-    symbol = await _symbol_async(token, return_None_on_failure=True)
+    try:
+        symbol = await ERC20(token).symbol_async
+    except NonStandardERC20:
+        symbol = None
     token_string = f"{symbol} {token}" if symbol else token
 
     logger.debug("-------------[ y ]-------------")

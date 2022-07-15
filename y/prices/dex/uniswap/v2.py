@@ -53,7 +53,10 @@ class UniswapPoolV2(ERC20):
             raise NotAUniswapV2Pool    
 
     def __repr__(self) -> str:
-        return f"<UniswapPoolV2 {self.symbol} {self.address}>"    
+        try:
+            return f"<UniswapPoolV2 {self.symbol} {self.address}>"  
+        except RuntimeError:
+            return f"<UniswapPoolV2 {self.address}>"  
     
     @cached_property
     @yLazyLogger(logger)
