@@ -17,7 +17,7 @@ from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
 
-from multicall.utils import gather
+from multicall.utils import await_awaitable, gather
 
 logger = logging.getLogger(__name__)
 
@@ -135,119 +135,6 @@ async def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@memory.cache
-@yLazyLogger(logger)
-def _symbol(
-    contract_address: AddressOrContract,
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = False
-    ) -> Optional[str]:
-    
-    # method 1
-    # NOTE: this will almost always work, you will rarely proceed to further methods
-    symbol = raw_call(contract_address, "symbol()", block=block, output='str', return_None_on_failure=True)
-    if symbol is not None: return symbol
-
-    # method 2
-    symbol = raw_call(contract_address, "SYMBOL()", block=block, output='str', return_None_on_failure=True)
-    if symbol is not None: return symbol
-
-    # method 3
-    symbol = raw_call(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
-    if symbol is not None:
-        return symbol
-
-    ''' # NOTE 
-    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
-        raise NoProxyImplementation(f"""
-            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
-    '''
-
-    # we've failed to fetch
-    if return_None_on_failure:
-        return None
-    raise NonStandardERC20(f'''
-        Unable to fetch `symbol` for {contract_address} on {Network.printable()}
-        If the contract is verified, please check to see if it has a strangely named
-        `symbol` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
-        with the contract address and correct method name so we can keep things going smoothly :)''')
-
-@yLazyLogger(logger)
-@alru_cache(maxsize=None)
-#@memory.cache
-async def _symbol_async(
-    contract_address: AddressOrContract,
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = False
-    ) -> Optional[str]:
-
-    # method 1
-    # NOTE: this will almost always work, you will rarely proceed to further methods
-    symbol = await raw_call_async(contract_address, "symbol()", block=block, output='str', return_None_on_failure=True)
-    if symbol is not None: return symbol
-
-    # method 2
-    symbol = await raw_call_async(contract_address, "SYMBOL()", block=block, output='str', return_None_on_failure=True)
-    if symbol is not None: return symbol
-
-    # method 3
-    symbol = await raw_call_async(contract_address, "getSymbol()", block=block, output='str', return_None_on_failure=True)
-    if symbol is not None:
-        return symbol
-
-    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
-        raise NoProxyImplementation(f"""
-            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
-
-    # we've failed to fetch
-    if return_None_on_failure:
-        return None
-    raise NonStandardERC20(f'''
-        Unable to fetch `symbol` for {contract_address} on {Network.printable()}
-        If the contract is verified, please check to see if it has a strangely named
-        `symbol` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
-        with the contract address and correct method name so we can keep things going smoothly :)''')
-
-
-@yLazyLogger(logger)
-@alru_cache(maxsize=None)
-#@memory.cache
-async def _name(
-    contract_address: AddressOrContract,
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = False
-    ) -> Optional[str]:
-
-    # method 1
-    # NOTE: this will almost always work, you will rarely proceed to further methods
-    name = await raw_call_async(contract_address, "name()", block=block, output='str', return_None_on_failure=True)
-    if name is not None:
-        return name
-
-    # method 2
-    name = await raw_call_async(contract_address, "NAME()", block=block, output='str', return_None_on_failure=True)
-    if name is not None:
-        return name
-
-    # method 3
-    name = await raw_call_async(contract_address, "getName()", block=block, output='str', return_None_on_failure=True)
-    if name is not None:
-        return name
-
-    if await proxy_implementation(contract_address, block) == ZERO_ADDRESS:
-        raise NoProxyImplementation(f"""
-            Contract {contract_address} is a proxy contract, and had no implementation at block {block}.""")
-
-    # we've failed to fetch
-    if return_None_on_failure:
-        return None
-    raise NonStandardERC20(f'''
-        Unable to fetch `name` for {contract_address} on {Network.printable()}
-        If the contract is verified, please check to see if it has a strangely named
-        `name` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
-        with the contract address and correct method name so we can keep things going smoothly :)''')
-
-
 @yLazyLogger(logger)
 async def _totalSupply(
     contract_address: AddressOrContract, 
@@ -305,9 +192,16 @@ async def _totalSupplyReadable(
         `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
+def balanceOf(
+    contract_address: AddressOrContract, 
+    address: Address, 
+    block: Optional[Block] = None,
+    return_None_on_failure: bool = False
+    ) -> Optional[int]:
+    return await_awaitable(balanceOf_async(contract_address, address, block=block, return_None_on_failure=return_None_on_failure))
 
 @yLazyLogger(logger)
-async def _balanceOf(
+async def balanceOf_async(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -352,7 +246,7 @@ async def _balanceOfReadable(
     ) -> Optional[float]:
 
     # TODO _balanceOf return_None_on_failure
-    balance = _balanceOf(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure)
+    balance = balanceOf_async(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure)
     decimals = _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure)
     balance, decimals = await gather([balance, decimals])
     if balance is not None and decimals is not None:
