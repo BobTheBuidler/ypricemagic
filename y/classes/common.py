@@ -172,7 +172,7 @@ class ERC20(ContractBase):
         total_supply, scale = await gather([self.total_supply_async(block=block), self.scale])
         return total_supply / scale
     
-    def balance_of(self, address: AnyAddressType, block: Optional[Block] - None) -> int:
+    def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
         return await_awaitable(self.balance_of_async(address, block=block))
     
     @yLazyLogger(logger)

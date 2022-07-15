@@ -3,11 +3,13 @@
 import logging
 
 from brownie import chain
+
+from y.classes.common import ERC20
 from y.constants import wbtc, weth
 from y.networks import Network
 from y.prices.utils.buckets import check_bucket_async
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import _symbol_async, raw_call_async
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -133,7 +135,7 @@ async def _sense_check(
     print('this prints')
     # proceed with sense check
     price_readable = round(price, 4)
-    symbol = await _symbol_async(token_address)
+    symbol = await ERC20(token_address).symbol_async
     network = Network.name(chain.id)
     logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
