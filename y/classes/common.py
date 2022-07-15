@@ -1,4 +1,5 @@
 
+import asyncio
 import logging
 from functools import cached_property, lru_cache
 from typing import Any, Optional, Union
@@ -13,10 +14,12 @@ from y.constants import EEE_ADDRESS
 from y.contracts import Contract, build_name, has_method, has_method_async
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.erc20 import decimals_async, totalSupply_async
-from y.exceptions import ContractNotVerified, MessedUpBrownieContract
+from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
+                          NonStandardERC20)
+from y.networks import Network
 from y.prices import magic
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import _name, _symbol, _symbol_async
+from y.utils.raw_calls import balanceOf_async, raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -72,28 +75,64 @@ class ERC20(ContractBase):
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
-        if self.symbol is None:
+        if asyncio.get_event_loop().is_running() or self.symbol is None:
             return f"<ERC20 '{self.address}'>"
         else:
             return f"<ERC20 {self.symbol} '{self.address}'>"
     
     @cached_property
     def symbol(self) -> str:
-        if self.address == EEE_ADDRESS:
-            return "ETH"
-        return _symbol(self.address, return_None_on_failure=True)
+        return await_awaitable(self.symbol_async)
 
     @async_cached_property
     async def symbol_async(self) -> str:
         if self.address == EEE_ADDRESS:
             return "ETH"
-        return await _symbol_async(self.address, return_None_on_failure=True)
+        
+        # method 1
+        # NOTE: this will almost always work, you will rarely proceed to further methods
+        symbol = await raw_call_async(self.address, "symbol()", output='str', return_None_on_failure=True)
+        if symbol is not None: return symbol
+
+        # method 2
+        symbol = await raw_call_async(self.address, "SYMBOL()", output='str', return_None_on_failure=True)
+        if symbol is not None: return symbol
+
+        # method 3
+        symbol = await raw_call_async(self.address, "getSymbol()", output='str', return_None_on_failure=True)
+        if symbol is not None:
+            return symbol
+
+        # we've failed to fetch
+        self.raise_exception('symbol')
+    
+    @cached_property
+    def name(self) -> str:
+        return await_awaitable(self.name_async)
     
     @async_cached_property
-    async def name(self) -> str:
+    async def name_async(self) -> str:
         if self.address == EEE_ADDRESS:
             return "Ethereum"
-        return await _name(self.address, return_None_on_failure=True)
+
+        # method 1
+        # NOTE: this will almost always work, you will rarely proceed to further methods
+        name = await raw_call_async(self.address, "name()", output='str', return_None_on_failure=True)
+        if name is not None:
+            return name
+
+        # method 2
+        name = await raw_call_async(self.address, "NAME()", output='str', return_None_on_failure=True)
+        if name is not None:
+            return name
+
+        # method 3
+        name = await raw_call_async(self.address, "getName()", output='str', return_None_on_failure=True)
+        if name is not None:
+            return name
+        
+        # we've failed to fetch
+        self.raise_exception('name')
     
     @yLazyLogger(logger)
     @async_cached_property
@@ -132,8 +171,22 @@ class ERC20(ContractBase):
     async def total_supply_readable_async(self, block: Optional[Block] = None) -> float:
         total_supply, scale = await gather([self.total_supply_async(block=block), self.scale])
         return total_supply / scale
-
+    
+    def balance_of(self, address: AnyAddressType, block: Optional[Block] - None) -> int:
+        return await_awaitable(self.balance_of_async(address, block=block))
+    
     @yLazyLogger(logger)
+    async def balance_of_async(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
+        return await balanceOf_async(self.address, address, block=block)
+    
+    def balance_of_readable(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
+        return await_awaitable(self.balance_of_readable_async(address, block=block))
+    
+    @yLazyLogger(logger)
+    async def balance_of_readable_async(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
+        balance, scale = await gather([self.balance_of_async(address, block=block), self.scale])
+        return balance / scale
+
     def price(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:
         return await_awaitable(
             self.price_async(block=block, return_None_on_failure=return_None_on_failure)
@@ -146,6 +199,13 @@ class ERC20(ContractBase):
             block=block, 
             fail_to_None=return_None_on_failure
         )
+    
+    def raise_exception(self, fn_name: str):
+        raise NonStandardERC20(f'''
+            Unable to fetch `{fn_name}` for {self.address} on {Network.printable()}
+            If the contract is verified, please check to see if it has a strangely named
+            `{fn_name}` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
+            with the contract address and correct method name so we can keep things going smoothly :)''')
 
 class WeiBalance:
     def __init__(

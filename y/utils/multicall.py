@@ -123,7 +123,7 @@ async def multicall_decimals_async(
     ) -> List[int]:
 
     try: 
-        return await gather([Call(address, ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
+        return await gather([Call(str(address), ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
     except (CannotHandleRequest,InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:

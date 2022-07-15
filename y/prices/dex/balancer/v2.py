@@ -1,6 +1,6 @@
 import logging
 from functools import cached_property, lru_cache
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Awaitable, Dict, List, Optional, Tuple
 
 from async_lru import alru_cache
 from brownie import chain
@@ -48,9 +48,12 @@ class BalancerV2Vault(ContractBase):
             # we need the contract cached so we can decode logs correctly
             self.contract
     
-    @yLazyLogger(logger)
     def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
-        return self.contract.getPoolTokens(pool_id, block_identifier = block)
+        return await_awaitable(self.get_pool_tokens_async(pool_id, block))
+    
+    @yLazyLogger(logger)
+    async def get_pool_tokens_async(self, pool_id: int, block: Optional[Block] = None):
+        return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
 
     @yLazyLogger(logger)
     def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
@@ -120,9 +123,16 @@ class BalancerV2Pool(ERC20):
         vault = raw_call(self.address,'getVault()',output='address')
         return BalancerV2Vault(vault)
 
-    @yLazyLogger(logger)
     def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
-        return UsdPrice(self.get_tvl(block=block) / self.total_supply_readable(block=block))
+        return await_awaitable(self.get_pool_price_async(block=block))
+    
+    @yLazyLogger(logger)
+    async def get_pool_price_async(self, block: Optional[Block] = None) -> Awaitable[UsdPrice]:
+        tvl, total_supply = await gather([
+            self.total_supply_readable_async(block=block),
+            self.vault.get_pool_tokens_async(self.id, block=block),
+        ])
+        return UsdPrice(tvl / total_supply)
 
     @yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> UsdValue:
@@ -208,9 +218,12 @@ class BalancerV2(metaclass=Singleton):
         methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
         return await has_methods_async(token_address, methods)
     
-    @yLazyLogger(logger)
     def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-        return BalancerV2Pool(pool_address).get_pool_price(block=block)
+        return await_awaitable(self.get_pool_price_async(pool_address, block=block))
+
+    @yLazyLogger(logger)
+    async def get_pool_price_async(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+        return await BalancerV2Pool(pool_address).get_pool_price_async(block=block)
 
     @yLazyLogger(logger)
     def get_token_price(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
