@@ -394,7 +394,6 @@ class CurveRegistry(metaclass=Singleton):
             new_entries = []
         if not new_entries:
             new_entries = get_logs_asap(str(self.address_provider), None)
-        print('done')
         
         for event in decode_logs(new_entries):
             if event.name == 'NewAddressIdentifier':
