@@ -1,18 +1,7 @@
 
-from collections import defaultdict
 import functools
-import logging
 import os
-import threading
-from random import randrange
-from sqlite3 import OperationalError
-from time import sleep, time
-from typing import Any, Callable, Tuple
-
-from requests.exceptions import HTTPError, ReadTimeout
-
-from y.utils.debug import record_duration
-from y.utils.logging import yLazyLogger
+from typing import Any, Callable
 
 DEBUG = os.environ.get('YPRICEMAGIC_DEBUG', False)
 
