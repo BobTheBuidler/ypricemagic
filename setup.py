@@ -23,6 +23,7 @@ setup(
         'eth-brownie>=1.18.1',
         'eth_retry>=0.1.4',
         'joblib>=1.0.1',
+        'multicall>=0.5.1',
     ],
     setup_requires=[
         'setuptools_scm',
