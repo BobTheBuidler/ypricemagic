@@ -93,8 +93,12 @@ class YearnInspiredVault(ERC20):
         super().__init__(address, *args, **kwargs)
     
     def __repr__(self) -> str:
-        if self.symbol:
-            return f"<YearnInspiredVault {self.symbol} '{self.address}'>"
+        try:
+            if self.symbol:
+                return f"<YearnInspiredVault {self.symbol} '{self.address}'>"
+        except RuntimeError:
+            pass
+        return f"<YearnInspiredVault '{self.address}'>"
     
     @cached_property
     @yLazyLogger(logger)
