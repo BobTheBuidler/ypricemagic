@@ -1,3 +1,4 @@
+import asyncio
 from brownie import Contract as _Contract
 from brownie import chain
 
@@ -6,6 +7,8 @@ from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 
 EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
+
+SEMAPHORE = asyncio.Semaphore(1_000)
 
 sushi = None
 

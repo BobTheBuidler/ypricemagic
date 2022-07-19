@@ -9,7 +9,7 @@ from brownie.exceptions import ContractNotFound
 from multicall.utils import await_awaitable, raise_if_exception_in
 from y import convert
 from y.classes.common import ERC20
-from y.constants import WRAPPED_GAS_COIN
+from y.constants import SEMAPHORE, WRAPPED_GAS_COIN
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
@@ -79,7 +79,8 @@ async def get_price_async(
     token_address = convert.to_address(token_address)
 
     try:
-        return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
+        async with SEMAPHORE:
+            return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
     except (ContractNotFound, NonStandardERC20, RecursionError):
         if fail_to_None:
             return None
