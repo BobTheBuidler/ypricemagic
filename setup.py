@@ -21,7 +21,7 @@ setup(
         'cachetools>=4.1.1',
         'dank_mids==0.0.14',
         'eth-brownie>=1.18.1,<1.19',
-        'eth_retry>=0.1.4,<0.2',
+        'eth_retry>=0.1.5,<0.2',
         'joblib>=1.0.1',
         'multicall>=0.5.1,<0.6',
     ],
