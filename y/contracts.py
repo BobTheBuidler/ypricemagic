@@ -109,6 +109,7 @@ class Contract(brownie.Contract):
                     super().__init__(address, *args, owner=owner, **kwargs)
                     self._verified = True
                     patch_contract(self, dank_w3)
+                    _squeeze(self)
                 except AttributeError as e:
                     if "'UsingForDirective' object has no attribute 'typeName'" in str(e):
                         raise MessedUpBrownieContract(address, str(e))
@@ -287,3 +288,9 @@ def build_name(address: AnyAddressType, return_None_on_failure: bool = False) ->
 async def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
     return await probe(address, ['implementation()(address)','target()(address)'], block)
 
+def _squeeze(it):
+    """ Reduce the contract size in RAM significantly. """
+    for k in ["ast", "bytecode", "coverageMap", "deployedBytecode", "deployedSourceMap", "natspec", "opcodes", "pcMap"]:
+        if it._build and k in it._build.keys():
+            it._build[k] = {}
+    return it
