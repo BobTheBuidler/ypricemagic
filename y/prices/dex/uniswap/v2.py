@@ -269,15 +269,18 @@ class UniswapRouterV2(ContractBase):
             busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
+        if str(token_in) in STABLECOINS:
+            return 1
+        
         try:
             amount_in = await ERC20(token_in).scale
         except NonStandardERC20:
             return None
 
-        if str(token_in) in STABLECOINS:
-            return 1
+        if token_in in [weth.address, WRAPPED_GAS_COIN] and token_out in STABLECOINS:
+            path = [token_in, token_out]
 
-        if str(token_out) in STABLECOINS:
+        elif str(token_out) in STABLECOINS:
             try:
                 path = await self.get_path_to_stables_async(token_in, block)
                 logger.debug('smrt')
@@ -285,8 +288,7 @@ class UniswapRouterV2(ContractBase):
                 pass
         
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
-        deepest_pool = await self.deepest_pool_async(token_in, block)
-        if path is None and deepest_pool:
+        if path is None and (deepest_pool:= await self.deepest_pool_async(token_in, block)):
             paired_with = (await self.pool_mapping_async)[token_in][deepest_pool]
             path = [token_in,paired_with]
             quote, out_scale = await gather([
