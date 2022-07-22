@@ -106,11 +106,11 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         return curve.get_factory(self)
 
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_coins(self) -> List[ERC20]:
         return await_awaitable(self.get_coins_async) 
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def get_coins_async(self) -> List[ERC20]:
         """
@@ -132,25 +132,25 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
         return [ERC20(coin) for coin in coins if coin not in {None, ZERO_ADDRESS}]
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_coin_index(self, coin: AnyAddressType) -> int:
         return await_awaitable(self.get_coin_index_async(coin))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache
     async def get_coin_index_async(self, coin: AnyAddressType) -> int:
         return [i for i, _coin in enumerate(await self.get_coins_async) if _coin == coin][0]
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def num_coins(self) -> int:
         return len(self.get_coins)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
         return await_awaitable(self.get_dy_async(coin_ix_in, coin_ix_out, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_dy_async(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
         tokens = await self.get_coins_async
         token_in = tokens[coin_ix_in]
@@ -165,11 +165,11 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             raise
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_coins_decimals(self) -> List[int]:
         return await_awaitable(self.get_coins_decimals())
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def get_coins_decimals_async(self) -> List[int]:
         source = self.factory if self.factory else curve.registry
@@ -183,7 +183,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         return [dec for dec in coins_decimals if dec != 0]
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_underlying_coins(self) -> List[ERC20]:        
         if self.factory:
             # new factory reverts for non-meta pools
@@ -200,12 +200,12 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
         return [ERC20(coin) for coin in coins if coin != ZERO_ADDRESS]
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
         return await_awaitable(self.get_balances_async(block=block)) 
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def get_balances_async(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
         """
@@ -233,14 +233,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             if coin != ZERO_ADDRESS
         }
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         """
         Get total value in Curve pool.
         """
         return await_awaitable(self.get_tvl_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         """
         Get total value in Curve pool.
@@ -256,7 +256,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         )
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def oracle(self) -> Optional[Address]:
         '''
         If `pool` has method `price_oracle`, returns price_oracle address.
@@ -267,7 +267,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             return None
         return response
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def gauge(self) -> Optional[brownie.Contract]:
         """
@@ -283,7 +283,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             return Contract(gauges[0])
         return None
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def calculate_apy(self, lp_token: AnyAddressType, block: Optional[Block] = None) -> Dict[str,float]:
         if not chain.id == Network.Mainnet:
             raise UnsupportedNetwork(f'apy calculations only available on Mainnet')
@@ -314,7 +314,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             "token price": token_price,
         }
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def calculate_boost(self, addr: AddressOrContract, block: Optional[Block] = None) -> Dict[str,float]:
         if not chain.id == Network.Mainnet:
             raise UnsupportedNetwork(f'boost calculations only available on Mainnet')
@@ -419,7 +419,7 @@ class CurveRegistry(metaclass=Singleton):
         logger.info(f'loaded {len(self.pools)} pools')
 
     @property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def registry(self) -> brownie.Contract:
         try:
             return Contract(self.identifiers[0][-1])
@@ -451,7 +451,7 @@ class CurveRegistry(metaclass=Singleton):
             for factory, pool_count in zip(metapool_factories, pool_counts)
         }
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_factory(self, pool: AddressOrContract) -> Contract:
         """
         Get metapool factory that has spawned a pool.
@@ -466,12 +466,12 @@ class CurveRegistry(metaclass=Singleton):
         except StopIteration:
             return None
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def _pool_from_lp_token(self, token: AddressOrContract) -> str:
         return self.registry.get_pool_from_lp_token(token)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def __contains__(self, token: Address) -> bool:
         return self.get_pool(token) is not None
     
@@ -480,7 +480,7 @@ class CurveRegistry(metaclass=Singleton):
     def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
         return await_awaitable(self.get_price_async(token, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def get_price_async(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
         tvl = await self.get_pool(token).get_tvl_async(block=block)
@@ -488,7 +488,7 @@ class CurveRegistry(metaclass=Singleton):
             return None
         return tvl / await ERC20(token).total_supply_readable_async(block)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_pool(self, token: Address) -> CurvePool:
         """
@@ -505,12 +505,12 @@ class CurveRegistry(metaclass=Singleton):
         if pool != ZERO_ADDRESS:
             return CurvePool(pool)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_price_for_underlying_async(token_in, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def get_price_for_underlying_async(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         try:

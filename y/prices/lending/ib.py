@@ -15,20 +15,20 @@ from y.utils.logging import yLazyLogger
 logger = logging.getLogger(__name__)
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_ib_token(token: AnyAddressType) -> bool:
     return await_awaitable(is_ib_token_async(token))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_ib_token_async(token: AnyAddressType) -> bool:
     return await has_methods_async(token, ('debtShareToVal(uint)(uint)','debtValToShare(uint)(uint)','token()(address)','totalToken()(uint)','totalSupply()(uint)'))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(token, block=block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     contract = Contract(address)

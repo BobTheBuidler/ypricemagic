@@ -20,17 +20,17 @@ POOLS = {
 }.get(chain.id, {})
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_belt_lp(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     return address in POOLS
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(token, block=block))
     
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     pool = POOLS[address]

@@ -140,7 +140,7 @@ async def _sense_check(
     logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def _exit_sense_check(token_address: str) -> bool:
     '''
     For some token types, its normal to have a crazy high nominal price.

@@ -35,11 +35,11 @@ class UniswapMultiplexer:
         self.v1 = UniswapV1()
         self._uid_lock = threading.Lock()
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def is_uniswap_pool(self, token_address: AnyAddressType) -> bool:
         return await_awaitable(self.is_uniswap_pool_async(token_address))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def is_uniswap_pool_async(self, token_address: AnyAddressType) -> bool:
         token_address = convert.to_address(token_address)
         try:
@@ -54,32 +54,32 @@ class UniswapMultiplexer:
         except NotAUniswapV2Pool:
             return False
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_price_v1(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_v1_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_price_v1_async(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         return await self.v1.get_price_async(token_address, block)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @ttl_cache(ttl=600)
     def lp_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         """ Get Uniswap/Sushiswap LP token price. """
         return await_awaitable(self.lp_price_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=500)
     async def lp_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         """ Get Uniswap/Sushiswap LP token price. """
         return await UniswapPoolV2(token_address).get_price_async(block=block)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @ttl_cache(ttl=36000)
     def get_price(self, token_in: AnyAddressType, block: Optional[Block] = None, protocol: Optional[str] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_price_async(token_in, block=block, protocol=protocol))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_price_async(self, token_in: AnyAddressType, block: Optional[Block] = None, protocol: Optional[str] = None) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -102,11 +102,11 @@ class UniswapMultiplexer:
         
         return None
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def deepest_router(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UniswapRouterV2]:
         return await_awaitable(self.deepest_router_async(token_in, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def deepest_router_async(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UniswapRouterV2]:
         token_in = convert.to_address(token_in)
 
@@ -114,11 +114,11 @@ class UniswapMultiplexer:
             return router # will return first router in the dict, or None if no supported routers
         return None
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def routers_by_depth(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         return await_awaitable(self.routers_by_depth_async(token_in, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def routers_by_depth_async(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least

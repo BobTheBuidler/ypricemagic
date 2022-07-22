@@ -46,7 +46,7 @@ class ContractBase(metaclass=ContractSingleton):
         return Contract(self.address)
     
     @cached_property
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     def _is_cached(self) -> bool:
         try:
             self.contract
@@ -57,11 +57,11 @@ class ContractBase(metaclass=ContractSingleton):
             return None
     
     @cached_property
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     def build_name(self) -> str:
         return build_name(self.address)
     
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     @lru_cache
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return has_method(self.address, method, return_response=return_response)
@@ -134,40 +134,40 @@ class ERC20(ContractBase):
         # we've failed to fetch
         self.raise_exception('name')
     
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     @async_cached_property
     async def decimals(self) -> int:
         if self.address == EEE_ADDRESS:
             return 18
         return await decimals_async(self.address)
 
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     async def _decimals(self, block: Optional[Block] = None) -> int:
         '''used to fetch decimals at specific block'''
         if self.address == EEE_ADDRESS:
             return 18
         return await decimals_async(self.address, block=block)
     
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     @async_cached_property
     async def scale(self) -> int:
         return 10 ** await self.decimals
     
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     async def _scale(self, block: Optional[Block] = None) -> int:
         return 10 ** await self._decimals(block=block)
 
     def total_supply(self, block: Optional[Block] = None) -> int:
         return await_awaitable(self.total_supply_async(block=block))
 
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     async def total_supply_async(self, block: Optional[Block] = None) -> int:
         return await totalSupply_async(self.address, block=block)
     
     def total_supply_readable(self, block: Optional[Block] = None) -> float:
         return await_awaitable(self.total_supply_readable_async(block=block))
 
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     async def total_supply_readable_async(self, block: Optional[Block] = None) -> float:
         total_supply, scale = await gather([self.total_supply_async(block=block), self.scale])
         return total_supply / scale
@@ -175,14 +175,14 @@ class ERC20(ContractBase):
     def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
         return await_awaitable(self.balance_of_async(address, block=block))
     
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     async def balance_of_async(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
         return await balanceOf_async(self.address, address, block=block)
     
     def balance_of_readable(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
         return await_awaitable(self.balance_of_readable_async(address, block=block))
     
-    @yLazyLogger(logger)
+    #@yLazyLogger(logger)
     async def balance_of_readable_async(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
         balance, scale = await gather([self.balance_of_async(address, block=block), self.scale])
         return balance / scale
@@ -192,7 +192,7 @@ class ERC20(ContractBase):
             self.price_async(block=block, return_None_on_failure=return_None_on_failure)
         )
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def price_async(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:
         return await magic.get_price_async(
             self.address, 

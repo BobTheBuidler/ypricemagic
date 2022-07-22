@@ -22,11 +22,11 @@ class wstEth:
         except KeyError:
             self.address = None
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
         share_price, weth_price = await gather([
             raw_call_async(self.address, 'stEthPerToken()', output='int', block=block),
@@ -37,7 +37,7 @@ class wstEth:
 
 wsteth = wstEth()
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_wsteth(address: AnyAddressType) -> bool:
     if chain.id != Network.Mainnet:
         return False

@@ -59,11 +59,11 @@ class UniswapPoolV2(ERC20):
             return f"<UniswapPoolV2 {self.address}>"  
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def factory(self) -> Address:
         return await_awaitable(self.factory_async)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def factory_async(self) -> Address:
         try: return await raw_call_async(self.address, 'factory()', output='address')
@@ -80,39 +80,39 @@ class UniswapPoolV2(ERC20):
             else: raise
 
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def tokens(self) -> Tuple[ERC20, ERC20]:
         return await_awaitable(self.tokens_async)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def tokens_async(self) -> Tuple[ERC20, ERC20]:
         methods = 'token0()(address)', 'token1()(address)'
         token0, token1 = await gather([Call(self.address, [method]).coroutine() for method in methods])
         return ERC20(token0), ERC20(token1)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def token0(self) -> ERC20:
         return self.tokens[0]
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def token0_async(self) -> ERC20:
         return await(self.tokens_async)[0]
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def token1(self) -> ERC20:
         return self.tokens[1]
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def token1_async(self) -> ERC20:
         return await(self.tokens_async)[1]
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_price_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def get_price_async(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
         tvl = await self.tvl_async(block=block)
@@ -120,11 +120,11 @@ class UniswapPoolV2(ERC20):
             return UsdPrice(tvl / await self.total_supply_readable_async(block=block))
         return None
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def reserves(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
         return await_awaitable(self.reserves_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def reserves_async(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
         reserves, tokens = await gather([
             Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block).coroutine(),
@@ -133,11 +133,11 @@ class UniswapPoolV2(ERC20):
         if reserves:
             return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def tvl(self, block: Optional[Block] = None) -> Optional[float]:
         return await_awaitable(self.tvl_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def tvl_async(self, block: Optional[Block] = None) -> Optional[float]:
         prices, reserves = await gather([
             asyncio.gather(
@@ -168,11 +168,11 @@ class UniswapPoolV2(ERC20):
         if vals[0] is not None and vals[1] is not None:
             return sum(vals)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         return await_awaitable(self.get_pool_details_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_details_async(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         try:
@@ -237,7 +237,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @ttl_cache(ttl=36000)
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_price(
         self,
         token_in: Address,
@@ -249,7 +249,7 @@ class UniswapRouterV2(ContractBase):
             self.get_price_async(token_in, block=block, token_out=token_out, paired_against=paired_against)
         )
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=500)
     async def get_price_async(
         self,
@@ -325,12 +325,12 @@ class UniswapRouterV2(ContractBase):
 
 
     @continue_on_revert
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         return await_awaitable(self.get_quote_async(amount_in, path, block=block))
     
     @continue_on_revert
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_quote_async(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         if self._is_cached:
             try:
@@ -355,7 +355,7 @@ class UniswapRouterV2(ContractBase):
             ).coroutine()
 
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
@@ -456,14 +456,14 @@ class UniswapRouterV2(ContractBase):
         except KeyError:
             return {}
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=500)
     def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
         return await_awaitable(
             self.deepest_pool_async(token_address, block=block, _ignore_pools=_ignore_pools)
         )
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=500)
     async def deepest_pool_async(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
         token_address = convert.to_address(token_address)
@@ -506,12 +506,12 @@ class UniswapRouterV2(ContractBase):
         return deepest_pool
 
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=500)
     def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
         return await_awaitable(self.deepest_stable_pool_async(token_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=500)
     async def deepest_stable_pool_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
@@ -558,14 +558,14 @@ class UniswapRouterV2(ContractBase):
         return deepest_stable_pool
 
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=500)
     def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
         return await_awaitable(
             self.get_path_to_stables_async(token, block=block, _loop_count=_loop_count, _ignore_pools=_ignore_pools)
         )
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=500)
     async def get_path_to_stables_async(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
         if _loop_count > 10:

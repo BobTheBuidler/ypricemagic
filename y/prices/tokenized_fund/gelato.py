@@ -14,12 +14,12 @@ from y.utils.raw_calls import _totalSupplyReadable, raw_call_async
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def is_gelato_pool(token_address: AnyAddressType) -> bool:
     return await_awaitable(is_gelato_pool_async(token_address))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_gelato_pool_async(token_address: AnyAddressType) -> bool:
     return await has_methods_async(token_address, ('gelatoBalance0()(uint)','gelatoBalance1()(uint)'))
@@ -27,7 +27,7 @@ async def is_gelato_pool_async(token_address: AnyAddressType) -> bool:
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(token, block=block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token) 
 

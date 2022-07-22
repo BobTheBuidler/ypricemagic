@@ -46,11 +46,11 @@ force_false = {
 }.get(chain.id, [])
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_yearn_vault(token: AnyAddressType) -> bool:
     return await_awaitable(is_yearn_vault_async(token))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_yearn_vault_async(token: AnyAddressType) -> bool:
     
@@ -77,11 +77,11 @@ async def is_yearn_vault_async(token: AnyAddressType) -> bool:
 
     return result
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return YearnInspiredVault(token).price(block=block)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await YearnInspiredVault(token).price_async(block=block)
 
@@ -101,11 +101,11 @@ class YearnInspiredVault(ERC20):
         return f"<YearnInspiredVault '{self.address}'>"
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def underlying(self) -> ERC20:
         return await_awaitable(self.underlying_async)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def underlying_async(self) -> ERC20:
         # special cases
@@ -134,11 +134,11 @@ class YearnInspiredVault(ERC20):
         if underlying: return ERC20(underlying)
         else: raise CantFetchParam(f'underlying for {self.__repr__()}')
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def share_price(self, block: Optional[Block] = None) -> Optional[float]:
         return await_awaitable(self.share_price_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=1000)
     async def share_price_async(self, block: Optional[Block] = None) -> Optional[float]:
         method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
@@ -165,11 +165,11 @@ class YearnInspiredVault(ERC20):
         else:
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def price(self, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.price_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=1000)
     async def price_async(self, block: Optional[Block] = None) -> UsdPrice:
         underlying = await self.underlying_async

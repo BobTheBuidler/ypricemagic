@@ -140,11 +140,11 @@ class Chainlink(metaclass=Singleton):
             self.registry = Contract(registries[chain.id])
         
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def feeds(self) -> Dict[ERC20, str]:
         return await_awaitable(self.feeds_async)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def feeds_async(self) -> Dict[ERC20, str]:
         if chain.id in registries:
@@ -170,11 +170,11 @@ class Chainlink(metaclass=Singleton):
         logger.info(f'loaded {len(feeds)} feeds')
         return feeds
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_feed(self, asset: Address) -> Optional[Contract]:
         return await_awaitable(self.get_feed_async(asset))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_feed_async(self, asset: Address) -> Optional[Contract]:
         feeds = await self.feeds_async
         try:
@@ -182,7 +182,7 @@ class Chainlink(metaclass=Singleton):
         except ContractNotVerified:
             return None
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def __contains__(self, asset: AnyAddressType) -> bool:
         return convert.to_address(asset) in self.feeds
     
@@ -192,7 +192,7 @@ class Chainlink(metaclass=Singleton):
     def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_async(asset, block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_price_async(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
             block = chain.height
@@ -223,7 +223,7 @@ class Chainlink(metaclass=Singleton):
     def feed_decimals(self, asset: AnyAddressType) -> int:
         return await_awaitable(self.feed_decimals_async(asset))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def feed_decimals_async(self, asset: AnyAddressType) -> int:
         asset = convert.to_address(asset)

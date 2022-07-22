@@ -13,16 +13,16 @@ from y.utils.raw_calls import _totalSupply, raw_call_async
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_creth(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     return chain.id == Network.Mainnet and address == '0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd'
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price_creth(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_creth_async(token, block=block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_creth_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     total_balance, total_supply, weth_price = await gather([

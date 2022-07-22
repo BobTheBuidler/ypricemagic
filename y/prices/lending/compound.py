@@ -71,11 +71,11 @@ class CToken(ERC20):
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def underlying(self) -> ERC20:
         return await_awaitable(self.underlying_async)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @async_cached_property
     async def underlying_async(self) -> ERC20:
         underlying = await self.has_method_async('underlying()(address)', return_response=True)
@@ -86,12 +86,12 @@ class CToken(ERC20):
 
         return ERC20(underlying)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache
     def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         return await_awaitable(self.underlying_per_ctoken_async(block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def underlying_per_ctoken_async(self, block: Optional[Block] = None) -> float:
         exchange_rate, decimals, underlying = await gather([
             self.exchange_rate_async(block=block),
@@ -100,12 +100,12 @@ class CToken(ERC20):
         ])
         return exchange_rate * 10 ** (decimals - await underlying.decimals)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache
     def exchange_rate(self, block: Optional[Block] = None) -> float:
         return await_awaitable(self.exchange_rate(block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def exchange_rate_async(self, block: Optional[Block] = None) -> float:
         method = 'exchangeRateCurrent()(uint)'
         call = Call(self.address, [method], block_id=block)
@@ -142,7 +142,7 @@ class Comptroller(ContractBase):
     def __repr__(self) -> str:
         return f"<Comptroller {self.key} '{self.address}'>"
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def __contains__(self, token_address: AnyAddressType) -> bool:
         return token_address in self.markets
     
@@ -169,11 +169,11 @@ class Compound(metaclass = Singleton):
             in TROLLERS.items()
         }
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def is_compound_market(self, token_address: AddressOrContract) -> bool:
         return await_awaitable(self.is_compound_market_async(token_address))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def is_compound_market_async(self, token_address: AddressOrContract) -> bool:
         all_markets = await gather([troller.markets_async for troller in self.trollers.values()])
         if any(token_address in troller for troller in all_markets):
@@ -184,19 +184,19 @@ class Compound(metaclass = Singleton):
         if result is True: self.__notify_if_unknown_comptroller(token_address)
         return result
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_async(token_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return await CToken(token_address).get_price_async(block=block)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def __contains__(self, token_address: AddressOrContract) -> bool:
         return self.is_compound_market(token_address)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         comptroller = raw_call(token_address,'comptroller()',output='address')
         if comptroller not in self.trollers.values():

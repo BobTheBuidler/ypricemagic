@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 
 @memory.cache() 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_block_timestamp(height: int) -> int:
     client = get_ethereum_client()
     if client in ['tg', 'erigon']:
@@ -21,7 +21,7 @@ def get_block_timestamp(height: int) -> int:
 
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def last_block_on_date(date_string: str) -> int:
     logger.debug(f'last block on date {date_string}')
     date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
@@ -42,7 +42,7 @@ def last_block_on_date(date_string: str) -> int:
 
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def closest_block_after_timestamp(timestamp: int) -> int:
     logger.info('closest block after timestamp %d', timestamp)
     height = chain.height

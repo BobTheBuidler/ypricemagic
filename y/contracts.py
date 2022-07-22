@@ -45,7 +45,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
 
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
@@ -176,7 +176,7 @@ class Contract(brownie.Contract):
 
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_contract(address: AnyAddressType) -> bool:
     '''
     Checks to see if the input address is a contract. Returns `True` if:
@@ -189,7 +189,7 @@ def is_contract(address: AnyAddressType) -> bool:
 def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
     return await_awaitable(has_method_async(address, method, return_response=return_response))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 #@memory.cache()
 async def has_method_async(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
@@ -219,7 +219,7 @@ def has_methods(
 ) -> bool:
     return await_awaitable(has_methods_async(address,methods,_func=_func))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def has_methods_async(
     address: AnyAddressType, 
@@ -248,7 +248,7 @@ async def has_methods_async(
         return False if _func == all else any(await gather([has_method_async(address, method) for method in methods]))
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def probe(
     address: AnyAddressType, 
     methods: List[str],
@@ -275,7 +275,7 @@ async def probe(
 
 
 @memory.cache()
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
         contract = Contract(address)

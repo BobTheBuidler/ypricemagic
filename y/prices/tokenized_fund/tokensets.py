@@ -13,12 +13,12 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def is_token_set(token: AnyAddressType) -> bool:
     return await_awaitable(is_token_set_async(token))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_token_set_async(token: AnyAddressType) -> bool:
     return any(await gather([
@@ -26,11 +26,11 @@ async def is_token_set_async(token: AnyAddressType) -> bool:
         has_methods_async(token, ("getComponents()(address[])", "getModules()(address[])", "getPositions()(address[])")),
     ]))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return TokenSet(token).get_price(block=block)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await TokenSet(token).get_price_async(block=block)
 

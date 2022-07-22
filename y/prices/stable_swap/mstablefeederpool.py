@@ -13,7 +13,7 @@ from y.utils.logging import yLazyLogger
 logger = logging.getLogger(__name__)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
     return await has_methods_async(address, ('getPrice()((uint,uint))','mAsset()(address)'))
@@ -21,7 +21,7 @@ async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
 async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(token, block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     contract = Contract(address)

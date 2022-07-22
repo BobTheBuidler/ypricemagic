@@ -16,16 +16,16 @@ from y.utils.raw_calls import raw_call_async
 logger = logging.getLogger(__name__)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def is_pie(token: AnyAddressType) -> bool:
     return await_awaitable(is_pie_async(token))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_pie_async(token: AnyAddressType) -> bool:
     return await has_method_async(token, "getCap()(uint)")
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(pie, block))
 
@@ -36,13 +36,13 @@ async def get_price_async(pie: AnyAddressType, block: Optional[Block] = None) ->
     ])
     return UsdPrice(tvl / total_supply)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[ERC20]:
     tokens = await Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], block_id=block).coroutine()
     tokens = tokens['tokens']
     return [ERC20(t) for t in tokens]
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
     try:
         bpool = await raw_call_async(pie_address, 'getBPool()', output='address', block=block)
@@ -52,7 +52,7 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
             raise
         return pie_address
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
     pool, tokens = await gather([
         get_bpool(pie_address, block),

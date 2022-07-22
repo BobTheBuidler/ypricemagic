@@ -29,11 +29,11 @@ else:
     router = None
     gas_coin = None
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_mooniswap_pool(token: AnyAddressType) -> bool:
     return await_awaitable(is_mooniswap_pool_async(token))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_mooniswap_pool_async(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
@@ -44,7 +44,7 @@ async def is_mooniswap_pool_async(token: AnyAddressType) -> bool:
 def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_pool_price_async(token, block=block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_pool_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     token = Contract(address)
