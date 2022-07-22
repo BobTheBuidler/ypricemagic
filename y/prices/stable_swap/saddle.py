@@ -19,11 +19,11 @@ from y.utils.multicall import \
 logger = logging.getLogger(__name__)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_saddle_lp(token_address: AnyAddressType) -> bool:
     return await_awaitable(is_saddle_lp_async(token_address))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_saddle_lp_async(token_address: AnyAddressType) -> bool:
     pool = await get_pool(token_address)
@@ -31,7 +31,7 @@ async def is_saddle_lp_async(token_address: AnyAddressType) -> bool:
         return await has_methods_async(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'))
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def get_pool(token_address: AnyAddressType) -> Address:
     convert.to_address(token_address)
@@ -45,7 +45,7 @@ async def get_pool(token_address: AnyAddressType) -> Address:
     pool = await has_method_async(token_address, 'swap()(address)', return_response=True)
     return pool or None
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(token_address, block))
 
@@ -56,7 +56,7 @@ async def get_price_async(token_address: AddressOrContract, block: Optional[Bloc
     ])
     return UsdPrice(tvl / total_supply)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
     pool, tokens, balances = await gather([
         get_pool(token_address),
@@ -73,7 +73,7 @@ async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None) 
     return UsdValue(sum(balance * price for balance, price in zip (balances, prices)))
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[ERC20]:
     pool, response = await gather([
         get_pool(token_address),

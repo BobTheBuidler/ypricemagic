@@ -35,30 +35,30 @@ class BalancerMultiplexer:
         try: return BalancerV2()
         except ImportError: return None
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
         return await_awaitable(self.is_balancer_pool_async(token_address))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def is_balancer_pool_async(self, token_address: AnyAddressType) -> bool:
         return any(await gather([v.is_pool_async(token_address) for v in self.versions]))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_pool_price_async(token_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         for v in self.versions:
             if await v.is_pool_async(token_address):
                 return UsdPrice(await v.get_pool_price_async(token_address, block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @lru_cache(maxsize=None)
     def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_price_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if await self.is_balancer_pool_async(token_address):

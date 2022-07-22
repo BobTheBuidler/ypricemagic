@@ -12,16 +12,16 @@ from y.utils.raw_calls import _decimals, _totalSupplyReadable, raw_call
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def is_eps_rewards_pool(token_address: AnyAddressType) -> bool:
     return await_awaitable(is_eps_rewards_pool_async(token_address))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_eps_rewards_pool_async(token_address: AnyAddressType) -> bool:
     return await has_methods_async(token_address, ('lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
     minter = Contract(raw_call(token_address,'minter()',output='address', block=block))
     i, balances = 0, []

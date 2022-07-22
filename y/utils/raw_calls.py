@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 We use raw calls for commonly used functions because its much faster than using brownie Contracts
 """
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def _cached_call_fn(
     func: Callable,
@@ -40,7 +40,7 @@ async def _cached_call_fn(
         return await func(contract_address, required_arg, block=block)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def decimals(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None, 
@@ -52,7 +52,7 @@ async def decimals(
         return await _cached_call_fn(_decimals,contract_address,block)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def _decimals(
     contract_address: AddressOrContract, 
@@ -135,7 +135,7 @@ async def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def _totalSupply(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -168,7 +168,7 @@ async def _totalSupply(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def _totalSupplyReadable(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -200,7 +200,7 @@ def balanceOf(
     ) -> Optional[int]:
     return await_awaitable(balanceOf_async(contract_address, address, block=block, return_None_on_failure=return_None_on_failure))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def balanceOf_async(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
@@ -237,7 +237,7 @@ async def balanceOf_async(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def _balanceOfReadable(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
@@ -265,7 +265,7 @@ async def _balanceOfReadable(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def raw_call(
     contract_address: AddressOrContract, 
     method: str, 
@@ -296,7 +296,7 @@ def raw_call(
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def raw_call_async(
     contract_address: AddressOrContract, 
     method: str, 
@@ -331,7 +331,7 @@ async def raw_call_async(
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def prepare_data(
     method, 
     inputs = Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract]
@@ -363,7 +363,7 @@ def prepare_data(
     '''
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def prepare_input(
     input: Union[
         bytes, # for bytes input

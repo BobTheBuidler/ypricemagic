@@ -33,27 +33,27 @@ class BalancerV1Pool(ERC20):
     def __init__(self, pool_address: AnyAddressType) -> None:
         super().__init__(pool_address)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def tokens(self, block: Optional[Block] = None) -> List[ERC20]:
         tokens = self.contract.getCurrentTokens(block_identifier=block)
         return [ERC20(token) for token in tokens]
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_pool_price_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_price_async(self, block: Optional[Block] = None) -> UsdPrice:
         supply = await self.total_supply_readable_async(block=block)
         if supply == 0:
             return 0
         return UsdPrice(await self.get_tvl_async(block=block) / supply)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         return await_awaitable(self.get_tvl_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         token_balances = await self.get_balances_async()
         good_balances = {
@@ -74,11 +74,11 @@ class BalancerV1Pool(ERC20):
             return good_value / len(good_balances) * len(token_balances)
         return None
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, float]:
         return await_awaitable(self.get_balances_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_balances_async(self, block: Optional[Block] = None) -> Dict[ERC20, float]:
         tokens = self.tokens(block=block)
         balances = fetch_multicall(*[[self.contract, "getBalance", token] for token in tokens], block=block)
@@ -97,28 +97,28 @@ class BalancerV1(metaclass=Singleton):
     def __repr__(self) -> str:
         return "<BalancerV1>"
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def is_pool(self, token_address: AnyAddressType) -> bool:
         return await_awaitable(self.is_pool_async(token_address))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def is_pool_async(self, token_address: AnyAddressType) -> bool:
         return await has_methods_async(token_address ,("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_pool_price_async(token_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         assert await self.is_pool_async(token_address)
         return await BalancerV1Pool(token_address).get_pool_price_async(block=block)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_token_price_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_token_price_async(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         scale = 1.0
         out, totalOutput = await self.get_some_output_async(token_address, block=block)
@@ -137,7 +137,7 @@ class BalancerV1(metaclass=Singleton):
         else:
             return
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def check_liquidity_against(
         self,
         token_in: AddressOrContract,
@@ -150,7 +150,7 @@ class BalancerV1(metaclass=Singleton):
             self.check_liquidity_against_async(token_in, token_out, scale=scale, block=block)
         )
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def check_liquidity_against_async(
         self,
         token_in: AddressOrContract,
@@ -172,7 +172,7 @@ class BalancerV1(metaclass=Singleton):
 
         return token_out, output
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_some_output(
         self,
         token_in: AddressOrContract,
@@ -182,7 +182,7 @@ class BalancerV1(metaclass=Singleton):
 
         return await_awaitable(self.get_some_output_async(token_in, scale=scale, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_some_output_async(
         self,
         token_in: AddressOrContract,

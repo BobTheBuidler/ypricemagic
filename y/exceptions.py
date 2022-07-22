@@ -46,7 +46,7 @@ class MessedUpBrownieContract(Exception):
             else: raise
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def contract_not_verified(e: Exception) -> bool:
     triggers = [
         'Contract source code not verified',
@@ -77,7 +77,7 @@ class CallReverted(Exception):
     pass
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def call_reverted(e: Exception) -> bool:
     triggers = [
         'execution reverted',
@@ -95,7 +95,7 @@ def continue_if_call_reverted(e: Exception) -> None:
     else: raise e
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def out_of_gas(e: Exception) -> bool:
     return 'out of gas' in str(e) 
 

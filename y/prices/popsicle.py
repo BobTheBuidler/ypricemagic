@@ -15,22 +15,22 @@ from y.utils.raw_calls import _totalSupplyReadable
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def is_popsicle_lp(token_address: AnyAddressType) -> bool:
     return await_awaitable(is_popsicle_lp_async(token_address))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_popsicle_lp_async(token_address: AnyAddressType) -> bool:
     # NOTE: contract to check for reference (mainnet): 0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf
     return await has_methods_async(token_address, ('token0()(address)','token1()(address)','usersAmounts()((uint,uint))'))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
     return await_awaitable(get_price_async(token, block=block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
     address = convert.to_address(token)
     total_val = await get_tvl_async(address, block)
@@ -39,11 +39,11 @@ async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) 
     total_supply = await _totalSupplyReadable(address,block)
     return UsdPrice(total_val / total_supply)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_tvl(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdValue]:
     return await_awaitable(get_tvl_async(token, block=block))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_tvl_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdValue]:
     balances = await get_balances_async(token, block)
     if balances is None:
@@ -55,11 +55,11 @@ async def get_tvl_async(token: AnyAddressType, block: Optional[Block] = None) ->
     ])
     return UsdValue(sum(values))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_balances(token: AnyAddressType, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance,WeiBalance]]:
     return await_awaitable(get_balances_async(token, block=block))
     
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def get_balances_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance,WeiBalance]]:
     address = convert.to_address(token)
     methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'

@@ -47,7 +47,7 @@ code = "0x608060405234801561001057600080fd5b50600436106100b45760003560e01c806372
 multicall_deploy_block = contract_creation_block(multicall2.address)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def multicall_same_func_no_input(
     addresses: Iterable[AnyAddressType],
     method: str, 
@@ -61,7 +61,7 @@ def multicall_same_func_no_input(
     )
     
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def multicall_same_func_no_input_async(
     addresses: Iterable[AnyAddressType],
     method: str, 
@@ -75,7 +75,7 @@ async def multicall_same_func_no_input_async(
     return [v for call in results for k, v in call.items()]
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def multicall_same_func_same_contract_different_inputs(
     address: AnyAddressType, 
     method: str, 
@@ -90,7 +90,7 @@ def multicall_same_func_same_contract_different_inputs(
     )
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def multicall_same_func_same_contract_different_inputs_async(
     address: AnyAddressType, 
     method: str, 
@@ -105,7 +105,7 @@ async def multicall_same_func_same_contract_different_inputs_async(
     return [result for call in results for key, result in call.items()]
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def multicall_decimals(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
@@ -115,7 +115,7 @@ def multicall_decimals(
         multicall_decimals_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
     )
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def multicall_decimals_async(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
@@ -135,7 +135,7 @@ async def multicall_decimals_async(
     return decimals
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def multicall_totalSupply(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
@@ -145,7 +145,7 @@ def multicall_totalSupply(
         multicall_totalSupply_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
     )
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def multicall_totalSupply_async(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
@@ -160,7 +160,7 @@ async def multicall_totalSupply_async(
     return [await _totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
     # https://github.com/makerdao/multicall
     multicall_input = []
@@ -201,7 +201,7 @@ def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional
     return decoded
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def multicall_matrix(contracts, params, block="latest"):
     matrix = list(product(contracts, params))
     calls = [[contract, param] for contract, param in matrix]
@@ -215,7 +215,7 @@ def multicall_matrix(contracts, params, block="latest"):
     return dict(output)
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def batch_call(calls: Tuple[Contract,str,List[Any],Block]) -> List[Any]:
     """
     Similar interface but block height as last param. Uses JSON-RPC batch.
@@ -250,7 +250,7 @@ def batch_call(calls: Tuple[Contract,str,List[Any],Block]) -> List[Any]:
     ]
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def _clean_addresses(
     addresses: Iterable[AnyAddressType]
     ) -> List[Address]:

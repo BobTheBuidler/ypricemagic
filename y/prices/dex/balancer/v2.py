@@ -51,15 +51,15 @@ class BalancerV2Vault(ContractBase):
     def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
         return await_awaitable(self.get_pool_tokens_async(pool_id, block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_tokens_async(self, pool_id: int, block: Optional[Block] = None):
         return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         return await_awaitable(self.list_pools_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     @alru_cache(maxsize=10)
     async def list_pools_async(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
@@ -82,11 +82,11 @@ class BalancerV2Vault(ContractBase):
             for poolId in poolids
         ])
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         return await_awaitable(self.deepest_pool_for_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def deepest_pool_for_async(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         pools = await self.list_pools_async(block=block)
         poolids = (poolid for poolid, pool in pools.items() if _is_standard_pool(pool))
@@ -113,12 +113,12 @@ class BalancerV2Pool(ERC20):
         super().__init__(pool_address)
 
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def id(self) -> PoolId:
         return Call(self.address, ['getPoolId()(bytes32)'], [['id',PoolId]])()['id']
     
     @cached_property
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def vault(self) -> BalancerV2Vault:
         vault = raw_call(self.address,'getVault()',output='address')
         return BalancerV2Vault(vault)
@@ -126,7 +126,7 @@ class BalancerV2Pool(ERC20):
     def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_pool_price_async(block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_price_async(self, block: Optional[Block] = None) -> Awaitable[UsdPrice]:
         tvl, total_supply = await gather([
             self.get_tvl_async(block=block),
@@ -137,7 +137,7 @@ class BalancerV2Pool(ERC20):
     def get_tvl(self, block: Optional[Block] = None) -> UsdValue:
         return await_awaitable(self.get_tvl_async(block=block))
         
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Awaitable[UsdValue]:
         balances = await self.get_balances_async(block=block)
         return UsdValue(sum(await gather([balance.value_usd_async for balance in balances.values()])))
@@ -145,15 +145,15 @@ class BalancerV2Pool(ERC20):
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         return await_awaitable(self.get_balances_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_balances_async(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         return {token: balance for token, balance in (await self.tokens_async(block=block)).items()}
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_token_price_async(self, token_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_token_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         token_balances = self.get_balances(block=block)
         pool_token_info = list(zip(token_balances.keys(),token_balances.values(), self.weights(block=block)))
@@ -181,12 +181,12 @@ class BalancerV2Pool(ERC20):
     def tokens(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         return await_awaitable(self.tokens_async(block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def tokens_async(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens, balances, lastChangedBlock = await self.vault.get_pool_tokens_async(self.id, block=block)
         return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def weights(self, block: Optional[Block] = None) -> List[int]:
         try:
             return self.contract.getNormalizedWeights(block_identifier = block)
@@ -194,7 +194,7 @@ class BalancerV2Pool(ERC20):
             return [1 for _ in self.tokens(block=block).keys()]
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @lru_cache(maxsize=None)
 def _is_standard_pool(pool: EthAddress) -> bool:
     '''
@@ -213,11 +213,11 @@ class BalancerV2(metaclass=Singleton):
     def __str__(self) -> str:
         return "BalancerV2()"
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def is_pool(self, token_address: AnyAddressType) -> bool:
         return await_awaitable(self.is_pool_async(token_address))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def is_pool_async(self, token_address: AnyAddressType) -> bool:
         methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
         return await has_methods_async(token_address, methods)
@@ -225,26 +225,26 @@ class BalancerV2(metaclass=Singleton):
     def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_pool_price_async(pool_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_pool_price_async(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return await BalancerV2Pool(pool_address).get_pool_price_async(block=block)
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_token_price(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_token_price_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_token_price_async(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
         deepest_pool = await self.deepest_pool_for_async(token_address, block=block)
         if deepest_pool is None:
             return
         return await deepest_pool.get_token_price_async(token_address, block)
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         return await_awaitable(self.deepest_pool_for_async(token_address, block=block))
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def deepest_pool_for_async(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         deepest_pools = await gather([vault.deepest_pool_for_async(token_address, block=block) for vault in self.vaults])
         deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in zip(self.vaults, deepest_pools) if deepest_pool is not None}

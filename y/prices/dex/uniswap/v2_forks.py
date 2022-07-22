@@ -124,7 +124,7 @@ SPECIAL_PATHS = {
     },
 }.get(chain.id, {})
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @lru_cache
 def special_paths(router_address: str) -> Dict[str,Dict[Address,List[Address]]]:
     protocol = ROUTER_TO_PROTOCOL[router_address]

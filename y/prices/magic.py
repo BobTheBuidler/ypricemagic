@@ -35,7 +35,7 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
@@ -194,7 +194,7 @@ async def _get_price(
     return price
 
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block

@@ -23,11 +23,11 @@ class UniswapV1:
     def __init__(self) -> None:
         self.factory = V1
     
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     def get_price(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
         return await_awaitable(self.get_price_async(token_address, block=block))
 
-    @yLazyLogger(logger)
+    #yLazyLogger(logger)
     async def get_price_async(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
         try:
             factory = Contract(self.factory)

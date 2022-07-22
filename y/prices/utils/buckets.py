@@ -31,7 +31,7 @@ def check_bucket(
     ) -> str:
     return await_awaitable(check_bucket_async(token))
 
-@yLazyLogger(logger)
+#yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def check_bucket_async(
     token: AnyAddressType
