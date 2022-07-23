@@ -170,21 +170,26 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         """
         Get {token: balance} of liquidity in the pool.
         """
+
+        # TODO figure out why these can't be gathered.
+        # Sometimes `self.get_coins_async` is a list not a coroutine?
+        #coins, decimals = await gather([
+        #    self.get_coins_async,
+        #    self.get_coins_decimals_async,
+        #])
+        coins = await self.get_coins_async
+        decimals = await self.get_coins_decimals_async
+
         try:
             source = self.factory if self.factory else curve.registry
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         # fallback for historical queries
         except ValueError:
             balances = await multicall_same_func_same_contract_different_inputs_async(
-                self.address, 'balances(uint256)(uint256)', inputs = (i for i, _ in enumerate(await self.get_coins_async)), block=block)
+                self.address, 'balances(uint256)(uint256)', inputs = (i for i, _ in enumerate(coins)), block=block)
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
-
-        coins, decimals = await gather([
-            self.get_coins_async,
-            self.get_coins_decimals_async,
-        ])
 
         return {
             coin: balance / 10 ** dec
