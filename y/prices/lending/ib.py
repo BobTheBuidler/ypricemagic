@@ -36,7 +36,6 @@ async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) 
         contract.token.coroutine(block_identifier=block),
         contract.totalToken.coroutine(block_identifier=block),
         contract.totalSupply.coroutine(block_identifier=block),
-        #fetch_multicall([contract,'token'],[contract,'totalToken'],[contract,'totalSupply'], block=block)
     ])
     token_scale, pool_scale = gather([
         ERC20(token).scale,
