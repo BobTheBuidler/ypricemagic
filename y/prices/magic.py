@@ -216,7 +216,7 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'creth':                 price = await creth.get_price_creth_async(token_address, block)
     elif bucket == 'curve lp':              price = await curve.get_price_async(token_address, block)
 
-    elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
+    elif bucket == 'ellipsis lp':           price = await ellipsis.get_price_async(token_address, block=block)
     elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
     elif bucket == 'gelato':                price = await gelato.get_price_async(token_address, block=block)
 
