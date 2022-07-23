@@ -349,7 +349,10 @@ class CurveRegistry(metaclass=Singleton):
                 self.factories[factory].add(pool)
     
     def read_pools(self, registry: Address) -> List[EthAddress]:
-        registry = Contract(registry)
+        try:
+            registry = Contract(registry)
+        except ContractNotVerified: # This happens sometimes, not sure why as the contract is verified.
+            registry = brownie.Contract.from_explorer(registry)
         return fetch_multicall(
             *[[registry, 'pool_list', i] for i in range(registry.pool_count())]
         )
