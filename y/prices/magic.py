@@ -9,7 +9,7 @@ from brownie.exceptions import ContractNotFound
 from multicall.utils import await_awaitable, raise_if_exception_in
 from y import convert
 from y.classes.common import ERC20
-from y.constants import SEMAPHORE, WRAPPED_GAS_COIN
+from y.constants import WRAPPED_GAS_COIN
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
@@ -79,8 +79,7 @@ async def get_price_async(
     token_address = convert.to_address(token_address)
 
     try:
-        async with SEMAPHORE:
-            return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
+        return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
     except (ContractNotFound, NonStandardERC20, RecursionError):
         if fail_to_None:
             return None
@@ -216,12 +215,12 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'creth':                 price = await creth.get_price_creth_async(token_address, block)
     elif bucket == 'curve lp':              price = await curve.get_price_async(token_address, block)
 
-    elif bucket == 'ellipsis lp':           price = ellipsis.get_price(token_address, block=block)
+    elif bucket == 'ellipsis lp':           price = await ellipsis.get_price_async(token_address, block=block)
     elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
     elif bucket == 'gelato':                price = await gelato.get_price_async(token_address, block=block)
 
     elif bucket == 'generic amm':           price = await generic_amm.get_price_async(token_address, block=block)
-    elif bucket == 'ib token':              price = ib.get_price(token_address,block=block)
+    elif bucket == 'ib token':              price = await ib.get_price_async(token_address,block=block)
     elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price_async(token_address, block=block)
 
     elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price_async(token_address,block=block)

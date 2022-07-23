@@ -54,12 +54,13 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
 
 #yLazyLogger(logger)
 async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
+    tokens: List[ERC20]
     pool, tokens = await gather([
         get_bpool(pie_address, block),
         get_tokens(pie_address, block),
     ])
     token_balances, token_scales, prices = await gather([
-        gather([Call(token, ['balanceOf(address)(uint)', pool], block_id=block).coroutine() for token in tokens]),
+        gather([Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block).coroutine() for token in tokens]),
         gather([token.scale for token in tokens]),
         magic.get_prices_async(tokens, block),
     ])

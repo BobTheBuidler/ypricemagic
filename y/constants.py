@@ -8,8 +8,6 @@ from y.networks import Network
 
 EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 
-SEMAPHORE = asyncio.Semaphore(1_000)
-
 sushi = None
 
 

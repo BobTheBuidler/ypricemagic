@@ -3,12 +3,12 @@ import logging
 from typing import Optional
 
 from async_lru import alru_cache
-from multicall.utils import await_awaitable
+from multicall.utils import await_awaitable, gather
+from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods_async
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
-from y.prices import magic
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import _decimals, _totalSupplyReadable, raw_call
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -23,16 +23,25 @@ async def is_eps_rewards_pool_async(token_address: AnyAddressType) -> bool:
 
 #yLazyLogger(logger)
 def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
-    minter = Contract(raw_call(token_address,'minter()',output='address', block=block))
+    return await_awaitable(get_price_async(token_address, block))
+
+async def get_price_async(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+    minter = Contract(await raw_call_async(token_address,'minter()',output='address', block=block))
     i, balances = 0, []
     while True:
         try:
-            coin = minter.coins(i, block_identifier = block)
-            balances.append((coin,minter.balances(i, block_identifier = block) / 10 ** _decimals(coin,block)))
+            coin, balance = await gather([
+                minter.coins.coroutine(i, block_identifier = block),
+                minter.balances(i, block_identifier = block),
+            ])
+            balance /= await ERC20(coin).scale
+            balances.append(WeiBalance(balance, coin, block))
             i += 1
         except:
             break
-    tvl = sum(balance * magic.get_price(coin, block) for coin, balance in balances)
-    totalSupply = _totalSupplyReadable(token_address,block)
-    return UsdPrice(tvl / totalSupply)
-    
+    coin_values, total_supply = await gather([
+        gather([b.value_usd_async for b in balances]),
+        ERC20(token_address).total_supply_readable_async(block),
+    ])
+    tvl = sum(coin_values)
+    return UsdPrice(tvl / total_supply)
