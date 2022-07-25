@@ -47,6 +47,11 @@ class Ids(IntEnum):
     Fee_Distributor = 4
     CryptoSwap_Registry = 5
     CryptoPool_Factory = 6
+    # On Polygon, id 7 is listed as "cryptopool factory".
+    # On other chains, "cryptopool factory" is id 6.
+    # On Polygon, id 6 is "crypto factory".
+    # I've only seen this on Polygon so far, for now will treat `7` == `6`.
+    Cryptopool_Factory = 7
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
@@ -343,7 +348,7 @@ class CurveRegistry(metaclass=Singleton):
 
         # if there are factories that haven't yet been added to the on-chain address provider,
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
-        for factory in self.identifiers[Ids.CryptoPool_Factory]:
+        for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]:
             pool_list = self.read_pools(factory)
             for pool in pool_list:
                 if pool in self.factories[factory]:
