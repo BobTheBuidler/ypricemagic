@@ -47,6 +47,11 @@ class Ids(IntEnum):
     Fee_Distributor = 4
     CryptoSwap_Registry = 5
     CryptoPool_Factory = 6
+    # On Polygon, id 7 is listed as "cryptopool factory".
+    # On other chains, "cryptopool factory" is id 6.
+    # On Polygon, id 6 is "crypto factory".
+    # I've only seen this on Polygon so far, for now will treat `7` == `6`.
+    Cryptopool_Factory = 7
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
@@ -183,8 +188,10 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         try:
             source = self.factory if self.factory else curve.registry
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
+            logger.critical(f'balances: {balances}')
         # fallback for historical queries
         except ValueError:
+            logger.critical('problem')
             balances = await multicall_same_func_same_contract_different_inputs_async(
                 self.address, 'balances(uint256)(uint256)', inputs = (i for i, _ in enumerate(coins)), block=block)
 
@@ -343,7 +350,7 @@ class CurveRegistry(metaclass=Singleton):
 
         # if there are factories that haven't yet been added to the on-chain address provider,
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
-        for factory in self.identifiers[Ids.CryptoPool_Factory]:
+        for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]:
             pool_list = self.read_pools(factory)
             for pool in pool_list:
                 if pool in self.factories[factory]:
@@ -421,20 +428,30 @@ class CurveRegistry(metaclass=Singleton):
     @alru_cache(maxsize=None)
     async def get_price_for_underlying_async(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         try:
-            pools = (await self.coin_to_pools_async)[token_in]
+            pools: List[CurvePool] = (await self.coin_to_pools_async)[token_in]
         except KeyError:
             return None
 
+        # Choose a pool to use for pricing `token_in`.
         if len(pools) == 1:
             pool = pools[0]
         else:
-            # TODO: handle this sitch if/when needed
-            return None
-            #for pool in self.coin_to_pools[token_in]:
-            #    for stable in STABLECOINS:
-            #        if stable != token_in and stable in pool.get_coins:
-            #            pool = pool
+            # Use the pool with deepest liquidity.
+            balances = await asyncio.gather(*[pool.get_balances_async(block=block) for pool in pools], return_exceptions=True)
+            deepest_pool, deepest_bal = None, 0
+            for pool, pool_bals in zip(pools, balances):
+                if isinstance(pool_bals, ValueError):
+                    if str(pool_bals).startswith("could not fetch balances"):
+                        continue
+                    else:
+                        raise pool_bals
+                for token, bal in pool_bals.items():
+                    if token == token_in and bal > deepest_bal:
+                        deepest_pool = pool
+                        deepest_bal = bal
+            pool = deepest_pool
         
+        # Get the price for `token_in` using the selected pool.
         if len(await pool.get_coins_async) == 2:
             # this works for most typical metapools
             token_in_ix = await pool.get_coin_index_async(token_in)
