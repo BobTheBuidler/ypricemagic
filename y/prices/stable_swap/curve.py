@@ -194,6 +194,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
                 self.address, 'balances(uint256)(uint256)', inputs = (i for i, _ in enumerate(coins)), block=block)
 
         if not any(balances):
+            logger.critical(balances)
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
 
         return {
@@ -441,8 +442,7 @@ class CurveRegistry(metaclass=Singleton):
                 if isinstance(pool_bals, ValueError):
                     if str(pool_bals).startswith("could not fetch balances"):
                         continue
-                    else:
-                        raise pool_bals
+                    raise pool_bals
                 for token, bal in pool_bals.items():
                     if token == token_in and bal > deepest_bal:
                         deepest_pool = pool
