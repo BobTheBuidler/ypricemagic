@@ -451,6 +451,7 @@ class CurveRegistry(metaclass=Singleton):
                         deepest_bal = bal
             pool = deepest_pool
         
+        # Get the price for `token_in` using the selected pool.
         if len(await pool.get_coins_async) == 2:
             # this works for most typical metapools
             token_in_ix = await pool.get_coin_index_async(token_in)
