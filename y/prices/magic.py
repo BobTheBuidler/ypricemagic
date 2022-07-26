@@ -126,7 +126,7 @@ async def get_prices_async(
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
     if dop:
-        logger.warn('Kwarg `dop` was Optional in an old impmentation and will be removed in a future version. Please remove `dop` from your code.')
+        logger.warning('Kwarg `dop` was Optional in an old impmentation and will be removed in a future version. Please remove `dop` from your code.')
 
     if block is None:
         block = chain.height
