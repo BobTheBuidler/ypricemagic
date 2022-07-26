@@ -11,7 +11,7 @@ from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.singleton import ContractSingleton
 from y.constants import EEE_ADDRESS
-from y.contracts import Contract, build_name, has_method, has_method_async
+from y.contracts import Contract, build_name, has_method, has_method_async, probe
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.erc20 import decimals_async, totalSupply_async
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
@@ -89,18 +89,8 @@ class ERC20(ContractBase):
         if self.address == EEE_ADDRESS:
             return "ETH"
         
-        # method 1
-        # NOTE: this will almost always work, you will rarely proceed to further methods
-        symbol = await raw_call_async(self.address, "symbol()", output='str', return_None_on_failure=True)
-        if symbol is not None: return symbol
-
-        # method 2
-        symbol = await raw_call_async(self.address, "SYMBOL()", output='str', return_None_on_failure=True)
-        if symbol is not None: return symbol
-
-        # method 3
-        symbol = await raw_call_async(self.address, "getSymbol()", output='str', return_None_on_failure=True)
-        if symbol is not None:
+        symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
+        if symbol:
             return symbol
 
         # we've failed to fetch
@@ -114,21 +104,9 @@ class ERC20(ContractBase):
     async def name_async(self) -> str:
         if self.address == EEE_ADDRESS:
             return "Ethereum"
-
-        # method 1
-        # NOTE: this will almost always work, you will rarely proceed to further methods
-        name = await raw_call_async(self.address, "name()", output='str', return_None_on_failure=True)
-        if name is not None:
-            return name
-
-        # method 2
-        name = await raw_call_async(self.address, "NAME()", output='str', return_None_on_failure=True)
-        if name is not None:
-            return name
-
-        # method 3
-        name = await raw_call_async(self.address, "getName()", output='str', return_None_on_failure=True)
-        if name is not None:
+        
+        name = await probe(self.address, ["name()(string)", "NAME()(string)", "getName()(string)"])
+        if name:
             return name
         
         # we've failed to fetch
