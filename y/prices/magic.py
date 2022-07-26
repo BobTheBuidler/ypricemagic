@@ -90,7 +90,7 @@ def get_prices(
     block: Optional[Block] = None,
     fail_to_None: bool = False,
     silent: bool = False,
-    dop: int = int(os.environ.get('DOP',4))
+    dop: int = None
     ) -> List[Optional[float]]:
     '''
     A more optimized way to fetch prices for multiple assets at the same block.
@@ -104,14 +104,14 @@ def get_prices(
     - if `fail_to_None == True`, ypricemagic will return `None` for that token
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
-    return await_awaitable(get_prices_async(token_addresses, block=block, fail_to_None=fail_to_None, silent=silent))
+    return await_awaitable(get_prices_async(token_addresses, block=block, fail_to_None=fail_to_None, silent=silent, dop=dop))
 
 async def get_prices_async(
     token_addresses: Iterable[AnyAddressType],
     block: Optional[Block] = None,
     fail_to_None: bool = False,
     silent: bool = False,
-    dop: int = int(os.environ.get('DOP',4))
+    dop: int = None
     ) -> List[Optional[float]]:
     '''
     A more optimized way to fetch prices for multiple assets at the same block.
@@ -126,7 +126,7 @@ async def get_prices_async(
     - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
     '''
     if dop:
-        logger.warn('Kwarg `dop` was Optional in an old impmentation and will be removed in a future implementation. Please remove `dop` from your code.')
+        logger.warn('Kwarg `dop` was Optional in an old impmentation and will be removed in a future version. Please remove `dop` from your code.')
 
     if block is None:
         block = chain.height
