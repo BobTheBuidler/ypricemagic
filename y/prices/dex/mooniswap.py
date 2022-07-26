@@ -1,21 +1,18 @@
 
-from asyncio import gather
+import asyncio
 import logging
 from typing import Optional
 
 from async_lru import alru_cache
-from brownie import ZERO_ADDRESS, chain, multicall, web3
+from brownie import ZERO_ADDRESS, chain
 from multicall.utils import await_awaitable
 from y import convert
-from y.utils.dank_mids import dank_w3
 from y.classes.common import ERC20
 from y.constants import weth
 from y.contracts import Contract
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.prices import magic
-from y.utils.logging import yLazyLogger
-from y.utils.multicall import multicall2
-from y.utils.raw_calls import _decimals, _totalSupplyReadable
+from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
 
@@ -48,18 +45,23 @@ def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdP
 async def get_pool_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     token = Contract(address)
-    token0, token1 = await gather([
+    token0, token1 = await asyncio.gather(
         token.token0.coroutine(),
         token.token1.coroutine(),
-    ])
+    )
 
-    bal0, bal1, price0, price1, total_supply = await gather([
-        dank_w3.eth.get_balance(token.address) / 10 ** 18 if token0 == ZERO_ADDRESS else ERC20(token0).balance_of_readable_async(token.address, block),
-        dank_w3.eth.get_balance(token.address) / 10 ** 18 if token1 == ZERO_ADDRESS else ERC20(token1).balance_of_readable_async(token.address, block),
+    bal0, bal1, price0, price1, total_supply = await asyncio.gather(
+        dank_w3.eth.get_balance(token.address) if token0 == ZERO_ADDRESS else ERC20(token0).balance_of_readable_async(token.address, block),
+        dank_w3.eth.get_balance(token.address) if token1 == ZERO_ADDRESS else ERC20(token1).balance_of_readable_async(token.address, block),
         magic.get_price_async(gas_coin, block) if token0 == ZERO_ADDRESS else magic.get_price_async(token0, block),
         magic.get_price_async(gas_coin, block) if token1 == ZERO_ADDRESS else magic.get_price_async(token1, block),
         ERC20(address).total_supply_readable_async(block),
-    ])
+    )
+
+    if token0 == ZERO_ADDRESS:
+        bal0 /= 1e18
+    elif token1 == ZERO_ADDRESS:
+        bal1 /= 1e18
 
     totalVal = bal0 * price0 + bal1 * price1
     price = totalVal / total_supply
