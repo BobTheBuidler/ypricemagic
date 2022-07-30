@@ -22,6 +22,9 @@ class NonStandardERC20(Exception):
 class CantFetchParam(Exception):
     pass
 
+class NoBlockFound(Exception):
+    pass
+
 
 # Contracts
 
