@@ -184,7 +184,7 @@ def is_contract(address: AnyAddressType) -> bool:
     - The address used to be a contract but has self-destructed
     '''
     address = convert.to_address(address)
-    return web3.eth.get_code(address) != '0x'
+    return web3.eth.get_code(address) not in ['0x',b'']
 
 def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
     return await_awaitable(has_method_async(address, method, return_response=return_response))
