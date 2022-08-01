@@ -184,7 +184,7 @@ class BalancerV2Pool(ERC20):
     #yLazyLogger(logger)
     async def tokens_async(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens, balances, lastChangedBlock = await self.vault.get_pool_tokens_async(self.id, block=block)
-        return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
+        return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances) if token != self.address}
 
     #yLazyLogger(logger)
     def weights(self, block: Optional[Block] = None) -> List[int]:

@@ -10,6 +10,7 @@ from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
 from y.utils.logging import yLazyLogger
+from y.exceptions import PriceError
 
 logger = logging.getLogger(__name__)
 
@@ -62,9 +63,12 @@ class BalancerMultiplexer:
     @alru_cache(maxsize=None)
     async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if await self.is_balancer_pool_async(token_address):
-            return await self.get_pool_price_async(token_address, block=block)
+            try:
+                return await self.get_pool_price_async(token_address, block=block)
+            except PriceError:
+                return None
 
-        price = None    
+        price = None
         
         if ( # NOTE: Only query v2 if block queried > v2 deploy block plus some extra blocks to build up liquidity
             (chain.id == Network.Mainnet and (not block or block > 12272146 + 100000))
