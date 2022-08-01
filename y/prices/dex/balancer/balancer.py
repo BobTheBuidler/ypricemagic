@@ -9,8 +9,6 @@ from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
-from y.utils.logging import yLazyLogger
-from y.exceptions import PriceError
 
 logger = logging.getLogger(__name__)
 
