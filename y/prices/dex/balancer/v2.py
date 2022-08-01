@@ -140,7 +140,7 @@ class BalancerV2Pool(ERC20):
     #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Awaitable[UsdValue]:
         balances = await self.get_balances_async(block=block)
-        return UsdValue(sum(await gather([balance.value_usd_async for balance in balances.values()])))
+        return UsdValue(sum(await gather([balance.value_usd_async for balance in balances.values() if balance.token.address != self.address])))
 
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         return await_awaitable(self.get_balances_async(block=block))
@@ -184,7 +184,7 @@ class BalancerV2Pool(ERC20):
     #yLazyLogger(logger)
     async def tokens_async(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens, balances, lastChangedBlock = await self.vault.get_pool_tokens_async(self.id, block=block)
-        return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances) if token != self.address}
+        return {ERC20(token): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
     #yLazyLogger(logger)
     def weights(self, block: Optional[Block] = None) -> List[int]:
