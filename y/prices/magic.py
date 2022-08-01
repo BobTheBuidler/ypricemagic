@@ -80,7 +80,7 @@ async def get_price_async(
 
     try:
         return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
-    except (ContractNotFound, NonStandardERC20, RecursionError):
+    except (ContractNotFound, NonStandardERC20, RecursionError, PriceError):
         if fail_to_None:
             return None
         raise PriceError(f'could not fetch price for {await ERC20(token_address).symbol_async} {token_address} on {Network.printable()}')

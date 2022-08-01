@@ -140,7 +140,10 @@ class BalancerV2Pool(ERC20):
     #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Awaitable[UsdValue]:
         balances = await self.get_balances_async(block=block)
-        return UsdValue(sum(await gather([balance.value_usd_async for balance in balances.values()])))
+        return UsdValue(sum(await gather([
+            balance.value_usd_async for balance in balances.values()
+            if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
+        ])))
 
     def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         return await_awaitable(self.get_balances_async(block=block))

@@ -9,7 +9,6 @@ from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
-from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -64,7 +63,7 @@ class BalancerMultiplexer:
         if await self.is_balancer_pool_async(token_address):
             return await self.get_pool_price_async(token_address, block=block)
 
-        price = None    
+        price = None
         
         if ( # NOTE: Only query v2 if block queried > v2 deploy block plus some extra blocks to build up liquidity
             (chain.id == Network.Mainnet and (not block or block > 12272146 + 100000))
