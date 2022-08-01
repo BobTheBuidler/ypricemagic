@@ -63,10 +63,7 @@ class BalancerMultiplexer:
     @alru_cache(maxsize=None)
     async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if await self.is_balancer_pool_async(token_address):
-            try:
-                return await self.get_pool_price_async(token_address, block=block)
-            except PriceError:
-                return None
+            return await self.get_pool_price_async(token_address, block=block)
 
         price = None
         
