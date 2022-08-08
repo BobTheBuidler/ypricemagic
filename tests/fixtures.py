@@ -8,8 +8,8 @@ from brownie.convert.datatypes import EthAddress
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block
+from y.datatypes import Address, Block
 from y.networks import Network
-from y.typing import Address, Block
 
 mainnet_only = pytest.mark.skipif(
     chain.id != Network.Mainnet, reason="This test is only applicable on mainnet"
