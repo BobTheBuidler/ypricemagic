@@ -7,11 +7,12 @@ from typing import Any, Optional, Union
 import brownie
 from async_property import async_cached_property, async_property
 from brownie.exceptions import ContractNotFound
+from checksum_dict import ChecksumAddressSingletonMeta
 from multicall.utils import await_awaitable, gather
 from y import convert
-from y.classes.singleton import ContractSingleton
 from y.constants import EEE_ADDRESS
-from y.contracts import Contract, build_name, has_method, has_method_async, probe
+from y.contracts import (Contract, build_name, has_method, has_method_async,
+                         probe)
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.erc20 import decimals_async, totalSupply_async
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
@@ -24,7 +25,7 @@ from y.utils.raw_calls import balanceOf_async, raw_call_async
 logger = logging.getLogger(__name__)
 
 
-class ContractBase(metaclass=ContractSingleton):
+class ContractBase(metaclass=ChecksumAddressSingletonMeta):
     def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
         self.address = convert.to_address(address)
         super().__init__(*args, **kwargs)
