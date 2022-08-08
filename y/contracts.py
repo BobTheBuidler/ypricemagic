@@ -17,6 +17,7 @@ from multicall import Call
 from multicall.utils import await_awaitable, gather
 
 from y import convert
+from y.classes.singleton import ContractSingleton
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NodeNotSynced, call_reverted, contract_not_verified)
@@ -89,8 +90,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
 # cached Contract instance, saves about 20ms of init time
 _contract_lock = threading.Lock()
 
-@lru_cache(maxsize=None)
-class Contract(brownie.Contract):
+class Contract(brownie.Contract, metaclass = ContractSingleton):
     @eth_retry.auto_retry
     def __init__(
         self, 
@@ -100,8 +100,6 @@ class Contract(brownie.Contract):
         require_success: bool = True, 
         **kwargs: Any
         ) -> None:
-        
-        address = convert.to_address(address)
         
         with _contract_lock:
             try:
@@ -120,7 +118,7 @@ class Contract(brownie.Contract):
                     if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
                         if chain.id == Network.xDai:
                             raise ValueError(f'Rate limited by Blockscout. Please try again.')
-                        if web3.eth.get_code(address):
+                        if web3.eth.get_code(convert.to_address(address)):
                             raise ContractNotVerified(address)
                         else:
                             raise ContractNotFound(address)
