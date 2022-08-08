@@ -2,7 +2,7 @@
 import asyncio
 import logging
 import threading
-from functools import lru_cache
+from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, List, Optional, Tuple, Union
 
 import brownie
@@ -11,13 +11,13 @@ from async_lru import alru_cache
 from brownie import chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.typing import AccountsType
+from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from dank_mids.brownie_patch import patch_contract
 from hexbytes import HexBytes
 from multicall import Call
 from multicall.utils import await_awaitable, gather
 
 from y import convert
-from y.classes.singleton import ContractSingleton
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NodeNotSynced, call_reverted, contract_not_verified)
@@ -28,6 +28,8 @@ from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
+
+contract_threads = ThreadPoolExecutor(16)
 
 
 def Contract_erc20(address: AnyAddressType) -> brownie.Contract:
@@ -90,7 +92,9 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
 # cached Contract instance, saves about 20ms of init time
 _contract_lock = threading.Lock()
 
-class Contract(brownie.Contract, metaclass = ContractSingleton):
+class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
+    _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
+
     @eth_retry.auto_retry
     def __init__(
         self, 
@@ -148,6 +152,26 @@ class Contract(brownie.Contract, metaclass = ContractSingleton):
                     self._verified = False
                 else:
                     self._verified = None
+    
+    @classmethod
+    async def coroutine(
+        cls, 
+        address: AnyAddressType, 
+        *args: Any, 
+        owner: Optional[AccountsType] = None, 
+        require_success: bool = True, 
+        **kwargs: Any
+        ) -> None:
+        try:
+            return Contract._ChecksumAddressSingletonMeta__instances[address]
+        except KeyError:
+            new_kwargs = {
+                "owner": owner,
+                "require_success": require_success,
+            }
+            for k, v in kwargs.items():
+                new_kwargs[k] = v
+            return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address, *args, new_kwargs)
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return has_method(self.address, method, return_response=return_response)
