@@ -8,7 +8,7 @@ T = TypeVar("T", bound=type)
 class Singleton(type):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.__instance: Optional[T] = None
-        self.__lock == threading.Lock()
+        self.__lock = threading.Lock()
         super().__init__(*args, **kwargs)
 
     def __call__(self, *args: Any, **kwargs: Any) -> T:
