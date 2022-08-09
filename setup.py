@@ -20,7 +20,7 @@ setup(
         'bobs_lazy_logging==0.0.4',
         'cachetools>=4.1.1',
         'checksum_dict>=1.1.1',
-        'dank_mids==0.2.1',
+        'dank_mids>=0.2.2',
         'eth-brownie>=1.18.1,<1.19',
         'eth_retry>=0.1.5,<0.2',
         'joblib>=1.0.1',
