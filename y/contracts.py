@@ -1,15 +1,19 @@
 
 import asyncio
+import json
 import logging
 import threading
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Callable, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import brownie
 import eth_retry
 from async_lru import alru_cache
 from brownie import chain, web3
-from brownie.exceptions import CompilerError, ContractNotFound
+from brownie.exceptions import ContractNotFound
+from brownie.network.contract import (_add_deployment, _ContractBase,
+                                      _DeployedContractBase,
+                                      _fetch_from_explorer, _resolve_address)
 from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from dank_mids.brownie_patch import patch_contract
@@ -19,8 +23,8 @@ from multicall.utils import await_awaitable, gather
 
 from y import convert
 from y.datatypes import Address, AnyAddressType, Block
-from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
-                          NodeNotSynced, call_reverted, contract_not_verified)
+from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
+                          contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 from y.utils.cache import memory
@@ -32,18 +36,29 @@ logger = logging.getLogger(__name__)
 contract_threads = ThreadPoolExecutor(16)
 
 
-def Contract_erc20(address: AnyAddressType) -> brownie.Contract:
+# cached Contract instance, saves about 20ms of init time
+_contract_lock = threading.Lock()
+
+# These tokens have trouble when resolving the implementation via the chain.
+FORCE_IMPLEMENTATION = {
+    Network.Mainnet: {
+        "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": "0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF", # USDC as of 2022-08-10
+    },
+}.get(chain.id, {})
+
+
+def Contract_erc20(address: AnyAddressType) -> "Contract":
     address = convert.to_address(address)
-    return brownie.Contract.from_abi('ERC20',address,ERC20ABI)
+    return Contract.from_abi('ERC20',address,ERC20ABI)
 
 
-def Contract_with_erc20_fallback(address: AnyAddressType) -> brownie.Contract:
-    if type(address) is brownie.Contract:
+def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
+    if isinstance(address, Contract):
         return address
     address = convert.to_address(address)
     try:
         return Contract(address)
-    except (ContractNotVerified,MessedUpBrownieContract):
+    except ContractNotVerified:
         return Contract_erc20(address)
 
 
@@ -89,8 +104,6 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             lo = mid
     return hi if hi != height else None
 
-# cached Contract instance, saves about 20ms of init time
-_contract_lock = threading.Lock()
 
 class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
@@ -105,53 +118,45 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         **kwargs: Any
         ) -> None:
         
+        address = str(address)
         with _contract_lock:
+            # autofetch-sources: false
+            # Try to fetch the contract from the local sqlite db.
             try:
-                try:
-                    super().__init__(address, *args, owner=owner, **kwargs)
-                    self._verified = True
-                    patch_contract(self, dank_w3)
-                    _squeeze(self)
-                except AttributeError as e:
-                    if "'UsingForDirective' object has no attribute 'typeName'" in str(e):
-                        raise MessedUpBrownieContract(address, str(e))
-                    raise
-                except CompilerError as e:
-                    raise MessedUpBrownieContract(address, str(e))
-                except ConnectionError as e:
-                    if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
-                        if chain.id == Network.xDai:
-                            raise ValueError(f'Rate limited by Blockscout. Please try again.')
-                        if web3.eth.get_code(convert.to_address(address)):
-                            raise ContractNotVerified(address)
-                        else:
-                            raise ContractNotFound(address)
-                    raise
-                except IndexError as e:
-                    if 'list index out of range' in str(e):
-                        raise MessedUpBrownieContract(address, str(e))
-                    elif "pop from an empty deque" in str(e):
-                        raise MessedUpBrownieContract(address, str(e))
-                    else:
+                super().__init__(address, *args, owner=owner, **kwargs)
+                self.verified = True
+            # If we don't already have the contract in the db, we'll try to fetch it from the explorer.
+            except ValueError as e:
+                try:                  
+                    name, abi = _resolve_proxy(address)
+                    build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
+                    self.__init_from_abi__(build, owner=owner, persist=True)
+                except (ContractNotFound, ContractNotVerified) as e:
+                    if require_success:
                         raise
-                except ValueError as e:
-                    if contract_not_verified(e):
-                        raise ContractNotVerified(f'{address} on {Network.printable()}')
-                    elif "Unknown contract address:" in str(e):
-                        if not is_contract(address):
-                            raise ContractNotFound(str(e))
-                        raise ContractNotVerified(str(e)) # avax snowtrace
-                    elif "invalid literal for int() with base 16" in str(e):
-                        raise MessedUpBrownieContract(address, str(e))
+                    if type(e) == ContractNotVerified:
+                        self._verified = False
                     else:
-                        raise
-            except (ContractNotFound, ContractNotVerified, MessedUpBrownieContract) as e:
-                if require_success:
-                    raise
-                if type(e) == ContractNotVerified:
-                    self._verified = False
-                else:
-                    self._verified = None
+                        self._verified = None
+        
+        patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
+        _squeeze(self)                  # Get rid of unnecessary memory-hog properties
+
+    @classmethod
+    def from_abi(
+        cls,
+        name: str,
+        address: str,
+        abi: List,
+        owner: Optional[AccountsType] = None,
+        persist: bool = True,
+        ) -> "Contract":
+        self = cls.__new__(cls)
+        build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
+        self.__init_from_abi__(build, owner, persist)
+        patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
+        _squeeze(self)                  # Get rid of unnecessary memory-hog properties
+        return self
     
     @classmethod
     async def coroutine(
@@ -172,6 +177,14 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
             for k, v in kwargs.items():
                 new_kwargs[k] = v
             return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address, *args, new_kwargs)
+    
+    def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
+        _ContractBase.__init__(self, None, build, {})  # type: ignore
+        _DeployedContractBase.__init__(self, build['address'], owner, None)
+        if persist:
+            _add_deployment(self)
+        self.verified = True
+        return self
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return has_method(self.address, method, return_response=return_response)
@@ -316,3 +329,78 @@ def _squeeze(it):
         if it._build and k in it._build.keys():
             it._build[k] = {}
     return it
+
+
+async def _extract_abi_data(address):
+    try:
+        data = _fetch_from_explorer(address, "getsourcecode", False)
+    except ConnectionError as e:
+        if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
+            if chain.id == Network.xDai:
+                raise ValueError(f'Rate limited by Blockscout. Please try again.')
+            if web3.eth.get_code(convert.to_address(address)):
+                raise ContractNotVerified(address)
+            else:
+                raise ContractNotFound(address)
+        raise
+    except ValueError as e:
+        if contract_not_verified(e):
+            raise ContractNotVerified(f'{address} on {Network.printable()}')
+        elif "Unknown contract address:" in str(e):
+            if not is_contract(address):
+                raise ContractNotFound(str(e))
+            raise ContractNotVerified(str(e)) # avax snowtrace
+        else:
+            raise
+    
+    is_verified = bool(data["result"][0].get("SourceCode"))
+    if not is_verified:
+        raise ValueError(f"Contract source code not verified: {address}")
+    name = data["result"][0]["ContractName"]
+    abi = json.loads(data["result"][0]["ABI"])
+    return name, abi
+
+@eth_retry.auto_retry
+def _resolve_proxy(address) -> Tuple[str, Address, List]:
+    name, abi, implementation = _extract_abi_data(address)
+    as_proxy_for = None
+
+    if address in FORCE_IMPLEMENTATION:
+        implementation = FORCE_IMPLEMENTATION[address]
+        name, abi, _ = _extract_abi_data(implementation)
+        return Contract.from_abi(name, address, abi)
+
+    # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
+    implementation_eip1967 = web3.eth.get_storage_at(
+        address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1
+    )
+    # always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822
+    implementation_eip1822 = web3.eth.get_storage_at(address, web3.keccak(text="PROXIABLE"))
+
+    # Just leave this code where it is for a helpful debugger as needed.
+    if address == "":
+        raise Exception(
+            f"""implementation: {implementation}
+            implementation_eip1967: {len(implementation_eip1967)} {implementation_eip1967}
+            implementation_eip1822: {len(implementation_eip1822)} {implementation_eip1822}""")
+
+    if len(implementation_eip1967) > 0 and int(implementation_eip1967.hex(), 16):
+        as_proxy_for = _resolve_address(implementation_eip1967[-20:])
+    elif len(implementation_eip1822) > 0 and int(implementation_eip1822.hex(), 16):
+        as_proxy_for = _resolve_address(implementation_eip1822[-20:])
+    elif implementation:
+        # for other proxy patterns, we only check if etherscan indicates
+        # the contract is a proxy. otherwise we could have a false positive
+        # if there is an `implementation` method on a regular contract.
+        try:
+            # first try to call `implementation` per EIP897
+            # https://eips.ethereum.org/EIPS/eip-897
+            c = Contract.from_abi(name, address, abi)
+            as_proxy_for = c.implementation.call()
+        except Exception:
+            # if that fails, fall back to the address provided by etherscan
+            as_proxy_for = _resolve_address(implementation)
+
+    if as_proxy_for:
+        name, abi = _extract_abi_data(as_proxy_for)
+    return name, abi
