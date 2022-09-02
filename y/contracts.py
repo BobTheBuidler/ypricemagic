@@ -331,7 +331,7 @@ def _squeeze(it):
     return it
 
 
-async def _extract_abi_data(address):
+def _extract_abi_data(address):
     try:
         data = _fetch_from_explorer(address, "getsourcecode", False)
     except ConnectionError as e:
