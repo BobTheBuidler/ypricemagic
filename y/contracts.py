@@ -358,7 +358,8 @@ def _extract_abi_data(address):
         raise ValueError(f"Contract source code not verified: {address}")
     name = data["result"][0]["ContractName"]
     abi = json.loads(data["result"][0]["ABI"])
-    return name, abi
+    implementation = data["result"][0]["Implementation"]
+    return name, abi, implementation
 
 @eth_retry.auto_retry
 def _resolve_proxy(address) -> Tuple[str, Address, List]:
@@ -402,5 +403,5 @@ def _resolve_proxy(address) -> Tuple[str, Address, List]:
             as_proxy_for = _resolve_address(implementation)
 
     if as_proxy_for:
-        name, abi = _extract_abi_data(as_proxy_for)
+        name, abi, _ = _extract_abi_data(as_proxy_for)
     return name, abi
