@@ -234,7 +234,8 @@ class Chainlink(metaclass=Singleton):
         return await_awaitable(self.feed_scale_async(asset))
 
     async def feed_scale_async(self, asset: AnyAddressType) -> int:
-        return 10 ** await self.feed_decimals_async(asset)
+        if decimals:= await self.feed_decimals_async(asset):
+            return 10 ** decimals
 
 
 try: chainlink = Chainlink()
