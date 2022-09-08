@@ -4,7 +4,7 @@ import os
 from typing import Iterable, List, Optional
 
 from async_lru import alru_cache
-from brownie import chain
+from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import await_awaitable, raise_if_exception_in
 from y import convert
@@ -160,6 +160,10 @@ async def _get_price(
     except NonStandardERC20:
         symbol = None
     token_string = f"{symbol} {token}" if symbol else token
+
+    if token == ZERO_ADDRESS:
+        _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
+        return None
 
     logger.debug("-------------[ y ]-------------")
     logger.debug(f"Fetching price for...")

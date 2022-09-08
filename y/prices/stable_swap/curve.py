@@ -414,7 +414,7 @@ class CurveRegistry(metaclass=Singleton):
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
         token = convert.to_address(token)
-        if token in self.token_to_pool:
+        if token in self.token_to_pool and token != ZERO_ADDRESS:
             return CurvePool(self.token_to_pool[token])
 
     #yLazyLogger(logger)
