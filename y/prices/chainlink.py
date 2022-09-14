@@ -216,7 +216,7 @@ class Chainlink(metaclass=Singleton):
             print(str(e))
             return None
 
-        if latest_answer:
+        if latest_answer and scale:
             price = latest_answer / scale
             return price
     
