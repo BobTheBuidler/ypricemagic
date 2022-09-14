@@ -1,3 +1,4 @@
+import asyncio
 from brownie import Contract as _Contract
 from brownie import chain
 

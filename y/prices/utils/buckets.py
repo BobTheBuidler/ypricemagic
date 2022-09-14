@@ -1,9 +1,11 @@
 import logging
 from functools import lru_cache
 
+from async_lru import alru_cache
+from multicall.utils import await_awaitable
 from y import convert
 from y.constants import STABLECOINS
-from y.decorators import log
+from y.datatypes import AnyAddressType
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -19,17 +21,23 @@ from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
-from y.typing import AnyAddressType
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
 @lru_cache(maxsize=None)
 def check_bucket(
-    token_address: AnyAddressType
+    token: AnyAddressType
+    ) -> str:
+    return await_awaitable(check_bucket_async(token))
+
+#yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def check_bucket_async(
+    token: AnyAddressType
     ) -> str:
 
-    token_address = convert.to_address(token_address)
+    token_address = convert.to_address(token)
 
     # these require neither calls to the chain nor contract initialization
     if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
@@ -45,28 +53,28 @@ def check_bucket(
     elif convex.is_convex_lp(token_address):                                return 'convex'
 
     # these just require calls
-    elif balancer_multiplexer.is_balancer_pool(token_address):              return 'balancer pool'
-    elif yearn.is_yearn_vault(token_address):                               return 'yearn or yearn-like'
-    elif ib.is_ib_token(token_address):                                     return 'ib token'
+    elif await balancer_multiplexer.is_balancer_pool_async(token_address):  return 'balancer pool'
+    elif await ib.is_ib_token_async(token_address):                         return 'ib token'
 
-    elif gelato.is_gelato_pool(token_address):                              return 'gelato'
-    elif piedao.is_pie(token_address):                                      return 'piedao lp'
-    elif tokensets.is_token_set(token_address):                             return 'token set'
+    elif await gelato.is_gelato_pool_async(token_address):                  return 'gelato'
+    elif await piedao.is_pie_async(token_address):                          return 'piedao lp'
+    elif await tokensets.is_token_set_async(token_address):                 return 'token set'
 
-    elif ellipsis.is_eps_rewards_pool(token_address):                       return 'ellipsis lp'
-    elif mstablefeederpool.is_mstable_feeder_pool(token_address):           return 'mstable feeder pool'
-    elif saddle.is_saddle_lp(token_address):                                return 'saddle'
+    elif await ellipsis.is_eps_rewards_pool_async(token_address):           return 'ellipsis lp'
+    elif await mstablefeederpool.is_mstable_feeder_pool(token_address):     return 'mstable feeder pool'
+    elif await saddle.is_saddle_lp_async(token_address):                    return 'saddle'
 
-    elif basketdao.is_basketdao_index(token_address):                       return 'basketdao'
-    elif popsicle.is_popsicle_lp(token_address):                            return 'popsicle'
+    elif await basketdao.is_basketdao_index_async(token_address):           return 'basketdao'
+    elif await popsicle.is_popsicle_lp_async(token_address):                return 'popsicle'
 
-    # these just require contract initialization
-    elif token_address in generic_amm:                                      return 'generic amm'
 
     # these require both calls and contract initializations
-    elif uniswap_multiplexer.is_uniswap_pool(token_address):                return 'uni or uni-like lp'
-    elif mooniswap.is_mooniswap_pool(token_address):                        return 'mooniswap lp'
-    elif token_address in compound:                                         return 'compound'
+    elif await uniswap_multiplexer.is_uniswap_pool_async(token_address):    return 'uni or uni-like lp'
+    # this just requires contract initialization but should go behind uniswap
+    elif token_address in generic_amm:                                      return 'generic amm'
+    elif await mooniswap.is_mooniswap_pool_async(token_address):            return 'mooniswap lp'
+    elif await compound.is_compound_market_async(token_address):            return 'compound'
     elif token_address in curve:                                            return 'curve lp'
-    elif token_address in chainlink:                                        return 'chainlink feed'
-    elif token_address in synthetix:                                        return 'synthetix'
+    elif chainlink and await chainlink.has_feed(token_address):                           return 'chainlink feed'
+    elif synthetix and await synthetix.is_synth(token_address):             return 'synthetix'
+    elif await yearn.is_yearn_vault_async(token_address):                   return 'yearn or yearn-like'

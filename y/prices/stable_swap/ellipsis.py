@@ -1,34 +1,47 @@
 
 import logging
-from functools import lru_cache
 from typing import Optional
 
-from y.contracts import Contract, has_methods
-from y.datatypes import UsdPrice
-from y.decorators import log
-from y.prices import magic
-from y.typing import AddressOrContract, AnyAddressType, Block
-from y.utils.raw_calls import _decimals, _totalSupplyReadable, raw_call
+from async_lru import alru_cache
+from multicall.utils import await_awaitable, gather
+from y.classes.common import ERC20, WeiBalance
+from y.contracts import Contract, has_methods_async
+from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
+from y.utils.logging import yLazyLogger
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
-@lru_cache
+#yLazyLogger(logger)
 def is_eps_rewards_pool(token_address: AnyAddressType) -> bool:
-    return has_methods(token_address, ['lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'])
+    return await_awaitable(is_eps_rewards_pool_async(token_address))
 
-@log(logger)
+#yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_eps_rewards_pool_async(token_address: AnyAddressType) -> bool:
+    return await has_methods_async(token_address, ('lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'))
+
+#yLazyLogger(logger)
 def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
-    minter = Contract(raw_call(token_address,'minter()',output='address', block=block))
+    return await_awaitable(get_price_async(token_address, block))
+
+async def get_price_async(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+    minter = Contract(await raw_call_async(token_address,'minter()',output='address', block=block))
     i, balances = 0, []
     while True:
         try:
-            coin = minter.coins(i, block_identifier = block)
-            balances.append((coin,minter.balances(i, block_identifier = block) / 10 ** _decimals(coin,block)))
+            coin, balance = await gather([
+                minter.coins.coroutine(i, block_identifier = block),
+                minter.balances(i, block_identifier = block),
+            ])
+            balance /= await ERC20(coin).scale
+            balances.append(WeiBalance(balance, coin, block))
             i += 1
         except:
             break
-    tvl = sum(balance * magic.get_price(coin, block) for coin, balance in balances)
-    totalSupply = _totalSupplyReadable(token_address,block)
-    return UsdPrice(tvl / totalSupply)
-    
+    coin_values, total_supply = await gather([
+        gather([b.value_usd_async for b in balances]),
+        ERC20(token_address).total_supply_readable_async(block),
+    ])
+    tvl = sum(coin_values)
+    return UsdPrice(tvl / total_supply)

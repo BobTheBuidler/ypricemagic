@@ -11,14 +11,15 @@ from eth_abi.exceptions import InsufficientDataBytes
 from web3.exceptions import CannotHandleRequest
 from y import convert
 from y.contracts import Contract, contract_creation_block
-from y.decorators import log
+from y.datatypes import Address, AddressOrContract, AnyAddressType, Block
 from y.exceptions import continue_if_call_reverted
 from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
-from y.typing import Address, AddressOrContract, AnyAddressType, Block
+from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals, _totalSupply
 
-from multicall import Call, Multicall
+from multicall import Call
+from multicall.utils import await_awaitable, gather
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +47,7 @@ code = "0x608060405234801561001057600080fd5b50600436106100b45760003560e01c806372
 multicall_deploy_block = contract_creation_block(multicall2.address)
 
 
-@log(logger)
+#yLazyLogger(logger)
 def multicall_same_func_no_input(
     addresses: Iterable[AnyAddressType],
     method: str, 
@@ -55,27 +56,26 @@ def multicall_same_func_no_input(
     return_None_on_failure: bool = False
     ) -> List[Any]:
 
-    addresses = _clean_addresses(addresses)
-    calls = [Call(address, [method], [[address,apply_func]]) for address in addresses]
-    return [result for result in Multicall(calls, block_id=block, require_success=(not return_None_on_failure))().values()]
+    return await_awaitable(
+        multicall_same_func_no_input_async(addresses, method, block=block, apply_func=apply_func, return_None_on_failure=return_None_on_failure)
+    )
+    
 
-
-@log(logger)
-def multicall_same_func_different_contracts_same_input(
-    addresses: Iterable[AnyAddressType], 
+#yLazyLogger(logger)
+async def multicall_same_func_no_input_async(
+    addresses: Iterable[AnyAddressType],
     method: str, 
-    input: Any = None,
     block: Optional[Block] = None,
-    apply_func: Optional[Callable] = None
+    apply_func: Optional[Callable] = None,
+    return_None_on_failure: bool = False
     ) -> List[Any]:
 
-    assert input
     addresses = _clean_addresses(addresses)
-    calls = [Call(address, [method, input], [[address,apply_func]]) for address in addresses]
-    return [result for result in Multicall(calls, block_id=block)().values()]
+    results = await gather([Call(address, [method], [[address,apply_func]], block_id=block).coroutine() for address in addresses])
+    return [v for call in results for k, v in call.items()]
 
 
-@log(logger)
+#yLazyLogger(logger)
 def multicall_same_func_same_contract_different_inputs(
     address: AnyAddressType, 
     method: str, 
@@ -85,53 +85,82 @@ def multicall_same_func_same_contract_different_inputs(
     return_None_on_failure: bool = False
     ) -> List[Any]:
 
+    return await_awaitable(
+        multicall_same_func_same_contract_different_inputs_async(address, method, inputs, block=block, apply_func=apply_func, return_None_on_failure=return_None_on_failure)
+    )
+
+
+#yLazyLogger(logger)
+async def multicall_same_func_same_contract_different_inputs_async(
+    address: AnyAddressType, 
+    method: str, 
+    inputs: Union[List, Tuple],  
+    block: Optional[Block] = None,
+    apply_func: Optional[Callable] = None,
+    return_None_on_failure: bool = False
+    ) -> List[Any]:
     assert inputs
     address = convert.to_address(address)
-    calls = [Call(address, [method, input], [[input,apply_func]]) for input in inputs]
-    return [result for result in Multicall(calls, block_id=block, require_success = not return_None_on_failure)().values()]
+    results = await gather(Call(address, [method, input], [[input,apply_func]], block_id=block).coroutine() for input in inputs)
+    return [result for call in results for key, result in call.items()]
 
 
-@log(logger)
+#yLazyLogger(logger)
 def multicall_decimals(
+    addresses: Iterable[AddressOrContract], 
+    block: Optional[Block] = None,
+    return_None_on_failure: bool = True
+    ) -> List[int]:
+    return await_awaitable(
+        multicall_decimals_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
+    )
+
+#yLazyLogger(logger)
+async def multicall_decimals_async(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
     return_None_on_failure: bool = True
     ) -> List[int]:
 
     try: 
-        return multicall_same_func_no_input(addresses, 'decimals()(uint256)', block=block)
+        return await gather([Call(str(address), ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
     except (CannotHandleRequest,InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:
         continue_if_call_reverted(e)
 
-    return [_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses]
+    decimals = await gather(
+        [_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses]
+    )
+    return decimals
 
 
-@log(logger)
+#yLazyLogger(logger)
 def multicall_totalSupply(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
     return_None_on_failure: bool = True
     ) -> List[int]:
+    return await_awaitable(
+        multicall_totalSupply_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
+    )
 
-    try: return multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block)
-    except (CannotHandleRequest,InsufficientDataBytes): pass
-        
-    return [_totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
-
-
-@log(logger)
-def multicall_balanceOf(
-    token_addresses: Iterable[AnyAddressType], 
-    hodler_address: Address, 
+#yLazyLogger(logger)
+async def multicall_totalSupply_async(
+    addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
-    return_None_on_failure: bool = True # TODO: implement this kwarg
+    return_None_on_failure: bool = True
     ) -> List[int]:
-    return multicall_same_func_different_contracts_same_input(token_addresses, 'balanceOf(address)(uint)', input=hodler_address, block=block)
+
+    try:
+        return await multicall_same_func_no_input_async(addresses, 'totalSupply()(uint256)', block=block)
+    except (CannotHandleRequest,InsufficientDataBytes):
+        pass
+        
+    return [await _totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
 
 
-@log(logger)
+#yLazyLogger(logger)
 def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
     # https://github.com/makerdao/multicall
     multicall_input = []
@@ -172,7 +201,7 @@ def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional
     return decoded
 
 
-@log(logger)
+#yLazyLogger(logger)
 def multicall_matrix(contracts, params, block="latest"):
     matrix = list(product(contracts, params))
     calls = [[contract, param] for contract, param in matrix]
@@ -186,7 +215,7 @@ def multicall_matrix(contracts, params, block="latest"):
     return dict(output)
 
 
-@log(logger)
+#yLazyLogger(logger)
 def batch_call(calls: Tuple[Contract,str,List[Any],Block]) -> List[Any]:
     """
     Similar interface but block height as last param. Uses JSON-RPC batch.
@@ -221,7 +250,7 @@ def batch_call(calls: Tuple[Contract,str,List[Any],Block]) -> List[Any]:
     ]
 
 
-@log(logger)
+#yLazyLogger(logger)
 def _clean_addresses(
     addresses: Iterable[AnyAddressType]
     ) -> List[Address]:

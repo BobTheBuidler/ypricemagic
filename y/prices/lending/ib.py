@@ -2,31 +2,48 @@
 import logging
 from typing import Optional
 
+from async_lru import alru_cache
+from multicall.utils import await_awaitable, gather
 from y import convert
-from y.contracts import Contract, has_methods
-from y.datatypes import UsdPrice
-from y.decorators import log
+from y.classes.common import ERC20
+from y.contracts import Contract, has_methods_async
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.prices import magic
-from y.typing import AnyAddressType, Block
 from y.utils.cache import memory
-from y.utils.multicall import fetch_multicall
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-@log(logger)
 @memory.cache()
+#yLazyLogger(logger)
 def is_ib_token(token: AnyAddressType) -> bool:
-    return has_methods(token, ['debtShareToVal(uint)(uint)','debtValToShare(uint)(uint)'])
+    return await_awaitable(is_ib_token_async(token))
 
-@log(logger)
+#yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_ib_token_async(token: AnyAddressType) -> bool:
+    return await has_methods_async(token, ('debtShareToVal(uint)(uint)','debtValToShare(uint)(uint)','token()(address)','totalToken()(uint)','totalSupply()(uint)'))
+
+#yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    return await_awaitable(get_price_async(token, block=block))
+
+#yLazyLogger(logger)
+async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     contract = Contract(address)
-    token, total_bal, total_supply = fetch_multicall([contract,'token'],[contract,'totalToken'],[contract,'totalSupply'], block=block)
-    token_decimals, pool_decimals = fetch_multicall([Contract(token),'decimals'],[contract,'decimals'], block=block)
-    total_bal /= 10 ** token_decimals
-    total_supply /= 10 ** pool_decimals
-    share_price = total_bal/total_supply
-    token_price = magic.get_price(token, block)
+    token, total_bal, total_supply = gather([
+        contract.token.coroutine(block_identifier=block),
+        contract.totalToken.coroutine(block_identifier=block),
+        contract.totalSupply.coroutine(block_identifier=block),
+    ])
+    token_scale, pool_scale = gather([
+        ERC20(token).scale,
+        ERC20(address).scale,
+    ])
+    total_bal /= token_scale
+    total_supply /= pool_scale
+    share_price = total_bal / total_supply
+    token_price = await magic.get_price_async(token, block)
     price = share_price * token_price
     return price

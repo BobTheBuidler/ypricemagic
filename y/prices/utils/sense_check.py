@@ -1,12 +1,15 @@
+# async: done
 
 import logging
 
 from brownie import chain
+
+from y.classes.common import ERC20
 from y.constants import wbtc, weth
-from y.decorators import log
 from y.networks import Network
-from y.prices.utils.buckets import check_bucket
-from y.utils.raw_calls import _symbol, raw_call
+from y.prices.utils.buckets import check_bucket_async
+from y.utils.logging import yLazyLogger
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -111,7 +114,7 @@ ACCEPTABLE_HIGH_PRICES = {
     ]
 }.get(chain.id, [])
 
-def _sense_check(
+async def _sense_check(
     token_address: str, 
     price: float
     ):
@@ -126,25 +129,26 @@ def _sense_check(
 
     # for some token types, its normal to have a crazy high nominal price
     # we can skip the sense check for those
-    if _exit_sense_check(token_address):
+    if await _exit_sense_check(token_address):
         return None
 
+    print('this prints')
     # proceed with sense check
     price_readable = round(price, 4)
-    symbol = _symbol(token_address)
+    symbol = await ERC20(token_address).symbol_async
     network = Network.name(chain.id)
-    logger.warn(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+    logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
 
-@log(logger)
-def _exit_sense_check(token_address: str) -> bool:
+#yLazyLogger(logger)
+async def _exit_sense_check(token_address: str) -> bool:
     '''
     For some token types, its normal to have a crazy high nominal price.
     We can skip the sense check for those.
     We can also skip wrapped versions of tokens in `ACCEPTABLE_HIGH_PRICES`.
     '''
 
-    bucket = check_bucket(token_address)
+    bucket = await check_bucket_async(token_address)
 
     if bucket == 'uni or uni-like lp':
         return True
@@ -156,35 +160,35 @@ def _exit_sense_check(token_address: str) -> bool:
 
     elif bucket == 'yearn or yearn-like':
         try: # v2
-            underlying = raw_call(token_address, 'token()', output='address')
-            if underlying in ACCEPTABLE_HIGH_PRICES or _exit_sense_check(underlying):
+            underlying = await raw_call_async(token_address, 'token()', output='address')
+            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
         try: # v1
-            underlying = raw_call(token_address, 'want()', output='address')
-            if underlying in ACCEPTABLE_HIGH_PRICES or _exit_sense_check(underlying):
+            underlying = await raw_call_async(token_address, 'want()', output='address')
+            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
     
     elif bucket == 'atoken':
         try: # v2
-            underlying = raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
-            if underlying in ACCEPTABLE_HIGH_PRICES or _exit_sense_check(underlying):
+            underlying = await raw_call_async(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
+            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
         try: # v1
-            underlying = raw_call(token_address, 'underlyingAssetAddress()', output='address')
-            if underlying in ACCEPTABLE_HIGH_PRICES or _exit_sense_check(underlying):
+            underlying = await raw_call_async(token_address, 'underlyingAssetAddress()', output='address')
+            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
 
     elif bucket == 'compound':
-        underlying = raw_call(token_address, 'underlying()', output='address')
-        if underlying in ACCEPTABLE_HIGH_PRICES or _exit_sense_check(underlying):
+        underlying = await raw_call_async(token_address, 'underlying()', output='address')
+        if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
             return True
     
     return False

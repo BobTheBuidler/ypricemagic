@@ -3,10 +3,10 @@ from typing import Optional
 
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
-from y.datatypes import UsdPrice
+from multicall.utils import await_awaitable
+from y.datatypes import Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
-from y.typing import Block
 
 MAPPING = {
     Network.Mainnet: {
@@ -18,4 +18,7 @@ def is_one_to_one_token(token_address: EthAddress) -> bool:
     return token_address in MAPPING
 
 def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return magic.get_price(MAPPING[token_address], block=block)
+    return await_awaitable(get_price_async(token_address, block=block))
+
+async def get_price_async(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
+    return await magic.get_price_async(MAPPING[token_address], block=block)

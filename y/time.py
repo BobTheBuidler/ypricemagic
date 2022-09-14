@@ -2,15 +2,17 @@ import datetime
 import logging
 
 from brownie import chain, web3
-from y.decorators import log
+
+from y.exceptions import NoBlockFound
 from y.utils.cache import memory
 from y.utils.client import get_ethereum_client
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
 
-@log(logger)
 @memory.cache() 
+#yLazyLogger(logger)
 def get_block_timestamp(height: int) -> int:
     client = get_ethereum_client()
     if client in ['tg', 'erigon']:
@@ -20,10 +22,10 @@ def get_block_timestamp(height: int) -> int:
         return chain[height].timestamp
 
 
-@log(logger)
-@memory.cache() 
+@memory.cache()
+#yLazyLogger(logger)
 def last_block_on_date(date_string: str) -> int:
-    logger.debug('last block on date %d', date_string)
+    logger.debug(f'last block on date {date_string}')
     date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
     date = date.date()
     height = chain.height
@@ -41,8 +43,16 @@ def last_block_on_date(date_string: str) -> int:
     return hi if hi != height else None
 
 
-@memory.cache()
+#yLazyLogger(logger)
 def closest_block_after_timestamp(timestamp: int) -> int:
+    try:
+        return _closest_block_after_timestamp_cached(timestamp)
+    except NoBlockFound:
+        return None
+
+
+@memory.cache()
+def _closest_block_after_timestamp_cached(timestamp: int) -> int:
     logger.info('closest block after timestamp %d', timestamp)
     height = chain.height
     lo, hi = 0, height
@@ -52,4 +62,6 @@ def closest_block_after_timestamp(timestamp: int) -> int:
             hi = mid
         else:
             lo = mid
-    return hi if hi != height else None
+    if hi == height:
+        raise NoBlockFound(f"No block found after timestamp {timestamp}")
+    return hi

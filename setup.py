@@ -15,9 +15,16 @@ setup(
     url='https://github.com/BobTheBuidler/ypricemagic',
     license='MIT',
     install_requires=[
+        'async_lru==1.0.3',
+        'async_property==0.2.1',
+        'bobs_lazy_logging==0.0.4',
         'cachetools>=4.1.1',
-        'eth-brownie>=1.18.1',
+        'checksum_dict>=1.1.1',
+        'dank_mids>=0.2.2',
+        'eth-brownie>=1.18.1,<1.19',
+        'eth_retry>=0.1.5,<0.2',
         'joblib>=1.0.1',
+        'multicall>=0.5.1,<0.6',
     ],
     setup_requires=[
         'setuptools_scm',

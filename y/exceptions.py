@@ -1,7 +1,7 @@
 import logging
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
-from y.decorators import log
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +20,9 @@ class NonStandardERC20(Exception):
     pass
 
 class CantFetchParam(Exception):
+    pass
+
+class NoBlockFound(Exception):
     pass
 
 
@@ -46,7 +49,7 @@ class MessedUpBrownieContract(Exception):
             else: raise
 
 
-@log(logger)
+#yLazyLogger(logger)
 def contract_not_verified(e: Exception) -> bool:
     triggers = [
         'Contract source code not verified',
@@ -77,7 +80,7 @@ class CallReverted(Exception):
     pass
 
 
-@log(logger)
+#yLazyLogger(logger)
 def call_reverted(e: Exception) -> bool:
     triggers = [
         'execution reverted',
@@ -95,7 +98,7 @@ def continue_if_call_reverted(e: Exception) -> None:
     else: raise e
 
 
-@log(logger)
+#yLazyLogger(logger)
 def out_of_gas(e: Exception) -> bool:
     return 'out of gas' in str(e) 
 

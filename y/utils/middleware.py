@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Callable
 
+import eth_retry
 from brownie import web3
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 
 BATCH_SIZE = (
     2_000 if 'moralis' in web3.provider.endpoint_uri
+    else 2_000 if 'pokt' in web3.provider.endpoint_uri
     else 10_000
 )
 CACHED_CALLS = [
@@ -35,6 +37,8 @@ def should_cache(method: str, params: Any) -> bool:
 
 
 def cache_middleware(make_request: Callable, web3: Web3) -> Callable:
+
+    @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
 

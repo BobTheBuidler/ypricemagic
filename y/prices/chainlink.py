@@ -1,19 +1,21 @@
 import logging
-from functools import cached_property, lru_cache
+from functools import cached_property
 from typing import Dict, Optional
 
+from async_lru import alru_cache
+from async_property import async_cached_property
 from brownie import ZERO_ADDRESS, chain
-from cachetools.func import ttl_cache
+from multicall import Call
+from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract
-from y.datatypes import UsdPrice
-from y.decorators import log
-from y.exceptions import UnsupportedNetwork
+from y.datatypes import Address, AnyAddressType, Block, UsdPrice
+from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.networks import Network
-from y.typing import Address, AnyAddressType, Block
-from y.utils.events import create_filter, decode_logs, get_logs_asap
+from y.utils.events import create_filter, decode_logs, get_logs_asap_async
+from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -138,8 +140,13 @@ class Chainlink(metaclass=Singleton):
             self.registry = Contract(registries[chain.id])
         
     @cached_property
-    @log(logger)
+    #yLazyLogger(logger)
     def feeds(self) -> Dict[ERC20, str]:
+        return await_awaitable(self.feeds_async)
+    
+    #yLazyLogger(logger)
+    @async_cached_property
+    async def feeds_async(self) -> Dict[ERC20, str]:
         if chain.id in registries:
             try:
                 log_filter = create_filter(str(self.registry), [self.registry.topics['FeedConfirmed']])
@@ -147,7 +154,7 @@ class Chainlink(metaclass=Singleton):
             except ValueError as e:
                 if 'the method is currently not implemented: eth_newFilter' not in str(e):
                     raise
-                new_entries = get_logs_asap(str(self.registry), [self.registry.topics['FeedConfirmed']])
+                new_entries = await get_logs_asap_async(str(self.registry), [self.registry.topics['FeedConfirmed']])
 
             logs = decode_logs(new_entries)
             feeds = {
@@ -163,35 +170,72 @@ class Chainlink(metaclass=Singleton):
         logger.info(f'loaded {len(feeds)} feeds')
         return feeds
 
-    @log(logger)
-    def get_feed(self, asset: Address) -> Contract:
-        return Contract(self.feeds[convert.to_address(asset)])
+    #yLazyLogger(logger)
+    def get_feed(self, asset: Address) -> Optional[Contract]:
+        return await_awaitable(self.get_feed_async(asset))
+    
+    #yLazyLogger(logger)
+    async def get_feed_async(self, asset: Address) -> Optional[Contract]:
+        feeds = await self.feeds_async
+        try:
+            return Contract(feeds[convert.to_address(asset)])
+        except ContractNotVerified:
+            return None
 
-    @log(logger)
+    #yLazyLogger(logger)
     def __contains__(self, asset: AnyAddressType) -> bool:
         return convert.to_address(asset) in self.feeds
+    
+    async def has_feed(self, asset: AnyAddressType) -> bool:
+        return convert.to_address(asset) in await self.feeds_async
 
-    @ttl_cache(maxsize=None, ttl=600)
-    @log(logger)
     def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
+        return await_awaitable(self.get_price_async(asset, block))
+
+    #yLazyLogger(logger)
+    async def get_price_async(self, asset, block: Optional[Block] = None) -> UsdPrice:
+        if block is None:
+            block = chain.height
+        return await self._get_price_async(asset, block)
+
+    @alru_cache(maxsize=None)
+    async def _get_price_async(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
-        try:
-            price = self.get_feed(asset).latestAnswer(block_identifier=block) / self.feed_scale(asset)
-            logger.debug("chainlink -> %s", price)
-            return price
-        except ValueError:
+        feed = await self.get_feed_async(asset)
+        if feed is None:
             return None
+        try:
+            latest_answer, scale = await gather([
+                Call(feed.address, 'latestAnswer()(uint)', block_id=block).coroutine(),
+                self.feed_scale_async(asset),
+            ])
+        except ValueError as e:
+            print(feed.address)
+            print(str(e))
+            return None
+
+        if latest_answer and scale:
+            price = latest_answer / scale
+            return price
     
-    @lru_cache(maxsize=None)
     def feed_decimals(self, asset: AnyAddressType) -> int:
+        return await_awaitable(self.feed_decimals_async(asset))
+
+    #yLazyLogger(logger)
+    @alru_cache(maxsize=None)
+    async def feed_decimals_async(self, asset: AnyAddressType) -> int:
         asset = convert.to_address(asset)
-        feed = self.get_feed(asset)
-        return feed.decimals()
+        feed = await self.get_feed_async(asset)
+        return await Call(feed.address, ['decimals()(uint)'], []).coroutine()
     
     def feed_scale(self, asset: AnyAddressType) -> int:
-        return 10 ** self.feed_decimals(asset)
+        return await_awaitable(self.feed_scale_async(asset))
+
+    async def feed_scale_async(self, asset: AnyAddressType) -> int:
+        if decimals:= await self.feed_decimals_async(asset):
+            return 10 ** decimals
 
 
 try: chainlink = Chainlink()

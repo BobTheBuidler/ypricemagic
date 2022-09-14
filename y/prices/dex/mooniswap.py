@@ -1,18 +1,18 @@
 
+import asyncio
 import logging
 from typing import Optional
 
-from brownie import ZERO_ADDRESS, chain, multicall, web3
+from async_lru import alru_cache
+from brownie import ZERO_ADDRESS, chain
+from multicall.utils import await_awaitable
+from y import convert
+from y.classes.common import ERC20
 from y.constants import weth
 from y.contracts import Contract
-from y.datatypes import UsdPrice
-from y.decorators import log
-from y import convert
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.prices import magic
-from y.typing import Block, AnyAddressType
-from y.utils.cache import memory
-from y.utils.multicall import multicall2
-from y.utils.raw_calls import _decimals, _totalSupplyReadable
+from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
 
@@ -26,59 +26,44 @@ else:
     router = None
     gas_coin = None
 
-@log(logger)
-@memory.cache()
+#yLazyLogger(logger)
 def is_mooniswap_pool(token: AnyAddressType) -> bool:
+    return await_awaitable(is_mooniswap_pool_async(token))
+
+#yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_mooniswap_pool_async(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     if router is None:
         return False
-    return router.isPool(address)
+    return await router.isPool.coroutine(address)
 
-@log(logger)
 def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    return await_awaitable(get_pool_price_async(token, block=block))
+
+#yLazyLogger(logger)
+async def get_pool_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     token = Contract(address)
-    if block >= 12336033 and chain.id == 1:
-        with multicall(address=multicall2.address, block_identifier = block):
-            token0_address = token.token0()
-            token1_address = token.token1()
-            totalSupply = _totalSupplyReadable(address,block)
-            if token0_address == ZERO_ADDRESS:
-                token1 = Contract(token1_address)
-                bal0 = web3.eth.get_balance(token.address) / 10 ** 18
-                bal1 = token1.balanceOf(token) / 10 ** _decimals(token1_address,block)
-            elif token1_address == ZERO_ADDRESS:
-                token0 = Contract(token0_address)
-                bal0 = token0.balanceOf(token) / 10 ** _decimals(token0_address,block)
-                bal1 = web3.eth.get_balance(token.address) / 10 ** 18
-            else:
-                token0, token1 = Contract(token0_address), Contract(token1_address)
-                bal0 = token0.balanceOf(token) / 10 ** _decimals(token0_address,block)
-                bal1 = token1.balanceOf(token) / 10 ** _decimals(token1_address,block)
-    else:
-        token0_address = token.token0(block_identifier = block)
-        token1_address = token.token1(block_identifier = block)
-        totalSupply = _totalSupplyReadable(address,block)
-        if token0_address == ZERO_ADDRESS:
-            token1 = Contract(token1_address)
-            bal0 = web3.eth.get_balance(token.address, block_identifier = block) / 10 ** 18
-            bal1 = token1.balanceOf(token, block_identifier = block) / 10 ** _decimals(token1_address,block)
-        elif token1_address == ZERO_ADDRESS:
-            token0 = Contract(token0_address)
-            bal0 = token0.balanceOf(token, block_identifier = block) / 10 ** _decimals(token0_address,block)
-            bal1 = web3.eth.get_balance(token.address, block_identifier = block) / 10 ** 18
-        else:
-            token0, token1 = Contract(token0_address), Contract(token1_address)
-            bal0 = token0.balanceOf(token,block_identifier = block) / 10 ** _decimals(token0_address,block)
-            bal1 = token1.balanceOf(token,block_identifier = block) / 10 ** _decimals(token1_address,block)
+    token0, token1 = await asyncio.gather(
+        token.token0.coroutine(),
+        token.token1.coroutine(),
+    )
 
-    if token0_address == ZERO_ADDRESS:
-        token0 = gas_coin
-    if token1_address == ZERO_ADDRESS:
-        token1 = gas_coin
-    val0 = bal0 * magic.get_price(token0.address, block)
-    val1 = bal1 * magic.get_price(token1.address, block)
-    totalVal = val0 + val1
-    price = totalVal / totalSupply
+    bal0, bal1, price0, price1, total_supply = await asyncio.gather(
+        dank_w3.eth.get_balance(token.address) if token0 == ZERO_ADDRESS else ERC20(token0).balance_of_readable_async(token.address, block),
+        dank_w3.eth.get_balance(token.address) if token1 == ZERO_ADDRESS else ERC20(token1).balance_of_readable_async(token.address, block),
+        magic.get_price_async(gas_coin, block) if token0 == ZERO_ADDRESS else magic.get_price_async(token0, block),
+        magic.get_price_async(gas_coin, block) if token1 == ZERO_ADDRESS else magic.get_price_async(token1, block),
+        ERC20(address).total_supply_readable_async(block),
+    )
+
+    if token0 == ZERO_ADDRESS:
+        bal0 /= 1e18
+    elif token1 == ZERO_ADDRESS:
+        bal1 /= 1e18
+
+    totalVal = bal0 * price0 + bal1 * price1
+    price = totalVal / total_supply
     return price
     

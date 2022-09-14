@@ -43,7 +43,7 @@ POPSICLES = mutate_addresses(POPSICLES)
 @pytest.mark.parametrize('token',POPSICLES)
 def test_popsicle_get_price(token):
     assert popsicle.is_popsicle_lp(token), 'Popsicle LP not recognized.'
-    blocks = blocks_for_contract(token, 10)
+    blocks = blocks_for_contract(token, 25)
     for block in blocks:
         assert popsicle.get_price(token, block), 'Failed to fetch price.'
 

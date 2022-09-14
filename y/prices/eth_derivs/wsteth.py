@@ -2,14 +2,14 @@ import logging
 from typing import Optional
 
 from brownie import chain
+from multicall.utils import await_awaitable, gather
 from y import convert
 from y.constants import weth
-from y.datatypes import UsdPrice
-from y.decorators import log
+from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
-from y.typing import AnyAddressType, Block
-from y.utils.raw_calls import raw_call
+from y.utils.logging import yLazyLogger
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -22,14 +22,22 @@ class wstEth:
         except KeyError:
             self.address = None
     
-    @log(logger)
+    #yLazyLogger(logger)
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
-        share_price = raw_call(self.address, 'stEthPerToken()', output='int', block=block) / 1e18
-        return UsdPrice(share_price * magic.get_price(weth, block))
+        return await_awaitable(self.get_price_async(block=block))
+
+    #yLazyLogger(logger)
+    async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
+        share_price, weth_price = await gather([
+            raw_call_async(self.address, 'stEthPerToken()', output='int', block=block),
+            magic.get_price_async(weth, block),
+        ])
+        share_price /= 1e18
+        return UsdPrice(share_price * weth_price)
 
 wsteth = wstEth()
 
-@log(logger)
+#yLazyLogger(logger)
 def is_wsteth(address: AnyAddressType) -> bool:
     if chain.id != Network.Mainnet:
         return False

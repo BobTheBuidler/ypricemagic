@@ -1,53 +1,70 @@
 import logging
-from functools import lru_cache
 from typing import List, Optional
 
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS
 from multicall import Call
-from y.contracts import has_method
-from y.datatypes import UsdPrice, UsdValue
-from y.decorators import log
-from y.erc20 import decimals, totalSupplyReadable
+from multicall.utils import await_awaitable, gather
+from y.classes.common import ERC20
+from y.contracts import has_method_async
+from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
 from y.prices import magic
-from y.typing import Address, AnyAddressType, Block
-from y.utils.multicall import multicall_balanceOf
-from y.utils.raw_calls import raw_call
+from y.utils.logging import yLazyLogger
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
 
-@log(logger)
-@lru_cache
-def is_pie(token: AnyAddressType) -> bool:
-    return has_method(token, "getCap()(uint)")
+#yLazyLogger(logger)
+async def is_pie(token: AnyAddressType) -> bool:
+    return await_awaitable(is_pie_async(token))
 
-@log(logger)
+#yLazyLogger(logger)
+@alru_cache(maxsize=None)
+async def is_pie_async(token: AnyAddressType) -> bool:
+    return await has_method_async(token, "getCap()(uint)")
+
+#yLazyLogger(logger)
 def get_price(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return UsdPrice(tvl(pie, block) / totalSupplyReadable(pie, block))
+    return await_awaitable(get_price_async(pie, block))
 
-@log(logger)
-def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[Address]:
-    return Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], block_id=block)()['tokens']
+async def get_price_async(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    tvl, total_supply = await gather([
+        get_tvl(pie, block),
+        ERC20(pie).total_supply_readable_async(block),
+    ])
+    return UsdPrice(tvl / total_supply)
 
-@log(logger)
-def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
+#yLazyLogger(logger)
+async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[ERC20]:
+    tokens = await Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], block_id=block).coroutine()
+    tokens = tokens['tokens']
+    return [ERC20(t) for t in tokens]
+
+#yLazyLogger(logger)
+async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
     try:
-        bpool = raw_call(pie_address, 'getBPool()', output='address', block=block)
+        bpool = await raw_call_async(pie_address, 'getBPool()', output='address', block=block)
         return bpool if bpool != ZERO_ADDRESS else pie_address
     except Exception as e:
         if not call_reverted(e):
             raise
         return pie_address
 
-@log(logger)
-def tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
-    tokens = get_tokens(pie_address, block)
-    pool = get_bpool(pie_address, block)
-    token_balances = multicall_balanceOf(tokens, pool, block=block)
-    token_decimals = decimals(tokens, block)
-    token_balances = [bal / 10 ** decimal for bal, decimal in zip(token_balances, token_decimals)]
-    prices = magic.get_prices(tokens, block, silent=True, dop=1)
+#yLazyLogger(logger)
+async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
+    tokens: List[ERC20]
+    pool, tokens = await gather([
+        get_bpool(pie_address, block),
+        get_tokens(pie_address, block),
+    ])
+    token_balances, token_scales, prices = await gather([
+        gather([Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block).coroutine() for token in tokens]),
+        gather([token.scale for token in tokens]),
+        magic.get_prices_async(tokens, block),
+    ])
+    token_balances = [bal / scale for bal, scale in zip(token_balances, token_scales)]
     return UsdValue(
         sum(bal * price for bal, price in zip(token_balances, prices))
     )

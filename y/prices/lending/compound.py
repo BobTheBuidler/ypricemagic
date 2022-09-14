@@ -1,18 +1,18 @@
 import logging
 from functools import cached_property, lru_cache
-from typing import Any, Optional, Set
+from typing import Any, Optional, Tuple
 
+from async_property import async_cached_property
 from brownie import chain, convert
 from multicall import Call
+from multicall.utils import await_awaitable, gather
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
-from y.contracts import has_methods
-from y.datatypes import UsdPrice
-from y.decorators import log
+from y.contracts import has_methods_async
+from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.networks import Network
-from y.typing import AddressOrContract, AnyAddressType, Block
-from y.utils.logging import gh_issue_request
+from y.utils.logging import gh_issue_request, yLazyLogger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -61,34 +61,70 @@ class CToken(ERC20):
         super().__init__(address, *args, **kwargs)
     
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
-        return UsdPrice(self.underlying_per_ctoken(block=block) * self.underlying.price(block=block))
+        return await_awaitable(self.get_price_async(block))
+    
+    async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
+        underlying_per_ctoken, underlying_price = await gather([
+            self.underlying_per_ctoken_async(block=block),
+            (await self.underlying_async).price_async(block=block),
+        ])
+        return UsdPrice(underlying_per_ctoken * underlying_price)
     
     @cached_property
-    @log(logger)
+    #yLazyLogger(logger)
     def underlying(self) -> ERC20:
-        underlying = self.has_method('underlying()(address)', return_response=True)
+        return await_awaitable(self.underlying_async)
+    
+    #yLazyLogger(logger)
+    @async_cached_property
+    async def underlying_async(self) -> ERC20:
+        underlying = await self.has_method_async('underlying()(address)', return_response=True)
 
         # this will run for gas coin markets like cETH, crETH
-        if not underlying: underlying = EEE_ADDRESS
+        if not underlying:
+            underlying = EEE_ADDRESS
 
         return ERC20(underlying)
     
-    @log(logger)
+    #yLazyLogger(logger)
     @lru_cache
     def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
-        return self.exchange_rate(block=block) * 10 ** (self.decimals - self.underlying.decimals)
+        return await_awaitable(self.underlying_per_ctoken_async(block))
     
-    @log(logger)
+    #yLazyLogger(logger)
+    async def underlying_per_ctoken_async(self, block: Optional[Block] = None) -> float:
+        exchange_rate, decimals, underlying = await gather([
+            self.exchange_rate_async(block=block),
+            self.decimals,
+            self.underlying_async,
+        ])
+        return exchange_rate * 10 ** (decimals - await underlying.decimals)
+    
+    #yLazyLogger(logger)
     @lru_cache
     def exchange_rate(self, block: Optional[Block] = None) -> float:
+        return await_awaitable(self.exchange_rate(block))
+
+    #yLazyLogger(logger)
+    async def exchange_rate_async(self, block: Optional[Block] = None) -> float:
         method = 'exchangeRateCurrent()(uint)'
+        call = Call(self.address, [method], block_id=block)
+
+        exchange_rate = await call.coroutine()
+
+        if exchange_rate:
+            return exchange_rate / 1e18
+
+        # multicall failed but lets try with single call just to see. Might get rid of this later.
         try:
-            exchange_rate = Call(self.address, [method], [[method,None]], block_id=block)()[method]
+            exchange_rate = call()
         except Exception as e:
             if 'borrow rate is absurdly high' in str(e):
                 exchange_rate = 0
-            else:
-                raise
+        
+        if exchange_rate is None:
+            return None
+
         return exchange_rate / 1e18
     
 
@@ -106,17 +142,21 @@ class Comptroller(ContractBase):
     def __repr__(self) -> str:
         return f"<Comptroller {self.key} '{self.address}'>"
 
-    @log(logger)
+    #yLazyLogger(logger)
     def __contains__(self, token_address: AnyAddressType) -> bool:
         return token_address in self.markets
     
     @cached_property
-    def markets(self) -> Set[CToken]:
-        response = self.has_method("getAllMarkets()(address[])", return_response=True)
+    def markets(self) -> Tuple[CToken]:
+        return await_awaitable(self.markets_async)
+
+    @async_cached_property
+    async def markets_async(self) -> Tuple[CToken]:
+        response = await self.has_method_async("getAllMarkets()(address[])", return_response=True)
         if not response:
             logger.error(f'had trouble loading markets for {self.__repr__()}')
             response = set()
-        markets = {CToken(market) for market in response}
+        markets = tuple(CToken(market) for market in response)
         logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
         return markets
 
@@ -129,25 +169,34 @@ class Compound(metaclass = Singleton):
             in TROLLERS.items()
         }
 
-    @log(logger)
+    #yLazyLogger(logger)
     def is_compound_market(self, token_address: AddressOrContract) -> bool:
-        if any(token_address in troller for troller in self.trollers.values()):
+        return await_awaitable(self.is_compound_market_async(token_address))
+    
+    #yLazyLogger(logger)
+    async def is_compound_market_async(self, token_address: AddressOrContract) -> bool:
+        all_markets = await gather([troller.markets_async for troller in self.trollers.values()])
+        if any(token_address in troller for troller in all_markets):
             return True
 
         # NOTE: Workaround for pools that have since been revoked
-        result = has_methods(token_address, ['isCToken()(bool)','comptroller()(address)','underlying()(address)'])
+        result = await has_methods_async(token_address, ('isCToken()(bool)','comptroller()(address)','underlying()(address)'))
         if result is True: self.__notify_if_unknown_comptroller(token_address)
         return result
     
-    @log(logger)
+    #yLazyLogger(logger)
     def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-        return CToken(token_address).get_price(block=block)
+        return await_awaitable(self.get_price_async(token_address, block=block))
 
-    @log(logger)
+    #yLazyLogger(logger)
+    async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+        return await CToken(token_address).get_price_async(block=block)
+
+    #yLazyLogger(logger)
     def __contains__(self, token_address: AddressOrContract) -> bool:
         return self.is_compound_market(token_address)
 
-    @log(logger)
+    #yLazyLogger(logger)
     def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         comptroller = raw_call(token_address,'comptroller()',output='address')
         if comptroller not in self.trollers.values():

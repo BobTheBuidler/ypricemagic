@@ -1,13 +1,14 @@
 import pytest
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
-from tests.constants import STABLECOINS
+from tests.test_constants import STABLECOINS
 from tests.fixtures import blocks_for_contract, mutate_tokens
 from y.classes.common import ERC20
 from y.constants import WRAPPED_GAS_COIN, wbtc
 from y.exceptions import NoProxyImplementation, call_reverted
 
-TOKENS = STABLECOINS + mutate_tokens([WRAPPED_GAS_COIN, wbtc.address])
+TOKENS = list(STABLECOINS) + [WRAPPED_GAS_COIN, wbtc.address]
+
 TOKENS_BY_BLOCK = [
     (token, block)
     for token in TOKENS
