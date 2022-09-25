@@ -338,7 +338,7 @@ def _extract_abi_data(address):
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
                 raise ValueError(f'Rate limited by Blockscout. Please try again.')
-            if web3.eth.get_code(convert.to_address(address)):
+            if web3.eth.get_code(address):
                 raise ContractNotVerified(address)
             else:
                 raise ContractNotFound(address)
@@ -355,21 +355,22 @@ def _extract_abi_data(address):
     
     is_verified = bool(data["result"][0].get("SourceCode"))
     if not is_verified:
-        raise ValueError(f"Contract source code not verified: {address}")
+        raise ContractNotVerified(f"Contract source code not verified: {address}")
     name = data["result"][0]["ContractName"]
     abi = json.loads(data["result"][0]["ABI"])
     implementation = data["result"][0]["Implementation"]
     return name, abi, implementation
 
 @eth_retry.auto_retry
-def _resolve_proxy(address) -> Tuple[str, Address, List]:
+def _resolve_proxy(address) -> Tuple[str, List]:
+    address = convert.to_address(address)
     name, abi, implementation = _extract_abi_data(address)
     as_proxy_for = None
 
     if address in FORCE_IMPLEMENTATION:
         implementation = FORCE_IMPLEMENTATION[address]
         name, abi, _ = _extract_abi_data(implementation)
-        return Contract.from_abi(name, address, abi)
+        return name, abi
 
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
     implementation_eip1967 = web3.eth.get_storage_at(
