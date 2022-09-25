@@ -362,14 +362,14 @@ def _extract_abi_data(address):
     return name, abi, implementation
 
 @eth_retry.auto_retry
-def _resolve_proxy(address) -> Tuple[str, Address, List]:
+def _resolve_proxy(address) -> Tuple[str, List]:
     name, abi, implementation = _extract_abi_data(address)
     as_proxy_for = None
 
     if address in FORCE_IMPLEMENTATION:
         implementation = FORCE_IMPLEMENTATION[address]
         name, abi, _ = _extract_abi_data(implementation)
-        return Contract.from_abi(name, address, abi)
+        return name, abi
 
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
     implementation_eip1967 = web3.eth.get_storage_at(
