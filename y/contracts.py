@@ -338,7 +338,7 @@ def _extract_abi_data(address):
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
                 raise ValueError(f'Rate limited by Blockscout. Please try again.')
-            if web3.eth.get_code(convert.to_address(address)):
+            if web3.eth.get_code(address):
                 raise ContractNotVerified(address)
             else:
                 raise ContractNotFound(address)
@@ -363,6 +363,7 @@ def _extract_abi_data(address):
 
 @eth_retry.auto_retry
 def _resolve_proxy(address) -> Tuple[str, List]:
+    address = convert.to_address(address)
     name, abi, implementation = _extract_abi_data(address)
     as_proxy_for = None
 
