@@ -452,7 +452,7 @@ class CurveRegistry(metaclass=Singleton):
             return None
         
         # Get the price for `token_in` using the selected pool.
-        if len(await pool.get_coins_async) == 2:
+        if len(coins := await pool.get_coins_async) == 2:
             # this works for most typical metapools
             token_in_ix = await pool.get_coin_index_async(token_in)
             token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
@@ -461,7 +461,8 @@ class CurveRegistry(metaclass=Singleton):
                 return None
             coro = dy.value_usd_async
             try:
-                if token in curve:
+                token_out = coins[token_out_ix]
+                if token_out in curve:
                     return await coro
                 for p in asyncio.as_completed([coro],timeout=60):
                     return await p
