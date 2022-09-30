@@ -78,8 +78,6 @@ class Synthetix(metaclass=Singleton):
             return target in synthetix.synths and await Call(target, 'proxy()(address)').coroutine() == token
         return False
 
-
-    @lru_cache(maxsize=None)
     def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
         return await_awaitable(self.get_currency_key_async(token))
     
