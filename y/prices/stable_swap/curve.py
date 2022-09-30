@@ -459,8 +459,11 @@ class CurveRegistry(metaclass=Singleton):
             dy = await pool.get_dy_async(token_in_ix, token_out_ix, block = block)
             if dy is None:
                 return None
+            coro = dy.value_usd_async
             try:
-                for p in asyncio.as_completed([dy.value_usd_async],timeout=1):
+                if token in curve:
+                    return await coro
+                for p in asyncio.as_completed([coro],timeout=60):
                     return await p
             except (PriceError, asyncio.TimeoutError):
                 return None
