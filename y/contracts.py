@@ -162,21 +162,11 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def coroutine(
         cls, 
         address: AnyAddressType, 
-        *args: Any, 
-        owner: Optional[AccountsType] = None, 
-        require_success: bool = True, 
-        **kwargs: Any
-        ) -> None:
+        ) -> "Contract":
         try:
             return Contract._ChecksumAddressSingletonMeta__instances[address]
         except KeyError:
-            new_kwargs = {
-                "owner": owner,
-                "require_success": require_success,
-            }
-            for k, v in kwargs.items():
-                new_kwargs[k] = v
-            return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address, *args, new_kwargs)
+            return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address)
     
     def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
         _ContractBase.__init__(self, None, build, {})  # type: ignore

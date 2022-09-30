@@ -31,7 +31,7 @@ def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
 #yLazyLogger(logger)
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
-    contract = Contract(address)
+    contract = await Contract.coroutine(address)
     token, total_bal, total_supply = gather([
         contract.token.coroutine(block_identifier=block),
         contract.totalToken.coroutine(block_identifier=block),

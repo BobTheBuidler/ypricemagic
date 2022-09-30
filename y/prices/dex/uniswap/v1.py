@@ -30,16 +30,16 @@ class UniswapV1:
     #yLazyLogger(logger)
     async def get_price_async(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
         try:
-            factory = Contract(self.factory)
+            factory = await Contract.coroutine(self.factory)
         except ValueError:
             raise UnsupportedNetwork
         exchange = factory.getExchange(token_address)
         if exchange == ZERO_ADDRESS:
             return None
         try:
-            exchange = Contract(exchange)
+            exchange = await Contract.coroutine(exchange)
             eth_bought = exchange.getTokenToEthInputPrice(10 ** await _decimals(token_address,block), block_identifier=block)
-            exchange = Contract(factory.getExchange(usdc))
+            exchange = await Contract.coroutine(factory.getExchange(usdc))
             usdc_bought = exchange.getEthToTokenInputPrice(eth_bought, block_identifier=block) / 1e6
             fees = 0.997 ** 2
             return UsdPrice(usdc_bought / fees)

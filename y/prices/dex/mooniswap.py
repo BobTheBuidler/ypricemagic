@@ -44,7 +44,7 @@ def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdP
 #yLazyLogger(logger)
 async def get_pool_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
-    token = Contract(address)
+    token = await Contract.coroutine(address)
     token0, token1 = await asyncio.gather(
         token.token0.coroutine(),
         token.token1.coroutine(),

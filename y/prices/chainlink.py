@@ -178,7 +178,7 @@ class Chainlink(metaclass=Singleton):
     async def get_feed_async(self, asset: Address) -> Optional[Contract]:
         feeds = await self.feeds_async
         try:
-            return Contract(feeds[convert.to_address(asset)])
+            return await Contract.coroutine(feeds[convert.to_address(asset)])
         except ContractNotVerified:
             return None
 
