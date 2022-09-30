@@ -69,7 +69,9 @@ async def _decimals(
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch 
         # using the verified non standard abi as a fallback
-        try: decimals = await Contract(contract_address).decimals.coroutine(block_identifier=block)
+        try: 
+            contract = await Contract.coroutine(contract_address)
+            decimals = await contract.decimals.coroutine(block_identifier=block)
         except ContractNotVerified:
             pass
         except AttributeError as e:
@@ -88,7 +90,9 @@ async def _decimals(
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
-        try: decimals = await Contract(contract_address).DECIMALS.coroutine(block_identifier=block)
+        try: 
+            contract = await Contract.coroutine(contract_address)
+            decimals = await contract.DECIMALS.coroutine(block_identifier=block)
         except ContractNotVerified:
             pass
         except AttributeError as e:
@@ -107,7 +111,9 @@ async def _decimals(
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
-        try: decimals = await Contract(contract_address).getDecimals.coroutine(block_identifier=block)
+        try: 
+            contract = await Contract.coroutine(contract_address)
+            decimals = await contract.getDecimals.coroutine(block_identifier=block)
         except ContractNotVerified:
             pass
         except AttributeError as e:
@@ -148,7 +154,8 @@ async def _totalSupply(
         # the contract might not comply with standards, so we can possibly fetch totalSupply 
         # using the verified non standard abi as a fallback
         try:
-            total_supply = await Contract(contract_address).totalSupply.coroutine(block_identifier=block)
+            contract = await Contract.coroutine(contract_address)
+            total_supply = await contract.totalSupply.coroutine(block_identifier=block)
         except AttributeError as e:
             if "has no attribute 'totalSupply'" not in str(e):
                 raise
@@ -216,7 +223,9 @@ async def balanceOf_async(
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch balanceOf 
         # using the verified non standard abi as a fallback
-        try: return await Contract(call_address).balanceOf.coroutine(input_address, block_identifier=block)
+        try:
+            contract = await Contract.coroutine(call_address)
+            return await contract.balanceOf.coroutine(input_address, block_identifier=block)
         except AttributeError as e:
             if "has no attribute 'balanceOf'" not in str(e):
                 raise

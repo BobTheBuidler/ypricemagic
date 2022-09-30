@@ -75,9 +75,13 @@ class UniswapPoolV2(ERC20):
             # verified uni fork, maybe we can get factory this way
             okay_errors = ['is not a valid ETH address','invalid opcode','invalid jump destination']
             if any([msg in str(e) for msg in okay_errors]):
-                try: self.factory = Contract(self.address).factory()
-                except AttributeError: raise NotAUniswapV2Pool
-            else: raise
+                contract = await Contract.coroutine(self.address)
+                try: 
+                    return await contract.factory.coroutine()
+                except AttributeError:
+                    raise NotAUniswapV2Pool
+            else:
+                raise
 
     @cached_property
     #yLazyLogger(logger)
@@ -185,7 +189,7 @@ class UniswapPoolV2(ERC20):
                 raise
             # if call reverted, let's try with brownie. Sometimes this works, not sure why
             try:
-                contract = Contract(self.address)
+                contract = await Contract.coroutine(self.address)
                 token0, token1, supply, reserves = fetch_multicall([contract,'token0'],[contract,'token1'],[contract,'totalSupply'],[contract,'getReserves'],block=block)
             except (AttributeError, ContractNotVerified, MessedUpBrownieContract):
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
@@ -266,7 +270,7 @@ class UniswapRouterV2(ContractBase):
         token_in, token_out, path = str(token_in), str(token_out), None
 
         if chain.id == Network.BinanceSmartChain and token_out == usdc.address:
-            busd = Contract("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
+            busd = await Contract.coroutine("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
         if str(token_in) in STABLECOINS:
@@ -482,7 +486,7 @@ class UniswapRouterV2(ContractBase):
             if reserve is None or isinstance(i, Exception):
                 # TODO: Figure out which abi we should use for getReserves
                 try:
-                    pool = Contract(pool)
+                    pool = await Contract.coroutine(pool)
                     if all(
                         pool.getReserves.abi['outputs'][i]['type'] == _type 
                         for i, _type in enumerate(['uint112', 'uint112', 'uint32'])
@@ -534,7 +538,7 @@ class UniswapRouterV2(ContractBase):
             if reserve is None or isinstance(i, Exception):
                 # TODO: Figure out which abi we should use for getReserves
                 try:
-                    pool = Contract(pool)
+                    pool = await Contract.coroutine(pool)
                     if all(
                         pool.getReserves.abi['outputs'][i]['type'] == _type 
                         for i, _type in enumerate(['uint112', 'uint112', 'uint32'])

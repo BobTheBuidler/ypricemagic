@@ -26,7 +26,8 @@ def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -
     return await_awaitable(get_price_async(token_address, block))
 
 async def get_price_async(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
-    minter = Contract(await raw_call_async(token_address,'minter()',output='address', block=block))
+    minter = await raw_call_async(token_address,'minter()',output='address', block=block)
+    minter = await Contract.coroutine(minter)
     i, balances = 0, []
     while True:
         try:

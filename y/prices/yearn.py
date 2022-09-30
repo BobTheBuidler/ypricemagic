@@ -66,7 +66,7 @@ async def is_yearn_vault_async(token: AnyAddressType) -> bool:
     # but it might still be a vault. This section will correct `result` for problematic vaults.
     if result is False:
         try: 
-            contract = Contract(token)
+            contract = await Contract.coroutine(token)
             result = any([
                 hasattr(contract,'pricePerShare'),
                 hasattr(contract,'getPricePerShare'),

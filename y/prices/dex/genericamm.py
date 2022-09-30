@@ -57,7 +57,7 @@ class GenericAmm:
         return await_awaitable(self.get_tvl_async(lp_token_address, block=block))
     
     async def get_tvl_async(self, lp_token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
-        lp_token_contract = Contract(lp_token_address)
+        lp_token_contract = await Contract.coroutine(lp_token_address)
         tokens = await self.get_tokens_async(lp_token_address)
         reserves = await lp_token_contract.getReserves.coroutine(block_identifier=block)
         reserves = [WeiBalance(reserve,token,block) for token, reserve in zip(tokens,reserves)]
