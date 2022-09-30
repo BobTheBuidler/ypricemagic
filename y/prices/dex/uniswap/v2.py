@@ -222,6 +222,20 @@ def _events_subprocess(logs):
     return pairs, pools
     
 
+async def _get_reserves_long_way(pool: Address, block: Block):
+    # TODO: Figure out which abi we should use for getReserves
+    try:
+        pool = await Contract.coroutine(pool)
+        if all(
+            pool.getReserves.abi['outputs'][i]['type'] == _type 
+            for i, _type in enumerate(['uint112', 'uint112', 'uint32'])
+        ):
+            return None
+        reserves = await pool.getReserves.coroutine(block_identifier=block)
+        logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
+        return reserves
+    except:
+        logger.error(f'must debug getReserves for {pool}')
 
 class UniswapRouterV2(ContractBase):
     def __init__(self, router_address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
@@ -482,20 +496,10 @@ class UniswapRouterV2(ContractBase):
         # DEVELOPMENT:
         # some items in `reserves` will == None if the abi differs from the expected one.
         # I will remove this later. 
-        async for i, (pool, reserve) in as_aiter(enumerate(zip(pools, reserves))):
-            if reserve is None or isinstance(i, Exception):
-                # TODO: Figure out which abi we should use for getReserves
-                try:
-                    pool = await Contract.coroutine(pool)
-                    if all(
-                        pool.getReserves.abi['outputs'][i]['type'] == _type 
-                        for i, _type in enumerate(['uint112', 'uint112', 'uint32'])
-                    ):
-                        continue
-                    reserves[i] = await pool.getReserves.coroutine(block_identifier=block)
-                    logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
-                except:
-                    logger.error(f'must debug getReserves for {pool}')
+        to_fix = [(i, pool) for i, (pool, reserve) in enumerate(zip(pools, reserves)) if reserve is None]
+        fixed = await asyncio.gather(*[_get_reserves_long_way(pool, block) for i, pool in to_fix])
+        for (i, _), reserve in zip(to_fix, fixed):
+            reserves[i] = reserve  
 
         deepest_pool = None
         deepest_pool_balance = 0
@@ -534,20 +538,10 @@ class UniswapRouterV2(ContractBase):
         # DEVELOPMENT:
         # some items in `reserves` will == None if the abi differs from the expected one.
         # I will remove this later. 
-        async for i, (pool, reserve) in as_aiter(enumerate(zip(pools, reserves))):
-            if reserve is None or isinstance(i, Exception):
-                # TODO: Figure out which abi we should use for getReserves
-                try:
-                    pool = await Contract.coroutine(pool)
-                    if all(
-                        pool.getReserves.abi['outputs'][i]['type'] == _type 
-                        for i, _type in enumerate(['uint112', 'uint112', 'uint32'])
-                    ):
-                        continue
-                    reserves[i] = await pool.getReserves.coroutine(block_identifier=block)
-                    logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
-                except:
-                    logger.error(f'must debug getReserves for {pool}')
+        to_fix = [(i, pool) for i, (pool, reserve) in enumerate(zip(pools, reserves)) if reserve is None]
+        fixed = await asyncio.gather(*[_get_reserves_long_way(pool, block) for i, pool in to_fix])
+        for (i, _), reserve in zip(to_fix, fixed):
+            reserves[i] = reserve  
 
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
