@@ -132,7 +132,6 @@ async def _sense_check(
     if await _exit_sense_check(token_address):
         return None
 
-    print('this prints')
     # proceed with sense check
     price_readable = round(price, 4)
     symbol = await ERC20(token_address).symbol_async
