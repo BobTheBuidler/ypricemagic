@@ -22,7 +22,6 @@ from multicall import Call
 from multicall.utils import await_awaitable, gather
 
 from y import convert
-from y.constants import EEE_ADDRESS
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
                           contract_not_verified)
@@ -113,21 +112,19 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     def __init__(
         self, 
         address: AnyAddressType, 
-        *args: Any, 
         owner: Optional[AccountsType] = None, 
         require_success: bool = True, 
-        **kwargs: Any
         ) -> None:
         
         address = str(address)
-        if address == EEE_ADDRESS:
-            raise ContractNotFound(f"{EEE_ADDRESS} is not a contract.")
+        if address.lower() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee":
+            raise ContractNotFound(f"{address} is not a contract.")
 
         with _contract_lock:
             # autofetch-sources: false
             # Try to fetch the contract from the local sqlite db.
             try:
-                super().__init__(address, *args, owner=owner, **kwargs)
+                super().__init__(address, owner=owner)
                 self.verified = True
             # If we don't already have the contract in the db, we'll try to fetch it from the explorer.
             except ValueError as e:
