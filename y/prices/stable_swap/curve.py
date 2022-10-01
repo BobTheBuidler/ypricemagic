@@ -18,6 +18,7 @@ from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
+from y.constants import EEE_ADDRESS
 from y.contracts import Contract
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
@@ -462,8 +463,10 @@ class CurveRegistry(metaclass=Singleton):
             coro = dy.value_usd_async
             try:
                 token_out = coins[token_out_ix]
-                if token_out in curve:
+                # If we know we won't have issues with recursion, we can await directly.
+                if token_out == EEE_ADDRESS or token_out in curve:
                     return await coro
+                # We include a timeout here in case we create a recursive loop.
                 for p in asyncio.as_completed([coro],timeout=60):
                     return await p
             except (PriceError, asyncio.TimeoutError):
