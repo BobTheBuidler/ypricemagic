@@ -202,20 +202,6 @@ def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional
 
 
 #yLazyLogger(logger)
-def multicall_matrix(contracts, params, block="latest"):
-    matrix = list(product(contracts, params))
-    calls = [[contract, param] for contract, param in matrix]
-
-    results = fetch_multicall(*calls, block=block)
-
-    output = defaultdict(dict)
-    for (contract, param), value in zip(matrix, results):
-        output[contract][param] = value
-
-    return dict(output)
-
-
-#yLazyLogger(logger)
 def _clean_addresses(
     addresses: Iterable[AnyAddressType]
     ) -> List[Address]:
