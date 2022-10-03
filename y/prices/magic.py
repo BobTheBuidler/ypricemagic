@@ -215,7 +215,7 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'chainlink feed':        price = await chainlink.get_price_async(token_address, block)
     elif bucket == 'compound':              price = await compound.get_price_async(token_address, block=block)
 
-    elif bucket == 'convex':                price = convex.get_price(token_address,block)
+    elif bucket == 'convex':                price = await convex.get_price_async(token_address,block)
     elif bucket == 'creth':                 price = await creth.get_price_creth_async(token_address, block)
     elif bucket == 'curve lp':              price = await curve.get_price_async(token_address, block)
 
@@ -228,7 +228,7 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price_async(token_address, block=block)
 
     elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price_async(token_address,block=block)
-    elif bucket == 'one to one':            price = one_to_one.get_price(token_address, block)
+    elif bucket == 'one to one':            price = await one_to_one.get_price_async(token_address, block)
     elif bucket == 'piedao lp':             price = await piedao.get_price_async(token_address, block=block)
     elif bucket == 'popsicle':              price = await popsicle.get_price_async(token_address, block=block)
 
