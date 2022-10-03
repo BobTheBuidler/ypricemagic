@@ -215,12 +215,12 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'chainlink feed':        price = await chainlink.get_price_async(token_address, block)
     elif bucket == 'compound':              price = await compound.get_price_async(token_address, block=block)
 
-    elif bucket == 'convex':                price = await convex.get_price_async(token_address,block)
+    elif bucket == 'convex':                price = convex.get_price(token_address,block)
     elif bucket == 'creth':                 price = await creth.get_price_creth_async(token_address, block)
     elif bucket == 'curve lp':              price = await curve.get_price_async(token_address, block)
 
     elif bucket == 'ellipsis lp':           price = await ellipsis.get_price_async(token_address, block=block)
-    elif bucket == 'froyo':                 price = froyo.get_price(token_address, block=block)
+    elif bucket == 'froyo':                 price = await froyo.get_price_async(token_address, block=block)
     elif bucket == 'gelato':                price = await gelato.get_price_async(token_address, block=block)
 
     elif bucket == 'generic amm':           price = await generic_amm.get_price_async(token_address, block=block)
