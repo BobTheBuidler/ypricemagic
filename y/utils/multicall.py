@@ -216,41 +216,6 @@ def multicall_matrix(contracts, params, block="latest"):
 
 
 #yLazyLogger(logger)
-def batch_call(calls: Tuple[Contract,str,List[Any],Block]) -> List[Any]:
-    """
-    Similar interface but block height as last param. Uses JSON-RPC batch.
-    [[contract, 'func', arg, block_identifier]]
-    """
-    jsonrpc_batch = []
-    fn_list = []
-    ids = count()
-
-    for contract, fn_name, *fn_inputs, block in calls:
-        fn = getattr(contract, fn_name)
-        if hasattr(fn, "_get_fn_from_args"):
-            fn = fn._get_fn_from_args(fn_inputs)
-        fn_list.append(fn)
-
-        jsonrpc_batch.append(
-            {
-                'jsonrpc': '2.0',
-                'id': next(ids),
-                'method': 'eth_call',
-                'params': [
-                    {'to': str(contract), 'data': fn.encode_input(*fn_inputs)},
-                    block,
-                ],
-            }
-        )
-
-    response = requests.post(web3.provider.endpoint_uri, json=jsonrpc_batch).json()
-    return [
-        fn.decode_output(res['result'])
-        for res in sorted(response, key=itemgetter('id'))
-    ]
-
-
-#yLazyLogger(logger)
 def _clean_addresses(
     addresses: Iterable[AnyAddressType]
     ) -> List[Address]:
