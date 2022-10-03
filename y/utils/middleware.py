@@ -3,8 +3,6 @@ from typing import Any, Callable
 
 import eth_retry
 from brownie import web3
-from eth_utils import encode_hex
-from eth_utils import function_signature_to_4byte_selector as fourbyte
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider, Web3
@@ -18,37 +16,21 @@ BATCH_SIZE = (
     else 2_000 if 'pokt' in web3.provider.endpoint_uri
     else 10_000
 )
-CACHED_CALLS = [
-    "name()",
-    "symbol()",
-    "decimals()",
-]
-CACHED_CALLS = [encode_hex(fourbyte(data)) for data in CACHED_CALLS]
 
 
 def should_cache(method: str, params: Any) -> bool:
-    if method == "eth_call" and params[0]["data"] in CACHED_CALLS:
-        return True
     if method == "eth_getCode" and params[1] == "latest":
         return True
-    if method == "eth_getLogs":
-        return int(params[0]["toBlock"], 16) - int(params[0]["fromBlock"], 16) == BATCH_SIZE - 1
     return False
 
 
 def cache_middleware(make_request: Callable, web3: Web3) -> Callable:
-
     @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
-
         if should_cache(method, params):
-            response = memory.cache(make_request)(method, params)
-        else:
-            response = make_request(method, params)
-
-        return response
-
+            return memory.cache(make_request)(method, params)
+        return make_request(method, params)
     return middleware
 
 

@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from functools import cached_property, lru_cache
 from typing import Any, Awaitable, Dict, List, Optional, Tuple
@@ -11,7 +12,7 @@ from multicall.utils import await_awaitable, gather
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.classes.singleton import Singleton
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN
-from y.contracts import build_name, has_methods_async
+from y.contracts import build_name_async, has_methods_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.networks import Network
 from y.utils.events import decode_logs, get_logs_asap_async
@@ -89,7 +90,8 @@ class BalancerV2Vault(ContractBase):
     #yLazyLogger(logger)
     async def deepest_pool_for_async(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         pools = await self.list_pools_async(block=block)
-        poolids = (poolid for poolid, pool in pools.items() if _is_standard_pool(pool))
+        is_standard_pool = await asyncio.gather(*[_is_standard_pool(pool) for pool in pools.values()])
+        poolids = (poolid for (poolid, pool), is_standard in zip(pools.items(), is_standard_pool) if is_standard)
         pools_info = await self.get_pool_info_async(poolids, block=block)
         pools_info = {self.list_pools(block=block)[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}
         
@@ -198,15 +200,15 @@ class BalancerV2Pool(ERC20):
 
 
 #yLazyLogger(logger)
-@lru_cache(maxsize=None)
-def _is_standard_pool(pool: EthAddress) -> bool:
+@alru_cache(maxsize=None)
+async def _is_standard_pool(pool: EthAddress) -> bool:
     '''
     Returns `False` if `build_name(pool) in ['ConvergentCurvePool','MetaStablePool']`, else `True`
     '''
     
     # With `return_None_on_failure=True`, if `build_name(pool)` fails,
     # we can't know for sure that its a standard pool, but... it probably is.
-    return build_name(pool, return_None_on_failure=True) not in ['ConvergentCurvePool','MetaStablePool']
+    return await build_name_async(pool, return_None_on_failure=True) not in ['ConvergentCurvePool','MetaStablePool']
 
 
 class BalancerV2(metaclass=Singleton):

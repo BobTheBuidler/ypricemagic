@@ -195,7 +195,10 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         return await has_methods_async(self.address, methods, _func)
 
     def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
-        return build_name(self.address, return_None_on_failure=return_None_on_failure)
+        return await_awaitable(self.build_name_async(return_None_on_failure=return_None_on_failure))
+
+    async def build_name_async(self, return_None_on_failure: bool = False) -> Optional[str]:
+        return await build_name_async(self.address, return_None_on_failure=return_None_on_failure)
     
     def get_code(self, block: Optional[Block] = None) -> HexBytes:
         return web3.eth.get_code(self.address, block=block)
@@ -303,8 +306,11 @@ async def probe(
 @memory.cache()
 #yLazyLogger(logger)
 def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
+    return await_awaitable(build_name_async(address, return_None_on_failure=return_None_on_failure))
+
+async def build_name_async(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
-        contract = Contract(address)
+        contract = await Contract.coroutine(address)
         return contract.__dict__['_build']['contractName']
     except ContractNotVerified:
         if not return_None_on_failure:
