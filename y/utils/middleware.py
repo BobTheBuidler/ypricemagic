@@ -25,18 +25,12 @@ def should_cache(method: str, params: Any) -> bool:
 
 
 def cache_middleware(make_request: Callable, web3: Web3) -> Callable:
-
     @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
-
         if should_cache(method, params):
-            response = memory.cache(make_request)(method, params)
-        else:
-            response = make_request(method, params)
-
-        return response
-
+            return memory.cache(make_request)(method, params)
+        return make_request(method, params)
     return middleware
 
 
