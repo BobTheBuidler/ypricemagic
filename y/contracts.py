@@ -287,7 +287,7 @@ async def probe(
     address = convert.to_address(address)
     results = await asyncio.gather(*[Call(address, [method], block_id=block).coroutine() for method in methods], return_exceptions=True)
     results = [(method, result) for method, result in zip(methods, results) if not isinstance(result, Exception) and result is not None]
-    assert len(results) in [1,0], '`probe` returned multiple results. Must debug'
+    assert len(results) in [1,0], f'`probe` returned multiple results for {address}: {results}. Must debug'
     if len(results) == 1:
         method, result = results[0]
     else:
