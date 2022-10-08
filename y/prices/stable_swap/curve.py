@@ -189,10 +189,9 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         try:
             source = self.factory if self.factory else curve.registry
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
-        # fallback for historical queries
+        # fallback for historical queries where registry was not yet deployed
         except ValueError:
-            balances = await multicall_same_func_same_contract_different_inputs_async(
-                self.address, 'balances(uint256)(uint256)', inputs = (i for i, _ in enumerate(coins)), block=block)
+            balances = await asyncio.gather(*[self.contract.balances.coroutine(i, block_identifier=block) for i, _ in enumerate(coins)])
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
