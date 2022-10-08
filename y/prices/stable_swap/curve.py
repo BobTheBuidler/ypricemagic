@@ -438,7 +438,7 @@ class CurveRegistry(metaclass=Singleton):
             balances = await asyncio.gather(*[pool.get_balances_async(block=block) for pool in pools], return_exceptions=True)
             deepest_pool, deepest_bal = None, 0
             for pool, pool_bals in zip(pools, balances):
-                if isinstance(pool_bals, ValueError):
+                if isinstance(pool_bals, Exception):
                     if str(pool_bals).startswith("could not fetch balances"):
                         continue
                     raise pool_bals
