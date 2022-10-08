@@ -191,7 +191,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         # fallback for historical queries where registry was not yet deployed
         except ValueError:
-            balances = await asyncio.gather(*[self.contract.balances.coroutine(i, block_identifier=block) for i, _ in enumerate(coins)])
+            balances = await asyncio.gather(*[self._get_balance(i, block) for i, _ in enumerate(coins)])
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
@@ -201,6 +201,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             for coin, balance, dec in zip(coins, balances, decimals)
             if coin != ZERO_ADDRESS
         }
+    
+    async def _get_balance(self, i: int, block: Optional[Block] = None) -> Optional[int]:
+        try:
+            return await self.contract.balances.coroutine(i, block_identifier=block)
+        except ValueError as e:
+            if str(e) == "No data was returned - the call likely reverted":
+                return None
+            raise
     
     #yLazyLogger(logger)
     def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
