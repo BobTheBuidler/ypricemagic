@@ -19,7 +19,7 @@ from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
-from y.contracts import Contract
+from y.contracts import Contract, contract_creation_block
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
 from y.decorators import wait_or_exit_after
@@ -437,6 +437,8 @@ class CurveRegistry(metaclass=Singleton):
             pools: List[CurvePool] = (await self.coin_to_pools_async)[token_in]
         except KeyError:
             return None
+        
+        pools = [pool for pool in pools if block is None or contract_creation_block(pool.address) <= block]
 
         # Choose a pool to use for pricing `token_in`.
         if len(pools) == 1:
