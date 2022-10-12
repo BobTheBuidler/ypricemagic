@@ -10,7 +10,7 @@ from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
-from y.contracts import Contract
+from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.networks import Network
@@ -204,7 +204,7 @@ class Chainlink(metaclass=Singleton):
         if asset == ZERO_ADDRESS:
             return None
         feed = await self.get_feed_async(asset)
-        if feed is None:
+        if feed is None or (block is not None and block < contract_creation_block(feed.address)):
             return None
         try:
             latest_answer, scale = await gather([
