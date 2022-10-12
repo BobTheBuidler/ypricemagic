@@ -8,7 +8,7 @@ from multicall.utils import await_awaitable, gather
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.constants import dai, usdc, wbtc, weth
-from y.contracts import Contract, has_methods_async
+from y.contracts import Contract, contract_creation_block, has_methods_async
 from y.datatypes import (AddressOrContract, AnyAddressType, Block, UsdPrice,
                          UsdValue)
 from y.networks import Network
@@ -115,11 +115,13 @@ class BalancerV1(metaclass=Singleton):
         return await BalancerV1Pool(token_address).get_pool_price_async(block=block)
 
     #yLazyLogger(logger)
-    def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+    def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_token_price_async(token_address, block=block))
     
     #yLazyLogger(logger)
-    async def get_token_price_async(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+    async def get_token_price_async(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        if block is not None and block < contract_creation_block(self.exchange_proxy):
+            return None
         scale = 1.0
         out, totalOutput = await self.get_some_output_async(token_address, block=block)
         if out:
@@ -134,8 +136,7 @@ class BalancerV1(metaclass=Singleton):
         out, totalOutput = await self.get_some_output_async(token_address, block=block, scale=scale)
         if out:
             return await _calc_out_value(out, totalOutput, scale, block=block)
-        else:
-            return
+        return None
 
     #yLazyLogger(logger)
     def check_liquidity_against(

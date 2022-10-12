@@ -12,7 +12,7 @@ from multicall.utils import await_awaitable, gather
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.classes.singleton import Singleton
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN
-from y.contracts import build_name_async, has_methods_async
+from y.contracts import build_name_async, contract_creation_block, has_methods_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.networks import Network
 from y.utils.events import decode_logs, get_logs_asap_async
@@ -91,7 +91,7 @@ class BalancerV2Vault(ContractBase):
     async def deepest_pool_for_async(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         pools = await self.list_pools_async(block=block)
         is_standard_pool = await asyncio.gather(*[_is_standard_pool(pool) for pool in pools.values()])
-        poolids = (poolid for (poolid, pool), is_standard in zip(pools.items(), is_standard_pool) if is_standard)
+        poolids = (poolid for (poolid, pool), is_standard in zip(pools.items(), is_standard_pool) if is_standard and (block is None or block <= contract_creation_block(pool)))
         pools_info = await self.get_pool_info_async(poolids, block=block)
         pools_info = {self.list_pools(block=block)[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}
         
