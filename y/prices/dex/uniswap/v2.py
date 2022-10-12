@@ -16,7 +16,7 @@ from multicall.utils import await_awaitable, gather, raise_if_exception_in
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
-from y.contracts import Contract
+from y.contracts import Contract, contract_creation_block
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice)
 from y.decorators import continue_on_revert
@@ -467,14 +467,15 @@ class UniswapRouterV2(ContractBase):
         return pool_mapping
 
 
-    def pools_for_token(self, token_address: Address) -> Dict[Address,Address]:
-        return await_awaitable(self.pools_for_token_async(token_address))
+    def pools_for_token(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:
+        return await_awaitable(self.pools_for_token_async(token_address, block))
     
-    async def pools_for_token_async(self, token_address: Address) -> Dict[Address,Address]:
+    async def pools_for_token_async(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:
         try: 
-            return (await self.pool_mapping_async)[token_address]
+            pools = (await self.pool_mapping_async)[token_address]
         except KeyError:
             return {}
+        return {k: v for k, v in pools.items() if block is None or contract_creation_block(k) <= block}
 
     #yLazyLogger(logger)
     @lru_cache(maxsize=500)
@@ -488,8 +489,8 @@ class UniswapRouterV2(ContractBase):
     async def deepest_pool_async(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
-            return await self.deepest_stable_pool_async(token_address)
-        pools = await self.pools_for_token_async(token_address)
+            return await self.deepest_stable_pool_async(token_address, block)
+        pools = await self.pools_for_token_async(token_address, block)
 
         reserves = await asyncio.gather(*[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools], return_exceptions=True)
 
@@ -527,7 +528,7 @@ class UniswapRouterV2(ContractBase):
         token_address = convert.to_address(token_address)
         pools = {
             pool: paired_with
-            for pool, paired_with in (await self.pools_for_token_async(token_address)).items()
+            for pool, paired_with in (await self.pools_for_token_async(token_address, block)).items()
             if paired_with in STABLECOINS
         }
         reserves = await asyncio.gather(
