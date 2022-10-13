@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from brownie import Contract as _Contract
 from brownie import chain
 
@@ -186,5 +187,4 @@ WRAPPED_GAS_COIN = {
     Network.Cronos:             "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
 }.get(chain.id)
 
-
-
+sync_threads = ThreadPoolExecutor(8)

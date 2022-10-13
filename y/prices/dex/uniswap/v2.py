@@ -15,7 +15,7 @@ from multicall import Call
 from multicall.utils import await_awaitable, gather, raise_if_exception_in
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth, sync_threads
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice)
@@ -475,7 +475,10 @@ class UniswapRouterV2(ContractBase):
             pools = (await self.pool_mapping_async)[token_address]
         except KeyError:
             return {}
-        return {k: v for k, v in pools.items() if block is None or contract_creation_block(k) <= block}
+        if block is not None:
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, k, True) for k in pools.keys()])
+            pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
+        return pools
 
     #yLazyLogger(logger)
     @lru_cache(maxsize=500)
