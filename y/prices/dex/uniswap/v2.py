@@ -531,9 +531,14 @@ class UniswapRouterV2(ContractBase):
         token_address = convert.to_address(token_address)
         pools = {
             pool: paired_with
-            for pool, paired_with in (await self.pools_for_token_async(token_address, block)).items()
+            for pool, paired_with in (await self.pools_for_token_async(token_address, None)).items()
             if paired_with in STABLECOINS
         }
+
+        if block is not None:
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, pool) for pool in pools])
+            pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
+            
         reserves = await asyncio.gather(
             *[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools.keys()],
             return_exceptions=True
