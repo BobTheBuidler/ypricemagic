@@ -18,7 +18,7 @@ from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
-from y.constants import EEE_ADDRESS
+from y.constants import EEE_ADDRESS, sync_threads
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
@@ -438,7 +438,9 @@ class CurveRegistry(metaclass=Singleton):
         except KeyError:
             return None
         
-        pools = [pool for pool in pools if block is None or contract_creation_block(pool.address) <= block]
+        if block is not None:
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, pool.address, True) for pool in pools])
+            pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
 
         # Choose a pool to use for pricing `token_in`.
         if len(pools) == 1:
