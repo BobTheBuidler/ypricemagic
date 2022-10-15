@@ -106,7 +106,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     return hi if hi != height else None
 
 # this defaultdict prevents congestion in the contracts thread pool
-address_semaphores = defaultdict(asyncio.Semaphore(1))
+address_semaphores = defaultdict(lambda: asyncio.Semaphore())
 
 class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
