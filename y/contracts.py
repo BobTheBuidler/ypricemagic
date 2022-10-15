@@ -1,5 +1,6 @@
 
 import asyncio
+from collections import defaultdict
 import json
 import logging
 import threading
@@ -104,6 +105,8 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             lo = mid
     return hi if hi != height else None
 
+# this defaultdict prevents congestion in the contracts thread pool
+address_semaphores = defaultdict(asyncio.Semaphore(1))
 
 class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
@@ -164,10 +167,11 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         cls, 
         address: AnyAddressType, 
         ) -> "Contract":
-        try:
-            return Contract._ChecksumAddressSingletonMeta__instances[address]
-        except KeyError:
-            return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address)
+        async with address_semaphores[address]:
+            try:
+                return Contract._ChecksumAddressSingletonMeta__instances[address]
+            except KeyError:
+                return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address)
     
     def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
         _ContractBase.__init__(self, None, build, {})  # type: ignore
