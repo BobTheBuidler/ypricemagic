@@ -361,8 +361,14 @@ class CurveRegistry(metaclass=Singleton):
             for pool in pool_list:
                 if pool in self.factories[factory]:
                     continue
+                factory_contract = Contract(factory)
                 # for curve v5 pools, pool and lp token are separate
-                lp_token = Contract(factory).get_token(pool)
+                if hasattr(factory_contract, 'get_token'):
+                    lp_token = factory_contract.get_token(pool)
+                elif hasattr(factory_contract, 'get_lp_token'):
+                    lp_token = factory_contract.get_lp_token(pool)
+                else:
+                    raise NotImplementedError(f"New factory {factory_contract} is not yet supported. Please notify a ypricemagic maintainer.")
                 self.token_to_pool[lp_token] = pool
                 self.factories[factory].add(pool)
     
