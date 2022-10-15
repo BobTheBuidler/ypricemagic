@@ -48,10 +48,11 @@ class Ids(IntEnum):
     Fee_Distributor = 4
     CryptoSwap_Registry = 5
     CryptoPool_Factory = 6
+    # On Mainnet, id 7 is listed as "metafactory".
     # On Polygon, id 7 is listed as "cryptopool factory".
     # On other chains, "cryptopool factory" is id 6.
     # On Polygon, id 6 is "crypto factory".
-    # I've only seen this on Polygon so far, for now will treat `7` == `6`.
+    # I've only seen this on Mainnet and Polygon so far, for now will treat `7` == `6`.
     Cryptopool_Factory = 7
 
 
