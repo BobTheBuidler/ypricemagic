@@ -91,6 +91,9 @@ UNISWAPS = {
     },
     Network.OKEx: {
         "dfyn":             {"factory": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B", "router": "0x34686CBF7229ed0bff2Fbe7ED2CFC916317764f6"},
+    },
+    Network.Optimism: {
+        "":                 {"factory": "", "router": ""},
     }
 }.get(chain.id, {})
 

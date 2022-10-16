@@ -33,6 +33,10 @@ addresses = {
         'quoter': UNISWAP_V3_QUOTER,
         'fee_tiers': [3000, 500, 10_000],
     },
+    Network.Optimism: {
+        'factory': UNISWAP_V3_FACTORY,
+        'quoter': UNISWAP_V3_QUOTER,
+    }
 }
 
 FEE_DENOMINATOR = 1_000_000
