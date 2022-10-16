@@ -58,7 +58,7 @@ thread_pool_executor = ThreadPoolExecutor(max_workers=DOP)
 
 async def get_logs_asap_async(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     if from_block is None:
-        from_block = 0 if address is None else contract_creation_block(address)
+        from_block = 0 if address is None else await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, address)
     if to_block is None:
         to_block = chain.height
 
