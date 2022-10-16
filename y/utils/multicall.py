@@ -36,6 +36,7 @@ MULTICALL2 = {
     Network.xDai:               "0x9903f30c1469d8A2f415D4E8184C93BD26992573",
     Network.Aurora:             "0xe0e3887b158F7F9c80c835a61ED809389BC08d1b",
     Network.Cronos:             "0x5e954f5972EC6BFc7dECd75779F10d848230345F",
+    Network.Optimism:           "0xcA11bde05977b3631167028862bE2a173976CA11", # Multicall 3
 }.get(chain.id, None)
 
 multicall = None

@@ -19,6 +19,7 @@ class Network(IntEnum):
     Aurora = 1313161554
     OKEx = 66
     Cronos = 25
+    Optimism = 10
 
     @staticmethod
     def label(chain_id: Optional[int] = None) -> str:
@@ -37,6 +38,7 @@ class Network(IntEnum):
         elif chain_id == Network.Aurora:                return 'AURORA'
         elif chain_id == Network.OKEx:                  return 'OKEX'
         elif chain_id == Network.Cronos:                return 'CRO'
+        elif chain_id == Network.Optimism:              return 'OPTI'
     
     @staticmethod
     def name(chain_id: Optional[int] = None) -> str:
@@ -55,6 +57,7 @@ class Network(IntEnum):
         elif chain_id == Network.Aurora:                return 'Aurora'
         elif chain_id == Network.OKEx:                  return 'OKEx'
         elif chain_id == Network.Cronos:                return 'Cronos'
+        elif chain_id == Network.Optimism:              return "Optimism"
 
     @staticmethod
     def printable(chain_id: Optional[int] = None) -> str:

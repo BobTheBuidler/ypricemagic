@@ -102,6 +102,13 @@ elif chain.id == Network.Cronos:
     usdc = Contract('0xc21223249CA28397B4B6541dfFaEcC539BfF0c59')
     usdt = Contract('0x66e428c3f67a68878562e79A0234c1F83c208770')
 
+elif chain.id == Network.Optimism:
+    weth = Contract('0x4200000000000000000000000000000000000006')
+    wbtc = Contract('0x68f180fcCe6836688e9084f035309E29Bf0A2095')
+    dai =  Contract('0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1')
+    usdc = Contract('0x7F5c764cBc14f9669B88837ca1490cCa17c31607')
+    usdt = Contract('0x94b008aA00579c1307B0EF2c499aD98a8ce58e58')
+
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {
@@ -172,6 +179,11 @@ STABLECOINS = {
         "0xc21223249CA28397B4B6541dfFaEcC539BfF0c59": "usdc",
         "0xF2001B145b43032AAF5Ee2884e456CCd805F677D": "dai",
     },
+    Network.Optimism: {
+        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1": "dai",
+        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607": "usdc",
+        "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58": "usdt",
+    }
 }.get(chain.id, {})
 
 
@@ -185,6 +197,7 @@ WRAPPED_GAS_COIN = {
     Network.Heco:               "0x5545153CCFcA01fbd7Dd11C0b23ba694D9509A6F",
     Network.Harmony:            "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
     Network.Cronos:             "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
+    Network.Optimism:           "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
 
 sync_threads = ThreadPoolExecutor(8)
