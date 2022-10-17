@@ -363,7 +363,7 @@ class UniswapRouterV2(ContractBase):
                     "INSUFFICIENT_OUT_LIQUIDITY",
                     "Sequence has incorrect length",
                 ]
-                if any(s in str(e) for s in strings):
+                if call_reverted(e) or any(s in str(e) for s in strings):
                     return
                 raise e
         else:
