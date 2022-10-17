@@ -1,5 +1,5 @@
-import asyncio
 from concurrent.futures import ThreadPoolExecutor
+import os
 from brownie import Contract as _Contract
 from brownie import chain
 
@@ -200,4 +200,4 @@ WRAPPED_GAS_COIN = {
     Network.Optimism:           "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
 
-sync_threads = ThreadPoolExecutor(8)
+thread_pool_executor = ThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 8)))
