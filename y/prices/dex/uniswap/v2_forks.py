@@ -82,6 +82,7 @@ UNISWAPS = {
         "sushiswap":        {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
         "dfyn":             {"factory": "0xA102072A4C07F06EC3B4900FDC4C7B80b6c57429", "router": "0xaedE1EFe768bD8A1663A7608c63290C60B85e71c"},
         "dxswap":           {"factory": "0x359F20Ad0F42D75a5077e65F30274cABe6f4F01a", "router": "0x530476d5583724A89c8841eB6Da76E7Af4C0F17E"},
+        "fraxswap":         {"factory": "0x5Ca135cB8527d76e932f34B5145575F9d8cbE08E", "router": "0xc2544A32872A91F4A553b404C6950e89De901fdb"},
     },
     Network.Harmony: {
         "defikingdoms":     {"factory": "0x9014B937069918bd319f80e8B3BB4A2cf6FAA5F7", "router": "0x24ad62502d1C652Cc7684081169D04896aC20f30"},
