@@ -11,6 +11,7 @@ from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
 from y.contracts import has_methods_async
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
+from y.exceptions import call_reverted
 from y.networks import Network
 from y.utils.logging import gh_issue_request, yLazyLogger
 from y.utils.raw_calls import raw_call
@@ -110,7 +111,12 @@ class CToken(ERC20):
         method = 'exchangeRateCurrent()(uint)'
         call = Call(self.address, [method], block_id=block)
 
-        exchange_rate = await call.coroutine()
+        try:
+            exchange_rate = await call.coroutine()
+        except Exception as e:
+            if not call_reverted(e):
+                raise e
+            return None
 
         if exchange_rate:
             return exchange_rate / 1e18
