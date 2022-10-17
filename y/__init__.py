@@ -4,7 +4,8 @@ from brownie import network
 
 from y import time
 from y.constants import dai, usdc, wbtc, weth
-from y.contracts import Contract, has_method, has_methods
+from y.contracts import (Contract, Contract_erc20,
+                         Contract_with_erc20_fallback, has_method, has_methods)
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
 from y.exceptions import (CalldataPreparationError, CallReverted,
                           ContractNotVerified, MessedUpBrownieContract,
