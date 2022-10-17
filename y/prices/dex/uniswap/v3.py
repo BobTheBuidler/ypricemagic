@@ -10,7 +10,7 @@ from eth_abi.packed import encode_abi_packed
 from multicall.utils import await_awaitable
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
-from y.constants import sync_threads, usdc, weth
+from y.constants import thread_pool_executor, usdc, weth
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork
@@ -69,7 +69,7 @@ class UniswapV3(metaclass=Singleton):
     
     @alru_cache(maxsize=None)
     async def get_price_async(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        if block and block < await asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, UNISWAP_V3_QUOTER, True):
+        if block and block < await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, UNISWAP_V3_QUOTER, True):
             return None
 
         paths = []
