@@ -95,7 +95,10 @@ UNISWAPS = {
     },
     Network.Optimism: {
         "zipswap":          {"factory": "0x8BCeDD62DD46F1A76F8A1633d4f5B76e0CDa521E", "router": "0xE6Df0BB08e5A97b40B21950a0A51b94c4DbA0Ff6"},
-    }
+    },
+    Network.xDai: {
+        "sushiswap":        {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
+    },
 }.get(chain.id, {})
 
 
