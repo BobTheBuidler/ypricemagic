@@ -11,7 +11,7 @@ from multicall.utils import await_awaitable, gather
 from y import convert
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
-from y.constants import sync_threads
+from y.constants import thread_pool_executor
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified, UnsupportedNetwork
@@ -206,7 +206,7 @@ class Chainlink(metaclass=Singleton):
         if asset == ZERO_ADDRESS:
             return None
         feed = await self.get_feed_async(asset)
-        if feed is None or (block is not None and block < await asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, feed.address, True)):
+        if feed is None or (block is not None and block < await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, feed.address, True)):
             return None
         try:
             latest_answer, scale = await gather([

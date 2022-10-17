@@ -8,7 +8,7 @@ from brownie.exceptions import VirtualMachineError
 from multicall.utils import await_awaitable, gather
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
-from y.constants import dai, sync_threads, usdc, wbtc, weth
+from y.constants import dai, thread_pool_executor, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block, has_methods_async
 from y.datatypes import (AddressOrContract, AnyAddressType, Block, UsdPrice,
                          UsdValue)
@@ -121,7 +121,7 @@ class BalancerV1(metaclass=Singleton):
     
     #yLazyLogger(logger)
     async def get_token_price_async(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        if block is not None and block < await asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, self.exchange_proxy, True):
+        if block is not None and block < await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, self.exchange_proxy, True):
             return None
         scale = 1.0
         out, totalOutput = await self.get_some_output_async(token_address, block=block)

@@ -1,8 +1,6 @@
 import asyncio
 import logging
-import os
 from collections import Counter, defaultdict
-from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
 from typing import Any, Dict, List, Optional
 
@@ -13,6 +11,7 @@ from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
+from y.constants import thread_pool_executor
 from y.contracts import contract_creation_block
 from y.datatypes import Address, Block
 from y.utils.cache import memory
@@ -52,9 +51,6 @@ def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_
     return await_awaitable(
         get_logs_asap_async(address, topics, from_block=from_block, to_block=to_block, verbose=verbose)
     )
-
-DOP = int(os.environ.get("DOP", 8))
-thread_pool_executor = ThreadPoolExecutor(max_workers=DOP)
 
 async def get_logs_asap_async(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     if from_block is None:

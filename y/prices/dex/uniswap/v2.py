@@ -15,7 +15,8 @@ from multicall import Call
 from multicall.utils import await_awaitable, gather, raise_if_exception_in
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth, sync_threads
+from y.constants import (STABLECOINS, WRAPPED_GAS_COIN, sushi, thread_pool_executor,
+                         thread_pool_executor, usdc, weth)
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice)
@@ -28,9 +29,7 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
-from y.utils.aio import as_aiter
-from y.utils.events import (decode_logs, get_logs_asap_async,
-                            thread_pool_executor)
+from y.utils.events import decode_logs, get_logs_asap_async
 from y.utils.logging import yLazyLogger
 from y.utils.multicall import (
     fetch_multicall, multicall_same_func_same_contract_different_inputs_async)
@@ -407,7 +406,6 @@ class UniswapRouterV2(ContractBase):
         logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
         logs = await get_logs_asap_async(self.factory, PairCreated)
         pairs, pools = await asyncio.get_event_loop().run_in_executor(
-            #process_pool_executor,
             thread_pool_executor,
             _events_subprocess,
             logs,
@@ -476,7 +474,7 @@ class UniswapRouterV2(ContractBase):
         except KeyError:
             return {}
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, k, True) for k in pools.keys()])
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, k, True) for k in pools.keys()])
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
@@ -536,7 +534,7 @@ class UniswapRouterV2(ContractBase):
         }
 
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, pool) for pool in pools])
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, pool) for pool in pools])
             pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
             
         reserves = await asyncio.gather(

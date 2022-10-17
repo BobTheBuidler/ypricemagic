@@ -11,7 +11,7 @@ from multicall import Call
 from multicall.utils import await_awaitable, gather
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.classes.singleton import Singleton
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sync_threads
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, thread_pool_executor
 from y.contracts import (build_name_async, contract_creation_block,
                          has_methods_async)
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
@@ -96,7 +96,7 @@ class BalancerV2Vault(ContractBase):
         if block is None:
             poolids = (poolid for (poolid, pool), is_standard in zip(pools.items(), is_standard_pool) if is_standard)
         else:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(sync_threads, contract_creation_block, pool, True) for pool in pools.values()])
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, pool, True) for pool in pools.values()])
             poolids = (poolid for (poolid, pool), is_standard, deploy_block in zip(pools.items(), is_standard_pool, deploy_blocks) if is_standard and deploy_block <= block)
 
         pools_info = await self.get_pool_info_async(poolids, block=block)
