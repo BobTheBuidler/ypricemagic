@@ -53,7 +53,7 @@ class UniswapV3(metaclass=Singleton):
         conf = addresses[chain.id]
         self.factory = Contract(conf['factory'])
         try:
-            Contract(conf['quoter'])
+            self.quoter = Contract(conf['quoter'])
         except ContractNotVerified:
             self.quoter = brownie.Contract.from_abi("Quoter", conf['quoter'], UNIV3_QUOTER_ABI)
         self.fee_tiers = conf['fee_tiers']
