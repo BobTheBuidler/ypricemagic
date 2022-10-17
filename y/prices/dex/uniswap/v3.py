@@ -4,6 +4,7 @@ from functools import lru_cache
 from itertools import cycle
 from typing import Optional
 
+import brownie
 from async_lru import alru_cache
 from brownie import chain
 from eth_abi.packed import encode_abi_packed
@@ -13,7 +14,8 @@ from y.classes.singleton import Singleton
 from y.constants import thread_pool_executor, usdc, weth
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, Block, UsdPrice
-from y.exceptions import UnsupportedNetwork
+from y.exceptions import ContractNotVerified, UnsupportedNetwork
+from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
 from y.utils.multicall import fetch_multicall
 
@@ -36,6 +38,7 @@ addresses = {
     Network.Optimism: {
         'factory': UNISWAP_V3_FACTORY,
         'quoter': UNISWAP_V3_QUOTER,
+        'fee_tiers': [3000, 500, 10_000, 100],
     }
 }
 
@@ -49,7 +52,10 @@ class UniswapV3(metaclass=Singleton):
 
         conf = addresses[chain.id]
         self.factory = Contract(conf['factory'])
-        self.quoter = Contract(conf['quoter'])
+        try:
+            Contract(conf['quoter'])
+        except ContractNotVerified:
+            self.quoter = brownie.Contract.from_abi("Quoter", conf['quoter'], UNIV3_QUOTER_ABI)
         self.fee_tiers = conf['fee_tiers']
 
     def __contains__(self, asset) -> bool:
