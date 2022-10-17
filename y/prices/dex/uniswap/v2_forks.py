@@ -93,7 +93,7 @@ UNISWAPS = {
         "dfyn":             {"factory": "0xE7Fb3e833eFE5F9c441105EB65Ef8b261266423B", "router": "0x34686CBF7229ed0bff2Fbe7ED2CFC916317764f6"},
     },
     Network.Optimism: {
-        "":                 {"factory": "", "router": ""},
+        "zipswap":          {"factory": "0x8BCeDD62DD46F1A76F8A1633d4f5B76e0CDa521E", "router": "0xE6Df0BB08e5A97b40B21950a0A51b94c4DbA0Ff6"},
     }
 }.get(chain.id, {})
 
