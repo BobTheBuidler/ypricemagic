@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from functools import cached_property, lru_cache
 from typing import Any, List, Optional, Union
@@ -9,7 +10,9 @@ from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
+from y.contracts import Contract
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
+from y.exceptions import ContractNotVerified
 from y.networks import Network
 from y.utils.logging import yLazyLogger
 from y.utils.multicall import fetch_multicall
@@ -146,6 +149,14 @@ class AaveRegistry(metaclass = Singleton):
     def is_atoken(self, token_address: AnyAddressType) -> bool:
         return token_address in self
     
+    async def is_wrapped_atoken(self, token_address: AnyAddressType) -> bool:
+        try:
+            contract = await Contract.coroutine(token_address)
+            attrs = "ATOKEN", "STATIC_ATOKEN_LM_REVISION", "staticToDynamicAmount"
+            return all(hasattr(contract, attr) for attr in attrs)
+        except ContractNotVerified:
+            return False
+    
     #yLazyLogger(logger)
     @lru_cache
     def underlying(self, token_address: AddressOrContract) -> ERC20:
@@ -165,6 +176,15 @@ class AaveRegistry(metaclass = Singleton):
     async def get_price_async(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
         underlying = await self.underlying_async(token_address)
         return await underlying.price_async(block)
+    
+    async def get_price_wrapped_async(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+        contract, scale = await asyncio.gather(Contract.coroutine(token_address), ERC20(token_address).scale)
+        underlying, price_per_share = await asyncio.gather(
+            contract.ATOKEN.coroutine(block_identifier=block),
+            contract.staticToDynamicAmount.coroutine(scale, block_identifier=block),
+        )
+        price_per_share /= scale
+        return price_per_share * await ERC20(underlying).price_async(block)
 
 
 aave = AaveRegistry()

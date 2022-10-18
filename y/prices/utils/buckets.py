@@ -67,14 +67,15 @@ async def check_bucket_async(
     elif await basketdao.is_basketdao_index_async(token_address):           return 'basketdao'
     elif await popsicle.is_popsicle_lp_async(token_address):                return 'popsicle'
 
-
     # these require both calls and contract initializations
     elif await uniswap_multiplexer.is_uniswap_pool_async(token_address):    return 'uni or uni-like lp'
+
     # this just requires contract initialization but should go behind uniswap
+    elif await aave.is_wrapped_atoken(token_address):                       return 'wrapped atoken'
     elif token_address in generic_amm:                                      return 'generic amm'
     elif await mooniswap.is_mooniswap_pool_async(token_address):            return 'mooniswap lp'
     elif await compound.is_compound_market_async(token_address):            return 'compound'
     elif token_address in curve:                                            return 'curve lp'
-    elif chainlink and await chainlink.has_feed(token_address):                           return 'chainlink feed'
+    elif chainlink and await chainlink.has_feed(token_address):             return 'chainlink feed'
     elif synthetix and await synthetix.is_synth(token_address):             return 'synthetix'
     elif await yearn.is_yearn_vault_async(token_address):                   return 'yearn or yearn-like'
