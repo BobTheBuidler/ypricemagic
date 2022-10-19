@@ -201,3 +201,5 @@ WRAPPED_GAS_COIN = {
 }.get(chain.id)
 
 thread_pool_executor = ThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 8)))
+
+RECURSION_TIMEOUT = int(os.environ.get("YPRICEMAGIC_RECURSION_TIMEOUT", 60))
