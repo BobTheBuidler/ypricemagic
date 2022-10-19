@@ -20,11 +20,10 @@ setup(
         'bobs_lazy_logging==0.0.4',
         'cachetools>=4.1.1',
         'checksum_dict>=1.1.1',
-        'dank_mids>=4.20.8',
+        'dank_mids>=4.20.9',
         'eth-brownie>=1.18.1,<1.20',
         'eth_retry>=0.1.10,<0.2',
         'joblib>=1.0.1',
-        'multicall>=0.6.1',
     ],
     setup_requires=[
         'setuptools_scm',
