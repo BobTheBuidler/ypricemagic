@@ -53,6 +53,10 @@ def is_yearn_vault(token: AnyAddressType) -> bool:
 #yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_yearn_vault_async(token: AnyAddressType) -> bool:
+    # wibbtc returns True here even though it doesn't meet the criteria.
+    # TODO figure out a better fix. For now I need a fix asap so this works.
+    if chain.id == Network.Mainnet and str(token) == "0x8751D4196027d4e6DA63716fA7786B5174F04C15":
+        return False
     
     # Yearn-like contracts can use these formats
     result = any(
