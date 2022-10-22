@@ -40,7 +40,7 @@ def create_filter(address, topics=None):
     Set fromBlock as the earliest creation block.
     """
     if isinstance(address, list):
-        start_block = min(contract_creation_block(address, when_no_history_return_0=True))
+        start_block = min(contract_creation_block(addr, when_no_history_return_0=True) for addr in address)
     else:
         start_block = contract_creation_block(address, when_no_history_return_0=True)
 
