@@ -534,7 +534,7 @@ class UniswapRouterV2(ContractBase):
         }
 
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, pool) for pool in pools])
+            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, pool, True) for pool in pools])
             pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
             
         reserves = await asyncio.gather(
