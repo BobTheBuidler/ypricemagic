@@ -339,7 +339,7 @@ def _squeeze(it):
 
 def _extract_abi_data(address):
     try:
-        data = _fetch_from_explorer(address, "getsourcecode", False)
+        data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
@@ -359,12 +359,12 @@ def _extract_abi_data(address):
         else:
             raise
     
-    is_verified = bool(data["result"][0].get("SourceCode"))
+    is_verified = bool(data.get("SourceCode"))
     if not is_verified:
         raise ContractNotVerified(f"Contract source code not verified: {address}")
-    name = data["result"][0]["ContractName"]
-    abi = json.loads(data["result"][0]["ABI"])
-    implementation = data["result"][0]["Implementation"]
+    name = data["ContractName"]
+    abi = json.loads(data["ABI"])
+    implementation = data.get("Implementation")
     return name, abi, implementation
 
 @eth_retry.auto_retry
