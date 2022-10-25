@@ -82,6 +82,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
+        # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
             if web3.eth.get_code(address, mid):
                 hi = mid
@@ -89,15 +90,15 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
                 lo = mid
         except ValueError as e:
             if 'missing trie node' in str(e):
-                logger.critical('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
+                logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
                 if when_no_history_return_0:
                     return 0
             elif 'Server error: account aurora does not exist while viewing' in str(e):
-                logger.critical(str(e))
+                logger.warning(str(e))
                 if when_no_history_return_0:
                     return 0
             elif 'No state available for block' in str(e):
-                logger.critical(str(e))
+                logger.warning(str(e))
                 if when_no_history_return_0:
                     return 0
             else:
@@ -311,7 +312,6 @@ async def probe(
         return method, result
     
 
-
 @memory.cache()
 #yLazyLogger(logger)
 def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
@@ -336,7 +336,7 @@ def _squeeze(it):
             it._build[k] = {}
     return it
 
-
+@eth_retry.auto_retry
 def _extract_abi_data(address):
     try:
         data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
@@ -367,7 +367,6 @@ def _extract_abi_data(address):
     implementation = data.get("Implementation")
     return name, abi, implementation
 
-@eth_retry.auto_retry
 def _resolve_proxy(address) -> Tuple[str, List]:
     address = convert.to_address(address)
     name, abi, implementation = _extract_abi_data(address)
