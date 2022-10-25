@@ -4,7 +4,7 @@ import threading
 from typing import Dict, Optional
 
 from async_lru import alru_cache
-from brownie import chain
+from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
 from multicall import Call
 from multicall.utils import await_awaitable, gather
@@ -47,7 +47,7 @@ class UniswapMultiplexer:
             is_pool = all(await pool.get_pool_details_async())
             if is_pool:
                 factory = await pool.factory_async
-                if factory not in self.factories:
+                if factory not in self.factories and factory != ZERO_ADDRESS:
                     gh_issue_request(f'UniClone Factory {factory} is unknown to ypricemagic.', logger)
                     self.factories.append(factory)
             return is_pool

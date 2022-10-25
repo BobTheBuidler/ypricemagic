@@ -4,6 +4,7 @@ import logging
 from brownie import chain, web3
 
 from y.exceptions import NoBlockFound
+from y.networks import Network
 from y.utils.cache import memory
 from y.utils.client import get_ethereum_client
 from y.utils.logging import yLazyLogger
@@ -25,7 +26,6 @@ def get_block_timestamp(height: int) -> int:
 @memory.cache()
 #yLazyLogger(logger)
 def last_block_on_date(date_string: str) -> int:
-    logger.debug(f'last block on date {date_string}')
     date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
     date = date.date()
     height = chain.height
@@ -40,20 +40,23 @@ def last_block_on_date(date_string: str) -> int:
         else:
             lo = mid
     hi = hi - 1
-    return hi if hi != height else None
+    block = hi if hi != height else None
+    logger.debug(f'last {Network.name()} block on date {date_string} -> {block}')
+    return block
 
 
 #yLazyLogger(logger)
 def closest_block_after_timestamp(timestamp: int) -> int:
     try:
-        return _closest_block_after_timestamp_cached(timestamp)
+        block = _closest_block_after_timestamp_cached(timestamp)
     except NoBlockFound:
-        return None
+        block = None
+    logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
+    return block
 
 
 @memory.cache()
 def _closest_block_after_timestamp_cached(timestamp: int) -> int:
-    logger.info('closest block after timestamp %d', timestamp)
     height = chain.height
     lo, hi = 0, height
     while hi - lo > 1:
