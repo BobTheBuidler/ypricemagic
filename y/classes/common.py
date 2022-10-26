@@ -18,7 +18,6 @@ from y.erc20 import decimals_async, totalSupply_async
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
-from y.prices import magic
 from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import balanceOf_async, raw_call_async
 
@@ -173,7 +172,8 @@ class ERC20(ContractBase):
 
     #yLazyLogger(logger)
     async def price_async(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:
-        return await magic.get_price_async(
+        from y.prices.magic import get_price_async
+        return await get_price_async(
             self.address, 
             block=block, 
             fail_to_None=return_None_on_failure
