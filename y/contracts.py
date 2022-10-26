@@ -110,6 +110,21 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
 address_semaphores = defaultdict(lambda: asyncio.Semaphore())
 
 class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
+    """
+    Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
+    1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
+    2. To each contract method, a `coroutine` property has been defined which allows you to make asynchronous calls using the following syntax:
+    ```Contract(0xAddress).methodName.coroutine(*args, block_identifier = 123)```
+    3. A few attributes were removed in order to minimize the size of a Contract object in memory: 
+        - ast, bytecode, coverageMap, deployedBytecode, deployedSourceMap, natspec, opcodes, pcMap
+    4. There are a few new util methods but they're not officially supported yet and may change without warning:
+        - has_method
+        - has_methods
+        - has_methods_async
+        - build_name
+        - build_name_async
+        - get_code
+    """
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
 
     @eth_retry.auto_retry
