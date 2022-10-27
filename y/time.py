@@ -1,5 +1,6 @@
 import datetime
 import logging
+from typing import Union
 
 from brownie import chain, web3
 
@@ -25,9 +26,15 @@ def get_block_timestamp(height: int) -> int:
 
 @memory.cache()
 #yLazyLogger(logger)
-def last_block_on_date(date_string: str) -> int:
-    date = datetime.datetime.strptime(date_string, "%Y-%m-%d")
-    date = date.date()
+def last_block_on_date(date: Union[str, datetime.date]) -> int:
+    """ Returns the last block on a given `date`. You can pass either a `datetime.date` object or a date string formatted as 'YYYY-MM-DD'. """
+    if isinstance(date, datetime.datetime):
+        raise TypeError(
+            "You can not pass in a `datetime.datetime` object. Please call date() on your input before passing it to this funciton."
+        )
+    if not isinstance(date, datetime.date):
+        date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
+    
     height = chain.height
     lo, hi = 0, height
     while hi - lo > 1:
@@ -41,7 +48,7 @@ def last_block_on_date(date_string: str) -> int:
             lo = mid
     hi = hi - 1
     block = hi if hi != height else None
-    logger.debug(f'last {Network.name()} block on date {date_string} -> {block}')
+    logger.debug(f'last {Network.name()} block on date {date} -> {block}')
     return block
 
 
