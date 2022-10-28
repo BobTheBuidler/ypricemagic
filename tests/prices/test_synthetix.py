@@ -1,4 +1,5 @@
 import pytest
+from multicall.utils import await_awaitable
 from tests.fixtures import mainnet_only, mutate_tokens
 from y.prices.synthetix import synthetix
 
@@ -13,11 +14,9 @@ def test_get_synths():
 @mainnet_only
 def test_synthetix_detection():
     sLINK = '0xbBC455cb4F1B9e4bFC4B73970d360c8f032EfEE6'
-    assert sLINK in synthetix
+    assert await_awaitable(synthetix.is_synth(sLINK))
 
 
 @pytest.mark.parametrize('token', SYNTHS)
 def test_synthetix_price(token):
-    price = synthetix.get_price(token)
-    print(price)
-    return price
+    assert synthetix.get_price(token)
