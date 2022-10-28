@@ -25,6 +25,7 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
 from y.decorators import wait_or_exit_after
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           PriceError, UnsupportedNetwork, call_reverted)
+from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
 from y.networks import Network
 from y.utils.events import create_filter, decode_logs, get_logs_asap
 from y.utils.logging import yLazyLogger
@@ -326,8 +327,12 @@ class CurveRegistry(metaclass=Singleton):
             # fetch pools from the latest registries
             for event in decode_logs(registry_logs):
                 if event.name == 'PoolAdded':
+                    try:
+                        lp_token = Contract(event.address).get_lp_token(event['pool'])
+                    except ContractNotVerified:
+                        logger.warning(f"failed to load curve pool {event['pool']} from non-verified registry {event.address}")
+                        continue
                     self.registries[event.address].add(event['pool'])
-                    lp_token = Contract(event.address).get_lp_token(event['pool'])
                     self.token_to_pool[lp_token] = event['pool']
                 elif event.name == 'PoolRemoved':
                     self.registries[event.address].discard(event['pool'])
@@ -376,8 +381,12 @@ class CurveRegistry(metaclass=Singleton):
     def read_pools(self, registry: Address) -> List[EthAddress]:
         try:
             registry = Contract(registry)
-        except ContractNotVerified: # This happens sometimes, not sure why as the contract is verified.
-            registry = brownie.Contract.from_explorer(registry)
+        except ContractNotVerified:
+            if chain.id == Network.xDai:
+                registry = Contract.from_abi("Vyper_contract", registry, CURVE_REGISTRY_ABI)
+            else:
+                # This happens sometimes, not sure why as the contract is verified.
+                registry = brownie.Contract.from_explorer(registry)
         return fetch_multicall(
             *[[registry, 'pool_list', i] for i in range(registry.pool_count())]
         )
