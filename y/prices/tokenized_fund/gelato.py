@@ -10,7 +10,7 @@ from y.classes.common import ERC20
 from y.contracts import has_methods_async
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import _totalSupplyReadable, raw_call_async
+from y.utils.raw_calls import raw_call_async
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,7 @@ async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) 
         ERC20(token1).scale,
         y.prices.magic.get_price_async(token0,block),
         y.prices.magic.get_price_async(token1,block),
-        _totalSupplyReadable(address,block),
+        ERC20(address).total_supply_readable_async(block),
     ])
 
     balance0 /= scale0

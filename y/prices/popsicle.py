@@ -6,12 +6,11 @@ from async_lru import alru_cache
 from multicall import Call
 from multicall.utils import await_awaitable, gather
 from y import convert
-from y.classes.common import WeiBalance
+from y.classes.common import ERC20, WeiBalance
 from y.contracts import has_methods_async
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
 from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import _totalSupplyReadable
 
 logger = logging.getLogger(__name__)
 
@@ -36,7 +35,7 @@ async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) 
     total_val = await get_tvl_async(address, block)
     if total_val is None:
         return None
-    total_supply = await _totalSupplyReadable(address,block)
+    total_supply = ERC20(address).total_supply_readable_async(address, block)
     return UsdPrice(total_val / total_supply)
 
 #yLazyLogger(logger)
