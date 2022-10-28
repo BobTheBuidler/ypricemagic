@@ -5,7 +5,7 @@ from typing import Dict, List, Optional, Tuple
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import VirtualMachineError
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.constants import dai, thread_pool_executor, usdc, wbtc, weth
@@ -24,10 +24,7 @@ EXCHANGE_PROXY = {
 logger = logging.getLogger(__name__)
 
 async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale: float, block) -> float:
-    out_scale, out_price = await gather([
-        ERC20(token_out).scale,
-        magic.get_price_async(token_out, block),
-    ])
+    out_scale, out_price = await asyncio.gather(ERC20(token_out).scale, magic.get_price_async(token_out, block))
     return (total_outout / out_scale) * out_price / scale
 
 class BalancerV1Pool(ERC20):
@@ -64,10 +61,7 @@ class BalancerV1Pool(ERC20):
             if await token.price_async(block=block, return_None_on_failure=True) is not None
         }
         
-        prices = await gather([
-            token.price_async(block=block, return_None_on_failure = True)
-            for token in good_balances.keys()
-        ])
+        prices = await asyncio.gather(*[token.price_async(block=block, return_None_on_failure = True) for token in good_balances])
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(balance * price for balance, price in zip(good_balances.values(),prices))

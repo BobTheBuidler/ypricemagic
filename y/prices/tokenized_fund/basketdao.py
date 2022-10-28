@@ -1,9 +1,10 @@
 
+import asyncio
 from typing import Optional
 
 from brownie.convert.datatypes import EthAddress
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.classes.common import ERC20, WeiBalance
 from y.datatypes import Block, UsdPrice
 
@@ -22,10 +23,10 @@ def get_price(address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
     return await_awaitable(get_price_async(address, block=block))
 
 async def get_price_async(address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    balances, total_supply = await gather([
+    balances, total_supply = await asyncio.gather(
         Call(address, 'getAssetsAndBalances()(address[],uint[])',block_id=block).coroutine(),
         ERC20(address).total_supply_readable_async(block=block),
-    ])
+    )
 
     balances = [
         WeiBalance(balance, token, block)
@@ -33,5 +34,5 @@ async def get_price_async(address: EthAddress, block: Optional[Block] = None) ->
         in zip(balances[0],balances[1])
     ]
 
-    tvl = sum(await gather([bal.value_usd_async for bal in balances]))
+    tvl = sum(await asyncio.gather(*[bal.value_usd_async for bal in balances]))
     return UsdPrice(tvl / total_supply)

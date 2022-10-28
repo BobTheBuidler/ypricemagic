@@ -1,10 +1,12 @@
 
+import asyncio
 import logging
 from typing import Optional
 
 from async_lru import alru_cache
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
+from y.classes.common import ERC20
 from y.contracts import Contract, has_methods_async
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.prices import magic
@@ -25,11 +27,11 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token)
     contract = await Contract.coroutine(address)
-    ratio, masset, decimals = await gather([
+    ratio, masset, scale = await asyncio.gather(
         contract.getPrice.coroutine(block_identifier=block),
         contract.mAsset.coroutine(block_identifier=block),
-        contract.decimals.coroutine(block_identifier=block),
-    ])
-    ratio = ratio[0] / 10 ** decimals
-    underlying_price = await magic.get_price_async(masset,block)
+        ERC20(address).scale,
+    )
+    ratio = ratio[0] / scale
+    underlying_price = await magic.get_price_async(masset, block)
     return UsdPrice(underlying_price * ratio)

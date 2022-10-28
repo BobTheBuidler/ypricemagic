@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from functools import cached_property
 from typing import Any, Optional
@@ -5,7 +6,7 @@ from typing import Any, Optional
 from async_lru import alru_cache
 from async_property import async_cached_property
 from brownie import chain
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import Network
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method_async, has_methods_async, probe
@@ -60,10 +61,10 @@ async def is_yearn_vault_async(token: AnyAddressType) -> bool:
     
     # Yearn-like contracts can use these formats
     result = any(
-        await gather([
+        await asyncio.gather(
             has_methods_async(token, ('pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'), any),
             has_methods_async(token, ('exchangeRate()(uint)','underlying()(address)')),
-        ])
+        )
     )
 
     # pricePerShare can revert if totalSupply == 0, which would cause `has_methods` to return `False`,
@@ -177,8 +178,8 @@ class YearnInspiredVault(ERC20):
     @alru_cache(maxsize=1000)
     async def price_async(self, block: Optional[Block] = None) -> UsdPrice:
         underlying = await self.underlying_async
-        share_price, underlying_price = await gather([
+        share_price, underlying_price = await asyncio.gather(
             self.share_price_async(block=block),
-            underlying.price_async(block=block)
-        ])
+            underlying.price_async(block=block),
+        )
         return UsdPrice(share_price * underlying_price)

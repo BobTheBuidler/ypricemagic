@@ -20,7 +20,7 @@ from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from dank_mids.brownie_patch import patch_contract
 from hexbytes import HexBytes
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 
 from y import convert
 from y.datatypes import Address, AnyAddressType, Block
@@ -287,14 +287,14 @@ async def has_methods_async(
         return _func([
             False if call is None else True
             for call
-            in await gather([Call(address, [method]).coroutine() for method in methods])
+            in await asyncio.gather(*[Call(address, [method]).coroutine() for method in methods])
         ])
     except Exception as e:
         if not call_reverted(e): raise # and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
-        return False if _func == all else any(await gather([has_method_async(address, method) for method in methods]))
+        return False if _func == all else any(await asyncio.gather(*[has_method_async(address, method) for method in methods]))
 
 
 #yLazyLogger(logger)

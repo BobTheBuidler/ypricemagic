@@ -1,10 +1,11 @@
+import asyncio
 import logging
 from functools import lru_cache
 from typing import Optional, Tuple
 
 from async_lru import alru_cache
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import has_methods_async
@@ -48,10 +49,10 @@ async def get_tvl_async(token: AnyAddressType, block: Optional[Block] = None) ->
     if balances is None:
         return None
     balance0, balance1 = balances
-    values = await gather([
+    values = await asyncio.gather(
         balance0.value_usd_async,
         balance1.value_usd_async,
-    ])
+    )
     return UsdValue(sum(values))
 
 #yLazyLogger(logger)
@@ -63,7 +64,7 @@ async def get_balances_async(token: AnyAddressType, block: Optional[Block] = Non
     address = convert.to_address(token)
     methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
     try:
-        token0, token1, (balance0, balance1) = await gather([Call(address, method, block_id=block).coroutine() for method in methods])
+        token0, token1, (balance0, balance1) = await asyncio.gather(*[Call(address, method, block_id=block).coroutine() for method in methods])
     except Exception as e:
         if call_reverted(e):
             return None

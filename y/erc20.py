@@ -1,13 +1,14 @@
+import asyncio
 import logging
 from typing import Any, Callable, KeysView, List, Optional, Tuple, Union
 
 import brownie
 from brownie.convert.datatypes import EthAddress
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 
 from y.contracts import Contract
 from y.datatypes import Address, AddressOrContract, Block
-from y.utils.multicall import (multicall_decimals_async, multicall_totalSupply,
+from y.utils.multicall import (multicall_decimals_async,
                                multicall_totalSupply_async)
 from y.utils.raw_calls import _decimals, _totalSupply
 
@@ -73,10 +74,10 @@ async def totalSupplyReadable_async(
     return_None_on_failure: bool = False
     ):
 
-    token_supplys, token_decimals = await gather([
+    token_supplys, token_decimals = await asyncio.gather(
         totalSupply_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure),
         decimals_async(contract_address_or_addresses, block=block, return_None_on_failure=return_None_on_failure),
-    ])
+    )
 
     if type(token_supplys) == brownie.Wei: # if only fetching totalSupply for one token
         supply = token_supplys

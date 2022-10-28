@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from functools import cached_property, lru_cache
 from typing import Any, Optional, Tuple
@@ -5,7 +6,7 @@ from typing import Any, Optional, Tuple
 from async_property import async_cached_property
 from brownie import chain, convert
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
@@ -65,10 +66,11 @@ class CToken(ERC20):
         return await_awaitable(self.get_price_async(block))
     
     async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        underlying_per_ctoken, underlying_price = await gather([
+        underlying = await self.underlying_async
+        underlying_per_ctoken, underlying_price = await asyncio.gather(
             self.underlying_per_ctoken_async(block=block),
-            (await self.underlying_async).price_async(block=block),
-        ])
+            underlying.price_async(block=block),
+        )
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
     @cached_property
@@ -94,11 +96,11 @@ class CToken(ERC20):
     
     #yLazyLogger(logger)
     async def underlying_per_ctoken_async(self, block: Optional[Block] = None) -> float:
-        exchange_rate, decimals, underlying = await gather([
+        exchange_rate, decimals, underlying = await asyncio.gather(
             self.exchange_rate_async(block=block),
             self.decimals,
             self.underlying_async,
-        ])
+        )
         return exchange_rate * 10 ** (decimals - await underlying.decimals)
     
     #yLazyLogger(logger)
@@ -181,7 +183,7 @@ class Compound(metaclass = Singleton):
     
     #yLazyLogger(logger)
     async def is_compound_market_async(self, token_address: AddressOrContract) -> bool:
-        all_markets = await gather([troller.markets_async for troller in self.trollers.values()])
+        all_markets = await asyncio.gather(*[troller.markets_async for troller in self.trollers.values()])
         if any(token_address in troller for troller in all_markets):
             return True
 

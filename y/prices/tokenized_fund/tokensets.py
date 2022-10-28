@@ -1,11 +1,12 @@
 
+import asyncio
 import logging
 from functools import lru_cache
 from typing import Any, List, Optional
 
 from async_lru import alru_cache
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import has_methods_async
 from y.datatypes import AnyAddressType, Block, UsdPrice
@@ -21,10 +22,10 @@ def is_token_set(token: AnyAddressType) -> bool:
 #yLazyLogger(logger)
 @alru_cache(maxsize=None)
 async def is_token_set_async(token: AnyAddressType) -> bool:
-    return any(await gather([
+    return any(await asyncio.gather(
         has_methods_async(token, ("getComponents()(address[])", "naturalUnit()(uint)")),
         has_methods_async(token, ("getComponents()(address[])", "getModules()(address[])", "getPositions()(address[])")),
-    ]))
+    ))
 
 #yLazyLogger(logger)
 def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
@@ -54,7 +55,7 @@ class TokenSet(ERC20):
         if hasattr(self.contract, 'getUnits'):
             balances = await self.contract.getUnits.coroutine(block_identifier = block)
         elif hasattr(self.contract, 'getTotalComponentRealUnits'):
-            balances = await gather([
+            balances = await asyncio.gather(*[
                 Call(self.address, ["getTotalComponentRealUnits(address)(uint)", component.address], block_id=block).coroutine()
                 for component in await self.components_async(block)
             ])
@@ -67,4 +68,4 @@ class TokenSet(ERC20):
         total_supply = await self.total_supply_readable_async(block=block)
         if total_supply == 0:
             return UsdPrice(0)
-        return UsdPrice(sum(await gather([balance.value_usd_async for balance in await self.balances_async(block=block)])))
+        return UsdPrice(sum(await asyncio.gather(*[balance.value_usd_async for balance in await self.balances_async(block=block)])))

@@ -1,10 +1,11 @@
+import asyncio
 import logging
 from functools import lru_cache
 from typing import Optional
 
 import y.prices.magic
 from async_lru import alru_cache
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import has_methods_async
@@ -31,12 +32,12 @@ def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
 async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token) 
 
-    token0, token1 = await gather([
+    token0, token1 = await asyncio.gather(
         raw_call_async(address,'token0()',block=block,output='address'),
         raw_call_async(address,'token1()',block=block,output='address'),
-    ])
+    )
 
-    balance0, balance1, scale0, scale1, price0, price1, total_supply = await gather([
+    balance0, balance1, scale0, scale1, price0, price1, total_supply = await asyncio.gather(
         raw_call_async(address,'gelatoBalance0()',block=block,output='int'),
         raw_call_async(address,'gelatoBalance1()',block=block,output='int'),
         ERC20(token0).scale,
@@ -44,7 +45,7 @@ async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) 
         y.prices.magic.get_price_async(token0,block),
         y.prices.magic.get_price_async(token1,block),
         ERC20(address).total_supply_readable_async(block),
-    ])
+    )
 
     balance0 /= scale0
     balance1 /= scale1

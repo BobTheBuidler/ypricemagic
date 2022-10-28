@@ -1,8 +1,9 @@
+import asyncio
 import logging
 from typing import Optional
 
 from brownie import chain
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.constants import weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
@@ -28,10 +29,10 @@ class wstEth:
 
     #yLazyLogger(logger)
     async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        share_price, weth_price = await gather([
+        share_price, weth_price = await asyncio.gather(
             raw_call_async(self.address, 'stEthPerToken()', output='int', block=block),
             magic.get_price_async(weth, block),
-        ])
+        )
         share_price /= 1e18
         return UsdPrice(share_price * weth_price)
 
