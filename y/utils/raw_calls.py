@@ -175,30 +175,6 @@ async def _totalSupply(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-#yLazyLogger(logger)
-async def _totalSupplyReadable(
-    contract_address: AddressOrContract, 
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = False
-    ) -> Optional[float]:
-
-    total_supply = _totalSupply(contract_address, block=block, return_None_on_failure=return_None_on_failure)
-    decimals = _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
-    total_supply, decimals = await gather([total_supply, decimals])
-
-    if total_supply is not None and decimals is not None:
-        return total_supply / 10 ** decimals
-
-    if total_supply is None and decimals is None and return_None_on_failure:
-        return None
-
-    raise NonStandardERC20(f'''
-        Unable to fetch `totalSupplyReadable` for {contract_address} on {Network.printable()}
-        totalSupply: {total_supply} decimals: {decimals}
-        If the contract is verified, please check to see if it has a strangely named `totalSupply` or
-        `decimals` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
-        with the contract address and correct function name so we can keep things going smoothly :)''')
-
 def balanceOf(
     contract_address: AddressOrContract, 
     address: Address, 
