@@ -8,7 +8,7 @@ import brownie
 from async_property import async_cached_property, async_property
 from brownie.exceptions import ContractNotFound
 from checksum_dict import ChecksumAddressSingletonMeta
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.constants import EEE_ADDRESS
 from y.contracts import (Contract, build_name, has_method, has_method_async,
@@ -147,7 +147,7 @@ class ERC20(ContractBase):
 
     #@yLazyLogger(logger)
     async def total_supply_readable_async(self, block: Optional[Block] = None) -> float:
-        total_supply, scale = await gather([self.total_supply_async(block=block), self.scale])
+        total_supply, scale = await asyncio.gather(self.total_supply_async(block=block), self.scale)
         return total_supply / scale
     
     def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
@@ -162,7 +162,7 @@ class ERC20(ContractBase):
     
     #@yLazyLogger(logger)
     async def balance_of_readable_async(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
-        balance, scale = await gather([self.balance_of_async(address, block=block), self.scale])
+        balance, scale = await asyncio.gather(self.balance_of_async(address, block=block), self.scale)
         return balance / scale
 
     def price(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:
@@ -222,8 +222,8 @@ class WeiBalance:
     async def value_usd_async(self) -> float:
         if self.balance == 0:
             return 0
-        balance, price = await gather([
+        balance, price = await asyncio.gather(
             self.readable_async,
             self.token.price_async(block=self.block),
-        ])
+        )
         return balance * price

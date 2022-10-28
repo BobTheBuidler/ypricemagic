@@ -14,7 +14,7 @@ from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
@@ -145,7 +145,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         # pool not in registry
         if not any(coins_decimals):
             coins = await self.get_coins_async
-            coins_decimals = await gather(coin.decimals for coin in coins)
+            coins_decimals = await asyncio.gather(*[coin.decimals for coin in coins])
         
         return [dec for dec in coins_decimals if dec != 0]
     
@@ -228,7 +228,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         if balances is None:
             return None
         
-        prices = await gather([coin.price_async(block=block) for coin in balances.keys()])
+        prices = await asyncio.gather(*[coin.price_async(block=block) for coin in balances])
 
         return UsdValue(
             sum(balance * price for balance, price in zip(balances.values(),prices))

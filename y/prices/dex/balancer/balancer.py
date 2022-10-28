@@ -1,10 +1,11 @@
+import asyncio
 import logging
 from functools import cached_property, lru_cache
 from typing import List, Optional, Union
 
 from async_lru import alru_cache
 from brownie import chain
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
@@ -40,7 +41,7 @@ class BalancerMultiplexer:
 
     #yLazyLogger(logger)
     async def is_balancer_pool_async(self, token_address: AnyAddressType) -> bool:
-        return any(await gather([v.is_pool_async(token_address) for v in self.versions]))
+        return any(await asyncio.gather(*[v.is_pool_async(token_address) for v in self.versions]))
     
     #yLazyLogger(logger)
     async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:

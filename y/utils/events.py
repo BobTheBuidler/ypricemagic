@@ -17,7 +17,7 @@ from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ async def get_logs_asap_async(address: Optional[Address], topics: Optional[List[
     if verbose > 0:
         logger.info('fetching %d batches', len(ranges))
     
-    batches = await gather([
+    batches = await asyncio.gather(*[
         asyncio.get_event_loop().run_in_executor(
             thread_pool_executor,
             _get_logs,

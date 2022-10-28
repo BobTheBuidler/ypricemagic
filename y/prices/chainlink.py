@@ -7,7 +7,7 @@ from async_lru import alru_cache
 from async_property import async_cached_property
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
@@ -210,10 +210,10 @@ class Chainlink(metaclass=Singleton):
         if feed is None or (block is not None and block < await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, feed.address, True)):
             return None
         try:
-            latest_answer, scale = await gather([
+            latest_answer, scale = await asyncio.gather(
                 Call(feed.address, 'latestAnswer()(uint)', block_id=block).coroutine(),
                 self.feed_scale_async(asset),
-            ])
+            )
         except ValueError as e:
             print(feed.address)
             print(str(e))

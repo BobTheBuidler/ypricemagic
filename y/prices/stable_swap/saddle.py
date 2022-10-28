@@ -1,10 +1,11 @@
 
+import asyncio
 import logging
 from typing import List, Optional
 
 from async_lru import alru_cache
 from brownie import chain
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import has_method_async, has_methods_async
@@ -50,35 +51,35 @@ def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -
     return await_awaitable(get_price_async(token_address, block))
 
 async def get_price_async(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
-    tvl, total_supply = await gather([
+    tvl, total_supply = await asyncio.gather(
         get_tvl(token_address, block),
         ERC20(token_address).total_supply_readable_async(block),
-    ])
+    )
     return UsdPrice(tvl / total_supply)
 
 #yLazyLogger(logger)
 async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
-    pool, tokens, balances = await gather([
+    pool, tokens, balances = await asyncio.gather(
         get_pool(token_address),
         get_tokens(token_address, block),
         multicall_same_func_same_contract_different_inputs_async(
             pool, 'getTokenBalance(uint8)(uint)', inputs=[*range(len(tokens))]
         ),
-    ])
-    tokens_scale, prices = await gather([
-        gather([token.scale for token in tokens]),
+    )
+    tokens_scale, prices = await asyncio.gather(
+        asyncio.gather(*[token.scale for token in tokens]),
         magic.get_prices_async(tokens, block, silent=True),
-    ])
+    )
     balances = [balance / scale for balance, scale in zip(balances, tokens_scale)]
     return UsdValue(sum(balance * price for balance, price in zip (balances, prices)))
 
 
 #yLazyLogger(logger)
 async def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[ERC20]:
-    pool, response = await gather([
+    pool, response = await asyncio.gather(
         get_pool(token_address),
         multicall_same_func_same_contract_different_inputs_async(
             pool, 'getToken(uint8)(address)', inputs=[*range(8)], block=block, return_None_on_failure=True
         ),
-    ])
+    )
     return [ERC20(token) for token in response if token is not None]

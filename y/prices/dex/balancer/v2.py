@@ -8,7 +8,7 @@ from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from hexbytes import HexBytes
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.classes.singleton import Singleton
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, thread_pool_executor
@@ -79,7 +79,7 @@ class BalancerV2Vault(ContractBase):
     
     @alru_cache(maxsize=10)
     async def get_pool_info_async(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
-        return await gather([
+        return await asyncio.gather(*[
             self.contract.getPoolTokens.coroutine(poolId, block_identifier=block)
             for poolId in poolids
         ])
@@ -137,10 +137,10 @@ class BalancerV2Pool(ERC20):
     
     #yLazyLogger(logger)
     async def get_pool_price_async(self, block: Optional[Block] = None) -> Awaitable[UsdPrice]:
-        tvl, total_supply = await gather([
+        tvl, total_supply = await asyncio.gather(
             self.get_tvl_async(block=block),
             self.total_supply_readable_async(block=block),
-        ])
+        )
         return UsdPrice(tvl / total_supply)
 
     def get_tvl(self, block: Optional[Block] = None) -> UsdValue:
@@ -149,7 +149,7 @@ class BalancerV2Pool(ERC20):
     #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Awaitable[UsdValue]:
         balances = await self.get_balances_async(block=block)
-        return UsdValue(sum(await gather([
+        return UsdValue(sum(await asyncio.gather(*[
             balance.value_usd_async for balance in balances.values()
             if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
         ])))
@@ -258,7 +258,7 @@ class BalancerV2(metaclass=Singleton):
     
     #yLazyLogger(logger)
     async def deepest_pool_for_async(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
-        deepest_pools = await gather([vault.deepest_pool_for_async(token_address, block=block) for vault in self.vaults])
+        deepest_pools = await asyncio.gather(*[vault.deepest_pool_for_async(token_address, block=block) for vault in self.vaults])
         deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in zip(self.vaults, deepest_pools) if deepest_pool is not None}
         deepest_pool_balance = max(pool_balance for pool_address, pool_balance in deepest_pools.values())
         for pool_address, pool_balance in deepest_pools.values():

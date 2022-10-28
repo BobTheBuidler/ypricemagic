@@ -1,9 +1,10 @@
 
+import asyncio
 import logging
 from typing import Optional
 
 from async_lru import alru_cache
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods_async
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
@@ -31,18 +32,18 @@ async def get_price_async(token_address: AddressOrContract, block: Optional[Bloc
     i, balances = 0, []
     while True:
         try:
-            coin, balance = await gather([
+            coin, balance = await asyncio.gather(
                 minter.coins.coroutine(i, block_identifier = block),
-                minter.balances(i, block_identifier = block),
-            ])
+                minter.balances.coroutine(i, block_identifier = block),
+            )
             balance /= await ERC20(coin).scale
             balances.append(WeiBalance(balance, coin, block))
             i += 1
         except:
             break
-    coin_values, total_supply = await gather([
-        gather([b.value_usd_async for b in balances]),
+    coin_values, total_supply = await asyncio.gather(
+        asyncio.gather(*[b.value_usd_async for b in balances]),
         ERC20(token_address).total_supply_readable_async(block),
-    ])
+    )
     tvl = sum(coin_values)
     return UsdPrice(tvl / total_supply)

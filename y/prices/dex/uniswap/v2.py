@@ -12,7 +12,7 @@ from brownie import chain
 from brownie.exceptions import EventLookupError
 from cachetools.func import ttl_cache
 from multicall import Call
-from multicall.utils import await_awaitable, gather, raise_if_exception_in
+from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN, sushi, thread_pool_executor,
@@ -91,7 +91,7 @@ class UniswapPoolV2(ERC20):
     @async_cached_property
     async def tokens_async(self) -> Tuple[ERC20, ERC20]:
         methods = 'token0()(address)', 'token1()(address)'
-        token0, token1 = await gather([Call(self.address, [method]).coroutine() for method in methods])
+        token0, token1 = await asyncio.gather(*[Call(self.address, [method]).coroutine() for method in methods])
         return ERC20(token0), ERC20(token1)
     
     #yLazyLogger(logger)
@@ -129,10 +129,10 @@ class UniswapPoolV2(ERC20):
 
     #yLazyLogger(logger)
     async def reserves_async(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
-        reserves, tokens = await gather([
+        reserves, tokens = await asyncio.gather(
             Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block).coroutine(),
             self.tokens_async,
-        ])
+        )
         if reserves:
             return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
@@ -142,17 +142,10 @@ class UniswapPoolV2(ERC20):
 
     #yLazyLogger(logger)
     async def tvl_async(self, block: Optional[Block] = None) -> Optional[float]:
-        prices, reserves = await gather([
-            asyncio.gather(
-                *[
-                    token.price_async(block=block, return_None_on_failure=True)
-                    for token in await self.tokens_async
-                ],
-                return_exceptions=True,
-            ),
+        prices, reserves = await asyncio.gather(
+            asyncio.gather(*[token.price_async(block=block, return_None_on_failure=True) for token in await self.tokens_async]),
             self.reserves_async(block=block),
-        ])
-        raise_if_exception_in(prices)
+        )
 
         if reserves is None:
             return None
@@ -179,10 +172,7 @@ class UniswapPoolV2(ERC20):
     async def get_pool_details_async(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         try:
-            token0, token1, supply, reserves = await gather([
-                Call(self.address, [method], block_id=block).coroutine()
-                for method in methods
-            ])
+            token0, token1, supply, reserves = await asyncio.gather(*[Call(self.address, [method], block_id=block).coroutine() for method in methods])
         except Exception as e:
             if not call_reverted(e):
                 raise
@@ -308,10 +298,7 @@ class UniswapRouterV2(ContractBase):
         if path is None and (deepest_pool:= await self.deepest_pool_async(token_in, block)):
             paired_with = (await self.pool_mapping_async)[token_in][deepest_pool]
             path = [token_in,paired_with]
-            quote, out_scale = await gather([
-                self.get_quote_async(amount_in, path, block=block),
-                ERC20(path[-1]).scale,
-            ])
+            quote, out_scale = await asyncio.gather(self.get_quote_async(amount_in, path, block=block), ERC20(path[-1]).scale)
             if quote is not None:
                 amount_out = quote[-1] / out_scale  
                 fees = 0.997 ** (len(path) - 1)
@@ -334,10 +321,7 @@ class UniswapRouterV2(ContractBase):
         
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
-        quote, out_scale = await gather([
-            self.get_quote_async(amount_in, path, block=block),
-            ERC20(path[-1]).scale,
-        ])
+        quote, out_scale = await asyncio.gather(self.get_quote_async(amount_in, path, block=block), ERC20(path[-1]).scale)
         if quote is not None:
             amount_out = quote[-1] / out_scale
             return UsdPrice(amount_out / fees)
@@ -434,10 +418,10 @@ class UniswapRouterV2(ContractBase):
             #token0s = await gather(calls)
             #calls = [Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]
             #token1s = await gather(calls)
-            token0s, token1s = await gather([
-                gather([Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                gather([Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get])
-            ])
+            token0s, token1s = await asyncio.gather(
+                asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+                asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+            )
             pools_your_node_couldnt_get = {
                 convert.to_address(pool): {
                     'token0':convert.to_address(token0),

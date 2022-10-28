@@ -1,11 +1,8 @@
+import asyncio
 import logging
-from collections import defaultdict
-from itertools import count, product
-from operator import itemgetter
 from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import brownie
-import requests
 from brownie import chain, web3
 from eth_abi.exceptions import InsufficientDataBytes
 from web3.exceptions import CannotHandleRequest
@@ -19,7 +16,7 @@ from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals, _totalSupply
 
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 
 logger = logging.getLogger(__name__)
 
@@ -72,7 +69,7 @@ async def multicall_same_func_no_input_async(
     ) -> List[Any]:
 
     addresses = _clean_addresses(addresses)
-    results = await gather([Call(address, [method], [[address,apply_func]], block_id=block).coroutine() for address in addresses])
+    results = await asyncio.gather(*[Call(address, [method], [[address,apply_func]], block_id=block).coroutine() for address in addresses])
     return [v for call in results for k, v in call.items()]
 
 
@@ -102,7 +99,7 @@ async def multicall_same_func_same_contract_different_inputs_async(
     ) -> List[Any]:
     assert inputs
     address = convert.to_address(address)
-    results = await gather(Call(address, [method, input], [[input,apply_func]], block_id=block).coroutine() for input in inputs)
+    results = await asyncio.gather(*[Call(address, [method, input], [[input,apply_func]], block_id=block).coroutine() for input in inputs])
     return [result for call in results for key, result in call.items()]
 
 
@@ -124,15 +121,13 @@ async def multicall_decimals_async(
     ) -> List[int]:
 
     try: 
-        return await gather([Call(str(address), ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
+        return await asyncio.gather(*[Call(str(address), ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
     except (CannotHandleRequest,InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:
         continue_if_call_reverted(e)
 
-    decimals = await gather(
-        [_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses]
-    )
+    decimals = await asyncio.gather(*[_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses])
     return decimals
 
 

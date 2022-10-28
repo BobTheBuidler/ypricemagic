@@ -7,7 +7,7 @@ from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from cachetools.func import ttl_cache
 from multicall import Call
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 from y import convert
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import contract_not_verified
@@ -125,7 +125,7 @@ class UniswapMultiplexer:
         '''
         token_in = convert.to_address(token_in)
         routers = self.routers.values()
-        pools_per_router = await gather([router.pools_for_token_async(token_in) for router in routers])
+        pools_per_router = await asyncio.gather(*[router.pools_for_token_async(token_in) for router in routers])
         pools_to_routers = {pool: router for router, pools in zip(routers,pools_per_router) for pool in pools}
         reserves = await asyncio.gather(
             *[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools_to_routers],

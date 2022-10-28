@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from typing import Any, Callable, Optional, Union
 
@@ -17,7 +18,7 @@ from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
 
-from multicall.utils import await_awaitable, gather
+from multicall.utils import await_awaitable
 
 logger = logging.getLogger(__name__)
 
@@ -230,10 +231,10 @@ async def _balanceOfReadable(
     return_None_on_failure: bool = False
     ) -> Optional[float]:
 
-    # TODO _balanceOf return_None_on_failure
-    balance = balanceOf_async(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure)
-    decimals = _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure)
-    balance, decimals = await gather([balance, decimals])
+    balance, decimals = await asyncio.gather(
+        balanceOf_async(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure),
+        _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure),
+    )
     if balance is not None and decimals is not None:
         return balance / 10 ** decimals
 
