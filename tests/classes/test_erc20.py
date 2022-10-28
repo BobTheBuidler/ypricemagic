@@ -1,8 +1,9 @@
 import pytest
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
+from multicall.utils import await_awaitable
+from tests.fixtures import blocks_for_contract
 from tests.test_constants import STABLECOINS
-from tests.fixtures import blocks_for_contract, mutate_tokens
 from y.classes.common import ERC20
 from y.constants import WRAPPED_GAS_COIN, wbtc
 from y.exceptions import NoProxyImplementation, call_reverted
@@ -25,8 +26,8 @@ def test_erc20(token):
     assert token.build_name, f'Cannot fetch build name for token {token}'
     assert token.symbol, f'Cannot fetch symbol for token {token}'
     assert token.name, f'Cannot fetch name for token {token}'
-    assert 10 ** token.decimals == token.scale, f'Incorrect scale fetched for token {token}'
-    assert token.total_supply(block) / token.scale == token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
+    assert 10 ** await_awaitable(token.decimals) == await_awaitable(token.scale), f'Incorrect scale fetched for token {token}'
+    assert token.total_supply(block) / await_awaitable(token.scale) == token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
     assert token.price(), f'Cannot fetch price for token {token}'
 
 @pytest.mark.parametrize('token,block',TOKENS_BY_BLOCK)
@@ -46,7 +47,7 @@ def test_erc20_at_block(token, block):
     # NOTE We've validated token is not problematic proxy, proceed with test.
     try:
         # NOTE also tests ERC20._decimals
-        assert token.total_supply(block) / token._scale(block) == token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
+        assert token.total_supply(block) / await_awaitable(token._scale(block)) == token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
     except NoProxyImplementation:
         pass
     
