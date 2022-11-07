@@ -80,6 +80,8 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             You can only use this function on a fully synced node.''')
 
     lo, hi = 0, height
+    barrier = 0
+    warned = False
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
@@ -90,21 +92,25 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
                 lo = mid
         except ValueError as e:
             if 'missing trie node' in str(e):
-                logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
-                if when_no_history_return_0:
-                    return 0
+                if not warned:
+                    logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
             elif 'Server error: account aurora does not exist while viewing' in str(e):
-                logger.warning(str(e))
-                if when_no_history_return_0:
-                    return 0
+                if not warned:
+                    logger.warning(str(e))
             elif 'No state available for block' in str(e):
-                logger.warning(str(e))
-                if when_no_history_return_0:
-                    return 0
+                if not warned:
+                    logger.warning(str(e))
             else:
                 raise
+            warned = True
+            barrier = mid
             lo = mid
-    return hi if hi != height else None
+    if hi == lo + 1 == barrier + 1:
+        if when_no_history_return_0:
+            return 0
+    if hi != height:
+        return hi
+    raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 # this defaultdict prevents congestion in the contracts thread pool
 address_semaphores = defaultdict(lambda: asyncio.Semaphore())
