@@ -1,20 +1,22 @@
+import asyncio
 import logging
-from functools import cached_property, lru_cache
+from functools import cached_property
 from typing import List, Optional
 
 from async_lru import alru_cache
+from async_property import async_cached_property
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
 from eth_abi import encode_single
 from multicall import Call
 from multicall.utils import await_awaitable
+
 from y import convert
 from y.classes.singleton import Singleton
 from y.contracts import Contract, has_method_async
 from y.datatypes import AnyAddressType, Block, UsdPrice
-from y.exceptions import UnsupportedNetwork
+from y.exceptions import UnsupportedNetwork, call_reverted
 from y.networks import Network
-from y.utils.multicall import fetch_multicall
 
 logger = logging.getLogger(__name__)
 
@@ -27,30 +29,30 @@ class Synthetix(metaclass=Singleton):
     def __init__(self) -> None:
         if chain.id not in addresses:
             raise UnsupportedNetwork("synthetix is not supported on this network")
+    
+    @async_cached_property
+    async def address_resolver(self) -> Contract:
+        return await Contract.coroutine(addresses[chain.id])
 
-    @lru_cache(maxsize=None)
-    def get_address(self, name) -> Contract:
+    @alru_cache(maxsize=256)
+    async def get_address(self, name: str, block: Block = None) -> Contract:
         """
         Get contract from Synthetix registry.
         See also https://docs.synthetix.io/addresses/
         """
-        address_resolver = Contract(addresses[chain.id])
-        address = address_resolver.getAddress(encode_single('bytes32', name.encode()))
-        proxy = Contract(address)
-        return Contract(proxy.target()) if hasattr(proxy, 'target') else proxy
+        address_resolver = await self.address_resolver
+        address = await address_resolver.getAddress.coroutine(encode_single('bytes32', name.encode()), block_identifier=block)
+        proxy = await Contract.coroutine(address)
+        return await Contract.coroutine(proxy.target()) if hasattr(proxy, 'target') else proxy
 
     @cached_property
-    def synths(self) -> List[EthAddress]:
+    async def synths(self) -> List[EthAddress]:
         """
         Get target addresses of all synths.
         """
-        proxy_erc20 = self.get_address('ProxyERC20')
-        synths = fetch_multicall(
-            *[
-                [proxy_erc20, 'availableSynths', i]
-                for i in range(proxy_erc20.availableSynthCount())
-            ]
-        )
+        proxy_erc20 = await self.get_address('ProxyERC20')
+        synth_count = await proxy_erc20.availableSynthCount.coroutine()
+        synths = await asyncio.gather(*[proxy_erc20.availableSynths(i) for i in range(synth_count)])
         logger.info(f'loaded {len(synths)} synths')
         return synths
     '''
@@ -75,7 +77,7 @@ class Synthetix(metaclass=Singleton):
             return True
         if await has_method_async(token, 'target()(address)'):
             target = await Call(token, 'target()(address)').coroutine()
-            return target in synthetix.synths and await Call(target, 'proxy()(address)').coroutine() == token
+            return target in await synthetix.synths and await Call(target, 'proxy()(address)').coroutine() == token
         return False
 
     def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
@@ -94,12 +96,13 @@ class Synthetix(metaclass=Singleton):
         Get a price of a synth in dollars.
         """
         token = convert.to_address(token)
-        rates = self.get_address('ExchangeRates')
-        key = await self.get_currency_key_async(token)
         try:
-            return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block) / 1e18)
-        except ValueError:
-            return None
+            rates, key = await asyncio.gather(self.get_address('ExchangeRates', block=block), self.get_currency_key_async(token))
+            return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block) / 10 ** 18)
+        except Exception as e:
+            if call_reverted(e):
+                return None
+            raise
 
 
 try:
