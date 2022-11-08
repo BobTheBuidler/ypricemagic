@@ -12,9 +12,8 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-
-@memory.cache() 
-#yLazyLogger(logger)
+@memory.cache()
+@yLazyLogger(logger)
 def get_block_timestamp(height: int) -> int:
     client = get_ethereum_client()
     if client in ['tg', 'erigon']:
@@ -40,9 +39,11 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
         logger.debug('block: ' + str(mid))
-        logger.debug('mid: ' + str(datetime.date.fromtimestamp(get_block_timestamp(mid))))
+        mid_ts = get_block_timestamp(mid)
+        mid_date = datetime.date.fromtimestamp(mid_ts)
+        logger.debug(f'mid: {mid_date}')
         logger.debug(date)
-        if datetime.date.fromtimestamp(get_block_timestamp(mid)) > date:
+        if mid_date > date:
             hi = mid
         else:
             lo = mid

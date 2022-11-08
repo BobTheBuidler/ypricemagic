@@ -6,8 +6,8 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-#@yLazyLogger(logger)
 @lru_cache(1)
+@yLazyLogger(logger)
 def get_ethereum_client() -> str:
     client = web3.clientVersion
     if client.startswith('TurboGeth'):
