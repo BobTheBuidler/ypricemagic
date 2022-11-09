@@ -315,7 +315,6 @@ class UniswapRouterV2(ContractBase):
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
-            print("runs2")
             path = self.smol_brain_path_selector(token_in, token_out, paired_against)
             logger.debug('smol')
         
