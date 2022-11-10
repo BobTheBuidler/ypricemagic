@@ -123,9 +123,9 @@ class CToken(ERC20):
         if exchange_rate:
             return exchange_rate / 1e18
 
-        # multicall failed but lets try with single call just to see. Might get rid of this later.
+        # NOTE: Sometimes this works, not sure why
         try:
-            exchange_rate = call()
+            exchange_rate = self.contract.exchangeRateCurrent.call(block_identifier=block)
         except Exception as e:
             if 'borrow rate is absurdly high' in str(e):
                 exchange_rate = 0
