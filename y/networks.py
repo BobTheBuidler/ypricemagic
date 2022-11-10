@@ -6,8 +6,15 @@ from brownie import chain
 
 
 class Network(IntEnum):
+    """
+    A lightweight enum that enables lookup of popular chainids.
+    """
+    # NOTE: If a particular network has changed names, do not remove
+    # the old spec, simply add the new spec directly above the old one.
+    # Both will work but Network(chainid) will return the new name. """
     Mainnet = 1
     BinanceSmartChain = 56
+    Gnosis = 100
     xDai = 100
     Heco = 128
     Polygon = 137
@@ -27,7 +34,7 @@ class Network(IntEnum):
 
         if chain_id == Network.Mainnet:                 return 'ETH'
         elif chain_id == Network.BinanceSmartChain:     return 'BSC'
-        elif chain_id == Network.xDai:                  return 'XDAI'
+        elif chain_id == Network.Gnosis:                return 'GNO'
         elif chain_id == Network.Heco:                  return 'HECO'
         elif chain_id == Network.Polygon:               return 'POLY'
         elif chain_id == Network.Fantom:                return 'FTM'
@@ -46,7 +53,7 @@ class Network(IntEnum):
 
         if chain_id == Network.Mainnet:                 return 'Mainnet'
         elif chain_id == Network.BinanceSmartChain:     return 'Binance Smart Chain'
-        elif chain_id == Network.xDai:                  return 'xDai'
+        elif chain_id == Network.Gnosis:                return 'Gnosis'
         elif chain_id == Network.Heco:                  return 'Heco'
         elif chain_id == Network.Polygon:               return 'Polygon'
         elif chain_id == Network.Fantom:                return 'Fantom'
