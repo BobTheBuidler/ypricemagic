@@ -32,7 +32,7 @@ class Network(IntEnum):
         elif chain_id == Network.Polygon:               return 'POLY'
         elif chain_id == Network.Fantom:                return 'FTM'
         elif chain_id == Network.Moonriver:             return 'MOVR'
-        elif chain_id == Network.Arbitrum:              return 'ARRB'
+        elif chain_id == Network.Arbitrum:              return 'ARB'
         elif chain_id == Network.Avalanche:             return 'AVAX'
         elif chain_id == Network.Harmony:               return 'ONE'
         elif chain_id == Network.Aurora:                return 'AURORA'
