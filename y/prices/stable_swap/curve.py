@@ -15,10 +15,12 @@ from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound
 from cachetools.func import ttl_cache
 from multicall.utils import await_awaitable
+
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
-from y.constants import EEE_ADDRESS, RECURSION_TIMEOUT, thread_pool_executor
+from y.prices.utils.buckets import check_bucket_async
+from y.constants import RECURSION_TIMEOUT, thread_pool_executor
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
@@ -28,7 +30,6 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
 from y.networks import Network
 from y.utils.events import create_filter, decode_logs, get_logs_asap
-from y.utils.logging import yLazyLogger
 from y.utils.middleware import ensure_middleware
 from y.utils.multicall import (
     fetch_multicall, multicall_same_func_same_contract_different_inputs_async)
@@ -491,7 +492,7 @@ class CurveRegistry(metaclass=Singleton):
             try:
                 token_out = coins[token_out_ix]
                 # If we know we won't have issues with recursion, we can await directly.
-                if token_out == EEE_ADDRESS or token_out in curve:
+                if await check_bucket_async(token_out):
                     return await coro
                 # We include a timeout here in case we create a recursive loop.
                 for p in asyncio.as_completed([coro],timeout=RECURSION_TIMEOUT):
