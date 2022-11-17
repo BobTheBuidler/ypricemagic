@@ -13,11 +13,12 @@ from brownie.exceptions import EventLookupError
 from cachetools.func import ttl_cache
 from multicall import Call
 from multicall.utils import await_awaitable
+
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN, sushi, thread_pool_executor,
-                         thread_pool_executor, usdc, weth)
-from y.contracts import Contract, contract_creation_block
+from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN,
+                         sushi, thread_pool_executor, usdc, weth)
+from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice)
 from y.decorators import continue_on_revert
@@ -457,7 +458,7 @@ class UniswapRouterV2(ContractBase):
         except KeyError:
             return {}
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, k, True) for k in pools.keys()])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(k, True) for k in pools.keys()])
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
@@ -517,7 +518,7 @@ class UniswapRouterV2(ContractBase):
         }
 
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, pool, True) for pool in pools])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True)])
             pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
             
         reserves = await asyncio.gather(

@@ -2,12 +2,14 @@ import datetime
 import logging
 from typing import Union
 
+from async_lru import alru_cache
 from brownie import chain, web3
 
 from y.exceptions import NoBlockFound
 from y.networks import Network
 from y.utils.cache import memory
-from y.utils.client import get_ethereum_client
+from y.utils.client import get_ethereum_client, get_ethereum_client_async
+from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
@@ -22,6 +24,15 @@ def get_block_timestamp(height: int) -> int:
     else:
         return chain[height].timestamp
 
+@alru_cache(maxsize=None, cache_exceptions=False)
+async def get_block_timestamp_async(height: int) -> int:
+    client = await get_ethereum_client_async()
+    if client in ['tg', 'erigon']:
+        header = await dank_w3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
+        return int(header.timestamp, 16)
+    else:
+        block = await dank_w3.eth.get_block(height)
+        return block.timestamp
 
 @memory.cache()
 #yLazyLogger(logger)
@@ -61,6 +72,20 @@ def closest_block_after_timestamp(timestamp: int) -> int:
         block = None
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
+
+@alru_cache(maxsize=1024, cache_exceptions=False)
+async def closest_block_after_timestamp_async(timestamp: int) -> int:
+    height = await dank_w3.eth.block_number
+    lo, hi = 0, height
+    while hi - lo > 1:
+        mid = lo + (hi - lo) // 2
+        if await get_block_timestamp_async(mid) > timestamp:
+            hi = mid
+        else:
+            lo = mid
+    if hi == height:
+        raise NoBlockFound(f"No block found after timestamp {timestamp}")
+    return hi
 
 
 @memory.cache()

@@ -1,4 +1,3 @@
-import asyncio
 import math
 from functools import lru_cache
 from itertools import cycle
@@ -9,10 +8,11 @@ from async_lru import alru_cache
 from brownie import chain
 from eth_abi.packed import encode_abi_packed
 from multicall.utils import await_awaitable
+
 from y.classes.common import ERC20
 from y.classes.singleton import Singleton
-from y.constants import thread_pool_executor, usdc, weth
-from y.contracts import Contract, contract_creation_block
+from y.constants import usdc, weth
+from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, UsdPrice
 from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
@@ -75,7 +75,7 @@ class UniswapV3(metaclass=Singleton):
     
     @alru_cache(maxsize=None)
     async def get_price_async(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        if block and block < await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, UNISWAP_V3_QUOTER, True):
+        if block and block < await contract_creation_block_async(UNISWAP_V3_QUOTER, True):
             return None
 
         paths = []
