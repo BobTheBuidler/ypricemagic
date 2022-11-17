@@ -19,8 +19,8 @@ from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
-from y.constants import RECURSION_TIMEOUT, thread_pool_executor
-from y.contracts import Contract, contract_creation_block
+from y.constants import RECURSION_TIMEOUT
+from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
 from y.decorators import wait_or_exit_after
@@ -455,7 +455,7 @@ class CurveRegistry(metaclass=Singleton):
             return None
         
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, pool.address, True) for pool in pools])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool.address, True) for pool in pools])
             pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
 
         # Choose a pool to use for pricing `token_in`.
@@ -483,7 +483,7 @@ class CurveRegistry(metaclass=Singleton):
         if len(coins := await pool.get_coins_async) == 2:
             # this works for most typical metapools
             from y.prices.utils.buckets import check_bucket_async
-            
+
             token_in_ix = await pool.get_coin_index_async(token_in)
             token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
             dy = await pool.get_dy_async(token_in_ix, token_out_ix, block = block)

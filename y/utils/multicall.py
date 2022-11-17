@@ -5,7 +5,10 @@ from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 import brownie
 from brownie import chain, web3
 from eth_abi.exceptions import InsufficientDataBytes
+from multicall import Call
+from multicall.utils import await_awaitable
 from web3.exceptions import CannotHandleRequest
+
 from y import convert
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, AddressOrContract, AnyAddressType, Block
@@ -14,9 +17,6 @@ from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
 from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals, _totalSupply
-
-from multicall import Call
-from multicall.utils import await_awaitable
 
 logger = logging.getLogger(__name__)
 
