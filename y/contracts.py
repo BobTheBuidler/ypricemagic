@@ -107,6 +107,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             lo = mid
     if hi == lo + 1 == barrier + 1:
         if when_no_history_return_0:
+            logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
             return 0
     if hi != height:
         return hi
@@ -155,6 +156,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
             lo = mid
     if hi == lo + 1 == barrier + 1:
         if when_no_history_return_0:
+            logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
             return 0
     if hi != height:
         return hi

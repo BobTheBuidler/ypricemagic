@@ -3,6 +3,7 @@ import logging
 from async_lru import alru_cache
 from brownie import web3
 from cachetools.func import lru_cache
+from web3._utils.rpc_abi import RPC
 
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
@@ -16,7 +17,7 @@ def get_ethereum_client() -> str:
 
 @alru_cache(maxsize=1, cache_exceptions=False)
 async def get_ethereum_client_async() -> str:
-    return _get_ethereum_client(await dank_w3.clientVersion)
+    return _get_ethereum_client(await dank_w3.manager.coro_request(RPC.web3_clientVersion, []))
 
 @yLazyLogger(logger)
 def _get_ethereum_client(client: str) -> str:
