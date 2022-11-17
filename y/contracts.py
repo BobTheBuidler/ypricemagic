@@ -114,6 +114,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 
+@alru_cache(maxsize=None, cache_exceptions=False)
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
