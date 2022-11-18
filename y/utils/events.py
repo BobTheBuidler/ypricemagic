@@ -2,22 +2,23 @@ import asyncio
 import logging
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from brownie import chain, web3
+from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
 from eth_typing import ChecksumAddress
+from multicall.utils import await_awaitable
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
+
 from y.constants import thread_pool_executor
-from y.contracts import contract_creation_block
+from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
 from y.utils.cache import memory
+from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
-
-from multicall.utils import await_awaitable
 
 logger = logging.getLogger(__name__)
 
@@ -34,46 +35,67 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     return decoded
 
 
-def create_filter(address, topics=None):
-    """
-    Create a log filter for one or more contracts.
-    Set fromBlock as the earliest creation block.
-    """
-    if isinstance(address, list):
-        start_block = min(contract_creation_block(addr, when_no_history_return_0=True) for addr in address)
-    else:
-        start_block = contract_creation_block(address, when_no_history_return_0=True)
-
-    return web3.eth.filter({"address": address, "fromBlock": start_block, "topics": topics})
-
-
 def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
     return await_awaitable(
         get_logs_asap_async(address, topics, from_block=from_block, to_block=to_block, verbose=verbose)
     )
 
-async def get_logs_asap_async(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
+async def get_logs_asap_async(
+    address: Optional[Address],
+    topics: Optional[List[str]],
+    from_block: Optional[Block] = None,
+    to_block: Optional[Block] = None,
+    verbose: int = 0
+) -> List[Any]:
+
     if from_block is None:
-        from_block = 0 if address is None else await asyncio.get_event_loop().run_in_executor(thread_pool_executor, contract_creation_block, address, True)
+        from_block = 0 if address is None else await contract_creation_block_async(address, True)
     if to_block is None:
-        to_block = chain.height
+        to_block = await dank_w3.eth.block_number
 
     ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
     if verbose > 0:
         logger.info('fetching %d batches', len(ranges))
     
-    batches = await asyncio.gather(*[
-        asyncio.get_event_loop().run_in_executor(
-            thread_pool_executor,
-            _get_logs,
-            address,
-            topics,
-            start,
-            end,
-        )
-        for start, end in ranges
-    ])
+    batches = await asyncio.gather(*[_get_logs_async(address, topics, start, end) for start, end in ranges])
     return [log for batch in batches for log in batch]
+
+
+async def get_logs_asap_generator(
+    address: Optional[Address],
+    topics: Optional[List[str]] = None,
+    from_block: Optional[Block] = None,
+    to_block: Optional[Block] = None,
+    chronological: bool = True,
+    run_forever: bool = False,
+    run_forever_interval: int = 60,
+    verbose: int = 0
+) -> AsyncGenerator[List[LogReceipt], None]:
+    # NOTE: If you don't need the logs in order, you will get your logs faster if you set `chronological` to False.
+
+    if from_block is None:
+        from_block = 0 if address is None else await contract_creation_block_async(address, True)
+    if to_block is None:
+        to_block = await dank_w3.eth.block_number
+    elif run_forever:
+        raise TypeError(f'`to_block` must be None if `run_forever` is True.')
+    while True:
+        ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
+        if verbose > 0:
+            logger.info('fetching %d batches', len(ranges))
+        coros = [_get_logs_async(address, topics, start, end) for start, end in ranges]
+        if chronological:
+            for logs in await asyncio.gather(*coros):
+                logs = yield logs
+        else:
+            for logs in asyncio.as_completed(coros, timeout=None):
+                yield await logs
+        if not run_forever:
+            return
+        to_block = await dank_w3.eth.block_number
+        from_block = to_block + 1 if to_block + 1 < to_block else to_block
+        await asyncio.sleep(run_forever_interval)
+
 
 def logs_to_balance_checkpoints(logs) -> Dict[EthAddress,int]:
     """
@@ -119,6 +141,13 @@ def _get_logs(
             response.remove(log)
     return response
 
+address_semaphores = defaultdict(lambda: asyncio.Semaphore(4))
+
+async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
+    async with address_semaphores[tuple(address) if isinstance(address, list) else address]:
+        return await asyncio.get_event_loop().run_in_executor(
+            thread_pool_executor, _get_logs, address, topics, start, end,
+        )
 
 def _get_logs_no_cache(
     address: Optional[ChecksumAddress],

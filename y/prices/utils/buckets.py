@@ -75,7 +75,7 @@ async def check_bucket_async(
     elif token_address in generic_amm:                                      return 'generic amm'
     elif await mooniswap.is_mooniswap_pool_async(token_address):            return 'mooniswap lp'
     elif await compound.is_compound_market_async(token_address):            return 'compound'
-    elif token_address in curve:                                            return 'curve lp'
     elif chainlink and await chainlink.has_feed(token_address):             return 'chainlink feed'
     elif synthetix and await synthetix.is_synth(token_address):             return 'synthetix'
     elif await yearn.is_yearn_vault_async(token_address):                   return 'yearn or yearn-like'
+    elif await curve.get_pool(token_address):                               return 'curve lp'
