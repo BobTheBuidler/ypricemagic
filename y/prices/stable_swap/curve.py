@@ -5,7 +5,7 @@ import time
 from collections import defaultdict
 from enum import IntEnum
 from functools import cached_property, lru_cache
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, NoReturn, Optional
 
 import brownie
 from async_lru import alru_cache
@@ -23,15 +23,16 @@ from y.constants import RECURSION_TIMEOUT
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
-from y.decorators import wait_or_exit_after
+from y.decorators import event_daemon_task
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           PriceError, UnsupportedNetwork, call_reverted)
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
 from y.networks import Network
-from y.utils.events import create_filter, decode_logs, get_logs_asap
+from y.utils.dank_mids import dank_w3
+from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.middleware import ensure_middleware
-from y.utils.multicall import (
-    fetch_multicall, multicall_same_func_same_contract_different_inputs_async)
+from y.utils.multicall import \
+    multicall_same_func_same_contract_different_inputs_async
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -264,7 +265,6 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
 
 class CurveRegistry(metaclass=Singleton):
-    @wait_or_exit_after
     def __init__(self) -> None:
         try: self.address_provider = Contract(ADDRESS_PROVIDER)
         except (ContractNotFound, ContractNotVerified):
@@ -280,81 +280,115 @@ class CurveRegistry(metaclass=Singleton):
         self.factories = defaultdict(set)  # factory -> pools
         self.pools = set()
         self.token_to_pool = dict()  # lp_token -> pool
-        
-        self._done = threading.Event()
-        self._thread = threading.Thread(target=self.watch_events, daemon=True)
-        self._has_exception = False
-        self._thread.start()
+
+        self._address_providers_loaded = threading.Event()
+        self._registries_loaded = threading.Event()
+        self._loaded_registries = set()
+        self._all_loaded = threading.Event()
     
     def __repr__(self) -> str:
         return "<CurveRegistry>"
+    
+    def _load_address_provider_event(self, event) -> None:
+        if event.name == 'NewAddressIdentifier':
+            self.identifiers[Ids(event['id'])].append(event['addr'])
+        elif event.name == 'AddressModified':
+            self.identifiers[Ids(event['id'])].append(event['new_address'])
 
-    def watch_events(self) -> None:
-        # fetch all registries and factories from address provider
-        try:
-            address_provider_filter = create_filter(str(self.address_provider))
-            address_provider_logs = address_provider_filter.get_all_entries()
-        except: # Some nodes have issues with filters and/or rate limiting
-            address_provider_logs = []
-        if not address_provider_logs:
-            address_provider_logs = get_logs_asap(str(self.address_provider), None)
+    @event_daemon_task
+    async def _load_address_providers(self) -> NoReturn:
+        """ Fetch all address providers. """
+        block = await dank_w3.eth.block_number            
+        async for logs in get_logs_asap_generator(str(self.address_provider), None, to_block=block, chronological=True):
+            for event in decode_logs(logs):
+                self._load_address_provider_event(event)
+        self._address_providers_loaded.set()
+        async for logs in get_logs_asap_generator(str(self.address_provider), None, from_block=block+1, chronological=True, run_forever=True):
+            for event in decode_logs(logs):
+                self._load_address_provider_event(event)
+    
+    async def _load_registry_event(self, registry: Contract, event) -> None:
+        if event.name == 'PoolAdded':
+            lp_token = await registry.get_lp_token.coroutine(event['pool'])
+            self.registries[event.address].add(event['pool'])
+            self.token_to_pool[lp_token] = event['pool']
+        elif event.name == 'PoolRemoved':
+            self.registries[event.address].discard(event['pool'])
+
+    @event_daemon_task
+    async def _load_registry(self, registry: Address) -> NoReturn:
+        """ Fetch all pools from a particular registry. """ 
+        contract, block = await asyncio.gather(Contract.coroutine(registry), dank_w3.eth.block_number)
+        async for logs in get_logs_asap_generator(registry, to_block=block, chronological=True):
+            for event in decode_logs(logs):
+                # Must go one-by-one for chronological order, no gather
+                await self._load_registry_event(contract, event)
+        self._loaded_registries.add(registry)
+        async for logs in get_logs_asap_generator(registry, from_block=block+1, chronological=True, run_forever=True):
+            for event in decode_logs(logs):
+                # Must go one-by-one for chronological order, no gather
+                await self._load_registry_event(contract, event)
+
+    @event_daemon_task   
+    async def _load_registries(self) -> None:
+        if not self._address_providers_loaded.is_set():
+            await self._load_address_providers()
+        while not self._address_providers_loaded.is_set():
+            await asyncio.sleep(0)
         
-        registries = []
-        registries_filter = None
-        registry_logs = []
+        known_registries = []
         while True:
-            for event in decode_logs(address_provider_logs):
-                if event.name == 'NewAddressIdentifier':
-                    self.identifiers[Ids(event['id'])].append(event['addr'])
-                elif event.name == 'AddressModified':
-                    self.identifiers[Ids(event['id'])].append(event['new_address'])
-
             # NOTE: Gnosis chain's address provider fails to provide registry via events.
             if not self.identifiers[Ids.Main_Registry]:
-                self.identifiers[Ids.Main_Registry] = self.address_provider.get_registry()
-
-            # if registries were updated, recreate the filter
-            _registries = [
+                self.identifiers[Ids.Main_Registry] = await self.address_provider.get_registry.coroutine()
+            
+            # Check if any registries were updated
+            registries = [
                 self.identifiers[i][-1]
                 for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry]
                 if self.identifiers[i]
             ]
-            if _registries != registries:
-                registries = _registries
-                registries_filter = create_filter(registries)
-                registry_logs = registries_filter.get_all_entries()
+            if registries != known_registries:
+                # For any updated registries, fetch logs
+                await asyncio.gather(*[self._load_registry(registry) for registry in registries if registry not in known_registries])
+                known_registries = registries
             
-            # fetch pools from the latest registries
-            for event in decode_logs(registry_logs):
-                if event.name == 'PoolAdded':
-                    try:
-                        lp_token = Contract(event.address).get_lp_token(event['pool'])
-                    except ContractNotVerified:
-                        logger.warning(f"failed to load curve pool {event['pool']} from non-verified registry {event.address}")
-                        continue
-                    self.registries[event.address].add(event['pool'])
-                    self.token_to_pool[lp_token] = event['pool']
-                elif event.name == 'PoolRemoved':
-                    self.registries[event.address].discard(event['pool'])
+            if not self._registries_loaded.is_set():
+                for registry in registries:
+                    print('waiting for registry')
+                    while registry not in self._loaded_registries:
+                        await asyncio.sleep(0)
+                self._registries_loaded.set()
             
             # load metapool and curve v5 factories
-            self.load_factories()
-
-            if not self._done.is_set():
-                self._done.set()
-                logger.info(f'loaded {len(self.token_to_pool)} pools from {len(self.registries)} registries and {len(self.factories)} factories')
+            await self._load_factories()
 
             time.sleep(600)
-
-            # read new logs at end of loop
-            address_provider_logs = address_provider_filter.get_new_entries()
-            if registries_filter:
-                registry_logs = registries_filter.get_new_entries()
     
-    def load_factories(self) -> None:
+    async def _load_factory_pool(self, factory: Contract, pool: Address) -> None:
+        # for curve v5 pools, pool and lp token are separate
+        if hasattr(factory, 'get_token'):
+            lp_token = await factory.get_token.coroutine(pool)
+        elif hasattr(factory, 'get_lp_token'):
+            lp_token = await factory.get_lp_token.coroutine(pool)
+        else:
+            raise NotImplementedError(f"New factory {factory.address} is not yet supported. Please notify a ypricemagic maintainer.")
+        self.token_to_pool[lp_token] = pool
+        self.factories[factory.address].add(pool)
+
+    async def _load_factory(self, factory: Address) -> None:
+        factory_contract, pool_list = await asyncio.gather(
+            Contract.coroutine(factory),
+            self.read_pools(factory),
+        )
+        await asyncio.gather(*[self._load_factory_pool(factory_contract, pool) for pool in pool_list if pool not in self.factories[factory]])
+            
+    
+    async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
-        for factory in self.identifiers[Ids.Metapool_Factory]:
-            pool_list = self.read_pools(factory)
+        metapool_factories = self.identifiers[Ids.Metapool_Factory]
+        metapool_factory_pools = await asyncio.gather(*[self.read_pools(factory) for factory in metapool_factories])
+        for factory, pool_list in zip(metapool_factories, metapool_factory_pools):
             for pool in pool_list:
                 # for metpool factories pool is the same as lp token
                 self.token_to_pool[pool] = pool
@@ -362,34 +396,22 @@ class CurveRegistry(metaclass=Singleton):
 
         # if there are factories that haven't yet been added to the on-chain address provider,
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
-        for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]:
-            pool_list = self.read_pools(factory)
-            for pool in pool_list:
-                if pool in self.factories[factory]:
-                    continue
-                factory_contract = Contract(factory)
-                # for curve v5 pools, pool and lp token are separate
-                if hasattr(factory_contract, 'get_token'):
-                    lp_token = factory_contract.get_token(pool)
-                elif hasattr(factory_contract, 'get_lp_token'):
-                    lp_token = factory_contract.get_lp_token(pool)
-                else:
-                    raise NotImplementedError(f"New factory {factory_contract} is not yet supported. Please notify a ypricemagic maintainer.")
-                self.token_to_pool[lp_token] = pool
-                self.factories[factory].add(pool)
+        await asyncio.gather(*[self._load_factory(factory) for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]])
+        if not self._all_loaded.is_set():
+            logger.info(f'loaded {len(self.token_to_pool)} pools from {len(self.registries)} registries and {len(self.factories)} factories')
+            self._all_loaded.set()
     
-    def read_pools(self, registry: Address) -> List[EthAddress]:
+    async def read_pools(self, registry: Address) -> List[EthAddress]:
         try:
-            registry = Contract(registry)
+            registry = await Contract.coroutine(registry)
         except ContractNotVerified:
             if chain.id == Network.xDai:
                 registry = Contract.from_abi("Vyper_contract", registry, CURVE_REGISTRY_ABI)
             else:
                 # This happens sometimes, not sure why as the contract is verified.
                 registry = brownie.Contract.from_explorer(registry)
-        return fetch_multicall(
-            *[[registry, 'pool_list', i] for i in range(registry.pool_count())]
-        )
+        pool_count = await registry.pool_count.coroutine()
+        return await asyncio.gather(*[registry.pool_list.coroutine(i) for i in range(pool_count)])
 
     @property
     #yLazyLogger(logger)
@@ -412,12 +434,7 @@ class CurveRegistry(metaclass=Singleton):
             )
             return Contract(factory)
         except StopIteration:
-            return None
-
-    #yLazyLogger(logger)
-    def __contains__(self, token: Address) -> bool:
-        return self.get_pool(token) is not None
-    
+            return None    
     
     @ttl_cache(maxsize=None)
     def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
@@ -426,17 +443,23 @@ class CurveRegistry(metaclass=Singleton):
     #yLazyLogger(logger)
     @alru_cache(maxsize=None)
     async def get_price_async(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
-        tvl = await self.get_pool(token).get_tvl_async(block=block)
+        pool = await self.get_pool(token)
+        tvl = await pool.get_tvl_async(block=block)
         if tvl is None:
             return None
         return tvl / await ERC20(token).total_supply_readable_async(block)
 
     #yLazyLogger(logger)
-    @lru_cache(maxsize=None)
-    def get_pool(self, token: AnyAddressType) -> CurvePool:
+    @alru_cache(maxsize=None)
+    async def get_pool(self, token: AnyAddressType) -> CurvePool:
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
+        if not self._all_loaded.is_set():
+            await self._load_registries()
+        while not self._all_loaded.is_set():
+            await asyncio.sleep(0)
+        
         token = convert.to_address(token)
         if token in self.token_to_pool and token != ZERO_ADDRESS:
             return CurvePool(self.token_to_pool[token])

@@ -414,10 +414,6 @@ class UniswapRouterV2(ContractBase):
             logger.debug(f'pools: {pools_your_node_couldnt_get}')
             pools_your_node_couldnt_get = await multicall_same_func_same_contract_different_inputs_async(
                 self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get])
-            #calls = [Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]
-            #token0s = await gather(calls)
-            #calls = [Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]
-            #token1s = await gather(calls)
             token0s, token1s = await asyncio.gather(
                 asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
                 asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
@@ -458,7 +454,7 @@ class UniswapRouterV2(ContractBase):
         except KeyError:
             return {}
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(k, True) for k in pools.keys()])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(k, True) for k in pools])
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
@@ -518,7 +514,7 @@ class UniswapRouterV2(ContractBase):
         }
 
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True)])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True) for pool in pools])
             pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
             
         reserves = await asyncio.gather(

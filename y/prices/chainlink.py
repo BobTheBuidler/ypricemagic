@@ -1,10 +1,9 @@
 import asyncio
 import logging
-from functools import cached_property
-from typing import Dict, Optional
+from typing import Dict, NoReturn, Optional, Union
 
 from async_lru import alru_cache
-from async_property import async_cached_property
+from async_property import async_property
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
 from multicall.utils import await_awaitable
@@ -14,9 +13,11 @@ from y.classes.common import ERC20
 from y.classes.singleton import Singleton
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
+from y.decorators import event_daemon_task
 from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.networks import Network
-from y.utils.events import create_filter, decode_logs, get_logs_asap_async
+from y.utils.dank_mids import dank_w3
+from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
@@ -162,42 +163,53 @@ FEEDS = {
 
 class Chainlink(metaclass=Singleton):
     def __init__(self) -> None:
-        if chain.id not in registries and len(FEEDS) == 0:
-            raise UnsupportedNetwork('chainlink is not supported on this network')
-
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
-        
-    @cached_property
-    #yLazyLogger(logger)
-    def feeds(self) -> Dict[ERC20, str]:
-        return await_awaitable(self.feeds_async)
+        elif len(FEEDS) == 0:
+            raise UnsupportedNetwork('chainlink is not supported on this network')
+        self._feeds = {ERC20(token): feed for token, feed in FEEDS.items()}
+        self._feeds_loaded = False
+        self._loading = False
     
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def feeds_async(self) -> Dict[ERC20, str]:
-        if chain.id in registries:
-            try:
-                log_filter = create_filter(str(self.registry), [self.registry.topics['FeedConfirmed']])
-                new_entries = log_filter.get_new_entries()
-            except ValueError as e:
-                if 'the method is currently not implemented: eth_newFilter' not in str(e):
-                    raise
-                new_entries = await get_logs_asap_async(str(self.registry), [self.registry.topics['FeedConfirmed']])
+    @event_daemon_task
+    async def _start_feed_loop(self) -> Union[None, NoReturn]:
+        if self._loading:
+            return
 
-            logs = decode_logs(new_entries)
-            feeds = {
-                log['asset']: log['latestAggregator']
-                for log in logs
-                if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS
-            }
-        else: feeds = {}
-        # for mainnet, we have some extra feeds to pull in
+        self._loading = True
         # for non-mainnet, we have no registry so must get feeds manually
-        feeds.update(FEEDS)
-        feeds = {ERC20(token): feed for token, feed in feeds.items()}
-        logger.info(f'loaded {len(feeds)} feeds')
-        return feeds
+        if chain.id not in registries:
+            self._feeds_loaded = True
+            self._loading = False
+            return
+
+        block = await dank_w3.eth.block_number
+        # for mainnet, we have some extra feeds to pull in
+        # cache feeds thru current block, log results.
+        async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], to_block=block):
+            for log in decode_logs(logs):
+                if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
+                    self._feeds[log["asset"]] = ERC20(log["latestAggregator"])
+        
+        self._feeds_loaded = True
+        logger.info(f'loaded {len(self._feeds)} feeds')
+
+        # leave coroutine running for future blocks
+        async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], from_block=block+1, run_forever=True):
+            for log in decode_logs(logs):
+                if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
+                    asset, latest_aggregator = log["asset"], log["latestAggregator"]
+                    self._feeds[asset] = ERC20(latest_aggregator)
+                    logger.info(f'loaded new feed {latest_aggregator}')
+
+    #yLazyLogger(logger)
+    @async_property
+    async def feeds(self) -> Dict[ERC20, str]:
+        if not self._feeds_loaded:
+            await self._start_feed_loop()
+        while not self._feeds_loaded:
+            await asyncio.sleep(0)
+        return self._feeds
 
     #yLazyLogger(logger)
     def get_feed(self, asset: Address) -> Optional[Contract]:
@@ -205,18 +217,14 @@ class Chainlink(metaclass=Singleton):
     
     #yLazyLogger(logger)
     async def get_feed_async(self, asset: Address) -> Optional[Contract]:
-        feeds = await self.feeds_async
+        feeds = await self.feeds
         try:
             return await Contract.coroutine(feeds[convert.to_address(asset)])
         except ContractNotVerified:
             return None
-
-    #yLazyLogger(logger)
-    def __contains__(self, asset: AnyAddressType) -> bool:
-        return convert.to_address(asset) in self.feeds
     
     async def has_feed(self, asset: AnyAddressType) -> bool:
-        return convert.to_address(asset) in await self.feeds_async
+        return convert.to_address(asset) in await self.feeds
 
     def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_async(asset, block))
