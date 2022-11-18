@@ -92,9 +92,14 @@ async def get_logs_asap_generator(
                 yield await logs
         if not run_forever:
             return
-        to_block = await dank_w3.eth.block_number
-        from_block = to_block + 1 if to_block + 1 < to_block else to_block
-        await asyncio.sleep(run_forever_interval)
+        
+        # Find start and end block for next loop
+        current_block = await dank_w3.eth.block_number
+        while current_block <= to_block:
+            await asyncio.sleep(run_forever_interval)
+            current_block = await dank_w3.eth.block_number
+        from_block = to_block + 1 if to_block + 1 <= current_block else current_block
+        to_block = current_block
 
 
 def logs_to_balance_checkpoints(logs) -> Dict[EthAddress,int]:
