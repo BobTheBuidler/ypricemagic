@@ -458,7 +458,7 @@ class UniswapRouterV2(ContractBase):
         except KeyError:
             return {}
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(k, True) for k in pools.keys()])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(k, True) for k in pools])
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
@@ -518,7 +518,7 @@ class UniswapRouterV2(ContractBase):
         }
 
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True)])
+            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True) for pool in pools])
             pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
             
         reserves = await asyncio.gather(
