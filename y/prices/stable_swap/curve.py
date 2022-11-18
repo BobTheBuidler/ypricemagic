@@ -355,7 +355,6 @@ class CurveRegistry(metaclass=Singleton):
             
             if not self._registries_loaded.is_set():
                 for registry in registries:
-                    print('waiting for registry')
                     while registry not in self._loaded_registries:
                         await asyncio.sleep(0)
                 self._registries_loaded.set()
