@@ -338,9 +338,9 @@ class CurveRegistry(metaclass=Singleton):
         
         known_registries = []
         while True:
-            # NOTE: Gnosis chain's address provider fails to provide registry via events.
+            # NOTE: Gnosis chain's address provider fails to provide registry via events. Maybe other chains as well.
             if not self.identifiers[Ids.Main_Registry]:
-                self.identifiers[Ids.Main_Registry] = await self.address_provider.get_registry.coroutine()
+                self.identifiers[Ids.Main_Registry] = [await self.address_provider.get_registry.coroutine()]
             
             # Check if any registries were updated
             registries = [
