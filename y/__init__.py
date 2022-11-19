@@ -2,6 +2,11 @@ import os
 
 from brownie import network
 
+if not network.is_connected():
+    if 'BROWNIE_NETWORK_ID' not in os.environ:
+        raise NetworkNotSpecified('In order to use pricemagic outside of a brownie project directory, you will need to set $BROWNIE_NETWORK_ID environment variable with the id of your preferred brownie network connection.')
+    network.connect(os.environ['BROWNIE_NETWORK_ID'])
+
 from y import time
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
@@ -62,8 +67,3 @@ __all__ = [
     # time
     'time',
 ]
-
-if not network.is_connected():
-    if 'BROWNIE_NETWORK_ID' not in os.environ:
-        raise NetworkNotSpecified('In order to use pricemagic outside of a brownie project directory, you will need to set $BROWNIE_NETWORK_ID environment variable with the id of your preferred brownie network connection.')
-    network.connect(os.environ['BROWNIE_NETWORK_ID'])
