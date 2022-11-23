@@ -1,5 +1,7 @@
+import asyncio
 import datetime
 import logging
+import time
 from typing import Union
 
 from async_lru import alru_cache
@@ -65,16 +67,25 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
 
 
 #yLazyLogger(logger)
-def closest_block_after_timestamp(timestamp: int) -> int:
-    try:
-        block = _closest_block_after_timestamp_cached(timestamp)
-    except NoBlockFound:
-        block = None
+def closest_block_after_timestamp(timestamp: int, wait_for_block_if_needed: bool = False) -> int:
+    while wait_for_block_if_needed:
+        try:
+            return closest_block_after_timestamp(timestamp)
+        except NoBlockFound:
+            time.sleep(.2)
+
+    block = _closest_block_after_timestamp_cached(timestamp)
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
 
 @alru_cache(maxsize=1024, cache_exceptions=False)
-async def closest_block_after_timestamp_async(timestamp: int) -> int:
+async def closest_block_after_timestamp_async(timestamp: int, wait_for_block_if_needed: bool = False) -> int:
+    while wait_for_block_if_needed:
+        try:
+            return await closest_block_after_timestamp(timestamp)
+        except NoBlockFound:
+            await asyncio.sleep(0.2)
+
     height = await dank_w3.eth.block_number
     lo, hi = 0, height
     while hi - lo > 1:
