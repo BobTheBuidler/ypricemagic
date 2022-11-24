@@ -146,7 +146,7 @@ def _get_logs(
             response.remove(log)
     return response
 
-address_semaphores = defaultdict(lambda: asyncio.Semaphore(4))
+address_semaphores = defaultdict(lambda: asyncio.Semaphore(16))
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with address_semaphores[tuple(address) if isinstance(address, list) else address]:
