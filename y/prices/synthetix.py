@@ -45,29 +45,17 @@ class Synthetix(metaclass=Singleton):
         proxy = await Contract.coroutine(address)
         return await Contract.coroutine(proxy.target()) if hasattr(proxy, 'target') else proxy
 
-    @cached_property
+    @async_cached_property
     async def synths(self) -> List[EthAddress]:
         """
         Get target addresses of all synths.
         """
         proxy_erc20 = await self.get_address('ProxyERC20')
         synth_count = await proxy_erc20.availableSynthCount.coroutine()
-        synths = await asyncio.gather(*[proxy_erc20.availableSynths(i) for i in range(synth_count)])
+        synths = await asyncio.gather(*[proxy_erc20.availableSynths.coroutine(i) for i in range(synth_count)])
         logger.info(f'loaded {len(synths)} synths')
         return synths
-    '''
-    def __contains__(self, token: AnyAddressType) -> bool:
-        """
-        Check if a token is a synth.
-        """
-        token = convert.to_address(token)
-        if synthetix.get_currency_key(token):
-            return True
-        if has_method(token, 'target()(address)'):
-            target = Call(token, 'target()(address)')()
-            return target in synthetix.synths and Call(target, 'proxy()(address)')() == token
-        return False
-    '''
+        
     async def is_synth(self, token: AnyAddressType) -> bool:
         """
         Check if a token is a synth.

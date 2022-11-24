@@ -3,7 +3,7 @@ from multicall.utils import await_awaitable
 from tests.fixtures import mainnet_only, mutate_tokens
 from y.prices.synthetix import synthetix
 
-SYNTHS = mutate_tokens(synthetix.synths if synthetix else ())
+SYNTHS = mutate_tokens(await_awaitable(synthetix.synths) if synthetix else ())
 
 
 @mainnet_only

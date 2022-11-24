@@ -78,11 +78,11 @@ def closest_block_after_timestamp(timestamp: int, wait_for_block_if_needed: bool
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
 
-@alru_cache(maxsize=1024, cache_exceptions=False)
+@alru_cache(maxsize=None, cache_exceptions=False)
 async def closest_block_after_timestamp_async(timestamp: int, wait_for_block_if_needed: bool = False) -> int:
     while wait_for_block_if_needed:
         try:
-            return await closest_block_after_timestamp(timestamp)
+            return await closest_block_after_timestamp_async(timestamp)
         except NoBlockFound:
             await asyncio.sleep(0.2)
 
