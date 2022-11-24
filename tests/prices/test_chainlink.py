@@ -113,14 +113,6 @@ FEEDS = mutate_addresses(FEEDS)
 
 
 @pytest.mark.parametrize('token', FEEDS)
-def test_chainlink_contains(token):
-    """
-    Tests `token in chainlink` with both lowercase address and checksum address.
-    """
-    assert token in chainlink
-
-
-@pytest.mark.parametrize('token', FEEDS)
 def test_chainlink_get_feed(token):
     """
     Tests `chainlink.get_feed` with both lowercase address and checksum address.
