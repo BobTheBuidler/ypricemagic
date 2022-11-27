@@ -15,11 +15,14 @@ logger = logging.getLogger(__name__)
 
 # This module is far from perfect, but provides an acceptable way to validate some of the prices returned by `get_price`
 
+acceptable_all_chains = [
+    weth.address,
+    wbtc.address,
+]
 ACCEPTABLE_HIGH_PRICES = {
     Network.Mainnet: [
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", # eth
-        weth.address,
         "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0", # wsteth
         "0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c", # ecrv
         "0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf", # ankrcrv
@@ -32,7 +35,6 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", # stETH
         "0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593", # rETH
         # btc and btc-like
-        wbtc.address,
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
         "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", # sbtc
         "0x49849C98ae39Fff122806C06791Fa73784FB3675", # crvrenwbtc
@@ -80,44 +82,23 @@ ACCEPTABLE_HIGH_PRICES = {
     ],
     Network.BinanceSmartChain: [
         # eth and eth-like
-        weth.address,
         "0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5", # bweth
         "0xbfF4a34A4644a113E8200D7F1D79b3555f723AfE", # ibeth
         # btc and btc-like
-        wbtc.address,
         "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c", # btcb
         "0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7", # ibbtcb
     ],
-    Network.Polygon: [
-        # eth and eth-like
-        weth.address,
-        # btc and btc-like
-        wbtc.address,
-    ],
     Network.Fantom: [
-        # eth and eth-like
-        weth.address,
-        # btc and btc-like
-        wbtc.address,
         # other
         "0x29b0Da86e484E1C0029B56e817912d778aC0EC69", # yfi
     ],
     Network.Avalanche: [
-        # eth and eth-like
-        weth.address,
         # btc and btc-like
-        wbtc.address,
         "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501", # renbtc
 
         "0xd6070ae98b8069de6B494332d1A1a81B6179D960", # bifi
     ],
-    Network.Arbitrum: [
-        # eth and eth-like
-        weth.address,
-        # btc and btc-like
-        wbtc.address,
-    ]
-}.get(chain.id, [])
+}.get(chain.id, []) + acceptable_all_chains
 
 async def _sense_check(
     token_address: str, 
