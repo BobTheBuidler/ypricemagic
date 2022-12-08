@@ -2,6 +2,7 @@ import os
 
 from brownie import network
 
+
 class NetworkNotSpecified(Exception):
     pass
     
@@ -18,9 +19,8 @@ from y.contracts import (Contract, Contract_erc20,
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
 from y.exceptions import (CalldataPreparationError, CallReverted,
                           ContractNotVerified, MessedUpBrownieContract,
-                          NetworkNotSpecified, NonStandardERC20,
-                          NotABalancerV2Pool, NotAUniswapV2Pool, PriceError,
-                          UnsupportedNetwork)
+                          NonStandardERC20, NotABalancerV2Pool,
+                          NotAUniswapV2Pool, PriceError, UnsupportedNetwork)
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import (get_price, get_price_async, get_prices,
