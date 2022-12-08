@@ -118,21 +118,17 @@ class CToken(ERC20):
         except Exception as e:
             if not call_reverted(e):
                 raise e
-            return None
+            exchange_rate = None
 
-        if exchange_rate:
-            return exchange_rate / 1e18
-
-        # NOTE: Sometimes this works, not sure why
-        try:
-            exchange_rate = self.contract.exchangeRateCurrent.call(block_identifier=block)
-        except Exception as e:
-            if 'borrow rate is absurdly high' in str(e):
+        if exchange_rate is None:
+            # NOTE: Sometimes this works, not sure why
+            try:
+                exchange_rate = self.contract.exchangeRateCurrent.call(block_identifier=block)
+            except Exception as e:
+                if 'borrow rate is absurdly high' not in str(e):
+                    raise
                 exchange_rate = 0
         
-        if exchange_rate is None:
-            return None
-
         return exchange_rate / 1e18
     
 
