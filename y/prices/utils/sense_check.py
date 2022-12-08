@@ -98,6 +98,10 @@ ACCEPTABLE_HIGH_PRICES = {
 
         "0xd6070ae98b8069de6B494332d1A1a81B6179D960", # bifi
     ],
+    Network.Optimism: [
+        # btc and btc-like
+        "0x298B9B95708152ff6968aafd889c6586e9169f1D", # sbtc
+    ]
 }.get(chain.id, []) + acceptable_all_chains
 
 async def _sense_check(
