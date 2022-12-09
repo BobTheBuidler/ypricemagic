@@ -94,7 +94,7 @@ class AaveMarketV2(AaveMarketBase):
     @alru_cache
     async def underlying_async(self, token_address: AddressOrContract) -> ERC20:
         underlying = await raw_call_async(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address')
-        print(underlying)
+        logger.debug(f"underlying: {underlying}")
         return ERC20(underlying)
 
     @cached_property
