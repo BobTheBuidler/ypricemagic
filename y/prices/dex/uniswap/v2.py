@@ -402,10 +402,10 @@ class UniswapRouterV2(ContractBase):
             if self.factory == "0x115934131916C8b277DD010Ee02de363c09d037c":
                 for id, pair in pairs.items():
                     if id > all_pairs_len:
-                        print(id, pair)
-            print(f'factory: {self.factory}')
-            print(f'len pairs: {len(pairs)}')
-            print(f'len allPairs: {all_pairs_len}')
+                        logger.debug(id, pair)
+            logger.debug(f'factory: {self.factory}')
+            logger.debug(f'len pairs: {len(pairs)}')
+            logger.debug(f'len allPairs: {all_pairs_len}')
             # TODO debug why this scenario occurs. Likely a strange interation between asyncio and joblib, or an incorrect cache value. 
             #raise ValueError("Returning more pairs than allPairsLength, something is wrong.")
         else: # <
