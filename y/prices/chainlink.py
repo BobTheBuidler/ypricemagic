@@ -249,8 +249,8 @@ class Chainlink(metaclass=Singleton):
                 self.feed_scale_async(asset),
             )
         except ValueError as e:
-            print(feed.address)
-            print(str(e))
+            logger.debug(feed.address)
+            logger.debug(str(e))
             return None
 
         if latest_answer and scale:
