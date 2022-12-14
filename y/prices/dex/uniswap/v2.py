@@ -225,7 +225,7 @@ async def _get_reserves_long_way(pool: Address, block: Block):
         logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
         return reserves
     except:
-        logger.error(f'must debug getReserves for {pool}')
+        logger.warning(f'must debug getReserves for {pool}')
 
 class UniswapRouterV2(ContractBase):
     def __init__(self, router_address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
@@ -285,7 +285,11 @@ class UniswapRouterV2(ContractBase):
         except NonStandardERC20:
             return None
 
-        if token_in in [weth.address, WRAPPED_GAS_COIN] and token_out in STABLECOINS:
+        if (
+            token_in in [weth.address, WRAPPED_GAS_COIN] and token_out in STABLECOINS
+            # simple path does not work for this block range but long path takes a while so we use short path where we can
+            and not (chain.id == Network.Fantom and 2462889 <= block <= 7512997)
+        ):
             path = [token_in, token_out]
 
         elif str(token_out) in STABLECOINS:

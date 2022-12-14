@@ -158,7 +158,7 @@ class Comptroller(ContractBase):
     async def markets_async(self) -> Tuple[CToken]:
         response = await self.has_method_async("getAllMarkets()(address[])", return_response=True)
         if not response:
-            logger.error(f'had trouble loading markets for {self.__repr__()}')
+            logger.warning(f'had trouble loading markets for {self.__repr__()}')
             response = set()
         markets = tuple(CToken(market) for market in response)
         logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
