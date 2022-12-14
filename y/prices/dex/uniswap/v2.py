@@ -288,7 +288,7 @@ class UniswapRouterV2(ContractBase):
         if (
             token_in in [weth.address, WRAPPED_GAS_COIN] and token_out in STABLECOINS
             # simple path does not work for this block range but long path takes a while so we use short path where we can
-            and not (chain.id == Network.Fantom and 2462889 <= block <= 7512997)
+            and not (chain.id == Network.Fantom and 2462889 <= block <= 9300751)
         ):
             path = [token_in, token_out]
 
