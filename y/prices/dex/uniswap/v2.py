@@ -17,7 +17,8 @@ from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN,
-                         sushi, thread_pool_executor, usdc, weth)
+                         log_possible_recursion_err, sushi,
+                         thread_pool_executor, usdc, weth)
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice)
@@ -310,6 +311,7 @@ class UniswapRouterV2(ContractBase):
                 amount_out /= fees
                 try:
                     for p in asyncio.as_completed([magic.get_price_async(paired_with, block, fail_to_None=True)],timeout=RECURSION_TIMEOUT):
+                        log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                         paired_with_price = await p
                 except asyncio.TimeoutError:
                     raise RecursionError(f'uniswap.v2 token: {token_in}')

@@ -19,7 +19,7 @@ from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20, WeiBalance
 from y.classes.singleton import Singleton
-from y.constants import RECURSION_TIMEOUT
+from y.constants import RECURSION_TIMEOUT, log_possible_recursion_err
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
@@ -519,6 +519,7 @@ class CurveRegistry(metaclass=Singleton):
                     return await coro
                 # We include a timeout here in case we create a recursive loop.
                 for p in asyncio.as_completed([coro],timeout=RECURSION_TIMEOUT):
+                    log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                     return await p
             except (PriceError, asyncio.TimeoutError):
                 return None
