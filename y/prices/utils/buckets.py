@@ -3,10 +3,12 @@ from functools import lru_cache
 
 from async_lru import alru_cache
 from multicall.utils import await_awaitable
+
 from y import convert
 from y.constants import STABLECOINS
 from y.datatypes import AnyAddressType
 from y.prices import convex, one_to_one, popsicle, yearn
+from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
@@ -75,7 +77,12 @@ async def check_bucket_async(
     elif token_address in generic_amm:                                      return 'generic amm'
     elif await mooniswap.is_mooniswap_pool_async(token_address):            return 'mooniswap lp'
     elif await compound.is_compound_market_async(token_address):            return 'compound'
+    elif await _chainlink_and_band(token_address):                          return 'chainlink and band'
     elif chainlink and await chainlink.has_feed(token_address):             return 'chainlink feed'
     elif synthetix and await synthetix.is_synth(token_address):             return 'synthetix'
     elif await yearn.is_yearn_vault_async(token_address):                   return 'yearn or yearn-like'
     elif await curve.get_pool(token_address):                               return 'curve lp'
+
+async def _chainlink_and_band(token_address) -> bool:
+    """ We only really need band for a short period in the beginning of fantom's history, and then we will default to chainlink once available. """
+    return chainlink and await chainlink.has_feed(token_address) and token_address in band
