@@ -7,10 +7,11 @@ from async_property import async_cached_property
 from brownie import chain, convert
 from multicall import Call
 from multicall.utils import await_awaitable
+
 from y.classes.common import ERC20, ContractBase
 from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
-from y.contracts import has_methods_async
+from y.contracts import Contract, has_methods_async
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.exceptions import call_reverted
 from y.networks import Network
@@ -59,17 +60,17 @@ TROLLERS = {
 
 
 class CToken(ERC20):
-    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, comptroller: "Comptroller", *args: Any, **kwargs: Any) -> None:
+        self.comptroller = comptroller
         super().__init__(address, *args, **kwargs)
     
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         return await_awaitable(self.get_price_async(block))
     
     async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        underlying = await self.underlying_async
         underlying_per_ctoken, underlying_price = await asyncio.gather(
             self.underlying_per_ctoken_async(block=block),
-            underlying.price_async(block=block),
+            self.get_underlying_price(block=block),
         )
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
@@ -131,6 +132,19 @@ class CToken(ERC20):
         
         return exchange_rate / 1e18
     
+    async def get_underlying_price(self, block: Optional[Block] = None) -> float:
+        # always query the oracle in case it was changed
+        oracle, underlying = await asyncio.gather(
+            self.comptroller.oracle(block),
+            self.underlying_async
+        )
+        price, underlying_decimals = await asyncio.gather(
+            oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
+            underlying.decimals
+        ) 
+        price /= 10 ** (36 - underlying_decimals)
+        return price
+    
 
 class Comptroller(ContractBase):
     def __init__(self, address: Optional[AnyAddressType] = None, key: Optional[str] = None) -> None:
@@ -160,9 +174,13 @@ class Comptroller(ContractBase):
         if not response:
             logger.error(f'had trouble loading markets for {self.__repr__()}')
             response = set()
-        markets = tuple(CToken(market) for market in response)
+        markets = tuple(CToken(market, self) for market in response)
         logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
         return markets
+    
+    async def oracle(self, block: Optional[Block] = None) -> Contract:
+        oracle = await self.contract.oracle.coroutine(block_identifier=block)
+        return await Contract.coroutine(oracle)
 
 
 class Compound(metaclass = Singleton):
