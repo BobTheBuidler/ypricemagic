@@ -14,6 +14,7 @@ from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
 from y.prices import convex, one_to_one, popsicle, yearn
+from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
@@ -212,35 +213,37 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'basketdao':             price = await basketdao.get_price_async(token_address, block)
 
     elif bucket == 'belt lp':               price = await belt.get_price_async(token_address, block)
+    elif bucket == 'chainlink and band':    price = await chainlink.get_price_async(token_address, block) or await band.get_price_async(token_address, block)
     elif bucket == 'chainlink feed':        price = await chainlink.get_price_async(token_address, block)
-    elif bucket == 'compound':              price = await compound.get_price_async(token_address, block=block)
 
+    elif bucket == 'compound':              price = await compound.get_price_async(token_address, block=block)
     elif bucket == 'convex':                price = await convex.get_price_async(token_address,block)
     elif bucket == 'creth':                 price = await creth.get_price_creth_async(token_address, block)
-    elif bucket == 'curve lp':              price = await curve.get_price_async(token_address, block)
 
+    elif bucket == 'curve lp':              price = await curve.get_price_async(token_address, block)
     elif bucket == 'ellipsis lp':           price = await ellipsis.get_price_async(token_address, block=block)
     elif bucket == 'froyo':                 price = await froyo.get_price_async(token_address, block=block)
-    elif bucket == 'gelato':                price = await gelato.get_price_async(token_address, block=block)
 
+    elif bucket == 'gelato':                price = await gelato.get_price_async(token_address, block=block)
     elif bucket == 'generic amm':           price = await generic_amm.get_price_async(token_address, block=block)
     elif bucket == 'ib token':              price = await ib.get_price_async(token_address,block=block)
-    elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price_async(token_address, block=block)
 
+    elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price_async(token_address, block=block)
     elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price_async(token_address,block=block)
     elif bucket == 'one to one':            price = await one_to_one.get_price_async(token_address, block)
+
     elif bucket == 'piedao lp':             price = await piedao.get_price_async(token_address, block=block)
     elif bucket == 'popsicle':              price = await popsicle.get_price_async(token_address, block=block)
-
     elif bucket == 'saddle':                price = await saddle.get_price_async(token_address, block)
+
     elif bucket == 'stable usd':            price = 1
     elif bucket == 'synthetix':             price = await synthetix.get_price_async(token_address, block)
-
     elif bucket == 'token set':             price = await tokensets.get_price_async(token_address, block=block)
+
     elif bucket == 'uni or uni-like lp':    price = await uniswap_multiplexer.lp_price_async(token_address, block)
     elif bucket == 'wrapped gas coin':      price = await get_price_async(WRAPPED_GAS_COIN, block)
-
     elif bucket == 'wrapped atoken':        price = await aave.get_price_wrapped_async(token_address, block)
+
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price_async(block)
     elif bucket == 'yearn or yearn-like':   price = await yearn.get_price_async(token_address, block)
 
