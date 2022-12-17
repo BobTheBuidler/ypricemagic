@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import logging
 import time
-from typing import Union
+from typing import NewType, Union
 
 from async_lru import alru_cache
 from brownie import chain, web3
@@ -65,21 +65,32 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     logger.debug(f'last {Network.name()} block on date {date} -> {block}')
     return block
 
+UnixTimestamp = NewType("UnixTimestamp", int)
+
+Timestamp = Union[UnixTimestamp, datetime.datetime]
+
+def _parse_timestamp(timestamp: Timestamp) -> UnixTimestamp:
+    if isinstance(timestamp, datetime.datetime):
+        timestamp = timestamp.timestamp()
+    elif not isinstance(timestamp, int):
+        raise TypeError("You may only pass in a unix timestamp or a datetime object.")
+    return UnixTimestamp(timestamp)
 
 #yLazyLogger(logger)
-def closest_block_after_timestamp(timestamp: int, wait_for_block_if_needed: bool = False) -> int:
+def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed: bool = False) -> int:
+    timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
         try:
             return closest_block_after_timestamp(timestamp)
         except NoBlockFound:
             time.sleep(.2)
-
     block = _closest_block_after_timestamp_cached(timestamp)
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
 
 @alru_cache(maxsize=None, cache_exceptions=False)
-async def closest_block_after_timestamp_async(timestamp: int, wait_for_block_if_needed: bool = False) -> int:
+async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_block_if_needed: bool = False) -> int:
+    timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
         try:
             return await closest_block_after_timestamp_async(timestamp)
