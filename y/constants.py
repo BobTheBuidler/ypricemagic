@@ -1,5 +1,7 @@
-from concurrent.futures import ThreadPoolExecutor
+import logging
 import os
+from concurrent.futures import ThreadPoolExecutor
+
 from brownie import Contract as _Contract
 from brownie import chain
 
@@ -203,3 +205,5 @@ WRAPPED_GAS_COIN = {
 thread_pool_executor = ThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 128)))
 
 RECURSION_TIMEOUT = int(os.environ.get("YPRICEMAGIC_RECURSION_TIMEOUT", 60))
+recursion_logger_level = os.environ.get("YPRICEMAGIC_RECURSION_LOGGER_LEVEL", "debug").lower()
+log_possible_recursion_err = getattr(logging.getLogger("ypricemagic.recursion_logger"), recursion_logger_level)
