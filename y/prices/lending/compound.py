@@ -61,7 +61,7 @@ TROLLERS = {
 
 class CToken(ERC20):
     def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"] = None, *args: Any, **kwargs: Any) -> None:
-        self.comptroller = comptroller
+        self.troller = comptroller
         super().__init__(address, *args, **kwargs)
     
     def get_price(self, block: Optional[Block] = None) -> UsdPrice:
@@ -144,7 +144,7 @@ class CToken(ERC20):
     async def get_underlying_price(self, block: Optional[Block] = None) -> float:
         # always query the oracle in case it was changed
         oracle, underlying = await asyncio.gather(
-            self.comptroller.oracle(block),
+            self.troller.oracle(block),
             self.underlying_async
         )
         price, underlying_decimals = await asyncio.gather(
