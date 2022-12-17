@@ -225,7 +225,7 @@ async def _get_reserves_long_way(pool: Address, block: Block):
         logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
         return reserves
     except:
-        logger.error(f'must debug getReserves for {pool}')
+        logger.warning(f'must debug getReserves for {pool}')
 
 class UniswapRouterV2(ContractBase):
     def __init__(self, router_address: AnyAddressType, *args: Any, **kwargs: Any) -> None:

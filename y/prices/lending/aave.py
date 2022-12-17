@@ -114,7 +114,7 @@ class AaveMarketV2(AaveMarketBase):
             logger.info(f'loaded {len(atokens)} v2 atokens for {self.__repr__()}')
             return atokens
         except TypeError: # TODO figure out what to do about non verified aave markets
-            logger.error(f'failed to load tokens for {self.__repr__()}')
+            logger.warning(f'failed to load tokens for {self.__repr__()}')
             return []
 
 
