@@ -60,7 +60,7 @@ TROLLERS = {
 
 
 class CToken(ERC20):
-    def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"], *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"] = None, *args: Any, **kwargs: Any) -> None:
         self.comptroller = comptroller
         super().__init__(address, *args, **kwargs)
     
