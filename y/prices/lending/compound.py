@@ -60,7 +60,7 @@ TROLLERS = {
 
 
 class CToken(ERC20):
-    def __init__(self, address: AnyAddressType, comptroller: "Comptroller", *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"], *args: Any, **kwargs: Any) -> None:
         self.comptroller = comptroller
         super().__init__(address, *args, **kwargs)
     
@@ -68,10 +68,19 @@ class CToken(ERC20):
         return await_awaitable(self.get_price_async(block))
     
     async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        underlying_per_ctoken, underlying_price = await asyncio.gather(
-            self.underlying_per_ctoken_async(block=block),
-            self.get_underlying_price(block=block),
-        )
+        if self.troller:
+            # We can use the protocol's oracle which will be quick
+            underlying_per_ctoken, underlying_price = await asyncio.gather(
+                self.underlying_per_ctoken_async(block=block),
+                self.get_underlying_price(block=block),
+            )
+        else:
+            # Or we can just price the underlying token ourselves
+            underlying = await self.underlying_async
+            underlying_per_ctoken, underlying_price = await asyncio.gather(
+                self.underlying_per_ctoken_async(block=block),
+                underlying.price_async(block=block)
+            )
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
     @cached_property
@@ -190,6 +199,13 @@ class Compound(metaclass = Singleton):
             for protocol, troller
             in TROLLERS.items()
         }
+    
+    async def get_troller(self, token_address: AddressOrContract) -> Optional[Comptroller]:
+        trollers = self.trollers.values()
+        all_markets = await asyncio.gather(*[troller.markets_async for troller in trollers])
+        for troller, markets in zip(trollers, all_markets):
+            if token_address in markets:
+                return troller
 
     #yLazyLogger(logger)
     def is_compound_market(self, token_address: AddressOrContract) -> bool:
@@ -197,8 +213,7 @@ class Compound(metaclass = Singleton):
     
     #yLazyLogger(logger)
     async def is_compound_market_async(self, token_address: AddressOrContract) -> bool:
-        all_markets = await asyncio.gather(*[troller.markets_async for troller in self.trollers.values()])
-        if any(token_address in troller for troller in all_markets):
+        if await self.get_troller(token_address):
             return True
 
         # NOTE: Workaround for pools that have since been revoked
@@ -207,12 +222,13 @@ class Compound(metaclass = Singleton):
         return result
     
     #yLazyLogger(logger)
-    def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await_awaitable(self.get_price_async(token_address, block=block))
 
     #yLazyLogger(logger)
-    async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-        return await CToken(token_address).get_price_async(block=block)
+    async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        troller = await self.get_troller(token_address)
+        return await CToken(token_address, troller).get_price_async(block=block)
 
     #yLazyLogger(logger)
     def __contains__(self, token_address: AddressOrContract) -> bool:
