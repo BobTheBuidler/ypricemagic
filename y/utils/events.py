@@ -79,6 +79,8 @@ async def get_logs_asap_generator(
         to_block = await dank_w3.eth.block_number
     elif run_forever:
         raise TypeError(f'`to_block` must be None if `run_forever` is True.')
+    if from_block > to_block:
+        raise ValueError(f"from_block must be <= to_block. You passed from_block: {from_block} to_block: {to_block}.")
     while True:
         ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
         if verbose > 0:
