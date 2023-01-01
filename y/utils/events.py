@@ -93,6 +93,8 @@ async def get_logs_asap_generator(
         if not run_forever:
             return
         
+        await asyncio.sleep(run_forever_interval)
+        
         # Find start and end block for next loop
         current_block = await dank_w3.eth.block_number
         while current_block <= to_block:
