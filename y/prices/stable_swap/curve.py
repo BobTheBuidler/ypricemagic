@@ -324,6 +324,8 @@ class CurveRegistry(metaclass=Singleton):
                 # Must go one-by-one for chronological order, no gather
                 await self._load_registry_event(contract, event)
         self._loaded_registries.add(registry)
+        while await dank_w3.eth.block_number < block+1:
+            await asyncio.sleep(15)
         async for logs in get_logs_asap_generator(registry, from_block=block+1, chronological=True, run_forever=True):
             for event in decode_logs(logs):
                 # Must go one-by-one for chronological order, no gather
