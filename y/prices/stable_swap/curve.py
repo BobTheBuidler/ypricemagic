@@ -302,8 +302,7 @@ class CurveRegistry(metaclass=Singleton):
         """ Fetch all address providers. """
         if self._address_providers_loading.is_set():
             return
-        if not self._address_providers_loading.is_set():
-            self._address_providers_loading.set()
+        self._address_providers_loading.set()
         block = await dank_w3.eth.block_number            
         async for logs in get_logs_asap_generator(str(self.address_provider), None, to_block=block, chronological=True):
             for event in decode_logs(logs):
@@ -373,7 +372,7 @@ class CurveRegistry(metaclass=Singleton):
             # load metapool and curve v5 factories
             await self._load_factories()
 
-            time.sleep(600)
+            await asyncio.sleep(600)
     
     async def _load_factory_pool(self, factory: Contract, pool: Address) -> None:
         # for curve v5 pools, pool and lp token are separate
