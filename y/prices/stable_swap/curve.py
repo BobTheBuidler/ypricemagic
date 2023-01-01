@@ -281,6 +281,7 @@ class CurveRegistry(metaclass=Singleton):
         self.pools = set()
         self.token_to_pool = dict()  # lp_token -> pool
 
+        self._address_providers_loading = asyncio.Event()
         self._address_providers_loaded = threading.Event()
         self._registries_loaded = threading.Event()
         self._loaded_registries = set()
@@ -298,6 +299,10 @@ class CurveRegistry(metaclass=Singleton):
     @event_daemon_task
     async def _load_address_providers(self) -> NoReturn:
         """ Fetch all address providers. """
+        if self._address_providers_loading.is_set():
+            return
+        if not self._address_providers_loading.is_set():
+            self._address_providers_loading.set()
         block = await dank_w3.eth.block_number            
         async for logs in get_logs_asap_generator(str(self.address_provider), None, to_block=block, chronological=True):
             for event in decode_logs(logs):
@@ -333,7 +338,7 @@ class CurveRegistry(metaclass=Singleton):
 
     @event_daemon_task   
     async def _load_registries(self) -> None:
-        if not self._address_providers_loaded.is_set():
+        if not self._address_providers_loading.is_set():
             await self._load_address_providers()
         while not self._address_providers_loaded.is_set():
             await asyncio.sleep(0)
