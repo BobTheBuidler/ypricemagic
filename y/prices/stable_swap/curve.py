@@ -285,6 +285,7 @@ class CurveRegistry(metaclass=Singleton):
         self._address_providers_loaded = threading.Event()
         self._registries_loaded = threading.Event()
         self._loaded_registries = set()
+        self._all_loading = threading.Event()
         self._all_loaded = threading.Event()
     
     def __repr__(self) -> str:
@@ -338,6 +339,9 @@ class CurveRegistry(metaclass=Singleton):
 
     @event_daemon_task   
     async def _load_registries(self) -> None:
+        if self._all_loading.is_set():
+            return
+        self._all_loading.set()
         if not self._address_providers_loading.is_set():
             await self._load_address_providers()
         while not self._address_providers_loaded.is_set():
@@ -461,7 +465,7 @@ class CurveRegistry(metaclass=Singleton):
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
-        if not self._all_loaded.is_set():
+        if not self._all_loading.is_set():
             await self._load_registries()
         while not self._all_loaded.is_set():
             await asyncio.sleep(0)
