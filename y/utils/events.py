@@ -4,6 +4,7 @@ from collections import Counter, defaultdict
 from itertools import zip_longest
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
+import eth_retry
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
@@ -158,6 +159,7 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
             thread_pool_executor, _get_logs, address, topics, start, end,
         )
 
+@eth_retry.auto_retry
 def _get_logs_no_cache(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],
