@@ -8,6 +8,7 @@ import eth_retry
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
+from dank_mids.semaphore import ThreadsafeSemaphore
 from eth_typing import ChecksumAddress
 from multicall.utils import await_awaitable
 from toolz import groupby
@@ -151,7 +152,7 @@ def _get_logs(
             response.remove(log)
     return response
 
-address_semaphores = defaultdict(lambda: asyncio.Semaphore(16))
+address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with address_semaphores[tuple(address) if isinstance(address, list) else address]:

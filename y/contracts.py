@@ -1,9 +1,9 @@
 
 import asyncio
-from collections import defaultdict
 import json
 import logging
 import threading
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
@@ -18,6 +18,7 @@ from brownie.network.contract import (_add_deployment, _ContractBase,
 from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from dank_mids.brownie_patch import patch_contract
+from dank_mids.semaphore import ThreadsafeSemaphore
 from hexbytes import HexBytes
 from multicall import Call
 from multicall.utils import await_awaitable
@@ -164,7 +165,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 # this defaultdict prevents congestion in the contracts thread pool
-address_semaphores = defaultdict(lambda: asyncio.Semaphore())
+address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(1))
 
 class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
