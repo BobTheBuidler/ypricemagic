@@ -52,5 +52,6 @@ def event_daemon_task(func: Callable[P, Awaitable[Union[NoReturn, None]]]) -> Ca
         raise RuntimeError("You can only decorate coroutine functions with `run_in_event_daemon`.")
     @functools.wraps(func)
     async def daemon_wrap(*args: P.args, **kwargs: P.kwargs) -> None:
-        _event_daemon_event_loop().create_task(func(*args, **kwargs))
+        #_event_daemon_event_loop().create_task(func(*args, **kwargs))
+        asyncio.get_event_loop().create_task(func(*args, **kwargs))
     return daemon_wrap
