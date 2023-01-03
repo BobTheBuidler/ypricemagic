@@ -4,9 +4,11 @@ from collections import Counter, defaultdict
 from itertools import zip_longest
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
+import eth_retry
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
+from dank_mids.semaphore import ThreadsafeSemaphore
 from eth_typing import ChecksumAddress
 from multicall.utils import await_awaitable
 from toolz import groupby
@@ -79,6 +81,8 @@ async def get_logs_asap_generator(
         to_block = await dank_w3.eth.block_number
     elif run_forever:
         raise TypeError(f'`to_block` must be None if `run_forever` is True.')
+    if from_block > to_block:
+        raise ValueError(f"from_block must be <= to_block. You passed from_block: {from_block} to_block: {to_block}.")
     while True:
         ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
         if verbose > 0:
@@ -92,6 +96,8 @@ async def get_logs_asap_generator(
                 yield await logs
         if not run_forever:
             return
+        
+        await asyncio.sleep(run_forever_interval)
         
         # Find start and end block for next loop
         current_block = await dank_w3.eth.block_number
@@ -146,7 +152,7 @@ def _get_logs(
             response.remove(log)
     return response
 
-address_semaphores = defaultdict(lambda: asyncio.Semaphore(16))
+address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with address_semaphores[tuple(address) if isinstance(address, list) else address]:
@@ -154,6 +160,7 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
             thread_pool_executor, _get_logs, address, topics, start, end,
         )
 
+@eth_retry.auto_retry
 def _get_logs_no_cache(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],

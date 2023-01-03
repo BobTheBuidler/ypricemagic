@@ -281,9 +281,11 @@ class CurveRegistry(metaclass=Singleton):
         self.pools = set()
         self.token_to_pool = dict()  # lp_token -> pool
 
+        self._address_providers_loading = asyncio.Event()
         self._address_providers_loaded = threading.Event()
         self._registries_loaded = threading.Event()
         self._loaded_registries = set()
+        self._all_loading = threading.Event()
         self._all_loaded = threading.Event()
     
     def __repr__(self) -> str:
@@ -298,6 +300,9 @@ class CurveRegistry(metaclass=Singleton):
     @event_daemon_task
     async def _load_address_providers(self) -> NoReturn:
         """ Fetch all address providers. """
+        if self._address_providers_loading.is_set():
+            return
+        self._address_providers_loading.set()
         block = await dank_w3.eth.block_number            
         async for logs in get_logs_asap_generator(str(self.address_provider), None, to_block=block, chronological=True):
             for event in decode_logs(logs):
@@ -324,6 +329,8 @@ class CurveRegistry(metaclass=Singleton):
                 # Must go one-by-one for chronological order, no gather
                 await self._load_registry_event(contract, event)
         self._loaded_registries.add(registry)
+        while await dank_w3.eth.block_number < block+1:
+            await asyncio.sleep(15)
         async for logs in get_logs_asap_generator(registry, from_block=block+1, chronological=True, run_forever=True):
             for event in decode_logs(logs):
                 # Must go one-by-one for chronological order, no gather
@@ -331,7 +338,10 @@ class CurveRegistry(metaclass=Singleton):
 
     @event_daemon_task   
     async def _load_registries(self) -> None:
-        if not self._address_providers_loaded.is_set():
+        if self._all_loading.is_set():
+            return
+        self._all_loading.set()
+        if not self._address_providers_loading.is_set():
             await self._load_address_providers()
         while not self._address_providers_loaded.is_set():
             await asyncio.sleep(0)
@@ -362,7 +372,7 @@ class CurveRegistry(metaclass=Singleton):
             # load metapool and curve v5 factories
             await self._load_factories()
 
-            time.sleep(600)
+            await asyncio.sleep(600)
     
     async def _load_factory_pool(self, factory: Contract, pool: Address) -> None:
         # for curve v5 pools, pool and lp token are separate
@@ -454,7 +464,7 @@ class CurveRegistry(metaclass=Singleton):
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
-        if not self._all_loaded.is_set():
+        if not self._all_loading.is_set():
             await self._load_registries()
         while not self._all_loaded.is_set():
             await asyncio.sleep(0)

@@ -2,20 +2,41 @@ import logging
 from typing import Any, Callable
 
 import eth_retry
-from brownie import web3
+from brownie import chain, web3
 from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider, Web3
 from web3.middleware import filter
+
+from y.networks import Network
 from y.utils.cache import memory
 
 logger = logging.getLogger(__name__)
 
-BATCH_SIZE = (
-    2_000 if 'moralis' in web3.provider.endpoint_uri
-    else 2_000 if 'pokt' in web3.provider.endpoint_uri
-    else 10_000
-)
+provider_specific_batch_sizes = {
+    "moralis":  2_000,
+    "pokt":     2_000,
+    "tenderly": 2_000,
+    "ankr":     2_000,
+}
+
+chain_specific_max_batch_sizes = {
+    Network.Mainnet:    10_000,     # 1.58 days
+    Network.Gnosis:     20_000,     # 1.15 days
+    Network.Fantom:     100_000,    # 1.03 days
+    Network.Arbitrum:   20_000,     # 0.34 days
+    Network.Optimism:   800_000,    # 10.02 days
+}
+
+fallback_batch_size = 10_000
+
+def _get_batch_size() -> int:
+    for provider, size in provider_specific_batch_sizes.items():
+        if provider in web3.provider.endpoint_uri:
+            return size
+    return chain_specific_max_batch_sizes.get(chain.id, fallback_batch_size)
+
+BATCH_SIZE = _get_batch_size()
 
 
 def should_cache(method: str, params: Any) -> bool:
