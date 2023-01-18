@@ -410,6 +410,12 @@ class CurveRegistry(metaclass=Singleton):
             logger.info(f'loaded {len(self.token_to_pool)} pools from {len(self.registries)} registries and {len(self.factories)} factories')
             self._all_loaded.set()
     
+    async def load_all(self) -> None:
+        if not self._all_loading.is_set():
+            await self._load_registries()
+        while not self._all_loaded.is_set():
+            await asyncio.sleep(0)
+    
     async def read_pools(self, registry: Address) -> List[EthAddress]:
         try:
             registry = await Contract.coroutine(registry)
@@ -464,10 +470,7 @@ class CurveRegistry(metaclass=Singleton):
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
         """
-        if not self._all_loading.is_set():
-            await self._load_registries()
-        while not self._all_loaded.is_set():
-            await asyncio.sleep(0)
+        await self.load_all()
         
         token = convert.to_address(token)
         if token in self.token_to_pool and token != ZERO_ADDRESS:
@@ -545,6 +548,7 @@ class CurveRegistry(metaclass=Singleton):
     @async_cached_property
     async def coin_to_pools_async(self) -> Dict[str, List[CurvePool]]:
         mapping = defaultdict(set)
+        await self.load_all()
         pools = {CurvePool(pool) for pools in self.factories.values() for pool in pools}
         for pool in pools:
             for coin in await pool.get_coins_async:
