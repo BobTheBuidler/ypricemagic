@@ -55,6 +55,9 @@ TROLLERS = {
         "neku":             "0xD5B649c7d27C13a2b80425daEe8Cb6023015Dc6B",
         "channels":         "0x3C13b172bf8BE5b873EB38553feC50F78c826284",
         "hund":             "0x0F390559F258eB8591C8e31Cf0905E97cf36ACE2",
+    },
+    Network.Optimism: {
+        "ironbank":         "0xE0B57FEEd45e7D908f2d0DaCd26F113Cf26715BF",
     }
 }.get(chain.id, {})
 
