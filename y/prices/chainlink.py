@@ -204,6 +204,9 @@ class Chainlink(metaclass=Singleton):
         
         self._feeds_loaded = True
         logger.info(f'loaded {len(self._feeds)} feeds')
+        
+        while await dank_w3.eth.block_number < block+1:
+            await asyncio.sleep(15)
 
         # leave coroutine running for future blocks
         async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], from_block=block+1, run_forever=True):
