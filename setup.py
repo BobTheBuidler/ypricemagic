@@ -28,4 +28,4 @@ setup(
     setup_requires=[
         'setuptools_scm',
     ],
-    )
+)
