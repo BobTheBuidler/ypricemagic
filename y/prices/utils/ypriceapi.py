@@ -39,33 +39,33 @@ async def get_price_from_api(
         block = await dank_w3.eth.block_number
     
     async with ypriceapi_semaphore:
-        while True:
-            async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), auth=auth) as session:
-                response = await session.get(f'/get_price/{chain.id}/{token}/{block}')
+        async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), auth=auth) as session:
+            response = await session.get(f'/get_price/{chain.id}/{token}/{block}')
 
-                # Handle successful response
-                if response.status == 200:
-                    result = await response.json()
-                    if isinstance(result, str):
-                        logger.error(f"Failed to get price from API: {result}")
-                        return None
-                    else:
-                        return result
-
-                # Handle unsuccessful response
-                # Unauthorized
-                elif response.status == 401:
-                    if 401 not in notified:
-                        logger.error('Your provided ypriceAPI user and password pair is not authorized for use. Falling back to your own node for pricing.')
-                        notified.add(401)
+            # Handle successful response
+            if response.status == 200:
+                result = await response.json()
+                if isinstance(result, str):
+                    logger.error(f"Failed to get price from API: {result}")
                     return None
-                
-                # Bad Gateway
-                elif response.status == 502:
-                    logger.error("ypriceAPI Bad Gateway. Retrying.")
-                    # Just retry
-                    pass
-        
                 else:
-                    raise NotImplementedError(f"status code {response.status} is not yet handled. Please tell Bob to fix this.")
+                    return result
+
+            # Handle unsuccessful response
+            # Unauthorized
+            elif response.status == 401:
+                if 401 not in notified:
+                    logger.error('Your provided ypriceAPI credentials are not authorized for use. Falling back to your node for pricing.')
+                    notified.add(401)
+                return None
+        
+            else:
+                if response.reason:
+                    ascii_encodable_reason = response.reason.encode(
+                        "ascii", "backslashreplace"
+                    ).decode("ascii")
+                    err_string = f"[{response.status} {ascii_encodable_reason}]"
+                else:
+                    err_string = f"[{response.status}]"
+                logger.error(f'ypriceAPI returned status code {err_string} for {token} at {block}. Falling back to your node for pricing.')
             
