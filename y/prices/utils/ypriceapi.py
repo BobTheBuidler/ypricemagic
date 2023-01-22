@@ -4,7 +4,7 @@ import logging
 import os
 from typing import Optional
 
-from aiohttp import BasicAuth, ClientSession, TCPConnector
+from aiohttp import BasicAuth, ClientSession, TCPConnector, Response
 from brownie import chain
 
 from y.classes.common import UsdPrice
@@ -25,6 +25,8 @@ notified = set()
 auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
 ypriceapi_semaphore = asyncio.Semaphore(50)
+
+fallback_str = "Falling back to your node for pricing."
 
 async def get_price_from_api(
     token: Address,
@@ -47,7 +49,7 @@ async def get_price_from_api(
                 if response.status == 200:
                     result = await response.json()
                     if isinstance(result, str):
-                        logger.error(f"Failed to get price from API: {result}")
+                        logger.warning(f"Failed to get price from API: {result}")
                         return None
                     else:
                         return result
@@ -56,20 +58,22 @@ async def get_price_from_api(
                 # Unauthorized
                 elif response.status == 401:
                     if 401 not in notified:
-                        logger.error('Your provided ypriceAPI credentials are not authorized for use. Falling back to your node for pricing.')
+                        logger.error('Your provided ypriceAPI credentials are not authorized for use.' + fallback_str)
                         notified.add(401)
                     return None
         
                 else:
-                    if response.reason:
-                        ascii_encodable_reason = response.reason.encode(
-                            "ascii", "backslashreplace"
-                        ).decode("ascii")
-                        err_string = f"[{response.status} {ascii_encodable_reason}]"
-                    else:
-                        err_string = f"[{response.status}]"
-                    logger.warning(f'ypriceAPI returned status code {err_string} for {token} at {block}. Falling back to your node for pricing.')
+                    logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} for {token} at {block}.' + fallback_str)
                     
         except asyncio.TimeoutError:
-            logger.error(f'ypriceAPI timed out for {token} at {block}. Falling back to your node for pricing.')
+            logger.warning(f'ypriceAPI timed out for {token} at {block}.' + fallback_str)
             
+
+def _get_err_reason(response: Response) -> str:
+    if response.reason is None:
+        return f"[{response.status}]"
+    ascii_encodable_reason = response.reason.encode(
+        "ascii", "backslashreplace"
+    ).decode("ascii")
+    return f"[{response.status} {ascii_encodable_reason}]"
+    
