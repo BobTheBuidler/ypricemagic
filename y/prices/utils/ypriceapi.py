@@ -68,7 +68,8 @@ async def get_price_from_api(
                         err_string = f"[{response.status} {ascii_encodable_reason}]"
                     else:
                         err_string = f"[{response.status}]"
-                    logger.error(f'ypriceAPI returned status code {err_string} for {token} at {block}. Falling back to your node for pricing.')
+                    logger.warning(f'ypriceAPI returned status code {err_string} for {token} at {block}. Falling back to your node for pricing.')
+                    
         except asyncio.TimeoutError:
             logger.error(f'ypriceAPI timed out for {token} at {block}. Falling back to your node for pricing.')
             
