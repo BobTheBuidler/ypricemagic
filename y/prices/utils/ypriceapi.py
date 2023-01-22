@@ -4,7 +4,7 @@ import logging
 import os
 from typing import Optional
 
-from aiohttp import BasicAuth, ClientSession, TCPConnector, Response
+from aiohttp import BasicAuth, ClientSession, TCPConnector, ClientResponse
 from brownie import chain
 
 from y.classes.common import UsdPrice
@@ -69,7 +69,7 @@ async def get_price_from_api(
             logger.warning(f'ypriceAPI timed out for {token} at {block}.' + fallback_str)
             
 
-def _get_err_reason(response: Response) -> str:
+def _get_err_reason(response: ClientResponse) -> str:
     if response.reason is None:
         return f"[{response.status}]"
     ascii_encodable_reason = response.reason.encode(
