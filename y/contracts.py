@@ -447,7 +447,12 @@ def _resolve_proxy(address) -> Tuple[str, List]:
 
     if address in FORCE_IMPLEMENTATION:
         implementation = FORCE_IMPLEMENTATION[address]
-        name, abi, _ = _extract_abi_data(implementation)
+        name, implementation_abi, _ = _extract_abi_data(implementation)
+        # Here we merge the proxy ABI with the implementation ABI
+        # without doing this, we'd only get the implementation
+        # and would lack any valid methods/events from the proxy itself.
+        # Credit: Wavey@Yearn
+        abi += implementation_abi
         return name, abi
 
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
