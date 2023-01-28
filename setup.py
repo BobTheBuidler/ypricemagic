@@ -1,5 +1,8 @@
 from setuptools import find_packages, setup
 
+with open(requirements_filename, "r") as f:
+    requirements = list(map(str.strip, f.read().split("\n")))[:-1]
+
 setup(
     name='ypricemagic',
     packages=find_packages(),
@@ -14,17 +17,7 @@ setup(
     author_email='bobthebuidlerdefi@gmail.com',
     url='https://github.com/BobTheBuidler/ypricemagic',
     license='MIT',
-    install_requires=[
-        'async_lru==1.0.3',
-        'async_property==0.2.1',
-        'bobs_lazy_logging==0.0.4',
-        'cachetools>=4.1.1',
-        'checksum_dict>=1.1.1',
-        'dank_mids>=4.20.25',
-        'eth-brownie>=1.18.1,<1.20',
-        'eth_retry>=0.1.10,<0.2',
-        'joblib>=1.0.1',
-    ],
+    install_requires=requirements,
     setup_requires=[
         'setuptools_scm',
     ],
