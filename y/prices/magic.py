@@ -33,7 +33,7 @@ from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils.buckets import check_bucket_async
 from y.prices.utils.sense_check import _sense_check
-from y.prices.utils.ypriceapi import YPRICEAPI_URL, get_price_from_api
+from y.prices.utils.ypriceapi import USE_YPRICEAPI, get_price_from_api
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
@@ -175,7 +175,7 @@ async def _get_price(
     logger.debug(f"Network: {Network.printable()}")
 
     # If the dev has passed a value for YPRICEAPI_URL, ypricemagic will attempt to fetch price from the API before falling back to your own node.
-    if YPRICEAPI_URL:
+    if USE_YPRICEAPI:
         price = await get_price_from_api(token, block)
         if price is not None:
             return price
