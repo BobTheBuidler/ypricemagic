@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
 YPRICEAPI_URL = os.environ.get("YPRICEAPI_URL")
-YPRICEAPI_SEMAPHORE = asyncio.Semaphoreint(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
+YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 USE_YPRICEAPI = bool(YPRICEAPI_URL)
 
