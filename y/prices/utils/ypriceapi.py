@@ -17,14 +17,13 @@ logger = logging.getLogger(__name__)
 YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
 YPRICEAPI_URL = os.environ.get("YPRICEAPI_URL")
+YPRICEAPI_SEMAPHORE = asyncio.Semaphoreint(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 USE_YPRICEAPI = bool(YPRICEAPI_URL)
 
 notified = set()
 
 auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
-
-ypriceapi_semaphore = asyncio.Semaphore(50)
 
 fallback_str = "Falling back to your node for pricing."
 
@@ -40,7 +39,7 @@ async def get_price_from_api(
     if block is None:
         block = await dank_w3.eth.block_number
     
-    async with ypriceapi_semaphore:
+    async with YPRICEAPI_SEMAPHORE:
         try:
             async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), auth=auth) as session:
                 response = await session.get(f'/get_price/{chain.id}/{token}/{block}')
