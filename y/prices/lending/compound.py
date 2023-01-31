@@ -152,8 +152,12 @@ class CToken(ERC20):
         )
         price, underlying_decimals = await asyncio.gather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
-            underlying.decimals
-        ) 
+            underlying.decimals,
+            return_exceptions=True,
+        )
+        if isinstance(price, Exception):
+            # TODO debug why this occurs and refactor. only found on arbitrum cream
+            price = oracle.getUnderlyingPrice(self.address, block_identifier=block)
         price /= 10 ** (36 - underlying_decimals)
         return price
     
@@ -191,7 +195,13 @@ class Comptroller(ContractBase):
         return markets
     
     async def oracle(self, block: Optional[Block] = None) -> Contract:
-        oracle = await self.contract.oracle.coroutine(block_identifier=block)
+        try:
+            oracle = await self.contract.oracle.coroutine(block_identifier=block)
+        except Exception as e:
+            # TODO debug why this occurs and refactor. only found on arbitrum cream
+            if not call_reverted(e):
+                raise
+            oracle = self.contract.oracle(block_identifier=block)
         return await Contract.coroutine(oracle)
 
 
