@@ -1,9 +1,9 @@
 async_lru==1.0.3
 async_property==0.2.1
 bobs_lazy_logging==0.0.4
-cachetools>=4.1.1,<4.2
+cachetools>=4.1.1,<4.3
 checksum_dict>=1.1.1
-dank_mids>=4.20.27
+dank_mids>=4.20.29
 eth-brownie>=1.18.1,<1.20
 eth_retry>=0.1.10,<0.2
 joblib>=1.0.1
