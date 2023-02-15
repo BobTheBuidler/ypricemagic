@@ -5,6 +5,7 @@ import os
 from typing import Optional
 
 from aiohttp import BasicAuth, ClientSession, TCPConnector, ClientResponse
+from aiohttp.client_exceptions import ClientError
 from brownie import chain
 
 from y.classes.common import UsdPrice
@@ -66,6 +67,8 @@ async def get_price_from_api(
                     
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.' + fallback_str)
+        except ClientError as e:
+            logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.' + fallback_str)
             
 
 def _get_err_reason(response: ClientResponse) -> str:
