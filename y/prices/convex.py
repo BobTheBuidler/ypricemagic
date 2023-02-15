@@ -20,4 +20,4 @@ def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPr
     return await_awaitable(get_price_async(token_address, block))
 
 async def get_price_async(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return magic.get_price_async(token_address, block)
+    return await magic.get_price_async(MAPPING[token_address], block)
