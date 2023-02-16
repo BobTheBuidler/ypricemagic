@@ -308,6 +308,10 @@ class CurveRegistry(metaclass=Singleton):
             for event in decode_logs(logs):
                 self._load_address_provider_event(event)
         self._address_providers_loaded.set()
+
+        while await dank_w3.eth.block_number < block+1:
+            await asyncio.sleep(15)
+            
         async for logs in get_logs_asap_generator(str(self.address_provider), None, from_block=block+1, chronological=True, run_forever=True):
             for event in decode_logs(logs):
                 self._load_address_provider_event(event)
