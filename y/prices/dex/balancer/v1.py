@@ -55,7 +55,7 @@ class BalancerV1Pool(ERC20):
 
     #yLazyLogger(logger)
     async def get_tvl_async(self, block: Optional[Block] = None) -> Optional[UsdValue]:
-        token_balances = await self.get_balances_async()
+        token_balances = await self.get_balances_async(block=block)
         good_balances = {
             token: balance
             for token, balance
