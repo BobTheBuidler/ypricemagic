@@ -12,30 +12,40 @@ from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN
 from y.prices.utils.buckets import check_bucket
 
 
+#@pytest.mark.parametrize('token',ATOKENS)
+#def test_check_bucket_aave(token):
+    #assert check_bucket(token) == 'atoken'
+
 @pytest.mark.parametrize('token',ATOKENS)
-def test_check_bucket_aave(token):
-    assert check_bucket(token) == 'atoken'
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_aave(token):
+    assert await check_bucket(token, sync=False) == 'atoken'
 
 @pytest.mark.parametrize('token',FEEDS)
-def test_check_bucket_chainlink(token):
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_chainlink(token):
     if convert.to_address(token) in [stable for stable in STABLECOINS if not isinstance(stable,int)]:
         pytest.skip(f'Not applicable to stablecoins.')
     if token in mutate_contract(WRAPPED_GAS_COIN) + mutate_address(EEE_ADDRESS):
         pytest.skip(f'Not applicable to native token.')
-    assert check_bucket(token) == 'chainlink feed'
+    assert await check_bucket(token, sync=False) == 'chainlink feed'
 
 @pytest.mark.parametrize('token',CTOKENS)
-def test_check_bucket_compound(token):
-    assert check_bucket(token) == 'compound'
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_compound(token):
+    assert await check_bucket(token, sync=False) == 'compound'
 
 @pytest.mark.parametrize('token',POPSICLES)
-def test_check_bucket_popsicle(token):
-    assert check_bucket(token) == 'popsicle'
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_popsicle(token):
+    assert await check_bucket(token, sync=False) == 'popsicle'
 
 @pytest.mark.parametrize('token',STABLECOINS)
-def test_check_bucket_stablecoins(token):
-    assert check_bucket(token) == 'stable usd'
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_stablecoins(token):
+    assert await check_bucket(token, sync=False) == 'stable usd'
 
 @pytest.mark.parametrize('token',SYNTHS)
-def test_check_bucket_synthetix(token):
-    assert check_bucket(token) == 'synthetix'
+@pytest.mark.asyncio_cooperative
+async def test_check_bucket_synthetix(token):
+    assert await check_bucket(token, sync=False) == 'synthetix'

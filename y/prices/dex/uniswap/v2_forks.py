@@ -3,10 +3,10 @@ from functools import lru_cache
 from typing import Dict, List
 
 from brownie import chain
+
 from y.constants import dai, usdc, usdt, wbtc, weth
 from y.datatypes import Address
 from y.networks import Network
-from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 

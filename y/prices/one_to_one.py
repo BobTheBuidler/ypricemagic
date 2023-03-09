@@ -1,9 +1,10 @@
 
 from typing import Optional
 
+import a_sync
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
-from multicall.utils import await_awaitable
+
 from y.datatypes import Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
@@ -18,8 +19,6 @@ MAPPING = {
 def is_one_to_one_token(token_address: EthAddress) -> bool:
     return token_address in MAPPING
 
-def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return await_awaitable(get_price_async(token_address, block=block))
-
-async def get_price_async(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return await magic.get_price_async(MAPPING[token_address], block=block)
+@a_sync.a_sync(default='sync')
+async def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
+    return await magic.get_price(MAPPING[token_address], block=block, sync=False)

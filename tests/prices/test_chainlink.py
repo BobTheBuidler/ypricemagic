@@ -1,12 +1,12 @@
 import pytest
 from brownie import ZERO_ADDRESS, chain
-from tests.fixtures import mainnet_only, mutate_addresses
-from y.contracts import contract_creation_block
+from tests.fixtures import mainnet_only
+from y.contracts import contract_creation_block_async
 from y.networks import Network
 from y.prices.chainlink import FEEDS, chainlink
 
-FEEDS = set(FEEDS.keys())
-FEEDS.update({
+feeds = set(FEEDS.keys())
+feeds.update({
     # Add feeds that *should* come from registry
     Network.Mainnet: [
         "0x0000000000000000000000000000000000000024",
@@ -108,8 +108,7 @@ FEEDS.update({
         '0x29b0Da86e484E1C0029B56e817912d778aC0EC69',
     ],
 }.get(chain.id, []))
-
-FEEDS = mutate_addresses(FEEDS)
+FEEDS = list(feeds)
 
 
 @pytest.mark.parametrize('token', FEEDS)
@@ -117,32 +116,35 @@ def test_chainlink_get_feed(token):
     """
     Tests `chainlink.get_feed` with both lowercase address and checksum address.
     """
-    assert chainlink.get_feed(token) != ZERO_ADDRESS, 'no feed available'
+    assert chainlink.get_feed(token, sync=True) != ZERO_ADDRESS, 'no feed available'
 
 
 @pytest.mark.parametrize('token', FEEDS)
-def test_chainlink_latest(token):
-    assert chainlink.get_price(token), 'no current price available'
+@pytest.mark.asyncio_cooperative
+async def test_chainlink_latest(token):
+    assert await chainlink.get_price(token), 'no current price available'
 
 
 @mainnet_only
 @pytest.mark.parametrize('token', FEEDS)
-def test_chainlink_before_registry(token):
+@pytest.mark.asyncio_cooperative
+async def test_chainlink_before_registry(token):
     test_block = 12800000
-    feed = chainlink.get_feed(token)
-    if contract_creation_block(feed.address) > test_block:
+    assert chainlink.asynchronous is True
+    feed = await chainlink.get_feed(token, sync=False)
+    if await contract_creation_block_async(feed.address) > test_block:
         pytest.skip('not applicable to feeds deployed after test block')
-    price = chainlink.get_price(token, block=test_block)
+    price = await chainlink.get_price(token, block=test_block)
     assert price, 'no price available before registry'
 
 
 def test_chainlink_nonexistent():
     with pytest.raises(KeyError):
-        chainlink.get_feed(ZERO_ADDRESS)
-    assert chainlink.get_price(ZERO_ADDRESS) is None
+        chainlink.get_feed(ZERO_ADDRESS, sync=True)
+    assert chainlink.get_price(ZERO_ADDRESS, sync=True) is None
 
 
 @mainnet_only
 def test_chainlink_before_feed():
     # try to fetch yfi price one block before feed is deployed
-    assert chainlink.get_price('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', 12742718) is None
+    assert chainlink.get_price('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', 12742718, sync=True) is None

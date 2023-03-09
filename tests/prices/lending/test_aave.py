@@ -1,8 +1,10 @@
 import pytest
 from brownie import chain
-from tests.fixtures import mainnet_only, mutate_addresses
+from multicall.utils import await_awaitable
+
+from tests.fixtures import mainnet_only
 from y.networks import Network
-from y.prices.lending.aave import aave
+from y.prices.lending.aave import AaveRegistry
 
 aDAI = '0x028171bCA77440897B824Ca71D1c56caC55b68A3'
 DAI = '0x6B175474E89094C44Da98b954EedeAC495271d0F'
@@ -96,26 +98,27 @@ ATOKENS = {
     ]
 }.get(chain.id, [])
 
-ATOKENS = mutate_addresses(ATOKENS)
-
-supported_chains = pytest.mark.skipif(not (aave.pools or ATOKENS), reason='Not applicable on chains without known Aaves or forks')
+supported_chains = pytest.mark.skipif(not (AaveRegistry(asynchronous=False).pools or ATOKENS), reason='Not applicable on chains without known Aaves or forks')
 
 @mainnet_only
 def test_adai():
     '''
     Simple test for a known underlying
     '''
-    assert aave.underlying(aDAI) == DAI
+    assert AaveRegistry(asynchronous=False).underlying(aDAI) == DAI
+    assert await_awaitable(AaveRegistry(asynchronous=True).underlying(aDAI)) == DAI
 
 @supported_chains
 def test_AaveRegistry():
+    aave = AaveRegistry()
     assert aave.pools, f'Cannot fetch Aave pools on {Network.printable()}'
     assert ATOKENS, f'Please set up `ATOKENS` constant to test Aave on {Network.printable()}'
     for pool in aave.pools:
         assert pool.atokens, f'Cannot find atokens for Aave pool {pool}'
 
 @pytest.mark.parametrize('token', ATOKENS)
-def test_atokens(token):
+@pytest.mark.asyncio_cooperative
+async def test_atokens_async(token):
     '''
     This tests the following functions:
     - aave.__contains__
@@ -124,9 +127,12 @@ def test_atokens(token):
     - aave.underlying
     - aave.get_price
     '''
-    assert token in aave, f'Cannot find atoken {token} in AaveRegistry.'
-    assert aave.is_atoken(token), f'Cannot validate atoken {token} as an atoken.'
-    assert aave.pool_for_atoken(token), f'Cannot find pool for atoken {token}'
-    underlying = aave.underlying(token)
+    aave = AaveRegistry(asynchronous=True)
+    with pytest.raises(RuntimeError):
+        assert token in aave, f'Cannot find atoken {token} in AaveRegistry.'
+    
+    assert await aave.is_atoken(token), f'Cannot validate atoken {token} as an atoken.'
+    assert await aave.pool_for_atoken(token), f'Cannot find pool for atoken {token}'
+    underlying = await aave.underlying(token)
     assert underlying, f'Cannot find underlying for atoken {token}'
-    assert aave.get_price(token), f'Cannot find price for atoken {token}'
+    assert await aave.get_price(token), f'Cannot find price for atoken {token}'

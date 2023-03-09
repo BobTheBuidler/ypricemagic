@@ -2,23 +2,18 @@ import asyncio
 import logging
 from typing import Dict, NoReturn, Optional, Union
 
-from async_lru import alru_cache
-from async_property import async_property
+import a_sync
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
-from multicall.utils import await_awaitable
 
 from y import convert
 from y.classes.common import ERC20
-from y.classes.singleton import Singleton
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
-from y.decorators import event_daemon_task
 from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.networks import Network
 from y.utils.dank_mids import dank_w3
 from y.utils.events import decode_logs, get_logs_asap_generator
-from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -172,17 +167,18 @@ FEEDS = {
 }.get(chain.id, {})
 
 
-class Chainlink(metaclass=Singleton):
-    def __init__(self) -> None:
+class Chainlink(a_sync.ASyncGenericSingleton):
+    def __init__(self, asynchronous: bool = False) -> None:
+        self.asynchronous = asynchronous
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
-        self._feeds = {ERC20(token): feed for token, feed in FEEDS.items()}
+        self._cached_feeds = {ERC20(token, asynchronous=self.asynchronous): feed for token, feed in FEEDS.items()}
         self._feeds_loaded = False
         self._loading = False
     
-    @event_daemon_task
+    #@event_daemon_task
     async def _start_feed_loop(self) -> Union[None, NoReturn]:
         if self._loading:
             return
@@ -200,10 +196,10 @@ class Chainlink(metaclass=Singleton):
         async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], to_block=block):
             for log in decode_logs(logs):
                 if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
-                    self._feeds[log["asset"]] = ERC20(log["latestAggregator"])
+                    self._cached_feeds[log["asset"]] = ERC20(log["latestAggregator"], self.asynchronous)
         
         self._feeds_loaded = True
-        logger.info(f'loaded {len(self._feeds)} feeds')
+        logger.info(f'loaded {len(self._cached_feeds)} feeds')
         
         while await dank_w3.eth.block_number < block+1:
             await asyncio.sleep(15)
@@ -213,54 +209,44 @@ class Chainlink(metaclass=Singleton):
             for log in decode_logs(logs):
                 if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
                     asset, latest_aggregator = log["asset"], log["latestAggregator"]
-                    self._feeds[asset] = ERC20(latest_aggregator)
+                    self._cached_feeds[asset] = ERC20(latest_aggregator, asynchronous=self.asynchronous)
                     logger.info(f'loaded new feed {latest_aggregator}')
 
-    #yLazyLogger(logger)
-    @async_property
+    @a_sync.aka.property
     async def feeds(self) -> Dict[ERC20, str]:
         if not self._feeds_loaded:
-            await self._start_feed_loop()
+            asyncio.get_event_loop().create_task(self._start_feed_loop(sync=False))
         while not self._feeds_loaded:
             await asyncio.sleep(0)
-        return self._feeds
-
-    #yLazyLogger(logger)
-    def get_feed(self, asset: Address) -> Optional[Contract]:
-        return await_awaitable(self.get_feed_async(asset))
+        return self._cached_feeds
     
-    #yLazyLogger(logger)
-    async def get_feed_async(self, asset: Address) -> Optional[Contract]:
-        feeds = await self.feeds
+    async def get_feed(self, asset: Address) -> Optional[Contract]:
+        feeds = await self.__feeds__(sync=False)
         try:
             return await Contract.coroutine(feeds[convert.to_address(asset)])
         except ContractNotVerified:
             return None
     
     async def has_feed(self, asset: AnyAddressType) -> bool:
-        return convert.to_address(asset) in await self.feeds
+        return convert.to_address(asset) in await self.__feeds__(sync=False)
 
-    def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
-        return await_awaitable(self.get_price_async(asset, block))
-
-    #yLazyLogger(logger)
-    async def get_price_async(self, asset, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
             block = chain.height
-        return await self._get_price_async(asset, block)
+        return await self._get_price_async(asset, block, sync=False)
 
-    @alru_cache(maxsize=None)
+    a_sync.a_sync(ram_cache_maxsize=1000)
     async def _get_price_async(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
-        feed = await self.get_feed_async(asset)
+        feed = await self.get_feed(asset, sync=False)
         if feed is None or (block is not None and block < await contract_creation_block_async(feed.address, True)):
             return None
         try:
             latest_answer, scale = await asyncio.gather(
                 Call(feed.address, 'latestAnswer()(uint)', block_id=block).coroutine(),
-                self.feed_scale_async(asset),
+                self.feed_scale(asset, sync=False),
             )
         except ValueError as e:
             logger.debug(feed.address)
@@ -270,24 +256,17 @@ class Chainlink(metaclass=Singleton):
         if latest_answer and scale:
             price = latest_answer / scale
             return price
-    
-    def feed_decimals(self, asset: AnyAddressType) -> int:
-        return await_awaitable(self.feed_decimals_async(asset))
 
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
-    async def feed_decimals_async(self, asset: AnyAddressType) -> int:
+    a_sync.a_sync(cache_type='memory')
+    async def feed_decimals(self, asset: AnyAddressType) -> int:
         asset = convert.to_address(asset)
-        feed = await self.get_feed_async(asset)
+        feed = await self.get_feed(asset, sync=False)
         return await Call(feed.address, ['decimals()(uint)'], []).coroutine()
-    
-    def feed_scale(self, asset: AnyAddressType) -> int:
-        return await_awaitable(self.feed_scale_async(asset))
 
-    async def feed_scale_async(self, asset: AnyAddressType) -> int:
-        if decimals:= await self.feed_decimals_async(asset):
+    async def feed_scale(self, asset: AnyAddressType) -> Optional[int]:
+        if decimals:= await self.feed_decimals(asset, sync=False):
             return 10 ** decimals
 
 
-try: chainlink = Chainlink()
+try: chainlink = Chainlink(asynchronous=True)
 except UnsupportedNetwork: chainlink = set()

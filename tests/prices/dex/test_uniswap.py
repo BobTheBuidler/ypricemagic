@@ -1,11 +1,13 @@
+import asyncio
+
 import pytest
 from brownie import chain
-from tests.fixtures import mutate_addresses
+
+from tests.fixtures import async_uni_v1, mutate_addresses
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap import v3
 from y.prices.dex.uniswap.uniswap import uniswap_multiplexer
-from y.prices.dex.uniswap.v1 import UniswapV1
 
 V1_TOKENS = {
     Network.Mainnet: [
@@ -41,29 +43,38 @@ V2_TOKENS = {
     ],
 }.get(chain.id, [])
 
-V1_TOKENS = mutate_addresses(V1_TOKENS)
 V2_TOKENS = mutate_addresses(V2_TOKENS)
 
 @pytest.mark.parametrize('token', V1_TOKENS)
-def test_uniswap_v1(token):
-    price = UniswapV1().get_price(token, None)
-    alt_price = magic.get_price(token)
+@pytest.mark.asyncio_cooperative
+async def test_uniswap_v1(token, async_uni_v1):
+    price, alt_price = await asyncio.gather(
+        async_uni_v1.get_price(token, None),
+        magic.get_price(token, sync=False),
+    )
     print(token, price, alt_price)
     # check if price is within 5% range
     assert price == pytest.approx(alt_price, rel=5e-2)
 
 
 @pytest.mark.parametrize('token', V2_TOKENS)
-def test_uniswap_v2(token):
-    price = uniswap_multiplexer.deepest_router(token).get_price(token)
-    alt_price = magic.get_price(token)
+@pytest.mark.asyncio_cooperative
+async def test_uniswap_v2(token):
+    deepest_router = await uniswap_multiplexer.deepest_router(token, sync=False)
+    price, alt_price = await asyncio.gather(
+        deepest_router.get_price(token, sync=False),
+        magic.get_price(token, sync=False),
+    )
     print(token, price, alt_price)
     assert price == pytest.approx(alt_price, rel=5e-2)
 
 
 @pytest.mark.parametrize('token', V2_TOKENS)
-def test_uniswap_v3(token):
-    price = v3.uniswap_v3.get_price(token)
-    alt_price = magic.get_price(token)
+@pytest.mark.asyncio_cooperative
+async def test_uniswap_v3(token):
+    price, alt_price = await asyncio.gather(
+        v3.uniswap_v3.get_price(token, sync=False),
+        magic.get_price(token, sync=False),
+    )
     print(token, price, alt_price)
     assert price == pytest.approx(alt_price, rel=5e-2)

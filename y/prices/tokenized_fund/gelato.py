@@ -1,50 +1,39 @@
 import asyncio
 import logging
-from functools import lru_cache
 from typing import Optional
 
+import a_sync
+
 import y.prices.magic
-from async_lru import alru_cache
-from multicall.utils import await_awaitable
 from y import convert
 from y.classes.common import ERC20
-from y.contracts import has_methods_async
+from y.contracts import has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice
-from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import raw_call_async
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
-#yLazyLogger(logger)
-@lru_cache(maxsize=None)
-def is_gelato_pool(token_address: AnyAddressType) -> bool:
-    return await_awaitable(is_gelato_pool_async(token_address))
+@a_sync.a_sync(default='sync', cache_type='memory')
+async def is_gelato_pool(token_address: AnyAddressType) -> bool:
+    return await has_methods(token_address, ('gelatoBalance0()(uint)','gelatoBalance1()(uint)'), sync=False)
 
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-async def is_gelato_pool_async(token_address: AnyAddressType) -> bool:
-    return await has_methods_async(token_address, ('gelatoBalance0()(uint)','gelatoBalance1()(uint)'))
-
-def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return await_awaitable(get_price_async(token, block=block))
-
-#yLazyLogger(logger)
-async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+@a_sync.a_sync(default='sync')
+async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     address = convert.to_address(token) 
 
     token0, token1 = await asyncio.gather(
-        raw_call_async(address,'token0()',block=block,output='address'),
-        raw_call_async(address,'token1()',block=block,output='address'),
+        raw_call(address,'token0()',block=block,output='address', sync=False),
+        raw_call(address,'token1()',block=block,output='address', sync=False),
     )
 
     balance0, balance1, scale0, scale1, price0, price1, total_supply = await asyncio.gather(
-        raw_call_async(address,'gelatoBalance0()',block=block,output='int'),
-        raw_call_async(address,'gelatoBalance1()',block=block,output='int'),
-        ERC20(token0).scale,
-        ERC20(token1).scale,
-        y.prices.magic.get_price_async(token0,block),
-        y.prices.magic.get_price_async(token1,block),
-        ERC20(address).total_supply_readable_async(block),
+        raw_call(address,'gelatoBalance0()',block=block,output='int', sync=False),
+        raw_call(address,'gelatoBalance1()',block=block,output='int', sync=False),
+        ERC20(token0, asynchronous=True).scale,
+        ERC20(token1, asynchronous=True).scale,
+        y.prices.magic.get_price(token0, block, sync=False),
+        y.prices.magic.get_price(token1, block, sync=False),
+        ERC20(address, asynchronous=True).total_supply_readable(block, sync=False),
     )
 
     balance0 /= scale0

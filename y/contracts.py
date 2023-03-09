@@ -7,9 +7,9 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
+import a_sync
 import brownie
 import eth_retry
-from async_lru import alru_cache
 from brownie import chain, web3
 from brownie.exceptions import ContractNotFound
 from brownie.network.contract import (_add_deployment, _ContractBase,
@@ -115,7 +115,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 
-@alru_cache(maxsize=None)
+@a_sync.a_sync(cache_type='memory')
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
@@ -221,6 +221,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
 
     @classmethod
+    @a_sync.a_sync
     def from_abi(
         cls,
         name: str,
@@ -241,6 +242,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         cls, 
         address: AnyAddressType, 
         ) -> "Contract":
+        # We do this so we don't clog the threadpool with multiple jobs for the same contract.
         async with address_semaphores[address]:
             try:
                 return Contract._ChecksumAddressSingletonMeta__instances[address]
@@ -256,30 +258,20 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         return self
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
-        return has_method(self.address, method, return_response=return_response)
+        return has_method(self.address, method, return_response=return_response, sync=False)
 
-    def has_methods(
+    async def has_methods(
         self, 
         methods: List[str],
         _func: Union[any, all] = all
     ) -> bool:
-        return await_awaitable(self.has_methods_async(methods, _func))
+        return await has_methods(self.address, methods, _func, sync=False)
 
-    async def has_methods_async(
-        self, 
-        methods: List[str],
-        _func: Union[any, all] = all
-    ) -> bool:
-        return await has_methods_async(self.address, methods, _func)
-
-    def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
-        return await_awaitable(self.build_name_async(return_None_on_failure=return_None_on_failure))
-
-    async def build_name_async(self, return_None_on_failure: bool = False) -> Optional[str]:
-        return await build_name_async(self.address, return_None_on_failure=return_None_on_failure)
+    async def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
+        return await build_name(self.address, return_None_on_failure=return_None_on_failure, sync=False)
     
-    def get_code(self, block: Optional[Block] = None) -> HexBytes:
-        return web3.eth.get_code(self.address, block=block)
+    async def get_code(self, block: Optional[Block] = None) -> HexBytes:
+        return await dank_w3.eth.get_code(self.address, block=block)
 
 
 @memory.cache()
@@ -293,13 +285,8 @@ def is_contract(address: AnyAddressType) -> bool:
     address = convert.to_address(address)
     return web3.eth.get_code(address) not in ['0x',b'']
 
-def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
-    return await_awaitable(has_method_async(address, method, return_response=return_response))
-
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-#@memory.cache()
-async def has_method_async(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
+@a_sync.a_sync(default='sync', cache_type='memory')
+async def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
     '''
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`
@@ -319,16 +306,9 @@ async def has_method_async(address: Address, method: str, return_response: bool 
         return response
     return True
 
-def has_methods(
-    address: AnyAddressType, 
-    methods: Tuple[str],
-    _func: Callable = all # Union[any, all]
-) -> bool:
-    return await_awaitable(has_methods_async(address,methods,_func=_func))
 
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-async def has_methods_async(
+@a_sync.a_sync(default='sync', cache_type='memory')
+async def has_methods(
     address: AnyAddressType, 
     methods: Tuple[str],
     _func: Callable = all # Union[any, all]
@@ -352,7 +332,7 @@ async def has_methods_async(
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
-        return False if _func == all else any(await asyncio.gather(*[has_method_async(address, method) for method in methods]))
+        return False if _func == all else any(await asyncio.gather(*[has_method(address, method, sync=False) for method in methods]))
 
 
 #yLazyLogger(logger)
@@ -385,12 +365,8 @@ async def probe(
         return method, result
     
 
-@memory.cache()
-#yLazyLogger(logger)
-def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
-    return await_awaitable(build_name_async(address, return_None_on_failure=return_None_on_failure))
-
-async def build_name_async(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
+@a_sync.a_sync(default='sync')
+async def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
         contract = await Contract.coroutine(address)
         return contract.__dict__['_build']['contractName']

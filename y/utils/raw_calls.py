@@ -2,23 +2,21 @@ import asyncio
 import logging
 from typing import Any, Callable, Optional, Union
 
+import a_sync
 import brownie
-from async_lru import alru_cache
-from brownie import ZERO_ADDRESS, convert, web3
+from brownie import ZERO_ADDRESS, convert
 from brownie.convert.datatypes import EthAddress
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
+
 from y.contracts import Contract, proxy_implementation
 from y.datatypes import Address, AddressOrContract, Block
 from y.exceptions import (CalldataPreparationError, ContractNotVerified,
                           NonStandardERC20, NoProxyImplementation,
                           call_reverted)
 from y.networks import Network
-from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
-
-from multicall.utils import await_awaitable
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +25,7 @@ We use raw calls for commonly used functions because its much faster than using 
 """
 
 #yLazyLogger(logger)
-@alru_cache(maxsize=None)
+@a_sync.a_sync(cache_type='memory')
 async def _cached_call_fn(
     func: Callable,
     contract_address: AddressOrContract, 
@@ -41,7 +39,7 @@ async def _cached_call_fn(
         return await func(contract_address, required_arg, block=block)
 
 
-#yLazyLogger(logger)
+@a_sync.a_sync(default='sync')
 async def decimals(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None, 
@@ -53,8 +51,7 @@ async def decimals(
         return await _cached_call_fn(_decimals,contract_address,block)
 
 
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
+@a_sync.a_sync(default='sync', cache_type='memory')
 async def _decimals(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None, 
@@ -65,7 +62,7 @@ async def _decimals(
 
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
-    try: decimals = await raw_call_async(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True)
+    try: decimals = await raw_call(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True, sync=False)
     except OverflowError:
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch 
@@ -86,7 +83,7 @@ async def _decimals(
         return decimals
 
     # method 2
-    try: decimals = await raw_call_async(contract_address, "DECIMALS()", block=block, output='int', return_None_on_failure=True)
+    try: decimals = await raw_call(contract_address, "DECIMALS()", block=block, output='int', return_None_on_failure=True, sync=False)
     except OverflowError: 
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
@@ -107,7 +104,7 @@ async def _decimals(
         return decimals
 
     # method 3
-    try: decimals = await raw_call_async(contract_address, "getDecimals()", block=block, output='int', return_None_on_failure=True)
+    try: decimals = await raw_call(contract_address, "getDecimals()", block=block, output='int', return_None_on_failure=True, sync=False)
     except OverflowError: 
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
@@ -142,14 +139,14 @@ async def _decimals(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-#yLazyLogger(logger)
+@a_sync.a_sync(default='sync')
 async def _totalSupply(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
     return_None_on_failure: bool = False # TODO: implement this kwarg
     ) -> Optional[int]:
 
-    try: total_supply = await raw_call_async(contract_address, "totalSupply()", block=block, output='int', return_None_on_failure=True)
+    try: total_supply = await raw_call(contract_address, "totalSupply()", block=block, output='int', return_None_on_failure=True, sync=False)
     except OverflowError:
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch totalSupply 
@@ -176,16 +173,8 @@ async def _totalSupply(
         with the contract address and correct method name so we can keep things going smoothly :)''')
 
 
-def balanceOf(
-    contract_address: AddressOrContract, 
-    address: Address, 
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = False
-    ) -> Optional[int]:
-    return await_awaitable(balanceOf_async(contract_address, address, block=block, return_None_on_failure=return_None_on_failure))
-
-#yLazyLogger(logger)
-async def balanceOf_async(
+@a_sync.a_sync(default='sync')
+async def balanceOf(
     call_address: AddressOrContract, 
     input_address: AddressOrContract, 
     block: Optional[Block] = None,
@@ -195,7 +184,7 @@ async def balanceOf_async(
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
     try:
-        balance = await raw_call_async(call_address, "balanceOf(address)", block=block, inputs=input_address, output='int', return_None_on_failure=True)
+        balance = await raw_call(call_address, "balanceOf(address)", block=block, inputs=input_address, output='int', return_None_on_failure=True, sync=False)
     except OverflowError:
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch balanceOf 
@@ -232,7 +221,7 @@ async def _balanceOfReadable(
     ) -> Optional[float]:
 
     balance, decimals = await asyncio.gather(
-        balanceOf_async(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure),
+        balanceOf(call_address, input_address, block=block, return_None_on_failure=return_None_on_failure, sync=False),
         _decimals(call_address, block=block, return_None_on_failure=return_None_on_failure),
     )
     if balance is not None and decimals is not None:
@@ -251,39 +240,8 @@ async def _balanceOfReadable(
         with the contract address and correct function name so we can keep things going smoothly :)''')
 
 
-#yLazyLogger(logger)
-def raw_call(
-    contract_address: AddressOrContract, 
-    method: str, 
-    block: Optional[Block] = None, 
-    inputs = None, 
-    output: str = None,
-    return_None_on_failure: bool = False
-    ) -> Optional[Any]:
-
-    if type(contract_address) != str:
-        contract_address = str(contract_address)
-
-    data = {'to': convert.to_address(contract_address),'data': prepare_data(method,inputs)}
-
-    try: response = web3.eth.call(data,block_identifier=block)
-    except ValueError as e:
-        if return_None_on_failure is False:                 raise
-        if call_reverted(e):                                return None
-        if 'invalid opcode' in str(e):                      return None
-        else:                                               raise
-    
-    if output is None:                                      return response
-    elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
-    elif output == 'address':                               return convert.to_address(f'0x{response.hex()[-40:]}')
-    elif output in [int, 'int','uint','uint256']:           return convert.to_int(response)
-    elif output in [str, 'str']:                            return convert.to_string(response).replace('\x00','').strip()
-
-    else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
-
-
-#yLazyLogger(logger)
-async def raw_call_async(
+@a_sync.a_sync(default='sync')
+async def raw_call(
     contract_address: AddressOrContract, 
     method: str, 
     block: Optional[Block] = None, 

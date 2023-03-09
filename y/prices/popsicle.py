@@ -1,66 +1,43 @@
 import asyncio
 import logging
-from functools import lru_cache
 from typing import Optional, Tuple
 
-from async_lru import alru_cache
+import a_sync
 from multicall import Call
-from multicall.utils import await_awaitable
+
 from y import convert
 from y.classes.common import ERC20, WeiBalance
-from y.contracts import has_methods_async
+from y.contracts import has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
-from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-#yLazyLogger(logger)
-@lru_cache(maxsize=None)
-def is_popsicle_lp(token_address: AnyAddressType) -> bool:
-    return await_awaitable(is_popsicle_lp_async(token_address))
 
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-async def is_popsicle_lp_async(token_address: AnyAddressType) -> bool:
+@a_sync.a_sync(default='sync', cache_type='memory')
+async def is_popsicle_lp(token_address: AnyAddressType) -> bool:
     # NOTE: contract to check for reference (mainnet): 0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf
-    return await has_methods_async(token_address, ('token0()(address)','token1()(address)','usersAmounts()((uint,uint))'))
+    return await has_methods(token_address, ('token0()(address)','token1()(address)','usersAmounts()((uint,uint))'), sync=False)
 
-#yLazyLogger(logger)
-def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-    return await_awaitable(get_price_async(token, block=block))
-
-#yLazyLogger(logger)
-async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+@a_sync.a_sync(default='sync')
+async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
     address = convert.to_address(token)
-    total_val = await get_tvl_async(address, block)
+    total_val = await get_tvl(address, block, sync=False)
     if total_val is None:
         return None
-    total_supply = ERC20(address).total_supply_readable_async(address, block)
+    total_supply = await ERC20(address, asynchronous=True).total_supply_readable(block, sync=False)
     return UsdPrice(total_val / total_supply)
 
-#yLazyLogger(logger)
-def get_tvl(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdValue]:
-    return await_awaitable(get_tvl_async(token, block=block))
-
-#yLazyLogger(logger)
-async def get_tvl_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdValue]:
-    balances = await get_balances_async(token, block)
+@a_sync.a_sync(default='sync')
+async def get_tvl(token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdValue]:
+    balances: Tuple[WeiBalance, WeiBalance]
+    balances = await get_balances(token, block, _async_balance_objects=True, sync=False)
     if balances is None:
         return None
-    balance0, balance1 = balances
-    values = await asyncio.gather(
-        balance0.value_usd_async,
-        balance1.value_usd_async,
-    )
-    return UsdValue(sum(values))
+    return UsdValue(sum(await asyncio.gather(*[bal.value_usd for bal in balances])))
 
-#yLazyLogger(logger)
-def get_balances(token: AnyAddressType, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance,WeiBalance]]:
-    return await_awaitable(get_balances_async(token, block=block))
-    
-#yLazyLogger(logger)
-async def get_balances_async(token: AnyAddressType, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance,WeiBalance]]:
+@a_sync.a_sync(default='sync')
+async def get_balances(token: AnyAddressType, block: Optional[Block] = None, _async_balance_objects: bool = False) -> Optional[Tuple[WeiBalance,WeiBalance]]:
     address = convert.to_address(token)
     methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
     try:
@@ -72,6 +49,6 @@ async def get_balances_async(token: AnyAddressType, block: Optional[Block] = Non
             # TODO determine if this is regular behavior when no tvl in pool or if this is bug to fix
             return None
         raise
-    balance0 = WeiBalance(balance0, token0, block=block)
-    balance1 = WeiBalance(balance1, token1, block=block)
+    balance0 = WeiBalance(balance0, token0, block=block, asynchronous=_async_balance_objects)
+    balance1 = WeiBalance(balance1, token1, block=block, asynchronous=_async_balance_objects)
     return balance0, balance1

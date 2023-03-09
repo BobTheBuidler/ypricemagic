@@ -4,13 +4,13 @@ from collections import Counter, defaultdict
 from itertools import zip_longest
 from typing import Any, AsyncGenerator, Dict, List, Optional
 
+import a_sync
 import eth_retry
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
 from dank_mids.semaphore import ThreadsafeSemaphore
 from eth_typing import ChecksumAddress
-from multicall.utils import await_awaitable
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
@@ -37,12 +37,8 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     return decoded
 
 
-def get_logs_asap(address: Optional[Address], topics: Optional[List[str]], from_block: Optional[Block] = None, to_block: Optional[Block] = None, verbose: int = 0) -> List[Any]:
-    return await_awaitable(
-        get_logs_asap_async(address, topics, from_block=from_block, to_block=to_block, verbose=verbose)
-    )
-
-async def get_logs_asap_async(
+@a_sync.a_sync#(default='sync')
+async def get_logs_asap(
     address: Optional[Address],
     topics: Optional[List[str]],
     from_block: Optional[Block] = None,
@@ -135,6 +131,7 @@ def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> 
         total += checkpoints[a] * (b - a) / (end_block - start_block)
     return total
 
+@a_sync.a_sync(executor=thread_pool_executor)
 def _get_logs(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],
@@ -156,9 +153,7 @@ address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with address_semaphores[tuple(address) if isinstance(address, list) else address]:
-        return await asyncio.get_event_loop().run_in_executor(
-            thread_pool_executor, _get_logs, address, topics, start, end,
-        )
+        return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
 def _get_logs_no_cache(

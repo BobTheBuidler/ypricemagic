@@ -9,6 +9,8 @@ from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, Block
+from y.prices.dex.uniswap.v1 import UniswapV1
+
 from y.networks import Network
 
 mainnet_only = pytest.mark.skipif(
@@ -55,3 +57,7 @@ def mutate_token(token: Address) -> Tuple[str,str,str,EthAddress,BrownieContract
 
 def mutate_tokens(addresses: Iterable[Address]):
     return [mutation for address in addresses for mutation in mutate_token(address)]
+
+@pytest.fixture
+def async_uni_v1():
+    yield UniswapV1(asynchronous=True)
