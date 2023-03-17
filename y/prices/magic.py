@@ -26,7 +26,7 @@ from y.prices.eth_derivs import creth, wsteth
 from y.prices.lending import ib
 from y.prices.lending.aave import aave
 from y.prices.lending.compound import compound
-from y.prices.stable_swap import belt, froyo, mstablefeederpool, saddle
+from y.prices.stable_swap import belt, froyo, mstablefeederpool, saddle, ellipsis
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
