@@ -131,7 +131,7 @@ class ERC20(ContractBase):
             return symbol
 
         # we've failed to fetch
-        self.raise_exception('symbol')
+        self.__raise_exception('symbol')
     
     @a_sync.aka.cached_property
     async def name(self) -> str:
@@ -143,7 +143,7 @@ class ERC20(ContractBase):
             return name
         
         # we've failed to fetch
-        self.raise_exception('name')
+        self.__raise_exception('name')
     
     @a_sync.aka.cached_property
     async def decimals(self) -> int:
@@ -151,18 +151,23 @@ class ERC20(ContractBase):
             return 18
         return await decimals(self.address, sync=False)
 
+    @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
         '''used to fetch decimals at specific block'''
         if self.address == EEE_ADDRESS:
             return 18
-        return await decimals(self.address, block=block, sync=False)
+        retval = await decimals(self.address, block=block, sync=False)
+        if asyncio.iscoroutine(retval):
+            raise Exception(retval)
+        return retval
     
     @a_sync.aka.cached_property
     async def scale(self) -> int:
         return 10 ** await self.__decimals__(asynchronous=True)
     
+    @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _scale(self, block: Optional[Block] = None) -> int:
-        return 10 ** await self._decimals(block=block, asynchronous=True)
+        return 10 ** await self._decimals(block, sync=False)
 
     async def total_supply(self, block: Optional[Block] = None) -> int:
         return await totalSupply(self.address, block=block, sync=False)
@@ -190,7 +195,7 @@ class ERC20(ContractBase):
             sync=False,
         )
     
-    def raise_exception(self, fn_name: str):
+    def __raise_exception(self, fn_name: str):
         raise NonStandardERC20(f'''
             Unable to fetch `{fn_name}` for {self.address} on {Network.printable()}
             If the contract is verified, please check to see if it has a strangely named
