@@ -1,7 +1,6 @@
 import pytest
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
-from multicall.utils import await_awaitable
 
 from tests.fixtures import blocks_for_contract
 from tests.test_constants import STABLECOINS
@@ -13,11 +12,7 @@ from y.utils.dank_mids import dank_w3
 
 TOKENS = list(STABLECOINS) + [WRAPPED_GAS_COIN, wbtc.address]
 
-TOKENS_BY_BLOCK = [
-    (token, block)
-    for token in TOKENS
-    for block in blocks_for_contract(token)
-]
+TOKENS_BY_BLOCK = [(token, block) for token in TOKENS for block in blocks_for_contract(token)]
 
 @pytest.mark.parametrize('token',TOKENS)
 def test_erc20_sync(token):
@@ -49,7 +44,7 @@ async def test_erc20_async(token):
     assert isinstance(await token.symbol, str), f'Cannot fetch symbol for token {token}'
     assert isinstance(await token.name, str), f'Cannot fetch name for token {token}'
     assert 10 ** await token.decimals == await token.scale, f'Incorrect scale fetched for token {token}'
-    assert await token.total_supply(block) / await_awaitable(token.scale) == await_awaitable(token.total_supply_readable(block)), f'Incorrect total supply readable for token {token}'
+    assert await token.total_supply(block) / await token.scale == await token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
     assert await token.price(), f'Cannot fetch price for token {token}'
 
 @pytest.mark.parametrize('token,block',TOKENS_BY_BLOCK)
