@@ -71,7 +71,7 @@ class AaveMarketV2(AaveMarketBase):
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
         underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address', sync=False)
         logger.debug(f"underlying: {underlying}")
-        return ERC20(underlying)
+        return ERC20(underlying, asynchronous=self.asynchronous)
 
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
@@ -122,7 +122,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
             raise RuntimeError(f"'self.asynchronous' must be False to use AaveRegistry.__contains__.\nYou may wish to use AaveRegistry.is_atoken instead.")
         return any(__o in pool for pool in self.pools)
 
-    @a_sync.a_sync(ram_cache_maxsize=256)
+    @a_sync.a_sync(ram_cache_ttl = 60 * 10)
     async def is_atoken(self, token_address: AnyAddressType) -> bool:
         return any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__(sync=False)]))
     
@@ -134,7 +134,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         except ContractNotVerified:
             return False
     
-    @a_sync.a_sync(ram_cache_maxsize=256)
+    @a_sync.a_sync(cache_type='memory')
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
         pool: Union[AaveMarketV1, AaveMarketV2] = await self.pool_for_atoken(token_address, sync=False)
         return await pool.underlying(token_address, sync=False)
