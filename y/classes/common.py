@@ -2,7 +2,7 @@
 import asyncio
 import logging
 from functools import cached_property
-from typing import Any, Optional, TypeVar, Union
+from typing import Any, Optional, Union
 
 import a_sync
 from brownie.exceptions import ContractNotFound
@@ -19,8 +19,6 @@ from y.networks import Network
 from y.utils.raw_calls import balanceOf
 
 logger = logging.getLogger(__name__)
-
-T = TypeVar('T')
 
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
