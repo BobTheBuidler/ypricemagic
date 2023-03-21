@@ -1,17 +1,14 @@
 
 import asyncio
 import logging
-import threading
-from collections import defaultdict
 from functools import cached_property
-from typing import Any, DefaultDict, Generic, Optional, TypeVar, Union
+from typing import Any, Optional, TypeVar, Union
 
 import a_sync
 from brownie.exceptions import ContractNotFound
-from checksum_dict import ChecksumAddressDict
-from checksum_dict.base import AnyAddressOrContract
 
 from y import convert
+from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
 from y.contracts import Contract, build_name, has_method, probe
 from y.datatypes import AnyAddressType, Block, UsdPrice
@@ -21,51 +18,12 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
 from y.networks import Network
 from y.utils.raw_calls import balanceOf
 
-from a_sync import _kwargs
-
 logger = logging.getLogger(__name__)
-
 
 T = TypeVar('T')
 
-class ChecksumASyncMeta(a_sync._meta.ASyncMeta, Generic[T]):
-    def __init__(cls, name, bases, namespace):
-        super().__init__(name, bases, namespace)
-        cls.__instances: DefaultDict[bool, ChecksumAddressDict[T]] = defaultdict(ChecksumAddressDict)
-        cls.__locks = defaultdict(lambda: defaultdict(threading.Lock))
-        cls.__locks_lock: threading.Lock = threading.Lock()
-    
-    def __call__(cls, address: AnyAddressOrContract, *args, **kwargs) -> T:  # type: ignore
-        address = str(address)
-        is_sync = cls.__a_sync_instance_will_be_sync__(kwargs)
-        try:
-            instance = cls.__instances[is_sync][address]
-        except KeyError:
-            with cls.__get_address_lock(address, is_sync):
-                # Try to get the instance again, in case it was added while waiting for the lock
-                try:
-                    instance =  cls.__instances[is_sync][address]
-                except KeyError:
-                    instance = super().__call__(address, *args, **kwargs)
-                    cls.__instances[is_sync][address] = instance
-            cls.__delete_address_lock(address, is_sync)
-        return instance
 
-    def __get_address_lock(cls, address: AnyAddressOrContract, is_sync: bool) -> threading.Lock:
-        """ Makes sure the singleton is actually a singleton. """
-        with cls.__locks_lock:
-            return cls.__locks[is_sync][address]
-    
-    def __delete_address_lock(cls, address: AnyAddressOrContract, is_sync: bool) -> None:
-        """ No need to maintain locks for initialized addresses. """
-        with cls.__locks_lock:
-            try:
-                del cls.__locks[is_sync][address]
-            except KeyError:
-                pass
-
-
-class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncMeta):
+class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         self.address = convert.to_address(address)
         self.asynchronous = asynchronous
