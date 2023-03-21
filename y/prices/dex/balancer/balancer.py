@@ -55,7 +55,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
             or (chain.id == Network.Fantom and (not block or block > 16896080))
             ): 
             v2: BalancerV2 = await self.v2
-            price = v2.get_token_price(token_address, block, sync=False)
+            price = await v2.get_token_price(token_address, block, sync=False)
             if price:
                 logger.debug(f"balancer v2 -> ${price}")
                 return price
