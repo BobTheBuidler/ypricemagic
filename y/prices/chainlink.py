@@ -3,6 +3,7 @@ import logging
 from typing import Dict, NoReturn, Optional, Union
 
 import a_sync
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
 
@@ -178,7 +179,6 @@ class Chainlink(a_sync.ASyncGenericSingleton):
         self._feeds_loaded = False
         self._loading = False
     
-    #@event_daemon_task
     async def _start_feed_loop(self) -> Union[None, NoReturn]:
         if self._loading:
             return
@@ -196,7 +196,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
         async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], to_block=block):
             for log in decode_logs(logs):
                 if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
-                    self._cached_feeds[log["asset"]] = ERC20(log["latestAggregator"], self.asynchronous)
+                    self._cached_feeds[log["asset"]] = ERC20(log["latestAggregator"], asynchronous=self.asynchronous)
         
         self._feeds_loaded = True
         logger.info(f'loaded {len(self._cached_feeds)} feeds')
@@ -215,7 +215,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def feeds(self) -> Dict[ERC20, str]:
         if not self._feeds_loaded:
-            asyncio.get_event_loop().create_task(self._start_feed_loop(sync=False))
+            asyncio.get_event_loop().create_task(self._start_feed_loop())
         while not self._feeds_loaded:
             await asyncio.sleep(0)
         return self._cached_feeds
@@ -233,10 +233,10 @@ class Chainlink(a_sync.ASyncGenericSingleton):
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
             block = chain.height
-        return await self._get_price_async(asset, block, sync=False)
+        return await self._get_price(asset, block)
 
-    a_sync.a_sync(ram_cache_maxsize=1000)
-    async def _get_price_async(self, asset, block: Block) -> Optional[UsdPrice]:
+    alru_cache(maxsize=1000)
+    async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
