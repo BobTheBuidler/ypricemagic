@@ -69,11 +69,11 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         except ContractNotVerified:
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
 
-    def encode_path(self, path) -> bytes:
+    def _encode_path(self, path) -> bytes:
         types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
         return encode_abi_packed(types, path)
 
-    def undo_fees(self, path) -> float:
+    def _undo_fees(self, path) -> float:
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
     
@@ -90,27 +90,18 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
         amount_in = await ERC20(token, asynchronous=True).scale
 
-        # TODO make this async after extending brownie ContractTx
+        # TODO make this async after extending for brownie ContractTx
         quoter = await self.__quoter__(sync=False)
         results = fetch_multicall(
             *[
-                [quoter, 'quoteExactInput', self.encode_path(path), amount_in]
+                [quoter, 'quoteExactInput', self._encode_path(path), amount_in]
                 for path in paths
             ],
             block=block,
         )
 
-        # TODO async version
-        #results = await gather(
-        #    *[
-        #        self.quoter.quoteExactInput.coroutine(self.encode_path(path), amount_in, block_identifier=block)
-        #        for path in paths
-        #    ],
-        #    return_exceptions=True
-        #)
-
         outputs = [
-            amount / self.undo_fees(path) / 1e6
+            amount / self._undo_fees(path) / 1e6
             for amount, path in zip(results, paths)
             if amount
         ]
