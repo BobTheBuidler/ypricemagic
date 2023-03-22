@@ -77,7 +77,10 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            decimals = brownie.Contract.from_explorer(contract_address).decimals(block_identifier=block)
+            try:
+                decimals = brownie.Contract.from_explorer(contract_address).decimals(block_identifier=block)
+            except AttributeError:
+                pass
 
     if decimals is not None:
         return decimals
@@ -159,7 +162,10 @@ async def _totalSupply(
                 raise
             # we got a response from the chain but brownie can't find `totalSupply` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            total_supply = brownie.Contract.from_explorer(contract_address).totalSupply(block_identifier=block)
+            try:
+                total_supply = brownie.Contract.from_explorer(contract_address).totalSupply(block_identifier=block)
+            except AttributeError:
+                pass
 
     if total_supply is not None:
         return total_supply
