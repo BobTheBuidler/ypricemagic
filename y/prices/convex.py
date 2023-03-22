@@ -1,8 +1,9 @@
 
 from typing import Optional
 
+import a_sync
 from brownie.convert.datatypes import EthAddress
-from multicall.utils import await_awaitable
+
 from y.datatypes import Block, UsdPrice
 from y.prices import magic
 
@@ -17,8 +18,6 @@ MAPPING = {
 def is_convex_lp(token_address: EthAddress) -> bool:
     return token_address in MAPPING
 
-def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return await_awaitable(get_price_async(token_address, block))
-
-async def get_price_async(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return await magic.get_price_async(MAPPING[token_address], block)
+@a_sync.a_sync(default='sync')
+async def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
+    return await magic.get_price(MAPPING[token_address], block, sync=False)

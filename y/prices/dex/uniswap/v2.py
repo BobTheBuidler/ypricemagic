@@ -2,17 +2,13 @@
 import asyncio
 import logging
 from collections import defaultdict
-from functools import cached_property, lru_cache
 from typing import Any, Dict, List, Optional, Tuple
 
+import a_sync
 import brownie
-from async_lru import alru_cache
-from async_property import async_cached_property
 from brownie import chain
 from brownie.exceptions import EventLookupError
-from cachetools.func import ttl_cache
 from multicall import Call
-from multicall.utils import await_awaitable
 
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
@@ -31,11 +27,10 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
-from y.utils.events import decode_logs, get_logs_asap_async
-from y.utils.logging import yLazyLogger
+from y.utils.events import decode_logs, get_logs_asap
 from y.utils.multicall import (
-    fetch_multicall, multicall_same_func_same_contract_different_inputs_async)
-from y.utils.raw_calls import raw_call_async
+    fetch_multicall, multicall_same_func_same_contract_different_inputs)
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -46,28 +41,9 @@ Reserves = Tuple[int,int,int]
 
 
 class UniswapPoolV2(ERC20):
-    def __init__(self, address: AnyAddressType) -> None:
-        super().__init__(address)
-        try:
-            self.decimals
-        except NonStandardERC20:
-            raise NotAUniswapV2Pool    
-
-    def __repr__(self) -> str:
-        try:
-            return f"<UniswapPoolV2 {self.symbol} {self.address}>"  
-        except RuntimeError:
-            return f"<UniswapPoolV2 {self.address}>"  
-    
-    @cached_property
-    #yLazyLogger(logger)
-    def factory(self) -> Address:
-        return await_awaitable(self.factory_async)
-    
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def factory_async(self) -> Address:
-        try: return await raw_call_async(self.address, 'factory()', output='address')
+    @a_sync.aka.cached_property
+    async def factory(self) -> Address:
+        try: return await raw_call(self.address, 'factory()', output='address', sync=False)
         except ValueError as e:
             if call_reverted(e):
                 raise NotAUniswapV2Pool
@@ -84,76 +60,47 @@ class UniswapPoolV2(ERC20):
             else:
                 raise
 
-    @cached_property
-    #yLazyLogger(logger)
-    def tokens(self) -> Tuple[ERC20, ERC20]:
-        return await_awaitable(self.tokens_async)
+    @a_sync.aka.property
+    async def tokens(self) -> Tuple[ERC20, ERC20]:
+        return await asyncio.gather(self.__token0__(sync=False), self.__token1__(sync=False))
     
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def tokens_async(self) -> Tuple[ERC20, ERC20]:
-        methods = 'token0()(address)', 'token1()(address)'
-        token0, token1 = await asyncio.gather(*[Call(self.address, [method]).coroutine() for method in methods])
-        return ERC20(token0), ERC20(token1)
-    
-    #yLazyLogger(logger)
-    def token0(self) -> ERC20:
-        return self.tokens[0]
-    
-    #yLazyLogger(logger)
-    async def token0_async(self) -> ERC20:
-        return await(self.tokens_async)[0]
+    @a_sync.aka.cached_property
+    async def token0(self) -> ERC20:
+        token0 = await Call(self.address, ['token0()(address)']).coroutine()
+        return ERC20(token0, asynchronous=self.asynchronous)
 
-    #yLazyLogger(logger)
-    def token1(self) -> ERC20:
-        return self.tokens[1]
+    @a_sync.aka.cached_property
+    async def token1(self) -> ERC20:
+        token1 = await Call(self.address, ['token1()(address)']).coroutine()
+        return ERC20(token1, asynchronous=self.asynchronous)
     
-    #yLazyLogger(logger)
-    async def token1_async(self) -> ERC20:
-        return await(self.tokens_async)[1]
-    
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=None)
-    def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await_awaitable(self.get_price_async(block=block))
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
-    async def get_price_async(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        tvl = await self.tvl_async(block=block)
+    @a_sync.a_sync(cache_type='memory')
+    async def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        tvl = await self.tvl(block=block, sync=False)
         if tvl is not None:
-            return UsdPrice(tvl / await self.total_supply_readable_async(block=block))
+            return UsdPrice(tvl / await self.total_supply_readable(block=block, sync=False))
         return None
     
     #yLazyLogger(logger)
-    def reserves(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
-        return await_awaitable(self.reserves_async(block=block))
-
-    #yLazyLogger(logger)
-    async def reserves_async(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
+    async def reserves(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
         reserves, tokens = await asyncio.gather(
             Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block).coroutine(),
-            self.tokens_async,
+            self.__tokens__(sync=False),
         )
         if reserves:
             return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
-    #yLazyLogger(logger)
-    def tvl(self, block: Optional[Block] = None) -> Optional[float]:
-        return await_awaitable(self.tvl_async(block=block))
-
-    #yLazyLogger(logger)
-    async def tvl_async(self, block: Optional[Block] = None) -> Optional[float]:
+    async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
         prices, reserves = await asyncio.gather(
-            asyncio.gather(*[token.price_async(block=block, return_None_on_failure=True) for token in await self.tokens_async]),
-            self.reserves_async(block=block),
+            asyncio.gather(*[token.price(block=block, return_None_on_failure=True, sync=False) for token in await self.__tokens__(sync=False)]),
+            self.reserves(block=block, sync=False),
         )
 
         if reserves is None:
             return None
 
         vals = [
-            None if price is None else await reserve.readable_async * price
+            None if price is None else await reserve.__readable__(sync=False) * price
             for reserve, price in zip(reserves, prices)
         ]
         
@@ -166,12 +113,7 @@ class UniswapPoolV2(ERC20):
         if vals[0] is not None and vals[1] is not None:
             return sum(vals)
 
-    #yLazyLogger(logger)
-    def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
-        return await_awaitable(self.get_pool_details_async(block=block))
-    
-    #yLazyLogger(logger)
-    async def get_pool_details_async(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
+    async def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
         try:
             token0, token1, supply, reserves = await asyncio.gather(*[Call(self.address, [method], block_id=block).coroutine() for method in methods])
@@ -186,14 +128,13 @@ class UniswapPoolV2(ERC20):
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
         
         if token0:
-            token0 = ERC20(token0)
+            token0 = ERC20(token0, asynchronous=self.asynchronous)
         if token1:
-            token1 = ERC20(token1)
-        self.tokens = token0, token1
+            token1 = ERC20(token1, asynchronous=self.asynchronous)
         return token0, token1, supply, reserves
 
-
-def _events_subprocess(logs):
+@a_sync.a_sync(default='async', executor=thread_pool_executor)
+def _parse_pairs_from_events(logs):
     events = decode_logs(logs)
     try:
         pairs = {
@@ -237,30 +178,14 @@ class UniswapRouterV2(ContractBase):
         self.special_paths = special_paths(self.address)
 
         # we need the factory contract object cached in brownie so we can decode logs properly
-        if not ContractBase(self.factory)._is_cached:
+        if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
             brownie.Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
     
-
     def __repr__(self) -> str:
         return f"<UniswapV2Router {self.label} '{self.address}'>"
 
-
-    @ttl_cache(ttl=36000)
-    #yLazyLogger(logger)
-    def get_price(
-        self,
-        token_in: Address,
-        block: Optional[Block] = None,
-        token_out: Address = usdc.address,
-        paired_against: Address = WRAPPED_GAS_COIN
-        ) -> Optional[UsdPrice]:
-        return await_awaitable(
-            self.get_price_async(token_in, block=block, token_out=token_out, paired_against=paired_against)
-        )
-
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=500)
-    async def get_price_async(
+    @a_sync.a_sync(ram_cache_maxsize=500)
+    async def get_price(
         self,
         token_in: Address,
         block: Optional[Block] = None,
@@ -282,7 +207,7 @@ class UniswapRouterV2(ContractBase):
             return 1
         
         try:
-            amount_in = await ERC20(token_in).scale
+            amount_in = await ERC20(token_in, asynchronous=True).scale
         except NonStandardERC20:
             return None
 
@@ -291,22 +216,22 @@ class UniswapRouterV2(ContractBase):
 
         elif str(token_out) in STABLECOINS:
             try:
-                path = await self.get_path_to_stables_async(token_in, block)
+                path = await self.get_path_to_stables(token_in, block, sync=False)
                 logger.debug('smrt')
             except CantFindSwapPath:
                 pass
         
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
-        if path is None and (deepest_pool:= await self.deepest_pool_async(token_in, block)):
-            paired_with = (await self.pool_mapping_async)[token_in][deepest_pool]
+        if path is None and (deepest_pool:= await self.deepest_pool(token_in, block, sync=False)):
+            paired_with = (await self.__pool_mapping__(sync=False))[token_in][deepest_pool]
             path = [token_in,paired_with]
-            quote, out_scale = await asyncio.gather(self.get_quote_async(amount_in, path, block=block), ERC20(path[-1]).scale)
+            quote, out_scale = await asyncio.gather(self.get_quote(amount_in, path, block=block, sync=False), ERC20(path[-1], asynchronous=True).scale)
             if quote is not None:
                 amount_out = quote[-1] / out_scale  
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
                 try:
-                    for p in asyncio.as_completed([magic.get_price_async(paired_with, block, fail_to_None=True)],timeout=RECURSION_TIMEOUT):
+                    for p in asyncio.as_completed([magic.get_price(paired_with, block, fail_to_None=True, sync=False)],timeout=RECURSION_TIMEOUT):
                         log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                         paired_with_price = await p
                 except asyncio.TimeoutError:
@@ -323,20 +248,14 @@ class UniswapRouterV2(ContractBase):
         
         fees = 0.997 ** (len(path) - 1)
         logger.debug(f'router: {self.label}     path: {path}')
-        quote, out_scale = await asyncio.gather(self.get_quote_async(amount_in, path, block=block), ERC20(path[-1]).scale)
+        quote, out_scale = await asyncio.gather(self.get_quote(amount_in, path, block=block, sync=False), ERC20(path[-1],asynchronous=True).scale)
         if quote is not None:
             amount_out = quote[-1] / out_scale
             return UsdPrice(amount_out / fees)
 
 
     @continue_on_revert
-    #yLazyLogger(logger)
-    def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
-        return await_awaitable(self.get_quote_async(amount_in, path, block=block))
-    
-    @continue_on_revert
-    #yLazyLogger(logger)
-    async def get_quote_async(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
+    async def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         if self._is_cached:
             try:
                 return await self.contract.getAmountsOut.coroutine(amount_in, path, block_identifier=block)
@@ -349,9 +268,8 @@ class UniswapRouterV2(ContractBase):
                     "INSUFFICIENT_OUT_LIQUIDITY",
                     "Sequence has incorrect length",
                 ]
-                if call_reverted(e) or any(s in str(e) for s in strings):
-                    return
-                raise e
+                if not call_reverted(e) and not any(s in str(e) for s in strings):
+                    raise e
         else:
             return await Call(
                 self.address,
@@ -360,7 +278,6 @@ class UniswapRouterV2(ContractBase):
             ).coroutine()
 
 
-    #yLazyLogger(logger)
     def smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
@@ -381,22 +298,17 @@ class UniswapRouterV2(ContractBase):
 
         return path
     
-
-    @cached_property
-    def pools(self) -> Dict[Address,Dict[Address,Address]]:
-        return await_awaitable(self.pools_async)
-    
-    @async_cached_property
-    async def pools_async(self) -> Dict[Address,Dict[Address,Address]]:
+    @a_sync.aka.cached_property
+    async def pools(self) -> Dict[Address,Dict[Address,Address]]:
         PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
         logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
-        logs = await get_logs_asap_async(self.factory, PairCreated)
-        pairs, pools = await asyncio.get_event_loop().run_in_executor(
-            thread_pool_executor,
-            _events_subprocess,
-            logs,
-        )
-        all_pairs_len = await raw_call_async(self.factory,'allPairsLength()',block=chain.height,output='int')
+        try:
+            logs = await get_logs_asap(self.factory, PairCreated, sync=False)
+            pairs, pools = await _parse_pairs_from_events(logs)
+        except Exception as e:
+            print(e)
+            raise e
+        all_pairs_len = await raw_call(self.factory,'allPairsLength()',block=chain.height,output='int', sync=False)
 
         if len(pairs) == all_pairs_len:
             return pools
@@ -414,8 +326,9 @@ class UniswapRouterV2(ContractBase):
             logger.debug(f"Oh no! Looks like your node can't look back that far. Checking for the missing {all_pairs_len - len(pairs)} pools...")
             pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in pairs]
             logger.debug(f'pools: {pools_your_node_couldnt_get}')
-            pools_your_node_couldnt_get = await multicall_same_func_same_contract_different_inputs_async(
-                self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get])
+            pools_your_node_couldnt_get = await multicall_same_func_same_contract_different_inputs(
+                self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get], sync=False
+            )
             token0s, token1s = await asyncio.gather(
                 asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
                 asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
@@ -432,27 +345,21 @@ class UniswapRouterV2(ContractBase):
 
         return pools
 
-    @cached_property
-    def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
-        return await_awaitable(self.pool_mapping_async)
-    
-    @async_cached_property
-    async def pool_mapping_async(self) -> Dict[Address,Dict[Address,Address]]:
+    @a_sync.aka.cached_property
+    async def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
         pool_mapping = defaultdict(dict)
-        for pool, tokens in (await self.pools_async).items():
+        for pool, tokens in (await self.__pools__(sync=False)).items():
             token0, token1 = tokens.values()
             pool_mapping[token0][pool] = token1
             pool_mapping[token1][pool] = token0
-        logger.info(f'Loaded {len(await self.pools_async)} pools supporting {len(pool_mapping)} tokens on {self.label}')
+        logger.info(f'Loaded {len(await self.__pools__(sync=False))} pools supporting {len(pool_mapping)} tokens on {self.label}')
         return pool_mapping
 
 
-    def pools_for_token(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:
-        return await_awaitable(self.pools_for_token_async(token_address, block))
-    
-    async def pools_for_token_async(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:
-        try: 
-            pools = (await self.pool_mapping_async)[token_address]
+    async def pools_for_token(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:
+        all_pools = await self.__pool_mapping__(sync=False)
+        try:
+            pools = all_pools[token_address]
         except KeyError:
             return {}
         if block is not None:
@@ -460,20 +367,12 @@ class UniswapRouterV2(ContractBase):
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=500)
-    def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
-        return await_awaitable(
-            self.deepest_pool_async(token_address, block=block, _ignore_pools=_ignore_pools)
-        )
-
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=500)
-    async def deepest_pool_async(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
+    @a_sync.a_sync(ram_cache_maxsize=500)
+    async def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Address:
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
-            return await self.deepest_stable_pool_async(token_address, block)
-        pools = await self.pools_for_token_async(token_address, block)
+            return await self.deepest_stable_pool(token_address, block, sync=False)
+        pools = await self.pools_for_token(token_address, block, sync=False)
 
         reserves = await asyncio.gather(*[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools], return_exceptions=True)
 
@@ -490,9 +389,9 @@ class UniswapRouterV2(ContractBase):
         for pool, reserves in zip(pools,reserves):
             if isinstance(reserves, Exception) or reserves is None or pool in _ignore_pools:
                 continue
-            if token_address == (await self.pools_async)[pool]['token0']:
+            if token_address == (await self.__pools__(sync=False))[pool]['token0']:
                 reserve = reserves[0]
-            elif token_address == (await self.pools_async)[pool]['token1']:
+            elif token_address == (await self.__pools__(sync=False))[pool]['token1']:
                 reserve = reserves[1]
             if reserve > deepest_pool_balance: 
                 deepest_pool = pool
@@ -500,18 +399,12 @@ class UniswapRouterV2(ContractBase):
         return deepest_pool
 
 
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=500)
-    def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
-        return await_awaitable(self.deepest_stable_pool_async(token_address, block=block))
-
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=500)
-    async def deepest_stable_pool_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
+    @a_sync.a_sync(ram_cache_maxsize=500)
+    async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
         token_address = convert.to_address(token_address)
         pools = {
             pool: paired_with
-            for pool, paired_with in (await self.pools_for_token_async(token_address, None)).items()
+            for pool, paired_with in (await self.pools_for_token(token_address, None, sync=False)).items()
             if paired_with in STABLECOINS
         }
 
@@ -537,9 +430,9 @@ class UniswapRouterV2(ContractBase):
         for pool, reserves in zip(pools, reserves):
             if isinstance(reserves, Exception) or reserves is None:
                 continue
-            if token_address == (await self.pools_async)[pool]['token0']:
+            if token_address == (await self.__pools__(sync=False))[pool]['token0']:
                 reserve = reserves[0]
-            elif token_address == (await self.pools_async)[pool]['token1']:
+            elif token_address == (await self.__pools__(sync=False))[pool]['token1']:
                 reserve = reserves[1]
             if reserve > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
@@ -547,37 +440,30 @@ class UniswapRouterV2(ContractBase):
         return deepest_stable_pool
 
 
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=500)
-    def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
-        return await_awaitable(
-            self.get_path_to_stables_async(token, block=block, _loop_count=_loop_count, _ignore_pools=_ignore_pools)
-        )
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=500)
-    async def get_path_to_stables_async(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
+    @a_sync.a_sync(ram_cache_maxsize=500)
+    async def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
         if _loop_count > 10:
             raise CantFindSwapPath
         token_address = convert.to_address(token)
         path = [token_address]
-        deepest_pool = await self.deepest_pool_async(token_address, block, _ignore_pools)
+        deepest_pool = await self.deepest_pool(token_address, block, _ignore_pools, sync=False)
         if deepest_pool:
-            paired_with = (await self.pool_mapping_async)[token_address][deepest_pool]
-            deepest_stable_pool = await self.deepest_stable_pool_async(token_address, block)
+            paired_with = (await self.__pool_mapping__(sync=False))[token_address][deepest_pool]
+            deepest_stable_pool = await self.deepest_stable_pool(token_address, block, sync=False)
             if deepest_stable_pool and deepest_pool == deepest_stable_pool:
-                last_step = (await self.pool_mapping_async)[token_address][deepest_stable_pool]
+                last_step = (await self.__pool_mapping__(sync=False))[token_address][deepest_stable_pool]
                 path.append(last_step)
                 return path
 
             if path == [token_address]:
                 try:
                     path.extend(
-                        await self.get_path_to_stables_async(
+                        await self.get_path_to_stables(
                             paired_with,
                             block=block, 
                             _loop_count=_loop_count+1, 
-                            _ignore_pools=tuple(list(_ignore_pools) + [deepest_pool])
+                            _ignore_pools=tuple(list(_ignore_pools) + [deepest_pool]),
+                            sync=False,
                         )
                     )
                 except CantFindSwapPath:

@@ -1,9 +1,14 @@
 
+import pytest
+
 from tests.fixtures import mainnet_only
 from y.classes.common import ERC20
 from y.constants import usdc
 from y.prices.yearn import YearnInspiredVault
 
+"""
+We use sync objects here to ensure internals will work for both sync and async
+"""
 
 @mainnet_only
 def test_share_price_yearn_v1():

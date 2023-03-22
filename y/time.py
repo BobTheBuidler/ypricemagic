@@ -4,9 +4,8 @@ import logging
 import time
 from typing import NewType, Union
 
-from async_lru import alru_cache
 from brownie import chain, web3
-
+from a_sync import a_sync
 from y.exceptions import NoBlockFound
 from y.networks import Network
 from y.utils.cache import memory
@@ -26,7 +25,7 @@ def get_block_timestamp(height: int) -> int:
     else:
         return chain[height].timestamp
 
-@alru_cache(maxsize=None, cache_exceptions=False)
+@a_sync(cache_type='memory')
 async def get_block_timestamp_async(height: int) -> int:
     client = await get_ethereum_client_async()
     if client in ['tg', 'erigon']:
@@ -88,7 +87,7 @@ def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
 
-@alru_cache(maxsize=None, cache_exceptions=False)
+@a_sync(cache_type='memory')
 async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_block_if_needed: bool = False) -> int:
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
@@ -98,6 +97,7 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
             await asyncio.sleep(0.2)
 
     height = await dank_w3.eth.block_number
+    print(height)
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2

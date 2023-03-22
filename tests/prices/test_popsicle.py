@@ -1,10 +1,13 @@
 
+import asyncio
+
 import pytest
 from brownie import chain
-from tests.fixtures import blocks_for_contract, mutate_addresses
+
+from tests.fixtures import blocks_for_contract
+from y.constants import WRAPPED_GAS_COIN
 from y.networks import Network
 from y.prices import popsicle
-from y.constants import WRAPPED_GAS_COIN
 
 POPSICLES = {
     Network.Mainnet: [
@@ -38,16 +41,16 @@ POPSICLES = {
     ],
 }.get(chain.id, [])
 
-POPSICLES = mutate_addresses(POPSICLES)
-
-@pytest.mark.parametrize('token',POPSICLES)
-def test_popsicle_get_price(token):
-    assert popsicle.is_popsicle_lp(token), 'Popsicle LP not recognized.'
-    blocks = blocks_for_contract(token, 25)
-    for block in blocks:
-        assert popsicle.get_price(token, block), 'Failed to fetch price.'
-
 def test_non_popsicle():
     assert not popsicle.is_popsicle_lp(WRAPPED_GAS_COIN), 'Token incorrectly recognized as Popsicle LP.'
     with pytest.raises(TypeError):
         popsicle.get_price(WRAPPED_GAS_COIN)
+
+@pytest.mark.asyncio_cooperative
+@pytest.mark.parametrize('token',POPSICLES)
+async def test_popsicle_get_price(token):
+    assert await popsicle.is_popsicle_lp(token, sync=False), 'Popsicle LP not recognized.'
+    blocks = blocks_for_contract(token, 25)
+    prices = await asyncio.gather(*[popsicle.get_price(token, block, sync=False) for block in blocks])
+    for block, price in zip(blocks, prices):
+        assert price, f'Failed to fetch price for {token} at block {block}.'

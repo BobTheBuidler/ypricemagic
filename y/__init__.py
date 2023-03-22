@@ -23,12 +23,10 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
                           NotAUniswapV2Pool, PriceError, UnsupportedNetwork)
 from y.networks import Network
 from y.prices import magic
-from y.prices.magic import (get_price, get_price_async, get_prices,
-                            get_prices_async)
+from y.prices.magic import get_price, get_prices
 from y.utils.dank_mids import dank_w3
 from y.utils.multicall import fetch_multicall
-from y.utils.raw_calls import balanceOf as balanceOf
-from y.utils.raw_calls import balanceOf_async, raw_call
+from y.utils.raw_calls import balanceOf, raw_call
 
 __all__ = [
     ### you can reach the below functions, classes, and variables using ###

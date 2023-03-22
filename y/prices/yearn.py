@@ -1,21 +1,17 @@
 import asyncio
 import logging
-from functools import cached_property
-from typing import Any, Optional
+from typing import Optional
 
-from async_lru import alru_cache
-from async_property import async_cached_property
+import a_sync
 from brownie import chain
-from multicall.utils import await_awaitable
+
 from y import Network
 from y.classes.common import ERC20
-from y.contracts import Contract, has_method_async, has_methods_async, probe
+from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
-from y.utils.cache import memory
-from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import raw_call_async
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
@@ -46,14 +42,8 @@ force_false = {
     ],
 }.get(chain.id, [])
 
-@memory.cache()
-#yLazyLogger(logger)
-def is_yearn_vault(token: AnyAddressType) -> bool:
-    return await_awaitable(is_yearn_vault_async(token))
-
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-async def is_yearn_vault_async(token: AnyAddressType) -> bool:
+@a_sync.a_sync(default='sync', cache_type='memory')
+async def is_yearn_vault(token: AnyAddressType) -> bool:
     # wibbtc returns True here even though it doesn't meet the criteria.
     # TODO figure out a better fix. For now I need a fix asap so this works.
     if chain.id == Network.Mainnet and str(token) == "0x8751D4196027d4e6DA63716fA7786B5174F04C15":
@@ -62,8 +52,8 @@ async def is_yearn_vault_async(token: AnyAddressType) -> bool:
     # Yearn-like contracts can use these formats
     result = any(
         await asyncio.gather(
-            has_methods_async(token, ('pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'), any),
-            has_methods_async(token, ('exchangeRate()(uint)','underlying()(address)')),
+            has_methods(token, ('pricePerShare()(uint)','getPricePerShare()(uint)','getPricePerFullShare()(uint)','getSharesToUnderlying()(uint)'), any, sync=False),
+            has_methods(token, ('exchangeRate()(uint)','underlying()(address)'), sync=False),
         )
     )
 
@@ -82,40 +72,20 @@ async def is_yearn_vault_async(token: AnyAddressType) -> bool:
 
     return result
 
-#yLazyLogger(logger)
-def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return YearnInspiredVault(token).price(block=block)
-
-#yLazyLogger(logger)
-async def get_price_async(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return await YearnInspiredVault(token).price_async(block=block)
+@a_sync.a_sync(default='sync')
+async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    return await YearnInspiredVault(token).price(block=block, sync=False)
 
 class YearnInspiredVault(ERC20):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
-    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
-        super().__init__(address, *args, **kwargs)
     
-    def __repr__(self) -> str:
-        try:
-            if self.symbol:
-                return f"<YearnInspiredVault {self.symbol} '{self.address}'>"
-        except RuntimeError:
-            pass
-        return f"<YearnInspiredVault '{self.address}'>"
-    
-    @cached_property
-    #yLazyLogger(logger)
-    def underlying(self) -> ERC20:
-        return await_awaitable(self.underlying_async)
-    
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def underlying_async(self) -> ERC20:
+    @a_sync.aka.cached_property
+    async def underlying(self) -> ERC20:
         # special cases
         if chain.id == Network.Arbitrum and self.address == '0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7':
-            return ERC20(await raw_call_async(self.address, 'usdl()', output='address'))
+            return ERC20(await raw_call(self.address, 'usdl()', output='address', sync=False), asynchronous=self.asynchronous)
 
         try:
             underlying = await probe(self.address, underlying_methods)
@@ -128,24 +98,19 @@ class YearnInspiredVault(ERC20):
 
             if not method:
                 raise
-            underlying = await raw_call_async(self.address, method, output='address')
+            underlying = await raw_call(self.address, method, output='address', sync=False)
         
         if not underlying:
             # certain reaper vaults
-            lend_platform = await self.has_method_async('lendPlatform()(address)', return_response=True)
+            lend_platform = await self.has_method('lendPlatform()(address)', return_response=True, sync=False)
             if lend_platform:
-                underlying = await has_method_async(lend_platform, 'underlying()(address)', return_response=True)
+                underlying = await has_method(lend_platform, 'underlying()(address)', return_response=True, sync=False)
 
         if underlying: return ERC20(underlying)
         else: raise CantFetchParam(f'underlying for {self.__repr__()}')
 
-    #yLazyLogger(logger)
-    def share_price(self, block: Optional[Block] = None) -> Optional[float]:
-        return await_awaitable(self.share_price_async(block=block))
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=1000)
-    async def share_price_async(self, block: Optional[Block] = None) -> Optional[float]:
+    a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
+    async def share_price(self, block: Optional[Block] = None) -> Optional[float]:
         method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
 
         if share_price is None:
@@ -153,7 +118,7 @@ class YearnInspiredVault(ERC20):
             try:
                 contract = self.contract
                 if hasattr(contract, 'getSharesToUnderlying'):
-                    share_price = contract.getSharesToUnderlying.coroutine(await self.scale,block_identifier=block)
+                    share_price = contract.getSharesToUnderlying.coroutine(await self.scale, block_identifier=block)
             except ContractNotVerified:
                 pass
 
@@ -161,25 +126,20 @@ class YearnInspiredVault(ERC20):
             if method == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / 1e18
-            underlying = await self.underlying_async
-            return share_price / await underlying.scale
+            underlying = await self.__underlying__(sync=False)
+            return share_price / await underlying.__scale__(sync=False)
             
-        elif await raw_call_async(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True) == 0:
+        elif await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False) == 0:
             return None
         
         else:
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
-    #yLazyLogger(logger)
-    def price(self, block: Optional[Block] = None) -> UsdPrice:
-        return await_awaitable(self.price_async(block=block))
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=1000)
-    async def price_async(self, block: Optional[Block] = None) -> UsdPrice:
-        underlying = await self.underlying_async
+    a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
+    async def price(self, block: Optional[Block] = None) -> UsdPrice:
+        underlying = await self.__underlying__(sync=False)
         share_price, underlying_price = await asyncio.gather(
-            self.share_price_async(block=block),
-            underlying.price_async(block=block),
+            self.share_price(block=block, sync=False),
+            underlying.price(block=block, sync=False),
         )
         return UsdPrice(share_price * underlying_price)

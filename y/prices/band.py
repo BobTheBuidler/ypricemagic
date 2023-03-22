@@ -1,10 +1,12 @@
+import asyncio
 from typing import Optional
 
+import a_sync
 from brownie import chain
 from brownie.exceptions import VirtualMachineError
-from multicall.utils import await_awaitable
 
 from y import Contract
+from y.classes.common import ERC20
 from y.datatypes import Address, AddressOrContract, Block
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
@@ -38,23 +40,27 @@ supported_assets = {
     ]
 }
 
-class Band:
-    def __init__(self) -> None:
+class Band(a_sync.ASyncGenericSingleton):
+    def __init__(self, asynchronous: bool = False) -> None:
         if chain.id not in addresses:
             raise UnsupportedNetwork('band is not supported on this network')
-        self.oracle = Contract(addresses[chain.id])
+        self.asynchronous = asynchronous
+        super().__init__()
 
     def __contains__(self, asset: AddressOrContract) -> bool:
         return chain.id in addresses and asset in supported_assets[chain.id]
     
-    def get_price(self, asset: Address, block: Optional[Block] = None) -> Optional[float]:
-        return await_awaitable(self.get_price_async(asset, block))
+    @a_sync.aka.property
+    async def oracle(self) -> Contract:
+        return await Contract.coroutine(addresses[chain.id])
 
-    async def get_price_async(self, asset: Address, block: Optional[Block] = None) -> Optional[float]:
-        contract = await Contract.coroutine(asset)
-        asset_symbol = await contract.symbol.coroutine()
+    async def get_price(self, asset: Address, block: Optional[Block] = None) -> Optional[float]:
+        oracle, asset_symbol = await asyncio.gather(
+            self.__oracle__(sync=False),
+            ERC20(asset, asynchronous=True).symbol,
+        )
         try:
-            reference_data = await self.oracle.getReferenceData.coroutine(asset_symbol, 'USDC', block_identifier=block)
+            reference_data = await oracle.getReferenceData.coroutine(asset_symbol, 'USDC', block_identifier=block)
             return reference_data[0] / 1e18
         except ValueError:
             return None
@@ -63,6 +69,6 @@ class Band:
 
 
 try:
-    band = Band()
+    band = Band(asynchronous=True)
 except UnsupportedNetwork:
     band = set()

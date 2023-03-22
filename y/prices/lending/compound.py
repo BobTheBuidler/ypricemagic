@@ -1,21 +1,18 @@
 import asyncio
 import logging
-from functools import cached_property, lru_cache
-from typing import Any, Optional, Tuple
+from typing import Optional, Tuple
 
-from async_property import async_cached_property
+import a_sync
 from brownie import chain, convert
 from multicall import Call
-from multicall.utils import await_awaitable
 
 from y.classes.common import ERC20, ContractBase
-from y.classes.singleton import Singleton
 from y.constants import EEE_ADDRESS
-from y.contracts import Contract, has_methods_async
+from y.contracts import Contract, has_methods
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.exceptions import call_reverted
 from y.networks import Network
-from y.utils.logging import gh_issue_request, yLazyLogger
+from y.utils.logging import gh_issue_request
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -63,66 +60,44 @@ TROLLERS = {
 
 
 class CToken(ERC20):
-    def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"] = None, *args: Any, **kwargs: Any) -> None:
+    def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"] = None, asynchronous: bool = False) -> None:
         self.troller = comptroller
-        super().__init__(address, *args, **kwargs)
+        super().__init__(address, asynchronous=asynchronous)
     
-    def get_price(self, block: Optional[Block] = None) -> UsdPrice:
-        return await_awaitable(self.get_price_async(block))
-    
-    async def get_price_async(self, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         if self.troller:
             # We can use the protocol's oracle which will be quick
             underlying_per_ctoken, underlying_price = await asyncio.gather(
-                self.underlying_per_ctoken_async(block=block),
-                self.get_underlying_price(block=block),
+                self.underlying_per_ctoken(block=block, asynchronous=True),
+                self.get_underlying_price(block=block, asynchronous=True),
             )
         else:
             # Or we can just price the underlying token ourselves
-            underlying = await self.underlying_async
+            underlying = await self.__underlying__(asynchronous=True)
             underlying_per_ctoken, underlying_price = await asyncio.gather(
-                self.underlying_per_ctoken_async(block=block),
-                underlying.price_async(block=block)
+                self.underlying_per_ctoken(block=block, asynchronous=True),
+                underlying.price(block=block, asynchronous=True)
             )
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
-    @cached_property
-    #yLazyLogger(logger)
-    def underlying(self) -> ERC20:
-        return await_awaitable(self.underlying_async)
-    
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def underlying_async(self) -> ERC20:
-        underlying = await self.has_method_async('underlying()(address)', return_response=True)
-
+    @a_sync.aka.cached_property
+    async def underlying(self) -> ERC20:
+        underlying = await self.has_method('underlying()(address)', return_response=True, sync=False)
         # this will run for gas coin markets like cETH, crETH
         if not underlying:
             underlying = EEE_ADDRESS
-
-        return ERC20(underlying)
+        return ERC20(underlying, asynchronous=self.asynchronous)
     
-    #yLazyLogger(logger)
-    @lru_cache
-    def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
-        return await_awaitable(self.underlying_per_ctoken_async(block))
-    
-    #yLazyLogger(logger)
-    async def underlying_per_ctoken_async(self, block: Optional[Block] = None) -> float:
+    async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         exchange_rate, decimals, underlying = await asyncio.gather(
-            self.exchange_rate_async(block=block),
-            self.decimals,
-            self.underlying_async,
+            self.exchange_rate(block=block, sync=False),
+            self.__decimals__(sync=False),
+            self.__underlying__(sync=False),
         )
-        return exchange_rate * 10 ** (decimals - await underlying.decimals)
-    
-    #yLazyLogger(logger)
-    @lru_cache
-    def exchange_rate(self, block: Optional[Block] = None) -> float:
-        return await_awaitable(self.exchange_rate(block))
+        return exchange_rate * 10 ** (decimals - await underlying.__decimals__(asynchronous=True))
 
     #yLazyLogger(logger)
-    async def exchange_rate_async(self, block: Optional[Block] = None) -> float:
+    async def exchange_rate(self, block: Optional[Block] = None) -> float:
         method = 'exchangeRateCurrent()(uint)'
         call = Call(self.address, [method], block_id=block)
 
@@ -147,12 +122,12 @@ class CToken(ERC20):
     async def get_underlying_price(self, block: Optional[Block] = None) -> float:
         # always query the oracle in case it was changed
         oracle, underlying = await asyncio.gather(
-            self.troller.oracle(block),
-            self.underlying_async
+            self.troller.oracle(block, asynchronous=True),
+            self.__underlying__(asynchronous=True),
         )
         price, underlying_decimals = await asyncio.gather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
-            underlying.decimals,
+            underlying.__decimals__(asynchronous=True),
             return_exceptions=True,
         )
         if isinstance(price, Exception):
@@ -163,7 +138,7 @@ class CToken(ERC20):
     
 
 class Comptroller(ContractBase):
-    def __init__(self, address: Optional[AnyAddressType] = None, key: Optional[str] = None) -> None:
+    def __init__(self, address: Optional[AnyAddressType] = None, key: Optional[str] = None, asynchronous: bool = False) -> None:
         assert address or key,          'Must provide either an address or a key'
         assert not (address and key),   'Must provide either an address or a key, not both'
 
@@ -172,25 +147,24 @@ class Comptroller(ContractBase):
 
         self.address = convert.to_address(address)
         self.key = key
+        self.asynchronous = asynchronous
     
     def __repr__(self) -> str:
         return f"<Comptroller {self.key} '{self.address}'>"
 
     #yLazyLogger(logger)
     def __contains__(self, token_address: AnyAddressType) -> bool:
+        if self.asynchronous:
+            raise RuntimeError(f"'self.asynchronous' must be False to use Comptroller.__contains__")
         return token_address in self.markets
-    
-    @cached_property
-    def markets(self) -> Tuple[CToken]:
-        return await_awaitable(self.markets_async)
 
-    @async_cached_property
-    async def markets_async(self) -> Tuple[CToken]:
-        response = await self.has_method_async("getAllMarkets()(address[])", return_response=True)
+    @a_sync.aka.cached_property
+    async def markets(self) -> Tuple[CToken]:
+        response = await self.has_method("getAllMarkets()(address[])", return_response=True, sync=False)
         if not response:
             logger.warning(f'had trouble loading markets for {self.__repr__()}')
             response = set()
-        markets = tuple(CToken(market, self) for market in response)
+        markets = tuple(CToken(market, comptroller=self, asynchronous=self.asynchronous) for market in response)
         logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
         return markets
     
@@ -205,53 +179,45 @@ class Comptroller(ContractBase):
         return await Contract.coroutine(oracle)
 
 
-class Compound(metaclass = Singleton):
-    def __init__(self) -> None:
+class Compound(a_sync.ASyncGenericSingleton):
+    def __init__(self, asynchronous: bool = False) -> None:
+        self.asynchronous = asynchronous
         self.trollers = {
-            protocol: Comptroller(troller)
+            protocol: Comptroller(troller, asynchronous=self.asynchronous)
             for protocol, troller
             in TROLLERS.items()
         }
     
+    def __contains__(self, token_address: AddressOrContract) -> bool:
+        if self.asynchronous:
+            raise RuntimeError("'self.asynchronous' must be False and the event loop must not be running")
+        return self.is_compound_market(token_address)
+    
     async def get_troller(self, token_address: AddressOrContract) -> Optional[Comptroller]:
         trollers = self.trollers.values()
-        all_markets = await asyncio.gather(*[troller.markets_async for troller in trollers])
+        all_markets = await asyncio.gather(*[troller.__markets__(sync=False) for troller in trollers])
         for troller, markets in zip(trollers, all_markets):
             if token_address in markets:
                 return troller
-
-    #yLazyLogger(logger)
-    def is_compound_market(self, token_address: AddressOrContract) -> bool:
-        return await_awaitable(self.is_compound_market_async(token_address))
-    
-    #yLazyLogger(logger)
-    async def is_compound_market_async(self, token_address: AddressOrContract) -> bool:
-        if await self.get_troller(token_address):
+            
+    async def is_compound_market(self, token_address: AddressOrContract) -> bool:
+        if await self.get_troller(token_address, sync=False):
             return True
 
         # NOTE: Workaround for pools that have since been revoked
-        result = await has_methods_async(token_address, ('isCToken()(bool)','comptroller()(address)','underlying()(address)'))
-        if result is True: self.__notify_if_unknown_comptroller(token_address)
+        result = await has_methods(token_address, ('isCToken()(bool)','comptroller()(address)','underlying()(address)'), sync=False)
+        if result is True:
+            await self.__notify_if_unknown_comptroller(token_address, sync=False)
         return result
     
-    #yLazyLogger(logger)
-    def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await_awaitable(self.get_price_async(token_address, block=block))
-
-    #yLazyLogger(logger)
-    async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         troller = await self.get_troller(token_address)
-        return await CToken(token_address, troller).get_price_async(block=block)
+        return await CToken(token_address, comptroller=troller, asynchronous=True).get_price(block=block)
 
-    #yLazyLogger(logger)
-    def __contains__(self, token_address: AddressOrContract) -> bool:
-        return self.is_compound_market(token_address)
-
-    #yLazyLogger(logger)
-    def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
-        comptroller = raw_call(token_address,'comptroller()',output='address')
+    async def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
+        comptroller = await raw_call(token_address,'comptroller()',output='address', sync=False)
         if comptroller not in self.trollers.values():
             gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
 
 
-compound = Compound()
+compound = Compound(asynchronous=True)

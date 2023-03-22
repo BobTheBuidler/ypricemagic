@@ -1,11 +1,10 @@
 import asyncio
 import logging
-from functools import cached_property, lru_cache
 from typing import List, Optional, Union
 
-from async_lru import alru_cache
+import a_sync
 from brownie import chain
-from multicall.utils import await_awaitable
+
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
@@ -14,55 +13,40 @@ from y.prices.dex.balancer.v2 import BalancerV2
 logger = logging.getLogger(__name__)
 
 
-class BalancerMultiplexer:
-    def __init__(self) -> None:
-        pass
+class BalancerMultiplexer(a_sync.ASyncGenericBase):
+    def __init__(self, asynchronous: bool = False) -> None:
+        self.asynchronous = asynchronous
     
     def __repr__(self) -> str:
-        return "<Balancer>"
+        return "<BalancerMuliplexer>"
     
-    @cached_property
-    def versions(self) -> List[Union[BalancerV1, BalancerV2]]:
-        return [v for v in [self.v1, self.v2] if v]
+    @a_sync.aka.property
+    async def versions(self) -> List[Union[BalancerV1, BalancerV2]]:
+        return [v for v in await asyncio.gather(self.v1, self.v2) if v]
 
-    @cached_property
-    def v1(self) -> Optional[BalancerV1]:
-        try: return BalancerV1()
+    @a_sync.aka.cached_property
+    async def v1(self) -> Optional[BalancerV1]:
+        try: return BalancerV1(asynchronous=self.asynchronous)
         except ImportError: return None
     
-    @cached_property
-    def v2(self) -> Optional[BalancerV2]:
-        try: return BalancerV2()
+    @a_sync.aka.cached_property
+    async def v2(self) -> Optional[BalancerV2]:
+        try: return BalancerV2(asynchronous=self.asynchronous)
         except ImportError: return None
 
-    #yLazyLogger(logger)
-    def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
-        return await_awaitable(self.is_balancer_pool_async(token_address))
-
-    #yLazyLogger(logger)
-    async def is_balancer_pool_async(self, token_address: AnyAddressType) -> bool:
-        return any(await asyncio.gather(*[v.is_pool_async(token_address) for v in self.versions]))
+    async def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
+        return any(await asyncio.gather(*[v.is_pool(token_address, sync=False) for v in await self.versions]))
     
-    #yLazyLogger(logger)
     async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await_awaitable(self.get_pool_price_async(token_address, block=block))
-
-    #yLazyLogger(logger)
-    async def get_pool_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        for v in self.versions:
-            if await v.is_pool_async(token_address):
-                return UsdPrice(await v.get_pool_price_async(token_address, block))
-
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=None)
-    def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await_awaitable(self.get_price_async(token_address, block=block))
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
-    async def get_price_async(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        if await self.is_balancer_pool_async(token_address):
-            return await self.get_pool_price_async(token_address, block=block)
+        versions: List[Union[BalancerV1, BalancerV2]] = await self.versions
+        for v in versions:
+            if await v.is_pool(token_address, sync=False):
+                return UsdPrice(await v.get_pool_price(token_address, block, sync=False))
+            
+    @a_sync.a_sync(cache_type='memory')
+    async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+        if await self.is_balancer_pool(token_address, sync=False):
+            return await self.get_pool_price(token_address, block=block, sync=False)
 
         price = None
         
@@ -70,16 +54,17 @@ class BalancerMultiplexer:
             (chain.id == Network.Mainnet and (not block or block > 12272146 + 100000))
             or (chain.id == Network.Fantom and (not block or block > 16896080))
             ): 
-            price = await self.v2.get_token_price_async(token_address, block)
+            v2: BalancerV2 = await self.v2
+            price = await v2.get_token_price(token_address, block, sync=False)
             if price:
                 logger.debug(f"balancer v2 -> ${price}")
                 return price
 
-        if not price and chain.id == Network.Mainnet:      
-            price = await self.v1.get_token_price_async(token_address, block)
+        if not price and chain.id == Network.Mainnet:   
+            v1: BalancerV1 = await self.v1   
+            price = await v1.get_token_price(token_address, block, sync=False)
             if price:
                 logger.debug(f"balancer v1 -> ${price}")
                 return price
-        
 
-balancer_multiplexer = BalancerMultiplexer()
+balancer_multiplexer = BalancerMultiplexer(asynchronous=True)

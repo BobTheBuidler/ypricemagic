@@ -2,58 +2,47 @@ import asyncio
 import logging
 from typing import List, Optional
 
-from async_lru import alru_cache
+import a_sync
 from brownie import ZERO_ADDRESS
 from multicall import Call
-from multicall.utils import await_awaitable
+
 from y.classes.common import ERC20
-from y.contracts import has_method_async
+from y.contracts import has_method
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
 from y.prices import magic
-from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import raw_call_async
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
 
-#yLazyLogger(logger)
+@a_sync.a_sync(default='sync', cache_type='memory')
 async def is_pie(token: AnyAddressType) -> bool:
-    return await_awaitable(is_pie_async(token))
+    return await has_method(token, "getCap()(uint)", sync=False)
 
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-async def is_pie_async(token: AnyAddressType) -> bool:
-    return await has_method_async(token, "getCap()(uint)")
-
-#yLazyLogger(logger)
-def get_price(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return await_awaitable(get_price_async(pie, block))
-
-async def get_price_async(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+@a_sync.a_sync(default='sync')
+async def get_price(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
     tvl, total_supply = await asyncio.gather(
         get_tvl(pie, block),
-        ERC20(pie).total_supply_readable_async(block),
+        # TODO: debug why we need sync kwarg here
+        ERC20(pie, asynchronous=True).total_supply_readable(block, sync=False),
     )
     return UsdPrice(tvl / total_supply)
 
-#yLazyLogger(logger)
 async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[ERC20]:
     tokens = await Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], block_id=block).coroutine()
     tokens = tokens['tokens']
     return [ERC20(t) for t in tokens]
 
-#yLazyLogger(logger)
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
     try:
-        bpool = await raw_call_async(pie_address, 'getBPool()', output='address', block=block)
+        bpool = await raw_call(pie_address, 'getBPool()', output='address', block=block, sync=False)
         return bpool if bpool != ZERO_ADDRESS else pie_address
     except Exception as e:
         if not call_reverted(e):
             raise
         return pie_address
 
-#yLazyLogger(logger)
 async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
     tokens: List[ERC20]
     pool, tokens = await asyncio.gather(
@@ -62,8 +51,8 @@ async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdVal
     )
     token_balances, token_scales, prices = await asyncio.gather(
         asyncio.gather(*[Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block).coroutine() for token in tokens]),
-        asyncio.gather(*[token.scale for token in tokens]),
-        magic.get_prices_async(tokens, block),
+        asyncio.gather(*[token.__scale__(sync=False) for token in tokens]),
+        magic.get_prices(tokens, block, sync=False),
     )
     token_balances = [bal / scale for bal, scale in zip(token_balances, token_scales)]
     return UsdValue(

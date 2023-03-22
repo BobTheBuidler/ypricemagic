@@ -3,37 +3,29 @@ import asyncio
 import logging
 from typing import List, Optional
 
-from async_lru import alru_cache
+import a_sync
 from brownie import chain
-from multicall.utils import await_awaitable
+
 from y import convert
 from y.classes.common import ERC20
-from y.contracts import has_method_async, has_methods_async
+from y.contracts import has_method, has_methods
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
 from y.networks import Network
 from y.prices import magic
-from y.utils.logging import yLazyLogger
 from y.utils.multicall import \
-    multicall_same_func_same_contract_different_inputs_async
+    multicall_same_func_same_contract_different_inputs
 
 logger = logging.getLogger(__name__)
 
 
-#yLazyLogger(logger)
-def is_saddle_lp(token_address: AnyAddressType) -> bool:
-    return await_awaitable(is_saddle_lp_async(token_address))
-
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
-async def is_saddle_lp_async(token_address: AnyAddressType) -> bool:
-    pool = await get_pool(token_address)
+@a_sync.a_sync(default='sync', cache_type='memory')
+async def is_saddle_lp(token_address: AnyAddressType) -> bool:
+    pool = await get_pool(token_address, sync=False)
     if pool:
-        return await has_methods_async(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'))
+        return await has_methods(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'), sync=False)
 
-
-#yLazyLogger(logger)
-@alru_cache(maxsize=None)
+@a_sync.a_sync(default='sync', cache_type='memory')
 async def get_pool(token_address: AnyAddressType) -> Address:
     convert.to_address(token_address)
     if chain.id == Network.Mainnet:
@@ -43,43 +35,39 @@ async def get_pool(token_address: AnyAddressType) -> Address:
             return '0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6'
         elif token_address == '0xF32E91464ca18fc156aB97a697D6f8ae66Cd21a3':
             return '0xdf3309771d2BF82cb2B6C56F9f5365C8bD97c4f2'
-    pool = await has_method_async(token_address, 'swap()(address)', return_response=True)
+    pool = await has_method(token_address, 'swap()(address)', return_response=True, sync=False)
     return pool or None
 
-#yLazyLogger(logger)
-def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
-    return await_awaitable(get_price_async(token_address, block))
-
-async def get_price_async(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+@a_sync.a_sync(default='sync')
+async def get_price(token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
     tvl, total_supply = await asyncio.gather(
-        get_tvl(token_address, block),
-        ERC20(token_address).total_supply_readable_async(block),
+        get_tvl(token_address, block, sync=False),
+        ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )
     return UsdPrice(tvl / total_supply)
 
-#yLazyLogger(logger)
+@a_sync.a_sync(default='sync')
 async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
     pool, tokens, balances = await asyncio.gather(
-        get_pool(token_address),
-        get_tokens(token_address, block),
-        multicall_same_func_same_contract_different_inputs_async(
-            pool, 'getTokenBalance(uint8)(uint)', inputs=[*range(len(tokens))]
+        get_pool(token_address, sync=False),
+        get_tokens(token_address, block, sync=False),
+        multicall_same_func_same_contract_different_inputs(
+            pool, 'getTokenBalance(uint8)(uint)', inputs=[*range(len(tokens))], sync=False
         ),
     )
     tokens_scale, prices = await asyncio.gather(
-        asyncio.gather(*[token.scale for token in tokens]),
-        magic.get_prices_async(tokens, block, silent=True),
+        asyncio.gather(*[token.__scale__(sync=False) for token in tokens]),
+        magic.get_prices(tokens, block, silent=True, sync=False),
     )
     balances = [balance / scale for balance, scale in zip(balances, tokens_scale)]
     return UsdValue(sum(balance * price for balance, price in zip (balances, prices)))
 
-
-#yLazyLogger(logger)
+@a_sync.a_sync(default='sync')
 async def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[ERC20]:
     pool, response = await asyncio.gather(
-        get_pool(token_address),
-        multicall_same_func_same_contract_different_inputs_async(
-            pool, 'getToken(uint8)(address)', inputs=[*range(8)], block=block, return_None_on_failure=True
+        get_pool(token_address, sync=False),
+        multicall_same_func_same_contract_different_inputs(
+            pool, 'getToken(uint8)(address)', inputs=[*range(8)], block=block, return_None_on_failure=True, sync=False
         ),
     )
     return [ERC20(token) for token in response if token is not None]

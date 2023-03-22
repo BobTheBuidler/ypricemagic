@@ -1,29 +1,23 @@
 import asyncio
 import logging
 import threading
-import time
 from collections import defaultdict
 from enum import IntEnum
-from functools import cached_property, lru_cache
+from functools import cached_property
 from typing import Any, Dict, List, NoReturn, Optional
 
+import a_sync
 import brownie
-from async_lru import alru_cache
-from async_property import async_cached_property
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound
-from cachetools.func import ttl_cache
-from multicall.utils import await_awaitable
 
 from y import convert
 from y.classes.common import ERC20, WeiBalance
-from y.classes.singleton import Singleton
 from y.constants import RECURSION_TIMEOUT, log_possible_recursion_err
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice, UsdValue)
-from y.decorators import event_daemon_task
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           PriceError, UnsupportedNetwork, call_reverted)
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
@@ -32,7 +26,7 @@ from y.utils.dank_mids import dank_w3
 from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.middleware import ensure_middleware
 from y.utils.multicall import \
-    multicall_same_func_same_contract_different_inputs_async
+    multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -59,71 +53,47 @@ class Ids(IntEnum):
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
-    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
-        super().__init__(address, *args, **kwargs)
-    
-    def __repr__(self) -> str:
-        return f"<CurvePool '{self.address}'>"
-    
-    @cached_property
-    def contract(self) -> Contract:
-        return Contract(self.address)
-    
-    @cached_property
-    def factory(self) -> Contract:
-        return curve.get_factory(self)
+    @a_sync.aka.cached_property
+    async def factory(self) -> Contract:
+        return await curve.get_factory(self, sync=False)
 
-    @cached_property
-    #yLazyLogger(logger)
-    def get_coins(self) -> List[ERC20]:
-        return await_awaitable(self.get_coins_async) 
-    
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def get_coins_async(self) -> List[ERC20]:
+    @a_sync.aka.cached_property
+    async def coins(self) -> List[ERC20]:
         """
         Get coins of pool.
         """
-        if self.factory:
-            coins = self.factory.get_coins(self.address)
+        factory = await self.__factory__(sync=False)
+        if factory:
+            coins = await factory.get_coins.coroutine(self.address)
         else:
-            coins = curve.registry.get_coins(self.address)
+            registry = await curve.__registry__(sync=False)
+            coins = await registry.get_coins(self.address, sync=False)
         
         # pool not in registry
         if set(coins) == {ZERO_ADDRESS}:
-            coins = await multicall_same_func_same_contract_different_inputs_async(
+            coins = await multicall_same_func_same_contract_different_inputs(
                 self.address, 
                 'coins(uint256)(address)', 
                 inputs = [i for i in range(8)],
-                return_None_on_failure=True
-                )
+                return_None_on_failure=True,
+                sync=False,
+            )
 
-        return [ERC20(coin) for coin in coins if coin not in {None, ZERO_ADDRESS}]
+        return [ERC20(coin, asynchronous=self.asynchronous) for coin in coins if coin not in {None, ZERO_ADDRESS}]
     
-    #yLazyLogger(logger)
-    def get_coin_index(self, coin: AnyAddressType) -> int:
-        return await_awaitable(self.get_coin_index_async(coin))
+    @a_sync.a_sync(ram_cache_maxsize=256)
+    async def get_coin_index(self, coin: AnyAddressType) -> int:
+        return [i for i, _coin in enumerate(await self.__coins__(sync=False)) if _coin == coin][0]
     
-    #yLazyLogger(logger)
-    @alru_cache
-    async def get_coin_index_async(self, coin: AnyAddressType) -> int:
-        return [i for i, _coin in enumerate(await self.get_coins_async) if _coin == coin][0]
+    @a_sync.aka.cached_property
+    async def num_coins(self) -> int:
+        return len(await self.__coins__(sync=False))
     
-    @cached_property
-    #yLazyLogger(logger)
-    def num_coins(self) -> int:
-        return len(self.get_coins)
-    
-    #yLazyLogger(logger)
-    def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
-        return await_awaitable(self.get_dy_async(coin_ix_in, coin_ix_out, block=block))
-    
-    #yLazyLogger(logger)
-    async def get_dy_async(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
-        tokens = await self.get_coins_async
+    async def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
+        tokens = await self.__coins__(sync=False)
         token_in = tokens[coin_ix_in]
         token_out = tokens[coin_ix_out]
-        amount_in = await token_in.scale
+        amount_in = await token_in.__scale__(sync=False)
         try:
             amount_out = await self.contract.get_dy.coroutine(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
             return WeiBalance(amount_out, token_out, block=block)
@@ -132,65 +102,57 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
                 return None
             raise
     
-    @cached_property
-    #yLazyLogger(logger)
-    def get_coins_decimals(self) -> List[int]:
-        return await_awaitable(self.get_coins_decimals())
-    
-    #yLazyLogger(logger)
-    @async_cached_property
-    async def get_coins_decimals_async(self) -> List[int]:
-        source = self.factory if self.factory else curve.registry
+    @a_sync.aka.cached_property
+    async def coins_decimals(self) -> List[int]:
+        factory = await self.__factory__(sync=False)
+        source = factory if factory else await curve.registry
         coins_decimals = await source.get_decimals.coroutine(self.address)
 
         # pool not in registry
         if not any(coins_decimals):
-            coins = await self.get_coins_async
+            coins = await self.__coins__(sync=False)
             coins_decimals = await asyncio.gather(*[coin.decimals for coin in coins])
         
         return [dec for dec in coins_decimals if dec != 0]
     
-    @cached_property
-    #yLazyLogger(logger)
-    def get_underlying_coins(self) -> List[ERC20]:        
-        if self.factory:
+    @a_sync.aka.cached_property
+    async def get_underlying_coins(self) -> List[ERC20]:    
+        factory = await self.__factory__(sync=False)    
+        if factory:
             # new factory reverts for non-meta pools
-            if not hasattr(self.factory, 'is_meta') or self.factory.is_meta(self.address):
-                coins = self.factory.get_underlying_coins(self.address)
+            if not hasattr(factory, 'is_meta') or factory.is_meta(self.address):
+                coins = await factory.get_underlying_coins.coroutine(self.address)
             else:
-                coins = self.factory.get_coins(self.address)
+                coins = await factory.get_coins.coroutine(self.address)
         else:
-            coins = curve.registry.get_underlying_coins(self.address)
+            registry = await curve.registry
+            coins = await registry.get_underlying_coins.coroutine(self.address)
         
         # pool not in registry, not checking for underlying_coins here
         if set(coins) == {ZERO_ADDRESS}:
-            return self.get_coins
+            return await self.__coins__(sync=False)
 
-        return [ERC20(coin) for coin in coins if coin != ZERO_ADDRESS]
+        return [ERC20(coin, asynchronous=self.asynchronous) for coin in coins if coin != ZERO_ADDRESS]
     
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=None)
-    def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
-        return await_awaitable(self.get_balances_async(block=block)) 
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
-    async def get_balances_async(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
+    @a_sync.a_sync(ram_cache_maxsize=1000)
+    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
         """
         Get {token: balance} of liquidity in the pool.
         """
 
         # TODO figure out why these can't be gathered.
-        # Sometimes `self.get_coins_async` is a list not a coroutine?
+        # Sometimes `self.coins` is a list not a coroutine?
         #coins, decimals = await gather([
-        #    self.get_coins_async,
-        #    self.get_coins_decimals_async,
+        #    self.__coins__(sync=False),
+        #    self.__coins_decimals__(sync=False),
         #])
-        coins = await self.get_coins_async
-        decimals = await self.get_coins_decimals_async
+
+        coins = await self.__coins__(sync=False)
+        decimals = await self.__coins_decimals__(sync=False)
 
         try:
-            source = self.factory if self.factory else curve.registry
+            factory = await self.__factory__(sync=False)
+            source = factory if factory else await curve.__registry__(sync=False)
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         # fallback for historical queries where registry was not yet deployed
         except ValueError:
@@ -212,60 +174,37 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             if str(e) == "No data was returned - the call likely reverted":
                 return None
             raise
-    
-    #yLazyLogger(logger)
-    def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
-        """
-        Get total value in Curve pool.
-        """
-        return await_awaitable(self.get_tvl_async(block=block))
 
-    #yLazyLogger(logger)
-    async def get_tvl_async(self, block: Optional[Block] = None) -> Optional[UsdValue]:
+    async def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         """
         Get total value in Curve pool.
         """
-        balances = await self.get_balances_async(block=block)
+        balances = await self.get_balances(block=block, sync=False)
         if balances is None:
             return None
         
-        prices = await asyncio.gather(*[coin.price_async(block=block) for coin in balances])
+        prices = await asyncio.gather(*[coin.price(block=block, sync=False) for coin in balances])
 
         return UsdValue(
             sum(balance * price for balance, price in zip(balances.values(),prices))
         )
     
-    @cached_property
-    #yLazyLogger(logger)
-    def oracle(self) -> Optional[Address]:
-        '''
-        If `pool` has method `price_oracle`, returns price_oracle address.
-        Else, returns `None`.
-        '''
-        response = raw_call(self.address, 'price_oracle()', output='address', return_None_on_failure=True)
-        if response == ZERO_ADDRESS:
-            return None
-        return response
-    
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=None)
-    def gauge(self) -> Optional[brownie.Contract]:
-        """
-        Get liquidity gauge address by pool.
-        """
-        if self.factory and hasattr(self.factory, 'get_gauge'):
-            gauge = self.factory.get_gauge(self.address)
-            if gauge != ZERO_ADDRESS:
-                return Contract(gauge)
-
-        gauges, types = curve.registry.get_gauges(self.address)
-        if gauges[0] != ZERO_ADDRESS:
-            return Contract(gauges[0])
-        return None
+    #@cached_property
+    #def oracle(self) -> Optional[Address]:
+    #    '''
+    #    If `pool` has method `price_oracle`, returns price_oracle address.
+    #    Else, returns `None`.
+    #    '''
+    #    response = raw_call(self.address, 'price_oracle()', output='address', return_None_on_failure=True)
+    #    if response == ZERO_ADDRESS:
+    #        return None
+    #    return response
 
 
-class CurveRegistry(metaclass=Singleton):
-    def __init__(self) -> None:
+class CurveRegistry(a_sync.ASyncGenericSingleton):
+    def __init__(self, asynchronous: bool = False) -> None:
+        super().__init__()
+        self.asynchronous = asynchronous
         try: self.address_provider = Contract(ADDRESS_PROVIDER)
         except (ContractNotFound, ContractNotVerified):
             raise UnsupportedNetwork("curve is not supported on this network")
@@ -297,7 +236,6 @@ class CurveRegistry(metaclass=Singleton):
         elif event.name == 'AddressModified':
             self.identifiers[Ids(event['id'])].append(event['new_address'])
 
-    @event_daemon_task
     async def _load_address_providers(self) -> NoReturn:
         """ Fetch all address providers. """
         if self._address_providers_loading.is_set():
@@ -324,7 +262,6 @@ class CurveRegistry(metaclass=Singleton):
         elif event.name == 'PoolRemoved':
             self.registries[event.address].discard(event['pool'])
 
-    @event_daemon_task
     async def _load_registry(self, registry: Address) -> NoReturn:
         """ Fetch all pools from a particular registry. """ 
         contract, block = await asyncio.gather(Contract.coroutine(registry), dank_w3.eth.block_number)
@@ -340,13 +277,12 @@ class CurveRegistry(metaclass=Singleton):
                 # Must go one-by-one for chronological order, no gather
                 await self._load_registry_event(contract, event)
 
-    @event_daemon_task   
     async def _load_registries(self) -> None:
         if self._all_loading.is_set():
             return
         self._all_loading.set()
         if not self._address_providers_loading.is_set():
-            await self._load_address_providers()
+            asyncio.get_event_loop().create_task(self._load_address_providers())
         while not self._address_providers_loaded.is_set():
             await asyncio.sleep(0)
         
@@ -364,7 +300,9 @@ class CurveRegistry(metaclass=Singleton):
             ]
             if registries != known_registries:
                 # For any updated registries, fetch logs
-                await asyncio.gather(*[self._load_registry(registry) for registry in registries if registry not in known_registries])
+                for registry in registries:
+                    if registry not in known_registries:
+                        asyncio.get_event_loop().create_task(self._load_registry(registry))
                 known_registries = registries
             
             if not self._registries_loaded.is_set():
@@ -416,7 +354,7 @@ class CurveRegistry(metaclass=Singleton):
     
     async def load_all(self) -> None:
         if not self._all_loading.is_set():
-            await self._load_registries()
+            asyncio.get_event_loop().create_task(self._load_registries())
         while not self._all_loaded.is_set():
             await asyncio.sleep(0)
     
@@ -432,16 +370,14 @@ class CurveRegistry(metaclass=Singleton):
         pool_count = await registry.pool_count.coroutine()
         return await asyncio.gather(*[registry.pool_list.coroutine(i) for i in range(pool_count)])
 
-    @property
-    #yLazyLogger(logger)
-    def registry(self) -> brownie.Contract:
+    @a_sync.aka.cached_property
+    async def registry(self) -> brownie.Contract:
         try:
-            return Contract(self.identifiers[0][-1])
+            return await Contract.coroutine(self.identifiers[0][-1])
         except IndexError: # if we couldn't get the registry via logs
-            return Contract(raw_call(self.address_provider, 'get_registry()', output='address'))
+            return await Contract.coroutine(await raw_call(self.address_provider, 'get_registry()', output='address', sync=False))
 
-    #yLazyLogger(logger)
-    def get_factory(self, pool: AddressOrContract) -> Contract:
+    async def get_factory(self, pool: AddressOrContract) -> Contract:
         """
         Get metapool factory that has spawned a pool.
         """
@@ -451,25 +387,19 @@ class CurveRegistry(metaclass=Singleton):
                 for factory, factory_pools in self.factories.items()
                 if str(pool) in factory_pools
             )
-            return Contract(factory)
+            return await Contract.coroutine(factory)
         except StopIteration:
             return None    
     
-    @ttl_cache(maxsize=None)
-    def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
-        return await_awaitable(self.get_price_async(token, block=block))
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
-    async def get_price_async(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
-        pool = await self.get_pool(token)
-        tvl = await pool.get_tvl_async(block=block)
+    @a_sync.a_sync(cache_type='memory')
+    async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
+        pool = await self.get_pool(token, sync=False)
+        tvl = await pool.get_tvl(block=block, sync=False)
         if tvl is None:
             return None
-        return tvl / await ERC20(token).total_supply_readable_async(block)
+        return tvl / await ERC20(token, asynchronous=True).total_supply_readable(block)
 
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
+    @a_sync.a_sync(cache_type='memory')
     async def get_pool(self, token: AnyAddressType) -> CurvePool:
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
@@ -480,16 +410,10 @@ class CurveRegistry(metaclass=Singleton):
         if token in self.token_to_pool and token != ZERO_ADDRESS:
             return CurvePool(self.token_to_pool[token])
 
-    #yLazyLogger(logger)
-    @lru_cache(maxsize=None)
-    def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await_awaitable(self.get_price_for_underlying_async(token_in, block=block))
-    
-    #yLazyLogger(logger)
-    @alru_cache(maxsize=None)
-    async def get_price_for_underlying_async(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    @a_sync.a_sync(cache_type='memory')
+    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         try:
-            pools: List[CurvePool] = (await self.coin_to_pools_async)[token_in]
+            pools: List[CurvePool] = (await self.__coin_to_pools__(sync=False))[token_in]
         except KeyError:
             return None
         
@@ -502,7 +426,7 @@ class CurveRegistry(metaclass=Singleton):
             pool = pools[0]
         else:
             # Use the pool with deepest liquidity.
-            balances = await asyncio.gather(*[pool.get_balances_async(block=block) for pool in pools], return_exceptions=True)
+            balances = await asyncio.gather(*[pool.get_balances(block=block, sync=False) for pool in pools], return_exceptions=True)
             deepest_pool, deepest_bal = None, 0
             for pool, pool_bals in zip(pools, balances):
                 if isinstance(pool_bals, Exception):
@@ -519,45 +443,46 @@ class CurveRegistry(metaclass=Singleton):
             return None
         
         # Get the price for `token_in` using the selected pool.
-        if len(coins := await pool.get_coins_async) == 2:
+        if len(coins := await pool.__coins__(sync=False)) == 2:
             # this works for most typical metapools
-            from y.prices.utils.buckets import check_bucket_async
+            from y.prices.utils.buckets import check_bucket
 
-            token_in_ix = await pool.get_coin_index_async(token_in)
+            token_in_ix = await pool.get_coin_index(token_in, sync=False)
             token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
-            dy = await pool.get_dy_async(token_in_ix, token_out_ix, block = block)
+            dy = await pool.get_dy(token_in_ix, token_out_ix, block = block, sync=False)
             if dy is None:
                 return None
-            coro = dy.value_usd_async
+
             try:
                 token_out = coins[token_out_ix]
                 # If we know we won't have issues with recursion, we can await directly.
-                if await check_bucket_async(token_out):
-                    return await coro
+                if await check_bucket(token_out, sync=False):
+                    return await dy.__value_usd__(sync=False)
                 # We include a timeout here in case we create a recursive loop.
-                for p in asyncio.as_completed([coro],timeout=RECURSION_TIMEOUT):
+                for p in asyncio.as_completed([dy.__value_usd__(sync=False)],timeout=RECURSION_TIMEOUT):
                     log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
-                    return await p
-            except (PriceError, asyncio.TimeoutError):
+                    price = await p
+                    print(type(price))
+                    return price
+            except (PriceError, asyncio.TimeoutError) as e:
+                print(f"exc: {e}")
                 return None
+            except:
+                raise
+                
         else:
             # TODO: handle this sitch if necessary
             return
-
-
-    @cached_property
-    def coin_to_pools(self) -> Dict[str, List[CurvePool]]:
-        return await_awaitable(self.coin_to_pools_async)
     
-    @async_cached_property
-    async def coin_to_pools_async(self) -> Dict[str, List[CurvePool]]:
+    @a_sync.aka.cached_property
+    async def coin_to_pools(self) -> Dict[str, List[CurvePool]]:
         mapping = defaultdict(set)
         await self.load_all()
         pools = {CurvePool(pool) for pools in self.factories.values() for pool in pools}
         for pool in pools:
-            for coin in await pool.get_coins_async:
+            for coin in await pool.__coins__(sync=False):
                 mapping[coin].add(pool)
         return {coin: list(pools) for coin, pools in mapping.items()}
 
-try: curve = CurveRegistry()
+try: curve = CurveRegistry(asynchronous=True)
 except UnsupportedNetwork: curve = set()

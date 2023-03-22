@@ -6,10 +6,10 @@ from brownie import chain
 
 from y.classes.common import ERC20
 from y.constants import wbtc, weth
+from y.exceptions import NonStandardERC20
 from y.networks import Network
-from y.prices.utils.buckets import check_bucket_async
-from y.utils.logging import yLazyLogger
-from y.utils.raw_calls import raw_call_async
+from y.prices.utils.buckets import check_bucket
+from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +35,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84", # stETH
         "0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593", # rETH
         "0x836A808d4828586A69364065A1e064609F5078c7", # pETH
+        "0xc3D088842DcF02C13699F936BB83DFBBc6f721Ab", # vETH
         # btc and btc-like
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
         "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", # sbtc
@@ -54,6 +55,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68", # obtc
         "0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa", # tbtc
         "0x8751D4196027d4e6DA63716fA7786B5174F04C15", # wibbtc
+        "0x66eFF5221ca926636224650Fd3B9c497FF828F7D", # multiBTC
+        "0x18084fbA666a33d37592fA2633fD49a74DD93a88", # tbtc
         # gold tokens
         "0x45804880De22913dAFE09f4980848ECE6EcbAf78", # paxg
         "0x4922a015c4407F87432B179bb209e125432E4a2A", # xaut
@@ -74,6 +77,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF", # alcx
         "0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74", # xMON
         "0x892A6f9dF0147e5f079b0993F486F9acA3c87881", # xFUND
+        "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f", # gOHM
+        "0x97983236bE88107Cc8998733Ef73D8d969c52E37", # sdYFI
         # nfts
         "0x641927E970222B10b2E8CDBC96b1B4F427316f16", # meeb
         "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
@@ -127,9 +132,12 @@ async def _sense_check(
 
     # proceed with sense check
     price_readable = round(price, 4)
-    symbol = await ERC20(token_address).symbol_async
     network = Network.name(chain.id)
-    logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+    try:
+        symbol = await ERC20(token_address, asynchronous=True).symbol
+        logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+    except NonStandardERC20:
+        logger.warning(f'unusually high price (${price_readable}) returned for {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
 
 #yLazyLogger(logger)
@@ -140,7 +148,7 @@ async def _exit_sense_check(token_address: str) -> bool:
     We can also skip wrapped versions of tokens in `ACCEPTABLE_HIGH_PRICES`.
     '''
 
-    bucket = await check_bucket_async(token_address)
+    bucket = await check_bucket(token_address, sync=False)
 
     if bucket == 'uni or uni-like lp':
         return True
@@ -152,13 +160,13 @@ async def _exit_sense_check(token_address: str) -> bool:
 
     elif bucket == 'yearn or yearn-like':
         try: # v2
-            underlying = await raw_call_async(token_address, 'token()', output='address')
+            underlying = await raw_call(token_address, 'token()', output='address', sync=False)
             if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
         try: # v1
-            underlying = await raw_call_async(token_address, 'want()', output='address')
+            underlying = await raw_call(token_address, 'want()', output='address', sync=False)
             if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
@@ -166,20 +174,20 @@ async def _exit_sense_check(token_address: str) -> bool:
     
     elif bucket == 'atoken':
         try: # v2
-            underlying = await raw_call_async(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address')
+            underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address', sync=False)
             if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
         try: # v1
-            underlying = await raw_call_async(token_address, 'underlyingAssetAddress()', output='address')
+            underlying = await raw_call(token_address, 'underlyingAssetAddress()', output='address', sync=False)
             if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
                 return True
         except:
             pass
 
     elif bucket == 'compound':
-        underlying = await raw_call_async(token_address, 'underlying()', output='address')
+        underlying = await raw_call(token_address, 'underlying()', output='address', sync=False)
         if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
             return True
     

@@ -2,11 +2,11 @@ import asyncio
 import logging
 from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
+import a_sync
 import brownie
 from brownie import chain, web3
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
-from multicall.utils import await_awaitable
 from web3.exceptions import CannotHandleRequest
 
 from y import convert
@@ -15,7 +15,6 @@ from y.datatypes import Address, AddressOrContract, AnyAddressType, Block
 from y.exceptions import continue_if_call_reverted
 from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
-from y.utils.logging import yLazyLogger
 from y.utils.raw_calls import _decimals, _totalSupply
 
 logger = logging.getLogger(__name__)
@@ -45,22 +44,8 @@ code = "0x608060405234801561001057600080fd5b50600436106100b45760003560e01c806372
 multicall_deploy_block = contract_creation_block(multicall2.address)
 
 
-#yLazyLogger(logger)
-def multicall_same_func_no_input(
-    addresses: Iterable[AnyAddressType],
-    method: str, 
-    block: Optional[Block] = None,
-    apply_func: Optional[Callable] = None,
-    return_None_on_failure: bool = False
-    ) -> List[Any]:
-
-    return await_awaitable(
-        multicall_same_func_no_input_async(addresses, method, block=block, apply_func=apply_func, return_None_on_failure=return_None_on_failure)
-    )
-    
-
-#yLazyLogger(logger)
-async def multicall_same_func_no_input_async(
+@a_sync.a_sync(default='sync')
+async def multicall_same_func_no_input(
     addresses: Iterable[AnyAddressType],
     method: str, 
     block: Optional[Block] = None,
@@ -73,23 +58,8 @@ async def multicall_same_func_no_input_async(
     return [v for call in results for k, v in call.items()]
 
 
-#yLazyLogger(logger)
-def multicall_same_func_same_contract_different_inputs(
-    address: AnyAddressType, 
-    method: str, 
-    inputs: Union[List, Tuple],  
-    block: Optional[Block] = None,
-    apply_func: Optional[Callable] = None,
-    return_None_on_failure: bool = False
-    ) -> List[Any]:
-
-    return await_awaitable(
-        multicall_same_func_same_contract_different_inputs_async(address, method, inputs, block=block, apply_func=apply_func, return_None_on_failure=return_None_on_failure)
-    )
-
-
-#yLazyLogger(logger)
-async def multicall_same_func_same_contract_different_inputs_async(
+@a_sync.a_sync(default='sync')
+async def multicall_same_func_same_contract_different_inputs(
     address: AnyAddressType, 
     method: str, 
     inputs: Union[List, Tuple],  
@@ -103,18 +73,8 @@ async def multicall_same_func_same_contract_different_inputs_async(
     return [result for call in results for key, result in call.items()]
 
 
-#yLazyLogger(logger)
-def multicall_decimals(
-    addresses: Iterable[AddressOrContract], 
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = True
-    ) -> List[int]:
-    return await_awaitable(
-        multicall_decimals_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
-    )
-
-#yLazyLogger(logger)
-async def multicall_decimals_async(
+@a_sync.a_sync(default='sync')
+async def multicall_decimals(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
     return_None_on_failure: bool = True
@@ -130,30 +90,19 @@ async def multicall_decimals_async(
     decimals = await asyncio.gather(*[_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses])
     return decimals
 
-
-#yLazyLogger(logger)
-def multicall_totalSupply(
-    addresses: Iterable[AddressOrContract], 
-    block: Optional[Block] = None,
-    return_None_on_failure: bool = True
-    ) -> List[int]:
-    return await_awaitable(
-        multicall_totalSupply_async(addresses, block=block, return_None_on_failure=return_None_on_failure)
-    )
-
-#yLazyLogger(logger)
-async def multicall_totalSupply_async(
+@a_sync.a_sync(default='sync')
+async def multicall_totalSupply(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
     return_None_on_failure: bool = True
     ) -> List[int]:
 
     try:
-        return await multicall_same_func_no_input_async(addresses, 'totalSupply()(uint256)', block=block)
+        return await multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block, sync=False)
     except (CannotHandleRequest,InsufficientDataBytes):
         pass
         
-    return [await _totalSupply(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses] 
+    return [await _totalSupply(address,block=block,return_None_on_failure=return_None_on_failure, sync=False) for address in addresses] 
 
 
 #yLazyLogger(logger)
