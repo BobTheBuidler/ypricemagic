@@ -122,7 +122,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
             raise RuntimeError(f"'self.asynchronous' must be False to use AaveRegistry.__contains__.\nYou may wish to use AaveRegistry.is_atoken instead.")
         return any(__o in pool for pool in self.pools)
 
-    @a_sync.a_sync(ram_cache_ttl = 60 * 10)
+    @a_sync.a_sync(cache_type='memory')
     async def is_atoken(self, token_address: AnyAddressType) -> bool:
         return any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__(sync=False)]))
     
