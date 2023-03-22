@@ -53,24 +53,18 @@ class Ids(IntEnum):
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
-    def __init__(self, address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
-        super().__init__(address, *args, **kwargs)
-    
-    @cached_property
-    def contract(self) -> Contract:
-        return Contract(self.address)
-    
-    @cached_property
-    def factory(self) -> Contract:
-        return curve.get_factory(self)
+    @a_sync.aka.cached_property
+    async def factory(self) -> Contract:
+        return await curve.get_factory(self, sync=False)
 
     @a_sync.aka.cached_property
     async def coins(self) -> List[ERC20]:
         """
         Get coins of pool.
         """
-        if self.factory:
-            coins = await self.factory.get_coins.coroutine(self.address)
+        factory = await self.__factory__(sync=False)
+        if factory:
+            coins = await factory.get_coins.coroutine(self.address)
         else:
             registry = await curve.__registry__(sync=False)
             coins = await registry.get_coins(self.address, sync=False)
@@ -110,7 +104,8 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     
     @a_sync.aka.cached_property
     async def coins_decimals(self) -> List[int]:
-        source = self.factory if self.factory else await curve.registry
+        factory = await self.__factory__(sync=False)
+        source = factory if factory else await curve.registry
         coins_decimals = await source.get_decimals.coroutine(self.address)
 
         # pool not in registry
@@ -121,13 +116,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         return [dec for dec in coins_decimals if dec != 0]
     
     @a_sync.aka.cached_property
-    async def get_underlying_coins(self) -> List[ERC20]:        
-        if self.factory:
+    async def get_underlying_coins(self) -> List[ERC20]:    
+        factory = await self.__factory__(sync=False)    
+        if factory:
             # new factory reverts for non-meta pools
-            if not hasattr(self.factory, 'is_meta') or self.factory.is_meta(self.address):
-                coins = await self.factory.get_underlying_coins.coroutine(self.address)
+            if not hasattr(factory, 'is_meta') or factory.is_meta(self.address):
+                coins = await factory.get_underlying_coins.coroutine(self.address)
             else:
-                coins = await self.factory.get_coins.coroutine(self.address)
+                coins = await factory.get_coins.coroutine(self.address)
         else:
             registry = await curve.registry
             coins = await registry.get_underlying_coins.coroutine(self.address)
@@ -155,11 +151,12 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         decimals = await self.__coins_decimals__(sync=False)
 
         try:
-            source = self.factory if self.factory else await curve.__registry__(sync=False)
+            factory = await self.__factory__(sync=False)
+            source = factory if factory else await curve.__registry__(sync=False)
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         # fallback for historical queries where registry was not yet deployed
         except ValueError:
-            balances = await asyncio.gather(*[self._get_balance(i, block, sync=False) for i, _ in enumerate(coins)])
+            balances = await asyncio.gather(*[self._get_balance(i, block) for i, _ in enumerate(coins)])
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
@@ -380,7 +377,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         except IndexError: # if we couldn't get the registry via logs
             return await Contract.coroutine(await raw_call(self.address_provider, 'get_registry()', output='address', sync=False))
 
-    def get_factory(self, pool: AddressOrContract) -> Contract:
+    async def get_factory(self, pool: AddressOrContract) -> Contract:
         """
         Get metapool factory that has spawned a pool.
         """
@@ -390,7 +387,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 for factory, factory_pools in self.factories.items()
                 if str(pool) in factory_pools
             )
-            return Contract(factory)
+            return await Contract.coroutine(factory)
         except StopIteration:
             return None    
     
