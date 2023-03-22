@@ -12,13 +12,15 @@ from y.utils.dank_mids import dank_w3
 
 TOKENS = list(STABLECOINS) + [WRAPPED_GAS_COIN, wbtc.address]
 
+OLD_SUSD = "0x57Ab1E02fEE23774580C119740129eAC7081e9D3"
+
 TOKENS_BY_BLOCK = [(token, block) for token in TOKENS for block in blocks_for_contract(token)]
 
 @pytest.mark.parametrize('token',TOKENS)
 def test_erc20_sync(token):
     token = ERC20(token)
 
-    if token.address == '0x57ab1e02fee23774580c119740129eac7081e9d3': # old sUSD
+    if token.address == OLD_SUSD:
         pytest.skip('Not applicable to deprecated sUSD.')
 
     block = chain.height
@@ -35,7 +37,7 @@ def test_erc20_sync(token):
 async def test_erc20_async(token):
     token = ERC20(token, asynchronous=True)
 
-    if token.address == '0x57ab1e02fee23774580c119740129eac7081e9d3': # old sUSD
+    if token.address == OLD_SUSD:
         pytest.skip('Not applicable to deprecated sUSD.')
 
     block = await dank_w3.eth.block_number
