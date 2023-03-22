@@ -49,6 +49,10 @@ ALL_TOKENS.remove('0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0')
 @pytest.mark.parametrize('block', BLOCKS)
 @pytest.mark.asyncio_cooperative
 async def test_get_prices(block):
+    """
+    Sometimes this will fail unnecessarily because Chainlink has added some more fiat feeds.
+    Just add the failing identifier to 'chainlink_identifiers_not_tokens' below.
+    """
     tokens = await relevant_tokens(ALL_TOKENS, block)
     checked_separately = await asyncio.gather(*[get_price(token, block) for token in tokens])
     checked_together = await magic.get_prices(tokens, block, fail_to_None=True, sync=False)
@@ -69,8 +73,23 @@ async def get_price(token, block):
         raise ValueError(token, str(e))
 
 chainlink_identifiers_not_tokens = [
-    "0x00000000000000000000000000000000000002F4",
+    "0x0000000000000000000000000000000000000024",
+    "0x000000000000000000000000000000000000007c",
     "0x000000000000000000000000000000000000009c",
+    "0x0000000000000000000000000000000000000188",
+    "0x000000000000000000000000000000000000019a",
+    "0x0000000000000000000000000000000000000164",
+    "0x000000000000000000000000000000000000022A",
+    "0x0000000000000000000000000000000000000236",
+    "0x0000000000000000000000000000000000000260",
+    "0x00000000000000000000000000000000000002be",
+    "0x00000000000000000000000000000000000002c6",
+    "0x00000000000000000000000000000000000002F4",
+    "0x000000000000000000000000000000000000033a",
+    "0x00000000000000000000000000000000000003d2",
+    "0x00000000000000000000000000000000000003Da",
+    "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+    "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
 ]
 
 async def relevant_tokens(tokens, block):
