@@ -101,7 +101,10 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            decimals = brownie.Contract.from_explorer(contract_address).DECIMALS(block_identifier=block)
+            try:
+                decimals = brownie.Contract.from_explorer(contract_address).DECIMALS(block_identifier=block)
+            except AttributeError:
+                pass
                 
     if decimals is not None:
         return decimals
@@ -122,7 +125,10 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            decimals = brownie.Contract.from_explorer(contract_address).getDecimals(block_identifier=block)
+            try:
+                decimals = brownie.Contract.from_explorer(contract_address).getDecimals(block_identifier=block)
+            except AttributeError:
+                pass
                 
     if decimals is not None:
         return decimals
@@ -148,6 +154,8 @@ async def _totalSupply(
     block: Optional[Block] = None,
     return_None_on_failure: bool = False # TODO: implement this kwarg
     ) -> Optional[int]:
+    
+    total_supply = None
 
     try: total_supply = await raw_call(contract_address, "totalSupply()", block=block, output='int', return_None_on_failure=True, sync=False)
     except OverflowError:
