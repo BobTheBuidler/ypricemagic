@@ -67,7 +67,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             coins = await factory.get_coins.coroutine(self.address)
         else:
             registry = await curve.__registry__(sync=False)
-            coins = await registry.get_coins(self.address, sync=False)
+            coins = await registry.get_coins.coroutine(self.address)
         
         # pool not in registry
         if set(coins) == {ZERO_ADDRESS}:
