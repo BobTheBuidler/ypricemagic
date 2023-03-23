@@ -43,7 +43,7 @@ async def get_price_from_api(
     async with YPRICEAPI_SEMAPHORE:
         try:
             async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), auth=auth) as session:
-                response = await session.get(f'/get_price/{chain.id}/{token}/{block}')
+                response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
 
                 # Handle successful response
                 if response.status == 200:
