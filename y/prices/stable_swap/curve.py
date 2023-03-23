@@ -111,7 +111,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         # pool not in registry
         if not any(coins_decimals):
             coins = await self.__coins__(sync=False)
-            coins_decimals = await asyncio.gather(*[coin.decimals for coin in coins])
+            coins_decimals = await asyncio.gather(*[coin.__decimals__(sync=False) for coin in coins])
         
         return [dec for dec in coins_decimals if dec != 0]
     
