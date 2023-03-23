@@ -21,7 +21,6 @@ from dank_mids.brownie_patch import patch_contract
 from dank_mids.semaphore import ThreadsafeSemaphore
 from hexbytes import HexBytes
 from multicall import Call
-from multicall.utils import await_awaitable
 
 from y import convert
 from y.datatypes import Address, AnyAddressType, Block
