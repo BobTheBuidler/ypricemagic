@@ -5,6 +5,7 @@ from functools import cached_property
 from typing import Any, Optional, Union
 
 import a_sync
+from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
 
 from y import convert
@@ -20,6 +21,13 @@ from y.utils.raw_calls import balanceOf
 
 logger = logging.getLogger(__name__)
 
+
+def hex_to_string(h: HexString) -> str:
+    '''returns a string from a HexString'''
+    h = h.hex().rstrip("0")
+    if len(h) % 2 != 0:
+        h += "0"
+    return bytes.fromhex(h).decode("utf-8")
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
@@ -85,6 +93,11 @@ class ERC20(ContractBase):
         symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
         if symbol:
             return symbol
+        
+        # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
+        symbol = await probe(self.address, ["symbol()(bytes32)"])
+        if symbol:
+            return hex_to_string(symbol)
 
         # we've failed to fetch
         self.__raise_exception('symbol')
@@ -98,6 +111,11 @@ class ERC20(ContractBase):
         if name:
             return name
         
+        # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
+        name = await probe(self.address, ["name()(bytes32)"])
+        if name:
+            return hex_to_string(name)
+                
         # we've failed to fetch
         self.__raise_exception('name')
     

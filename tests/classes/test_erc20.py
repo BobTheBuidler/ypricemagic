@@ -8,9 +8,15 @@ from y.classes.common import ERC20
 from y.constants import WRAPPED_GAS_COIN, wbtc
 from y.contracts import Contract
 from y.exceptions import NoProxyImplementation, call_reverted
+from y.networks import Network
 from y.utils.dank_mids import dank_w3
 
 TOKENS = list(STABLECOINS) + [WRAPPED_GAS_COIN, wbtc.address]
+
+if chain.id == Network.Mainnet:
+    # MKR symbol and name methods return bytes, we want to test that our code returns strings
+    MKR = "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2"
+    TOKENS.append(MKR)
 
 OLD_SUSD = "0x57Ab1E02fEE23774580C119740129eAC7081e9D3"
 
@@ -54,7 +60,7 @@ async def test_erc20_async(token):
 async def test_erc20_at_block(token, block):
     token = ERC20(token, asynchronous=True)
 
-    if token.address == '0x57ab1e02fee23774580c119740129eac7081e9d3' and block >= 13222927:
+    if token.address == OLD_SUSD and block >= 13222927:
         pytest.skip('Not applicable to the old sUSD after migration block.')
 
     # NOTE Some proxy tokens would fail tests in early days because no implementation is specified.
