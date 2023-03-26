@@ -11,7 +11,7 @@ import a_sync
 import brownie
 import eth_retry
 from brownie import chain, web3
-from brownie.exceptions import ContractNotFound
+from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.network.contract import (_add_deployment, _ContractBase,
                                       _DeployedContractBase,
                                       _fetch_from_explorer, _resolve_address)
@@ -202,8 +202,14 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
             try:
                 super().__init__(address, owner=owner)
                 self.verified = True
+            # This error happens on occasion, it comes from brownie's compiling process. But we shoulnd't be using that anyway. Check config.
+            except IndexError as e:
+                if str(e) == "pop from an empty deque":
+                    raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.")
+                raise e
             # If we don't already have the contract in the db, we'll try to fetch it from the explorer.
             except ValueError as e:
+                # TODO catch the specific error we expect, not all ValueErrors
                 try:                  
                     name, abi = _resolve_proxy(address)
                     build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
