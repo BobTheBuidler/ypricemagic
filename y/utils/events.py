@@ -37,7 +37,7 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     return decoded
 
 
-@a_sync.a_sync#(default='sync')
+@a_sync.a_sync(default='sync')
 async def get_logs_asap(
     address: Optional[Address],
     topics: Optional[List[str]],
