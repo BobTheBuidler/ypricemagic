@@ -408,7 +408,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         
         token = convert.to_address(token)
         if token in self.token_to_pool and token != ZERO_ADDRESS:
-            return CurvePool(self.token_to_pool[token])
+            return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 
     @a_sync.a_sync(cache_type='memory')
     async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
