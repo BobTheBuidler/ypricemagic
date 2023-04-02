@@ -462,10 +462,8 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 for p in asyncio.as_completed([dy.__value_usd__(sync=False)],timeout=RECURSION_TIMEOUT):
                     log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                     price = await p
-                    print(type(price))
                     return price
             except (PriceError, asyncio.TimeoutError) as e:
-                print(f"exc: {e}")
                 return None
             except:
                 raise
