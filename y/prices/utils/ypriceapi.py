@@ -28,12 +28,18 @@ auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI
 
 fallback_str = "Falling back to your node for pricing."
 
+# NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
+skip_ypriceapi = set()
+
 async def get_price_from_api(
     token: Address,
     block: Optional[Block]
 ) -> Optional[UsdPrice]:
+    
+    if token in skip_ypriceapi:
+        return None
 
-    if not YPRICEAPI_URL or auth is None:
+    if USE_YPRICEAPI is False or auth is None:
         logger.error('You are unable to get price from the ypriceAPI unless you pass YPRICEAPI_URL, YPRICEAPI_USER, and YPRICEAPI_PASS.')
         return None
     
