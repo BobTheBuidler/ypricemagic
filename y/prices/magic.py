@@ -141,15 +141,19 @@ async def _get_price(
     price = await _exit_early_for_known_tokens(token, block=block)
     if price is not None:
         return price
-
-    if price is None and curve:
-        price = await curve.get_price_for_underlying(token, block=block, sync=False)
     
+    # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
+    # TODO should we use a liuidity-based method to determine this? 
     if price is None and uniswap_v3:
         price = await uniswap_v3.get_price(token, block=block, sync=False)
 
     if price is None:
         price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
+        
+    # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
+    #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
+    if price is None and curve: 
+        price = await curve.get_price_for_underlying(token, block=block, sync=False)
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price is None or price == 0:
