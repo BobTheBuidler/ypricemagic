@@ -23,10 +23,12 @@ from y.prices.dex.uniswap import uniswap_multiplexer
 from y.prices.dex.uniswap.uniswap import uniswap_multiplexer
 from y.prices.dex.uniswap.v3 import uniswap_v3
 from y.prices.eth_derivs import creth, wsteth
+from y.prices.gearbox import gearbox
 from y.prices.lending import ib
 from y.prices.lending.aave import aave
 from y.prices.lending.compound import compound
-from y.prices.stable_swap import belt, froyo, mstablefeederpool, saddle, ellipsis
+from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
+                                  saddle)
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
@@ -194,26 +196,27 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'ellipsis lp':           price = await ellipsis.get_price(token_address, block=block, sync=False)
     elif bucket == 'froyo':                 price = await froyo.get_price(token_address, block=block, sync=False)
 
+    elif bucket == 'gearbox':               price = await gearbox.get_price(token_address, block=block, sync=False)
     elif bucket == 'gelato':                price = await gelato.get_price(token_address, block=block, sync=False)
     elif bucket == 'generic amm':           price = await generic_amm.get_price(token_address, block=block, sync=False)
+    
     elif bucket == 'ib token':              price = await ib.get_price(token_address, block=block, sync=False)
-
     elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price(token_address, block=block, sync=False)
     elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price(token_address,block=block, sync=False)
+    
     elif bucket == 'one to one':            price = await one_to_one.get_price(token_address, block, sync=False)
-
     elif bucket == 'piedao lp':             price = await piedao.get_price(token_address, block=block, sync=False)
     elif bucket == 'popsicle':              price = await popsicle.get_price(token_address, block=block, sync=False)
+    
     elif bucket == 'saddle':                price = await saddle.get_price(token_address, block, sync=False)
-
     elif bucket == 'stable usd':            price = 1
     elif bucket == 'synthetix':             price = await synthetix.get_price(token_address, block, sync=False)
+    
     elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, sync=False)
-
     elif bucket == 'uni or uni-like lp':    price = await uniswap_multiplexer.lp_price(token_address, block, sync=False)
     elif bucket == 'wrapped gas coin':      price = await get_price(WRAPPED_GAS_COIN, block, sync=False)
+    
     elif bucket == 'wrapped atoken':        price = await aave.get_price_wrapped(token_address, block, sync=False)
-
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, sync=False)
     elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, sync=False)
 

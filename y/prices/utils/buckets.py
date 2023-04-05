@@ -8,6 +8,7 @@ from y.datatypes import AnyAddressType
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
+from y.prices.gearbox import gearbox
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
 from y.prices.dex.genericamm import generic_amm
@@ -62,6 +63,7 @@ async def check_bucket(
 
     # these require both calls and contract initializations
     elif await uniswap_multiplexer.is_uniswap_pool(token_address, sync=False):    return 'uni or uni-like lp'
+    elif gearbox and await gearbox.is_diesel_token(token_address, sync=False):    return 'gearbox'
 
     # this just requires contract initialization but should go behind uniswap
     elif await aave.is_wrapped_atoken(token_address, sync=False):           return 'wrapped atoken'
