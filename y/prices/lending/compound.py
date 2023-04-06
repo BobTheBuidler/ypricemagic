@@ -207,7 +207,7 @@ class Compound(a_sync.ASyncGenericSingleton):
         # NOTE: Workaround for pools that have since been revoked
         result = await has_methods(token_address, ('isCToken()(bool)','comptroller()(address)','underlying()(address)'), sync=False)
         if result is True:
-            await self.__notify_if_unknown_comptroller(token_address, sync=False)
+            await self.__notify_if_unknown_comptroller(token_address)
         return result
     
     async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
