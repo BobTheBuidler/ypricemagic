@@ -73,7 +73,7 @@ async def get_price_from_api(
                 
                 # Not Found
                 elif response.status == 404:
-                    logger.debug(f"Failed to get price from API: {result}")
+                    logger.debug(f"Failed to get price from API: {token} at {block}")
                     return None
         
                 else:
