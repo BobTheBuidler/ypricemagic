@@ -4,6 +4,7 @@ from typing import Optional, Tuple
 
 import a_sync
 from brownie import chain, convert
+from brownie.exceptions import VirtualMachineError
 from multicall import Call
 
 from y.classes.common import ERC20, ContractBase
@@ -66,18 +67,20 @@ class CToken(ERC20):
     
     async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         if self.troller:
-            # We can use the protocol's oracle which will be quick
+            # We can use the protocol's oracle which will be quick (if it works)
             underlying_per_ctoken, underlying_price = await asyncio.gather(
                 self.underlying_per_ctoken(block=block, asynchronous=True),
                 self.get_underlying_price(block=block, asynchronous=True),
             )
-        else:
-            # Or we can just price the underlying token ourselves
-            underlying = await self.__underlying__(asynchronous=True)
-            underlying_per_ctoken, underlying_price = await asyncio.gather(
-                self.underlying_per_ctoken(block=block, asynchronous=True),
-                underlying.price(block=block, asynchronous=True)
-            )
+            if underlying_price:
+                return UsdPrice(underlying_per_ctoken * underlying_price)
+            
+        # Or we can just price the underlying token ourselves
+        underlying = await self.__underlying__(asynchronous=True)
+        underlying_per_ctoken, underlying_price = await asyncio.gather(
+            self.underlying_per_ctoken(block=block, asynchronous=True),
+            underlying.price(block=block, asynchronous=True)
+        )
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
     @a_sync.aka.cached_property
@@ -119,7 +122,7 @@ class CToken(ERC20):
         
         return exchange_rate / 1e18
     
-    async def get_underlying_price(self, block: Optional[Block] = None) -> float:
+    async def get_underlying_price(self, block: Optional[Block] = None) -> Optional[float]:
         # always query the oracle in case it was changed
         oracle, underlying = await asyncio.gather(
             self.troller.oracle(block, asynchronous=True),
@@ -132,7 +135,12 @@ class CToken(ERC20):
         )
         if isinstance(price, Exception):
             # TODO debug why this occurs and refactor. only found on arbitrum cream
-            price = oracle.getUnderlyingPrice(self.address, block_identifier=block)
+            try:
+                price = oracle.getUnderlyingPrice(self.address, block_identifier=block)
+            except VirtualMachineError as e:
+                if str(e) == "revert: Chainlink feeds are not being updated":
+                    return None
+                raise e
         price /= 10 ** (36 - underlying_decimals)
         return price
     
