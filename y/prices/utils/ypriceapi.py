@@ -14,17 +14,21 @@ from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
 
+# current
+YPRICEAPI_URL = os.environ.get("YPRICEAPI_URL")
+USE_YPRICEAPI = bool(YPRICEAPI_URL)
+YPRICEAPI_SIGNER = os.environ.get("YPRICEAPI_SIGNER")
+YPRICEAPI_SIGNATURE = os.environ.get("YPRICEAPI_SIGNATURE")
+auth_headers = {"X-Signer": YPRICEAPI_SIGNER, "X-Signature": YPRICEAPI_SIGNATURE} if YPRICEAPI_SIGNER and YPRICEAPI_SIGNATURE else {}
 
+# old
 YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
-YPRICEAPI_URL = os.environ.get("YPRICEAPI_URL")
+old_auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
+
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
-USE_YPRICEAPI = bool(YPRICEAPI_URL)
-
 notified = set()
-
-auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
 fallback_str = "Falling back to your node for pricing."
 
@@ -38,9 +42,13 @@ async def get_price_from_api(
     
     if token in skip_ypriceapi:
         return None
+    
+    # Notify user if using old auth scheme
+    if old_auth is not None:
+        raise NotImplementedError("YPRICEAPI_USER and YPRICEAPI_PASS are no longer used.\nPlease sign up for a plan (we have a free tier) at ypriceapi-beta.yearn.finance.\nThen, pass in YPRICEAPI_SIGNER (the wallet you used to sign up) and YPRICEAPI_SIGNATURE (the signature you generated on the website) env vars to continue using ypriceAPI.")
 
-    if USE_YPRICEAPI is False or auth is None:
-        logger.error('You are unable to get price from the ypriceAPI unless you pass YPRICEAPI_URL, YPRICEAPI_USER, and YPRICEAPI_PASS.')
+    if USE_YPRICEAPI is False or not auth_headers:
+        logger.error('You are unable to get price from the ypriceAPI unless you pass YPRICEAPI_URL, YPRICEAPI_SIGNER, and YPRICEAPI_SIGNATURE env vars.')
         return None
     
     if block is None:
@@ -48,17 +56,12 @@ async def get_price_from_api(
     
     async with YPRICEAPI_SEMAPHORE:
         try:
-            async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), auth=auth) as session:
+            async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), headers=auth_headers) as session:
                 response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
 
                 # Handle successful response
                 if response.status == 200:
-                    result = await response.json()
-                    if isinstance(result, str):
-                        logger.warning(f"Failed to get price from API: {result}")
-                        return None
-                    else:
-                        return result
+                    return await response.json()
 
                 # Handle unsuccessful response
                 # Unauthorized
@@ -66,6 +69,11 @@ async def get_price_from_api(
                     if 401 not in notified:
                         logger.error('Your provided ypriceAPI credentials are not authorized for use.' + fallback_str)
                         notified.add(401)
+                    return None
+                
+                # Not Found
+                elif response.status == 404:
+                    logger.debug(f"Failed to get price from API: {result}")
                     return None
         
                 else:
