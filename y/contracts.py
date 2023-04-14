@@ -4,7 +4,6 @@ import json
 import logging
 import threading
 from collections import defaultdict
-from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import a_sync
@@ -18,6 +17,7 @@ from brownie.network.contract import (_add_deployment, _ContractBase,
 from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from dank_mids.brownie_patch import patch_contract
+from dank_mids.executor import PruningThreadPoolExecutor
 from dank_mids.semaphore import ThreadsafeSemaphore
 from hexbytes import HexBytes
 from multicall import Call
@@ -34,8 +34,7 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
-contract_threads = ThreadPoolExecutor(16)
-
+contract_threads = PruningThreadPoolExecutor(16)
 
 # cached Contract instance, saves about 20ms of init time
 _contract_lock = threading.Lock()

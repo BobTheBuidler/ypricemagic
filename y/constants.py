@@ -1,9 +1,9 @@
 import logging
 import os
-from concurrent.futures import ThreadPoolExecutor
 
 from brownie import Contract as _Contract
 from brownie import chain
+from dank_mids.executor import PruningThreadPoolExecutor
 
 from y.contracts import Contract
 from y.interfaces.ERC20 import ERC20ABI
@@ -192,7 +192,7 @@ WRAPPED_GAS_COIN = {
     Network.Optimism:           "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
 
-thread_pool_executor = ThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 128)))
+thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 128)))
 
 RECURSION_TIMEOUT = int(os.environ.get("YPRICEMAGIC_RECURSION_TIMEOUT", 60))
 recursion_logger_level = os.environ.get("YPRICEMAGIC_RECURSION_LOGGER_LEVEL", "debug").lower()
