@@ -85,7 +85,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         mid = lo + (hi - lo) // 2
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
-            if web3.eth.get_code(address, mid):
+            if eth_retry.auto_retry(web3.eth.get_code)(address, mid):
                 hi = mid
             else:
                 lo = mid
