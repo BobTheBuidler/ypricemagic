@@ -102,7 +102,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         pools_per_router = await asyncio.gather(*[router.pools_for_token(token_in, sync=False) for router in routers])
         pools_to_routers = {pool: router for router, pools in zip(routers,pools_per_router) for pool in pools}
         reserves = await asyncio.gather(
-            *[Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools_to_routers],
+            *(Call(pool, 'getReserves()((uint112,uint112,uint32))', block_id=block).coroutine() for pool in pools_to_routers),
             return_exceptions=True,
         )
 
