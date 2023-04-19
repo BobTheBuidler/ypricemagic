@@ -149,13 +149,17 @@ def _get_logs(
             response.remove(log)
     return response
 
-address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
+get_logs_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
 
-async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
+def _get_semaphore_key(address, topics) -> tuple:
     if isinstance(address, list):
         address.sort()
-    semaphores_key = (tuple(address) if isinstance(address, list) else address, tuple(topics) if isinstance(topics, list) else topics)
-    async with address_semaphores[semaphores_key]:
+    addr_key = tuple(address) if isinstance(address, list) else address
+    topics_key = tuple(tuple(t) if isinstance(t, list) else t for t in topics) if isinstance(topics, list) else topics
+    return addr_key, topics_key
+
+async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
+    async with get_logs_semaphores[_get_semaphore_key(address, topics)]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
