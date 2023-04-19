@@ -154,10 +154,7 @@ address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     if isinstance(address, list):
         address.sort()
-    semaphores_key = tuple(
-        tuple(address) if isinstance(address, list) else address,
-        tuple(topics) if isinstance(topics, list) else topics,
-    )
+    semaphores_key = (tuple(address) if isinstance(address, list) else address, tuple(topics) if isinstance(topics, list) else topics)
     async with address_semaphores[semaphores_key]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
