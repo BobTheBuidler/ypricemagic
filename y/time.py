@@ -97,7 +97,6 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
             await asyncio.sleep(0.2)
 
     height = await dank_w3.eth.block_number
-    print(height)
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
