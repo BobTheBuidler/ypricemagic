@@ -143,7 +143,7 @@ def _get_logs(
     else:
         response = _get_logs_no_cache(address, topics, start, end)
     for log in response:
-        if log.address != address:
+        if address and log.address != address:
             ''' I have this due to a corrupt cache on my local box that I would prefer not to lose. '''
             ''' It will not impact your scripts. ''' 
             response.remove(log)
