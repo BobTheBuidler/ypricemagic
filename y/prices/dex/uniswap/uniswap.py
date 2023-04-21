@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import threading
 from typing import Dict, Optional
 
@@ -86,6 +87,9 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         
         return None
     
+    # NOTE: This uses mad memory so we arbitrarily cut it off at 50.
+    #       Feel free to implement your own limit with the env var. 
+    @a_sync.a_sync(semaphore=int(os.environ.get("YPM_DEEPEST_ROUTER_SEMAPHORE", 50)))
     async def deepest_router(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UniswapRouterV2]:
         token_in = convert.to_address(token_in)
 
@@ -93,6 +97,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             return router # will return first router in the dict, or None if no supported routers
         return None
 
+    
     async def routers_by_depth(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
