@@ -70,7 +70,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
     """
     address = convert.to_address(address)
-    logger.info("contract creation block %s", address)
+    logger.debug(f"contract creation block {address}")
     height = chain.height
 
     if height == 0:
@@ -104,11 +104,12 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             warned = True
             barrier = mid
             lo = mid
-    if hi == lo + 1 == barrier + 1:
-        if when_no_history_return_0:
-            logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
-            return 0
+    if hi == lo + 1 == barrier + 1 and when_no_history_return_0:
+        logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
+        logger.debug(f"contract creation block {address} -> 0")
+        return 0
     if hi != height:
+        logger.debug(f"contract creation block {address} -> {hi}")
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
@@ -120,7 +121,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
     """
     address = convert.to_address(address)
-    logger.info("contract creation block %s", address)
+    logger.debug(f"contract creation block {address}")
     height = await dank_w3.eth.block_number
 
     if height == 0:
@@ -154,11 +155,12 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
             warned = True
             barrier = mid
             lo = mid
-    if hi == lo + 1 == barrier + 1:
-        if when_no_history_return_0:
-            logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
-            return 0
+    if hi == lo + 1 == barrier + 1 and when_no_history_return_0:
+        logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
+        logger.debug(f"contract creation block {address} -> 0")
+        return 0
     if hi != height:
+        logger.debug(f"contract creation block {address} -> {hi}")
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
