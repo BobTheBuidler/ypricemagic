@@ -27,6 +27,7 @@ TROLLERS = {
         "ironbank":         "0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB",
         "inverse":          "0x4dCf7407AE5C07f8681e1659f626E114A7667339",
         "unfederalreserve": "0x3105D328c66d8d55092358cF595d54608178E9B5",
+        "flux":             "0x95Af143a021DF745bc78e845b54591C53a8B3A51",
     },
     Network.BinanceSmartChain: {
         "venus":            "0xfD36E2c2a6789Db23113685031d7F16329158384",
