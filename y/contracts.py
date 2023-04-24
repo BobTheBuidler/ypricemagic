@@ -211,6 +211,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
             # If we don't already have the contract in the db, we'll try to fetch it from the explorer.
             except ValueError as e:
                 # TODO catch the specific error we expect, not all ValueErrors
+                logger.warning(f"{address} {e}")
                 try:                  
                     name, abi = _resolve_proxy(address)
                     build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
