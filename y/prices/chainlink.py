@@ -221,7 +221,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
                     self._loading = False
                     raise e
             task.add_done_callback(_on_completion)
-        await self._feeds_loaded.wait():
+        await self._feeds_loaded.wait()
         return self._cached_feeds
     
     async def get_feed(self, asset: Address) -> Optional[Contract]:
