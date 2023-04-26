@@ -288,7 +288,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                     self._all_loading.clear()
                     raise e
             task.add_done_callback(_on_completion)
-        await self._address_providers_loaded.wait():
+        await self._address_providers_loaded.wait()
         
         known_registries = []
         while True:
@@ -359,7 +359,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     async def load_all(self) -> None:
         if not self._all_loading.is_set():
             asyncio.get_event_loop().create_task(self._load_registries())
-        await self._all_loaded.wait():
+        await self._all_loaded.wait()
     
     async def read_pools(self, registry: Address) -> List[EthAddress]:
         try:
