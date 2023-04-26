@@ -176,7 +176,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
         self._cached_feeds = {ERC20(token, asynchronous=self.asynchronous): feed for token, feed in FEEDS.items()}
-        self._feeds_loaded = False
+        self._feeds_loaded = asyncio.Event()
         self._loading = False
     
     async def _start_feed_loop(self) -> Union[None, NoReturn]:
@@ -186,7 +186,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
         self._loading = True
         # for non-mainnet, we have no registry so must get feeds manually
         if chain.id not in registries:
-            self._feeds_loaded = True
+            self._feeds_loaded.set()
             self._loading = False
             return
 
@@ -198,7 +198,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
                 if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
                     self._cached_feeds[log["asset"]] = ERC20(log["latestAggregator"], asynchronous=self.asynchronous)
         
-        self._feeds_loaded = True
+        self._feeds_loaded.set()
         logger.info(f'loaded {len(self._cached_feeds)} feeds')
         
         while await dank_w3.eth.block_number < block+1:
@@ -214,10 +214,14 @@ class Chainlink(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.property
     async def feeds(self) -> Dict[ERC20, str]:
-        if not self._feeds_loaded:
-            asyncio.get_event_loop().create_task(self._start_feed_loop())
-        while not self._feeds_loaded:
-            await asyncio.sleep(0)
+        if not self._feeds_loaded.is_set():
+            task = asyncio.get_event_loop().create_task(self._start_feed_loop())
+            def _on_completion(fut):
+                if e:=fut.exception():
+                    self._loading = False
+                    raise e
+            task.add_done_callback(_on_completion)
+        await self._feeds_loaded.wait():
         return self._cached_feeds
     
     async def get_feed(self, asset: Address) -> Optional[Contract]:
