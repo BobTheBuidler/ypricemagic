@@ -221,11 +221,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         self.token_to_pool = dict()  # lp_token -> pool
 
         self._address_providers_loading = asyncio.Event()
-        self._address_providers_loaded = threading.Event()
-        self._registries_loaded = threading.Event()
+        self._address_providers_loaded = asyncio.Event()
+        self._registries_loaded = asyncio.Event()
         self._loaded_registries = set()
-        self._all_loading = threading.Event()
-        self._all_loaded = threading.Event()
+        self._all_loading = asyncio.Event()
+        self._all_loaded = asyncio.Event()
     
     def __repr__(self) -> str:
         return "<CurveRegistry>"
@@ -241,7 +241,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if self._address_providers_loading.is_set():
             return
         self._address_providers_loading.set()
-        block = await dank_w3.eth.block_number            
+        block = await dank_w3.eth.block_number     
         async for logs in get_logs_asap_generator(str(self.address_provider), None, to_block=block, chronological=True):
             for event in decode_logs(logs):
                 self._load_address_provider_event(event)
@@ -282,9 +282,13 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return
         self._all_loading.set()
         if not self._address_providers_loading.is_set():
-            asyncio.get_event_loop().create_task(self._load_address_providers())
-        while not self._address_providers_loaded.is_set():
-            await asyncio.sleep(0)
+            task = asyncio.get_event_loop().create_task(self._load_address_providers())
+            def _on_completion(fut):
+                if e := fut.exception():
+                    self._all_loading.clear()
+                    raise e
+            task.add_done_callback(_on_completion)
+        await self._address_providers_loaded.wait():
         
         known_registries = []
         while True:
@@ -355,8 +359,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     async def load_all(self) -> None:
         if not self._all_loading.is_set():
             asyncio.get_event_loop().create_task(self._load_registries())
-        while not self._all_loaded.is_set():
-            await asyncio.sleep(0)
+        await self._all_loaded.wait():
     
     async def read_pools(self, registry: Address) -> List[EthAddress]:
         try:
