@@ -2,9 +2,11 @@
 import asyncio
 import logging
 import os
+from http import HTTPStatus
+from time import time
 from typing import Optional
 
-from aiohttp import BasicAuth, ClientSession, TCPConnector, ClientResponse
+from aiohttp import BasicAuth, ClientResponse, ClientSession, TCPConnector
 from aiohttp.client_exceptions import ClientError
 from brownie import chain
 
@@ -30,7 +32,9 @@ YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE"
 
 notified = set()
 
-fallback_str = "Falling back to your node for pricing."
+resume_at = 0
+
+FALLBACK_STR = "Falling back to your node for pricing."
 
 # NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
 skip_ypriceapi = set()
@@ -54,28 +58,42 @@ async def get_price_from_api(
     if block is None:
         block = await dank_w3.eth.block_number
     
+    if time() < resume_at:
+        # NOTE: The reason we are here has already been logged.
+        return None
+
     async with YPRICEAPI_SEMAPHORE:
         try:
             async with ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), headers=auth_headers) as session:
                 response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
 
-                # Handle successful response
-                if response.status == 200:
+                # 200
+                if response.status == HTTPStatus.OK:
                     return await response.json()
 
-                # Handle unsuccessful response
-                # Unauthorized
-                elif response.status == 401:
-                    if 401 not in notified:
-                        logger.error('Your provided ypriceAPI credentials are not authorized for use.' + fallback_str)
-                        notified.add(401)
+                # 401
+                elif response.status == HTTPStatus.UNAUTHORIZED:
+                    if HTTPStatus.UNAUTHORIZED not in notified:
+                        logger.error(f'Your provided ypriceAPI credentials are not authorized for use.{FALLBACK_STR}')
+                        notified.add(HTTPStatus.UNAUTHORIZED)
                     return None
                 
-                # Not Found
-                elif response.status == 404:
+                # 404
+                elif response.status == HTTPStatus.NOT_FOUND:
                     logger.debug(f"Failed to get price from API: {token} at {block}")
                     return None
-        
+                
+                # 503
+                elif response.status == HTTPStatus.SERVICE_UNAVAILABLE and (msg := response.content.get("message")):
+                    logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
+                    logger.warning(msg)
+                    five_minutes = 60 * 5  # some arbitrary amount of time in case the header is missing on unexpected 503s
+                    retry_after = response.headers.get("Retry-After", five_minutes)
+                    logger.info(f"Falling back to your node for {retry_after/60} minutes.")
+                    global resume_at
+                    resume_at = time() + retry_after
+                    return None
+                    
                 else:
                     logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} for {token} at {block}.' + fallback_str)
                     
