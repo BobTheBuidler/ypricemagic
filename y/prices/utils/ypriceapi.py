@@ -93,6 +93,9 @@ if OLD_AUTH is not None:
 
 
 
+class BadResponse(Exception):
+    pass
+
 @alru_cache(maxsize=1)
 async def get_session() -> ClientSession:
     return ClientSession("https://ypriceapi-beta.yearn.finance", connector=TCPConnector(verify_ssl=False), headers=AUTH_HEADERS)
@@ -117,7 +120,8 @@ async def get_price(
         # NOTE: The reason we are here has already been logged.
         return None
     
-    if chain.id not in await get_chains()
+    if chain.id not in await get_chains():
+        return None
 
     if block is None:
         block = await dank_w3.eth.block_number
@@ -129,15 +133,16 @@ async def get_price(
             return await read_response(token, block, response)
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
-        except ContentTypeError:
-            raise
         except ClientError as e:
             logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.{FALLBACK_STR}')
 
 async def read_response(response: ClientResponse, token: Optional[Address] = None, block: Optional[Block] = None) -> Optional[Any]:
     # 200
     if response.status == HTTPStatus.OK:
-        return await response.json()
+        try:
+            return await response.json()
+        except ContentTypeError as e:
+            raise BadResponse(await response.json(content_type=None)) from e
 
     # 401
     elif response.status == HTTPStatus.UNAUTHORIZED:
