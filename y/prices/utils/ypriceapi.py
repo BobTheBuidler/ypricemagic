@@ -33,7 +33,7 @@ old_auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRIC
 ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
-read_retry_header = lambda x: x.headers.get("Retry-After", ONE_MINUTE)
+read_retry_header = lambda x: int(x.headers.get("Retry-After", ONE_MINUTE))
 
 notified = set()
 
