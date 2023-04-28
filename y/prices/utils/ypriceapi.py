@@ -4,12 +4,11 @@ import logging
 import os
 from http import HTTPStatus
 from time import time
-from typing import Optional
-from async_lru import alru_cache
+from typing import Callable, Optional
 
-from json import JSONDecodeError
 from aiohttp import BasicAuth, ClientResponse, ClientSession, TCPConnector
 from aiohttp.client_exceptions import ClientError
+from async_lru import alru_cache
 from brownie import chain
 
 from y.classes.common import UsdPrice
@@ -31,15 +30,13 @@ YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
 old_auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
 ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+FALLBACK_STR = "Falling back to your node for pricing."
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
-read_retry_header = lambda x: int(x.headers.get("Retry-After", ONE_MINUTE))
-
 notified = set()
-
 resume_at = 0
+get_retry_header: Callable[[ClientResponse], int] = lambda x: int(x.headers.get("Retry-After", ONE_MINUTE))
 
-FALLBACK_STR = "Falling back to your node for pricing."
 
 # NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
 skip_ypriceapi = set()
@@ -100,23 +97,15 @@ async def read_response(token: Address, block: Optional[Block], response: Client
 
     # Server Errors
     
-    # 502
-    elif response.status == HTTPStatus.BAD_GATEWAY:
-        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
+    # 502 & 503
+    elif response.status in {HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE}:
+        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}")
         try:
-            logger.warning(await response.json(content_type=None) or await response.text())
+            if msg := await response.json(content_type=None) or await response.text():
+                logger.warning(msg)
         except Exception:
-            logger.warning(f'exception decoding ypriceapi 502 response.{FALLBACK_STR}', exc_info=True)
-        _set_resume_at(read_retry_header(response))
-    
-    # 503
-    elif response.status == HTTPStatus.SERVICE_UNAVAILABLE:
-        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
-        try:
-            logger.warning(await response.json(content_type=None) or await response.text())
-        except Exception:
-            logger.warning(f'exception decoding ypriceapi 503 response.{FALLBACK_STR}', exc_info=True)
-        _set_resume_at(read_retry_header(response))
+            logger.warning(f'exception decoding ypriceapi {response.status} response.{FALLBACK_STR}', exc_info=True)
+        _set_resume_at(get_retry_header(response))
 
     else:
         logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} for {token} at {block}.{FALLBACK_STR}')
