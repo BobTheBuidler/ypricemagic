@@ -94,12 +94,27 @@ async def read_response(token: Address, block: Optional[Block], response: Client
     elif response.status == HTTPStatus.NOT_FOUND:
         logger.debug(f"Failed to get price from API: {token} at {block}")
 
+
+    # Server Errors
+    
+    # 502
+    elif response.status == HTTPStatus.BAD_GATEWAY:
+        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
+        try:
+            logger.warning(await response.json(content_type=None) or await response.text())
+        except Exception:
+            logger.warning(f'exception decoding ypriceapi 502 response.{FALLBACK_STR}', exc_info=True)
+        
+        global resume_at
+        if time() + 60 > resume_at:
+            resume_at = time() * 60
+    
     # 503
     elif response.status == HTTPStatus.SERVICE_UNAVAILABLE:
         logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
         try:
-            logger.warning(response.reason or await response.json(content_type=None))
-        except Exception as e:
+            logger.warning(await response.json(content_type=None) or await response.text())
+        except Exception:
             logger.warning(f'exception decoding ypriceapi 503 response.{FALLBACK_STR}', exc_info=True)
         five_minutes = 60 * 5  # some arbitrary amount of time in case the header is missing on unexpected 503s
         retry_after = response.headers.get("Retry-After", five_minutes)
