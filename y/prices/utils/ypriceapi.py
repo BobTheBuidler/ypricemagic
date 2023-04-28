@@ -105,8 +105,9 @@ async def read_response(token: Address, block: Optional[Block], response: Client
         retry_after = response.headers.get("Retry-After", five_minutes)
         logger.info(f"Falling back to your node for {retry_after/60} minutes.")
         global resume_at
-        resume_at = time() + retry_after
-                    
+        if (resume_from_this_err_at := time() + retry_after) > resume_at:
+            resume_at = resume_from_this_err_at
+
     else:
         logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} for {token} at {block}.{FALLBACK_STR}')
             
