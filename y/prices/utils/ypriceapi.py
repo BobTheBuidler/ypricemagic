@@ -1,16 +1,20 @@
 
+# sourcery skip: merge-assign-and-aug-assign
 import asyncio
 import logging
 import os
+from collections import defaultdict
 from http import HTTPStatus
+from random import randint
 from time import time
-from typing import Callable, Optional
+from typing import Any, Callable, List, Optional
 
 from aiohttp import BasicAuth, ClientResponse, ClientSession, TCPConnector
 from aiohttp.client_exceptions import ClientError, ContentTypeError
 from async_lru import alru_cache
 from brownie import chain
 
+from y import constants
 from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
 from y.utils.dank_mids import dank_w3
@@ -18,55 +22,105 @@ from y.utils.dank_mids import dank_w3
 logger = logging.getLogger(__name__)
 
 # current
-YPRICEAPI_URL = os.environ.get("YPRICEAPI_URL")
-USE_YPRICEAPI = bool(YPRICEAPI_URL)
-YPRICEAPI_SIGNER = os.environ.get("YPRICEAPI_SIGNER")
-YPRICEAPI_SIGNATURE = os.environ.get("YPRICEAPI_SIGNATURE")
-auth_headers = {"X-Signer": YPRICEAPI_SIGNER, "X-Signature": YPRICEAPI_SIGNATURE} if YPRICEAPI_SIGNER and YPRICEAPI_SIGNATURE else {}
+header_env_names = {"X-Signer": "YPRICEAPI_SIGNER", "X-Signature": "YPRICEAPI_SIGNATURE"}
+AUTH_HEADERS = {header: os.environ.get(env) for header, env in header_env_names.items()}
+AUTH_HEADERS_PRESENT = all(AUTH_HEADERS.values())
 
 # old
 YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
-old_auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
+OLD_AUTH = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
 ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 FALLBACK_STR = "Falling back to your node for pricing."
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
+if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
+    for header in AUTH_HEADERS:
+        if not AUTH_HEADERS[header]:
+            raise EnvironmentError(f'You must also pass in a value for {header_env_names[header]} in order to use ypriceAPI.')
+                
+should_use = not constants.SKIP_YPRICEAPI 
 notified = set()
+auth_notifs = defaultdict(int)
 resume_at = 0
 get_retry_header: Callable[[ClientResponse], int] = lambda x: int(x.headers.get("Retry-After", ONE_MINUTE))
 
-
 # NOTE: if you want to bypass ypriceapi for specific tokens, have your program add the addresses to this set.
-skip_ypriceapi = set()
+skip_tokens = set()
+skip_ypriceapi = skip_tokens  # alias for backward compatability
+
+#########################
+# YPRICEAPI PUBLIC BETA #
+#########################
+    
+_you_get = [
+    "access to your desired price data more quickly...",
+    "...from nodes run by yearn-affiliated big brains...",
+    "on all the networks "
+]
+_testimonials = [
+    "I can now get prices for all of my useless shitcoins without waiting all day for ypricemagic to load logs."
+    "I don't need to maintain an archive node anymore and that's saving me money.", 
+    "Wow, so fast!",
+]
+beta_announcement = "ypriceAPI is now in beta!\n\n"
+beta_announcement += "Head to ypriceapi-beta.yearn.finance and sign up for access. You get:\n"
+for you_get in _you_get:
+    beta_announcement += f" - {you_get}\n"
+beta_announcement += "\nCheck out some testimonials from our close frens:"
+for testimonial in _testimonials:
+    beta_announcement += f' - from anon{randint(9999)}, "{testimonial}"\n'
+
+def announce_beta() -> None:
+    spam_your_logs_fn = logger.info if logger.isEnabledFor(logging.INFO) else print
+    spam_your_logs_fn(beta_announcement)
+    global should_use
+    should_use = False
+
+# TODO: Remove this when enough time has passed.
+# Notify user if using old auth scheme
+if OLD_AUTH is not None:
+    announce_beta()
+    raise NotImplementedError(
+        "YPRICEAPI_USER and YPRICEAPI_PASS are no longer used.\n"
+        + "Please sign up for a plan (we have a free tier) at ypriceapi-beta.yearn.finance.\n"
+        + "Then, pass in the following env vars to continue using ypriceAPI:\n"
+        + " - YPRICEAPI_SIGNATURE, the signature you generated on the website"
+        + " - YPRICEAPI_SIGNER, the wallet you used to sign up\n"
+        + "You can unset the old envs to continue using ypricemagic."
+    )
+
+
 
 @alru_cache(maxsize=1)
 async def get_session() -> ClientSession:
-    return ClientSession(YPRICEAPI_URL, connector=TCPConnector(verify_ssl=False), headers=auth_headers)
+    return ClientSession("https://ypriceapi-beta.yearn.finance", connector=TCPConnector(verify_ssl=False), headers=AUTH_HEADERS)
 
-async def get_price_from_api(
+@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
+async def get_chains() -> List[int]:
+    session = await get_session()
+    response = await session.get("/chains")
+    chains = await read_response(response)
+    return [] if chains is None else list(chains.keys())
+
+async def get_price(
     token: Address,
     block: Optional[Block]
 ) -> Optional[UsdPrice]:
     
-    if token in skip_ypriceapi:
+    if not AUTH_HEADERS_PRESENT:
+        announce_beta()
         return None
-
-    # Notify user if using old auth scheme
-    if old_auth is not None:
-        raise NotImplementedError("YPRICEAPI_USER and YPRICEAPI_PASS are no longer used.\nPlease sign up for a plan (we have a free tier) at ypriceapi-beta.yearn.finance.\nThen, pass in YPRICEAPI_SIGNER (the wallet you used to sign up) and YPRICEAPI_SIGNATURE (the signature you generated on the website) env vars to continue using ypriceAPI.")
-
-    if USE_YPRICEAPI is False or not auth_headers:
-        logger.error('You are unable to get price from the ypriceAPI unless you pass YPRICEAPI_URL, YPRICEAPI_SIGNER, and YPRICEAPI_SIGNATURE env vars.')
-        return None
-
-    if block is None:
-        block = await dank_w3.eth.block_number
-
+        
     if time() < resume_at:
         # NOTE: The reason we are here has already been logged.
         return None
+    
+    if chain.id not in await get_chains()
+
+    if block is None:
+        block = await dank_w3.eth.block_number
 
     async with YPRICEAPI_SEMAPHORE:
         try:
@@ -79,10 +133,8 @@ async def get_price_from_api(
             raise
         except ClientError as e:
             logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.{FALLBACK_STR}')
-        
 
-
-async def read_response(token: Address, block: Optional[Block], response: ClientResponse) -> Optional[UsdPrice]:
+async def read_response(response: ClientResponse, token: Optional[Address] = None, block: Optional[Block] = None) -> Optional[Any]:
     # 200
     if response.status == HTTPStatus.OK:
         return await response.json()
@@ -94,9 +146,8 @@ async def read_response(token: Address, block: Optional[Block], response: Client
             notified.add(HTTPStatus.UNAUTHORIZED)
                 
     # 404
-    elif response.status == HTTPStatus.NOT_FOUND:
+    elif response.status == HTTPStatus.NOT_FOUND and token and block:
         logger.debug(f"Failed to get price from API: {token} at {block}")
-
 
     # Server Errors
     
@@ -111,7 +162,10 @@ async def read_response(token: Address, block: Optional[Block], response: Client
         _set_resume_at(get_retry_header(response))
 
     else:
-        logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} for {token} at {block}.{FALLBACK_STR}')
+        msg = f'ypriceAPI returned status code {_get_err_reason(response)}'
+        if token and block:
+            msg += f' for {token} at {block}.{FALLBACK_STR}'
+        logger.warning(msg)
             
 
 def _get_err_reason(response: ClientResponse) -> str:

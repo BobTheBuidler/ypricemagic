@@ -7,9 +7,8 @@ from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import raise_if_exception_in
 
-from y import convert
+from y import constants, convert
 from y.classes.common import ERC20
-from y.constants import WRAPPED_GAS_COIN
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError
 from y.networks import Network
@@ -32,9 +31,9 @@ from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
+from y.prices.utils import ypriceapi
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
-from y.prices.utils.ypriceapi import USE_YPRICEAPI, get_price_from_api
 
 logger = logging.getLogger(__name__)
 
@@ -63,10 +62,10 @@ async def get_price(
 
     try:
         return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
-    except (ContractNotFound, NonStandardERC20, RecursionError, PriceError):
+    except (ContractNotFound, NonStandardERC20, RecursionError, PriceError) as e:
         if fail_to_None:
             return None
-        raise PriceError(f'could not fetch price for {await ERC20(token_address, asynchronous=True).symbol} {token_address} on {Network.printable()}')
+        raise PriceError(f'could not fetch price for {await ERC20(token_address, asynchronous=True).symbol} {token_address} on {Network.printable()}') from e
 
 @a_sync.a_sync(default='sync')
 async def get_prices(
@@ -116,7 +115,7 @@ async def _get_price(
     block: Block, 
     fail_to_None: bool = False, 
     silent: bool = False
-    ) -> Optional[UsdPrice]:
+    ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 
     try:
         symbol = await ERC20(token, asynchronous=True).symbol
@@ -129,14 +128,13 @@ async def _get_price(
         return None
 
     logger.debug("-------------[ y ]-------------")
-    logger.debug(f"Fetching price for...")
+    logger.debug("Fetching price for...")
     logger.debug(f"Token: {token_string}")
     logger.debug(f"Block: {block or 'latest'}") 
     logger.debug(f"Network: {Network.printable()}")
 
-    # If the dev has passed a value for YPRICEAPI_URL, ypricemagic will attempt to fetch price from the API before falling back to your own node.
-    if USE_YPRICEAPI:
-        price = await get_price_from_api(token, block)
+    if ypriceapi.should_use and token not in ypriceapi.skip_tokens:
+        price = await ypriceapi.get_price(token, block)
         if price is not None:
             return price
 
@@ -174,7 +172,7 @@ async def _get_price(
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block
-    ) -> Optional[UsdPrice]:
+    ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
 
     bucket = await check_bucket(token_address, sync=False)
 
@@ -214,7 +212,7 @@ async def _exit_early_for_known_tokens(
     
     elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, sync=False)
     elif bucket == 'uni or uni-like lp':    price = await uniswap_multiplexer.lp_price(token_address, block, sync=False)
-    elif bucket == 'wrapped gas coin':      price = await get_price(WRAPPED_GAS_COIN, block, sync=False)
+    elif bucket == 'wrapped gas coin':      price = await get_price(constants.WRAPPED_GAS_COIN, block, sync=False)
     
     elif bucket == 'wrapped atoken':        price = await aave.get_price_wrapped(token_address, block, sync=False)
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, sync=False)

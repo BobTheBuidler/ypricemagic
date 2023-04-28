@@ -197,3 +197,5 @@ thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.ge
 RECURSION_TIMEOUT = int(os.environ.get("YPRICEMAGIC_RECURSION_TIMEOUT", 60))
 recursion_logger_level = os.environ.get("YPRICEMAGIC_RECURSION_LOGGER_LEVEL", "debug").lower()
 log_possible_recursion_err = getattr(logging.getLogger("ypricemagic.recursion_logger"), recursion_logger_level)
+
+SKIP_YPRICEAPI = bool(os.environ.get("SKIP_YPRICEAPI"))
