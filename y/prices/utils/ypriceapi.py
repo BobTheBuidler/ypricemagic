@@ -70,7 +70,7 @@ for you_get in _you_get:
     beta_announcement += f" - {you_get}\n"
 beta_announcement += "\nCheck out some testimonials from our close frens:"
 for testimonial in _testimonials:
-    beta_announcement += f' - from anon{randint(9999)}, "{testimonial}"\n'
+    beta_announcement += f' - from anon{randint(0, 9999)}, "{testimonial}"\n'
 
 def announce_beta() -> None:
     spam_your_logs_fn = logger.info if logger.isEnabledFor(logging.INFO) else print
