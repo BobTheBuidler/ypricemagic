@@ -163,10 +163,12 @@ async def read_response(response: ClientResponse, token: Optional[Address] = Non
     elif response.status in {HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE}:
         logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}")
         try:
-            if msg := await response.json(content_type=None) or await response.text():
-                logger.warning(msg)
+            msg = await response.json(content_type=None) or await response.text()
         except Exception:
             logger.warning(f'exception decoding ypriceapi {response.status} response.{FALLBACK_STR}', exc_info=True)
+            msg = ''
+        if msg:
+            logger.warning(msg)
         _set_resume_at(get_retry_header(response))
 
     else:
@@ -186,7 +188,7 @@ def _get_err_reason(response: ClientResponse) -> str:
     
 def _set_resume_at(retry_after: float) -> None:
     global resume_at
-    logger.info(f"Falling back to your node for {retry_after/60} minutes.")
+    logger.info(f"Falling back to your node for {int(retry_after/60)} minutes.")
     resume_from_this_err_at = time() + retry_after
     if resume_from_this_err_at > resume_at:
         resume_at = resume_from_this_err_at
