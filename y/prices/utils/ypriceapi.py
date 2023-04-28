@@ -98,7 +98,7 @@ async def read_response(token: Address, block: Optional[Block], response: Client
     elif response.status == HTTPStatus.SERVICE_UNAVAILABLE:
         logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
         try:
-            logger.warning(await response.json(content_type=None))
+            logger.warning(response.reason or await response.json(content_type=None))
         except Exception as e:
             logger.warning(f'exception decoding ypriceapi 503 response.{FALLBACK_STR}', exc_info=True)
         five_minutes = 60 * 5  # some arbitrary amount of time in case the header is missing on unexpected 503s
