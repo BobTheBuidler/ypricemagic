@@ -143,9 +143,9 @@ async def read_response(response: ClientResponse, token: Optional[Address] = Non
         try:
             return await response.json()
         except ContentTypeError as e:
-            response = await response.json(content_type=None)
-            if response:
-                raise BadResponse(response) from e
+            msg = await response.json(content_type=None)
+            if msg:
+                raise BadResponse(msg) from e
             logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} with response None. Must investigate.')
 
     # 401
