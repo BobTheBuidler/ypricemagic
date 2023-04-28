@@ -99,7 +99,7 @@ async def read_response(token: Address, block: Optional[Block], response: Client
     
     # 502
     elif response.status == HTTPStatus.BAD_GATEWAY:
-        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
+        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}")
         try:
             logger.warning(await response.json(content_type=None) or await response.text())
         except Exception:
@@ -108,9 +108,10 @@ async def read_response(token: Address, block: Optional[Block], response: Client
     
     # 503
     elif response.status == HTTPStatus.SERVICE_UNAVAILABLE:
-        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
+        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}")
         try:
-            logger.warning(await response.json(content_type=None) or await response.text())
+            if msg := await response.json(content_type=None) or await response.text():
+                logger.warning(msg)                
         except Exception:
             logger.warning(f'exception decoding ypriceapi 503 response.{FALLBACK_STR}', exc_info=True)
         _set_resume_at(get_retry_header(response))
