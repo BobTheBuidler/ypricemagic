@@ -130,13 +130,14 @@ async def get_price(
             #    return None
             session = await get_session()
             response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
-            return await read_response(token, block, response)
+            return await read_response(response, token, block)
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
         except ClientError as e:
             logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.{FALLBACK_STR}')
 
 async def read_response(response: ClientResponse, token: Optional[Address] = None, block: Optional[Block] = None) -> Optional[Any]:
+    
     # 200
     if response.status == HTTPStatus.OK:
         try:
