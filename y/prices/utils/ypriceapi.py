@@ -30,7 +30,10 @@ YPRICEAPI_USER = os.environ.get("YPRICEAPI_USER")
 YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
 old_auth = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
+ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
+
+read_retry_header = lambda x: x.headers.get("Retry-After", ONE_MINUTE)
 
 notified = set()
 
@@ -94,19 +97,26 @@ async def read_response(token: Address, block: Optional[Block], response: Client
     elif response.status == HTTPStatus.NOT_FOUND:
         logger.debug(f"Failed to get price from API: {token} at {block}")
 
+
+    # Server Errors
+    
+    # 502
+    elif response.status == HTTPStatus.BAD_GATEWAY:
+        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
+        try:
+            logger.warning(await response.json(content_type=None) or await response.text())
+        except Exception:
+            logger.warning(f'exception decoding ypriceapi 502 response.{FALLBACK_STR}', exc_info=True)
+        _set_resume_at(read_retry_header(response))
+    
     # 503
     elif response.status == HTTPStatus.SERVICE_UNAVAILABLE:
         logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}:")
         try:
-            logger.warning(response.reason or await response.json(content_type=None))
-        except Exception as e:
+            logger.warning(await response.json(content_type=None) or await response.text())
+        except Exception:
             logger.warning(f'exception decoding ypriceapi 503 response.{FALLBACK_STR}', exc_info=True)
-        five_minutes = 60 * 5  # some arbitrary amount of time in case the header is missing on unexpected 503s
-        retry_after = response.headers.get("Retry-After", five_minutes)
-        logger.info(f"Falling back to your node for {retry_after/60} minutes.")
-        global resume_at
-        if (resume_from_this_err_at := time() + retry_after) > resume_at:
-            resume_at = resume_from_this_err_at
+        _set_resume_at(read_retry_header(response))
 
     else:
         logger.warning(f'ypriceAPI returned status code {_get_err_reason(response)} for {token} at {block}.{FALLBACK_STR}')
@@ -120,3 +130,9 @@ def _get_err_reason(response: ClientResponse) -> str:
     ).decode("ascii")
     return f"[{response.status} {ascii_encodable_reason}]"
     
+def _set_resume_at(retry_after: float) -> None:
+    global resume_at
+    logger.info(f"Falling back to your node for {retry_after/60} minutes.")
+    resume_from_this_err_at = time() + retry_after
+    if resume_from_this_err_at > resume_at:
+        resume_at = resume_from_this_err_at
