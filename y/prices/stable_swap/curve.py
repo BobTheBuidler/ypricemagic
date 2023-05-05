@@ -50,6 +50,9 @@ class Ids(IntEnum):
     # On Polygon, id 6 is "crypto factory".
     # I've only seen this on Mainnet and Polygon so far, for now will treat `7` == `6`.
     Cryptopool_Factory = 7
+    crvUSD_Plain_Pools_deprecated_1 = 8
+    crvUSD_Plain_Pools_deprecated_2 = 9
+    crvUSD_Plain_Pools = 10
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
@@ -286,6 +289,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             def _on_completion(fut):
                 if e := fut.exception():
                     self._all_loading.clear()
+                    logger.exception(e)
                     raise e
             task.add_done_callback(_on_completion)
         await self._address_providers_loaded.wait()
