@@ -50,6 +50,9 @@ class Ids(IntEnum):
     # On Polygon, id 6 is "crypto factory".
     # I've only seen this on Mainnet and Polygon so far, for now will treat `7` == `6`.
     Cryptopool_Factory = 7
+    crvUSD_Plain_Pools_deprecated_1 = 8
+    crvUSD_Plain_Pools_deprecated_2 = 9
+    crvUSD_Plain_Pools = 10
 
 
 class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for now
