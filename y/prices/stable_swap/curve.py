@@ -289,6 +289,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             def _on_completion(fut):
                 if e := fut.exception():
                     self._all_loading.clear()
+                    logger.exception(e)
                     raise e
             task.add_done_callback(_on_completion)
         await self._address_providers_loaded.wait()
