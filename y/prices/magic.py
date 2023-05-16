@@ -237,7 +237,7 @@ def _fail_appropriately(
     '''
 
     if not silent:
-        logger.error(f"failed to get price for {token_string} on {Network.printable()}")
+        logger.warning(f"failed to get price for {token_string} on {Network.printable()}")
 
     if not fail_to_None:
         raise PriceError(f'could not fetch price for {token_string} on {Network.printable()}')
