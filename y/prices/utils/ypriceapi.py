@@ -17,6 +17,7 @@ from brownie import chain
 from y import constants
 from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
+from y.networks import Network
 from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
@@ -107,9 +108,16 @@ async def get_session() -> ClientSession:
 @alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
 async def get_chains() -> List[int]:
     session = await get_session()
-    response = await session.get("/chains")
-    chains = await read_response(response)
+    async with session.get("/chains") as response:
+        chains = await read_response(response)
     return [] if chains is None else list(chains.keys())
+
+@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
+async def chain_supported(chainid: int) -> bool:
+    if chainid in await get_chains():
+        return True
+    logger.info(f'ypriceAPI does not support {Network.name()} at this time.')
+    return False
 
 async def get_price(
     token: Address,
@@ -129,11 +137,11 @@ async def get_price(
 
     async with YPRICEAPI_SEMAPHORE:
         try:
-            if chain.id not in await get_chains():
+            if not chain_supported(chain.id):
                 return None
             session = await get_session()
-            response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
-            return await read_response(response, token, block)
+            async with session.get(f'/get_price/{chain.id}/{token}?block={block}') as response:
+                return await read_response(response, token, block)
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
         except ContentTypeError:
