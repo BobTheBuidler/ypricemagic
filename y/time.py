@@ -70,7 +70,7 @@ Timestamp = Union[UnixTimestamp, datetime.datetime]
 
 def _parse_timestamp(timestamp: Timestamp) -> UnixTimestamp:
     if isinstance(timestamp, datetime.datetime):
-        timestamp = timestamp.timestamp()
+        timestamp = int(timestamp.timestamp())
     elif not isinstance(timestamp, int):
         raise TypeError("You may only pass in a unix timestamp or a datetime object.")
     return UnixTimestamp(timestamp)
