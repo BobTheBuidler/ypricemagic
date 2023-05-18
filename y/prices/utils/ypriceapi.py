@@ -100,13 +100,12 @@ class BadResponse(Exception):
 async def get_session() -> ClientSession:
     return ClientSession("https://ypriceapi-beta.yearn.finance", connector=TCPConnector(verify_ssl=False), headers=AUTH_HEADERS)
 
-# TODO: Fix
-#@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
-#async def get_chains() -> List[int]:
-#    session = await get_session()
-#    response = await session.get("/chains")
-#    chains = await read_response(response)
-#    return [] if chains is None else list(chains.keys())
+@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
+async def get_chains() -> List[int]:
+    session = await get_session()
+    response = await session.get("/chains")
+    chains = await read_response(response)
+    return [] if chains is None else list(chains.keys())
 
 async def get_price(
     token: Address,
@@ -119,6 +118,9 @@ async def get_price(
         
     if time() < resume_at:
         # NOTE: The reason we are here has already been logged.
+        return None
+    
+    if chain.id not in await get_chains():
         return None
 
     if block is None:
@@ -137,7 +139,6 @@ async def get_price(
             raise
         except ClientError as e:
             logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.{FALLBACK_STR}')
-        return await read_response(response, token, block)
 
 async def read_response(response: ClientResponse, token: Optional[Address] = None, block: Optional[Block] = None) -> Optional[Any]:
     
