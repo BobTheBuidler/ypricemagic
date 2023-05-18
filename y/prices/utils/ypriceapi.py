@@ -7,7 +7,7 @@ from collections import defaultdict
 from http import HTTPStatus
 from random import randint
 from time import time
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from aiohttp import BasicAuth, ClientResponse, ClientSession, TCPConnector
 from aiohttp.client_exceptions import ClientError, ContentTypeError
@@ -107,12 +107,11 @@ async def get_session() -> ClientSession:
     )
 
 @alru_cache(ttl=ONE_HOUR)
-async def get_chains() -> List[int]:
+async def get_chains() -> Dict[int, str]:
     session = await get_session()
     async with session.get("/chains") as response:
-        chains = await read_response(response)
-        logger.info(chains)
-    return [] if chains is None else list(chains.keys())
+        chains = await read_response(response) or {}
+    return {int(k): v for k, v in chains.items()}
 
 @alru_cache(ttl=ONE_HOUR)
 async def chain_supported(chainid: int) -> bool:
