@@ -28,6 +28,7 @@ from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
                           contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
+from y.time import check_node, check_node_async
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
@@ -77,6 +78,8 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         raise NodeNotSynced(f'''
             `chain.height` returns 0 on your node, which means it is not fully synced.
             You can only use this function on a fully synced node.''')
+    
+    check_node()
 
     lo, hi = 0, height
     barrier = 0
@@ -128,6 +131,8 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
         raise NodeNotSynced(f'''
             `chain.height` returns 0 on your node, which means it is not fully synced.
             You can only use this function on a fully synced node.''')
+    
+    check_node_async()
 
     lo, hi = 0, height
     barrier = 0

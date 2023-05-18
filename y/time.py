@@ -4,9 +4,12 @@ import logging
 import time
 from typing import NewType, Union
 
-from brownie import chain, web3
 from a_sync import a_sync
-from y.exceptions import NoBlockFound
+from async_lru import alru_cache
+from brownie import chain, web3
+from cachetools.func import ttl_cache
+
+from y.exceptions import NoBlockFound, NodeNotSynced
 from y.networks import Network
 from y.utils.cache import memory
 from y.utils.client import get_ethereum_client, get_ethereum_client_async
@@ -83,6 +86,7 @@ def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed
             return closest_block_after_timestamp(timestamp)
         except NoBlockFound:
             time.sleep(.2)
+    check_node()
     block = _closest_block_after_timestamp_cached(timestamp)
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
@@ -95,6 +99,8 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
             return await closest_block_after_timestamp_async(timestamp)
         except NoBlockFound:
             await asyncio.sleep(0.2)
+    
+    await check_node_async()
 
     height = await dank_w3.eth.block_number
     lo, hi = 0, height
@@ -122,3 +128,19 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> int:
     if hi == height:
         raise NoBlockFound(f"No block found after timestamp {timestamp}")
     return hi
+
+
+@ttl_cache(ttl=60)
+def check_node() -> None:
+    node_timestamp = web3.eth.getBlock('latest').timestamp
+    current_time = time.time()
+    if current_time - node_timestamp > 5 * 60:
+        raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")
+
+@alru_cache(ttl=60)
+async def check_node_async() -> None:
+    latest = await dank_w3.eth.getBlock('latest')
+    node_timestamp = latest.timestamp
+    current_time = time.time()
+    if current_time - node_timestamp > 5 * 60:
+        raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")
