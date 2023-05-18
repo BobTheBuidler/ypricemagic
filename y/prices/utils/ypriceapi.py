@@ -33,6 +33,7 @@ YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
 OLD_AUTH = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
 ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
@@ -105,7 +106,7 @@ async def get_session() -> ClientSession:
         headers=AUTH_HEADERS,
     )
 
-@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
+@alru_cache(ttl=ONE_HOUR)
 async def get_chains() -> List[int]:
     session = await get_session()
     async with session.get("/chains") as response:
@@ -113,7 +114,7 @@ async def get_chains() -> List[int]:
         logger.info(chains)
     return [] if chains is None else list(chains.keys())
 
-@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
+@alru_cache(ttl=ONE_HOUR)
 async def chain_supported(chainid: int) -> bool:
     if chainid in await get_chains():
         return True
