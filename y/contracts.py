@@ -132,7 +132,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
             `chain.height` returns 0 on your node, which means it is not fully synced.
             You can only use this function on a fully synced node.''')
     
-    check_node_async()
+    await check_node_async()
 
     lo, hi = 0, height
     barrier = 0
