@@ -59,10 +59,10 @@ skip_ypriceapi = skip_tokens  # alias for backward compatability
 _you_get = [
     "access to your desired price data more quickly...",
     "...from nodes run by yearn-affiliated big brains...",
-    "on all the networks "
+    "...on all the networks Yearn supports."
 ]
 _testimonials = [
-    "I can now get prices for all of my useless shitcoins without waiting all day for ypricemagic to load logs."
+    "I can now get prices for all of my useless shitcoins without waiting all day for ypricemagic to load logs.",
     "I don't need to maintain an archive node anymore and that's saving me money.", 
     "Wow, so fast!",
 ]
@@ -70,7 +70,7 @@ beta_announcement = "ypriceAPI is now in beta!\n\n"
 beta_announcement += "Head to ypriceapi-beta.yearn.finance and sign up for access. You get:\n"
 for you_get in _you_get:
     beta_announcement += f" - {you_get}\n"
-beta_announcement += "\nCheck out some testimonials from our close frens:"
+beta_announcement += "\nCheck out some testimonials from our close frens:\n"
 for testimonial in _testimonials:
     beta_announcement += f' - from anon{randint(0, 9999)}, "{testimonial}"\n'
 
