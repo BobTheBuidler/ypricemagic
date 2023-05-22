@@ -182,9 +182,12 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         """
         Get total value in Curve pool.
         """
-        balances = await self.get_balances(block=block, sync=False)
-        if balances is None:
-            return None
+        try:
+            balances = await self.get_balances(block=block, sync=False)
+        except ValueError as e:
+            if str(e).startswith("could not fetch balances "):
+                return None
+            raise e
         
         prices = await asyncio.gather(*[coin.price(block=block, sync=False) for coin in balances])
 
