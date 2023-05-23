@@ -8,9 +8,8 @@ from brownie.convert.datatypes import EthAddress
 from hexbytes import HexBytes
 from multicall import Call
 
+from y import constants, contracts
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN
-from y.contracts import build_name, contract_creation_block_async, has_methods
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.networks import Network
 from y.utils.events import decode_logs, get_logs_asap
@@ -62,7 +61,12 @@ class BalancerV2Vault(ContractBase):
         #    if "Start must be less than or equal to stop" in str(e):
         #        return {}
         #    raise
-        return {event['poolId'].hex():event['poolAddress'] for event in events}
+        return {
+            event['poolId'].hex(): event['poolAddress'] for event in events
+            # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
+            #       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.
+            if contracts.is_contract(event['poolAddress'])
+        }
     
     @a_sync.a_sync(ram_cache_maxsize=10)
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
@@ -73,13 +77,14 @@ class BalancerV2Vault(ContractBase):
     
     #yLazyLogger(logger)
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
+        # sourcery skip: simplify-len-comparison
         pools = await self.list_pools(block=block, sync=False)
         is_standard_pool = await asyncio.gather(*[_is_standard_pool(pool) for pool in pools.values()])
         
         if block is None:
             poolids = (poolid for (poolid, pool), is_standard in zip(pools.items(), is_standard_pool) if is_standard)
         else:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True) for pool in pools.values()])
+            deploy_blocks = await asyncio.gather(*[contracts.contract_creation_block_async(pool, True) for pool in pools.values()])
             poolids = (poolid for (poolid, pool), is_standard, deploy_block in zip(pools.items(), is_standard_pool, deploy_blocks) if is_standard and deploy_block <= block)
 
         pools_info = await self.get_pool_info(poolids, block=block, sync=False)
@@ -131,7 +136,7 @@ class BalancerV2Pool(ERC20):
 
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens = await self.tokens(block=block, sync=False)
-        return {token: balance for token, balance in tokens.items()}
+        return dict(tokens.items())
 
     async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         token_balances, weights = await asyncio.gather(
@@ -144,10 +149,10 @@ class BalancerV2Pool(ERC20):
                 token_balance, token_weight = balance, weight
 
         for pool_token, balance, weight in pool_token_info:
-            if pool_token in STABLECOINS:
+            if pool_token in constants.STABLECOINS:
                 paired_token_balance, paired_token_weight = balance, weight
                 break
-            elif pool_token == WRAPPED_GAS_COIN:
+            elif pool_token == constants.WRAPPED_GAS_COIN:
                 paired_token_balance, paired_token_weight = balance, weight
                 break
             elif len(pool_token_info) == 2 and pool_token != token_address:
@@ -182,7 +187,7 @@ async def _is_standard_pool(pool: EthAddress) -> bool:
     
     # With `return_None_on_failure=True`, if `build_name(pool)` fails,
     # we can't know for sure that its a standard pool, but... it probably is.
-    return await build_name(pool, return_None_on_failure=True, sync=False) not in ['ConvergentCurvePool','MetaStablePool']
+    return await contracts.build_name(pool, return_None_on_failure=True, sync=False) not in ['ConvergentCurvePool','MetaStablePool']
 
 
 class BalancerV2(a_sync.ASyncGenericSingleton):
@@ -195,7 +200,7 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
 
     async def is_pool(self, token_address: AnyAddressType) -> bool:
         methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
-        return await has_methods(token_address, methods, sync=False)
+        return await contracts.has_methods(token_address, methods, sync=False)
     
     async def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         return await BalancerV2Pool(pool_address, asynchronous=True).get_pool_price(block=block)
