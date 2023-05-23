@@ -18,9 +18,11 @@ jobs:
     runs-on: ${{ matrix.os }}
     #timeout-minutes: 10
     strategy:
+      fail-fast: false
       matrix:
         os: [ ubuntu-latest, macos-latest, windows-latest ]
-        network: [ mainnet, bsc-main, polygon-main, ftm-main ]
+        pyversion: [ "3.8", "3.9", "3.10" ]
+        network: [ mainnet, bsc-main, polygon-main, ftm-main, arbitrum-main, optimism-main ]
         include:
         - os: ubuntu-latest
           path: ~/.cache/pip
@@ -36,7 +38,10 @@ jobs:
           provider: POLY_WEB3_PROVIDER
         - network: ftm-main
           provider: FTM_WEB3_PROVIDER
-
+        - network: arbitrum-main
+          provider: ARBI_WEB3_PROVIDER
+        - network: optimism-main
+          provider: OPTI_WEB3_PROVIDER
 
     steps:
       - name: Check out repository code
@@ -45,7 +50,7 @@ jobs:
       - name: Setup Python (faster than using Python container)
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9"
+          python-version: ${{ matrix.pyversion }}
 
       - name: Cache dependencies
         uses: actions/cache@v3
@@ -89,6 +94,7 @@ jobs:
           BSCSCAN_TOKEN: ${{ secrets.BSCSCAN_TOKEN }}
           POLYGONSCAN_TOKEN: ${{ secrets.POLYGONSCAN_TOKEN }}
           FTMSCAN_TOKEN: ${{ secrets.FTMSCAN_TOKEN }}
+          ARBISCAN_TOKEN: ${{ secrets.ARBISCAN_TOKEN }}
+          OPTISCAN_TOKEN: ${{ secrets.OPTISCAN_TOKEN }}
         run: make test
-        continue-on-error: true
       
