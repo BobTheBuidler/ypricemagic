@@ -67,7 +67,8 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     logger.debug(f'last {Network.name()} block on date {date} -> {block}')
     return block
 
-UnixTimestamp = NewType("UnixTimestamp", int)
+class UnixTimestamp(int):
+    pass
 
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 
