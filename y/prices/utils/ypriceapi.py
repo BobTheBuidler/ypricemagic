@@ -137,7 +137,7 @@ async def get_price(
 
     async with YPRICEAPI_SEMAPHORE:
         try:
-            if not chain_supported(chain.id):
+            if not await chain_supported(chain.id):
                 return None
             session = await get_session()
             async with session.get(f'/get_price/{chain.id}/{token}?block={block}') as response:
