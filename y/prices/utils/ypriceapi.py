@@ -135,6 +135,7 @@ async def get_price(
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
         except ClientError as e:
             logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.{FALLBACK_STR}')
+        return await read_response(response, token, block)
 
 async def read_response(response: ClientResponse, token: Optional[Address] = None, block: Optional[Block] = None) -> Optional[Any]:
     
