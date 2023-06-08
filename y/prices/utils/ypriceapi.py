@@ -7,7 +7,7 @@ from collections import defaultdict
 from http import HTTPStatus
 from random import randint
 from time import time
-from typing import Any, Callable, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from aiohttp import BasicAuth, ClientResponse, ClientSession, TCPConnector
 from aiohttp.client_exceptions import ClientError, ContentTypeError
@@ -17,6 +17,7 @@ from brownie import chain
 from y import constants
 from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
+from y.networks import Network
 from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
@@ -32,6 +33,7 @@ YPRICEAPI_PASS = os.environ.get("YPRICEAPI_PASS")
 OLD_AUTH = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRICEAPI_PASS else None
 
 ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
+ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
@@ -57,10 +59,10 @@ skip_ypriceapi = skip_tokens  # alias for backward compatability
 _you_get = [
     "access to your desired price data more quickly...",
     "...from nodes run by yearn-affiliated big brains...",
-    "on all the networks "
+    "...on all the networks Yearn supports."
 ]
 _testimonials = [
-    "I can now get prices for all of my useless shitcoins without waiting all day for ypricemagic to load logs."
+    "I can now get prices for all of my useless shitcoins without waiting all day for ypricemagic to load logs.",
     "I don't need to maintain an archive node anymore and that's saving me money.", 
     "Wow, so fast!",
 ]
@@ -68,7 +70,7 @@ beta_announcement = "ypriceAPI is now in beta!\n\n"
 beta_announcement += "Head to ypriceapi-beta.yearn.finance and sign up for access. You get:\n"
 for you_get in _you_get:
     beta_announcement += f" - {you_get}\n"
-beta_announcement += "\nCheck out some testimonials from our close frens:"
+beta_announcement += "\nCheck out some testimonials from our close frens:\n"
 for testimonial in _testimonials:
     beta_announcement += f' - from anon{randint(0, 9999)}, "{testimonial}"\n'
 
@@ -98,15 +100,25 @@ class BadResponse(Exception):
 
 @alru_cache(maxsize=1)
 async def get_session() -> ClientSession:
-    return ClientSession("https://ypriceapi-beta.yearn.finance", connector=TCPConnector(verify_ssl=False), headers=AUTH_HEADERS)
+    return ClientSession(
+        "https://ypriceapi-beta.yearn.finance",
+        connector=TCPConnector(verify_ssl=False),
+        headers=AUTH_HEADERS,
+    )
 
-# TODO: Fix
-#@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
-#async def get_chains() -> List[int]:
-#    session = await get_session()
-#    response = await session.get("/chains")
-#    chains = await read_response(response)
-#    return [] if chains is None else list(chains.keys())
+@alru_cache(ttl=ONE_HOUR)
+async def get_chains() -> Dict[int, str]:
+    session = await get_session()
+    async with session.get("/chains") as response:
+        chains = await read_response(response) or {}
+    return {int(k): v for k, v in chains.items()}
+
+@alru_cache(ttl=ONE_HOUR)
+async def chain_supported(chainid: int) -> bool:
+    if chainid in await get_chains():
+        return True
+    logger.info(f'ypriceAPI does not support {Network.name()} at this time.')
+    return False
 
 async def get_price(
     token: Address,
@@ -126,13 +138,15 @@ async def get_price(
 
     async with YPRICEAPI_SEMAPHORE:
         try:
-            #if chain.id not in await get_chains():
-            #    return None
+            if not await chain_supported(chain.id):
+                return None
             session = await get_session()
-            response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
-            return await read_response(response, token, block)
+            async with session.get(f'/get_price/{chain.id}/{token}?block={block}') as response:
+                return await read_response(response, token, block)
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
+        except ContentTypeError:
+            raise
         except ClientError as e:
             logger.warning(f'ypriceAPI {e.__class__.__name__} for {token} at {block}.{FALLBACK_STR}')
 

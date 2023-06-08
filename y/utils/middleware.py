@@ -7,6 +7,7 @@ from requests import Session
 from requests.adapters import HTTPAdapter
 from web3 import HTTPProvider, Web3
 from web3.middleware import filter
+from web3.middleware.geth_poa import geth_poa_middleware
 
 from y.networks import Network
 from y.utils.cache import memory
@@ -75,6 +76,9 @@ def setup_middleware() -> None:
     filter.MAX_BLOCK_REQUEST = BATCH_SIZE
     web3.middleware_onion.add(filter.local_filter_middleware)
     web3.middleware_onion.add(cache_middleware)
+    
+    if chain.id == Network.Optimism:
+        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 def ensure_middleware() -> None:
     setup_middleware()
