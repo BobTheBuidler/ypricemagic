@@ -119,17 +119,14 @@ async def get_price(
     if time() < resume_at:
         # NOTE: The reason we are here has already been logged.
         return None
-    
-    if chain.id not in await get_chains():
-        return None
 
     if block is None:
         block = await dank_w3.eth.block_number
 
     async with YPRICEAPI_SEMAPHORE:
         try:
-            #if chain.id not in await get_chains():
-            #    return None
+            if chain.id not in await get_chains():
+                return None
             session = await get_session()
             response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
             return await read_response(response, token, block)
