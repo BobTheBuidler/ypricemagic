@@ -110,6 +110,7 @@ async def get_chains() -> List[int]:
     session = await get_session()
     async with session.get("/chains") as response:
         chains = await read_response(response)
+        logger.info(chains)
     return [] if chains is None else list(chains.keys())
 
 @alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
