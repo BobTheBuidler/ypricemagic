@@ -74,10 +74,11 @@ def setup_middleware() -> None:
 
     # patch and inject local filter middleware
     filter.MAX_BLOCK_REQUEST = BATCH_SIZE
-    if chain.id == Network.Optimism:
-        web3.middleware_onion.add(geth_poa_middleware)
     web3.middleware_onion.add(filter.local_filter_middleware)
     web3.middleware_onion.add(cache_middleware)
+    
+    if chain.id == Network.Optimism:
+        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
 
 def ensure_middleware() -> None:
     setup_middleware()
