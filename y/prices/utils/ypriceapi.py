@@ -100,12 +100,13 @@ class BadResponse(Exception):
 async def get_session() -> ClientSession:
     return ClientSession("https://ypriceapi-beta.yearn.finance", connector=TCPConnector(verify_ssl=False), headers=AUTH_HEADERS)
 
-@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
-async def get_chains() -> List[int]:
-    session = await get_session()
-    response = await session.get("/chains")
-    chains = await read_response(response)
-    return [] if chains is None else list(chains.keys())
+# TODO: Fix
+#@alru_cache(maxsize=1, ttl=ONE_MINUTE * 60)
+#async def get_chains() -> List[int]:
+#    session = await get_session()
+#    response = await session.get("/chains")
+#    chains = await read_response(response)
+#    return [] if chains is None else list(chains.keys())
 
 async def get_price(
     token: Address,
@@ -125,8 +126,8 @@ async def get_price(
 
     async with YPRICEAPI_SEMAPHORE:
         try:
-            if chain.id not in await get_chains():
-                return None
+            #if chain.id not in await get_chains():
+            #    return None
             session = await get_session()
             response = await session.get(f'/get_price/{chain.id}/{token}?block={block}')
             return await read_response(response, token, block)
