@@ -262,10 +262,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 self._load_address_provider_event(event)
     
     async def _load_registry_event(self, registry: Contract, event) -> None:
-        if event.name == 'PoolAdded':
-            lp_token = await registry.get_lp_token.coroutine(event['pool'])
-            self.registries[event.address].add(event['pool'])
-            self.token_to_pool[lp_token] = event['pool']
+        if event.name in ['PoolAdded', 'TricryptoPoolDeployed']:
+            pool = event['pool']
+            lp_token = pool if event.name == 'TricryptoPoolDeployed' else await registry.get_lp_token.coroutine(pool)
+            self.registries[event.address].add(pool)
+            self.token_to_pool[lp_token] = pool
         elif event.name == 'PoolRemoved':
             self.registries[event.address].discard(event['pool'])
 
