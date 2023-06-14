@@ -238,9 +238,9 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         return "<CurveRegistry>"
     
     def _load_address_provider_event(self, event) -> None:
-        if event.name == 'NewAddressIdentifier':
+        if event.name == 'NewAddressIdentifier' and event['addr'] != ZERO_ADDRESS:
             self.identifiers[Ids(event['id'])].append(event['addr'])
-        elif event.name == 'AddressModified':
+        elif event.name == 'AddressModified' and event['new_address'] != ZERO_ADDRESS:
             self.identifiers[Ids(event['id'])].append(event['new_address'])
 
     async def _load_address_providers(self) -> NoReturn:
@@ -350,7 +350,12 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
-        metapool_factories = self.identifiers[Ids.Metapool_Factory]
+        metapool_factories = [
+            factory 
+            for i in [Ids.Metapool_Factory, Ids.crvUSD_Plain_Pools, Ids.Curve_Tricrypto_Factory]
+            for factory in self.identifiers[i]
+        ]
+
         metapool_factory_pools = await asyncio.gather(*[self.read_pools(factory) for factory in metapool_factories])
         for factory, pool_list in zip(metapool_factories, metapool_factory_pools):
             for pool in pool_list:
