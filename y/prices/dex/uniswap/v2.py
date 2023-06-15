@@ -243,7 +243,7 @@ class UniswapRouterV2(ContractBase):
 
         # If we still don't have a workable path, try this smol brain method
         if path is None:
-            path = self.smol_brain_path_selector(token_in, token_out, paired_against)
+            path = self._smol_brain_path_selector(token_in, token_out, paired_against)
             logger.debug('smol')
         
         fees = 0.997 ** (len(path) - 1)
@@ -278,7 +278,7 @@ class UniswapRouterV2(ContractBase):
             ).coroutine()
 
 
-    def smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
+    def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
 
