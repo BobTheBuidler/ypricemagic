@@ -9,7 +9,7 @@ from random import randint
 from time import time
 from typing import Any, Callable, Dict, List, Optional
 
-from aiohttp import BasicAuth, ClientResponse, ClientSession, TCPConnector
+from aiohttp import BasicAuth, ClientResponse, ClientSession, ClientTimeout, TCPConnector
 from aiohttp.client_exceptions import ClientError, ContentTypeError
 from async_lru import alru_cache
 from brownie import chain
@@ -35,6 +35,8 @@ OLD_AUTH = BasicAuth(YPRICEAPI_USER, YPRICEAPI_PASS) if YPRICEAPI_USER and YPRIC
 ONE_MINUTE = 60  # some arbitrary amount of time in case the header is missing on unexpected 5xx responses
 ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
+
+YPRICEAPI_TIMEOUT = ClientTimeout(int(os.environ.get("YPRICEAPI_TIMEOUT", 5 * ONE_MINUTE)))  # Five minutes is the default timeout from aiohttp.
 YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
@@ -104,6 +106,7 @@ async def get_session() -> ClientSession:
         "https://ypriceapi-beta.yearn.finance",
         connector=TCPConnector(verify_ssl=False),
         headers=AUTH_HEADERS,
+        timeout=YPRICEAPI_TIMEOUT,
     )
 
 @alru_cache(ttl=ONE_HOUR)
