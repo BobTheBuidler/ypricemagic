@@ -67,7 +67,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             return target in await synthetix.synths and await Call(target, 'proxy()(address)').coroutine() == token
         return False
     
-    @a_sync.a_sync(cache_type='memory')
+    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=60*60*24)  # 24h ttl
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
         target = await Call(token, ['target()(address)']).coroutine() if await has_method(token, 'target()(address)', sync=False) else token
         return await Call(target, ['currencyKey()(bytes32)']).coroutine() if await has_method(token, 'currencyKey()(bytes32)', sync=False) else None

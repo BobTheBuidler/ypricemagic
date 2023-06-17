@@ -109,7 +109,7 @@ async def get_prices(
                 raise p
     return prices
 
-@a_sync.a_sync(cache_type='memory')
+@a_sync.a_sync(cache_type='memory', ram_cache_ttl=constants.RAM_CACHE_TTL)
 async def _get_price(
     token: AnyAddressType, 
     block: Block, 

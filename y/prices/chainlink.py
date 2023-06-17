@@ -239,7 +239,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
             block = chain.height
         return await self._get_price(asset, block)
 
-    alru_cache(maxsize=1000)
+    alru_cache(maxsize=1000, ttl=60*60*24)  # 24h ttl
     async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
