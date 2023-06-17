@@ -77,7 +77,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
     
-    @a_sync.a_sync(cache_type='memory')
+    @a_sync.a_sync(cache_type='memory', ttl=60*60*24)  # 24h ttl
     async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if block and block < await contract_creation_block_async(UNISWAP_V3_QUOTER, True):
             return None
