@@ -25,7 +25,7 @@ async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     if pool:
         return await has_methods(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'), sync=False)
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', ram_cache_ttl=60*60*24)  # 24h ttl
 async def get_pool(token_address: AnyAddressType) -> Address:
     convert.to_address(token_address)
     if chain.id == Network.Mainnet:
