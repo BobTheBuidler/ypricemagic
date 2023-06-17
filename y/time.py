@@ -28,7 +28,7 @@ def get_block_timestamp(height: int) -> int:
     else:
         return chain[height].timestamp
 
-@a_sync(cache_type='memory')
+@a_sync(cache_type='memory', ttl=60*60*24)  # 24h ttl
 async def get_block_timestamp_async(height: int) -> int:
     client = await get_ethereum_client_async()
     if client in ['tg', 'erigon']:
@@ -92,7 +92,7 @@ def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed
     logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
     return block
 
-@a_sync(cache_type='memory')
+@a_sync(cache_type='memory', ttl=60*60*24)  # 24h ttl
 async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_block_if_needed: bool = False) -> int:
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
