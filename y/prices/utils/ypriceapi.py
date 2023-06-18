@@ -13,6 +13,7 @@ from aiohttp import BasicAuth, ClientResponse, ClientSession, ClientTimeout, TCP
 from aiohttp.client_exceptions import ClientError, ContentTypeError
 from async_lru import alru_cache
 from brownie import chain
+from dank_mids.semaphore import ThreadsafeSemaphore
 
 from y import constants
 from y.classes.common import UsdPrice
@@ -37,7 +38,7 @@ ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
 
 YPRICEAPI_TIMEOUT = ClientTimeout(int(os.environ.get("YPRICEAPI_TIMEOUT", 5 * ONE_MINUTE)))  # Five minutes is the default timeout from aiohttp.
-YPRICEAPI_SEMAPHORE = asyncio.Semaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
+YPRICEAPI_SEMAPHORE = ThreadsafeSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
