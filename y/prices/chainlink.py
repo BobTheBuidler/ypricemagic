@@ -176,7 +176,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
         self._cached_feeds = {ERC20(token, asynchronous=self.asynchronous): feed for token, feed in FEEDS.items()}
-        self._feeds_loaded = asyncio.Event()
+        self._feeds_loaded = a_sync.Event()
         self._loading = False
     
     async def _start_feed_loop(self) -> Union[None, NoReturn]:
