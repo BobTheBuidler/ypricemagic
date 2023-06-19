@@ -1,8 +1,8 @@
 bobs_lazy_logging==0.0.4
 cachetools>=4.1.1,<4.3
 checksum_dict>=1.1.1
-dank_mids>=4.20.36,!=4.20.38
+dank_mids>=4.20.49
 eth-brownie>=1.18.1,<1.20
 eth_retry>=0.1.17,<0.2
-ez-a-sync>=0.1.8
+ez-a-sync>=0.1.9
 joblib>=1.0.1
