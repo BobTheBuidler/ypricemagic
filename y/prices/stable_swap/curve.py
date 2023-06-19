@@ -227,12 +227,12 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         self.pools = set()
         self.token_to_pool = dict()  # lp_token -> pool
 
-        self._address_providers_loading = asyncio.Event()
-        self._address_providers_loaded = asyncio.Event()
-        self._registries_loaded = asyncio.Event()
+        self._address_providers_loading = a_sync.Event()
+        self._address_providers_loaded = a_sync.Event()
+        self._registries_loaded = a_sync.Event()
         self._loaded_registries = set()
-        self._all_loading = asyncio.Event()
-        self._all_loaded = asyncio.Event()
+        self._all_loading = a_sync.Event()
+        self._all_loaded = a_sync.Event()
     
     def __repr__(self) -> str:
         return "<CurveRegistry>"
