@@ -133,15 +133,15 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> int:
 
 @ttl_cache(ttl=60)
 def check_node() -> None:
-    node_timestamp = web3.eth.get_block('latest').timestamp
     current_time = time.time()
+    node_timestamp = web3.eth.get_block('latest').timestamp
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")
 
 @alru_cache(ttl=60)
 async def check_node_async() -> None:
+    current_time = time.time()
     latest = await dank_w3.eth.get_block('latest')
     node_timestamp = latest.timestamp
-    current_time = time.time()
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")
