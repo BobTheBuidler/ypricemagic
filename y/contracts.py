@@ -269,7 +269,10 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         _DeployedContractBase.__init__(self, build['address'], owner, None)
         if persist:
             _add_deployment(self)
-        self.verified = True
+        try:
+            self.verified = True
+        except AttributeError:
+            logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
         return self
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
