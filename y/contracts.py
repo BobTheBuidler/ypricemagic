@@ -207,7 +207,10 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
             # Try to fetch the contract from the local sqlite db.
             try:
                 super().__init__(address, owner=owner)
-                self.verified = True
+                try:
+                    self.verified = True
+                except AttributeError:
+                    logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
             # This error happens on occasion, it comes from brownie's compiling process. But we shoulnd't be using that anyway. Check config.
             except IndexError as e:
                 if str(e) == "pop from an empty deque":
