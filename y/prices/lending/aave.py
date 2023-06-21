@@ -129,7 +129,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     async def is_wrapped_atoken(self, token_address: AnyAddressType) -> bool:
         try:
             contract = await Contract.coroutine(token_address)
-            attrs = "ATOKEN", "STATIC_ATOKEN_LM_REVISION", "staticToDynamicAmount"
+            attrs = "ATOKEN", "AAVE_POOL", "UNDERLYING"
             return all(hasattr(contract, attr) for attr in attrs)
         except ContractNotVerified:
             return False
@@ -147,7 +147,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         contract, scale = await asyncio.gather(Contract.coroutine(token_address), ERC20(token_address, asynchronous=True).scale)
         underlying, price_per_share = await asyncio.gather(
             contract.ATOKEN.coroutine(block_identifier=block),
-            contract.staticToDynamicAmount.coroutine(scale, block_identifier=block),
+            contract.convertToAssets.coroutine(scale, block_identifier=block),
         )
         price_per_share /= scale
         return price_per_share * await ERC20(underlying, asynchronous=True).price(block)
