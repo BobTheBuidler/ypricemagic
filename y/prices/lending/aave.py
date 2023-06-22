@@ -35,9 +35,35 @@ v2_pools = {
     ],
     Network.Avalanche: [
         "0x70BbE4A294878a14CB3CDD9315f5EB490e346163", # blizz
-    ]
+    ],
 }.get(chain.id, [])        
 
+v3_pools = {
+    Network.Mainnet: [
+        "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2", # aave v3
+    ],
+    Network.Optimism: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+    Network.Arbitrum: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+    Network.Harmony: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+    Network.Arbitrum: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+    Network.Fantom: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+    Network.Avalanche: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+    Network.Polygon: [
+        "0x794a61358D6845594F94dc1DB02A252b5b4814aD", # aave v3
+    ],
+}.get(chain.id, [])
 
 class AaveMarketBase(ContractBase):
     def __contains__(self, __o: object) -> bool:
@@ -89,7 +115,31 @@ class AaveMarketV2(AaveMarketBase):
             atokens = [ERC20(reserve_data[7], asynchronous=self.asynchronous) for reserve_data in reserves_data]
             logger.info(f'loaded {len(atokens)} v2 atokens for {self.__repr__()}')
             return atokens
-        except TypeError: # TODO figure out what to do about non verified aave markets
+        except TypeError as e: # TODO figure out what to do about non verified aave markets
+            logger.exception(e)
+            logger.warning(f'failed to load tokens for {self.__repr__()}')
+            return []
+
+
+class AaveMarketV3(AaveMarketBase):
+    @a_sync.a_sync(ram_cache_maxsize=256)
+    async def underlying(self, token_address: AddressOrContract) -> ERC20:
+        underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address', sync=False)
+        logger.debug(f"underlying: {underlying}")
+        return ERC20(underlying, asynchronous=self.asynchronous)
+
+    @a_sync.aka.cached_property
+    async def atokens(self) -> List[ERC20]:
+        reserves = await Call(self.address, ['getReservesList()(address[])'], [[self.address,None]]).coroutine()
+        reserves = reserves[self.address]
+        reserves_data = await asyncio.gather(*[self.contract.getReserveData.coroutine(reserve) for reserve in reserves])
+
+        try:
+            atokens = [ERC20(reserve_data[8], asynchronous=self.asynchronous) for reserve_data in reserves_data]
+            logger.info(f'loaded {len(atokens)} v3 atokens for {self.__repr__()}')
+            return atokens
+        except TypeError as e: # TODO figure out what to do about non verified aave markets
+            logger.exception(e)
             logger.warning(f'failed to load tokens for {self.__repr__()}')
             return []
 
@@ -100,8 +150,12 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def pools(self) -> List[Union[AaveMarketV1, AaveMarketV2]]:
-        v1, v2 = await asyncio.gather(self.__pools_v1__(sync=False), self.__pools_v2__(sync=False))
-        return v1 + v2
+        v1, v2, v3 = await asyncio.gather(
+            self.__pools_v1__(sync=False),
+            self.__pools_v2__(sync=False), 
+            self.__pools_v3__(sync=False),
+        )
+        return v1 + v2 + v3
     
     @a_sync.aka.cached_property
     async def pools_v1(self) -> List[AaveMarketV1]:
@@ -110,6 +164,10 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def pools_v2(self) -> List[AaveMarketV2]:
         return [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
+    
+    @a_sync.aka.cached_property
+    async def pools_v3(self) -> List[AaveMarketV2]:
+        return [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
     
     async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
         pools = await self.__pools__(sync=False)
