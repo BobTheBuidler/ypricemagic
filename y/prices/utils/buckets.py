@@ -66,7 +66,8 @@ async def check_bucket(
     elif gearbox and await gearbox.is_diesel_token(token_address, sync=False):    return 'gearbox'
 
     # this just requires contract initialization but should go behind uniswap
-    elif await aave.is_wrapped_atoken(token_address, sync=False):           return 'wrapped atoken'
+    elif await aave.is_wrapped_atoken_v2(token_address, sync=False):        return 'wrapped atoken v2'
+    elif await aave.is_wrapped_atoken_v3(token_address, sync=False):        return 'wrapped atoken v3'
     elif token_address in generic_amm:                                      return 'generic amm'
     elif await mooniswap.is_mooniswap_pool(token_address, sync=False):      return 'mooniswap lp'
     elif await compound.is_compound_market(token_address, sync=False):      return 'compound'

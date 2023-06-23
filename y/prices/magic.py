@@ -214,8 +214,10 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'uni or uni-like lp':    price = await uniswap_multiplexer.lp_price(token_address, block, sync=False)
     elif bucket == 'wrapped gas coin':      price = await get_price(constants.WRAPPED_GAS_COIN, block, sync=False)
     
-    elif bucket == 'wrapped atoken':        price = await aave.get_price_wrapped(token_address, block, sync=False)
+    elif bucket == 'wrapped atoken v2':     price = await aave.get_price_wrapped_v2(token_address, block, sync=False)
+    elif bucket == 'wrapped atoken v3':     price = await aave.get_price_wrapped_v3(token_address, block, sync=False)
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, sync=False)
+    
     elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, sync=False)
 
     return price
