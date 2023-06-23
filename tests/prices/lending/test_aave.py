@@ -136,3 +136,17 @@ async def test_atokens_async(token):
     underlying = await aave.underlying(token)
     assert underlying, f'Cannot find underlying for atoken {token}'
     assert await aave.get_price(token), f'Cannot find price for atoken {token}'
+
+@pytest.mark.asyncio_cooperative
+async def test_wrapped_atoken_v2():
+    wrapped_ausdt = "0xf8Fd466F12e236f4c96F7Cce6c79EAdB819abF58"
+    aave: AaveRegistry = AaveRegistry(asynchronous=True)
+    assert await aave.is_wrapped_atoken_v2(wrapped_ausdt)
+    assert await aave.get_price_wrapped_v2(wrapped_ausdt, block=17_000_000) == 1.112026
+
+@pytest.mark.asyncio_cooperative
+async def test_wrapped_atoken_v3():
+    wrapped_ausdc = "0x57d20c946A7A3812a7225B881CdcD8431D23431C"
+    aave: AaveRegistry = AaveRegistry(asynchronous=True)
+    assert await aave.is_wrapped_atoken_v3(wrapped_ausdc)
+    assert await aave.get_price_wrapped_v3(wrapped_ausdc, block=17_000_000) == 1.000168
