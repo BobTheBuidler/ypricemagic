@@ -22,7 +22,8 @@ underlying_methods = [
     'underlying()(address)',
     'native()(address)',
     'want()(address)',
-    'input()(address)'
+    'input()(address)',
+    'asset()(address)',
     'wmatic()(address)',
     'wbnb()(address)',
     'based()(address)',
@@ -33,7 +34,7 @@ share_price_methods = [
     'getPricePerShare()(uint)',
     'getPricePerFullShare()(uint)',
     'getSharesToUnderlying()(uint)',
-    'exchangeRate()(uint)'
+    'exchangeRate()(uint)',
 ]
 
 force_false = {
