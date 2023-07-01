@@ -8,6 +8,7 @@ from a_sync import a_sync
 from async_lru import alru_cache
 from brownie import chain, web3
 from cachetools.func import ttl_cache
+from dank_mids._config import GANACHE_FORK
 
 from y.exceptions import NoBlockFound, NodeNotSynced
 from y.networks import Network
@@ -133,6 +134,8 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> int:
 
 @ttl_cache(ttl=60)
 def check_node() -> None:
+    if GANACHE_FORK:
+        return
     current_time = time.time()
     node_timestamp = web3.eth.get_block('latest').timestamp
     if current_time - node_timestamp > 5 * 60:
@@ -140,6 +143,8 @@ def check_node() -> None:
 
 @alru_cache(ttl=60)
 async def check_node_async() -> None:
+    if GANACHE_FORK:
+        return
     current_time = time.time()
     latest = await dank_w3.eth.get_block('latest')
     node_timestamp = latest.timestamp
