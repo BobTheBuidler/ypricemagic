@@ -33,12 +33,7 @@ BALANCER_V2_VAULTS = {
 }.get(chain.id, [])
 
 
-#class PoolId(bytes):
-#    def __init__(self, v: int) -> None:
-#        super().__init__()
-
 PoolId = NewType('PoolId', bytes)
-
 
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
@@ -46,21 +41,15 @@ class BalancerV2Vault(ContractBase):
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
-
-    #yLazyLogger(logger)
+            
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
         return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
-    #yLazyLogger(logger)
-    @a_sync.a_sync(ram_cache_maxsize=10)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
-        #try:
         events = decode_logs(await get_logs_asap(self.address, topics, to_block=block, sync=False))
-        #except TypeError as e:
-        #    if "Start must be less than or equal to stop" in str(e):
-        #        return {}
-        #    raise
         return {
             event['poolId'].hex(): event['poolAddress'] for event in events
             # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
@@ -68,14 +57,13 @@ class BalancerV2Vault(ContractBase):
             if contracts.is_contract(event['poolAddress'])
         }
     
-    @a_sync.a_sync(ram_cache_maxsize=10)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         return await asyncio.gather(*[
             self.contract.getPoolTokens.coroutine(poolId, block_identifier=block)
             for poolId in poolids
         ])
     
-    #yLazyLogger(logger)
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         # sourcery skip: simplify-len-comparison
         pools = await self.list_pools(block=block, sync=False)
@@ -134,6 +122,7 @@ class BalancerV2Pool(ERC20):
             if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
         ])))
 
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens = await self.tokens(block=block, sync=False)
         return dict(tokens.items())
@@ -159,22 +148,26 @@ class BalancerV2Pool(ERC20):
                 paired_token_balance, paired_token_weight = balance, weight
                 break
 
-        try:
-            token_value_in_pool = paired_token_balance.value_usd / paired_token_weight * token_weight
-            return UsdPrice(token_value_in_pool / token_balance.readable)
-        except UnboundLocalError:
-            return None
+        token_value_in_pool, token_balance_readable = await asyncio.gather(*[
+            paired_token_balance.__value_usd__(sync=False),
+            token_balance.__readable__(sync=False),
+        ])
+        token_value_in_pool /= paired_token_weight * token_weight
+        return UsdPrice(token_value_in_pool / token_balance_readable) 
 
+    # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def tokens(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
         return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def weights(self, block: Optional[Block] = None) -> List[int]:
         try:
             return await self.contract.getNormalizedWeights.coroutine(block_identifier = block)
         except (AttributeError,ValueError):
-            tokens = await self.__tokens__(sync=False)
+            tokens = await self.tokens(block=block, sync=False)
             return [1 for _ in tokens.keys()]
 
 
