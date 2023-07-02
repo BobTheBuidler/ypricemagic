@@ -3,6 +3,7 @@ import logging
 from typing import Awaitable, Dict, List, NewType, Optional, Tuple
 
 import a_sync
+from async_lru import alru_cache
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from hexbytes import HexBytes
@@ -46,21 +47,15 @@ class BalancerV2Vault(ContractBase):
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
-
-    #yLazyLogger(logger)
+            
+    @alru_cache(maxsize=None, ttl=60*60)
     async def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
         return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
-    #yLazyLogger(logger)
-    @a_sync.a_sync(ram_cache_maxsize=10)
+    @alru_cache(maxsize=None, ttl=60*60)
     async def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
-        #try:
         events = decode_logs(await get_logs_asap(self.address, topics, to_block=block, sync=False))
-        #except TypeError as e:
-        #    if "Start must be less than or equal to stop" in str(e):
-        #        return {}
-        #    raise
         return {
             event['poolId'].hex(): event['poolAddress'] for event in events
             # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
@@ -68,14 +63,13 @@ class BalancerV2Vault(ContractBase):
             if contracts.is_contract(event['poolAddress'])
         }
     
-    @a_sync.a_sync(ram_cache_maxsize=10)
+    @alru_cache(maxsize=None, ttl=60*60)
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         return await asyncio.gather(*[
             self.contract.getPoolTokens.coroutine(poolId, block_identifier=block)
             for poolId in poolids
         ])
     
-    #yLazyLogger(logger)
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         # sourcery skip: simplify-len-comparison
         pools = await self.list_pools(block=block, sync=False)
@@ -134,6 +128,7 @@ class BalancerV2Pool(ERC20):
             if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
         ])))
 
+    @alru_cache(maxsize=None, ttl=60*60)
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens = await self.tokens(block=block, sync=False)
         return dict(tokens.items())
@@ -165,16 +160,19 @@ class BalancerV2Pool(ERC20):
         except UnboundLocalError:
             return None
 
+    # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
+    @alru_cache(maxsize=None, ttl=60*60)
     async def tokens(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
         return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
+    @alru_cache(maxsize=None, ttl=60*60)
     async def weights(self, block: Optional[Block] = None) -> List[int]:
         try:
             return await self.contract.getNormalizedWeights.coroutine(block_identifier = block)
         except (AttributeError,ValueError):
-            tokens = await self.__tokens__(sync=False)
+            tokens = await self.tokens(block=block, sync=False)
             return [1 for _ in tokens.keys()]
 
 
