@@ -3,7 +3,6 @@ import logging
 from typing import Awaitable, Dict, List, NewType, Optional, Tuple
 
 import a_sync
-from async_lru import alru_cache
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from hexbytes import HexBytes
@@ -34,12 +33,7 @@ BALANCER_V2_VAULTS = {
 }.get(chain.id, [])
 
 
-#class PoolId(bytes):
-#    def __init__(self, v: int) -> None:
-#        super().__init__()
-
 PoolId = NewType('PoolId', bytes)
-
 
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
@@ -48,11 +42,11 @@ class BalancerV2Vault(ContractBase):
             # we need the contract cached so we can decode logs correctly
             self.contract
             
-    @alru_cache(maxsize=None, ttl=60*60)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
         return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
-    @alru_cache(maxsize=None, ttl=60*60)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
         topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
         events = decode_logs(await get_logs_asap(self.address, topics, to_block=block, sync=False))
@@ -63,7 +57,7 @@ class BalancerV2Vault(ContractBase):
             if contracts.is_contract(event['poolAddress'])
         }
     
-    @alru_cache(maxsize=None, ttl=60*60)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         return await asyncio.gather(*[
             self.contract.getPoolTokens.coroutine(poolId, block_identifier=block)
@@ -128,7 +122,7 @@ class BalancerV2Pool(ERC20):
             if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
         ])))
 
-    @alru_cache(maxsize=None, ttl=60*60)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         tokens = await self.tokens(block=block, sync=False)
         return dict(tokens.items())
@@ -161,13 +155,13 @@ class BalancerV2Pool(ERC20):
             return None
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
-    @alru_cache(maxsize=None, ttl=60*60)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def tokens(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
         return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 
-    @alru_cache(maxsize=None, ttl=60*60)
+    @a_sync.a_sync(ram_cache_ttl=60*60)
     async def weights(self, block: Optional[Block] = None) -> List[int]:
         try:
             return await self.contract.getNormalizedWeights.coroutine(block_identifier = block)
