@@ -148,11 +148,12 @@ class BalancerV2Pool(ERC20):
                 paired_token_balance, paired_token_weight = balance, weight
                 break
 
-        try:
-            token_value_in_pool = paired_token_balance.value_usd / paired_token_weight * token_weight
-            return UsdPrice(token_value_in_pool / token_balance.readable)
-        except UnboundLocalError:
-            return None
+        token_value_in_pool, token_balance_readable = await asyncio.gather(*[
+            paired_token_balance.__value_usd__(sync=False),
+            token_balance.__readable__(sync=False),
+        ])
+        token_value_in_pool /= paired_token_weight * token_weight
+        return UsdPrice(token_value_in_pool / token_balance_readable) 
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
     @a_sync.a_sync(ram_cache_ttl=60*60)
