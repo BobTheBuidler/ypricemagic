@@ -8,7 +8,10 @@ from a_sync import a_sync
 from async_lru import alru_cache
 from brownie import chain, web3
 from cachetools.func import ttl_cache
-from dank_mids._config import GANACHE_FORK
+try:
+    from dank_mids.ENVIRONMENT_VARIABLES import GANACHE_FORK
+except ImportError:
+    from dank_mids._config import GANACHE_FORK
 
 from y.exceptions import NoBlockFound, NodeNotSynced
 from y.networks import Network
