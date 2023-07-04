@@ -1,13 +1,16 @@
-
 import logging
-from typing import List, Union
+from typing import List, TypeVar, Union
 
 from brownie import chain
 from cachetools.func import ttl_cache
 from lazy_logging import LazyLoggerFactory
+from typing_extensions import ParamSpec
 
 from y.datatypes import AnyAddressType, Block
 from y.networks import Network
+
+T = TypeVar('T')
+P = ParamSpec('P')
 
 yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 
@@ -27,7 +30,7 @@ def _get_price_logger(token_address: AnyAddressType, block: Block, extra: str = 
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ =f'name ({Network.name()})' if Network.name() else f'chainid ({chain.id})'
 
-def gh_issue_request(issue_request_details: Union[str, List[str]], _logger = None) -> None:
+def _gh_issue_request(issue_request_details: Union[str, List[str]], _logger = None) -> None:
 
     if _logger is None: _logger = logger
 

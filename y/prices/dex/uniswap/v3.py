@@ -6,6 +6,7 @@ import a_sync
 from brownie import chain
 from eth_abi.packed import encode_abi_packed
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
@@ -77,7 +78,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
     
-    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=60*60*24)  # 24h ttl
+    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if block and block < await contract_creation_block_async(UNISWAP_V3_QUOTER, True):
             return None

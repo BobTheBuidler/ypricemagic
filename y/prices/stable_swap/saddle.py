@@ -6,6 +6,7 @@ from typing import List, Optional
 import a_sync
 from brownie import chain
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import has_method, has_methods
@@ -25,7 +26,7 @@ async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     if pool:
         return await has_methods(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'), sync=False)
 
-@a_sync.a_sync(default='sync', ram_cache_ttl=60*60*24)  # 24h ttl
+@a_sync.a_sync(default='sync', ram_cache_ttl=ENVS.CACHE_TTL)
 async def get_pool(token_address: AnyAddressType) -> Address:
     convert.to_address(token_address)
     if chain.id == Network.Mainnet:

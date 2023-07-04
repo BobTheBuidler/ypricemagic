@@ -7,9 +7,11 @@ from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import raise_if_exception_in
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
 from y.classes.common import ERC20
 from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.decorators import stuck_coro_debugger
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.band import band
@@ -104,7 +106,8 @@ async def get_prices(
                 raise p
     return prices
 
-@a_sync.a_sync(cache_type='memory', ram_cache_ttl=constants.RAM_CACHE_TTL)
+@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@stuck_coro_debugger
 async def _get_price(
     token: AnyAddressType, 
     block: Block, 

@@ -13,7 +13,7 @@ from y.contracts import Contract, has_methods
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.exceptions import call_reverted
 from y.networks import Network
-from y.utils.logging import gh_issue_request
+from y.utils.logging import _gh_issue_request
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -226,7 +226,7 @@ class Compound(a_sync.ASyncGenericSingleton):
     async def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         comptroller = await raw_call(token_address,'comptroller()',output='address', sync=False)
         if comptroller not in self.trollers.values():
-            gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
+            _gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
 
 
 compound = Compound(asynchronous=True)
