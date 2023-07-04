@@ -1,14 +1,22 @@
 import logging
+from typing import Optional
+
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
-from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
 # General
 
+class yPriceMagicError(ValueError):
+    def __init__(self, exc: Exception, address: str, block: Optional[int], symbol: str):
+        from y import Network
+        self.exception = exc
+        super().__init__(f"{self.exception} while fetching {Network.printable()} {symbol} {address} at block {block}")
+
 class PriceError(Exception):
-    pass
+    def __init__(self, logger: logging.Logger, symbol: str):
+        super().__init__(f"No price found for {symbol} {logger.address} at block {logger.block}")
 
 class UnsupportedNetwork(Exception):
     pass
@@ -46,7 +54,6 @@ class MessedUpBrownieContract(Exception):
             else: raise
 
 
-#yLazyLogger(logger)
 def contract_not_verified(e: Exception) -> bool:
     triggers = [
         'Contract source code not verified',
@@ -77,7 +84,6 @@ class CallReverted(Exception):
     pass
 
 
-#yLazyLogger(logger)
 def call_reverted(e: Exception) -> bool:
     triggers = [
         'execution reverted',
@@ -95,7 +101,6 @@ def continue_if_call_reverted(e: Exception) -> None:
     else: raise e
 
 
-#yLazyLogger(logger)
 def out_of_gas(e: Exception) -> bool:
     return 'out of gas' in str(e) 
 

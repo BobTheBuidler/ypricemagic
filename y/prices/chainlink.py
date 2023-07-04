@@ -7,6 +7,7 @@ from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block_async
@@ -239,7 +240,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
             block = chain.height
         return await self._get_price(asset, block)
 
-    alru_cache(maxsize=1000, ttl=60*60*24)  # 24h ttl
+    alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
     async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:

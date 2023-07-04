@@ -24,6 +24,7 @@ from multicall import Call
 
 from y import convert
 from y.datatypes import Address, AnyAddressType, Block
+from y.decorators import stuck_coro_debugger
 from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
                           contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
@@ -31,7 +32,6 @@ from y.networks import Network
 from y.time import check_node, check_node_async
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
-from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +118,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
 
 
 @a_sync.a_sync(cache_type='memory')
+@stuck_coro_debugger
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
@@ -254,6 +255,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         return self
     
     @classmethod
+    @stuck_coro_debugger
     async def coroutine(
         cls, 
         address: AnyAddressType, 
@@ -273,7 +275,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         try:
             self.verified = True
         except AttributeError:
-            logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
+            logger.warning(f'`Contract("{self.address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
         return self
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
@@ -327,6 +329,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
 
 
 @a_sync.a_sync(default='sync', cache_type='memory')
+@stuck_coro_debugger
 async def has_methods(
     address: AnyAddressType, 
     methods: Tuple[str],
@@ -355,6 +358,7 @@ async def has_methods(
 
 
 #yLazyLogger(logger)
+@stuck_coro_debugger
 async def probe(
     address: AnyAddressType, 
     methods: List[str],
@@ -385,6 +389,7 @@ async def probe(
     
 
 @a_sync.a_sync(default='sync')
+@stuck_coro_debugger
 async def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
     try:
         contract = await Contract.coroutine(address)

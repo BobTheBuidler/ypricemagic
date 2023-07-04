@@ -17,7 +17,7 @@ from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapPoolV2,
                                      UniswapRouterV2)
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
-from y.utils.logging import gh_issue_request
+from y.utils.logging import _gh_issue_request
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             if is_pool:
                 factory = await pool.__factory__(sync=False)
                 if factory not in self.factories and factory != ZERO_ADDRESS:
-                    gh_issue_request(f'UniClone Factory {factory} is unknown to ypricemagic.', logger)
+                    _gh_issue_request(f'UniClone Factory {factory} is unknown to ypricemagic.', logger)
                     self.factories.append(factory)
             return is_pool
         except NotAUniswapV2Pool:

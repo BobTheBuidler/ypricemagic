@@ -6,6 +6,7 @@ from typing import List, Dict
 import a_sync
 from brownie import chain
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
 from y.contracts import Contract
 from y.datatypes import Address, Block, UsdPrice
@@ -52,7 +53,7 @@ class Gearbox(a_sync.ASyncGenericBase):
     async def registry(self) -> Contract:
         return await Contract.coroutine(registry)
     
-    @a_sync.a_sync(ram_cache_ttl=600)
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def pools(self) -> List[DieselPool]:
         registry = await self.registry
         return [DieselPool(pool, asynchronous=self.asynchronous) for pool in await registry.getPools.coroutine()]
