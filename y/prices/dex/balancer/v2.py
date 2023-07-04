@@ -67,14 +67,7 @@ class BalancerV2Vault(ContractBase):
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
         # sourcery skip: simplify-len-comparison
         pools = await self.list_pools(block=block, sync=False)
-        is_standard_pool = await asyncio.gather(*[_is_standard_pool(pool) for pool in pools.values()])
-        
-        if block is None:
-            poolids = (poolid for (poolid, pool), is_standard in zip(pools.items(), is_standard_pool) if is_standard)
-        else:
-            deploy_blocks = await asyncio.gather(*[contracts.contract_creation_block_async(pool, True) for pool in pools.values()])
-            poolids = (poolid for (poolid, pool), is_standard, deploy_block in zip(pools.items(), is_standard_pool, deploy_blocks) if is_standard and deploy_block <= block)
-
+        poolids = tuple(pools.keys())
         pools_info = await self.get_pool_info(poolids, block=block, sync=False)
         all_pools = await self.list_pools(block=block, sync=False)
         pools_info = {all_pools[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}

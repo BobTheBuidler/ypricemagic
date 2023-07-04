@@ -3,6 +3,7 @@ import logging
 from typing import Iterable, List, Optional
 
 import a_sync
+from cachetools.func import ttl_cache
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import raise_if_exception_in
@@ -10,7 +11,7 @@ from multicall.utils import raise_if_exception_in
 from y import constants, convert
 from y.classes.common import ERC20
 from y.datatypes import AnyAddressType, Block, UsdPrice
-from y.exceptions import NonStandardERC20, PriceError
+from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
 from y.networks import Network
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.band import band
@@ -34,6 +35,7 @@ from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils import ypriceapi
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
+from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
 
@@ -57,15 +59,14 @@ async def get_price(
     - If `fail_to_None == True`, ypricemagic will return `None`
     - If `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-    block = block or chain.height
+    block = block or await dank_w3.eth.block_number
     token_address = convert.to_address(token_address)
-
     try:
         return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
     except (ContractNotFound, NonStandardERC20, RecursionError, PriceError) as e:
-        if fail_to_None:
-            return None
-        raise PriceError(f'could not fetch price for {await ERC20(token_address, asynchronous=True).symbol} {token_address} on {Network.printable()}') from e
+        symbol = await ERC20(token_address, asynchronous=True).symbol
+        if not fail_to_None:
+            raise yPriceMagicError(e, token_address, block, symbol) from e
 
 @a_sync.a_sync(default='sync')
 async def get_prices(
@@ -118,57 +119,66 @@ async def _get_price(
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 
     try:
+        # We do this to cache the symbol for later, otherwise some repr woudl break
         symbol = await ERC20(token, asynchronous=True).symbol
     except NonStandardERC20:
         symbol = None
-    token_string = f"{symbol} {token}" if symbol else token
+    
+    
+
+    job_logger = logging.getLogger(f"{__name__}.{Network.label().upper()}.{token}.{block}")
+    job_logger.setLevel(job_logger.parent.level)
+    job_logger.debug(f'fetching price for {symbol}')
 
     if token == ZERO_ADDRESS:
-        _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
+        _fail_appropriately(f"{symbol} {token}" if symbol else token, fail_to_None=fail_to_None, silent=silent)
         return None
-
-    logger.debug("-------------[ y ]-------------")
-    logger.debug("Fetching price for...")
-    logger.debug(f"Token: {token_string}")
-    logger.debug(f"Block: {block or 'latest'}") 
-    logger.debug(f"Network: {Network.printable()}")
 
     if ypriceapi.should_use and token not in ypriceapi.skip_tokens:
         price = await ypriceapi.get_price(token, block)
+        job_logger.debug(f"ypriceapi -> {price}")
         if price is not None:
+            job_logger.debug(f"{symbol} price: {price}")
             return price
 
     price = await _exit_early_for_known_tokens(token, block=block)
+    job_logger.debug(f"early exit -> {price}")
     if price is not None:
+        job_logger.debug(f"{symbol} price: {price}")
         return price
     
     # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
     # TODO should we use a liuidity-based method to determine this? 
     if price is None and uniswap_v3:
         price = await uniswap_v3.get_price(token, block=block, sync=False)
+        job_logger.debug(f"uniswap v3 -> {price}")
 
     if price is None:
         price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
+        job_logger.debug(f"uniswap v2 -> {price}")
         
     # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
     #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
     if price is None and curve: 
         price = await curve.get_price_for_underlying(token, block=block, sync=False)
+        job_logger.debug(f"curve -> {price}")
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price is None or price == 0:
         new_price = await balancer_multiplexer.get_price(token, block=block, sync=False)
+        job_logger.debug(f"balancer -> {price}")
         if new_price:
+            job_logger.debug(f"replacing price {price} with new price {new_price}")
             price = new_price
 
     if price is None:
-        _fail_appropriately(token_string, fail_to_None=fail_to_None, silent=silent)
+        _fail_appropriately(f"{symbol} {token}" if symbol else token, fail_to_None=fail_to_None, silent=silent)
     if price:
         await _sense_check(token, price)
+    job_logger.debug(f"{symbol} price: {price}")
     return price
 
 
-#yLazyLogger(logger)
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block
@@ -242,4 +252,9 @@ def _fail_appropriately(
         logger.warning(f"failed to get price for {token_string} on {Network.printable()}")
 
     if not fail_to_None:
-        raise PriceError(f'could not fetch price for {token_string} on {Network.printable()}')
+        raise PriceError("no price found")
+
+async def _debug_tsk(symbol: str, logger: logging.Logger):
+        while True:
+            await asyncio.sleep(60)
+            logger.debug(f"price still fetching for {symbol}")
