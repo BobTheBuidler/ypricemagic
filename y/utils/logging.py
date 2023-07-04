@@ -3,13 +3,27 @@ import logging
 from typing import List, Union
 
 from brownie import chain
+from cachetools.func import ttl_cache
 from lazy_logging import LazyLoggerFactory
 
+from y.datatypes import AnyAddressType, Block
 from y.networks import Network
 
 yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 
 logger = logging.getLogger(__name__)
+
+@ttl_cache(ttl=10*60)
+def _get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '') -> logging.Logger:
+    address = str(token_address)
+    name = f"y.prices.{Network.label()}.{address}.{block}"
+    if extra: 
+        name += f".{extra}"
+    logger = logging.getLogger(name)
+    logger.setLevel(logger.parent.level)
+    logger.address = address
+    logger.block = block
+    return logger
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ =f'name ({Network.name()})' if Network.name() else f'chainid ({chain.id})'
 

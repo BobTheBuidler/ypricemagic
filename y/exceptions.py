@@ -15,7 +15,8 @@ class yPriceMagicError(ValueError):
         super().__init__(f"{self.exception} while fetching {Network.printable()} {symbol} {address} at block {block}")
 
 class PriceError(Exception):
-    pass
+    def __init__(self, logger: logging.Logger, symbol: str):
+        super().__init__(f"No price found for {symbol} {logger.address} at block {logger.block}")
 
 class UnsupportedNetwork(Exception):
     pass

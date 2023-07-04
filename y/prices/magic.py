@@ -1,9 +1,8 @@
 import asyncio
 import logging
-from typing import Iterable, List, Optional
+from typing import Iterable, List, NoReturn, Optional
 
 import a_sync
-from cachetools.func import ttl_cache
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import raise_if_exception_in
@@ -12,7 +11,6 @@ from y import constants, convert
 from y.classes.common import ERC20
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
-from y.networks import Network
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
@@ -36,8 +34,7 @@ from y.prices.utils import ypriceapi
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
 from y.utils.dank_mids import dank_w3
-
-logger = logging.getLogger(__name__)
+from y.utils.logging import _get_price_logger
 
 
 @a_sync.a_sync(default='sync')
@@ -74,7 +71,6 @@ async def get_prices(
     block: Optional[Block] = None,
     fail_to_None: bool = False,
     silent: bool = False,
-    dop: int = None
     ) -> List[Optional[float]]:
     '''
     A more optimized way to fetch prices for multiple assets at the same block.
@@ -86,10 +82,8 @@ async def get_prices(
 
     When `get_prices` is unable to find a price:
     - if `fail_to_None == True`, ypricemagic will return `None` for that token
-    - if `fail_to_None == False`, ypricemagic will raise a PriceError and prevent you from receiving prices for your other tokens
+    - if `fail_to_None == False`, ypricemagic will raise a yPriceMagicError
     '''
-    if dop:
-        logger.warning('Kwarg `dop` was Optional in an old impmentation and will be removed in a future version. Please remove `dop` from your code.')
 
     if block is None:
         block = chain.height
@@ -123,59 +117,65 @@ async def _get_price(
         symbol = await ERC20(token, asynchronous=True).symbol
     except NonStandardERC20:
         symbol = None
-    
-    
 
-    job_logger = logging.getLogger(f"{__name__}.{Network.label().upper()}.{token}.{block}")
-    job_logger.setLevel(job_logger.parent.level)
-    job_logger.debug(f'fetching price for {symbol}')
+    logger = _get_price_logger(token, block, 'magic')
+    logger.debug(f'fetching price for {symbol}')
+    logger._debugger = asyncio.create_task(_debug_tsk(symbol, logger))
+
+    # Helps to detect stuck code
 
     if token == ZERO_ADDRESS:
-        _fail_appropriately(f"{symbol} {token}" if symbol else token, fail_to_None=fail_to_None, silent=silent)
+        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        logger._debugger.cancel()
         return None
 
     if ypriceapi.should_use and token not in ypriceapi.skip_tokens:
         price = await ypriceapi.get_price(token, block)
-        job_logger.debug(f"ypriceapi -> {price}")
+        logger.debug(f"ypriceapi -> {price}")
         if price is not None:
-            job_logger.debug(f"{symbol} price: {price}")
+            logger.debug(f"{symbol} price: {price}")
+            logger._debugger.cancel()
             return price
 
     price = await _exit_early_for_known_tokens(token, block=block)
-    job_logger.debug(f"early exit -> {price}")
+    logger.debug(f"early exit -> {price}")
     if price is not None:
-        job_logger.debug(f"{symbol} price: {price}")
+        logger.debug(f"{symbol} price: {price}")
+        logger._debugger.cancel()
         return price
     
     # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
     # TODO should we use a liuidity-based method to determine this? 
     if price is None and uniswap_v3:
         price = await uniswap_v3.get_price(token, block=block, sync=False)
-        job_logger.debug(f"uniswap v3 -> {price}")
+        logger.debug(f"uniswap v3 -> {price}")
 
     if price is None:
         price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
-        job_logger.debug(f"uniswap v2 -> {price}")
+        logger.debug(f"uniswap v2 -> {price}")
         
     # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
     #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
     if price is None and curve: 
         price = await curve.get_price_for_underlying(token, block=block, sync=False)
-        job_logger.debug(f"curve -> {price}")
+        logger.debug(f"curve -> {price}")
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price is None or price == 0:
         new_price = await balancer_multiplexer.get_price(token, block=block, sync=False)
-        job_logger.debug(f"balancer -> {price}")
+        logger.debug(f"balancer -> {price}")
         if new_price:
-            job_logger.debug(f"replacing price {price} with new price {new_price}")
+            logger.debug(f"replacing price {price} with new price {new_price}")
             price = new_price
 
     if price is None:
-        _fail_appropriately(f"{symbol} {token}" if symbol else token, fail_to_None=fail_to_None, silent=silent)
+        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
     if price:
         await _sense_check(token, price)
-    job_logger.debug(f"{symbol} price: {price}")
+
+    logger.debug(f"{symbol} price: {price}")
+    # Don't need this anymore
+    logger._debugger.cancel()
     return price
 
 
@@ -234,7 +234,8 @@ async def _exit_early_for_known_tokens(
 
          
 def _fail_appropriately(
-    token_string: str, 
+    logger: logging.Logger,
+    symbol: str, 
     fail_to_None: bool = False, 
     silent: bool = False
     ) -> None:
@@ -247,14 +248,14 @@ def _fail_appropriately(
         if `fail_to_None == True`, ypricemagic will return `None`
         if `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-
     if not silent:
-        logger.warning(f"failed to get price for {token_string} on {Network.printable()}")
+        logger.warning(f"failed to get price for {symbol}")
 
     if not fail_to_None:
-        raise PriceError("no price found")
+        raise PriceError(logger, symbol)
 
-async def _debug_tsk(symbol: str, logger: logging.Logger):
-        while True:
-            await asyncio.sleep(60)
-            logger.debug(f"price still fetching for {symbol}")
+async def _debug_tsk(symbol: str, logger: logging.Logger) -> NoReturn:
+    """Prints a log every 1 minute until the creating coro returns"""
+    while True:
+        await asyncio.sleep(60)
+        logger.debug(f"price still fetching for {symbol}")
