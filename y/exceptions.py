@@ -8,7 +8,9 @@ logger = logging.getLogger(__name__)
 
 # General
 
-class yPriceMagicError(ValueError):
+class yPriceMagicError(PriceError):
+    # We inherit from PriceError here just so we don't break your scripts with this new exc type.
+    # If you intend to catch a yPriceMagicError, you should still catch it by name
     def __init__(self, exc: Exception, address: str, block: Optional[int], symbol: str):
         from y import Network
         self.exception = exc
