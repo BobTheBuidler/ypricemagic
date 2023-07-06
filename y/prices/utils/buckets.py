@@ -28,22 +28,6 @@ from y.utils.logging import _get_price_logger
 
 logger = logging.getLogger(__name__)
 
-# these just require calls
-calls_only = {
-    'atoken': aave.is_atoken,
-    'balancer pool': balancer_multiplexer.is_balancer_pool,
-    'ib token': ib.is_ib_token,
-    'gelato': gelato.is_gelato_pool,
-    'piedao lp': piedao.is_pie,
-    'token set': tokensets.is_token_set,
-    'ellipsis lp': ellipsis.is_eps_rewards_pool,
-    'mstable feeder pool': mstablefeederpool.is_mstable_feeder_pool,
-    'saddle': saddle.is_saddle_lp,
-    'basketdao': basketdao.is_basketdao_index,
-    'popsicle': popsicle.is_popsicle_lp,
-}
-
-
 @a_sync.a_sync(default='sync', cache_type='memory')
 async def check_bucket(
     token: AnyAddressType
@@ -53,16 +37,12 @@ async def check_bucket(
     logger = _get_price_logger(token_address, block=None)
 
     # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
-    if token_address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE":       return 'wrapped gas coin'
-    elif token_address in STABLECOINS:                                      return 'stable usd'
-    elif one_to_one.is_one_to_one_token(token_address):                     return 'one to one'
-    
-    elif wsteth.is_wsteth(token_address):                                   return 'wsteth'
-    elif creth.is_creth(token_address):                                     return 'creth'
-    elif belt.is_belt_lp(token_address):                                    return 'belt lp'
-
-    elif froyo.is_froyo(token_address):                                     return 'froyo'
-    elif convex.is_convex_lp(token_address):                                return 'convex'
+    for bucket, check in string_matchers.items():
+        if check(token):
+            logger.debug(f"{token_address} is {bucket}")
+            return bucket
+        else:
+            logger.debug(f"{token_address} is not {bucket}")
 
     # check these first, these just require calls
     coros = [_check_bucket_helper(bucket, check, token_address) for bucket, check in calls_only.items()]
@@ -105,10 +85,36 @@ async def check_bucket(
     logger.debug(f"{token_address} bucket is {bucket}")
     return bucket
 
+# these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
+string_matchers = {
+    'wrapped gas coin': lambda address: address == "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    'stable usd': lambda address: address in STABLECOINS,
+    'one to one': one_to_one.is_one_to_one_token,
+    'wsteth': wsteth.is_wsteth,
+    'creth': creth.is_creth,
+    'belt lp': belt.is_belt_lp,
+    'froyo': froyo.is_froyo,
+    'convex': convex.is_convex_lp,
+}
+
+# these just require calls
+calls_only = {
+    'atoken': aave.is_atoken,
+    'balancer pool': balancer_multiplexer.is_balancer_pool,
+    'ib token': ib.is_ib_token,
+    'gelato': gelato.is_gelato_pool,
+    'piedao lp': piedao.is_pie,
+    'token set': tokensets.is_token_set,
+    'ellipsis lp': ellipsis.is_eps_rewards_pool,
+    'mstable feeder pool': mstablefeederpool.is_mstable_feeder_pool,
+    'saddle': saddle.is_saddle_lp,
+    'basketdao': basketdao.is_basketdao_index,
+    'popsicle': popsicle.is_popsicle_lp,
+}
+
 async def _chainlink_and_band(token_address) -> bool:
     """ We only really need band for a short period in the beginning of fantom's history, and then we will default to chainlink once available. """
     return chainlink and await chainlink.has_feed(token_address, sync=False) and token_address in band
 
 async def _check_bucket_helper(bucket: str, check: Callable[[Address], Awaitable[bool]], address: Address) -> Tuple[str, bool]:
     return bucket, await check(address, sync=False)
-    
