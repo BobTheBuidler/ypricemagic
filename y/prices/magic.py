@@ -126,60 +126,63 @@ async def _get_price(
     logger._debugger = asyncio.create_task(_debug_tsk(symbol, logger))
 
     # Helps to detect stuck code
+    try:
+        if token == ZERO_ADDRESS:
+            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+            logger._debugger.cancel()
+            return None
 
-    if token == ZERO_ADDRESS:
-        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
-        logger._debugger.cancel()
-        return None
+        if ypriceapi.should_use and token not in ypriceapi.skip_tokens:
+            price = await ypriceapi.get_price(token, block)
+            logger.debug(f"ypriceapi -> {price}")
+            if price is not None:
+                logger.debug(f"{symbol} price: {price}")
+                logger._debugger.cancel()
+                return price
 
-    if ypriceapi.should_use and token not in ypriceapi.skip_tokens:
-        price = await ypriceapi.get_price(token, block)
-        logger.debug(f"ypriceapi -> {price}")
+        price = await _exit_early_for_known_tokens(token, block=block)
+        logger.debug(f"early exit -> {price}")
         if price is not None:
             logger.debug(f"{symbol} price: {price}")
             logger._debugger.cancel()
             return price
+        
+        # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
+        # TODO should we use a liuidity-based method to determine this? 
+        if price is None and uniswap_v3:
+            price = await uniswap_v3.get_price(token, block=block, sync=False)
+            logger.debug(f"uniswap v3 -> {price}")
 
-    price = await _exit_early_for_known_tokens(token, block=block)
-    logger.debug(f"early exit -> {price}")
-    if price is not None:
+        if price is None:
+            price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
+            logger.debug(f"uniswap v2 -> {price}")
+            
+        # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
+        #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
+        if price is None and curve: 
+            price = await curve.get_price_for_underlying(token, block=block, sync=False)
+            logger.debug(f"curve -> {price}")
+
+        # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
+        if price is None or price == 0:
+            new_price = await balancer_multiplexer.get_price(token, block=block, sync=False)
+            logger.debug(f"balancer -> {price}")
+            if new_price:
+                logger.debug(f"replacing price {price} with new price {new_price}")
+                price = new_price
+
+        if price is None:
+            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        if price:
+            await _sense_check(token, price)
+
         logger.debug(f"{symbol} price: {price}")
+        # Don't need this anymore
         logger._debugger.cancel()
         return price
-    
-    # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
-    # TODO should we use a liuidity-based method to determine this? 
-    if price is None and uniswap_v3:
-        price = await uniswap_v3.get_price(token, block=block, sync=False)
-        logger.debug(f"uniswap v3 -> {price}")
-
-    if price is None:
-        price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
-        logger.debug(f"uniswap v2 -> {price}")
-        
-    # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
-    #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
-    if price is None and curve: 
-        price = await curve.get_price_for_underlying(token, block=block, sync=False)
-        logger.debug(f"curve -> {price}")
-
-    # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
-    if price is None or price == 0:
-        new_price = await balancer_multiplexer.get_price(token, block=block, sync=False)
-        logger.debug(f"balancer -> {price}")
-        if new_price:
-            logger.debug(f"replacing price {price} with new price {new_price}")
-            price = new_price
-
-    if price is None:
-        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
-    if price:
-        await _sense_check(token, price)
-
-    logger.debug(f"{symbol} price: {price}")
-    # Don't need this anymore
-    logger._debugger.cancel()
-    return price
+    except Exception as e:
+        logger._debugger.cancel()
+        raise e
 
 
 async def _exit_early_for_known_tokens(
