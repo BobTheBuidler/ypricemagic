@@ -45,13 +45,16 @@ async def check_bucket(
             logger.debug(f"{token_address} is not {bucket}")
 
     # check these first, these just require calls
-    coros = [_check_bucket_helper(bucket, check, token_address) for bucket, check in calls_only.items()]
-    for fut in asyncio.as_completed(coros):
+    futs = [asyncio.ensure_future(_check_bucket_helper(bucket, check, token_address)) for bucket, check in calls_only.items()]
+    for fut in asyncio.as_completed(futs):
         bucket, is_member = await fut
-        logger.debug(f"{token_address} is {'' if is_member else 'not '}{bucket}")
         if is_member:
+            logger.debug(f"{token_address} is {bucket}")
+            for fut in futs:
+                fut.cancel()
             return bucket
         else:
+            logger.debug(f"{token_address} is not {bucket}")
             bucket = None
 
     # TODO: Refactor the below like the above
