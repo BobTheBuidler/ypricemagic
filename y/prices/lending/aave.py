@@ -12,6 +12,7 @@ from y.contracts import Contract
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified
 from y.networks import Network
+from y.utils.logging import _get_price_logger
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
@@ -73,7 +74,9 @@ class AaveMarketBase(ContractBase):
         return convert.to_address(__o) in self.atokens
     
     async def contains(self, __o: object) -> bool:
-        return convert.to_address(__o) in await self.__atokens__(sync=False)
+        contains = convert.to_address(__o) in await self.__atokens__(sync=False)
+        logger.debug(f'{self} contains {__o}: {contains}')
+        return contains
 
 
 class AaveMarketV1(AaveMarketBase):
@@ -159,15 +162,21 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     
     @a_sync.aka.cached_property
     async def pools_v1(self) -> List[AaveMarketV1]:
-        return [AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools]
+        pools = [AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools]
+        logger.debug(f"{self} v1 pools {pools}")
+        return pools
     
     @a_sync.aka.cached_property
     async def pools_v2(self) -> List[AaveMarketV2]:
-        return [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
+        pools = [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
+        logger.debug(f"{self} v2 pools {pools}")
+        return pools
     
     @a_sync.aka.cached_property
     async def pools_v3(self) -> List[AaveMarketV2]:
-        return [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
+        pools = [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
+        logger.debug(f"{self} v3 pools {pools}")
+        return pools
     
     async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
         pools = await self.__pools__(sync=False)
@@ -182,7 +191,10 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(cache_type='memory')
     async def is_atoken(self, token_address: AnyAddressType) -> bool:
-        return any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__(sync=False)]))
+        logger = _get_price_logger(token_address, block=None)
+        is_atoken = any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__(sync=False)]))
+        logger.debug(f"is_atoken: {is_atoken}")
+        return is_atoken
     
     async def is_wrapped_atoken_v2(self, token_address: AnyAddressType) -> bool:
         # NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.
