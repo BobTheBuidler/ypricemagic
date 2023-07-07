@@ -17,6 +17,7 @@ from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapPoolV2,
                                      UniswapRouterV2)
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
+from y.prices.dex.velodrome import VelodromeRouterV1
 from y.utils.logging import _gh_issue_request
 
 logger = logging.getLogger(__name__)
@@ -29,7 +30,8 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self.asynchronous = asynchronous
         self.routers = {}
         for name in UNISWAPS:
-            try: self.routers[name] = UniswapRouterV2(UNISWAPS[name]['router'], asynchronous=self.asynchronous)
+            router_cls = VelodromeRouterV1 if name == "velodrome v1" else UniswapRouterV2
+            try: self.routers[name] = router_cls(UNISWAPS[name]['router'], asynchronous=self.asynchronous)
             except ValueError as e: # TODO do this better
                 if not contract_not_verified(e):
                     raise

@@ -257,10 +257,6 @@ class UniswapRouterV2(ContractBase):
     @continue_on_revert
     async def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         if self._is_cached:
-            # NOTE: This could be cleaner but is makes it easiest wrt adding modified uni forks
-            if self.contract.getAmountsOut.abi['inputs'][1].get('internalType') == "struct Router.route[]": # Velo router
-                routes = [[path[i], path[i+1], False] for i in range(len(path) - 1)]
-                path = routes
             try:
                 return await self.contract.getAmountsOut.coroutine(amount_in, path, block_identifier=block)
             # TODO figure out how to best handle uni forks with slight modifications.
@@ -358,7 +354,6 @@ class UniswapRouterV2(ContractBase):
             pool_mapping[token1][pool] = token0
         logger.info(f'Loaded {len(await self.__pools__(sync=False))} pools supporting {len(pool_mapping)} tokens on {self.label}')
         return pool_mapping
-
 
     async def pools_for_token(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:
         all_pools = await self.__pool_mapping__(sync=False)
