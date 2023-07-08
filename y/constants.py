@@ -1,9 +1,9 @@
 import logging
 import os
 
+from a_sync.primitives import PruningThreadPoolExecutor
 from brownie import Contract as _Contract
 from brownie import chain
-from dank_mids.executor import PruningThreadPoolExecutor
 
 from y.contracts import Contract
 from y.interfaces.ERC20 import ERC20ABI

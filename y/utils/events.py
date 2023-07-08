@@ -6,10 +6,10 @@ from typing import Any, AsyncGenerator, Dict, List, Optional
 
 import a_sync
 import eth_retry
+from a_sync.primitives import ThreadsafeSemaphore
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
-from dank_mids.semaphore import ThreadsafeSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
