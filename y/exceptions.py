@@ -92,6 +92,7 @@ def call_reverted(e: Exception) -> bool:
         'Tried to read 32 bytes.  Only got 0 bytes',
         'invalid jump destination',
         'error processing call Revert',
+        'invalid opcode: INVALID',
     ]
     return any(trigger in str(e) for trigger in triggers)
 
