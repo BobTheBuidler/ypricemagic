@@ -54,5 +54,6 @@ async def _stuck_debug_task(logger: logging.Logger, fn: Callable[P, T], *args: P
             logging.DEBUG, 
             f"{fn.__module__}.{fn.__name__} still executing after {round(time.time() - start, 2)}s with"
             + f" args {tuple(str(arg) for arg in args)}"
-             + f" kwargs {dict((k, str(v)) for k, v in kwargs.items())}"
+            + f" kwargs {dict((k, str(v)) for k, v in kwargs.items())}",
+            (),
         )
