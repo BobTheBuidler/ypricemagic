@@ -69,7 +69,15 @@ async def multicall_same_func_same_contract_different_inputs(
     ) -> List[Any]:
     assert inputs
     address = convert.to_address(address)
-    results = await asyncio.gather(*[Call(address, [method, input], [[input,apply_func]], block_id=block).coroutine() for input in inputs])
+    results = await asyncio.gather(
+        *[Call(address, [method, input], [[input,apply_func]], block_id=block).coroutine() for input in inputs],
+        return_exceptions=return_None_on_failure,
+    )
+    if return_None_on_failure:
+        for i, result in enumerate(results[:]):
+            if isinstance(result, Exception):
+                continue_if_call_reverted(result)
+                results[i] = {i: None}
     return [result for call in results for key, result in call.items()]
 
 
