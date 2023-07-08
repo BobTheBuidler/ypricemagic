@@ -34,7 +34,7 @@ async def check_bucket(
     ) -> str:
 
     token_address = convert.to_address(token)
-    logger = _get_price_logger(token_address, block=None)
+    logger = _get_price_logger(token_address, block=None, extra='buckets')
 
     # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
     for bucket, check in string_matchers.items():
@@ -47,7 +47,13 @@ async def check_bucket(
     # check these first, these just require calls
     futs = [asyncio.ensure_future(_check_bucket_helper(bucket, check, token_address)) for bucket, check in calls_only.items()]
     for fut in asyncio.as_completed(futs):
-        bucket, is_member = await fut
+        try:
+            bucket, is_member = await fut
+        except Exception as e:
+            logger.warning(f"{e} when checking {fut}. This will probably not impact your run.")
+            logger.warning(e, exc_info=True)
+            continue
+
         if is_member:
             logger.debug(f"{token_address} is {bucket}")
             for fut in futs:
