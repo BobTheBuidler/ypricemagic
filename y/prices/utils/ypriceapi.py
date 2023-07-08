@@ -9,11 +9,12 @@ from random import randint
 from time import time
 from typing import Any, Callable, Dict, List, Optional
 
-from aiohttp import BasicAuth, ClientResponse, ClientSession, ClientTimeout, TCPConnector
+from a_sync.primitives import ThreadsafeSemaphore
+from aiohttp import (BasicAuth, ClientResponse, ClientSession, ClientTimeout,
+                     TCPConnector)
 from aiohttp.client_exceptions import ClientError, ContentTypeError
 from async_lru import alru_cache
 from brownie import chain
-from dank_mids.semaphore import ThreadsafeSemaphore
 
 from y import constants
 from y.classes.common import UsdPrice

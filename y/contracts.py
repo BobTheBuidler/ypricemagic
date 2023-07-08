@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import a_sync
 import brownie
 import eth_retry
+from a_sync.primitives import PruningThreadPoolExecutor, ThreadsafeSemaphore
 from brownie import chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.network.contract import (_add_deployment, _ContractBase,
@@ -17,8 +18,6 @@ from brownie.network.contract import (_add_deployment, _ContractBase,
 from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from dank_mids.brownie_patch import patch_contract
-from dank_mids.executor import PruningThreadPoolExecutor
-from dank_mids.semaphore import ThreadsafeSemaphore
 from hexbytes import HexBytes
 from multicall import Call
 
