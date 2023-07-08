@@ -17,6 +17,10 @@ mainnet_only = pytest.mark.skipif(
     chain.id != Network.Mainnet, reason="This test is only applicable on mainnet"
 )
 
+optimism_only = pytest.mark.skipif(
+    chain.id != Network.Optimism, reason="This test is only applicable on optimism"
+)
+
 async_test = pytest.mark.asyncio_cooperative
 
 def blocks_for_contract(address: Address, count: int = 5) -> List[Block]:

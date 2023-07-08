@@ -179,7 +179,8 @@ class ERC20(ContractBase):
 
 class WeiBalance(a_sync.ASyncGenericBase):
     def __init__(
-        self, balance: int,
+        self, 
+        balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
         asynchronous: bool = False,
@@ -193,9 +194,32 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
     def __str__(self) -> str:
         return str(self.balance)
+    
+    def __repr__(self) -> str:
+        return f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
 
     def __eq__(self, __o: object) -> bool:
-        return __o == self.balance
+        if isinstance(__o, int):
+            return __o == self.balance
+        elif isinstance(__o, WeiBalance):
+            return self.balance == __o.balance and self.token == __o.token
+        return False
+    
+    def __lt__(self, __o: object) -> bool:
+        if isinstance(__o, int):
+            return __o < self.balance
+        elif isinstance(__o, WeiBalance):
+            if self.token != __o.token:
+                raise TypeError(f"'<' only supported between {self.__class__.__name__} instances when denominated in the same token.")
+            return self.balance < __o.balance
+        raise TypeError(f"'<' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'")
+
+    def __ge__(self, __o: object) -> bool:
+        if __o < self:
+            return True
+        elif type(__o) is type(self):
+            return self == __o
+        raise TypeError(f"'>=' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'")
     
     @a_sync.aka.property
     async def readable(self) -> float:
