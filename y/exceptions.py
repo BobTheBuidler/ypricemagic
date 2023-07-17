@@ -90,7 +90,6 @@ def call_reverted(e: Exception) -> bool:
         'No data was returned - the call likely reverted',
         'invalid opcode: opcode 0xfe not defined',
         'Tried to read 32 bytes.  Only got 0 bytes',
-        'invalid jump destination',
         'error processing call Revert',
         'invalid opcode: INVALID',
     ]

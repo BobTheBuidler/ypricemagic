@@ -9,7 +9,7 @@ from brownie import ZERO_ADDRESS, chain
 from y.constants import usdc
 from y.contracts import Contract
 from y.datatypes import Address, Block, UsdPrice
-from y.exceptions import UnsupportedNetwork
+from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
 from y.utils.raw_calls import _decimals
 
@@ -54,6 +54,6 @@ class UniswapV1(a_sync.ASyncGenericBase):
             fees = 0.997 ** 2
             return UsdPrice(usdc_bought / fees)
         except ValueError as e:
-            if 'invalid jump destination' not in str(e):
-                raise e
-            return None
+            if 'invalid jump destination' in str(e):
+                return None
+            continue_if_call_reverted(e)

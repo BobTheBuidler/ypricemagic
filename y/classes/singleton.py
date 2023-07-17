@@ -22,7 +22,7 @@ class ChecksumASyncSingletonMeta(a_sync._meta.ASyncMeta, Generic[T]):
         # NOTE This will only work if you init your objects using a kwarg not a positional arg
         # TODO Make it work with posiional args
         address = str(address)
-        is_sync = cls.__a_sync_instance_will_be_sync__(kwargs)
+        is_sync = cls.__a_sync_instance_will_be_sync__(args, kwargs)
         try:
             instance = cls.__instances[is_sync][address]
         except KeyError:
