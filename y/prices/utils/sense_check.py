@@ -102,14 +102,20 @@ ACCEPTABLE_HIGH_PRICES = {
     Network.Fantom: [
         # other
         "0x29b0Da86e484E1C0029B56e817912d778aC0EC69", # yfi
+        "0xf43Cc235E686d7BC513F53Fbffb61F760c3a1882", # elite
     ],
     Network.Avalanche: [
         # btc and btc-like
         "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501", # renbtc
-
+        # other
         "0xd6070ae98b8069de6B494332d1A1a81B6179D960", # bifi
     ],
     Network.Optimism: [
+        # eth and eth-like
+        "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D", # reth
+        "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb", # wsteth
+        "0x6806411765Af15Bddd26f8f544A34cC40cb9838B", # frxeth
+        "0x484c2D6e3cDd945a8B2DF735e079178C1036578c", # sfrxeth
         # btc and btc-like
         "0x298B9B95708152ff6968aafd889c6586e9169f1D", # sbtc
     ]
