@@ -89,7 +89,7 @@ async def get_logs_asap_generator(
                 return i, await coro
             yielded = 0
             done = {}
-            for logs in await asyncio.as_completed([wrap(i, coro) for i, coro in enumerate(coros)], timeout=None):
+            for logs in asyncio.as_completed([wrap(i, coro) for i, coro in enumerate(coros)], timeout=None):
                 i, result = await logs
                 done[i] = result
                 for i in range(len(coros)):
