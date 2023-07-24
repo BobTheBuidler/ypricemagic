@@ -13,6 +13,7 @@ from y.classes.common import ERC20
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.decorators import stuck_coro_debugger
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
+from y.networks import Network
 from y.prices import convex, one_to_one, popsicle, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
@@ -150,8 +151,13 @@ async def _get_price(
         # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
         # TODO should we use a liuidity-based method to determine this? 
         if price is None and uniswap_v3:
-            price = await uniswap_v3.get_price(token, block=block, sync=False)
-            logger.debug(f"uniswap v3 -> {price}")
+            # alETH on optimism has wrong price with uni_v3 due to too low liquidity at the moment
+            # break here and try with uni_v2
+            if chain.id == Network.Optimism and token == "0x3E29D3A9316dAB217754d13b28646B76607c5f04":
+                price = None
+            else:
+                price = await uniswap_v3.get_price(token, block=block, sync=False)
+                logger.debug(f"uniswap v3 -> {price}")
 
         if price is None:
             price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
