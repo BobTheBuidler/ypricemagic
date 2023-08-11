@@ -110,6 +110,9 @@ class UniswapPoolV2(ERC20):
             if vals[1] is not None and not vals[0]:
                 vals[0] = vals[1]
 
+        logger.debug('reserves: %s', reserves)
+        logger.debug('prices: %s', prices)
+        logger.debug('vals: %s', vals)
         if vals[0] is not None and vals[1] is not None:
             return sum(vals)
 

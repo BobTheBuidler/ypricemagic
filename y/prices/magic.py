@@ -151,9 +151,13 @@ async def _get_price(
         # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
         # TODO should we use a liuidity-based method to determine this? 
         if price is None and uniswap_v3:
-            # alETH on optimism has wrong price with uni_v3 due to too low liquidity at the moment
+            # uni_v3 due to too low liquidity at the moment
             # break here and try with uni_v2
-            if chain.id == Network.Optimism and token == "0x3E29D3A9316dAB217754d13b28646B76607c5f04":
+            # TODO: liquidity checker for deepest source by default
+            if chain.id == Network.Optimism and token in [
+                "0x3E29D3A9316dAB217754d13b28646B76607c5f04",  # aleth
+                "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",  # alusd
+            ]:
                 price = None
             else:
                 price = await uniswap_v3.get_price(token, block=block, sync=False)
