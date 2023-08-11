@@ -17,7 +17,7 @@ from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapPoolV2,
                                      UniswapRouterV2)
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
-from y.prices.dex.velodrome import VelodromeRouterV1
+from y.prices.dex.velodrome import VelodromeRouterV1, VelodromeRouterV2
 from y.utils.logging import _gh_issue_request
 
 logger = logging.getLogger(__name__)
@@ -25,12 +25,17 @@ logger = logging.getLogger(__name__)
 # NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.
 #       Please add a viable swap path to ..protocols to fetch price data successfully.
 
+_special_routers = {
+    "velodrome v1": VelodromeRouterV1,
+    "velodrome v2": VelodromeRouterV2,
+}
+
 class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
         self.routers = {}
         for name in UNISWAPS:
-            router_cls = VelodromeRouterV1 if name == "velodrome v1" else UniswapRouterV2
+            router_cls = _special_routers.get(name, UniswapRouterV2)
             try: self.routers[name] = router_cls(UNISWAPS[name]['router'], asynchronous=self.asynchronous)
             except ValueError as e: # TODO do this better
                 if not contract_not_verified(e):

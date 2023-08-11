@@ -97,6 +97,7 @@ UNISWAPS = {
         "zipswap":          {"factory": "0x8BCeDD62DD46F1A76F8A1633d4f5B76e0CDa521E", "router": "0xE6Df0BB08e5A97b40B21950a0A51b94c4DbA0Ff6"},
         # TODO: Extract the velo logic into a Uni V2 subclass
         "velodrome v1":     {"factory": "0x25CbdDb98b35ab1FF77413456B31EC81A6B6B746", "router": "0x9c12939390052919aF3155f41Bf4160Fd3666A6f"},
+        "velodrome v2":     {"factory": "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a", "router": "0xa062aE8A9c5e11aaA026fc2670B0D65cCc8B2858"},
     },
     Network.xDai: {
         "sushiswap":        {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},

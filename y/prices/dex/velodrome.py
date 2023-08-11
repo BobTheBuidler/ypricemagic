@@ -1,24 +1,58 @@
 import asyncio
-from typing import List, Optional, Tuple
+import itertools
+import logging
+from collections import defaultdict
+from typing import Dict, List, Optional, Tuple
 
 import a_sync
+from async_lru import alru_cache
+from brownie import chain
+from multicall.call import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y import convert
+from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.decorators import continue_on_revert
 from y.exceptions import call_reverted
+from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
+from y.networks import Network
 from y.prices.dex.uniswap.v2 import Path, UniswapPoolV2, UniswapRouterV2
+from y.utils.dank_mids import dank_w3
+from y.utils.events import decode_logs, get_logs_asap
+from y.utils.raw_calls import raw_call
 
+logger = logging.getLogger(__name__)
 
-class VelodromeRouterV1(UniswapRouterV2):
+class VelodromeRouter(UniswapRouterV2):
     """
     Velo V1 is a modified fork of Uni V2.
     The `uniswap_multiplexer` is the entrypoint for pricing using this object.
     """
+        
+    @continue_on_revert
+    async def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
+        routes = await self.get_routes_from_path(path, block)
+        try:
+            return await self.contract.getAmountsOut.coroutine(amount_in, routes, block_identifier=block)
+        # TODO figure out how to best handle uni forks with slight modifications.
+        # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
+        except Exception as e:
+            strings = [
+                "INSUFFICIENT_INPUT_AMOUNT",
+                "INSUFFICIENT_LIQUIDITY",
+                "INSUFFICIENT_OUT_LIQUIDITY",
+                "Sequence has incorrect length",
+            ]
+            if not call_reverted(e) and not any(s in str(e) for s in strings):
+                raise e
+    
+class VelodromeRouterV1(VelodromeRouter):
+
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def pair_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.pairFor.coroutine(input_token, output_token, stable)
-
+    
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapPoolV2]:
         pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
@@ -63,19 +97,116 @@ class VelodromeRouterV1(UniswapRouterV2):
             
         return routes
 
-    @continue_on_revert
-    async def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
-        routes = await self.get_routes_from_path(path, block)
+
+class VelodromeRouterV2(VelodromeRouter):
+    default_factory = "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
+    
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    async def pair_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
+        return await self.contract.pairFor.coroutine(input_token, output_token, stable, self.default_factory)
+    
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapPoolV2]:
+        pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
+        if await _get_code(str(pool_address)) not in ['0x',b'']:
+            return UniswapPoolV2(pool_address)
+
+    @a_sync.aka.cached_property
+    async def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
+        pool_mapping = defaultdict(dict)
+        for pool, params in (await self.__pools__(sync=False)).items():
+            token0, token1, stable = params.values()
+            pool_mapping[token0][pool] = token1
+            pool_mapping[token1][pool] = token0
+        logger.info(f'Loaded {len(await self.__pools__(sync=False))} pools supporting {len(pool_mapping)} tokens on {self.label}')
+        return pool_mapping
+    
+    @a_sync.aka.cached_property
+    async def pools(self) -> Dict[Address, Dict[Address,Address]]:
+        logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
         try:
-            return await self.contract.getAmountsOut.coroutine(amount_in, routes, block_identifier=block)
-        # TODO figure out how to best handle uni forks with slight modifications.
-        # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
+            factory = await Contract.coroutine(self.factory)
+            if 'PoolCreated' not in factory.topics:
+                # the etherscan proxy detection is borked here, need this to decode properly
+                factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
+            logs = await get_logs_asap(self.factory, [factory.topics['PoolCreated']], sync=False)
+            pools = {
+                convert.to_address(event['pool']): {
+                    'token0': convert.to_address(event['token0']),
+                    'token1': convert.to_address(event['token1']),
+                    'stable': event['stable'],
+                }
+                for event in decode_logs(logs)
+            }
         except Exception as e:
-            strings = [
-                "INSUFFICIENT_INPUT_AMOUNT",
-                "INSUFFICIENT_LIQUIDITY",
-                "INSUFFICIENT_OUT_LIQUIDITY",
-                "Sequence has incorrect length",
-            ]
-            if not call_reverted(e) and not any(s in str(e) for s in strings):
-                raise e
+            print(e)
+            raise e
+        all_pairs_len = await raw_call(self.factory,'allPairsLength()',block=chain.height,output='int', sync=False)
+
+        if len(pools) == all_pairs_len:
+            return pools
+        else:
+            logger.debug(f"Oh no! Looks like your node can't look back that far. Checking for the missing {all_pairs_len - len(pools)} pools...")
+            pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
+            logger.debug(f'pools: {pools_your_node_couldnt_get}')
+            pools_your_node_couldnt_get = await asyncio.gather(
+                *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
+            )
+            token0s, token1s, stables = await asyncio.gather(
+                asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+                asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+                asyncio.gather(*[Call(pool, ['stable()(bool)']).coroutine() for pool in pools_your_node_couldnt_get]),
+            )
+            pools_your_node_couldnt_get = {
+                convert.to_address(pool): {
+                    'token0': convert.to_address(token0),
+                    'token1': convert.to_address(token1),
+                    'stable': stable
+                }
+                for pool, token0, token1, stable
+                in zip(pools_your_node_couldnt_get, token0s, token1s, stables)
+            }
+            pools.update(pools_your_node_couldnt_get)
+
+        return pools
+    
+    async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
+        routes = []
+        for i in range(len(path) - 1):
+            input_token, output_token = path[i], path[i+1]
+            # Try for a stable pool first and use that if available
+            stable_pool, unstable_pool = await asyncio.gather(
+                self.get_pool(input_token, output_token, True, block, sync=False),
+                self.get_pool(input_token, output_token, False, block, sync=False),
+            )
+            
+            if stable_pool and unstable_pool:
+                # We have to find out which of these pools is deepest
+                stable_reserves, unstable_reserves = await asyncio.gather(
+                    stable_pool.reserves(block, sync=False),
+                    unstable_pool.reserves(block, sync=False),
+                )
+                stable_reserves = tuple(stable_reserves)
+                unstable_reserves = tuple(unstable_reserves)
+                if await stable_pool.__tokens__(sync=False) == await unstable_pool.__tokens__(sync=False):
+                    stable_reserve = stable_reserves[0]
+                    unstable_reserve = unstable_reserves[0]
+                else:  # Order of tokens is flip flopped in the pools
+                    stable_reserve = stable_reserves[0]
+                    unstable_reserve = unstable_reserves[1]
+                if stable_reserve >= unstable_reserve:
+                    is_stable = True
+                elif stable_reserve < unstable_reserve:
+                    is_stable = False
+                routes.append([input_token, output_token, is_stable, self.factory])
+            elif stable_pool:
+                routes.append([input_token, output_token, True, self.factory])
+            elif unstable_pool:
+                routes.append([input_token, output_token, False, self.factory])
+            else:
+                raise ValueError("Not sure why this function is even running if no pool is found")
+            
+        return routes
+
+
+_get_code = alru_cache(maxsize=None)(dank_w3.eth.get_code)
