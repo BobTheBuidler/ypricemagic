@@ -157,6 +157,7 @@ async def _get_price(
             if chain.id == Network.Optimism and token in [
                 "0x3E29D3A9316dAB217754d13b28646B76607c5f04",  # aleth
                 "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",  # alusd
+                "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",  # tbtc
             ]:
                 price = None
             else:
