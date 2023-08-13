@@ -121,6 +121,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x1610e3c85dd44Af31eD7f33a63642012Dca0C5A5", # mseth
         # btc and btc-like
         "0x298B9B95708152ff6968aafd889c6586e9169f1D", # sbtc
+        "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40", # tbtc
     ]
 }.get(chain.id, []) + acceptable_all_chains
 
