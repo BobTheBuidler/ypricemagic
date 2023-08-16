@@ -212,9 +212,11 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                 except AttributeError:
                     logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
             # This error happens on occasion, it comes from brownie's compiling process. But we shoulnd't be using that anyway. Check config.
+            except AssertionError as e:
+                raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
             except IndexError as e:
                 if str(e) == "pop from an empty deque":
-                    raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.")
+                    raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
                 raise e
             # If we don't already have the contract in the db, we'll try to fetch it from the explorer.
             except ValueError as e:
