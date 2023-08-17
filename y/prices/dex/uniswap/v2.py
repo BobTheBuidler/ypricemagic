@@ -170,6 +170,9 @@ async def _get_reserves_long_way(pool: Address, block: Block):
         logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
         return reserves
     except:
+        if chain.id == Network.Optimism and pool == "0x585Af0b397AC42dbeF7f18395426BF878634f18D":
+            # This is the velodrome sink converter contract, getReserves method exists but is not implemented
+            return None
         logger.warning(f'must debug getReserves for {pool}')
 
 class UniswapRouterV2(ContractBase):

@@ -1,3 +1,4 @@
+import asyncio
 import math
 from itertools import cycle
 from typing import Optional
@@ -7,6 +8,7 @@ from brownie import chain
 from eth_abi.packed import encode_abi_packed
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y import constants
 from y.classes.common import ERC20
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
@@ -47,12 +49,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         self.asynchronous = asynchronous
         if chain.id not in addresses:
             raise UnsupportedNetwork('compound is not supported on this network')
-
-        #self.factory = Contract(conf['factory'])
-        #try:
-        #    self.quoter = Contract(conf['quoter'])
-        #except ContractNotVerified:
-        #    self.quoter = brownie.Contract.from_abi("Quoter", conf['quoter'], UNIV3_QUOTER_ABI)
         self.fee_tiers = addresses[chain.id]['fee_tiers']
 
     def __contains__(self, asset) -> bool:
@@ -89,11 +85,11 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
                 [token, fee, weth.address, self.fee_tiers[0], usdc.address] for fee in self.fee_tiers
             ]
 
-        amount_in = await ERC20(token, asynchronous=True).scale
+        quoter, amount_in = await asyncio.gather(self.__quoter__(sync=False), ERC20(token, asynchronous=True).scale)
 
-        # TODO make this async after extending for brownie ContractTx
-        quoter = await self.__quoter__(sync=False)
-        results = fetch_multicall(
+        # TODO make this properly async after extending for brownie ContractTx
+        results = await constants.thread_pool_executor.run(
+            fetch_multicall,
             *[
                 [quoter, 'quoteExactInput', self._encode_path(path), amount_in]
                 for path in paths
