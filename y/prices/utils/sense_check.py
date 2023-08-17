@@ -119,6 +119,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x6806411765Af15Bddd26f8f544A34cC40cb9838B", # frxeth
         "0x484c2D6e3cDd945a8B2DF735e079178C1036578c", # sfrxeth
         "0x1610e3c85dd44Af31eD7f33a63642012Dca0C5A5", # mseth
+        "0x3E29D3A9316dAB217754d13b28646B76607c5f04", # aleth
         # btc and btc-like
         "0x298B9B95708152ff6968aafd889c6586e9169f1D", # sbtc
         "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40", # tbtc
