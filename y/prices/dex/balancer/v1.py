@@ -14,7 +14,6 @@ from y.datatypes import (AddressOrContract, AnyAddressType, Block, UsdPrice,
                          UsdValue)
 from y.networks import Network
 from y.prices import magic
-from y.utils.multicall import fetch_multicall, multicall_decimals
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
@@ -56,10 +55,15 @@ class BalancerV1Pool(ERC20):
     
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, float]:
         tokens = await self.tokens(block=block, sync=False)
-        balances = fetch_multicall(*[[self.contract, "getBalance", token] for token in tokens], block=block)
-        balances = [balance if balance else 0 for balance in balances]
-        decimals = await multicall_decimals(tokens, block, sync=False)
-        return {token:balance / 10 ** decimal for token, balance, decimal in zip(tokens,balances,decimals)}
+        balances = await asyncio.gather(*[self.get_balance(token, block or 'latest') for token in tokens])
+        return dict(zip(tokens, balances))
+
+    async def get_balance(self, token: AnyAddressType, block: Block) -> float:
+        balance, scale = await asyncio.gather(
+            self.contract.getBalance.coroutine(token, block_identifier=block),
+            ERC20(token, asynchronous=True).scale,
+        )
+        return balance / scale
 
 
 class BalancerV1(a_sync.ASyncGenericSingleton):

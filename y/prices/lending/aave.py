@@ -13,7 +13,6 @@ from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified
 from y.networks import Network
 from y.utils.logging import _get_price_logger
-from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -82,14 +81,13 @@ class AaveMarketBase(ContractBase):
 class AaveMarketV1(AaveMarketBase):
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
-        underlying = await raw_call(token_address, 'underlyingAssetAddress()',output='address', sync=False)
+        underlying = await raw_call(token_address, 'underlyingAssetAddress()', output='address', sync=False)
         return ERC20(underlying)
     
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
-        reserves_data = await Call(self.address, ['getReserves()(address[])'], [[self.address,None]]).coroutine()
-        reserves_data = reserves_data[self.address]
-        reserves_data = fetch_multicall(*[[self.contract, 'getReserveData', reserve] for reserve in reserves_data])
+        reserves_data = await Call(self.address, ['getReserves()(address[])']).coroutine()
+        reserves_data = await asyncio.gather(*[self.contract.getReserveData.coroutine(reserve) for reserve in reserves_data])
         atokens = [ERC20(reserve['aTokenAddress'], asynchronous=self.asynchronous) for reserve in reserves_data]
         logger.info(f'loaded {len(atokens)} v1 atokens for {self.__repr__()}')
         return atokens
@@ -104,8 +102,7 @@ class AaveMarketV2(AaveMarketBase):
 
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
-        reserves = await Call(self.address, ['getReservesList()(address[])'], [[self.address,None]]).coroutine()
-        reserves = reserves[self.address]
+        reserves = await Call(self.address, ['getReservesList()(address[])']).coroutine()
         reserves_data = await asyncio.gather(*[
             Call(
                 self.address,
@@ -133,8 +130,7 @@ class AaveMarketV3(AaveMarketBase):
 
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
-        reserves = await Call(self.address, ['getReservesList()(address[])'], [[self.address,None]]).coroutine()
-        reserves = reserves[self.address]
+        reserves = await Call(self.address, ['getReservesList()(address[])']).coroutine()
         reserves_data = await asyncio.gather(*[self.contract.getReserveData.coroutine(reserve) for reserve in reserves])
 
         try:
