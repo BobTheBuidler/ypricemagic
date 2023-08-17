@@ -67,6 +67,7 @@ UNISWAPS = {
         'shiba':            {"factory": "0xeAcC845E4db0aB59A326513347a37ed4E999aBD8", "router": "0xB6f7b3d8CD9dBf30805C0dd79809dace5603Ce6A"},
         "zdex":             {"factory": "0x6178C3B21F7cA1adD84c16AD35452c85a85F5df4", "router": "0x40b12a3E261416fF0035586ff96e23c2894560f2"},
         "bomb":             {"factory": "0xD9473A05b2edf4f614593bA5D1dBd3021d8e0Ebe", "router": "0xb9799De71100e20aC1cdbCc63C69ddA2D0D81710"},
+        "solidly":          {"factory": "0x3fAaB499b519fdC5819e3D7ed0C26111904cbc28", "router": "0xa38cd27185a464914D3046f0AB9d43356B34829D"},
     },
     Network.Avalanche: {
         "pangolin":         {"factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88", "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106"},
