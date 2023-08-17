@@ -12,7 +12,8 @@ class yPriceMagicError(ValueError):
     def __init__(self, exc: Exception, address: str, block: Optional[int], symbol: str):
         from y import Network
         self.exception = exc
-        super().__init__(f"{self.exception} while fetching {Network.printable()} {symbol} {address} at block {block}")
+        detail = 'PriceError' if isinstance(self.exception, PriceError) else self.exception
+        super().__init__(f"{detail} while fetching {Network.printable()} {symbol} {address} at block {block}")
 
 class PriceError(Exception):
     def __init__(self, logger: logging.Logger, symbol: str):
