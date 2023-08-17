@@ -7,7 +7,7 @@ import a_sync
 from y import convert
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
-from y.prices import convex, one_to_one, popsicle, yearn
+from y.prices import convex, one_to_one, popsicle, solidex, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -65,6 +65,8 @@ async def check_bucket(
 
     # TODO: Refactor the below like the above
     # these require both calls and contract initializations
+    if await solidex.is_solidex_deposit(token_address, sync=False):
+        bucket = 'solidex'
     if await uniswap_multiplexer.is_uniswap_pool(token_address, sync=False):
         bucket = 'uni or uni-like lp'
     elif gearbox and await gearbox.is_diesel_token(token_address, sync=False):

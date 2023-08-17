@@ -13,11 +13,12 @@ from y.classes.common import ERC20
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
+from y.prices.dex.solidly import SolidlyRouter
 from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapPoolV2,
                                      UniswapRouterV2)
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
-from y.prices.dex.velodrome import VelodromeRouterV1, VelodromeRouterV2
+from y.prices.dex.velodrome import VelodromeRouterV2
 from y.utils.logging import _gh_issue_request
 
 logger = logging.getLogger(__name__)
@@ -26,7 +27,8 @@ logger = logging.getLogger(__name__)
 #       Please add a viable swap path to ..protocols to fetch price data successfully.
 
 _special_routers = {
-    "velodrome v1": VelodromeRouterV1,
+    "solidly": SolidlyRouter,
+    "velodrome v1": SolidlyRouter,
     "velodrome v2": VelodromeRouterV2,
 }
 
