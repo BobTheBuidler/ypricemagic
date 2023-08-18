@@ -148,7 +148,7 @@ async def _get_price(
             logger._debugger.cancel()
             return price
         
-        # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
+        # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
         if price is None:
             price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
             logger.debug(f"uniswap multiplexer -> {price}")

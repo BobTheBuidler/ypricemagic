@@ -6,7 +6,6 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
-from async_lru import alru_cache
 from brownie import chain
 from brownie.exceptions import EventLookupError
 from multicall import Call
@@ -459,7 +458,7 @@ class UniswapRouterV2(ContractBase):
 
         return path
 
-    @alru_cache(maxsize=10_000, ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         pools = [UniswapV2Pool(pool, asynchronous=True) for pool in await self.pools_for_token(token, sync=False)]
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools]))

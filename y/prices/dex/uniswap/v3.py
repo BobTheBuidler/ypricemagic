@@ -4,7 +4,6 @@ from itertools import cycle
 from typing import List, Optional
 
 import a_sync
-from async_lru import alru_cache
 from brownie import chain
 from eth_abi.packed import encode_abi_packed
 
@@ -143,11 +142,11 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
                 pools.append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
         return pools
 
-    @alru_cache(maxsize=None)
+    @a_sync.a_sync(ram_cache_maxsize=None)
     async def pools_for_token(self, token: Address) -> List[Address]:
         return [pool for pool in await self.__pools__(sync=False) if token in pool]
 
-    @alru_cache(maxsize=10_000, ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
         return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools]))

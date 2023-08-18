@@ -4,7 +4,6 @@ import logging
 from typing import Optional
 
 import a_sync
-from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 
 from y.classes.common import ERC20
@@ -52,7 +51,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
                 return None
             continue_if_call_reverted(e)
 
-    @alru_cache(maxsize=10_000, ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token_address: Address, block: Block) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
         return await ERC20(token_address, asynchronous=True).balance_of(exchange, block) if exchange else 0
