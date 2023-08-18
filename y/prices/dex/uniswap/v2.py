@@ -392,15 +392,14 @@ class UniswapRouterV2(ContractBase):
 
         deepest_pool = None
         deepest_pool_balance = 0
-        for pool, depth in zip(pools,liquidity):
+        for pool, depth in zip(pools, liquidity):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
                 deepest_pool_balance = depth
         return deepest_pool
 
-
     @a_sync.a_sync(ram_cache_maxsize=500)
-    async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Dict[str, str]:
+    async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UniswapV2Pool:
         token_address = convert.to_address(token_address)
         pools = {
             pool: paired_with
@@ -414,11 +413,10 @@ class UniswapRouterV2(ContractBase):
             
         pools = {UniswapV2Pool(pool, asynchronous=True): paired_with for pool, paired_with in pools.items()}
         liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block) for pool in pools])
-        
 
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        for pool, depth in zip(liquidity, liquidity):
+        for pool, depth in zip(pools, liquidity):
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth
