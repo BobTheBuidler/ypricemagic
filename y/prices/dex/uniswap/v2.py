@@ -148,9 +148,10 @@ class UniswapV2Pool(ERC20):
         if block < await contract_creation_block_async(self.address):
             return 0
         if reserves := await self.reserves(block, sync=False):
+            balance: WeiBalance
             for balance in reserves:
                 if token == balance.token:
-                    return balance.balances
+                    return balance.balance
             raise TokenNotFound(f"{token} not found in {reserves}")
 
     async def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
