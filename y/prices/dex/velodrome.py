@@ -23,6 +23,9 @@ from y.utils.raw_calls import raw_call
 logger = logging.getLogger(__name__)
 
 
+class NoReservesError(Exception):
+    pass
+
 class VelodromeRouterV2(SolidlyRouterBase):
     default_factory = "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
     
@@ -111,19 +114,26 @@ class VelodromeRouterV2(SolidlyRouterBase):
                     stable_pool.reserves(block, sync=False),
                     unstable_pool.reserves(block, sync=False),
                 )
-                stable_reserves = tuple(stable_reserves)
-                unstable_reserves = tuple(unstable_reserves)
-                if await stable_pool.__tokens__(sync=False) == await unstable_pool.__tokens__(sync=False):
-                    stable_reserve = stable_reserves[0]
-                    unstable_reserve = unstable_reserves[0]
-                else:  # Order of tokens is flip flopped in the pools
-                    stable_reserve = stable_reserves[0]
-                    unstable_reserve = unstable_reserves[1]
-                if stable_reserve >= unstable_reserve:
-                    is_stable = True
-                elif stable_reserve < unstable_reserve:
-                    is_stable = False
-                routes.append([input_token, output_token, is_stable, self.factory])
+                if stable_reserves and unstable_reserves:
+                    stable_reserves = tuple(stable_reserves)
+                    unstable_reserves = tuple(unstable_reserves)
+                    if await stable_pool.__tokens__(sync=False) == await unstable_pool.__tokens__(sync=False):
+                        stable_reserve = stable_reserves[0]
+                        unstable_reserve = unstable_reserves[0]
+                    else:  # Order of tokens is flip flopped in the pools
+                        stable_reserve = stable_reserves[0]
+                        unstable_reserve = unstable_reserves[1]
+                    if stable_reserve >= unstable_reserve:
+                        is_stable = True
+                    elif stable_reserve < unstable_reserve:
+                        is_stable = False
+                    routes.append([input_token, output_token, is_stable, self.factory])
+                elif stable_reserves:
+                    routes.append([input_token, output_token, True, self.factory])
+                elif unstable_reserves:
+                    routes.append([input_token, output_token, False, self.factory])
+                else:
+                    raise NoReservesError(f"No route available for path {path}")
             elif stable_pool:
                 routes.append([input_token, output_token, True, self.factory])
             elif unstable_pool:
