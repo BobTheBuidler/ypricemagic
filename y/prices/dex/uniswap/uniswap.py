@@ -96,7 +96,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         '''
         token_in = convert.to_address(token_in)
         depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
-        return [depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True)]
+        return [depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance]
     
     async def check_liquidity(self, token: Address, block: Block) -> int:
         return max(await asyncio.gather(*[uniswap.check_liquidity(token, block, sync=False) for uniswap in self.uniswaps]))

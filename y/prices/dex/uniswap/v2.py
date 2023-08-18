@@ -471,5 +471,9 @@ class UniswapRouterV2(ContractBase):
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
-        pools = [UniswapV2Pool(pool, asynchronous=True) for pool in await self.pools_for_token(token, sync=False)]
+        if block < await contract_creation_block_async(self.factory):
+            return 0
+        pools = await self.pools_for_token(token, sync=False)
+        deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool) for pool in pools])
+        pools = [UniswapV2Pool(pool, asynchronous=True) for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0

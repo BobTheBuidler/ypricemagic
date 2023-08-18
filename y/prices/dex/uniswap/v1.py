@@ -8,7 +8,7 @@ from brownie import ZERO_ADDRESS, chain
 
 from y.classes.common import ERC20
 from y.constants import usdc
-from y.contracts import Contract
+from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
@@ -54,4 +54,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token_address: Address, block: Block) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
-        return await ERC20(token_address, asynchronous=True).balance_of(exchange, block) if exchange else 0
+        if exchange is None:
+            return 0
+        if block < await contract_creation_block_async(exchange):
+            return 0
+        return await ERC20(token_address, asynchronous=True).balance_of(exchange, block)

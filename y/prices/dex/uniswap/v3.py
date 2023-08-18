@@ -8,10 +8,10 @@ from brownie import chain
 from eth_abi.packed import encode_abi_packed
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y.classes.common import ERC20
+from y.classes.common import ERC20, ContractBase
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, Block, UsdPrice
+from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
@@ -44,7 +44,10 @@ addresses = {
 FEE_DENOMINATOR = 1_000_000
 
 
-class UniswapV3Pool(a_sync.ASyncGenericSingleton):
+class TokenNotFound(Exception):
+    pass
+
+class UniswapV3Pool(ContractBase):
     def __init__(
         self,
         address: Address,
@@ -54,20 +57,23 @@ class UniswapV3Pool(a_sync.ASyncGenericSingleton):
         fee: int, 
         asynchronous: bool = True
     ) -> None:
-        self.address = address
-        self.token0 = token0
-        self.token1 = token1
+        super().__init__(address, asynchronous=asynchronous)
+        self.token0 = ERC20(token0, asynchronous=asynchronous)
+        self.token1 = ERC20(token1, asynchronous=asynchronous)
         self.tick_spacing = tick_spacing
         self.fee = fee
-        self.asynchronous = asynchronous
 
     def __contains__(self, token: Address) -> bool:
         return token in [self.token0, self.token1]
     
-    async def check_liquidity(self, token: Address, block: Block) -> Optional[int]:
-        if token in self:
-            return await ERC20(token, asynchronous=True).balance_of(self.address, block)
-        
+    def __getitem__(self, token: Address) -> ERC20:
+        if token not in self:
+            raise TokenNotFound(f"{token} is not in {self}")
+        return ERC20(token, self.asynchronous)
+
+    async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
+        return await self[token].balance_of(self.address, block)
+
 
 class UniswapV3(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = True) -> None:
@@ -148,7 +154,11 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
+        if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
+            return 0
         pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
+        deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool) for pool in pools])
+        pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
         return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
 
 try:
