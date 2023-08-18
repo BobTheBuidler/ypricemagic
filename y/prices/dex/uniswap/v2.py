@@ -150,12 +150,15 @@ class UniswapV2Pool(ERC20):
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block < await contract_creation_block_async(self.address):
             return 0
-        if reserves := await self.reserves(block, sync=False):
-            balance: WeiBalance
-            for balance in reserves:
-                if token == balance.token:
-                    return balance.balance
-            raise TokenNotFound(f"{token} not found in {reserves}")
+        try:
+            if reserves := await self.reserves(block, sync=False):
+                balance: WeiBalance
+                for balance in reserves:
+                    if token == balance.token:
+                        return balance.balance
+                raise TokenNotFound(f"{token} not found in {reserves}")
+        except InsufficientDataBytes:
+            return 0
 
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
@@ -260,8 +263,7 @@ class UniswapRouterV2(ContractBase):
                     paired_with_price = await asyncio.wait_for(magic.get_price(paired_with, block, fail_to_None=True, sync=False), timeout=RECURSION_TIMEOUT)
                 except asyncio.TimeoutError:
                     raise RecursionError(f'uniswap.v2 token: {token_in}')
-                    
-                #paired_with_price = magic.get_price_async(paired_with, block, fail_to_None=True)
+
                 if paired_with_price:
                     return amount_out * paired_with_price
 
