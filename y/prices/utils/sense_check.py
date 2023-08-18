@@ -184,7 +184,7 @@ async def _exit_sense_check(token_address: str) -> bool:
     if bucket in ['uni or uni-like lp', 'balancer pool']:
         return True
 
-    elif bucket == 'curve':
+    elif bucket == 'curve lp':
         return all(
             underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying)
             for underlying in await CurvePool(token_address, asynchronous=True).coins
