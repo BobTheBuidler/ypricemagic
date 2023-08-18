@@ -7,6 +7,7 @@ from brownie import chain
 
 from y.classes.common import ERC20
 from y.constants import wbtc, weth
+from y.contracts import Contract
 from y.exceptions import NonStandardERC20
 from y.networks import Network
 from y.prices.lending.aave import aave
@@ -190,10 +191,14 @@ async def _exit_sense_check(token_address: str) -> bool:
         if questionable_underlyings := [und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
             return all(await asyncio.gather(*[_exit_sense_check(underlying) for underlying in questionable_underlyings]))
         return True
+    
     elif bucket == 'atoken':
         underlying = await aave.underlying(token_address, sync=False)
     elif bucket == 'compound':
         underlying = await CToken(token_address, asynchronous=True).underlying
+    elif bucket == 'solidex':
+        contract = await Contract.coroutine(token_address)
+        underlying = await contract.pool.coroutine()
     elif bucket == 'yearn or yearn-like':
         underlying = await YearnInspiredVault(token_address, asynchronous=True).underlying
     else:
