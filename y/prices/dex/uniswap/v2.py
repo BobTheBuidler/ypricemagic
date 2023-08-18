@@ -3,7 +3,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 
 import a_sync
 import brownie
@@ -45,6 +45,7 @@ logger.setLevel(logging.INFO)
 Path = List[AddressOrContract]
 Reserves = Tuple[int,int,int]
 
+Pool = Union["UniswapV2Pool", "CurvePool"]
 
 class UniswapV2Pool(ERC20):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False):
@@ -222,7 +223,7 @@ class UniswapRouterV2(ContractBase):
         block: Optional[Block] = None,
         token_out: Address = usdc.address,
         paired_against: Address = WRAPPED_GAS_COIN,
-        ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = (),
+        ignore_pools: Tuple[Pool, ...] = (),
         ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.

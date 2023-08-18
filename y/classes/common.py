@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+Pool = Union["UniswapV2Pool", "CurvePool"]
 
 def hex_to_string(h: HexString) -> str:
     '''returns a string from a HexString'''
@@ -167,7 +168,7 @@ class ERC20(ContractBase):
         self, 
         block: Optional[Block] = None, 
         return_None_on_failure: bool = False, 
-        ignore_pools: Tuple["UniswapV2Pool", "CurvePool"] = (),
+        ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:
         from y.prices.magic import get_price
         return await get_price(
@@ -192,7 +193,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
-        ignore_pools: Tuple["UniswapV2Pool", "CurvePool"] = (),
+        ignore_pools: Tuple[Pool, ...] = (),
         asynchronous: bool = False,
         ) -> None:
 

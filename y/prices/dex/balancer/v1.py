@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
 
 import a_sync
 from brownie import chain
@@ -11,15 +11,21 @@ from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async, has_methods
 from y.datatypes import (AddressOrContract, AnyAddressType, Block, UsdPrice,
-                         UsdValue)
+                         UsdValue, Address)
 from y.networks import Network
 from y.prices import magic
+
+if TYPE_CHECKING:
+    from y.prices.dex.uniswap.v2 import UniswapV2Pool
+    from y.prices.stable_swap.curve import CurvePool
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
 }.get(chain.id, None)
 
 logger = logging.getLogger(__name__)
+
+Pool = Union["UniswapV2Pool", "CurvePool", "BalancerV1Pool"]
 
 async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale: float, block) -> float:
     out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, sync=False))
@@ -55,16 +61,22 @@ class BalancerV1Pool(ERC20):
     
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, float]:
         tokens = await self.tokens(block=block, sync=False)
-        balances = await asyncio.gather(*[self.get_balance(token, block or 'latest') for token in tokens])
+        balances = await asyncio.gather(*[self.get_balance(token, block or 'latest', sync=False) for token in tokens])
         return dict(zip(tokens, balances))
 
     async def get_balance(self, token: AnyAddressType, block: Block) -> float:
         balance, scale = await asyncio.gather(
-            self.contract.getBalance.coroutine(token, block_identifier=block),
+            self.check_liquidity(token, block, sync=False),
             ERC20(token, asynchronous=True).scale,
         )
         return balance / scale
 
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    async def check_liquidity(self, token: Address, block: Block) -> int:
+        if block < await contract_creation_block_async(self.address):
+            return 0
+        return await self.contract.getBalance.coroutine(token, block_identifier=block)
+    
 
 class BalancerV1(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = False) -> None:
@@ -151,3 +163,8 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
                         out = None
                         totalOutput = None
         return out, totalOutput
+
+    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
+        pools = []
+        pools = [pool for pool in pools if pool not in ignore_pools]
+        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
