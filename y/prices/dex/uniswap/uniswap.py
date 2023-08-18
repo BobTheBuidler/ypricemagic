@@ -2,7 +2,7 @@ import asyncio
 import logging
 import threading
 from contextlib import suppress
-from typing import List, Optional, Union
+from typing import List, Optional, Tuple, Union
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -79,7 +79,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self, 
         token_in: AnyAddressType, 
         block: Optional[Block] = None, 
-        ignore_pools: List[UniswapV2Pool] = [],
+        ignore_pools: Tuple[UniswapV2Pool] = (),
     ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -99,7 +99,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self, 
         token_in: AnyAddressType, 
         block: Optional[Block] = None, 
-        ignore_pools: List[UniswapV2Pool] = [],
+        ignore_pools: Tuple[UniswapV2Pool] = (),
     ) -> List[UniswapRouterV2]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
@@ -112,7 +112,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self, 
         token: Address, 
         block: Block, 
-        ignore_pools: List[UniswapV2Pool] = [],
+        ignore_pools: Tuple[UniswapV2Pool] = (),
     ) -> int:
         return max(await asyncio.gather(*[uniswap.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]))
 

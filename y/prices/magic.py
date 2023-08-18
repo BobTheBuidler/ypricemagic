@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Iterable, List, NoReturn, Optional
+from typing import Iterable, List, NoReturn, Optional, Tuple
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -44,7 +44,7 @@ async def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
     fail_to_None: bool = False,
-    ignore_pools: List[UniswapV2Pool] = [],
+    ignore_pools: Tuple[UniswapV2Pool] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:
     '''
@@ -113,7 +113,7 @@ async def _get_price(
     token: AnyAddressType, 
     block: Block, 
     fail_to_None: bool = False, 
-    ignore_pools: List[UniswapV2Pool] = [],
+    ignore_pools: Tuple[UniswapV2Pool] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 

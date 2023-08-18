@@ -1,7 +1,7 @@
 
 import asyncio
 import logging
-from typing import List, Optional
+from typing import Optional, Tuple
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -37,7 +37,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
         self, 
         token_address: Address, 
         block: Optional[Block],
-        ignore_pools: List[UniswapV2Pool] = [],
+        ignore_pools: Tuple[UniswapV2Pool] = (),
         ) -> Optional[UsdPrice]:
         exchange, usdc_exchange, decimals = await asyncio.gather(
             self.get_exchange(token_address, sync=False),

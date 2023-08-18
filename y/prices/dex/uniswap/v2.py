@@ -220,7 +220,7 @@ class UniswapRouterV2(ContractBase):
         block: Optional[Block] = None,
         token_out: Address = usdc.address,
         paired_against: Address = WRAPPED_GAS_COIN,
-        ignore_pools: List[UniswapV2Pool] = [],
+        ignore_pools: Tuple[UniswapV2Pool] = (),
         ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -261,7 +261,16 @@ class UniswapRouterV2(ContractBase):
                 
                 log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                 try:
-                    paired_with_price = await asyncio.wait_for(magic.get_price(paired_with, block, fail_to_None=True, sync=False), timeout=RECURSION_TIMEOUT)
+                    paired_with_price = await asyncio.wait_for(
+                        magic.get_price(
+                            paired_with,
+                            block,
+                            fail_to_None=True,
+                            ignore_pools=(*ignore_pools, deepest_pool),
+                            sync=False
+                        ),
+                        timeout=RECURSION_TIMEOUT,
+                    )
                 except asyncio.TimeoutError:
                     raise RecursionError(f'uniswap.v2 token: {token_in}')
 
@@ -394,7 +403,7 @@ class UniswapRouterV2(ContractBase):
         return pools
 
     @a_sync.a_sync(ram_cache_maxsize=500)
-    async def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Optional[UniswapV2Pool]:
+    async def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return await self.deepest_stable_pool(token_address, block, sync=False)
@@ -413,7 +422,7 @@ class UniswapRouterV2(ContractBase):
         return deepest_pool
 
     @a_sync.a_sync(ram_cache_maxsize=500)
-    async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[Address,...] = ()) -> Optional[UniswapV2Pool]:
+    async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         token_address = convert.to_address(token_address)
         pools = {
             pool: paired_with
@@ -440,7 +449,7 @@ class UniswapRouterV2(ContractBase):
 
 
     @a_sync.a_sync(ram_cache_maxsize=500)
-    async def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[Address,...] = ()) -> Path:
+    async def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Path:
         if _loop_count > 10:
             raise CantFindSwapPath
         token_address = convert.to_address(token)
