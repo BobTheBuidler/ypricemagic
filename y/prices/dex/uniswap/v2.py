@@ -114,7 +114,6 @@ class UniswapV2Pool(ERC20):
                 logger.warning(f'abi for getReserves for {self.contract} is {types}')
             except Exception as e:
                 if not call_reverted(e):
-                    logger.warning(f'abi for getReserves for {self.contract} is {types}')
                     raise e
                     
         if reserves is None:
