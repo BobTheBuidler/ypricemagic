@@ -10,6 +10,7 @@ import brownie
 from brownie import chain
 from brownie.exceptions import EventLookupError
 from multicall import Call
+from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
@@ -73,14 +74,16 @@ class UniswapV2Pool(ERC20):
     
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
-        if token0 := await Call(self.address, ['token0()(address)']).coroutine():
-            return ERC20(token0, asynchronous=self.asynchronous)
+        with suppress(ContractLogicError):
+            if token0 := await Call(self.address, ['token0()(address)']).coroutine():
+                return ERC20(token0, asynchronous=self.asynchronous)
         raise NotAUniswapV2Pool(self.address)
 
     @a_sync.aka.cached_property
     async def token1(self) -> ERC20:
-        if token1 := await Call(self.address, ['token1()(address)']).coroutine():
-            return ERC20(token1, asynchronous=self.asynchronous)
+        with suppress(ContractLogicError):
+            if token1 := await Call(self.address, ['token1()(address)']).coroutine():
+                return ERC20(token1, asynchronous=self.asynchronous)
         raise NotAUniswapV2Pool(self.address)
     
     @a_sync.a_sync(cache_type='memory')
@@ -149,16 +152,9 @@ class UniswapV2Pool(ERC20):
                     return balance.balance
             raise TokenNotFound(f"{token} not found in {reserves}")
 
-    async def is_uniswap_pool(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
+    async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
-            return all(
-                await asyncio.gather(
-                    self.__token0__(sync=False),
-                    self.__token1__(sync=False),
-                    self.total_supply(block, sync=False),
-                    self.reserves(block, sync=False),
-                )
-            )
+            return all(await asyncio.gather(self.reserves(block, sync=False), self.total_supply(block, sync=False)))
         except NotAUniswapV2Pool:
             return False
         
