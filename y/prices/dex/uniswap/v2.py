@@ -6,6 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
+from async_lru import alru_cache
 from brownie import chain
 from brownie.exceptions import EventLookupError
 from multicall import Call
@@ -28,7 +29,8 @@ from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.utils.events import decode_logs, get_logs_asap
-from y.utils.multicall import multicall_same_func_same_contract_different_inputs
+from y.utils.multicall import \
+    multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
