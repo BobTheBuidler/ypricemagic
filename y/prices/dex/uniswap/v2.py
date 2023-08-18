@@ -91,7 +91,7 @@ class UniswapV2Pool(ERC20):
         if reserves is None:
             expected_types = ['uint112', 'uint112', 'uint32']
             if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(expected_types)):
-                logger.warning(f'abi for getReserves for {self.contract}' is {self.contract.getReserves.abi})
+                logger.warning(f'abi for getReserves for {self.contract} is {self.contract.getReserves.abi}')
             try:
                 reserves = await self.contract.getReserves.coroutine(block_identifier=block)
             except Exception as e:
