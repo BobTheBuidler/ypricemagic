@@ -21,7 +21,8 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
 from y.decorators import continue_on_revert
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           MessedUpBrownieContract, NonStandardERC20,
-                          NotAUniswapV2Pool, call_reverted)
+                          NotAUniswapV2Pool, call_reverted,
+                          continue_if_call_reverted)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
@@ -82,7 +83,7 @@ class UniswapV2Pool(ERC20):
         return None
     
     #yLazyLogger(logger)
-    async def reserves(self, block: Optional[Block] = None) -> Tuple[WeiBalance, WeiBalance]:
+    async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         reserves, tokens = await asyncio.gather(
             Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block).coroutine(),
             self.__tokens__(sync=False),
@@ -91,7 +92,11 @@ class UniswapV2Pool(ERC20):
             expected_types = ['uint112', 'uint112', 'uint32']
             if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(expected_types)):
                 logger.warning(f'abi for getReserves for {self.contract}' is {self.contract.getReserves.abi})
-            reserves = await self.contract.getReserves.coroutine(block_identifier=block)
+            try:
+                reserves = await self.contract.getReserves.coroutine(block_identifier=block)
+            except Exception as e:
+                continue_if_call_reverted(e)
+                return WeiBalance(0, tokens[0], block=block), WeiBalance(0, tokens[1], block=block)
         return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
     async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
