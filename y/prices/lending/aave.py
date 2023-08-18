@@ -174,7 +174,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         logger.debug(f"{self} v3 pools {pools}")
         return pools
     
-    async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2]]:
+    async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
         pools = await self.__pools__(sync=False)
         for pool in pools:
             if await pool.contains(token_address, sync=False):
@@ -212,7 +212,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     
     @a_sync.a_sync(cache_type='memory')
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
-        pool: Union[AaveMarketV1, AaveMarketV2] = await self.pool_for_atoken(token_address, sync=False)
+        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = await self.pool_for_atoken(token_address, sync=False)
         return await pool.underlying(token_address, sync=False)
     
     async def get_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:

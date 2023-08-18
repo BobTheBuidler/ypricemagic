@@ -8,8 +8,11 @@ from y.classes.common import ERC20
 from y.constants import wbtc, weth
 from y.exceptions import NonStandardERC20
 from y.networks import Network
+from y.prices.lending.aave import aave
+from y.prices.lending.compound import CToken
+from y.prices.stable_swap.curve import CurvePool
 from y.prices.utils.buckets import check_bucket
-from y.utils.raw_calls import raw_call
+from y.prices.yearn import YearnInspiredVault
 
 logger = logging.getLogger(__name__)
 
@@ -171,45 +174,23 @@ async def _exit_sense_check(token_address: str) -> bool:
 
     bucket = await check_bucket(token_address, sync=False)
 
-    if bucket == 'uni or uni-like lp':
+    if bucket in ['uni or uni-like lp', 'balancer pool']:
         return True
-    
-    elif bucket == 'balancer pool':
-        return True
+
+    elif bucket == 'curve':
+        return all(
+            underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying)
+            for underlying in await CurvePool(token_address, asynchronous=True).coins
+        )
     
     # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
-
-    elif bucket == 'yearn or yearn-like':
-        try: # v2
-            underlying = await raw_call(token_address, 'token()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-        try: # v1
-            underlying = await raw_call(token_address, 'want()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-    
     elif bucket == 'atoken':
-        try: # v2
-            underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-        try: # v1
-            underlying = await raw_call(token_address, 'underlyingAssetAddress()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-
+        underlying = await aave.underlying(token_address, sync=False)
     elif bucket == 'compound':
-        underlying = await raw_call(token_address, 'underlying()', output='address', sync=False)
-        if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-            return True
-    
-    return False
+        underlying = await CToken(token_address, asynchronous=True).underlying
+    elif bucket == 'yearn or yearn-like':
+        underlying = await YearnInspiredVault(token_address, asynchronous=True).underlying
+    else:
+        return False
+
+    return underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying)
