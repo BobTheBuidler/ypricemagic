@@ -138,9 +138,7 @@ class YearnInspiredVault(ERC20):
     
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def price(self, block: Optional[Block] = None) -> UsdPrice:
-        underlying = await self.__underlying__(sync=False)
-        share_price, underlying_price = await asyncio.gather(
-            self.share_price(block=block, sync=False),
-            underlying.price(block=block, sync=False),
-        )
-        return UsdPrice(share_price * underlying_price)
+        share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__(sync=False))
+        if share_price is None:
+            return None
+        return UsdPrice(share_price * await underlying.price(block=block, sync=False))
