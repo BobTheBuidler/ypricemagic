@@ -89,28 +89,13 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             logger.debug("%s -> %s", router, price)
             if price:
                 return price
-    
-    """ lets make sure we can delete this
-    # NOTE: This uses mad memory so we arbitrarily cut it off at 50.
-    #       Feel free to implement your own limit with the env var. 
-    @a_sync.a_sync(semaphore=int(os.environ.get("YPM_DEEPEST_ROUTER_SEMAPHORE", 50)))
-    async def deepest_router(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[Uniswap]:
-        token_in = convert.to_address(token_in)
-        deepest_router = None
-        deepest_router_depth = 0
-        for router, depth in zip(self.uniswaps, await asyncio.gather(*[uniswap.check_liquidity(token_in, block, sync=False) for uniswap in self.uniswaps])):
-            if depth > deepest_router_depth:
-                deepest_router = router
-                deepest_router_depth = depth
-        return deepest_router
-    """
 
     async def routers_by_depth(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Dict[UniswapRouterV2,str]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
         '''
         token_in = convert.to_address(token_in)
-        depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, sync=False) for uniswap in self.uniswaps]), routers))
+        depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
         return {router: pool for balance in sorted(depth_to_router, reverse=True) for router, pool in depth_to_router[balance].items()}
     
     async def check_liquidity(self, token: Address, block: Block) -> int:
