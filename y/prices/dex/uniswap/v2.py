@@ -100,7 +100,10 @@ class UniswapV2Pool(ERC20):
         )
 
         if reserves is None and self._types_assumed:
-            self._check_return_types()
+            try:
+                self._check_return_types()
+            except AttributeError as e:
+                raise NotAUniswapV2Pool(self.address) from e
             return await self.reserves(block, sync=False)
         
         if reserves is None:
@@ -110,8 +113,11 @@ class UniswapV2Pool(ERC20):
                     types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
                     logger.warning(f'abi for getReserves for {self.contract} is {types}')
                 except Exception as e:
-                    continue_if_call_reverted(e)
-                    reserves = 0, 0
+                    if call_reverted(e):
+                        reserves = 0, 0
+                    else:
+                        logger.warning(f'abi for getReserves for {self.contract} is {types}')
+                        raise e                    
             else:
                 reserves = 0, 0
         return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
