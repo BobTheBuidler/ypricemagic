@@ -149,7 +149,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
-        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools]))
+        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
 
 try:
     uniswap_v3 = UniswapV3(asynchronous=True)
