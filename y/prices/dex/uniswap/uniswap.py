@@ -75,31 +75,46 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
                 return True
         return False
 
-    async def get_price(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_price(
+        self, 
+        token_in: AnyAddressType, 
+        block: Optional[Block] = None, 
+        ignore_pools: List[UniswapV2Pool] = [],
+    ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
         """
         router: Uniswap
         token_in = convert.to_address(token_in)
-        for router in await self.routers_by_depth(token_in, block=block, sync=False):
+        for router in await self.routers_by_depth(token_in, block=block, ignore_pools=ignore_pools, sync=False):
             # tries each known router from most to least liquid
             # returns the first price we get back, almost always from the deepest router
-            price = await router.get_price(token_in, block=block, sync=False)
+            price = await router.get_price(token_in, block=block, ignore_pools=ignore_pools, sync=False)
             logger.debug("%s -> %s", router, price)
             if price:
                 return price
 
-    async def routers_by_depth(self, token_in: AnyAddressType, block: Optional[Block] = None) -> List[UniswapRouterV2]:
+    async def routers_by_depth(
+        self, 
+        token_in: AnyAddressType, 
+        block: Optional[Block] = None, 
+        ignore_pools: List[UniswapV2Pool] = [],
+    ) -> List[UniswapRouterV2]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
         '''
         token_in = convert.to_address(token_in)
-        depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
+        depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
         return [depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance]
     
-    async def check_liquidity(self, token: Address, block: Block) -> int:
-        return max(await asyncio.gather(*[uniswap.check_liquidity(token, block, sync=False) for uniswap in self.uniswaps]))
+    async def check_liquidity(
+        self, 
+        token: Address, 
+        block: Block, 
+        ignore_pools: List[UniswapV2Pool] = [],
+    ) -> int:
+        return max(await asyncio.gather(*[uniswap.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]))
 
 
 uniswap_multiplexer = UniswapMultiplexer(asynchronous=True)

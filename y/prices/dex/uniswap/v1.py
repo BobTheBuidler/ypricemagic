@@ -1,7 +1,7 @@
 
 import asyncio
 import logging
-from typing import Optional
+from typing import List, Optional
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -12,6 +12,7 @@ from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
+from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
@@ -32,7 +33,12 @@ class UniswapV1(a_sync.ASyncGenericBase):
         if exchange != ZERO_ADDRESS:
             return await Contract.coroutine(exchange)
 
-    async def get_price(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
+    async def get_price(
+        self, 
+        token_address: Address, 
+        block: Optional[Block],
+        ignore_pools: List[UniswapV2Pool] = [],
+        ) -> Optional[UsdPrice]:
         exchange, usdc_exchange, decimals = await asyncio.gather(
             self.get_exchange(token_address, sync=False),
             self.get_exchange(usdc, sync=False),
@@ -52,9 +58,9 @@ class UniswapV1(a_sync.ASyncGenericBase):
             continue_if_call_reverted(e)
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
-    async def check_liquidity(self, token_address: Address, block: Block) -> int:
+    async def check_liquidity(self, token_address: Address, block: Block, ignore_pools = []) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
-        if exchange is None:
+        if exchange is None or exchange in ignore_pools:
             return 0
         if block < await contract_creation_block_async(exchange):
             return 0

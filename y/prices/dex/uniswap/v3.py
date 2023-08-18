@@ -15,6 +15,7 @@ from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
+from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.multicall import fetch_multicall
 
@@ -108,7 +109,12 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return math.prod(fees)
     
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
-    async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_price(
+        self, 
+        token: Address, 
+        block: Optional[Block] = None,
+        ignore_pools: List[UniswapV2Pool] = [],
+        ) -> Optional[UsdPrice]:
         if block and block < await contract_creation_block_async(UNISWAP_V3_QUOTER, True):
             return None
 
@@ -152,10 +158,11 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return [pool for pool in await self.__pools__(sync=False) if token in pool]
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
-    async def check_liquidity(self, token: Address, block: Block) -> int:
+    async def check_liquidity(self, token: Address, block: Block, ignore_pools: []) -> int:
         if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0
         pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
+        pools = [pool for pool in pools if pool not in ignore_pools]
         return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
 
 try:

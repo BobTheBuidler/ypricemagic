@@ -43,7 +43,8 @@ from y.utils.logging import _get_price_logger
 async def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
-    fail_to_None: bool = False, 
+    fail_to_None: bool = False,
+    ignore_pools: List[UniswapV2Pool] = [],
     silent: bool = False
     ) -> Optional[UsdPrice]:
     '''
@@ -61,7 +62,7 @@ async def get_price(
     block = block or await dank_w3.eth.block_number
     token_address = convert.to_address(token_address)
     try:
-        return await _get_price(token_address, block, fail_to_None=fail_to_None, silent=silent)
+        return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
     except (ContractNotFound, NonStandardERC20, RecursionError, PriceError) as e:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         if not fail_to_None:
@@ -112,6 +113,7 @@ async def _get_price(
     token: AnyAddressType, 
     block: Block, 
     fail_to_None: bool = False, 
+    ignore_pools: List[UniswapV2Pool] = [],
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 
@@ -150,7 +152,7 @@ async def _get_price(
         
         # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
         if price is None:
-            price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
+            price = await uniswap_multiplexer.get_price(token, block=block, ignore_pools=ignore_pools, sync=False)
             logger.debug(f"uniswap multiplexer -> {price}")
             
         # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
