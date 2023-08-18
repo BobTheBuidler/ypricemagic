@@ -109,6 +109,7 @@ ACCEPTABLE_HIGH_PRICES = {
         # eth and eth-like
         "0xBDC8fd437C489Ca3c6DA3B5a336D11532a532303", # anyeth
         # btc and btc-like
+        "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501", # renbtc
         "0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2", # anybtc
         # other
         "0x29b0Da86e484E1C0029B56e817912d778aC0EC69", # yfi
