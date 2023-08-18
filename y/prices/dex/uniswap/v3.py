@@ -71,7 +71,7 @@ class UniswapV3Pool(ContractBase):
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         if block < await contract_creation_block_async(self.address):
             return 0
-        return await self[token].balance_of(self.address, block)
+        return await self[token].balance_of(self.address, block, sync=False)
 
 
 class UniswapV3(a_sync.ASyncGenericSingleton):
