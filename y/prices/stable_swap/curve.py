@@ -195,6 +195,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             sum(balance * price for balance, price in zip(balances.values(),prices))
         )
     
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    async def check_liquidity(self, token: Address, block: Block) -> int:
+        deploy_block = await contract_creation_block_async(self.address)
+        if block < deploy_block:
+            return 0
+        i = await self.get_coin_index(token, sync=False)
+        return await self._get_balance(i, block)
+    
     #@cached_property
     #def oracle(self) -> Optional[Address]:
     #    '''
@@ -426,11 +434,13 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 
     @a_sync.a_sync(cache_type='memory')
-    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None, ignore_pools: Tuple[UniswapV2Pool] = ()) -> Optional[UsdPrice]:
         try:
             pools: List[CurvePool] = (await self.__coin_to_pools__(sync=False))[token_in]
         except KeyError:
             return None
+        
+        pools = [pool for pool in pools if pool not in ignore_pools]
         
         if block is not None:
             deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool.address, True) for pool in pools])
@@ -441,17 +451,12 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             pool = pools[0]
         else:
             # Use the pool with deepest liquidity.
-            balances = await asyncio.gather(*[pool.get_balances(block=block, sync=False) for pool in pools], return_exceptions=True)
+            balances = await asyncio.gather(*[pool.check_liquidity(token_in, block=block, sync=False) for pool in pools], return_exceptions=True)
             deepest_pool, deepest_bal = None, 0
-            for pool, pool_bals in zip(pools, balances):
-                if isinstance(pool_bals, Exception):
-                    if str(pool_bals).startswith("could not fetch balances"):
-                        continue
-                    raise pool_bals
-                for token, bal in pool_bals.items():
-                    if token == token_in and bal > deepest_bal:
-                        deepest_pool = pool
-                        deepest_bal = bal
+            for pool, depth in zip(pools, balances):
+                if depth > deepest_bal:
+                    deepest_pool = pool
+                    deepest_bal = depth
             pool = deepest_pool
 
         if pool is None:
@@ -487,6 +492,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             for coin in await pool.__coins__(sync=False):
                 mapping[coin].add(pool)
         return {coin: list(pools) for coin, pools in mapping.items()}
+    
+    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[UniswapV2Pool]) -> int:
+        pools = await self.__coin_to_pools__(sync=False)
+        pools = [pool for pool in pools[token] if pool not in ignore_pools]
+        return max(await asyncio.gather(*[pool.check_liquidity(block, sync=False) for pool in pools])) if pools else 0
 
 try: curve = CurveRegistry(asynchronous=True)
 except UnsupportedNetwork: curve = set()

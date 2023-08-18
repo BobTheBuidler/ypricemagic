@@ -152,14 +152,18 @@ async def _get_price(
         
         # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
         if price is None:
-            price = await uniswap_multiplexer.get_price(token, block=block, ignore_pools=ignore_pools, sync=False)
-            logger.debug(f"uniswap multiplexer -> {price}")
-            
-        # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
-        #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
-        if price is None and curve: 
-            price = await curve.get_price_for_underlying(token, block=block, sync=False)
-            logger.debug(f"curve -> {price}")
+            dexes = [uniswap_multiplexer]
+            if curve:
+                dexes.append(curve)
+            liquidity = await asyncio.gather(*[dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes])
+            depth_to_dex = dict(zip(liquidity, dexes))
+            dexes_by_depth = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True)}
+            for dex in dexes_by_depth.values():
+                method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
+                price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, sync=False)
+                logger.debug("%s -> %s", dex, price)
+                if price:
+                    break
 
         # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
         if price is None or price == 0:
