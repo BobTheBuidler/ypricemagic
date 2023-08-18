@@ -1,5 +1,6 @@
 # async: done
 
+import asyncio
 import logging
 
 from brownie import chain
@@ -185,12 +186,10 @@ async def _exit_sense_check(token_address: str) -> bool:
         return True
 
     elif bucket == 'curve lp':
-        return all(
-            underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying)
-            for underlying in await CurvePool(token_address, asynchronous=True).coins
-        )
-    
-    # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
+        questionable_underlyings = await CurvePool(token_address, asynchronous=True).coins
+        if questionable_underlyings := [und for und in questionable_underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
+            return all(await asyncio.gather(*[_exit_sense_check(underlying) for underlying in questionable_underlyings]))
+        return True
     elif bucket == 'atoken':
         underlying = await aave.underlying(token_address, sync=False)
     elif bucket == 'compound':
