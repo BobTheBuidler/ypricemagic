@@ -1,10 +1,9 @@
 import asyncio
 import logging
-import threading
 from collections import defaultdict
+from contextlib import suppress
 from enum import IntEnum
-from functools import cached_property
-from typing import Any, Dict, List, NoReturn, Optional
+from typing import Dict, List, NoReturn, Optional
 
 import a_sync
 import brownie
@@ -454,39 +453,30 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                         deepest_pool = pool
                         deepest_bal = bal
             pool = deepest_pool
-        
+
         if pool is None:
             return None
-        
-        # Get the price for `token_in` using the selected pool.
-        if len(coins := await pool.__coins__(sync=False)) == 2:
-            # this works for most typical metapools
-            from y.prices.utils.buckets import check_bucket
 
-            token_in_ix = await pool.get_coin_index(token_in, sync=False)
-            token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
-            dy = await pool.get_dy(token_in_ix, token_out_ix, block = block, sync=False)
-            if dy is None:
-                return None
-
-            try:
-                token_out = coins[token_out_ix]
-                # If we know we won't have issues with recursion, we can await directly.
-                if await check_bucket(token_out, sync=False):
-                    return await dy.__value_usd__(sync=False)
-                # We include a timeout here in case we create a recursive loop.
-                for p in asyncio.as_completed([dy.__value_usd__(sync=False)],timeout=RECURSION_TIMEOUT):
-                    log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
-                    price = await p
-                    return price
-            except (PriceError, asyncio.TimeoutError) as e:
-                return None
-            except:
-                raise
-                
-        else:
+        if len(coins := await pool.__coins__(sync=False)) != 2:
             # TODO: handle this sitch if necessary
             return
+
+        # Get the price for `token_in` using the selected pool.
+        # this works for most typical metapools
+
+        from y.prices.utils.buckets import check_bucket
+
+        token_in_ix = await pool.get_coin_index(token_in, sync=False)
+        token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
+        dy = await pool.get_dy(token_in_ix, token_out_ix, block = block, sync=False)
+        if dy is None:
+            return None
+
+        with suppress(PriceError, asyncio.TimeoutError):
+            token_out = coins[token_out_ix]
+            # We include a timeout here in case we create a recursive loop.
+            log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
+            return await asyncio.wait_for(dy.__value_usd__(sync=False), timeout=RECURSION_TIMEOUT)
     
     @a_sync.aka.cached_property
     async def coin_to_pools(self) -> Dict[str, List[CurvePool]]:

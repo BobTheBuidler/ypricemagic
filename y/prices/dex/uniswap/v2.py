@@ -242,11 +242,9 @@ class UniswapRouterV2(ContractBase):
             path = [token_in, token_out]
 
         elif str(token_out) in STABLECOINS:
-            try:
+            with suppress(CantFindSwapPath):
                 path = await self.get_path_to_stables(token_in, block, sync=False)
                 logger.debug('smrt')
-            except CantFindSwapPath:
-                pass
         
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (deepest_pool:= await self.deepest_pool(token_in, block, sync=False)):
@@ -257,10 +255,10 @@ class UniswapRouterV2(ContractBase):
                 amount_out = quote[-1] / out_scale  
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
+                
+                log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                 try:
-                    for p in asyncio.as_completed([magic.get_price(paired_with, block, fail_to_None=True, sync=False)],timeout=RECURSION_TIMEOUT):
-                        log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
-                        paired_with_price = await p
+                    paired_with_price = await asyncio.wait_for(magic.get_price(paired_with, block, fail_to_None=True, sync=False), timeout=RECURSION_TIMEOUT)
                 except asyncio.TimeoutError:
                     raise RecursionError(f'uniswap.v2 token: {token_in}')
                     
