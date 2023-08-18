@@ -87,8 +87,12 @@ class UniswapV2Pool(ERC20):
             Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block).coroutine(),
             self.__tokens__(sync=False),
         )
-        if reserves:
-            return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
+        if reserves is None:
+            expected_types = ['uint112', 'uint112', 'uint32']
+            if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(expected_types)):
+                logger.warning(f'abi for getReserves for {self.contract}' is {self.contract.getReserves.abi})
+            reserves = await self.contract.getReserves.coroutine(block_identifier=block)
+        return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
     async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
         prices, reserves = await asyncio.gather(
@@ -167,24 +171,6 @@ def _parse_pairs_from_events(logs):
         pairs, pools = {}, {}
     return pairs, pools
     
-
-async def _get_reserves_long_way(pool: Address, block: Block):
-    # TODO: Figure out which abi we should use for getReserves
-    try:
-        pool = await Contract.coroutine(pool)
-        if all(
-            pool.getReserves.abi['outputs'][i]['type'] == _type 
-            for i, _type in enumerate(['uint112', 'uint112', 'uint32'])
-        ):
-            return None
-        reserves = await pool.getReserves.coroutine(block_identifier=block)
-        logger.warning(f'abi for getReserves for {pool}' is {pool.getReserves.abi})
-        return reserves
-    except:
-        if chain.id == Network.Optimism and pool == "0x585Af0b397AC42dbeF7f18395426BF878634f18D":
-            # This is the velodrome sink converter contract, getReserves method exists but is not implemented
-            return None
-        logger.warning(f'must debug getReserves for {pool}')
 
 class UniswapRouterV2(ContractBase):
     def __init__(self, router_address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
