@@ -13,7 +13,6 @@ from y.classes.common import ERC20
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.decorators import stuck_coro_debugger
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
-from y.networks import Network
 from y.prices import convex, one_to_one, popsicle, solidex, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
@@ -22,7 +21,7 @@ from y.prices.dex.balancer import balancer_multiplexer
 from y.prices.dex.genericamm import generic_amm
 from y.prices.dex.uniswap import uniswap_multiplexer
 from y.prices.dex.uniswap.uniswap import uniswap_multiplexer
-from y.prices.dex.uniswap.v3 import uniswap_v3
+from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.prices.eth_derivs import creth, wsteth
 from y.prices.gearbox import gearbox
 from y.prices.lending import ib
@@ -144,29 +143,15 @@ async def _get_price(
         price = await _exit_early_for_known_tokens(token, block=block)
         logger.debug(f"early exit -> {price}")
         if price is not None:
+            await _sense_check(token, price)
             logger.debug(f"{symbol} price: {price}")
             logger._debugger.cancel()
             return price
         
         # TODO We need better logic to determine whether to use univ2, univ3, curve, balancer. For now this works for all known cases.
-        # TODO should we use a liuidity-based method to determine this? 
-        if price is None and uniswap_v3:
-            # uni_v3 due to too low liquidity at the moment
-            # break here and try with uni_v2
-            # TODO: liquidity checker for deepest source by default
-            if chain.id == Network.Optimism and token in [
-                "0x3E29D3A9316dAB217754d13b28646B76607c5f04",  # aleth
-                "0xCB8FA9a76b8e203D8C3797bF438d8FB81Ea3326A",  # alusd
-                "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",  # tbtc
-            ]:
-                price = None
-            else:
-                price = await uniswap_v3.get_price(token, block=block, sync=False)
-                logger.debug(f"uniswap v3 -> {price}")
-
         if price is None:
             price = await uniswap_multiplexer.get_price(token, block=block, sync=False)
-            logger.debug(f"uniswap v2 -> {price}")
+            logger.debug(f"uniswap multiplexer -> {price}")
             
         # NOTE: We want this to go last, to hopefully prevent issues with recursion, ie sdANGLE.
         #       We previously had this before uniswap v3, but sdANGLE would create a recursion error by trying to price ANGLE via curve instead of viable uniswap v2.
@@ -239,7 +224,7 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == 'synthetix':             price = await synthetix.get_price(token_address, block, sync=False)
     elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, sync=False)
-    elif bucket == 'uni or uni-like lp':    price = await uniswap_multiplexer.lp_price(token_address, block, sync=False)
+    elif bucket == 'uni or uni-like lp':    price = await UniswapV2Pool(token_address).get_price(block=block, sync=False)
 
     elif bucket == 'wrapped gas coin':      price = await get_price(constants.WRAPPED_GAS_COIN, block, sync=False)
     elif bucket == 'wrapped atoken v2':     price = await aave.get_price_wrapped_v2(token_address, block, sync=False)

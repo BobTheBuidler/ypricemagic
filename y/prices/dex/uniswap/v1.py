@@ -4,8 +4,10 @@ import logging
 from typing import Optional
 
 import a_sync
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 
+from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract
 from y.datatypes import Address, Block, UsdPrice
@@ -15,29 +17,21 @@ from y.utils.raw_calls import _decimals
 
 logger = logging.getLogger(__name__)
 
-V1 = {
-    Network.Mainnet: "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95",
-}.get(chain.id,None)
-
 
 class UniswapV1(a_sync.ASyncGenericBase):
+    factory = "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95"
+
     def __init__(self, asynchronous: bool = False) -> None:
-        self.asynchronous = asynchronous
-        super().__init__()
-    
-    @a_sync.aka.cached_property
-    async def factory(self) -> Contract:
-        if V1 is None:
+        if chain.id != Network.Mainnet:
             raise UnsupportedNetwork(f"UniswapV1 does not suppport chainid {chain.id}")
-        return await Contract.coroutine(V1)            
+        self.asynchronous = asynchronous
         
-    @a_sync.a_sync(ram_cache_maxsize=256)
+    @a_sync.a_sync(ram_cache_maxsize=None)
     async def get_exchange(self, token_address: Address) -> Optional[Contract]:
-        factory = await self.__factory__(sync=False)
+        factory = await Contract.coroutine(self.factory)
         exchange = await factory.getExchange.coroutine(token_address)
-        if exchange == ZERO_ADDRESS:
-            return None
-        return await Contract.coroutine(exchange)
+        if exchange != ZERO_ADDRESS:
+            return await Contract.coroutine(exchange)
 
     async def get_price(self, token_address: Address, block: Optional[Block]) -> Optional[UsdPrice]:
         exchange, usdc_exchange, decimals = await asyncio.gather(
@@ -57,3 +51,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
             if 'invalid jump destination' in str(e):
                 return None
             continue_if_call_reverted(e)
+
+    @alru_cache(maxsize=10_000, ttl=10*60)
+    async def check_liquidity(self, token_address: Address, block: Block) -> int:
+        exchange = await self.get_exchange(token_address, sync=False)
+        return await ERC20(token_address, asynchronous=True).balance_of(exchange, block) if exchange else 0

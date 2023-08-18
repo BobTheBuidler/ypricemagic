@@ -8,7 +8,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Address, Block
 from y.decorators import continue_on_revert
 from y.exceptions import call_reverted
-from y.prices.dex.uniswap.v2 import Path, UniswapPoolV2, UniswapRouterV2
+from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool, UniswapRouterV2
 
 
 class SolidlyRouterBase(UniswapRouterV2):
@@ -42,10 +42,10 @@ class SolidlyRouter(SolidlyRouterBase):
         return await self.contract.pairFor.coroutine(input_token, output_token, stable)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapPoolV2]:
+    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
         if await self.contract.isPair.coroutine(pool_address, block_identifier=block):
-            return UniswapPoolV2(pool_address)
+            return UniswapV2Pool(pool_address)
 
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
         routes = []
