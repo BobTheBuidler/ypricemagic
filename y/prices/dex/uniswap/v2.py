@@ -90,14 +90,13 @@ class UniswapV2Pool(ERC20):
             self.__tokens__(sync=False),
         )
         if reserves is None:
-            expected_types = ['uint112', 'uint112', 'uint32']
-            if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(expected_types)):
-                logger.warning(f'abi for getReserves for {self.contract} is {output_types}')
+            #if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(output_types.split(','))):
             try:
                 reserves = await self.contract.getReserves.coroutine(block_identifier=block)
             except Exception as e:
                 continue_if_call_reverted(e)
                 return WeiBalance(0, tokens[0], block=block), WeiBalance(0, tokens[1], block=block)
+            logger.warning(f'abi for getReserves for {self.contract} is {output_types}')
         return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
     async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
