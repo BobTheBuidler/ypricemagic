@@ -73,13 +73,15 @@ class UniswapV2Pool(ERC20):
     
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
-        token0 = await Call(self.address, ['token0()(address)']).coroutine()
-        return ERC20(token0, asynchronous=self.asynchronous)
+        if token0 := await Call(self.address, ['token0()(address)']).coroutine():
+            return ERC20(token0, asynchronous=self.asynchronous)
+        raise NotAUniswapV2Pool(self.address)
 
     @a_sync.aka.cached_property
     async def token1(self) -> ERC20:
-        token1 = await Call(self.address, ['token1()(address)']).coroutine()
-        return ERC20(token1, asynchronous=self.asynchronous)
+        if token1 := await Call(self.address, ['token1()(address)']).coroutine():
+            return ERC20(token1, asynchronous=self.asynchronous)
+        raise NotAUniswapV2Pool(self.address)
     
     @a_sync.a_sync(cache_type='memory')
     async def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
@@ -88,7 +90,6 @@ class UniswapV2Pool(ERC20):
             return UsdPrice(tvl / await self.total_supply_readable(block=block, sync=False))
         return None
     
-    #yLazyLogger(logger)
     async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         reserves, tokens = await asyncio.gather(
             Call(self.address, [f'getReserves()(({self._reserves_types}))'], block_id=block).coroutine(),
