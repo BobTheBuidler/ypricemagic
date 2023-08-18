@@ -6,6 +6,7 @@ from typing import List, Optional, Union
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
+from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20
@@ -65,7 +66,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             return False
     
         pool = UniswapV2Pool(token_address, asynchronous=True)
-        with suppress(NotAUniswapV2Pool):
+        with suppress(NotAUniswapV2Pool, ContractLogicError):
             if await pool.is_uniswap_pool(sync=False):
                 factory = await pool.__factory__(sync=False)
                 if factory not in self.v2_factories and factory != ZERO_ADDRESS:

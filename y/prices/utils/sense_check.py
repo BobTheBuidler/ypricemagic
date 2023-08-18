@@ -186,8 +186,8 @@ async def _exit_sense_check(token_address: str) -> bool:
         return True
 
     elif bucket == 'curve lp':
-        questionable_underlyings = await CurvePool(token_address, asynchronous=True).coins
-        if questionable_underlyings := [und for und in questionable_underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
+        underlyings = await CurvePool(token_address, asynchronous=True).coins
+        if questionable_underlyings := [und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
             return all(await asyncio.gather(*[_exit_sense_check(underlying) for underlying in questionable_underlyings]))
         return True
     elif bucket == 'atoken':
