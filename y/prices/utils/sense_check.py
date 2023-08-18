@@ -109,6 +109,7 @@ ACCEPTABLE_HIGH_PRICES = {
         # other
         "0x29b0Da86e484E1C0029B56e817912d778aC0EC69", # yfi
         "0xf43Cc235E686d7BC513F53Fbffb61F760c3a1882", # elite
+        "0x58e57cA18B7A47112b877E31929798Cd3D703b0f", # crv3crypto
     ],
     Network.Avalanche: [
         # btc and btc-like
@@ -118,6 +119,7 @@ ACCEPTABLE_HIGH_PRICES = {
     ],
     Network.Optimism: [
         # eth and eth-like
+        "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", # eth
         "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D", # reth
         "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb", # wsteth
         "0x6806411765Af15Bddd26f8f544A34cC40cb9838B", # frxeth
