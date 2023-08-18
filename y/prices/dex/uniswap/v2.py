@@ -259,7 +259,6 @@ class UniswapRouterV2(ContractBase):
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
                 
-                log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
                 try:
                     paired_with_price = await asyncio.wait_for(
                         magic.get_price(
@@ -271,8 +270,8 @@ class UniswapRouterV2(ContractBase):
                         ),
                         timeout=RECURSION_TIMEOUT,
                     )
-                except asyncio.TimeoutError:
-                    raise RecursionError(f'uniswap.v2 token: {token_in}')
+                except asyncio.TimeoutError as e:
+                    raise RecursionError(f'uniswap.v2  token_in: {token_in}  block: {block}') from e
 
                 if paired_with_price:
                     return amount_out * paired_with_price
