@@ -23,9 +23,8 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          UsdPrice)
 from y.decorators import continue_on_revert
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
-                          MessedUpBrownieContract, NonStandardERC20,
-                          NotAUniswapV2Pool, TokenNotFound, call_reverted,
-                          continue_if_call_reverted)
+                          NonStandardERC20, NotAUniswapV2Pool, TokenNotFound,
+                          call_reverted)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
@@ -271,8 +270,9 @@ class UniswapRouterV2(ContractBase):
                         timeout=RECURSION_TIMEOUT,
                     )
                 except asyncio.TimeoutError as e:
-                    raise RecursionError(f'uniswap.v2  token_in: {token_in}  block: {block}') from e
-
+                    log_possible_recursion_err(f"RecursionError: uniswap.v2 for {token_in} at block {block}")
+                    return None
+                
                 if paired_with_price:
                     return amount_out * paired_with_price
 
