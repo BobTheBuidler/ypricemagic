@@ -117,9 +117,10 @@ class UniswapV2Pool(ERC20):
             return sum(vals)
     
     async def check_liquidity(self, token: Address, block: Block) -> int:
-        for balance in await self.reserves(block, sync=False):
-            if token == balance.token:
-                return balance.balance
+        if reserves := await self.reserves(block, sync=False):
+            for balance in reserves:
+                if token == balance.token:
+                    return balance.balance
 
     async def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
