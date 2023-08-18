@@ -499,7 +499,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple["UniswapV2Pool", CurvePool]) -> int:
         pools = await self.__coin_to_pools__(sync=False)
         pools = [pool for pool in pools[token] if pool not in ignore_pools]
-        return max(await asyncio.gather(*[pool.check_liquidity(block, sync=False) for pool in pools])) if pools else 0
+        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
 
 try: curve = CurveRegistry(asynchronous=True)
 except UnsupportedNetwork: curve = set()
