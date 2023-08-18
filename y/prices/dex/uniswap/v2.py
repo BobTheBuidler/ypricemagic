@@ -2,6 +2,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from contextlib import suppress
 from typing import Any, Dict, List, Optional, Tuple
 
 import a_sync
@@ -42,12 +43,17 @@ Reserves = Tuple[int,int,int]
 
 
 class UniswapV2Pool(ERC20):
+    def __init__(self, address: AnyAddressType, asynchronous: bool = False):
+        super().__init__(address, asynchronous=asynchronous)
+        self._reserves_types = 'uint112,uint112,uint32'
+        self._types_assumed = True
+            
     @a_sync.aka.cached_property
     async def factory(self) -> Address:
         try: return await raw_call(self.address, 'factory()', output='address', sync=False)
         except ValueError as e:
             if call_reverted(e):
-                raise NotAUniswapV2Pool
+                raise NotAUniswapV2Pool from e
             # `is not a valid ETH address` means we got some kind of response from the chain.
             # but couldn't convert to address. If it happens to be a goofy but
             # verified uni fork, maybe we can get factory this way
@@ -56,8 +62,8 @@ class UniswapV2Pool(ERC20):
                 contract = await Contract.coroutine(self.address)
                 try: 
                     return await contract.factory.coroutine()
-                except AttributeError:
-                    raise NotAUniswapV2Pool
+                except AttributeError as exc:
+                    raise NotAUniswapV2Pool from exc
             else:
                 raise
 
@@ -84,19 +90,29 @@ class UniswapV2Pool(ERC20):
     
     #yLazyLogger(logger)
     async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        output_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
         reserves, tokens = await asyncio.gather(
-            Call(self.address, [f'getReserves()(({output_types}))'], block_id=block).coroutine(),
+            Call(self.address, [f'getReserves()(({self._reserves_types}))'], block_id=block).coroutine(),
             self.__tokens__(sync=False),
         )
-        if reserves is None:
-            #if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(output_types.split(','))):
+
+        if reserves is None and self._types_assumed:
+            try:
+                self._reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+                self._verified = True
+                assert self._reserves_types.count(',') == 2, self._reserves_types
+            except ContractNotVerified:
+                self._verified = False
+            self._types_assumed = False
+            return await self.reserves(block, sync=False)
+        
+        if reserves is None and self._verified:
             try:
                 reserves = await self.contract.getReserves.coroutine(block_identifier=block)
             except Exception as e:
                 continue_if_call_reverted(e)
                 return WeiBalance(0, tokens[0], block=block), WeiBalance(0, tokens[1], block=block)
-            logger.warning(f'abi for getReserves for {self.contract} is {output_types}')
+            types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+            logger.warning(f'abi for getReserves for {self.contract} is {types}')
         return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
     async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
