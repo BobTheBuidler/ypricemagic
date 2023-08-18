@@ -96,13 +96,7 @@ class UniswapV2Pool(ERC20):
         )
 
         if reserves is None and self._types_assumed:
-            try:
-                self._reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
-                self._verified = True
-                assert self._reserves_types.count(',') == 2, self._reserves_types
-            except ContractNotVerified:
-                self._verified = False
-            self._types_assumed = False
+            self._check_return_types()
             return await self.reserves(block, sync=False)
         
         if reserves is None:
@@ -155,7 +149,8 @@ class UniswapV2Pool(ERC20):
             raise TokenNotFound(f"{token} not found in {reserves}")
 
     async def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
-        methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
+        self._check_return_types()
+        methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', f'getReserves()(({self._reserves_types}))'
         try:
             token0, token1, supply, reserves = await asyncio.gather(*[Call(self.address, [method], block_id=block).coroutine() for method in methods])
         except Exception as e:
@@ -178,6 +173,17 @@ class UniswapV2Pool(ERC20):
         if token1:
             token1 = ERC20(token1, asynchronous=self.asynchronous)
         return token0, token1, supply, reserves
+        
+    def _check_return_types(self) -> None:
+        if not self._types_assumed:
+            return
+        try:
+            self._reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+            self._verified = True
+            assert self._reserves_types.count(',') == 2, self._reserves_types
+        except ContractNotVerified:
+            self._verified = False
+        self._types_assumed = False
 
 @a_sync.a_sync(default='async', executor=thread_pool_executor)
 def _parse_pairs_from_events(logs):
