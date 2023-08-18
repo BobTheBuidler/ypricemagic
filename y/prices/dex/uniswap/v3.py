@@ -138,7 +138,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         pools = []
         async for logs in get_logs_asap_generator(factory.address, [factory.topics["PoolCreated"]], chronological=False):
             for event in decode_logs(logs):
-                token0, token1, fee, tick_spacing, pool = event
+                token0, token1, fee, tick_spacing, pool = event.values()
                 pools.append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
         return pools
 
