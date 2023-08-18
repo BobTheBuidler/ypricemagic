@@ -12,7 +12,7 @@ from y.classes.common import ERC20, ContractBase
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
-from y.exceptions import ContractNotVerified, UnsupportedNetwork
+from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
 from y.utils.events import decode_logs, get_logs_asap_generator
@@ -44,9 +44,6 @@ addresses = {
 FEE_DENOMINATOR = 1_000_000
 
 
-class TokenNotFound(Exception):
-    pass
-
 class UniswapV3Pool(ContractBase):
     def __init__(
         self,
@@ -72,6 +69,8 @@ class UniswapV3Pool(ContractBase):
         return ERC20(token, self.asynchronous)
 
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
+        if block < await contract_creation_block_async(self.address):
+            return 0
         return await self[token].balance_of(self.address, block)
 
 
@@ -157,8 +156,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0
         pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
-        deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool) for pool in pools])
-        pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
         return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
 
 try:

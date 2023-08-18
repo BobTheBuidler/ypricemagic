@@ -22,7 +22,7 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
 from y.decorators import continue_on_revert
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           MessedUpBrownieContract, NonStandardERC20,
-                          NotAUniswapV2Pool, call_reverted,
+                          NotAUniswapV2Pool, TokenNotFound, call_reverted,
                           continue_if_call_reverted)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
@@ -145,10 +145,13 @@ class UniswapV2Pool(ERC20):
             return sum(vals)
     
     async def check_liquidity(self, token: Address, block: Block) -> int:
+        if block < await contract_creation_block_async(self.address):
+            return 0
         if reserves := await self.reserves(block, sync=False):
             for balance in reserves:
                 if token == balance.token:
-                    return balance.balance
+                    return balance.balances
+            raise TokenNotFound(f"{token} not found in {reserves}")
 
     async def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', 'getReserves()((uint112,uint112,uint32))'
@@ -473,7 +476,5 @@ class UniswapRouterV2(ContractBase):
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block < await contract_creation_block_async(self.factory):
             return 0
-        pools = await self.pools_for_token(token, sync=False)
-        deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool) for pool in pools])
-        pools = [UniswapV2Pool(pool, asynchronous=True) for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
+        pools = [UniswapV2Pool(pool, asynchronous=True) for pool in await self.pools_for_token(token, sync=False)]
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0

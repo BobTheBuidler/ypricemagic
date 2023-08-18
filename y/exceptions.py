@@ -76,6 +76,9 @@ class NotABalancerV2Pool(Exception):
 class CantFindSwapPath(Exception):
     pass
 
+class TokenNotFound(Exception):
+    pass
+
 # Calls
 
 class CalldataPreparationError(Exception):
