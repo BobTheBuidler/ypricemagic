@@ -9,6 +9,7 @@ import a_sync
 import brownie
 from brownie import chain
 from brownie.exceptions import EventLookupError
+from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import ContractLogicError
 
@@ -106,20 +107,19 @@ class UniswapV2Pool(ERC20):
                 raise NotAUniswapV2Pool(self.address) from e
             return await self.reserves(block, sync=False)
         
-        if reserves is None:
-            if self._verified:
-                try:
-                    reserves = await self.contract.getReserves.coroutine(block_identifier=block)
-                    types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+        if reserves is None and self._verified:
+            try:
+                reserves = await self.contract.getReserves.coroutine(block_identifier=block)
+                types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+                logger.warning(f'abi for getReserves for {self.contract} is {types}')
+            except Exception as e:
+                if not call_reverted(e):
                     logger.warning(f'abi for getReserves for {self.contract} is {types}')
-                except Exception as e:
-                    if call_reverted(e):
-                        reserves = 0, 0
-                    else:
-                        logger.warning(f'abi for getReserves for {self.contract} is {types}')
-                        raise e                    
-            else:
-                reserves = 0, 0
+                    raise e
+                    
+        if reserves is None:
+            reserves = 0, 0
+
         return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
 
     async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
@@ -161,7 +161,7 @@ class UniswapV2Pool(ERC20):
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
             return all(await asyncio.gather(self.reserves(block, sync=False), self.total_supply(block, sync=False)))
-        except NotAUniswapV2Pool:
+        except (NotAUniswapV2Pool, InsufficientDataBytes):
             return False
         
     def _check_return_types(self) -> None:
