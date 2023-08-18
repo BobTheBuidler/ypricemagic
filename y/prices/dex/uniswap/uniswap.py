@@ -2,7 +2,7 @@ import asyncio
 import logging
 import threading
 from contextlib import suppress
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -10,7 +10,7 @@ from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20
-from y.datatypes import Address, AnyAddressType, Block, UsdPrice
+from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
@@ -22,12 +22,7 @@ from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
 from y.prices.dex.velodrome import VelodromeRouterV2
 from y.utils.logging import _gh_issue_request
 
-if TYPE_CHECKING:
-    from y.prices.stable_swap.curve import CurvePool
-
 logger = logging.getLogger(__name__)
-
-Pool = Union[UniswapV2Pool, "CurvePool"]
 
 # NOTE: If this is failing to pull a price for a token you need, it's likely because that token requires a special swap path.
 #       Please add a viable swap path to ..protocols to fetch price data successfully.

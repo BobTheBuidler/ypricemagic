@@ -1,9 +1,15 @@
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 from brownie import Contract
 from brownie.convert.datatypes import EthAddress, HexBytes
 from eth_typing import AnyAddress, BlockNumber
+
+if TYPE_CHECKING:
+    from y.prices.dex.uniswap.v2 import UniswapV2Pool
+    from y.prices.stable_swap.curve import CurvePool
+
+Pool = Union["UniswapV2Pool", "CurvePool"]
 
 Address = Union[str,HexBytes,AnyAddress,EthAddress]
 Block = Union[int,BlockNumber]

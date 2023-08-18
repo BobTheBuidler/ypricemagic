@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Dict, List, Optional, Tuple, Union, TYPE_CHECKING
+from typing import Dict, List, Optional, Tuple
 
 import a_sync
 from brownie import chain
@@ -10,22 +10,16 @@ from brownie.exceptions import VirtualMachineError
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async, has_methods
-from y.datatypes import (AddressOrContract, AnyAddressType, Block, UsdPrice,
-                         UsdValue, Address)
+from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
+                         Pool, UsdPrice, UsdValue)
 from y.networks import Network
 from y.prices import magic
-
-if TYPE_CHECKING:
-    from y.prices.dex.uniswap.v2 import UniswapV2Pool
-    from y.prices.stable_swap.curve import CurvePool
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
 }.get(chain.id, None)
 
 logger = logging.getLogger(__name__)
-
-Pool = Union["UniswapV2Pool", "CurvePool", "BalancerV1Pool"]
 
 async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale: float, block) -> float:
     out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, sync=False))

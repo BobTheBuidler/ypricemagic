@@ -20,7 +20,7 @@ from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN,
                          thread_pool_executor, usdc, weth)
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
-                         UsdPrice)
+                         Pool, UsdPrice)
 from y.decorators import continue_on_revert
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           NonStandardERC20, NotAUniswapV2Pool, TokenNotFound,
@@ -35,17 +35,12 @@ from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
-if TYPE_CHECKING:
-    from y.prices.stable_swap.curve import CurvePool
-
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
 
 Path = List[AddressOrContract]
 Reserves = Tuple[int,int,int]
-
-Pool = Union["UniswapV2Pool", "CurvePool"]
 
 class UniswapV2Pool(ERC20):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False):

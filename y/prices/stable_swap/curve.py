@@ -3,7 +3,7 @@ import logging
 from collections import defaultdict
 from contextlib import suppress
 from enum import IntEnum
-from typing import TYPE_CHECKING, Dict, List, NoReturn, Optional, Tuple, Union
+from typing import Dict, List, NoReturn, Optional, Tuple
 
 import a_sync
 import brownie
@@ -16,7 +16,7 @@ from y.classes.common import ERC20, WeiBalance
 from y.constants import RECURSION_TIMEOUT, log_possible_recursion_err
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
-                         UsdPrice, UsdValue)
+                         Pool, UsdPrice, UsdValue)
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           PriceError, UnsupportedNetwork, call_reverted)
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
@@ -28,12 +28,7 @@ from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
-if TYPE_CHECKING:
-    from y.prices.dex.uniswap.v2 import UniswapV2Pool
-
 logger = logging.getLogger(__name__)
-
-Pool = Union["UniswapV2Pool", "CurvePool"]
 
 ensure_middleware()
 

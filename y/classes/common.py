@@ -13,20 +13,14 @@ from y import convert
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
 from y.contracts import Contract, build_name, has_method, probe
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.erc20 import decimals, totalSupply
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
 from y.utils.raw_calls import balanceOf
 
-if TYPE_CHECKING:
-    from y.prices.dex.uniswap.v2 import UniswapV2Pool
-    from y.prices.stable_swap.curve import CurvePool
-
 logger = logging.getLogger(__name__)
-
-Pool = Union["UniswapV2Pool", "CurvePool"]
 
 def hex_to_string(h: HexString) -> str:
     '''returns a string from a HexString'''

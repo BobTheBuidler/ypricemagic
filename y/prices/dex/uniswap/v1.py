@@ -1,7 +1,7 @@
 
 import asyncio
 import logging
-from typing import TYPE_CHECKING, Optional, Tuple, Union
+from typing import Optional, Tuple
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -9,18 +9,12 @@ from brownie import ZERO_ADDRESS, chain
 from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, Block, UsdPrice
+from y.datatypes import Address, Block, Pool, UsdPrice
 from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
-from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.utils.raw_calls import _decimals
 
-if TYPE_CHECKING:
-    from y.prices.stable_swap.curve import CurvePool
-
 logger = logging.getLogger(__name__)
-
-Pool = Union[UniswapV2Pool, "CurvePool"]
 
 class UniswapV1(a_sync.ASyncGenericBase):
     factory = "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95"

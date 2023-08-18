@@ -1,7 +1,7 @@
 import asyncio
 import math
 from itertools import cycle
-from typing import TYPE_CHECKING, List, Optional, Tuple, Union
+from typing import List, Optional, Tuple
 
 import a_sync
 from brownie import chain
@@ -11,18 +11,12 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
-from y.datatypes import Address, AnyAddressType, Block, UsdPrice
+from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
-from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.multicall import fetch_multicall
-
-if TYPE_CHECKING:
-    from y.prices.stable_swap.curve import CurvePool
-
-Pool = Union[UniswapV2Pool, "CurvePool"]
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
 UNISWAP_V3_FACTORY = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
