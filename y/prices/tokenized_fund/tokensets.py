@@ -45,4 +45,5 @@ class TokenSet(ERC20):
         total_supply = await self.total_supply_readable(block=block, sync=False)
         if total_supply == 0:
             return UsdPrice(0)
-        return UsdPrice(sum(await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in await self.balances(block=block, sync=False)])))
+        tvl = sum(await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in await self.balances(block=block, sync=False)]))
+        return UsdPrice(tvl / total_supply)
