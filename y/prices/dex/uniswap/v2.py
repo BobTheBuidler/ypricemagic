@@ -28,8 +28,7 @@ from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.utils.events import decode_logs, get_logs_asap
-from y.utils.multicall import (
-    fetch_multicall, multicall_same_func_same_contract_different_inputs)
+from y.utils.multicall import multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -126,7 +125,12 @@ class UniswapPoolV2(ERC20):
             # if call reverted, let's try with brownie. Sometimes this works, not sure why
             try:
                 contract = await Contract.coroutine(self.address)
-                token0, token1, supply, reserves = fetch_multicall([contract,'token0'],[contract,'token1'],[contract,'totalSupply'],[contract,'getReserves'],block=block)
+                token0, token1, supply, reserves = await asyncio.gather(
+                    contract.token0.coroutine(block_identifier=block),
+                    contract.token1.coroutine(block_identifier=block),
+                    contract.totalSupply.coroutine(block_identifier=block),
+                    contract.getReserves.coroutine(block_identifier=block),
+                )
             except (AttributeError, ContractNotVerified, MessedUpBrownieContract):
                 raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
         

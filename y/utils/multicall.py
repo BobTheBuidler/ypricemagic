@@ -4,7 +4,7 @@ from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import a_sync
 import brownie
-from brownie import chain, web3
+from brownie import chain
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import CannotHandleRequest
@@ -15,6 +15,7 @@ from y.datatypes import Address, AddressOrContract, AnyAddressType, Block
 from y.exceptions import continue_if_call_reverted
 from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
+from y.utils.dank_mids import dank_w3
 from y.utils.raw_calls import _decimals, _totalSupply
 
 logger = logging.getLogger(__name__)
@@ -114,7 +115,8 @@ async def multicall_totalSupply(
 
 
 #yLazyLogger(logger)
-def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
+@a_sync.a_sync(default='sync')
+async def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
     # https://github.com/makerdao/multicall
     multicall_input = []
     fn_list = []
@@ -133,14 +135,14 @@ def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional
     if isinstance(block, int) and block < multicall_deploy_block:
         # use state override to resurrect the contract prior to deployment
         data = multicall2.tryAggregate.encode_input(False, multicall_input)
-        call = web3.eth.call(
+        call = dank_w3.eth.call(
             {'to': str(multicall2), 'data': data},
             block or 'latest',
             {str(multicall2): {'code': f'0x{multicall2.bytecode}'}},
         )
         result = multicall2.tryAggregate.decode_output(call)
     else:
-        result = multicall2.tryAggregate.call(
+        result = await multicall2.tryAggregate.coroutine(
             False, multicall_input, block_identifier=block or 'latest'
         )
 

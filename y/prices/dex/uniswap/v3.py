@@ -88,13 +88,13 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         quoter, amount_in = await asyncio.gather(self.__quoter__(sync=False), ERC20(token, asynchronous=True).scale)
 
         # TODO make this properly async after extending for brownie ContractTx
-        results = await constants.thread_pool_executor.run(
-            fetch_multicall,
+        results = await fetch_multicall(
             *[
                 [quoter, 'quoteExactInput', self._encode_path(path), amount_in]
                 for path in paths
             ],
             block=block,
+            sync=False
         )
 
         outputs = [
