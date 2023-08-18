@@ -4,6 +4,7 @@ from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import a_sync
 import brownie
+import contextlib
 from brownie import chain
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
@@ -34,7 +35,7 @@ MULTICALL2 = {
     Network.Aurora:             "0xe0e3887b158F7F9c80c835a61ED809389BC08d1b",
     Network.Cronos:             "0x5e954f5972EC6BFc7dECd75779F10d848230345F",
     Network.Optimism:           "0xcA11bde05977b3631167028862bE2a173976CA11", # Multicall 3
-}.get(chain.id, None)
+}.get(chain.id)
 
 multicall = None
 multicall2 = brownie.Contract.from_abi("Multicall2",MULTICALL2, MULTICALL2_ABI) if chain.id in [Network.Harmony,Network.Cronos] else Contract(MULTICALL2)
@@ -96,8 +97,7 @@ async def multicall_decimals(
     except Exception as e:
         continue_if_call_reverted(e)
 
-    decimals = await asyncio.gather(*[_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses])
-    return decimals
+    return await asyncio.gather(*[_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses])
 
 @a_sync.a_sync(default='sync')
 async def multicall_totalSupply(
@@ -106,11 +106,8 @@ async def multicall_totalSupply(
     return_None_on_failure: bool = True
     ) -> List[int]:
 
-    try:
+    with contextlib.suppress(CannotHandleRequest, InsufficientDataBytes):
         return await multicall_same_func_no_input(addresses, 'totalSupply()(uint256)', block=block, sync=False)
-    except (CannotHandleRequest,InsufficientDataBytes):
-        pass
-        
     return [await _totalSupply(address,block=block,return_None_on_failure=return_None_on_failure, sync=False) for address in addresses] 
 
 
