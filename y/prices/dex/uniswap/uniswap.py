@@ -1,8 +1,8 @@
 import asyncio
 import logging
-import os
 import threading
-from typing import Dict, Optional, Union, List
+from contextlib import suppress
+from typing import List, Optional, Union
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -14,8 +14,8 @@ from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
 from y.prices.dex.uniswap.v1 import UniswapV1
-from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapV2Pool,
-                                     UniswapRouterV2)
+from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapRouterV2,
+                                     UniswapV2Pool)
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
 from y.prices.dex.velodrome import VelodromeRouterV2
@@ -63,17 +63,16 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             await ERC20(token_address, asynchronous=True).decimals
         except NonStandardERC20:
             return False
-        try:
-            pool = UniswapV2Pool(token_address, asynchronous=True)
-            is_pool = all(await pool.get_pool_details(sync=False))
-            if is_pool:
+    
+        pool = UniswapV2Pool(token_address, asynchronous=True)
+        with suppress(NotAUniswapV2Pool):
+            if await pool.is_uniswap_pool(sync=False):
                 factory = await pool.__factory__(sync=False)
                 if factory not in self.v2_factories and factory != ZERO_ADDRESS:
                     _gh_issue_request(f'UniClone Factory {factory} is unknown to ypricemagic.', logger)
                     self.v2_factories.append(factory)
-            return is_pool
-        except NotAUniswapV2Pool:
-            return False
+                return True
+        return False
 
     async def get_price(self, token_in: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         """

@@ -148,31 +148,18 @@ class UniswapV2Pool(ERC20):
                     return balance.balance
             raise TokenNotFound(f"{token} not found in {reserves}")
 
-    async def get_pool_details(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
-        self._check_return_types()
-        methods = 'token0()(address)', 'token1()(address)', 'totalSupply()(uint)', f'getReserves()(({self._reserves_types}))'
+    async def is_uniswap_pool(self, block: Optional[Block] = None) -> Tuple[Optional[ERC20], Optional[ERC20], Optional[int], Optional[Reserves]]:
         try:
-            token0, token1, supply, reserves = await asyncio.gather(*[Call(self.address, [method], block_id=block).coroutine() for method in methods])
-        except Exception as e:
-            if not call_reverted(e):
-                raise
-            # if call reverted, let's try with brownie. Sometimes this works, not sure why
-            try:
-                contract = await Contract.coroutine(self.address)
-                token0, token1, supply, reserves = await asyncio.gather(
-                    contract.token0.coroutine(block_identifier=block),
-                    contract.token1.coroutine(block_identifier=block),
-                    contract.totalSupply.coroutine(block_identifier=block),
-                    contract.getReserves.coroutine(block_identifier=block),
+            return all(
+                await asyncio.gather(
+                    self.__token0__(sync=False),
+                    self.__token1__(sync=False),
+                    self.total_supply(block, sync=False),
+                    self.reserves(block, sync=False),
                 )
-            except (AttributeError, ContractNotVerified, MessedUpBrownieContract):
-                raise NotAUniswapV2Pool(self.address, "Are you sure this is a uni pool?")
-        
-        if token0:
-            token0 = ERC20(token0, asynchronous=self.asynchronous)
-        if token1:
-            token1 = ERC20(token1, asynchronous=self.asynchronous)
-        return token0, token1, supply, reserves
+            )
+        except NotAUniswapV2Pool:
+            return False
         
     def _check_return_types(self) -> None:
         if not self._types_assumed:
