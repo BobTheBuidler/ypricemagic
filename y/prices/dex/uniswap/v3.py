@@ -66,7 +66,7 @@ class UniswapV3Pool(ContractBase):
     def __getitem__(self, token: Address) -> ERC20:
         if token not in self:
             raise TokenNotFound(f"{token} is not in {self}")
-        return ERC20(token, self.asynchronous)
+        return ERC20(token, asynchronous=self.asynchronous)
 
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         if block < await contract_creation_block_async(self.address):
