@@ -1,7 +1,7 @@
 import asyncio
 import math
 from itertools import cycle
-from typing import List, Optional, Tuple
+from typing import TYPE_CHECKING, List, Optional, Tuple
 
 import a_sync
 from brownie import chain
@@ -18,6 +18,9 @@ from y.networks import Network
 from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.multicall import fetch_multicall
+
+if TYPE_CHECKING:
+    from y.prices.stable_swap.curve import CurvePool
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
 UNISWAP_V3_FACTORY = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
@@ -113,7 +116,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         self, 
         token: Address, 
         block: Optional[Block] = None,
-        ignore_pools: Tuple[UniswapV2Pool] = (),
+        ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = (),
         ) -> Optional[UsdPrice]:
         if block and block < await contract_creation_block_async(UNISWAP_V3_QUOTER, True):
             return None
@@ -158,7 +161,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return [pool for pool in await self.__pools__(sync=False) if token in pool]
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
-    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[UniswapV2Pool] = ()) -> int:
+    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = ()) -> int:
         if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0
         pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)

@@ -1,7 +1,7 @@
 
 import asyncio
 import logging
-from typing import Optional, Tuple
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -14,6 +14,9 @@ from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
 from y.prices.dex.uniswap.v2 import UniswapV2Pool
 from y.utils.raw_calls import _decimals
+
+if TYPE_CHECKING:
+    from y.prices.stable_swap.curve import CurvePool
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +40,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
         self, 
         token_address: Address, 
         block: Optional[Block],
-        ignore_pools: Tuple[UniswapV2Pool] = (),
+        ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
         ) -> Optional[UsdPrice]:
         exchange, usdc_exchange, decimals = await asyncio.gather(
             self.get_exchange(token_address, sync=False),
@@ -58,7 +61,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
             continue_if_call_reverted(e)
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
-    async def check_liquidity(self, token_address: Address, block: Block, ignore_pools = []) -> int:
+    async def check_liquidity(self, token_address: Address, block: Block, ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = ()) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
         if exchange is None or exchange in ignore_pools:
             return 0

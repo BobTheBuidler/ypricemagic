@@ -3,7 +3,7 @@ import logging
 from collections import defaultdict
 from contextlib import suppress
 from enum import IntEnum
-from typing import Dict, List, NoReturn, Optional
+from typing import Dict, List, NoReturn, Optional, TYPE_CHECKING, Tuple
 
 import a_sync
 import brownie
@@ -27,6 +27,9 @@ from y.utils.middleware import ensure_middleware
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
+
+if TYPE_CHECKING:
+    from y.prices.dex.uniswap.v2 import UniswapV2Pool
 
 logger = logging.getLogger(__name__)
 
@@ -92,14 +95,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     async def num_coins(self) -> int:
         return len(await self.__coins__(sync=False))
     
-    async def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
+    async def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None, ignore_pools: Tuple["UniswapV2Pool", "CurvePool"] = ()) -> Optional[WeiBalance]:
         tokens = await self.__coins__(sync=False)
         token_in = tokens[coin_ix_in]
         token_out = tokens[coin_ix_out]
         amount_in = await token_in.__scale__(sync=False)
         try:
             amount_out = await self.contract.get_dy.coroutine(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
-            return WeiBalance(amount_out, token_out, block=block)
+            return WeiBalance(amount_out, token_out, block=block, ignore_pools=(*ignore_pools, self))
         except Exception as e:
             if call_reverted(e):
                 return None
@@ -108,7 +111,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     @a_sync.aka.cached_property
     async def coins_decimals(self) -> List[int]:
         factory = await self.__factory__(sync=False)
-        source = factory if factory else await curve.registry
+        source = factory or await curve.registry
         coins_decimals = await source.get_decimals.coroutine(self.address)
 
         # pool not in registry
@@ -155,7 +158,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
         try:
             factory = await self.__factory__(sync=False)
-            source = factory if factory else await curve.__registry__(sync=False)
+            source = factory or await curve.__registry__(sync=False)
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         # fallback for historical queries where registry was not yet deployed
         except ValueError:
@@ -220,11 +223,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         super().__init__()
         self.asynchronous = asynchronous
         try: self.address_provider = Contract(ADDRESS_PROVIDER)
-        except (ContractNotFound, ContractNotVerified):
-            raise UnsupportedNetwork("curve is not supported on this network")
-        except MessedUpBrownieContract:
+        except (ContractNotFound, ContractNotVerified) as e:
+            raise UnsupportedNetwork("curve is not supported on this network") from e
+        except MessedUpBrownieContract as e:
             if chain.id == Network.Cronos:
-                raise UnsupportedNetwork("curve is not supported on this network")
+                raise UnsupportedNetwork("curve is not supported on this network") from e
             else:
                 raise
 
@@ -434,14 +437,14 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 
     @a_sync.a_sync(cache_type='memory')
-    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None, ignore_pools: Tuple[UniswapV2Pool] = ()) -> Optional[UsdPrice]:
+    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None, ignore_pools: Tuple["UniswapV2Pool", CurvePool] = ()) -> Optional[UsdPrice]:
         try:
             pools: List[CurvePool] = (await self.__coin_to_pools__(sync=False))[token_in]
         except KeyError:
             return None
         
         pools = [pool for pool in pools if pool not in ignore_pools]
-        
+
         if block is not None:
             deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool.address, True) for pool in pools])
             pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
@@ -473,7 +476,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
 
         token_in_ix = await pool.get_coin_index(token_in, sync=False)
         token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
-        dy = await pool.get_dy(token_in_ix, token_out_ix, block = block, sync=False)
+        dy = await pool.get_dy(token_in_ix, token_out_ix, block=block, ignore_pools=ignore_pools, sync=False)
         if dy is None:
             return None
 
@@ -493,7 +496,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 mapping[coin].add(pool)
         return {coin: list(pools) for coin, pools in mapping.items()}
     
-    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[UniswapV2Pool]) -> int:
+    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple["UniswapV2Pool", CurvePool]) -> int:
         pools = await self.__coin_to_pools__(sync=False)
         pools = [pool for pool in pools[token] if pool not in ignore_pools]
         return max(await asyncio.gather(*[pool.check_liquidity(block, sync=False) for pool in pools])) if pools else 0

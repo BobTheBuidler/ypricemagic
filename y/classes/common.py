@@ -1,8 +1,9 @@
 
 import asyncio
 import logging
+from contextlib import suppress
 from functools import cached_property
-from typing import Any, Optional, Union
+from typing import TYPE_CHECKING, Any, Optional, Tuple, Union
 
 import a_sync
 from brownie.convert.datatypes import HexString
@@ -18,6 +19,10 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
 from y.utils.raw_calls import balanceOf
+
+if TYPE_CHECKING:
+    from y.prices.dex.uniswap.v2 import UniswapV2Pool
+    from y.prices.stable_swap.curve import CurvePool
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +49,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     def __eq__(self, __o: object) -> bool:
         try:
             return convert.to_address(__o) == self.address
-        except:
+        except Exception:
             return False
     
     def __hash__(self) -> int:
@@ -75,14 +80,12 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 class ERC20(ContractBase):
     def __repr__(self) -> str:
         cls = self.__class__.__name__
-        try:
+        with suppress(AttributeError):
             if ERC20.symbol.has_cache_value(self):
                 symbol = ERC20.symbol.get_cache_value(self)
                 return f"<{cls} {symbol} '{self.address}'>"
             elif not asyncio.get_event_loop().is_running() and not self.asynchronous:
                 return f"<{cls} {self.symbol} '{self.address}'>"
-        except AttributeError:
-            pass
         return super().__repr__()
     
     @a_sync.aka.cached_property
@@ -160,12 +163,18 @@ class ERC20(ContractBase):
         balance, scale = await asyncio.gather(self.balance_of(address, block=block, asynchronous=True), self.__scale__(asynchronous=True))
         return balance / scale
 
-    async def price(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:
+    async def price(
+        self, 
+        block: Optional[Block] = None, 
+        return_None_on_failure: bool = False, 
+        ignore_pools: Tuple["UniswapV2Pool", "CurvePool"] = (),
+    ) -> Optional[UsdPrice]:
         from y.prices.magic import get_price
         return await get_price(
             self.address, 
             block=block, 
             fail_to_None=return_None_on_failure,
+            ignore_pools=ignore_pools,
             sync=False,
         )
     
@@ -183,6 +192,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
+        ignore_pools: Tuple["UniswapV2Pool", "CurvePool"] = (),
         asynchronous: bool = False,
         ) -> None:
 
@@ -191,6 +201,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
+        self._ignore_pools = ignore_pools
 
     def __str__(self) -> str:
         return str(self.balance)
@@ -227,12 +238,12 @@ class WeiBalance(a_sync.ASyncGenericBase):
             return 0
         return self.balance / await self.token.__scale__(sync=False)
     
-    @a_sync.aka.property
+    @a_sync.aka.cached_property
     async def value_usd(self) -> float:
         if self.balance == 0:
             return 0
         balance, price = await asyncio.gather(
             self.__readable__(sync=False),
-            self.token.price(block=self.block, sync=False),
+            self.token.price(block=self.block, ignore_pools=self._ignore_pools, sync=False),
         )
         return balance * price

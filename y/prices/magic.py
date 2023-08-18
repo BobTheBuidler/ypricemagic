@@ -29,7 +29,7 @@ from y.prices.lending.aave import aave
 from y.prices.lending.compound import compound
 from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
                                   saddle)
-from y.prices.stable_swap.curve import curve
+from y.prices.stable_swap.curve import CurvePool, curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils import ypriceapi
@@ -44,7 +44,7 @@ async def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
     fail_to_None: bool = False,
-    ignore_pools: Tuple[UniswapV2Pool] = (),
+    ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:
     '''
@@ -113,7 +113,7 @@ async def _get_price(
     token: AnyAddressType, 
     block: Block, 
     fail_to_None: bool = False, 
-    ignore_pools: Tuple[UniswapV2Pool] = (),
+    ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 

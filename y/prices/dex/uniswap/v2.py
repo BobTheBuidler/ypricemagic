@@ -3,7 +3,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from contextlib import suppress
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
@@ -34,6 +34,9 @@ from y.utils.events import decode_logs, get_logs_asap
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
+
+if TYPE_CHECKING:
+    from y.prices.stable_swap.curve import CurvePool
 
 logger = logging.getLogger(__name__)
 logger.addHandler(logging.StreamHandler())
@@ -219,7 +222,7 @@ class UniswapRouterV2(ContractBase):
         block: Optional[Block] = None,
         token_out: Address = usdc.address,
         paired_against: Address = WRAPPED_GAS_COIN,
-        ignore_pools: Tuple[UniswapV2Pool] = (),
+        ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = (),
         ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -463,7 +466,7 @@ class UniswapRouterV2(ContractBase):
                 return path
 
             if path == [token_address]:
-                try:
+                with suppress(CantFindSwapPath):
                     path.extend(
                         await self.get_path_to_stables(
                             paired_with,
@@ -473,8 +476,6 @@ class UniswapRouterV2(ContractBase):
                             sync=False,
                         )
                     )
-                except CantFindSwapPath:
-                    pass
 
         if path == [token_address]:
             raise CantFindSwapPath(f'Unable to find swap path for {token_address} on {Network.printable()}')

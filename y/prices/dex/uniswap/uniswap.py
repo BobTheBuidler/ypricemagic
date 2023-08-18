@@ -2,7 +2,7 @@ import asyncio
 import logging
 import threading
 from contextlib import suppress
-from typing import List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
@@ -21,6 +21,9 @@ from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
 from y.prices.dex.velodrome import VelodromeRouterV2
 from y.utils.logging import _gh_issue_request
+
+if TYPE_CHECKING:
+    from y.prices.stable_swap.curve import CurvePool
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +82,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self, 
         token_in: AnyAddressType, 
         block: Optional[Block] = None, 
-        ignore_pools: Tuple[UniswapV2Pool] = (),
+        ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = (),
     ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -99,7 +102,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self, 
         token_in: AnyAddressType, 
         block: Optional[Block] = None, 
-        ignore_pools: Tuple[UniswapV2Pool] = (),
+        ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = (),
     ) -> List[UniswapRouterV2]:
         '''
         Returns a dict {router: pool} ordered by liquidity depth, greatest to least
@@ -112,7 +115,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self, 
         token: Address, 
         block: Block, 
-        ignore_pools: Tuple[UniswapV2Pool] = (),
+        ignore_pools: Tuple[UniswapV2Pool, "CurvePool"] = (),
     ) -> int:
         return max(await asyncio.gather(*[uniswap.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]))
 
