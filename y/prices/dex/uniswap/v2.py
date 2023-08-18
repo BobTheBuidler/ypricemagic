@@ -84,14 +84,15 @@ class UniswapV2Pool(ERC20):
     
     #yLazyLogger(logger)
     async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
+        output_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
         reserves, tokens = await asyncio.gather(
-            Call(self.address, ['getReserves()((uint112,uint112,uint32))'], block_id=block).coroutine(),
+            Call(self.address, [f'getReserves()(({output_types}))'], block_id=block).coroutine(),
             self.__tokens__(sync=False),
         )
         if reserves is None:
             expected_types = ['uint112', 'uint112', 'uint32']
             if any(self.contract.getReserves.abi['outputs'][i]['type'] != _type for i, _type in enumerate(expected_types)):
-                logger.warning(f'abi for getReserves for {self.contract} is {self.contract.getReserves.abi}')
+                logger.warning(f'abi for getReserves for {self.contract} is {output_types}')
             try:
                 reserves = await self.contract.getReserves.coroutine(block_identifier=block)
             except Exception as e:
