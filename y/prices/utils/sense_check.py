@@ -102,6 +102,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7", # ibbtcb
     ],
     Network.Fantom: [
+        # eth and eth-like
+        "0xBDC8fd437C489Ca3c6DA3B5a336D11532a532303", # anyeth
         # btc and btc-like
         "0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2", # anybtc
         # other
