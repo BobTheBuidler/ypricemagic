@@ -34,16 +34,33 @@ class TokenSet(ERC20):
     async def balances(self, block: Optional[Block] = None) -> List[WeiBalance]:
         if hasattr(self.contract, 'getUnits'):
             balances = await self.contract.getUnits.coroutine(block_identifier = block)
+            logger.debug("getUnits: %s", balances)
         elif hasattr(self.contract, 'getTotalComponentRealUnits'):
             balances = await asyncio.gather(*[
-                Call(self.address, ["getTotalComponentRealUnits(address)(uint)", component.address], block_id=block).coroutine()
+                Call(self.address, ["getTotalComponentRealUnits(address)(int256)", component.address], block_id=block).coroutine()
                 for component in await self.components(block, sync=False)
             ])
-        return [WeiBalance(balance, component, block=block) for component, balance in zip(await self.components(block=block, sync=False), balances)]
+            logger.debug("getTotalComponentRealUnits: %s", balances)
+        balances = [WeiBalance(balance, component, block=block) for component, balance in zip(await self.components(block=block, sync=False), balances)]
+        return balances
     
     async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         total_supply = await self.total_supply_readable(block=block, sync=False)
         if total_supply == 0:
+            logger.debug("total supply is 0, forcing price to $0")
             return UsdPrice(0)
-        tvl = sum(await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in await self.balances(block=block, sync=False)]))
-        return UsdPrice(tvl / total_supply)
+        if hasattr(self.contract, "getUnits"):
+            balances = await self.balances(block=block, sync=False)
+            values = await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in balances])
+            logger.debug("balances: %s  values: %s", balances, values)
+            tvl = sum(values)
+            price = UsdPrice(tvl / total_supply)
+            logger.debug("total supply: %s  tvl: %s  price: %s", total_supply, tvl, price)
+            return price
+        elif hasattr(self.contract, "getTotalComponentRealUnits"):
+            balances_per_token = await self.balances(block=block, sync=False)
+            values_per_token = await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in balances_per_token])
+            price = UsdPrice(sum(values_per_token))
+            logger.debug("balances per token: %s  values per token: %s  price: %s", balances_per_token, values_per_token, price)
+            return price
+        raise NotImplementedError
