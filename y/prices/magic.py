@@ -36,7 +36,7 @@ from y.prices.utils import ypriceapi
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
 from y.utils.dank_mids import dank_w3
-from y.utils.logging import _get_price_logger
+from y.utils.logging import get_price_logger
 
 
 @a_sync.a_sync(default='sync')
@@ -123,7 +123,7 @@ async def _get_price(
     except NonStandardERC20:
         symbol = None
 
-    logger = _get_price_logger(token, block, 'magic')
+    logger = get_price_logger(token, block, 'magic')
     logger.debug(f'fetching price for {symbol}')
     logger._debugger = asyncio.create_task(_debug_tsk(symbol, logger))
 

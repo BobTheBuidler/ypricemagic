@@ -1,9 +1,8 @@
 
 import asyncio
-import logging
 from contextlib import suppress
 from functools import cached_property
-from typing import TYPE_CHECKING, Any, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union
 
 import a_sync
 from brownie.convert.datatypes import HexString
@@ -18,9 +17,8 @@ from y.erc20 import decimals, totalSupply
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
-from y.utils.raw_calls import balanceOf
+from y.utils import logging, raw_calls
 
-logger = logging.getLogger(__name__)
 
 def hex_to_string(h: HexString) -> str:
     '''returns a string from a HexString'''
@@ -152,7 +150,7 @@ class ERC20(ContractBase):
         return total_supply / scale
     
     async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
-        return await balanceOf(self.address, address, block=block, sync=False)
+        return await raw_calls.balanceOf(self.address, address, block=block, sync=False)
     
     async def balance_of_readable(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
         balance, scale = await asyncio.gather(self.balance_of(address, block=block, asynchronous=True), self.__scale__(asynchronous=True))
@@ -196,6 +194,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
+        self._logger = logging.get_price_logger(token, block, self.__class__.__name__)
         self._ignore_pools = ignore_pools
 
     def __str__(self) -> str:
@@ -231,7 +230,10 @@ class WeiBalance(a_sync.ASyncGenericBase):
     async def readable(self) -> float:
         if self.balance == 0:
             return 0
-        return self.balance / await self.token.__scale__(sync=False)
+        scale = await self.token.__scale__(sync=False)
+        readable = self.balance / scale
+        self._logger.debug("balance: %s  decimals: %s  readable: %s", self.balance, str(scale).count("0"), readable)
+        return readable
     
     @a_sync.aka.cached_property
     async def value_usd(self) -> float:
@@ -241,4 +243,6 @@ class WeiBalance(a_sync.ASyncGenericBase):
             self.__readable__(sync=False),
             self.token.price(block=self.block, ignore_pools=self._ignore_pools, sync=False),
         )
-        return balance * price
+        value = balance * price
+        self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
+        return value

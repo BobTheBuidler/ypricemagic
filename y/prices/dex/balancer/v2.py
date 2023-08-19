@@ -14,7 +14,7 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.networks import Network
 from y.utils.events import decode_logs, get_logs_asap
-from y.utils.logging import _get_price_logger
+from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
 BALANCER_V2_VAULTS = {
@@ -72,7 +72,7 @@ class BalancerV2Vault(ContractBase):
         all_pools = await self.list_pools(block=block, sync=False)
         pools_info = {all_pools[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}
         
-        logger = _get_price_logger(token_address, block, 'balancer.v2')
+        logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool = {'pool': None, 'balance': 0}
         for pool, info in pools_info.items():
             num_tokens = len(info[0])

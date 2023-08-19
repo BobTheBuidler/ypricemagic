@@ -24,7 +24,7 @@ from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
-from y.utils.logging import _get_price_logger
+from y.utils.logging import get_price_logger
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ async def check_bucket(
     ) -> str:
 
     token_address = convert.to_address(token)
-    logger = _get_price_logger(token_address, block=None, extra='buckets')
+    logger = get_price_logger(token_address, block=None, extra='buckets')
 
     # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
     for bucket, check in string_matchers.items():

@@ -12,7 +12,7 @@ from y.contracts import Contract
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.exceptions import ContractNotVerified
 from y.networks import Network
-from y.utils.logging import _get_price_logger
+from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -187,7 +187,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(cache_type='memory')
     async def is_atoken(self, token_address: AnyAddressType) -> bool:
-        logger = _get_price_logger(token_address, block=None)
+        logger = get_price_logger(token_address, block=None)
         is_atoken = any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__(sync=False)]))
         logger.debug(f"is_atoken: {is_atoken}")
         return is_atoken

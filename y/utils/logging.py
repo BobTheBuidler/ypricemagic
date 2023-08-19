@@ -17,7 +17,7 @@ yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 logger = logging.getLogger(__name__)
 
 @ttl_cache(ttl=10*60)
-def _get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '') -> logging.Logger:
+def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '') -> logging.Logger:
     address = str(token_address)
     name = f"y.prices.{Network.label()}.{address}.{block}"
     if extra: 
@@ -27,6 +27,12 @@ def _get_price_logger(token_address: AnyAddressType, block: Block, extra: str = 
     logger.address = address
     logger.block = block
     return logger
+
+def enable_debug_logging(logger: str = 'y') -> None:
+    logger = logging.getLogger(logger)
+    logger.setLevel(logging.DEBUG)
+    logger.addHandler(logging.StreamHandler())
+    logger.info("handlers: %s", logger.handlers)
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ =f'name ({Network.name()})' if Network.name() else f'chainid ({chain.id})'
 
