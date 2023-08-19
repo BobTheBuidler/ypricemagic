@@ -21,6 +21,7 @@ from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
 from y.networks import Network
 from y.utils.dank_mids import dank_w3
+from dank_mids.semaphores import BlockSemaphore
 
 logger = logging.getLogger(__name__)
 
@@ -39,7 +40,7 @@ ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
 
 YPRICEAPI_TIMEOUT = ClientTimeout(int(os.environ.get("YPRICEAPI_TIMEOUT", 5 * ONE_MINUTE)))  # Five minutes is the default timeout from aiohttp.
-YPRICEAPI_SEMAPHORE = ThreadsafeSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
+YPRICEAPI_SEMAPHORE = BlockSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
@@ -141,7 +142,7 @@ async def get_price(
     if block is None:
         block = await dank_w3.eth.block_number
 
-    async with YPRICEAPI_SEMAPHORE:
+    async with YPRICEAPI_SEMAPHORE[block]:
         try:
             if not await chain_supported(chain.id):
                 return None
