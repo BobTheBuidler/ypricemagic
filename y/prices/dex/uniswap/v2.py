@@ -3,7 +3,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from contextlib import suppress
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
@@ -16,8 +16,7 @@ from web3.exceptions import ContractLogicError
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN,
-                         log_possible_recursion_err, sushi,
-                         thread_pool_executor, usdc, weth)
+                         sushi, thread_pool_executor, usdc, weth)
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
@@ -36,8 +35,6 @@ from y.utils.multicall import \
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
 
 Path = List[AddressOrContract]
 Reserves = Tuple[int,int,int]
@@ -268,8 +265,7 @@ class UniswapRouterV2(ContractBase):
                         ),
                         timeout=RECURSION_TIMEOUT,
                     )
-                except asyncio.TimeoutError as e:
-                    log_possible_recursion_err(f"RecursionError: uniswap.v2 for {token_in} at block {block}")
+                except asyncio.TimeoutError:
                     return None
                 
                 if paired_with_price:

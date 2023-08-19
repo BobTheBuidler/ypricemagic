@@ -63,7 +63,7 @@ async def get_price(
     token_address = convert.to_address(token_address)
     try:
         return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
-    except (ContractNotFound, NonStandardERC20, RecursionError, PriceError) as e:
+    except (ContractNotFound, NonStandardERC20, PriceError) as e:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         if not fail_to_None:
             raise yPriceMagicError(e, token_address, block, symbol) from e
