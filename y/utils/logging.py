@@ -31,8 +31,8 @@ def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '
 def enable_debug_logging(logger: str = 'y') -> None:
     logger = logging.getLogger(logger)
     logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler())
-    logger.info("handlers: %s", logger.handlers)
+    if not logger.handlers:
+        logger.addHandler(logging.StreamHandler())
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ =f'name ({Network.name()})' if Network.name() else f'chainid ({chain.id})'
 
