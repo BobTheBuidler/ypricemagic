@@ -139,7 +139,10 @@ class CToken(ERC20):
             try:
                 price = oracle.getUnderlyingPrice(self.address, block_identifier=block)
             except VirtualMachineError as e:
-                if str(e) == "revert: Chainlink feeds are not being updated":
+                if str(e) in {
+                    "revert: grace period not over",
+                    "revert: Chainlink feeds are not being updated",
+                }:
                     return None
                 raise e
         price /= 10 ** (36 - underlying_decimals)

@@ -1,15 +1,20 @@
 # async: done
 
+import asyncio
 import logging
 
 from brownie import chain
 
 from y.classes.common import ERC20
 from y.constants import wbtc, weth
+from y.contracts import Contract
 from y.exceptions import NonStandardERC20
 from y.networks import Network
+from y.prices.lending.aave import aave
+from y.prices.lending.compound import CToken
+from y.prices.stable_swap.curve import CurvePool
 from y.prices.utils.buckets import check_bucket
-from y.utils.raw_calls import raw_call
+from y.prices.yearn import YearnInspiredVault
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +46,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3", # OETH
         "0xE72B141DF173b999AE7c1aDcbF60Cc9833Ce56a8", # ETH+
         "0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5", # dETH
+        "0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6", # alETH
+        "0xBe9895146f7AF43049ca1c1AE358B0541Ea49704", # cbETH
         # btc and btc-like
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
         "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", # sbtc
@@ -84,6 +91,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x892A6f9dF0147e5f079b0993F486F9acA3c87881", # xFUND
         "0x0ab87046fBb341D058F17CBC4c1133F25a20a52f", # gOHM
         "0x97983236bE88107Cc8998733Ef73D8d969c52E37", # sdYFI
+        "0x68749665FF8D2d112Fa859AA293F07A622782F38", # XAUt
+        "0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4", # crvUSDTWBTCWETH
         # nfts
         "0x641927E970222B10b2E8CDBC96b1B4F427316f16", # meeb
         "0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5", # punk
@@ -102,9 +111,15 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7", # ibbtcb
     ],
     Network.Fantom: [
+        # eth and eth-like
+        "0xBDC8fd437C489Ca3c6DA3B5a336D11532a532303", # anyeth
+        # btc and btc-like
+        "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501", # renbtc
+        "0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2", # anybtc
         # other
         "0x29b0Da86e484E1C0029B56e817912d778aC0EC69", # yfi
         "0xf43Cc235E686d7BC513F53Fbffb61F760c3a1882", # elite
+        "0x58e57cA18B7A47112b877E31929798Cd3D703b0f", # crv3crypto
     ],
     Network.Avalanche: [
         # btc and btc-like
@@ -114,16 +129,21 @@ ACCEPTABLE_HIGH_PRICES = {
     ],
     Network.Optimism: [
         # eth and eth-like
+        "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE", # eth
         "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D", # reth
         "0x1F32b1c2345538c0c6f582fCB022739c4A194Ebb", # wsteth
         "0x6806411765Af15Bddd26f8f544A34cC40cb9838B", # frxeth
         "0x484c2D6e3cDd945a8B2DF735e079178C1036578c", # sfrxeth
         "0x1610e3c85dd44Af31eD7f33a63642012Dca0C5A5", # mseth
         "0x3E29D3A9316dAB217754d13b28646B76607c5f04", # aleth
+        "0xE405de8F52ba7559f9df3C368500B6E6ae6Cee49", # seth
         # btc and btc-like
         "0x298B9B95708152ff6968aafd889c6586e9169f1D", # sbtc
         "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40", # tbtc
-    ]
+    ],
+    Network.Arbitrum: [
+        "0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2", # crv3crypto
+    ],
 }.get(chain.id, []) + acceptable_all_chains
 
 async def _sense_check(
@@ -164,45 +184,25 @@ async def _exit_sense_check(token_address: str) -> bool:
 
     bucket = await check_bucket(token_address, sync=False)
 
-    if bucket == 'uni or uni-like lp':
+    if bucket in ['uni or uni-like lp', 'balancer pool']:
         return True
-    
-    elif bucket == 'balancer pool':
-        return True
-    
-    # for wrapped tokens, if the base token is in `ACCEPTABLE_HIGH_PRICES` we can exit the sense check
 
-    elif bucket == 'yearn or yearn-like':
-        try: # v2
-            underlying = await raw_call(token_address, 'token()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-        try: # v1
-            underlying = await raw_call(token_address, 'want()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
+    elif bucket == 'curve lp':
+        underlyings = await CurvePool(token_address, asynchronous=True).coins
+        if questionable_underlyings := [und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
+            return all(await asyncio.gather(*[_exit_sense_check(underlying) for underlying in questionable_underlyings]))
+        return True
     
     elif bucket == 'atoken':
-        try: # v2
-            underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-        try: # v1
-            underlying = await raw_call(token_address, 'underlyingAssetAddress()', output='address', sync=False)
-            if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-                return True
-        except:
-            pass
-
+        underlying = await aave.underlying(token_address, sync=False)
     elif bucket == 'compound':
-        underlying = await raw_call(token_address, 'underlying()', output='address', sync=False)
-        if underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying):
-            return True
-    
-    return False
+        underlying = await CToken(token_address, asynchronous=True).underlying
+    elif bucket == 'solidex':
+        contract = await Contract.coroutine(token_address)
+        underlying = await contract.pool.coroutine()
+    elif bucket == 'yearn or yearn-like':
+        underlying = await YearnInspiredVault(token_address, asynchronous=True).underlying
+    else:
+        return False
+
+    return underlying in ACCEPTABLE_HIGH_PRICES or await _exit_sense_check(underlying)

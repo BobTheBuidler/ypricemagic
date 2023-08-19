@@ -1,8 +1,8 @@
 
 import asyncio
-import logging
+from contextlib import suppress
 from functools import cached_property
-from typing import Any, Optional, Union
+from typing import Any, Optional, Tuple, Union
 
 import a_sync
 from brownie.convert.datatypes import HexString
@@ -12,14 +12,12 @@ from y import convert
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
 from y.contracts import Contract, build_name, has_method, probe
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.erc20 import decimals, totalSupply
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
-from y.utils.raw_calls import balanceOf
-
-logger = logging.getLogger(__name__)
+from y.utils import logging, raw_calls
 
 
 def hex_to_string(h: HexString) -> str:
@@ -44,7 +42,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     def __eq__(self, __o: object) -> bool:
         try:
             return convert.to_address(__o) == self.address
-        except:
+        except Exception:
             return False
     
     def __hash__(self) -> int:
@@ -75,14 +73,12 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 class ERC20(ContractBase):
     def __repr__(self) -> str:
         cls = self.__class__.__name__
-        try:
+        with suppress(AttributeError):
             if ERC20.symbol.has_cache_value(self):
                 symbol = ERC20.symbol.get_cache_value(self)
                 return f"<{cls} {symbol} '{self.address}'>"
             elif not asyncio.get_event_loop().is_running() and not self.asynchronous:
                 return f"<{cls} {self.symbol} '{self.address}'>"
-        except AttributeError:
-            pass
         return super().__repr__()
     
     @a_sync.aka.cached_property
@@ -154,18 +150,24 @@ class ERC20(ContractBase):
         return total_supply / scale
     
     async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
-        return await balanceOf(self.address, address, block=block, sync=False)
+        return await raw_calls.balanceOf(self.address, address, block=block, sync=False)
     
     async def balance_of_readable(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
         balance, scale = await asyncio.gather(self.balance_of(address, block=block, asynchronous=True), self.__scale__(asynchronous=True))
         return balance / scale
 
-    async def price(self, block: Optional[Block] = None, return_None_on_failure: bool = False) -> Optional[UsdPrice]:
+    async def price(
+        self, 
+        block: Optional[Block] = None, 
+        return_None_on_failure: bool = False, 
+        ignore_pools: Tuple[Pool, ...] = (),
+    ) -> Optional[UsdPrice]:
         from y.prices.magic import get_price
         return await get_price(
             self.address, 
             block=block, 
             fail_to_None=return_None_on_failure,
+            ignore_pools=ignore_pools,
             sync=False,
         )
     
@@ -183,6 +185,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
+        ignore_pools: Tuple[Pool, ...] = (),
         asynchronous: bool = False,
         ) -> None:
 
@@ -191,6 +194,8 @@ class WeiBalance(a_sync.ASyncGenericBase):
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
+        self._logger = logging.get_price_logger(token, block, self.__class__.__name__)
+        self._ignore_pools = ignore_pools
 
     def __str__(self) -> str:
         return str(self.balance)
@@ -225,14 +230,19 @@ class WeiBalance(a_sync.ASyncGenericBase):
     async def readable(self) -> float:
         if self.balance == 0:
             return 0
-        return self.balance / await self.token.__scale__(sync=False)
+        scale = await self.token.__scale__(sync=False)
+        readable = self.balance / scale
+        self._logger.debug("balance: %s  decimals: %s  readable: %s", self.balance, str(scale).count("0"), readable)
+        return readable
     
-    @a_sync.aka.property
+    @a_sync.aka.cached_property
     async def value_usd(self) -> float:
         if self.balance == 0:
             return 0
         balance, price = await asyncio.gather(
             self.__readable__(sync=False),
-            self.token.price(block=self.block, sync=False),
+            self.token.price(block=self.block, ignore_pools=self._ignore_pools, sync=False),
         )
-        return balance * price
+        value = balance * price
+        self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
+        return value

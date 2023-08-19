@@ -1,10 +1,9 @@
 import asyncio
 import logging
-import threading
 from collections import defaultdict
+from contextlib import suppress
 from enum import IntEnum
-from functools import cached_property
-from typing import Any, Dict, List, NoReturn, Optional
+from typing import Dict, List, NoReturn, Optional, Tuple
 
 import a_sync
 import brownie
@@ -14,10 +13,9 @@ from brownie.exceptions import ContractNotFound
 
 from y import convert
 from y.classes.common import ERC20, WeiBalance
-from y.constants import RECURSION_TIMEOUT, log_possible_recursion_err
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
-                         UsdPrice, UsdValue)
+                         Pool, UsdPrice, UsdValue)
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           PriceError, UnsupportedNetwork, call_reverted)
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
@@ -93,14 +91,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     async def num_coins(self) -> int:
         return len(await self.__coins__(sync=False))
     
-    async def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None) -> Optional[WeiBalance]:
+    async def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None, ignore_pools: Tuple[Pool, ...] = ()) -> Optional[WeiBalance]:
         tokens = await self.__coins__(sync=False)
         token_in = tokens[coin_ix_in]
         token_out = tokens[coin_ix_out]
         amount_in = await token_in.__scale__(sync=False)
         try:
             amount_out = await self.contract.get_dy.coroutine(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
-            return WeiBalance(amount_out, token_out, block=block)
+            return WeiBalance(amount_out, token_out, block=block, ignore_pools=(*ignore_pools, self))
         except Exception as e:
             if call_reverted(e):
                 return None
@@ -109,7 +107,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     @a_sync.aka.cached_property
     async def coins_decimals(self) -> List[int]:
         factory = await self.__factory__(sync=False)
-        source = factory if factory else await curve.registry
+        source = factory or await curve.registry
         coins_decimals = await source.get_decimals.coroutine(self.address)
 
         # pool not in registry
@@ -156,7 +154,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
         try:
             factory = await self.__factory__(sync=False)
-            source = factory if factory else await curve.__registry__(sync=False)
+            source = factory or await curve.__registry__(sync=False)
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         # fallback for historical queries where registry was not yet deployed
         except ValueError:
@@ -196,6 +194,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             sum(balance * price for balance, price in zip(balances.values(),prices))
         )
     
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    async def check_liquidity(self, token: Address, block: Block) -> int:
+        deploy_block = await contract_creation_block_async(self.address)
+        if block < deploy_block:
+            return 0
+        i = await self.get_coin_index(token, sync=False)
+        return await self._get_balance(i, block)
+    
     #@cached_property
     #def oracle(self) -> Optional[Address]:
     #    '''
@@ -213,11 +219,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         super().__init__()
         self.asynchronous = asynchronous
         try: self.address_provider = Contract(ADDRESS_PROVIDER)
-        except (ContractNotFound, ContractNotVerified):
-            raise UnsupportedNetwork("curve is not supported on this network")
-        except MessedUpBrownieContract:
+        except (ContractNotFound, ContractNotVerified) as e:
+            raise UnsupportedNetwork("curve is not supported on this network") from e
+        except MessedUpBrownieContract as e:
             if chain.id == Network.Cronos:
-                raise UnsupportedNetwork("curve is not supported on this network")
+                raise UnsupportedNetwork("curve is not supported on this network") from e
             else:
                 raise
 
@@ -427,12 +433,14 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 
     @a_sync.a_sync(cache_type='memory')
-    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None, ignore_pools: Tuple[Pool, ...] = ()) -> Optional[UsdPrice]:
         try:
             pools: List[CurvePool] = (await self.__coin_to_pools__(sync=False))[token_in]
         except KeyError:
             return None
         
+        pools = [pool for pool in pools if pool not in ignore_pools]
+
         if block is not None:
             deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool.address, True) for pool in pools])
             pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
@@ -442,51 +450,37 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             pool = pools[0]
         else:
             # Use the pool with deepest liquidity.
-            balances = await asyncio.gather(*[pool.get_balances(block=block, sync=False) for pool in pools], return_exceptions=True)
+            balances = await asyncio.gather(*[pool.check_liquidity(token_in, block=block, sync=False) for pool in pools], return_exceptions=True)
             deepest_pool, deepest_bal = None, 0
-            for pool, pool_bals in zip(pools, balances):
-                if isinstance(pool_bals, Exception):
-                    if str(pool_bals).startswith("could not fetch balances"):
-                        continue
-                    raise pool_bals
-                for token, bal in pool_bals.items():
-                    if token == token_in and bal > deepest_bal:
-                        deepest_pool = pool
-                        deepest_bal = bal
+            for pool, depth in zip(pools, balances):
+                if depth > deepest_bal:
+                    deepest_pool = pool
+                    deepest_bal = depth
             pool = deepest_pool
-        
+
         if pool is None:
             return None
-        
-        # Get the price for `token_in` using the selected pool.
-        if len(coins := await pool.__coins__(sync=False)) == 2:
-            # this works for most typical metapools
-            from y.prices.utils.buckets import check_bucket
 
-            token_in_ix = await pool.get_coin_index(token_in, sync=False)
-            token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
-            dy = await pool.get_dy(token_in_ix, token_out_ix, block = block, sync=False)
-            if dy is None:
-                return None
-
-            try:
-                token_out = coins[token_out_ix]
-                # If we know we won't have issues with recursion, we can await directly.
-                if await check_bucket(token_out, sync=False):
-                    return await dy.__value_usd__(sync=False)
-                # We include a timeout here in case we create a recursive loop.
-                for p in asyncio.as_completed([dy.__value_usd__(sync=False)],timeout=RECURSION_TIMEOUT):
-                    log_possible_recursion_err(f"Possible recursion error for {token_in} at block {block}")
-                    price = await p
-                    return price
-            except (PriceError, asyncio.TimeoutError) as e:
-                return None
-            except:
-                raise
-                
-        else:
+        if len(coins := await pool.__coins__(sync=False)) != 2:
             # TODO: handle this sitch if necessary
             return
+
+        # Get the price for `token_in` using the selected pool.
+        # this works for most typical metapools
+
+        from y.prices.utils.buckets import check_bucket
+
+        token_in_ix = await pool.get_coin_index(token_in, sync=False)
+        token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
+        dy = await pool.get_dy(token_in_ix, token_out_ix, block=block, ignore_pools=ignore_pools, sync=False)
+        if dy is None:
+            return None
+
+        try:
+            return await dy.__value_usd__(sync=False)
+        except PriceError as e:
+            logger.debug("%s for %s at block %s", e.__class__.__name__, token_in, block)
+            return None
     
     @a_sync.aka.cached_property
     async def coin_to_pools(self) -> Dict[str, List[CurvePool]]:
@@ -497,6 +491,14 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             for coin in await pool.__coins__(sync=False):
                 mapping[coin].add(pool)
         return {coin: list(pools) for coin, pools in mapping.items()}
+    
+    async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...]) -> int:
+        pools = await self.__coin_to_pools__(sync=False)
+        if token not in pools:
+            return 0
+        if pools := [pool for pool in pools[token] if pool not in ignore_pools]:
+            return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools]))
+        return 0
 
 try: curve = CurveRegistry(asynchronous=True)
 except UnsupportedNetwork: curve = set()

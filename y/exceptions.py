@@ -12,7 +12,9 @@ class yPriceMagicError(ValueError):
     def __init__(self, exc: Exception, address: str, block: Optional[int], symbol: str):
         from y import Network
         self.exception = exc
-        detail = 'PriceError' if isinstance(self.exception, PriceError) else self.exception
+        detail = exc.__class__.__name__
+        if not isinstance(self.exception, PriceError):
+            detail += f'({exc})'
         super().__init__(f"{detail} while fetching {Network.printable()} {symbol} {address} at block {block}")
 
 class PriceError(Exception):
@@ -74,6 +76,9 @@ class NotABalancerV2Pool(Exception):
 # Uni
 
 class CantFindSwapPath(Exception):
+    pass
+
+class TokenNotFound(Exception):
     pass
 
 # Calls

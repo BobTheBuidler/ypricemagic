@@ -15,7 +15,7 @@ from y.datatypes import Address, Block
 from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
-from y.prices.dex.uniswap.v2 import Path, UniswapPoolV2
+from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils.dank_mids import dank_w3
 from y.utils.events import decode_logs, get_logs_asap
 from y.utils.raw_calls import raw_call
@@ -34,10 +34,10 @@ class VelodromeRouterV2(SolidlyRouterBase):
         return await self.contract.pairFor.coroutine(input_token, output_token, stable, self.default_factory)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapPoolV2]:
+    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
         if await _get_code(str(pool_address)) not in ['0x',b'']:
-            return UniswapPoolV2(pool_address)
+            return UniswapV2Pool(pool_address)
 
     @a_sync.aka.cached_property
     async def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:

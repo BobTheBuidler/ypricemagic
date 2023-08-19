@@ -14,7 +14,7 @@ from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.networks import Network
 from y.utils.events import decode_logs, get_logs_asap
-from y.utils.logging import _get_price_logger
+from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
 BALANCER_V2_VAULTS = {
@@ -72,7 +72,7 @@ class BalancerV2Vault(ContractBase):
         all_pools = await self.list_pools(block=block, sync=False)
         pools_info = {all_pools[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}
         
-        logger = _get_price_logger(token_address, block, 'balancer.v2')
+        logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool = {'pool': None, 'balance': 0}
         for pool, info in pools_info.items():
             num_tokens = len(info[0])
@@ -131,6 +131,7 @@ class BalancerV2Pool(ERC20):
             if pool_token == token_address:
                 token_balance, token_weight = balance, weight
 
+        paired_token_balance = None
         for pool_token, balance, weight in pool_token_info:
             if pool_token in constants.STABLECOINS:
                 paired_token_balance, paired_token_weight = balance, weight
@@ -141,6 +142,9 @@ class BalancerV2Pool(ERC20):
             elif len(pool_token_info) == 2 and pool_token != token_address:
                 paired_token_balance, paired_token_weight = balance, weight
                 break
+        
+        if paired_token_balance is None:
+            return None
 
         token_value_in_pool, token_balance_readable = await asyncio.gather(*[
             paired_token_balance.__value_usd__(sync=False),
