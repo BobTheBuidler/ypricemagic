@@ -194,6 +194,4 @@ WRAPPED_GAS_COIN = {
 
 thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 128)))
 
-RECURSION_TIMEOUT = int(os.environ.get("YPRICEMAGIC_RECURSION_TIMEOUT", 60))
-
 SKIP_YPRICEAPI = bool(os.environ.get("SKIP_YPRICEAPI"))

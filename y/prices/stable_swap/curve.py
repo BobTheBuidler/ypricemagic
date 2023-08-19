@@ -13,7 +13,6 @@ from brownie.exceptions import ContractNotFound
 
 from y import convert
 from y.classes.common import ERC20, WeiBalance
-from y.constants import RECURSION_TIMEOUT
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
@@ -478,9 +477,10 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return None
 
         try:
-            return await asyncio.wait_for(dy.__value_usd__(sync=False), timeout=RECURSION_TIMEOUT)
-        except (PriceError, asyncio.TimeoutError) as e:
+            return await dy.__value_usd__(sync=False)
+        except PriceError as e:
             logger.debug("%s for %s at block %s", e.__class__.__name__, token_in, block)
+            return None
     
     @a_sync.aka.cached_property
     async def coin_to_pools(self) -> Dict[str, List[CurvePool]]:

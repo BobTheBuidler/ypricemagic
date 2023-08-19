@@ -15,8 +15,8 @@ from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import (RECURSION_TIMEOUT, STABLECOINS, WRAPPED_GAS_COIN,
-                         sushi, thread_pool_executor, usdc, weth)
+from y.constants import (STABLECOINS, WRAPPED_GAS_COIN, sushi,
+                         thread_pool_executor, usdc, weth)
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
@@ -253,20 +253,7 @@ class UniswapRouterV2(ContractBase):
                 amount_out = quote[-1] / out_scale  
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
-                
-                try:
-                    paired_with_price = await asyncio.wait_for(
-                        magic.get_price(
-                            paired_with,
-                            block,
-                            fail_to_None=True,
-                            ignore_pools=(*ignore_pools, deepest_pool),
-                            sync=False
-                        ),
-                        timeout=RECURSION_TIMEOUT,
-                    )
-                except asyncio.TimeoutError:
-                    return None
+                paired_with_price = await magic.get_price(paired_with, block, fail_to_None=True, ignore_pools=(*ignore_pools, deepest_pool), sync=False)
                 
                 if paired_with_price:
                     return amount_out * paired_with_price
