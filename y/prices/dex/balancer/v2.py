@@ -131,6 +131,7 @@ class BalancerV2Pool(ERC20):
             if pool_token == token_address:
                 token_balance, token_weight = balance, weight
 
+        paired_token_balance = None
         for pool_token, balance, weight in pool_token_info:
             if pool_token in constants.STABLECOINS:
                 paired_token_balance, paired_token_weight = balance, weight
@@ -141,6 +142,9 @@ class BalancerV2Pool(ERC20):
             elif len(pool_token_info) == 2 and pool_token != token_address:
                 paired_token_balance, paired_token_weight = balance, weight
                 break
+        
+        if paired_token_balance is None:
+            return None
 
         token_value_in_pool, token_balance_readable = await asyncio.gather(*[
             paired_token_balance.__value_usd__(sync=False),
