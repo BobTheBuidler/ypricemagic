@@ -194,6 +194,7 @@ def _get_logs_no_cache(
             "Service Unavailable for url:",
             "exceed maximum block range",
             "block range is too wide",
+            "request timed out",
         ]
         if any(err in str(e) for err in errs):
             logger.debug('your node is having trouble, breaking batch in half')
