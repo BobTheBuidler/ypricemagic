@@ -94,8 +94,7 @@ class BalancerV2Pool(ERC20):
 
     @a_sync.aka.cached_property
     async def id(self) -> PoolId:
-        response = await Call(self.address, ['getPoolId()(bytes32)']).coroutine()
-        return PoolId(response['id'])
+        return PoolId(await Call(self.address, ['getPoolId()(bytes32)']).coroutine())
     
     @a_sync.aka.cached_property
     async def vault(self) -> BalancerV2Vault:
