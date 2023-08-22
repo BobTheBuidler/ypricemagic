@@ -11,13 +11,18 @@ from y.contracts import Contract
 from y.datatypes import AnyAddressType
 from y.networks import Network
 from y.prices import magic
+from y.exceptions import ContractNotVerified
+from brownie.exceptions import ContractNotFound
 
 
 @a_sync.a_sync(default='sync')
 async def is_solidex_deposit(token: AnyAddressType) -> bool:
     if chain.id != Network.Fantom:
         return False
-    contract = await Contract.coroutine(token)
+    try:
+        contract = await Contract.coroutine(token)
+    except (ContractNotVerified, ContractNotFound):
+        return False
     if not hasattr(contract, 'pool'):
         return False
     name = await ERC20(token, asynchronous=True).name
