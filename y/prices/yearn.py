@@ -39,7 +39,8 @@ share_price_methods = [
 
 force_false = {
     Network.Mainnet: [
-        "0x8751D4196027d4e6DA63716fA7786B5174F04C15",
+        "0x8751D4196027d4e6DA63716fA7786B5174F04C15",  # wibBTC
+        "0xF0a93d4994B3d98Fb5e3A2F90dBc2d69073Cb86b",  # PWRD
     ],
 }.get(chain.id, [])
 
