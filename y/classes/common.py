@@ -48,7 +48,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     def __hash__(self) -> int:
         return hash(self.address)
     
-    @cached_property
+    @property
     def contract(self) -> Contract:
         return Contract(self.address)
     
