@@ -5,6 +5,7 @@ from typing import List, Optional, Union
 import a_sync
 from brownie import chain
 from multicall import Call
+from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20, ContractBase
@@ -219,18 +220,21 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         underlying = await self.underlying(token_address, sync=False)
         return await underlying.price(block, sync=False)
 
-    async def get_price_wrapped_v2(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price_wrapped_v2(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await self._get_price_wrapped(token_address, 'staticToDynamicAmount', block=block)
 
-    async def get_price_wrapped_v3(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price_wrapped_v3(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
         return await self._get_price_wrapped(token_address, 'convertToAssets', block=block)
     
-    async def _get_price_wrapped(self, token_address: AddressOrContract, method: str, block: Optional[Block] = None) -> UsdPrice:
+    async def _get_price_wrapped(self, token_address: AddressOrContract, method: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
         contract, scale = await asyncio.gather(Contract.coroutine(token_address), ERC20(token_address, asynchronous=True).scale)
-        underlying, price_per_share = await asyncio.gather(
-            contract.ATOKEN.coroutine(block_identifier=block),  # NOTE: We can probably cache this without breaking anything
-            getattr(contract, method).coroutine(scale, block_identifier=block),
-        )
+        try:
+            underlying, price_per_share = await asyncio.gather(
+                contract.ATOKEN.coroutine(block_identifier=block),  # NOTE: We can probably cache this without breaking anything
+                getattr(contract, method).coroutine(scale, block_identifier=block),
+            )
+        except ContractLogicError:
+            return None
         price_per_share /= scale
         return price_per_share * await ERC20(underlying, asynchronous=True).price(block)
 
