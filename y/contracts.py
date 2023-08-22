@@ -4,7 +4,7 @@ import json
 import logging
 import threading
 from collections import defaultdict
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union, Literal
 
 import a_sync
 import brownie
@@ -22,6 +22,7 @@ from hexbytes import HexBytes
 from multicall import Call
 
 from y import convert
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Address, AnyAddressType, Block
 from y.decorators import stuck_coro_debugger
 from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
@@ -196,7 +197,8 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         address: AnyAddressType, 
         owner: Optional[AccountsType] = None, 
         require_success: bool = True, 
-        ) -> None:
+        cache_ttl: Optional[int] = ENVS.CACHE_TTL,  # units: seconds
+    ) -> None:
         
         address = str(address)
         if address.lower() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee":
@@ -238,6 +240,12 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
 
+        self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
+        try:
+            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, self._ChecksumAddressSingletonMeta__instances.pop, self.address)
+        except RuntimeError:
+            self._ttl_cache_popper = cache_ttl
+
     @classmethod
     @a_sync.a_sync
     def from_abi(
@@ -247,12 +255,17 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         abi: List,
         owner: Optional[AccountsType] = None,
         persist: bool = True,
-        ) -> "Contract":
+        cache_ttl: Optional[int] = ENVS.CACHE_TTL,  # units: seconds
+    ) -> "Contract":
         self = cls.__new__(cls)
         build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
         self.__init_from_abi__(build, owner, persist)
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
+        try:
+            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, self.address)
+        except RuntimeError:
+            self._ttl_cache_popper = cache_ttl
         return self
     
     @classmethod
@@ -260,13 +273,31 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def coroutine(
         cls, 
         address: AnyAddressType, 
-        ) -> "Contract":
+        cache_ttl: Optional[int] = ENVS.CACHE_TTL,  # units: seconds
+    ) -> "Contract":
         # We do this so we don't clog the threadpool with multiple jobs for the same contract.
         async with address_semaphores[address]:
             try:
-                return Contract._ChecksumAddressSingletonMeta__instances[address]
+                contract = cls._ChecksumAddressSingletonMeta__instances[address]
             except KeyError:
-                return await asyncio.get_event_loop().run_in_executor(contract_threads, Contract, address)
+                contract = await contract_threads.run(Contract, address)
+
+        if contract._ttl_cache_popper == "disabled":
+            pass
+    
+        elif cache_ttl is None:
+            if isinstance(contract._ttl_cache_popper, asyncio.TimerHandle):
+                contract._ttl_cache_popper.cancel()
+            contract._ttl_cache_popper = "disabled"
+    
+        elif isinstance(contract._ttl_cache_popper, int):
+            cache_ttl = max(contract._ttl_cache_popper, cache_ttl)
+            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, contract.address)
+
+        elif asyncio.get_running_loop().time() + cache_ttl > contract._ttl_cache_popper.when():
+            contract._ttl_cache_popper.cancel()
+            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, contract.address)
+        return contract
     
     def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
         _ContractBase.__init__(self, None, build, {})  # type: ignore
