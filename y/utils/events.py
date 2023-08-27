@@ -6,10 +6,10 @@ from typing import Any, AsyncGenerator, Dict, List, Optional
 
 import a_sync
 import eth_retry
-from a_sync.primitives import ThreadsafeSemaphore
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs
+from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -161,7 +161,7 @@ def _get_logs(
             response.remove(log)
     return response
 
-get_logs_semaphores = defaultdict(lambda: ThreadsafeSemaphore(16))
+get_logs_semaphores = defaultdict(lambda: BlockSemaphore(16))
 
 def _get_semaphore_key(address, topics) -> tuple:
     if isinstance(address, list):
@@ -171,7 +171,7 @@ def _get_semaphore_key(address, topics) -> tuple:
     return addr_key, topics_key
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
-    async with get_logs_semaphores[_get_semaphore_key(address, topics)]:
+    async with get_logs_semaphores[_get_semaphore_key(address, topics)][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
