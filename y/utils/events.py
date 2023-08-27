@@ -2,7 +2,7 @@ import asyncio
 import logging
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import Any, AsyncGenerator, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional
 
 import a_sync
 import eth_retry
@@ -72,7 +72,12 @@ async def get_logs_asap_generator(
     # NOTE: If you don't need the logs in order, you will get your logs faster if you set `chronological` to False.
 
     if from_block is None:
-        from_block = 0 if address is None else await contract_creation_block_async(address, True)
+        if address is None:
+            from_block = 0
+        elif isinstance(address, Iterable) and not isinstance(address, str):
+            from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in address]))
+        else:
+            from_block = await contract_creation_block_async(address, True)
     if to_block is None:
         to_block = await dank_w3.eth.block_number
     elif run_forever:
