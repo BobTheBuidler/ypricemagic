@@ -111,6 +111,9 @@ elif chain.id == Network.Optimism:
     usdc = Contract('0x7F5c764cBc14f9669B88837ca1490cCa17c31607')
     usdt = Contract('0x94b008aA00579c1307B0EF2c499aD98a8ce58e58')
 
+elif chian.id == Network.Base:
+    dai = Contract('0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb')
+
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
 STABLECOINS = {
@@ -190,6 +193,7 @@ WRAPPED_GAS_COIN = {
     Network.Harmony:            "0xcF664087a5bB0237a0BAd6742852ec6c8d69A27a",
     Network.Cronos:             "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
     Network.Optimism:           "0x4200000000000000000000000000000000000006",
+    Network.Base:               "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
 
 thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 128)))
