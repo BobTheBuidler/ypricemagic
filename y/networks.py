@@ -13,21 +13,21 @@ class Network(IntEnum):
     # the old spec, simply add the new spec directly above the old one.
     # Both will work but Network(chainid) will return the new name. """
     Mainnet = 1
+    Optimism = 10
+    Cronos = 25
     BinanceSmartChain = 56
-    Base = 8453
+    OKEx = 66
     Gnosis = 100
     xDai = 100
     Heco = 128
     Polygon = 137
     Fantom = 250
     Moonriver = 1285
+    Base = 8453
     Arbitrum = 42161
     Avalanche = 43114
     Harmony = 1666600000
     Aurora = 1313161554
-    OKEx = 66
-    Cronos = 25
-    Optimism = 10
 
     @staticmethod
     def label(chain_id: Optional[int] = None) -> str:
