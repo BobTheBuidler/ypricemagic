@@ -14,6 +14,7 @@ class Network(IntEnum):
     # Both will work but Network(chainid) will return the new name. """
     Mainnet = 1
     BinanceSmartChain = 56
+    Base = 8453
     Gnosis = 100
     xDai = 100
     Heco = 128
@@ -46,6 +47,7 @@ class Network(IntEnum):
         elif chain_id == Network.OKEx:                  return 'OKEX'
         elif chain_id == Network.Cronos:                return 'CRO'
         elif chain_id == Network.Optimism:              return 'OPTI'
+        elif chain_id == Network.Base:                  return 'BASE'
     
     @staticmethod
     def name(chain_id: Optional[int] = None) -> str:
@@ -65,6 +67,7 @@ class Network(IntEnum):
         elif chain_id == Network.OKEx:                  return 'OKEx'
         elif chain_id == Network.Cronos:                return 'Cronos'
         elif chain_id == Network.Optimism:              return "Optimism"
+        elif chain_id == Network.Base:                  return "Base"
 
     @staticmethod
     def printable(chain_id: Optional[int] = None) -> str:
