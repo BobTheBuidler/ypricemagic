@@ -112,7 +112,9 @@ elif chain.id == Network.Optimism:
     usdt = Contract('0x94b008aA00579c1307B0EF2c499aD98a8ce58e58')
 
 elif chian.id == Network.Base:
-    dai = Contract('0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb')
+    dai  = Contract('0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb')
+    weth = Contract('0x4200000000000000000000000000000000000006')
+
 
 else: weth, dai, wbtc, usdc, usdt = None, None, None, None, None
 
