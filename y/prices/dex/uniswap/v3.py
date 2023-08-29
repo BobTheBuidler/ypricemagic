@@ -38,6 +38,11 @@ addresses = {
         'factory': UNISWAP_V3_FACTORY,
         'quoter': UNISWAP_V3_QUOTER,
         'fee_tiers': [3000, 500, 10_000, 100],
+    },
+    Network.Base: {
+        'factory': '0x33128a8fC17869897dcE68Ed026d694621f6FDfD',
+        'quoter': '0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a', # quoter v2
+        'fee_tiers': [3000, 500, 10_000, 100],
     }
 }
 
