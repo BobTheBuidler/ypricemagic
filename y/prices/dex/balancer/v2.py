@@ -30,6 +30,9 @@ BALANCER_V2_VAULTS = {
     Network.Arbitrum: [
         '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
     ],
+    Network.Base: [
+        '0xBA12222222228d8Ba445958a75a0704d566BF2C8',
+    ],
 }.get(chain.id, [])
 
 
