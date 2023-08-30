@@ -148,7 +148,8 @@ async def get_price(
                 return None
             session = await get_session()
             async with session.get(f'/get_price/{chain.id}/{token}?block={block}') as response:
-                return UsdPrice(await read_response(response, token, block))
+                if price := await read_response(response, token, block):
+                    return UsdPrice(price)
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
         except ContentTypeError:
