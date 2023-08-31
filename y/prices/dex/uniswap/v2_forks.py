@@ -104,6 +104,7 @@ UNISWAPS = {
         "sushiswap":        {"factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4", "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506"},
     },
     Network.Base: {
+        "sushiswap":        {"factory": "0x71524B4f93c58fcbF659783284E38825f0622859", "router": "0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891"},
         "aerodrome":        {"factory": "0x420DD381b31aEf6683db6B902084cB0FFECe40Da", "router": "0xcF77a3Ba9A5CA399B7c97c74d54e5b1Beb874E43"},
     },
 }.get(chain.id, {})
