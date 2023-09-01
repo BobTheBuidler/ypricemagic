@@ -91,7 +91,7 @@ async def check_bucket(
         bucket = 'synthetix'
     elif await yearn.is_yearn_vault(token_address, sync=False):             
         bucket = 'yearn or yearn-like'
-    elif await curve.get_pool(token_address, sync=False):                   
+    elif curve and await curve.get_pool(token_address, sync=False):                   
         bucket = 'curve lp'
     logger.debug(f"{token_address} bucket is {bucket}")
     return bucket
