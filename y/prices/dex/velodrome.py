@@ -26,8 +26,15 @@ logger = logging.getLogger(__name__)
 class NoReservesError(Exception):
     pass
 
+default_factory = {
+    Network.Optimism: "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a",
+    Network.Base: "0x420DD381b31aEf6683db6B902084cB0FFECe40Da",
+}
+
 class VelodromeRouterV2(SolidlyRouterBase):
-    default_factory = "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.default_factory = default_factory[chain.id]
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
