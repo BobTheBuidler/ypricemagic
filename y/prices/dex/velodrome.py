@@ -30,14 +30,14 @@ class VelodromeRouterV2(SolidlyRouterBase):
     default_factory = "0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a"
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def pair_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
-        return await self.contract.pairFor.coroutine(input_token, output_token, stable, self.default_factory)
+    async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
+        return await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
-        pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
-        if await _get_code(str(pool_address)) not in ['0x',b'']:
-            return UniswapV2Pool(pool_address)
+        pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
+        if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
+            return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
 
     @a_sync.aka.cached_property
     async def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
