@@ -398,12 +398,16 @@ async def probe(
     return_method: bool = False
 ) -> Any:
     address = convert.to_address(address)
-    results = await asyncio.gather(*[Call(address, [method], block_id=block).coroutine() for method in methods], return_exceptions=True)
+    results = await asyncio.gather(*[Call(address, [method], block_id=block).coroutine() for method in methods])#, return_exceptions=True)
+    logger.debug('probe results: %s', results)
     results = [(method, result) for method, result in zip(methods, results) if not isinstance(result, Exception) and result is not None]
     if len(results) not in [1,0]:
+        logger.debug('multiple results: %s', results)
         if len(results) == 2 and results[0][1] == results[1][1]:
             method = results[0][0], results[1][0]
             result = results[0][1]
+            results = [(method, result)]
+            logger.debug('final results: %s', results)
         else:
             raise AssertionError(f'`probe` returned multiple results for {address}: {results}. Must debug')
     if len(results) == 1:
