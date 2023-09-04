@@ -106,7 +106,7 @@ class BadResponse(Exception):
 @alru_cache(maxsize=1)
 async def get_session() -> ClientSession:
     return ClientSession(
-        "https://ypriceapi-beta.yearn.finance",
+        os.environ.get("YPRICEAPI_URL", "https://ypriceapi-beta.yearn.finance"),
         connector=TCPConnector(verify_ssl=False),
         headers=AUTH_HEADERS,
         timeout=YPRICEAPI_TIMEOUT,
