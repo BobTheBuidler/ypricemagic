@@ -60,7 +60,7 @@ class BalancerV1Pool(ERC20):
 
     async def get_balance(self, token: AnyAddressType, block: Block) -> float:
         balance, scale = await asyncio.gather(
-            self.check_liquidity(token, block, sync=False),
+            self.check_liquidity(str(token), block, sync=False),
             ERC20(token, asynchronous=True).scale,
         )
         return balance / scale
