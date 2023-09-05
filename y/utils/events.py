@@ -249,7 +249,7 @@ class EventStream(_ObjectStream[_EventItem]):
             else:
                 end_of_empty_range = await dank_w3.eth.block_number - 5 # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
                 block = min(self._block + BATCH_SIZE, end_of_empty_range)
-                print(f'empty batch for {self} self._logs[{block}] is {self._logs[block]}')
+                self._logger.debug('empty batch block %s %s', block, self)
                 self._logs[block]  # this ensures an empty list is in the ._logs defaultdict without overwriting any existing values (not likely, maybe impossible)
             self._read.set()
             self._read.clear()
@@ -279,27 +279,16 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
         event_stream = await self._event_stream
         next_event = asyncio.create_task(event_stream.__anext__())
         while True:
-            #try:
-            #    event = await asyncio.wait_for(asyncio.shield(next_event), 0)
-            #except asyncio.TimeoutError:
-            #    while True:
-            #        await asyncio.sleep(0)
-            #        try:
-            #            print('waiting')
-            #            event = await asyncio.wait_for(asyncio.shield(next_event), 0)
-            #            break
-            #        except asyncio.TimeoutError:
             await asyncio.sleep(0)
             sleep = 0
             while not next_event.done():
-                sleep = 30 #max(sleep+0.25, 10)
+                sleep = max(sleep+0.5, 10)
                 await asyncio.sleep(sleep)
                 if not next_event.done():
                     self._objects[max(event_stream._logs.keys())]
                     self._read.set()
                     self._read.clear()
-                    
-                    print(f'waiting for {self}')
+                    self._logger.debug('waiting for %s', self)
 
             event = await next_event
             block = event.block_number

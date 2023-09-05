@@ -290,7 +290,7 @@ class _ObjectStream(AsyncIterator[T]):
             for block in list(self._objects.keys()):
                 if yielded_thru_block >= block:
                     continue
-                print(f'block: {block}  to block: {to_block}  objects: {self._objects[block]}')
+                self._logger.debug('block: %s  to block: %s  objects: %s', block, to_block, self._objects[block])
                 if to_block and block > to_block:
                     return
                 for obj in self._objects[block]:
