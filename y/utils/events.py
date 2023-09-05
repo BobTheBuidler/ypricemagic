@@ -170,7 +170,7 @@ def _get_logs(
             response.remove(log)
     return response
 
-get_logs_semaphore = BlockSemaphore(thread_pool_executor._max_workers * 2, name="y.get_logs")
+get_logs_semaphore = BlockSemaphore(thread_pool_executor._max_workers * 5, name="y.get_logs")
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with get_logs_semaphore[end]:
