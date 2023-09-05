@@ -1,22 +1,19 @@
 
 import asyncio
 import logging
-from collections import defaultdict
 from contextlib import suppress
-from typing import Any, Awaitable, DefaultDict, Dict, List, Optional, Tuple, AsyncIterator
+from typing import Any, AsyncIterator, DefaultDict, List, Optional, Tuple
 
 import a_sync
 import brownie
 from brownie import chain
-from brownie.exceptions import EventLookupError
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance, _ObjectStream
-from y.constants import (STABLECOINS, WRAPPED_GAS_COIN, sushi,
-                         thread_pool_executor, usdc, weth)
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
@@ -29,9 +26,7 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
-from y.utils.events import EventStream, decode_logs, get_logs_asap
-from y.utils.multicall import \
-    multicall_same_func_same_contract_different_inputs
+from y.utils.events import EventStream
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -178,26 +173,6 @@ class UniswapV2Pool(ERC20):
             self._verified = False
         self._types_assumed = False
 
-@a_sync.a_sync(default='async', executor=thread_pool_executor)
-def _parse_pairs_from_events(logs):
-    events = decode_logs(logs)
-    try:
-        pairs = {
-            event['']: {
-                convert.to_address(event['pair']): {
-                    'token0':convert.to_address(event['token0']),
-                    'token1':convert.to_address(event['token1']),
-                }
-            }
-            for event in events
-        }
-        pools = {pool: tokens for pair in pairs.values() for pool, tokens in pair.items()}
-    # In at least one edge case, we have trouble getting the pools the easy way.
-    # They will be gathered later, the harder way. 
-    except EventLookupError:
-        pairs, pools = {}, {}
-    return pairs, pools
-    
 
 class UniswapRouterV2(ContractBase):
     def __init__(self, router_address: AnyAddressType, *args: Any, **kwargs: Any) -> None:
