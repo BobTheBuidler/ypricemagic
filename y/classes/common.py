@@ -308,6 +308,7 @@ class _ObjectStream(AsyncIterator[T]):
         try:
             await self._fetcher_task()
         except Exception as e:
+            self._task.cancel()
             self._exc = e
             raise e
             
