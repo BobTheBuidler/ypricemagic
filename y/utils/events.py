@@ -8,6 +8,7 @@ from typing import (Any, AsyncGenerator, DefaultDict, Dict, Iterable, List,
 
 import a_sync
 import eth_retry
+from async_property import async_cached_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
@@ -239,9 +240,16 @@ class EventStream(_ObjectStream[_EventItem]):
     def _logs(self) -> DefaultDict[int, List[_EventItem]]:
         return self._objects
 
+    @async_cached_property
+    async def _started_at_block(self) -> int:
+        return await dank_w3.eth.block_number
+
     async def _record_empty_batch(self) -> None:
-        end_of_empty_range = await dank_w3.eth.block_number - 5 # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
-        block = min(self._block + BATCH_SIZE, end_of_empty_range)
+        if (b := self._block + BATCH_SIZE) < await self._started_at_block:
+            # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
+            block = b
+        else:
+            block = await dank_w3.eth.block_number - 5
         self._logger.debug('empty batch block %s %s', block, self)
         self._block = block
         self._logs[block]  # this ensures an empty list is in the ._logs defaultdict without overwriting any existing values (not likely, maybe impossible)
