@@ -277,7 +277,7 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
         if self.__class__._event_stream.has_cache_value(self):
             string += f"for events [{self.__class__._event_stream.get_cache_value(self)}] "
         return f"{string}done thru block: {self._block} at {hex(id(self))}>"
-
+    
     @abc.abstractproperty
     async def _event_stream(self) -> EventStream:
         ...
@@ -285,11 +285,16 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
     @abc.abstractmethod
     def _process_event(self, event: _EventItem) -> T:
         ...
+        
+    @async_cached_property
+    async def _started_at_block(self) -> int:
+        return await dank_w3.eth.block_number
     
     async def _fetcher_task(self):
         last_block = 0
         event_stream = await self._event_stream
         
+        last_empty = None
         while True:
             next_event_fut = asyncio.create_task(event_stream.__anext__())
             await asyncio.sleep(0)
@@ -297,11 +302,15 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
                 await event_stream._read.wait()
                 if not next_event_fut.done():
                     block = max(event_stream._logs.keys())
-                    self._objects[block]
-                    self._block = block
-                    self._read.set()
-                    self._read.clear()
-                    self._logger.debug('waiting for %s', self)
+                    if block > await event_stream._started_at_block:
+                        if last_empty and not self._objects[last_empty]:  # save some cpu cycles
+                            self._objects.pop(last_empty)
+                        last_empty = block
+                        self._objects[block]
+                        self._block = block
+                        self._read.set()
+                        self._read.clear()
+                        self._logger.debug('waiting for %s', self)
 
             event = await next_event_fut
             block = event.block_number
