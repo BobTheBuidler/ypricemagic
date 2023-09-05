@@ -281,20 +281,21 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
     async def _fetcher_task(self):
         last_block = 0
         event_stream = await self._event_stream
-        next_event = asyncio.create_task(event_stream.__anext__())
+        
         while True:
+            next_event_fut = asyncio.create_task(event_stream.__anext__())
             await asyncio.sleep(0)
-            sleep = 0
-            while not next_event.done():
-                sleep = max(sleep+0.5, 10)
-                await asyncio.sleep(sleep)
-                if not next_event.done():
-                    self._objects[max(event_stream._logs.keys())]
+            while not next_event_fut.done():
+                await event_stream._read.wait()
+                if not next_event_fut.done():
+                    block = max(event_stream._logs.keys())
+                    self._objects[block]
+                    self._block = block
                     self._read.set()
                     self._read.clear()
                     self._logger.debug('waiting for %s', self)
 
-            event = await next_event
+            event = await next_event_fut
             block = event.block_number
             if block > last_block and last_block:
                 # NOTE: We don't need this anymore, let's conserve some memory
@@ -304,4 +305,12 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
                 self._read.clear()
             self._objects[block].append(self._process_event(event))
             last_block = block
-            next_event = asyncio.create_task(event_stream.__anext__())
+
+    async def _fetcher_helper(self) -> None:
+        try:
+            await self._fetcher_task()
+        except Exception as e:
+            if not isinstance(e, asyncio.CancelledError):
+                self._task.cancel()
+            self._exc = e
+            raise e
