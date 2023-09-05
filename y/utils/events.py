@@ -252,7 +252,7 @@ class EventStream(_ObjectStream[_EventItem]):
 
 T = TypeVar("T")
 
-class ProcessedEventStream(_ObjectStream[T]):
+class ProcessedEventStream(_ObjectStream[T], abc.ABC):
     def __init__(self, run_forever: bool = True) -> None:
         super().__init__(run_forever=run_forever)
 
