@@ -261,7 +261,7 @@ class _ObjectStream(AsyncIterator[T]):
         self._task = None
         self._exc = None
         self._read = asyncio.Event()
-        self._logger = logging.logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self._logger = logging.logging.getLogger(f"{self.__class__.__module__}.{self.__class__.__name__}")
         self._iterator = self.get_thru_block(run_forever=self.run_forever)
         
     def __aiter__(self) -> AsyncIterator[T]:
