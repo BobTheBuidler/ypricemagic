@@ -232,6 +232,9 @@ class EventStream(_ObjectStream[_EventItem]):
         self.topics = topics
         super().__init__(from_block=from_block, run_forever=run_forever)
     
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} [addresses={self.addresses}, topics={self.topics}] done thru block: {self._block} at {hex(id(self))}>"
+    
     @property
     def _logs(self) -> DefaultDict[int, List[_EventItem]]:
         return self._objects
@@ -246,6 +249,7 @@ class EventStream(_ObjectStream[_EventItem]):
             else:
                 end_of_empty_range = await dank_w3.eth.block_number - 5 # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
                 block = min(self._block + BATCH_SIZE, end_of_empty_range)
+                print(f'empty batch for {self} self._logs[{block}] is {self._logs[block]}')
                 self._logs[block]  # this ensures an empty list is in the ._logs defaultdict without overwriting any existing values (not likely, maybe impossible)
             self._read.set()
             self._read.clear()
@@ -255,6 +259,12 @@ T = TypeVar("T")
 class ProcessedEventStream(_ObjectStream[T], abc.ABC):
     def __init__(self, run_forever: bool = True) -> None:
         super().__init__(run_forever=run_forever)
+
+    def __repr__(self) -> str:
+        string = f"<{self.__class__.__module__}.{self.__class__.__name__} "
+        if self.__class__._event_stream.has_cache_value(self):
+            string += f"for events [{self.__class__._event_stream.get_cache_value(self)}] "
+        return f"{string}done thru block: {self._block} at {hex(id(self))}>"
 
     @abc.abstractproperty
     async def _event_stream(self) -> EventStream:
@@ -267,12 +277,31 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
     async def _fetcher_task(self):
         last_block = 0
         event_stream = await self._event_stream
+        next_event = asyncio.create_task(event_stream.__anext__())
         while True:
-            try:
-                event = asyncio.wait_for(event_stream.__anext__(), 60)
-            except asyncio.TimeoutError:
-                self._objects[event_stream._block]
-                continue
+            #try:
+            #    event = await asyncio.wait_for(asyncio.shield(next_event), 0)
+            #except asyncio.TimeoutError:
+            #    while True:
+            #        await asyncio.sleep(0)
+            #        try:
+            #            print('waiting')
+            #            event = await asyncio.wait_for(asyncio.shield(next_event), 0)
+            #            break
+            #        except asyncio.TimeoutError:
+            await asyncio.sleep(0)
+            sleep = 0
+            while not next_event.done():
+                sleep = 30 #max(sleep+0.25, 10)
+                await asyncio.sleep(sleep)
+                if not next_event.done():
+                    self._objects[max(event_stream._logs.keys())]
+                    self._read.set()
+                    self._read.clear()
+                    
+                    print(f'waiting for {self}')
+
+            event = await next_event
             block = event.block_number
             if block > last_block and last_block:
                 # NOTE: We don't need this anymore, let's conserve some memory
@@ -282,3 +311,4 @@ class ProcessedEventStream(_ObjectStream[T], abc.ABC):
                 self._read.clear()
             self._objects[block].append(self._process_event(event))
             last_block = block
+            next_event = asyncio.create_task(event_stream.__anext__())

@@ -40,7 +40,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         return f'{self.address}'
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} '{self.address}'"
+        return f"<{self.__class__.__name__}(address={self.address})>"
     
     def __eq__(self, __o: object) -> bool:
         try:
@@ -283,24 +283,22 @@ class _ObjectStream(AsyncIterator[T]):
             to_block = current_block
             if to_block > current_block:
                 self._logger.warning('to_block is > current block. Be aware, this can cause apparent hanging behavior.')
-        done_thru_block = (self.from_block - 1) if self.from_block else 0
-        while run_forever or done_thru_block < to_block:
+        yielded_thru_block = (self.from_block - 1) if self.from_block else 0
+        while True: #run_forever or done_thru_block < to_block:
             if self._exc:
                 raise self._exc
-            for block, objects in list(self._objects.items()):
-                if block <= done_thru_block:
+            for block in list(self._objects.keys()):
+                if yielded_thru_block >= block:
                     continue
+                print(f'block: {block}  to block: {to_block}  objects: {self._objects[block]}')
                 if to_block and block > to_block:
                     return
-                for obj in objects:
+                for obj in self._objects[block]:
                     yield obj
-                done_thru_block = block
-            while True:
-                try:
-                    await asyncio.wait_for(self._read.wait(), 10)
-                except asyncio.TimeoutError:
-                    if self._exc:
-                        raise self._exc
+                yielded_thru_block = block
+
+            with suppress(asyncio.TimeoutError):
+                await asyncio.wait_for(self._read.wait(), 5)
     
     def _ensure_fetcher(self) -> None:
         if self._task is None:
