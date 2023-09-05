@@ -290,7 +290,7 @@ class _ObjectStream(AsyncIterator[T]):
             for block, objects in list(self._objects.items()):
                 if block <= done_thru_block:
                     continue
-                if block > to_block:
+                if to_block and block > to_block:
                     return
                 for obj in objects:
                     yield obj

@@ -1,8 +1,10 @@
+import abc
 import asyncio
 import logging
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional, DefaultDict
+from typing import (Any, AsyncGenerator, DefaultDict, Dict, Iterable, List,
+                    Optional, TypeVar)
 
 import a_sync
 import eth_retry
@@ -236,9 +238,42 @@ class EventStream(_ObjectStream[_EventItem]):
     
     async def _fetcher_task(self):
         async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block, chronological=True, run_forever=self.run_forever):
-            for decoded in decode_logs(logs):
-                block = decoded.block_number
-                self._logs[block].append(decoded)
-            self._block = block
+            if logs:
+                for decoded in decode_logs(logs):
+                    block = decoded.block_number
+                    self._logs[block].append(decoded)
+                self._block = block
+            else:
+                end_of_empty_range = await dank_w3.eth.block_number - 5 # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
+                block = min(self._block + BATCH_SIZE, end_of_empty_range)
+                self._logs[block]  # this ensures an empty list is in the ._logs defaultdict without overwriting any existing values (not likely, maybe impossible)
             self._read.set()
             self._read.clear()
+
+T = TypeVar("T")
+
+class ProcessedEventStream(_ObjectStream[T]):
+    def __init__(self, run_forever: bool = True) -> None:
+        super().__init__(run_forever=run_forever)
+
+    @abc.abstractproperty
+    async def _event_stream(self) -> EventStream:
+        ...
+    
+    @abc.abstractmethod
+    def _process_event(self, event: _EventItem) -> T:
+        ...
+    
+    async def _fetcher_task(self):
+        last_block = 0
+        event_stream = await self._event_stream
+        async for event in event_stream:
+            block = event.block_number
+            if block > last_block and last_block:
+                # NOTE: We don't need this anymore, let's conserve some memory
+                event_stream._logs.pop(last_block)
+                self._block = last_block
+                self._read.set()
+                self._read.clear()
+            self._objects[block].append(self._process_event(event))
+            last_block = block

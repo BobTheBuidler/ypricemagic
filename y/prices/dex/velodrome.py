@@ -1,15 +1,13 @@
 import asyncio
 import logging
-from collections import defaultdict
-from typing import DefaultDict, Dict, List, Optional, Tuple
+from typing import DefaultDict, List, Optional, Tuple
 
 import a_sync
-from async_lru import alru_cache
+from async_property import async_cached_property
 from brownie import chain
-from multicall.call import Call
+from brownie.network.event import _EventItem
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y import convert
 from y.classes.common import _ObjectStream
 from y.contracts import Contract
 from y.datatypes import Address, Block
@@ -18,8 +16,7 @@ from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils.dank_mids import dank_w3
-from y.utils.events import EventStream, decode_logs, get_logs_asap
-from y.utils.raw_calls import raw_call
+from y.utils.events import EventStream
 
 logger = logging.getLogger(__name__)
 
@@ -102,29 +99,23 @@ class Pools(_ObjectStream[UniswapV2Pool]):
     @property
     def _pools(self) -> DefaultDict[int, List[UniswapV2Pool]]:
         return self._objects
-    
-    async def _fetcher_task(self):
-        last_block = 0
+
+    @async_cached_property
+    async def _event_stream(self) -> EventStream:
         factory = await Contract.coroutine(self.factory)
         if 'PoolCreated' not in factory.topics:
             # the etherscan proxy detection is borked here, need this to decode properly
             factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
-        event_stream = EventStream(factory, [factory.topics['PoolCreated']], run_forever=self.run_forever)
-        async for event in event_stream:
-            block = event.block_number
-            if block > last_block and last_block:
-                # NOTE: We don't need this anymore, let's conserve some memory
-                event_stream._logs.pop(last_block)
-                self._block = last_block
-            # NOTE: we should probably subclass univ2 pool and use this for init
-            stable = event['stable']
-            pool = UniswapV2Pool(
-                address=event['pool'], 
-                token0=event['token0'], 
-                token1=event['token1'], 
-                asynchronous=self.asynchronous,
-            )
-            self._pools[block].append(pool)
-            last_block = block
-            self._read.set()
-            self._read.clear()
+        return EventStream(factory, [factory.topics['PoolCreated']], run_forever=self.run_forever)
+    
+    def _process_event(self, event: _EventItem) -> UniswapV2Pool:
+        # NOTE: we should probably subclass univ2 pool and use this for init
+        stable = event['stable']
+        return UniswapV2Pool(
+            address=event['pool'], 
+            token0=event['token0'], 
+            token1=event['token1'], 
+            asynchronous=self.asynchronous,
+        )
+
+    

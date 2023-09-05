@@ -6,7 +6,9 @@ from typing import Any, AsyncIterator, DefaultDict, List, Optional, Tuple
 
 import a_sync
 import brownie
+from async_property import async_cached_property
 from brownie import chain
+from brownie.network.event import _EventItem
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import ContractLogicError
@@ -402,19 +404,11 @@ class Pools(_ObjectStream[UniswapV2Pool]):
     @property
     def _pools(self) -> DefaultDict[Block, List[UniswapV2Pool]]:
         return self._objects
-    
-    async def _fetcher_task(self):
-        last_block = 0
-        event_stream = EventStream(self.factory, self.PairCreated, run_forever=self.run_forever)
-        async for event in event_stream:
-            block = event.block_number
-            if block > last_block and last_block:
-                # NOTE: We don't need this anymore, let's conserve some memory
-                event_stream._logs.pop(last_block)
-                self._block = last_block
-            print(event.items())
-            token0, token1, pool, pool_id = event.values()
-            self._pools[block].append(UniswapV2Pool(address=pool, token0=token0, token1=token1, asynchronous=self.asynchronous))
-            last_block = block
-            self._read.set()
-            self._read.clear()
+
+    @async_cached_property
+    async def _event_stream(self) -> EventStream:
+        return EventStream(self.factory, self.PairCreated, run_forever=self.run_forever)
+        
+    def _process_event(self, event: _EventItem) -> UniswapV2Pool:
+        token0, token1, pool, pool_id = event.values()
+        return UniswapV2Pool(address=pool, token0=token0, token1=token1, asynchronous=self.asynchronous)

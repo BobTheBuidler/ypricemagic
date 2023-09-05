@@ -4,7 +4,9 @@ from itertools import cycle
 from typing import AsyncIterator, Awaitable, DefaultDict, List, Optional, Tuple
 
 import a_sync
+from async_property import async_cached_property
 from brownie import chain
+from brownie.network.event import _EventItem
 from eth_abi.packed import encode_abi_packed
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -171,21 +173,15 @@ class Pools(_ObjectStream[UniswapV3Pool]):
     def _pools(self) -> DefaultDict[Block, List[UniswapV3Pool]]:
         return self._objects
     
-    async def _fetcher_task(self):
-        last_block = 0
+    @async_cached_property
+    async def _event_stream(self) -> EventStream:
         factory = await self._factory_awaitable
-        event_stream = EventStream(factory.address, [factory.topics["PoolCreated"]], run_forever=self.run_forever)
-        async for event in event_stream:
-            token0, token1, fee, tick_spacing, pool = event.values()
-            block = event.block_number
-            if block > last_block and last_block:
-                # NOTE: We don't need this anymore, let's conserve some memory
-                event_stream._logs.pop(last_block)
-                self._block = last_block
-            self._pools[block].append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
-            last_block = block
-            self._read.set()
-            self._read.clear()
+        return EventStream(factory.address, [factory.topics["PoolCreated"]], run_forever=self.run_forever)
+        
+    def _process_event(self, event: _EventItem) -> UniswapV3Pool:
+        token0, token1, fee, tick_spacing, pool = event.values()
+        return UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous)
+
 
 try:
     uniswap_v3 = UniswapV3(asynchronous=True)
