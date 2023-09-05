@@ -287,7 +287,7 @@ class _ObjectStream(AsyncIterator[T]):
         while run_forever or done_thru_block < to_block:
             if self._exc:
                 raise self._exc
-            for block, objects in self._objects.items():
+            for block, objects in list(self._objects.items()):
                 if block <= done_thru_block:
                     continue
                 if block > to_block:

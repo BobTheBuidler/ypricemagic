@@ -109,9 +109,12 @@ class Pools(_ObjectStream[UniswapV2Pool]):
         if 'PoolCreated' not in factory.topics:
             # the etherscan proxy detection is borked here, need this to decode properly
             factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
-        async for event in EventStream(factory, [factory.topics['PoolCreated']], run_forever=self.run_forever):
+        event_stream = EventStream(factory, [factory.topics['PoolCreated']], run_forever=self.run_forever)
+        async for event in event_stream:
             block = event.block_number
-            if block > last_block:
+            if block > last_block and last_block:
+                # NOTE: We don't need this anymore, let's conserve some memory
+                event_stream._logs.pop(last_block)
                 self._block = last_block
             # NOTE: we should probably subclass univ2 pool and use this for init
             stable = event['stable']

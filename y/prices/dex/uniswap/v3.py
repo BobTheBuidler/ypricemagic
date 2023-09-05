@@ -174,10 +174,13 @@ class Pools(_ObjectStream[UniswapV3Pool]):
     async def _fetcher_task(self):
         last_block = 0
         factory = await self._factory_awaitable
-        async for event in EventStream(factory.address, [factory.topics["PoolCreated"]], run_forever=self.run_forever):
+        event_stream = EventStream(factory.address, [factory.topics["PoolCreated"]], run_forever=self.run_forever)
+        async for event in event_stream:
             token0, token1, fee, tick_spacing, pool = event.values()
             block = event.block_number
-            if block > last_block:
+            if block > last_block and last_block:
+                # NOTE: We don't need this anymore, let's conserve some memory
+                event_stream._logs.pop(last_block)
                 self._block = last_block
             self._pools[block].append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
             last_block = block
