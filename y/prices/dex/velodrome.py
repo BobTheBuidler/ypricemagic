@@ -8,7 +8,6 @@ from brownie import chain
 from brownie.network.event import _EventItem
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y.classes.common import _ObjectStream
 from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
@@ -16,7 +15,7 @@ from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils.dank_mids import dank_w3
-from y.utils.events import EventStream
+from y.utils.events import EventStream, ProcessedEventStream
 
 logger = logging.getLogger(__name__)
 
@@ -90,7 +89,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         return routes
 
 
-class Pools(_ObjectStream[UniswapV2Pool]):
+class Pools(ProcessedEventStream[UniswapV2Pool]):
     def __init__(self, factory: Address, asynchronous: bool, run_forever: bool = True) -> None:
         super().__init__(run_forever=run_forever)
         self.asynchronous = asynchronous

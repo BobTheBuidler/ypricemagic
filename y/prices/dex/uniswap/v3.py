@@ -10,14 +10,14 @@ from brownie.network.event import _EventItem
 from eth_abi.packed import encode_abi_packed
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y.classes.common import ERC20, ContractBase, _ObjectStream
+from y.classes.common import ERC20, ContractBase
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
-from y.utils.events import EventStream
+from y.utils.events import EventStream, ProcessedEventStream
 from y.utils.multicall import fetch_multicall
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
@@ -163,7 +163,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             futs.append(asyncio.create_task(pool.check_liquidity(token, block, sync=False)))
         return max(await asyncio.gather(*futs)) if futs else 0
 
-class Pools(_ObjectStream[UniswapV3Pool]):
+class Pools(ProcessedEventStream[UniswapV3Pool]):
     def __init__(self, factory_awaitable: Awaitable[Contract], asynchronous: bool, run_forever: bool = True) -> None:
         super().__init__(run_forever=run_forever)
         self.asynchronous = asynchronous

@@ -14,7 +14,7 @@ from multicall import Call
 from web3.exceptions import ContractLogicError
 
 from y import convert
-from y.classes.common import ERC20, ContractBase, WeiBalance, _ObjectStream
+from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
@@ -28,7 +28,7 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
-from y.utils.events import EventStream
+from y.utils.events import EventStream, ProcessedEventStream
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -394,7 +394,7 @@ class UniswapRouterV2(ContractBase):
                 futs.append(asyncio.create_task(pool.check_liquidity(token, block, sync=False)))
         return max(await asyncio.gather(*futs)) if futs else 0
 
-class Pools(_ObjectStream[UniswapV2Pool]):
+class Pools(ProcessedEventStream[UniswapV2Pool]):
     PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
     def __init__(self, factory: Address, asynchronous: bool, run_forever: bool = True) -> None:
         super().__init__(run_forever=run_forever)
