@@ -203,6 +203,6 @@ WRAPPED_GAS_COIN = {
     Network.Base:               "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
 
-thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 128)))
+thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 32)))
 
 SKIP_YPRICEAPI = bool(os.environ.get("SKIP_YPRICEAPI"))
