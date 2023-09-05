@@ -2,19 +2,20 @@ import asyncio
 import logging
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional
+from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional, DefaultDict
 
 import a_sync
 import eth_retry
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
-from brownie.network.event import EventDict, _decode_logs
+from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
+from y.classes.common import _ObjectStream
 from y.constants import thread_pool_executor
 from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
@@ -81,7 +82,7 @@ async def get_logs_asap_generator(
     if to_block is None:
         to_block = await dank_w3.eth.block_number
     elif run_forever:
-        raise TypeError(f'`to_block` must be None if `run_forever` is True.')
+        raise TypeError('`to_block` must be None if `run_forever` is True.')
     if from_block > to_block:
         raise ValueError(f"from_block must be <= to_block. You passed from_block: {from_block} to_block: {to_block}.")
     while True:
@@ -222,3 +223,22 @@ def _get_logs_batch_cached(
     end: Block
     ) -> List[LogReceipt]:
     return _get_logs_no_cache(address, topics, start, end)
+
+class EventStream(_ObjectStream[_EventItem]):
+    def __init__(self, addresses: List[Address], topics: List, from_block: Optional[int] = None, run_forever: bool = True):
+        self.addresses = addresses
+        self.topics = topics
+        super().__init__(from_block=from_block, run_forever=run_forever)
+    
+    @property
+    def _logs(self) -> DefaultDict[int, List[_EventItem]]:
+        return self._objects
+    
+    async def _fetcher_task(self):
+        async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block, chronological=True, run_forever=self.run_forever):
+            for decoded in decode_logs(logs):
+                block = decoded.block_number
+                self._logs[block].append(decoded)
+            self._block = block
+            self._read.set()
+            self._read.clear()

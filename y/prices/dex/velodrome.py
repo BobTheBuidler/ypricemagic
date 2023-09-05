@@ -1,7 +1,7 @@
 import asyncio
 import logging
 from collections import defaultdict
-from typing import Dict, List, Optional, Tuple
+from typing import DefaultDict, Dict, List, Optional, Tuple
 
 import a_sync
 from async_lru import alru_cache
@@ -10,6 +10,7 @@ from multicall.call import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y.classes.common import _ObjectStream
 from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
@@ -17,7 +18,7 @@ from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils.dank_mids import dank_w3
-from y.utils.events import decode_logs, get_logs_asap
+from y.utils.events import EventStream, decode_logs, get_logs_asap
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -32,8 +33,8 @@ default_factory = {
 }
 
 class VelodromeRouterV2(SolidlyRouterBase):
-    def __init__(self, *args, **kwargs) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, router_address: Address, *args, **kwargs):
+        super().__init__(router_address, *args, **kwargs)
         self.default_factory = default_factory[chain.id]
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
@@ -46,65 +47,6 @@ class VelodromeRouterV2(SolidlyRouterBase):
         if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
             return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
 
-    @a_sync.aka.cached_property
-    async def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
-        pool_mapping = defaultdict(dict)
-        for pool, params in (await self.__pools__(sync=False)).items():
-            token0, token1, stable = params.values()
-            pool_mapping[token0][pool] = token1
-            pool_mapping[token1][pool] = token0
-        logger.info(f'Loaded {len(await self.__pools__(sync=False))} pools supporting {len(pool_mapping)} tokens on {self.label}')
-        return pool_mapping
-    
-    @a_sync.aka.cached_property
-    async def pools(self) -> Dict[Address, Dict[Address,Address]]:
-        logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
-        try:
-            factory = await Contract.coroutine(self.factory)
-            if 'PoolCreated' not in factory.topics:
-                # the etherscan proxy detection is borked here, need this to decode properly
-                factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
-            logs = await get_logs_asap(self.factory, [factory.topics['PoolCreated']], sync=False)
-            pools = {
-                convert.to_address(event['pool']): {
-                    'token0': convert.to_address(event['token0']),
-                    'token1': convert.to_address(event['token1']),
-                    'stable': event['stable'],
-                }
-                for event in decode_logs(logs)
-            }
-        except Exception as e:
-            print(e)
-            raise e
-        all_pairs_len = await raw_call(self.factory,'allPairsLength()',block=chain.height,output='int', sync=False)
-
-        if len(pools) == all_pairs_len:
-            return pools
-        else:
-            logger.debug(f"Oh no! Looks like your node can't look back that far. Checking for the missing {all_pairs_len - len(pools)} pools...")
-            pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
-            logger.debug(f'pools: {pools_your_node_couldnt_get}')
-            pools_your_node_couldnt_get = await asyncio.gather(
-                *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
-            )
-            token0s, token1s, stables = await asyncio.gather(
-                asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['stable()(bool)']).coroutine() for pool in pools_your_node_couldnt_get]),
-            )
-            pools_your_node_couldnt_get = {
-                convert.to_address(pool): {
-                    'token0': convert.to_address(token0),
-                    'token1': convert.to_address(token1),
-                    'stable': stable
-                }
-                for pool, token0, token1, stable
-                in zip(pools_your_node_couldnt_get, token0s, token1s, stables)
-            }
-            pools.update(pools_your_node_couldnt_get)
-
-        return pools
-    
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
         routes = []
         for i in range(len(path) - 1):
@@ -151,4 +93,35 @@ class VelodromeRouterV2(SolidlyRouterBase):
         return routes
 
 
-_get_code = alru_cache(maxsize=None)(dank_w3.eth.get_code)
+class Pools(_ObjectStream[UniswapV2Pool]):
+    def __init__(self, factory: Address, asynchronous: bool, run_forever: bool = True) -> None:
+        super().__init__(run_forever=run_forever)
+        self.asynchronous = asynchronous
+        self.factory = factory
+    
+    @property
+    def _pools(self) -> DefaultDict[int, List[UniswapV2Pool]]:
+        return self._objects
+    
+    async def _fetcher_task(self):
+        last_block = 0
+        factory = await Contract.coroutine(self.factory)
+        if 'PoolCreated' not in factory.topics:
+            # the etherscan proxy detection is borked here, need this to decode properly
+            factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
+        async for event in EventStream(factory, [factory.topics['PoolCreated']], run_forever=self.run_forever):
+            block = event.block_number
+            if block > last_block:
+                self._block = last_block
+            # NOTE: we should probably subclass univ2 pool and use this for init
+            stable = event['stable']
+            pool = UniswapV2Pool(
+                address=event['pool'], 
+                token0=event['token0'], 
+                token1=event['token1'], 
+                asynchronous=self.asynchronous,
+            )
+            self._pools[block].append(pool)
+            last_block = block
+            self._read.set()
+            self._read.clear()

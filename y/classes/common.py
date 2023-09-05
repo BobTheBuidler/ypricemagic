@@ -1,8 +1,10 @@
 
 import asyncio
+from collections import defaultdict
 from contextlib import suppress
 from functools import cached_property
-from typing import Any, Optional, Tuple, Union
+from typing import (Any, AsyncIterator, Awaitable, DefaultDict, List, Optional,
+                    Tuple, TypeVar, Union)
 
 import a_sync
 from brownie.convert.datatypes import HexString
@@ -18,6 +20,7 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
 from y.utils import logging, raw_calls
+from y.utils.dank_mids import dank_w3
 
 
 def hex_to_string(h: HexString) -> str:
@@ -246,3 +249,71 @@ class WeiBalance(a_sync.ASyncGenericBase):
         value = balance * price
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
+
+T = TypeVar("T")
+
+class _ObjectStream(AsyncIterator[T]):
+    def __init__(self, from_block: Optional[int] = None, run_forever: bool = True):
+        self._objects: DefaultDict[int, List[T]] = defaultdict(list)
+        self.from_block = from_block
+        self.run_forever = run_forever
+        self._block = 0
+        self._task = None
+        self._exc = None
+        self._read = asyncio.Event()
+        self._logger = logging.logging.getLogger(f"{__name__}.{self.__class__.__name__}")
+        self._iterator = self.get_thru_block(run_forever=self.run_forever)
+        
+    def __aiter__(self) -> AsyncIterator[T]:
+        return self.get_thru_block(run_forever=self.run_forever).__aiter__()
+    
+    def __anext__(self) -> Awaitable[T]:
+        return self._iterator.__anext__()
+
+    async def get_thru_block(
+        self, 
+        to_block: Optional[int] = None, 
+        run_forever: bool = False
+    ) -> AsyncIterator[T]:
+        self._ensure_fetcher()
+        if to_block and run_forever:
+            raise Exception
+        if not run_forever and not to_block:
+            current_block = await dank_w3.eth.block_number
+            to_block = current_block
+            if to_block > current_block:
+                self._logger.warning('to_block is > current block. Be aware, this can cause apparent hanging behavior.')
+        done_thru_block = (self.from_block - 1) if self.from_block else 0
+        while run_forever or done_thru_block < to_block:
+            if self._exc:
+                raise self._exc
+            for block, objects in self._objects.items():
+                if block <= done_thru_block:
+                    continue
+                if block > to_block:
+                    return
+                for obj in objects:
+                    yield obj
+                done_thru_block = block
+            while True:
+                try:
+                    await asyncio.wait_for(self._read.wait(), 10)
+                except asyncio.TimeoutError:
+                    if self._exc:
+                        raise self._exc
+    
+    def _ensure_fetcher(self) -> None:
+        if self._task is None:
+            self._task = asyncio.create_task(self._fetcher_task())
+    
+    async def _fetcher_helper(self) -> None:
+        try:
+            await self._fetcher_task()
+        except Exception as e:
+            self._exc = e
+            raise e
+            
+    import abc
+    @abc.abstractmethod
+    async def _fetcher_task(self):
+        ...

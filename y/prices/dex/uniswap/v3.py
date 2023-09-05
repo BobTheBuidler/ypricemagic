@@ -1,21 +1,21 @@
 import asyncio
 import math
 from itertools import cycle
-from typing import List, Optional, Tuple
+from typing import AsyncIterator, Awaitable, DefaultDict, List, Optional, Tuple
 
 import a_sync
 from brownie import chain
 from eth_abi.packed import encode_abi_packed
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y.classes.common import ERC20, ContractBase
+from y.classes.common import ERC20, ContractBase, _ObjectStream
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
-from y.utils.events import decode_logs, get_logs_asap_generator
+from y.utils.events import EventStream
 from y.utils.multicall import fetch_multicall
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
@@ -74,8 +74,6 @@ class UniswapV3Pool(ContractBase):
         return ERC20(token, asynchronous=self.asynchronous)
 
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
-        if block < await contract_creation_block_async(self.address):
-            return 0
         return await self[token].balance_of(self.address, block, sync=False)
 
 
@@ -85,9 +83,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         if chain.id not in addresses:
             raise UnsupportedNetwork('compound is not supported on this network')
         self.fee_tiers = addresses[chain.id]['fee_tiers']
-        self.loading = False
-        self.loaded = a_sync.Event()
-        self._pools = {}
+        self._pools = Pools(self.__factory__(sync=False), self.asynchronous)
 
     def __contains__(self, asset) -> bool:
         return chain.id in addresses
@@ -147,29 +143,49 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         ]
         return UsdPrice(max(outputs)) if outputs else None
 
-    @a_sync.aka.cached_property
-    async def pools(self) -> List[UniswapV3Pool]:
-        factory = await self.__factory__(sync=False)
-        pools = []
-        async for logs in get_logs_asap_generator(factory.address, [factory.topics["PoolCreated"]], chronological=False):
-            for event in decode_logs(logs):
-                token0, token1, fee, tick_spacing, pool = event.values()
-                pools.append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
-        return pools
-
-    @a_sync.a_sync(ram_cache_maxsize=None)
-    async def pools_for_token(self, token: Address) -> List[Address]:
-        return [pool for pool in await self.__pools__(sync=False) if token in pool]
+    async def _pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
+        async for pool in self._pools.get_thru_block(block):
+            if token in pool:
+                yield pool
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0
-        pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
-        pools = [pool for pool in pools if pool not in ignore_pools]
-        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
+        
+        futs = []
+        async for pool in self._pools_for_token(token, block):
+            pool: UniswapV3Pool
+            if pool in ignore_pools:
+                continue
+            futs.append(asyncio.create_task(pool.check_liquidity(token, block, sync=False)))
+        return max(await asyncio.gather(*futs)) if futs else 0
+
+class Pools(_ObjectStream[UniswapV3Pool]):
+    def __init__(self, factory_awaitable: Awaitable[Contract], asynchronous: bool, run_forever: bool = True) -> None:
+        super().__init__(run_forever=run_forever)
+        self.asynchronous = asynchronous
+        self._factory_awaitable = factory_awaitable
+    
+    @property
+    def _pools(self) -> DefaultDict[Block, List[UniswapV3Pool]]:
+        return self._objects
+    
+    async def _fetcher_task(self):
+        last_block = 0
+        factory = await self._factory_awaitable
+        async for event in EventStream(factory.address, [factory.topics["PoolCreated"]], run_forever=self.run_forever):
+            token0, token1, fee, tick_spacing, pool = event.values()
+            block = event.block_number
+            if block > last_block:
+                self._block = last_block
+            self._pools[block].append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
+            last_block = block
+            self._read.set()
+            self._read.clear()
 
 try:
     uniswap_v3 = UniswapV3(asynchronous=True)
 except UnsupportedNetwork:
     uniswap_v3 = None
+
