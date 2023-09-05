@@ -40,8 +40,9 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
-        if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
-            return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
+        async for pool in self._pools.get_thru_block(block):
+            if pool_address == pool:
+                return pool
 
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
         routes = []
