@@ -237,7 +237,7 @@ class EventStream(_ObjectStream[_EventItem]):
         return self._objects
     
     async def _fetcher_task(self):
-        async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block, chronological=True, run_forever=self.run_forever):
+        async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block, chronological=True, run_forever=self.run_forever, run_forever_interval=30):
             if logs:
                 for decoded in decode_logs(logs):
                     block = decoded.block_number
@@ -267,7 +267,12 @@ class ProcessedEventStream(_ObjectStream[T]):
     async def _fetcher_task(self):
         last_block = 0
         event_stream = await self._event_stream
-        async for event in event_stream:
+        while True:
+            try:
+                event = asyncio.wait_for(event_stream.__anext__(), 60)
+            except asyncio.TimeoutError:
+                self._objects[event_stream._block]
+                continue
             block = event.block_number
             if block > last_block and last_block:
                 # NOTE: We don't need this anymore, let's conserve some memory
