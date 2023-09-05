@@ -238,6 +238,13 @@ class EventStream(_ObjectStream[_EventItem]):
     @property
     def _logs(self) -> DefaultDict[int, List[_EventItem]]:
         return self._objects
+
+    async def _record_empty_batch(self) -> None:
+        end_of_empty_range = await dank_w3.eth.block_number - 5 # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
+        block = min(self._block + BATCH_SIZE, end_of_empty_range)
+        self._logger.debug('empty batch block %s %s', block, self)
+        self._block = block
+        self._logs[block]  # this ensures an empty list is in the ._logs defaultdict without overwriting any existing values (not likely, maybe impossible)
     
     async def _fetcher_task(self):
         async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block, chronological=True, run_forever=self.run_forever, run_forever_interval=30):
@@ -247,10 +254,7 @@ class EventStream(_ObjectStream[_EventItem]):
                     self._logs[block].append(decoded)
                 self._block = block
             else:
-                end_of_empty_range = await dank_w3.eth.block_number - 5 # NOTE this is not the best method but it works for its purpose of preventing blocking for empty ranges
-                block = min(self._block + BATCH_SIZE, end_of_empty_range)
-                self._logger.debug('empty batch block %s %s', block, self)
-                self._logs[block]  # this ensures an empty list is in the ._logs defaultdict without overwriting any existing values (not likely, maybe impossible)
+                await self._record_empty_batch()
             self._read.set()
             self._read.clear()
 
