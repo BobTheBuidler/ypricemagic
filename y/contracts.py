@@ -197,7 +197,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         address: AnyAddressType, 
         owner: Optional[AccountsType] = None, 
         require_success: bool = True, 
-        cache_ttl: Optional[int] = ENVS.CACHE_TTL,  # units: seconds
+        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> None:
         
         address = str(address)
@@ -255,7 +255,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         abi: List,
         owner: Optional[AccountsType] = None,
         persist: bool = True,
-        cache_ttl: Optional[int] = ENVS.CACHE_TTL,  # units: seconds
+        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> "Contract":
         self = cls.__new__(cls)
         build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
@@ -273,7 +273,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def coroutine(
         cls, 
         address: AnyAddressType, 
-        cache_ttl: Optional[int] = ENVS.CACHE_TTL,  # units: seconds
+        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> "Contract":
         # We do this so we don't clog the threadpool with multiple jobs for the same contract.
         async with address_semaphores[address]:

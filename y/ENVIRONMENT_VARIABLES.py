@@ -5,3 +5,4 @@ _envs = EnvVarFactory("YPRICEMAGIC")
 
 # TTL for various in-memory caches thruout the library
 CACHE_TTL = _envs.create_env("CACHE_TTL", int, default=60*60, verbose=False)
+CONTRACT_CACHE_TTL = _envs.create_env("CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False)
