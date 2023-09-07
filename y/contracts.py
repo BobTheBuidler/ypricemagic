@@ -124,7 +124,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     async with creation_block_semaphore:
         return await constants.thread_pool_executor.run(contract_creation_block, str(address), when_no_history_return_0=when_no_history_return_0)
 
-''' I want to see something rq 
+''' # NOTE: We will just do this until I find/build a good async disc caching lib
 @a_sync.a_sync(cache_type='memory')
 @stuck_coro_debugger
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
