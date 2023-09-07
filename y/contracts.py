@@ -117,7 +117,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
-creation_block_semaphore = a_sync.Semaphore(10)
+creation_block_semaphore = ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
