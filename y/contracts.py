@@ -4,7 +4,8 @@ import json
 import logging
 import threading
 from collections import defaultdict
-from typing import Any, Callable, Dict, List, Optional, Tuple, Union, Literal
+from functools import partial
+from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import a_sync
 import brownie
@@ -21,8 +22,8 @@ from dank_mids.brownie_patch import patch_contract
 from hexbytes import HexBytes
 from multicall import Call
 
-from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y import constants, convert
 from y.datatypes import Address, AnyAddressType, Block
 from y.decorators import stuck_coro_debugger
 from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
@@ -116,7 +117,14 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
+creation_block_semaphore = ThreadsafeSemaphore(10)
 
+@a_sync.a_sync(cache_type='memory')
+async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
+    async with creation_block_semaphore:
+        return await constants.thread_pool_executor.run(contract_creation_block, str(address), when_no_history_return_0=when_no_history_return_0)
+
+''' # NOTE: We will just do this until I find/build a good async disc caching lib
 @a_sync.a_sync(cache_type='memory')
 @stuck_coro_debugger
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
@@ -127,7 +135,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     address = convert.to_address(address)
     logger.debug(f"contract creation block {address}")
     height = await dank_w3.eth.block_number
-
+'''"""
     if height == 0:
         raise NodeNotSynced(f'''
             `chain.height` returns 0 on your node, which means it is not fully synced.
@@ -169,6 +177,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
         logger.debug(f"contract creation block {address} -> {hi}")
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
+"""
 
 # this defaultdict prevents congestion in the contracts thread pool
 address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(1))
