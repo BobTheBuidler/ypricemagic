@@ -6,7 +6,7 @@ from typing import Optional
 
 from a_sync import a_sync
 from brownie import chain, convert
-from pony.orm import TransactionIntegrityError, commit, db_session
+from pony.orm import TransactionError, TransactionIntegrityError, commit, db_session
 
 from y._db.config import connection_settings
 from y._db.entities import Chain, Token, db
@@ -18,6 +18,9 @@ logger = logging.getLogger(__name__)
 try:
     db.bind(**connection_settings, create_db=True)
     db.generate_mapping(create_tables=True)
+except TransactionError as e:
+    if str(e) != "@db_session-decorated create_tables() function with `ddl` option cannot be called inside of another db_session":
+        raise e
 except TypeError as e:
     if not str(e).startswith('Database object was already bound to'):
         raise e
@@ -57,7 +60,7 @@ def get_token(address: str) -> Token:
         Token(chain=chain, address=address)
         commit()
         logger.debug('token %s added to ydb')
-    return Token.get(chain=chain, address=address)
+    return Token.get(chain=get_chain(sync=True), address=address)
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -100,4 +103,5 @@ def _get_token_bucket(address: str) -> Optional[str]:
 @a_sync(default='async', executor=executor)
 @db_session
 def _set_token_bucket(address: str, bucket: str) -> None:
-    get_token(address, sync=True).bucket = bucket
+    with suppress(ValueError):
+        get_token(address, sync=True).bucket = bucket
