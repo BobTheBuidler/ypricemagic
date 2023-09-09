@@ -1,12 +1,11 @@
 
-import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 from a_sync import a_sync
-from brownie import chain, convert
-from pony.orm import db_session
+from brownie import convert
+from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y._db.config import connection_settings
 from y._db.entities import Chain, Token, db
@@ -27,30 +26,21 @@ async def get_token_decimals(address: str) -> int:
         await _set_token_decimals(address, d)
     return d
 
-async def get_token_name(address: str) -> int:
-    n = await _get_token_name(address)
-    if n is None:
-        n = name(address)
-        await _set_token_name(address, n)
-    return n
-
-async def get_token_symbol(address: str) -> int:
-    s = await _get_token_symbol(address)
-    if s is None:
-        s = symbol(address)
-        await _set_token_symbol(address, s)
-    return s
 
 executor = ThreadPoolExecutor(16)
 
 @a_sync(default='async', executor=executor)
 @db_session
 def get_chain() -> Chain:
-    entity = Chain.get(id=chain.id)
-    if entity is None:
-        entity = Chain(id=chain.id)
-        logger.debug('chain %s added to ydb')
-    return entity
+    chain = Chain.get(id=chain.id)
+    if chain is None:
+        try:
+            chain = Chain(id=chain.id)
+            commit()
+            logger.debug('chain %s added to ydb')
+        except TransactionIntegrityError:
+            chain = Chain.get(id=chain.id)
+    return chain
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -59,11 +49,15 @@ def get_token(address: str) -> Token:
     if address == EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {EEE_ADDRESS}")
     chain = get_chain(sync=True)
-    entity = Token.get(chain=chain, address=address)
-    if entity is None:
-        entity = Token(chain=chain, address=address)
-        logger.debug('token %s added to ydb')
-    return entity
+    token = Token.get(chain=chain, address=address)
+    if token is None:
+        try:
+            token = Token(chain=chain, address=address)
+            commit()
+            logger.debug('token %s added to ydb')
+        except TransactionIntegrityError:
+            token = Token.get(chain=chain, address=address)
+    return token
 
 @a_sync(default='async', executor=executor)
 @db_session
