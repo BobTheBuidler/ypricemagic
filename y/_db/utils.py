@@ -1,10 +1,11 @@
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import suppress
 from typing import Optional
 
 from a_sync import a_sync
-from brownie import convert, chain
+from brownie import chain, convert
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y._db.config import connection_settings
@@ -14,9 +15,12 @@ from y.erc20 import decimals
 
 logger = logging.getLogger(__name__)
 
-db.bind(**connection_settings, create_db=True)
-
-db.generate_mapping(create_tables=True)
+try:
+    db.bind(**connection_settings, create_db=True)
+    db.generate_mapping(create_tables=True)
+except TypeError as e:
+    if not str(e).startswith('Database object was already bound to'):
+        raise e
 
 
 async def get_token_decimals(address: str) -> int:
@@ -32,15 +36,13 @@ executor = ThreadPoolExecutor(16)
 @a_sync(default='async', executor=executor)
 @db_session
 def get_chain() -> Chain:
-    c = Chain.get(id=chain.id)
-    if c is None:
-        try:
-            c = Chain(id=chain.id)
-            commit()
-            logger.debug('chain %s added to ydb')
-        except TransactionIntegrityError:
-            c = Chain.get(id=chain.id)
-    return c
+    if c:=Chain.get(id=chain.id):
+        return c
+    with suppress(TransactionIntegrityError):
+        Chain(id=chain.id)
+        commit()
+        logger.debug('chain %s added to ydb')
+    return Chain.get(id=chain.id)
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -49,15 +51,13 @@ def get_token(address: str) -> Token:
     if address == EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {EEE_ADDRESS}")
     chain = get_chain(sync=True)
-    token = Token.get(chain=chain, address=address)
-    if token is None:
-        try:
-            token = Token(chain=chain, address=address)
-            commit()
-            logger.debug('token %s added to ydb')
-        except TransactionIntegrityError:
-            token = Token.get(chain=chain, address=address)
-    return token
+    if token := Token.get(chain=chain, address=address):
+        return token
+    with suppress(TransactionIntegrityError):
+        Token(chain=chain, address=address)
+        commit()
+        logger.debug('token %s added to ydb')
+    return Token.get(chain=chain, address=address)
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -92,7 +92,10 @@ def _set_token_decimals(address: str, decimals: int) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _get_token_bucket(address: str) -> Optional[str]:
-    return get_token(address, sync=True).bucket
+    try:
+        return get_token(address, sync=True).bucket
+    except ValueError:
+        return None
 
 @a_sync(default='async', executor=executor)
 @db_session
