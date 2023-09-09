@@ -1,10 +1,11 @@
 
 import logging
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import suppress
 from typing import Optional
 
 from a_sync import a_sync
-from brownie import convert, chain
+from brownie import chain, convert
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y._db.config import connection_settings
@@ -32,15 +33,13 @@ executor = ThreadPoolExecutor(16)
 @a_sync(default='async', executor=executor)
 @db_session
 def get_chain() -> Chain:
-    c = Chain.get(id=chain.id)
-    if c is None:
-        try:
-            c = Chain(id=chain.id)
-            commit()
-            logger.debug('chain %s added to ydb')
-        except TransactionIntegrityError:
-            c = Chain.get(id=chain.id)
-    return c
+    if c:=Chain.get(id=chain.id):
+        return c
+    with suppress(TransactionIntegrityError):
+        Chain(id=chain.id)
+        commit()
+        logger.debug('chain %s added to ydb')
+    return Chain.get(id=chain.id)
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -49,15 +48,13 @@ def get_token(address: str) -> Token:
     if address == EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {EEE_ADDRESS}")
     chain = get_chain(sync=True)
-    token = Token.get(chain=chain, address=address)
-    if token is None:
-        try:
-            token = Token(chain=chain, address=address)
-            commit()
-            logger.debug('token %s added to ydb')
-        except TransactionIntegrityError:
-            token = Token.get(chain=chain, address=address)
-    return token
+    if token := Token.get(chain=chain, address=address):
+        return token
+    with suppress(TransactionIntegrityError):
+        Token(chain=chain, address=address)
+        commit()
+        logger.debug('token %s added to ydb')
+    return Token.get(chain=chain, address=address)
 
 @a_sync(default='async', executor=executor)
 @db_session
