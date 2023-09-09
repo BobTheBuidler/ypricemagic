@@ -32,14 +32,21 @@ logger = logging.getLogger(__name__)
 async def check_bucket(
     token: AnyAddressType
     ) -> str:
+    from y import _db
 
     token_address = convert.to_address(token)
     logger = get_price_logger(token_address, block=None, extra='buckets')
+    
+    bucket = await _db.utils._get_token_bucket(token_address)
+    if bucket:
+        logger.debug('returning bucket %s from ydb', bucket)
+        return bucket
 
     # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
     for bucket, check in string_matchers.items():
         if check(token):
             logger.debug(f"{token_address} is {bucket}")
+            await _db.utils._set_token_bucket(token, bucket)
             return bucket
         else:
             logger.debug(f"{token_address} is not {bucket}")
@@ -58,6 +65,7 @@ async def check_bucket(
             logger.debug(f"{token_address} is {bucket}")
             for fut in futs:
                 fut.cancel()
+            await _db.utils._set_token_bucket(token, bucket)
             return bucket
         else:
             logger.debug(f"{token_address} is not {bucket}")
@@ -93,7 +101,9 @@ async def check_bucket(
         bucket = 'yearn or yearn-like'
     elif curve and await curve.get_pool(token_address, sync=False):                   
         bucket = 'curve lp'
-    logger.debug(f"{token_address} bucket is {bucket}")
+    if bucket:
+        logger.debug(f"{token_address} bucket is {bucket}")
+        await _db.utils._set_token_bucket(token, bucket)
     return bucket
 
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)

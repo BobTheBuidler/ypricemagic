@@ -86,31 +86,47 @@ class ERC20(ContractBase):
         if self.address == EEE_ADDRESS:
             return "ETH"
         
-        symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
+        from y import _db
+
+        symbol = await _db.utils._get_token_symbol(self.address)
         if symbol:
             return symbol
         
-        # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
-        symbol = await probe(self.address, ["symbol()(bytes32)"])
+        symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
+        if symbol is None:
+            # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
+            symbol = await probe(self.address, ["symbol()(bytes32)"])
+            if symbol:
+                symbol = hex_to_string(symbol)
+        
         if symbol:
-            return hex_to_string(symbol)
-
+            await _db.utils._set_token_symbol(self.address, symbol)
+            return symbol
+        
         # we've failed to fetch
         self.__raise_exception('symbol')
     
-    @a_sync.aka.cached_property
+    @a_sync.aka.property
     async def name(self) -> str:
         if self.address == EEE_ADDRESS:
             return "Ethereum"
         
-        name = await probe(self.address, ["name()(string)", "NAME()(string)", "getName()(string)"])
+        from y import _db
+
+        name = await _db.utils._get_token_name(self.address)
         if name:
             return name
         
-        # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
-        name = await probe(self.address, ["name()(bytes32)"])
+        name = await probe(self.address, ["name()(string)", "NAME()(string)", "getName()(string)"])
+        if name is None:
+            # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
+            name = await probe(self.address, ["name()(bytes32)"])
+            if name:
+                name = hex_to_string(name)
+        
         if name:
-            return hex_to_string(name)
+            await _db.utils._set_token_name(self.address, name)
+            return name
                 
         # we've failed to fetch
         self.__raise_exception('name')
@@ -119,17 +135,15 @@ class ERC20(ContractBase):
     async def decimals(self) -> int:
         if self.address == EEE_ADDRESS:
             return 18
-        return await decimals(self.address, sync=False)
+        from y._db.utils import get_token_decimals
+        return await get_token_decimals(self.address)
 
     @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
         '''used to fetch decimals at specific block'''
         if self.address == EEE_ADDRESS:
             return 18
-        retval = await decimals(self.address, block=block, sync=False)
-        if asyncio.iscoroutine(retval):
-            raise Exception(retval)
-        return retval
+        return await decimals(self.address, block=block, sync=False)
     
     @a_sync.aka.cached_property
     async def scale(self) -> int:
