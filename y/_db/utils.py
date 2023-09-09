@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 from a_sync import a_sync
-from brownie import convert
+from brownie import convert, chain
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y._db.config import connection_settings
@@ -32,15 +32,15 @@ executor = ThreadPoolExecutor(16)
 @a_sync(default='async', executor=executor)
 @db_session
 def get_chain() -> Chain:
-    chain = Chain.get(id=chain.id)
-    if chain is None:
+    c = Chain.get(id=chain.id)
+    if c is None:
         try:
-            chain = Chain(id=chain.id)
+            c = Chain(id=chain.id)
             commit()
             logger.debug('chain %s added to ydb')
         except TransactionIntegrityError:
-            chain = Chain.get(id=chain.id)
-    return chain
+            c = Chain.get(id=chain.id)
+    return c
 
 @a_sync(default='async', executor=executor)
 @db_session
