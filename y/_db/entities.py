@@ -1,7 +1,8 @@
 
 from datetime import datetime
 
-from pony.orm import Database, Optional, PrimaryKey, Required, Set
+from pony.orm import (Database, Optional, PrimaryKey, Required, Set,
+                      composite_key)
 
 db = Database()
 
@@ -22,7 +23,7 @@ class _AsyncEntityMixin:
     
 class Chain(db.Entity, _AsyncEntityMixin):
     _pk = PrimaryKey(int, auto=True)
-    id = Required(int, lazy=True)
+    id = Required(int, unique=True, lazy=True)
 
     blocks = Set("Block")
     addresses = Set("Address")
@@ -33,6 +34,9 @@ class Block(db.Entity, _AsyncEntityMixin):
     number = Required(int, lazy=True)
     hash = Optional(int, lazy=True)
     timestamp = Optional(datetime, lazy=True)
+    
+    composite_key(chain, number)
+    composite_key(chain, hash)
 
     contracts_deployed = Set("Contract", reverse="deploy_block")
 
@@ -41,6 +45,8 @@ class Address(db.Entity, _AsyncEntityMixin):
     chain = Required(Chain, lazy=True, reverse="addresses")
     address = Required(str, lazy=True)
     notes = Optional(str, lazy=True)
+    
+    composite_key(chain, address)
 
     contracts_deployed = Set("Contract", reverse="deployer")
 
