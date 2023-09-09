@@ -89,7 +89,10 @@ def _set_token_decimals(address: str, decimals: int) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _get_token_bucket(address: str) -> Optional[str]:
-    return get_token(address, sync=True).bucket
+    try:
+        return get_token(address, sync=True).bucket
+    except ValueError:
+        return None
 
 @a_sync(default='async', executor=executor)
 @db_session
