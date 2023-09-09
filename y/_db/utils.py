@@ -15,9 +15,12 @@ from y.erc20 import decimals
 
 logger = logging.getLogger(__name__)
 
-db.bind(**connection_settings, create_db=True)
-
-db.generate_mapping(create_tables=True)
+try:
+    db.bind(**connection_settings, create_db=True)
+    db.generate_mapping(create_tables=True)
+except TypeError as e:
+    if not str(e).startswith('Database object was already bound to'):
+        raise e
 
 
 async def get_token_decimals(address: str) -> int:
