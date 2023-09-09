@@ -57,7 +57,7 @@ def get_token(address: str) -> Token:
         Token(chain=chain, address=address)
         commit()
         logger.debug('token %s added to ydb')
-    return Token.get(chain=chain, address=address)
+    return Token.get(chain=get_chain(sync=True), address=address)
 
 @a_sync(default='async', executor=executor)
 @db_session
