@@ -165,11 +165,17 @@ def _get_logs(
             ''' It will not impact your scripts. ''' 
             response.remove(log)
     return response
-
-get_logs_semaphore = BlockSemaphore(thread_pool_executor._max_workers * 10, name="y.get_logs")
+import threading
+get_logs_semaphore = defaultdict(
+    lambda: BlockSemaphore(
+        thread_pool_executor._max_workers * 10, 
+        # We need to do this in case users use the sync api in a multithread context
+        name="y.get_logs" + "" if threading.current_thread() == threading.main_thread() else f".{threading.current_thread()}",
+    )
+)
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
-    async with get_logs_semaphore[end]:
+    async with get_logs_semaphore[threading.current_thread()][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
