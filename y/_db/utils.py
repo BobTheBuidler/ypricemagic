@@ -95,13 +95,13 @@ def _set_token_decimals(address: str, decimals: int) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _get_token_bucket(address: str) -> Optional[str]:
-    try:
-        return get_token(address, sync=True).bucket
-    except ValueError:
-        return None
+    if address == EEE_ADDRESS:
+        return
+    return get_token(address, sync=True).bucket
 
 @a_sync(default='async', executor=executor)
 @db_session
 def _set_token_bucket(address: str, bucket: str) -> None:
-    with suppress(ValueError):
-        get_token(address, sync=True).bucket = bucket
+    if address == EEE_ADDRESS:
+        return
+    get_token(address, sync=True).bucket = bucket
