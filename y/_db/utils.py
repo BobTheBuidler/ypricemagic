@@ -10,7 +10,7 @@ from pony.orm import (BindingError, TransactionError,
                       TransactionIntegrityError, commit, db_session)
 
 from y._db.config import connection_settings
-from y._db.entities import Chain, Token, db
+from y._db.entities import Address, Chain, Token, db
 from y.constants import EEE_ADDRESS
 from y.erc20 import decimals
 
@@ -54,14 +54,19 @@ def get_token(address: str) -> Token:
     address = convert.to_address(address)
     if address == EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {EEE_ADDRESS}")
-    chain = get_chain(sync=True)
-    if token := Token.get(chain=chain, address=address):
-        return token
-    with suppress(TransactionIntegrityError):
-        Token(chain=chain, address=address)
-        commit()
-        logger.debug('token %s added to ydb')
-    return Token.get(chain=get_chain(sync=True), address=address)
+    while True:
+        if entity := Address.get(chain=get_chain(sync=True), address=address):
+            if isinstance(entity, Token):
+                return entity
+            entity.delete()
+            commit()
+        with suppress(TransactionIntegrityError):
+            Token(chain=get_chain(sync=True), address=address)
+            commit()
+            logger.debug('token %s added to ydb')
+        if token := Token.get(chain=get_chain(sync=True), address=address):
+            return token
+    return token
 
 @a_sync(default='async', executor=executor)
 @db_session
