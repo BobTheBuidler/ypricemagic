@@ -6,10 +6,11 @@ from typing import Optional
 
 from a_sync import a_sync
 from brownie import chain, convert
-from pony.orm import TransactionError, TransactionIntegrityError, commit, db_session
+from pony.orm import (BindingError, TransactionError,
+                      TransactionIntegrityError, commit, db_session)
 
 from y._db.config import connection_settings
-from y._db.entities import Chain, Token, db
+from y._db.entities import Address, Chain, Token, db
 from y.constants import EEE_ADDRESS
 from y.erc20 import decimals
 
@@ -21,7 +22,7 @@ try:
 except TransactionError as e:
     if str(e) != "@db_session-decorated create_tables() function with `ddl` option cannot be called inside of another db_session":
         raise e
-except TypeError as e:
+except BindingError as e:
     if not str(e).startswith('Database object was already bound to'):
         raise e
 
@@ -53,14 +54,19 @@ def get_token(address: str) -> Token:
     address = convert.to_address(address)
     if address == EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {EEE_ADDRESS}")
-    chain = get_chain(sync=True)
-    if token := Token.get(chain=chain, address=address):
-        return token
-    with suppress(TransactionIntegrityError):
-        Token(chain=chain, address=address)
-        commit()
-        logger.debug('token %s added to ydb')
-    return Token.get(chain=get_chain(sync=True), address=address)
+    while True:
+        if entity := Address.get(chain=get_chain(sync=True), address=address):
+            if isinstance(entity, Token):
+                return entity
+            entity.delete()
+            commit()
+        with suppress(TransactionIntegrityError):
+            Token(chain=get_chain(sync=True), address=address)
+            commit()
+            logger.debug('token %s added to ydb')
+        if token := Token.get(chain=get_chain(sync=True), address=address):
+            return token
+    return token
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -95,13 +101,13 @@ def _set_token_decimals(address: str, decimals: int) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _get_token_bucket(address: str) -> Optional[str]:
-    try:
-        return get_token(address, sync=True).bucket
-    except ValueError:
-        return None
+    if address == EEE_ADDRESS:
+        return
+    return get_token(address, sync=True).bucket
 
 @a_sync(default='async', executor=executor)
 @db_session
 def _set_token_bucket(address: str, bucket: str) -> None:
-    with suppress(ValueError):
-        get_token(address, sync=True).bucket = bucket
+    if address == EEE_ADDRESS:
+        return
+    get_token(address, sync=True).bucket = bucket
