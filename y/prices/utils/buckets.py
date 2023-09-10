@@ -5,7 +5,6 @@ from typing import Awaitable, Callable, Tuple
 import a_sync
 
 from y import convert
-import y._db.utils as db
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
 from y.prices import convex, one_to_one, popsicle, solidex, yearn
@@ -33,7 +32,8 @@ logger = logging.getLogger(__name__)
 async def check_bucket(
     token: AnyAddressType
     ) -> str:
-    from y import _db
+
+    import y._db.utils as db
 
     token_address = convert.to_address(token)
     logger = get_price_logger(token_address, block=None, extra='buckets')
@@ -102,8 +102,8 @@ async def check_bucket(
         bucket = 'yearn or yearn-like'
     elif curve and await curve.get_pool(token_address, sync=False):                   
         bucket = 'curve lp'
+    logger.debug(f"{token_address} bucket is {bucket}")
     if bucket:
-        logger.debug(f"{token_address} bucket is {bucket}")
         await db._set_token_bucket(token, bucket)
     return bucket
 
