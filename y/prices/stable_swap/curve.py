@@ -160,7 +160,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         except ValueError:
             balances = await asyncio.gather(*[self._get_balance(i, block) for i, _ in enumerate(coins)])
 
-        if not any(balances):
+        if all(b is None for b in balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
 
         return {
@@ -415,11 +415,15 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     
     @a_sync.a_sync(cache_type='memory')
     async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
+        total_supply = await ERC20(token, asynchronous=True).total_supply_readable(block)
+        if total_supply == 0:
+            logger.error(f"total_supply=0 for token {str(token)}")
+            return 0
         pool = await self.get_pool(token, sync=False)
         tvl = await pool.get_tvl(block=block, sync=False)
         if tvl is None:
             return None
-        return tvl / await ERC20(token, asynchronous=True).total_supply_readable(block)
+        return tvl / total_supply
 
     @a_sync.a_sync(cache_type='memory')
     async def get_pool(self, token: AnyAddressType) -> CurvePool:
