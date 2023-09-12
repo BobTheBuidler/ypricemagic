@@ -416,8 +416,9 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.a_sync(cache_type='memory')
     async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
         total_supply = await ERC20(token, asynchronous=True).total_supply_readable(block)
-        if total_supply == 0:
-            logger.error(f"total_supply=0 for token {str(token)}")
+        # as seen on rekt curve factory pool alETH(0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e) for blocks [17806772..17807227]
+        if total_supply <= 1e-18:
+            logger.error(f"total_supply={total_supply} for token {str(token)}")
             return 0
         pool = await self.get_pool(token, sync=False)
         tvl = await pool.get_tvl(block=block, sync=False)
