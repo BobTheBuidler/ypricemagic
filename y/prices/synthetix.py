@@ -53,7 +53,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         proxy_erc20 = await self.get_address('ProxyERC20', sync=False)
         synth_count = await proxy_erc20.availableSynthCount.coroutine()
         synths = await asyncio.gather(*[proxy_erc20.availableSynths.coroutine(i) for i in range(synth_count)])
-        logger.info(f'loaded {len(synths)} synths')
+        logger.info('loaded %s synths', len(synths))
         return synths
         
     async def is_synth(self, token: AnyAddressType) -> bool:

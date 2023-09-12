@@ -57,14 +57,14 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
             v2: BalancerV2 = await self.v2
             price = await v2.get_token_price(token_address, block, sync=False)
             if price:
-                logger.debug(f"balancer v2 -> ${price}")
+                logger.debug("balancer v2 -> $%s", price)
                 return price
 
         if not price and chain.id == Network.Mainnet:   
             v1: BalancerV1 = await self.v1   
             price = await v1.get_token_price(token_address, block, sync=False)
             if price:
-                logger.debug(f"balancer v1 -> ${price}")
+                logger.debug("balancer v1 -> $%s", price)
                 return price
 
 balancer_multiplexer = BalancerMultiplexer(asynchronous=True)

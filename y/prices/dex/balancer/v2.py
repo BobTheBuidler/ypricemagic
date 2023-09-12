@@ -87,7 +87,7 @@ class BalancerV2Vault(ContractBase):
             pool_balance = pool_balance[0]
             if pool_balance > deepest_pool['balance']:
                 deepest_pool = {'pool': pool, 'balance': pool_balance}
-        logger.debug(f"deepest pool {deepest_pool}")
+        logger.debug("deepest pool %s", deepest_pool)
         return tuple(deepest_pool.values())
 
 

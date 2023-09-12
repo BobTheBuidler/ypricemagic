@@ -177,7 +177,7 @@ class Comptroller(ContractBase):
             logger.warning(f'had trouble loading markets for {self.__repr__()}')
             response = set()
         markets = tuple(CToken(market, comptroller=self, asynchronous=self.asynchronous) for market in response)
-        logger.info(f"loaded {len(markets)} markets for {self.__repr__()}")
+        logger.info("loaded %s markets for %s", len(markets), self.__repr__())
         return markets
     
     async def oracle(self, block: Optional[Block] = None) -> Contract:

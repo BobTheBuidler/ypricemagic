@@ -264,7 +264,7 @@ class UniswapRouterV2(ContractBase):
             logger.debug('smol')
         
         fees = 0.997 ** (len(path) - 1)
-        logger.debug(f'router: {self.label}     path: {path}')
+        logger.debug('router: %s     path: %s', self.label, path)
         quote, out_scale = await asyncio.gather(self.get_quote(amount_in, path, block=block, sync=False), ERC20(path[-1],asynchronous=True).scale)
         if quote is not None:
             amount_out = quote[-1] / out_scale
@@ -318,7 +318,7 @@ class UniswapRouterV2(ContractBase):
     @a_sync.aka.cached_property
     async def pools(self) -> Dict[Address,Dict[Address,Address]]:
         PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
-        logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
+        logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         try:
             logs = await get_logs_asap(self.factory, PairCreated, sync=False)
             pairs, pools = await _parse_pairs_from_events(logs)
@@ -334,15 +334,15 @@ class UniswapRouterV2(ContractBase):
                 for id, pair in pairs.items():
                     if id > all_pairs_len:
                         logger.debug(id, pair)
-            logger.debug(f'factory: {self.factory}')
-            logger.debug(f'len pairs: {len(pairs)}')
-            logger.debug(f'len allPairs: {all_pairs_len}')
+            logger.debug('factory: %s', self.factory)
+            logger.debug('len pairs: %s', len(pairs))
+            logger.debug('len allPairs: %s', all_pairs_len)
             # TODO debug why this scenario occurs. Likely a strange interation between asyncio and joblib, or an incorrect cache value. 
             #raise ValueError("Returning more pairs than allPairsLength, something is wrong.")
         else: # <
-            logger.debug(f"Oh no! Looks like your node can't look back that far. Checking for the missing {all_pairs_len - len(pairs)} pools...")
+            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pairs))
             pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in pairs]
-            logger.debug(f'pools: {pools_your_node_couldnt_get}')
+            logger.debug('pools: %s', pools_your_node_couldnt_get)
             pools_your_node_couldnt_get = await multicall_same_func_same_contract_different_inputs(
                 self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get], sync=False
             )
@@ -369,7 +369,7 @@ class UniswapRouterV2(ContractBase):
             token0, token1 = tokens.values()
             pool_mapping[token0][pool] = token1
             pool_mapping[token1][pool] = token0
-        logger.info(f'Loaded {len(await self.__pools__(sync=False))} pools supporting {len(pool_mapping)} tokens on {self.label}')
+        logger.info('Loaded %s pools supporting %s tokens on %s', len(await self.__pools__(sync=False)), len(pool_mapping), self.label)
         return pool_mapping
 
     async def pools_for_token(self, token_address: Address, block: Optional[Block] = None) -> Dict[Address,Address]:

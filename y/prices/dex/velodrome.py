@@ -53,12 +53,12 @@ class VelodromeRouterV2(SolidlyRouterBase):
             token0, token1, stable = params.values()
             pool_mapping[token0][pool] = token1
             pool_mapping[token1][pool] = token0
-        logger.info(f'Loaded {len(await self.__pools__(sync=False))} pools supporting {len(pool_mapping)} tokens on {self.label}')
+        logger.info('Loaded %s pools supporting %s tokens on %s', len(await self.__pools__(sync=False)), len(pool_mapping), self.label)
         return pool_mapping
     
     @a_sync.aka.cached_property
     async def pools(self) -> Dict[Address, Dict[Address,Address]]:
-        logger.info(f'Fetching pools for {self.label} on {Network.printable()}. If this is your first time using ypricemagic, this can take a while. Please wait patiently...')
+        logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         try:
             factory = await Contract.coroutine(self.factory)
             if 'PoolCreated' not in factory.topics:
@@ -81,9 +81,9 @@ class VelodromeRouterV2(SolidlyRouterBase):
         if len(pools) == all_pairs_len:
             return pools
         else:
-            logger.debug(f"Oh no! Looks like your node can't look back that far. Checking for the missing {all_pairs_len - len(pools)} pools...")
+            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pools))
             pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
-            logger.debug(f'pools: {pools_your_node_couldnt_get}')
+            logger.debug('pools: %s', pools_your_node_couldnt_get)
             pools_your_node_couldnt_get = await asyncio.gather(
                 *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
             )
