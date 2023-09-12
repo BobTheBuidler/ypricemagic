@@ -46,11 +46,11 @@ async def check_bucket(
     # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
     for bucket, check in string_matchers.items():
         if check(token):
-            logger.debug(f"{token_address} is {bucket}")
+            logger.debug("%s is %s", token_address, bucket)
             await db._set_token_bucket(token, bucket)
             return bucket
         else:
-            logger.debug(f"{token_address} is not {bucket}")
+            logger.debug("%s is not %s", token_address, bucket)
 
     # check these first, these just require calls
     futs = [asyncio.ensure_future(_check_bucket_helper(bucket, check, token_address)) for bucket, check in calls_only.items()]
@@ -58,18 +58,18 @@ async def check_bucket(
         try:
             bucket, is_member = await fut
         except Exception as e:
-            logger.warning(f"{e} when checking {fut}. This will probably not impact your run.")
+            logger.warning("%s when checking %s. This will probably not impact your run.", e, fut)
             logger.warning(e, exc_info=True)
             continue
 
         if is_member:
-            logger.debug(f"{token_address} is {bucket}")
+            logger.debug("%s is %s", token_address, bucket)
             for fut in futs:
                 fut.cancel()
             await db._set_token_bucket(token, bucket)
             return bucket
         else:
-            logger.debug(f"{token_address} is not {bucket}")
+            logger.debug("%s is not %s", token_address, bucket)
             bucket = None
 
     # TODO: Refactor the below like the above
@@ -102,7 +102,7 @@ async def check_bucket(
         bucket = 'yearn or yearn-like'
     elif curve and await curve.get_pool(token_address, sync=False):                   
         bucket = 'curve lp'
-    logger.debug(f"{token_address} bucket is {bucket}")
+    logger.debug("%s bucket is %s", token_address, bucket)
     if bucket:
         await db._set_token_bucket(token, bucket)
     return bucket

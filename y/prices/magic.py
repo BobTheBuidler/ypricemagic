@@ -124,7 +124,7 @@ async def _get_price(
         symbol = None
 
     logger = get_price_logger(token, block, 'magic')
-    logger.debug(f'fetching price for {symbol}')
+    logger.debug('fetching price for %s', symbol)
     logger._debugger = asyncio.create_task(_debug_tsk(symbol, logger))
 
     # Helps to detect stuck code
@@ -136,17 +136,17 @@ async def _get_price(
 
         if ypriceapi.should_use and token not in ypriceapi.skip_tokens:
             price = await ypriceapi.get_price(token, block)
-            logger.debug(f"ypriceapi -> {price}")
+            logger.debug("ypriceapi -> %s", price)
             if price is not None:
-                logger.debug(f"{symbol} price: {price}")
+                logger.debug("%s price: %s", symbol, price)
                 logger._debugger.cancel()
                 return price
 
         price = await _exit_early_for_known_tokens(token, block=block)
-        logger.debug(f"early exit -> {price}")
+        logger.debug("early exit -> %s", price)
         if price is not None:
             await _sense_check(token, price)
-            logger.debug(f"{symbol} price: {price}")
+            logger.debug("%s price: %s", symbol, price)
             logger._debugger.cancel()
             return price
         
@@ -168,9 +168,9 @@ async def _get_price(
         # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
         if price is None or price == 0:
             new_price = await balancer_multiplexer.get_price(token, block=block, sync=False)
-            logger.debug(f"balancer -> {price}")
+            logger.debug("balancer -> %s", price)
             if new_price:
-                logger.debug(f"replacing price {price} with new price {new_price}")
+                logger.debug("replacing price %s with new price %s", price, new_price)
                 price = new_price
 
         if price is None:
@@ -178,7 +178,7 @@ async def _get_price(
         if price:
             await _sense_check(token, price)
 
-        logger.debug(f"{symbol} price: {price}")
+        logger.debug("%s price: %s", symbol, price)
         # Don't need this anymore
         logger._debugger.cancel()
         return price
@@ -267,4 +267,4 @@ async def _debug_tsk(symbol: str, logger: logging.Logger) -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns"""
     while True:
         await asyncio.sleep(60)
-        logger.debug(f"price still fetching for {symbol}")
+        logger.debug("price still fetching for %s", symbol)

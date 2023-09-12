@@ -200,7 +200,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
                     self._cached_feeds[log["asset"]] = ERC20(log["latestAggregator"], asynchronous=self.asynchronous)
         
         self._feeds_loaded.set()
-        logger.info(f'loaded {len(self._cached_feeds)} feeds')
+        logger.info('loaded %s feeds', len(self._cached_feeds))
         
         while await dank_w3.eth.block_number < block+1:
             await asyncio.sleep(15)
@@ -211,7 +211,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
                 if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
                     asset, latest_aggregator = log["asset"], log["latestAggregator"]
                     self._cached_feeds[asset] = ERC20(latest_aggregator, asynchronous=self.asynchronous)
-                    logger.info(f'loaded new feed {latest_aggregator}')
+                    logger.info('loaded new feed %s', latest_aggregator)
 
     @a_sync.aka.property
     async def feeds(self) -> Dict[ERC20, str]:
@@ -254,7 +254,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
                 self.feed_scale(asset, sync=False),
             )
         except ValueError as e:
-            logger.debug(feed.address)
+            logger.debug("error for feed address %s:", feed.address)
             logger.debug(str(e))
             return None
 

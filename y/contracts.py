@@ -72,7 +72,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
     """
     address = convert.to_address(address)
-    logger.debug(f"contract creation block {address}")
+    logger.debug("contract creation block %s", address)
     height = chain.height
 
     if height == 0:
@@ -109,11 +109,11 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             barrier = mid
             lo = mid
     if hi == lo + 1 == barrier + 1 and when_no_history_return_0:
-        logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
-        logger.debug(f"contract creation block {address} -> 0")
+        logger.warning('could not determine creation block for %s on %s (deployed prior to barrier)', address, Network.name())
+        logger.debug("contract creation block %s -> 0", address)
         return 0
     if hi != height:
-        logger.debug(f"contract creation block {address} -> {hi}")
+        logger.debug("contract creation block %s -> %s", address, hi)
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 

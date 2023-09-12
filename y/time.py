@@ -58,10 +58,10 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
-        logger.debug(f'block: {str(mid)}')
+        logger.debug('block: %s', str(mid))
         mid_ts = get_block_timestamp(mid)
         mid_date = datetime.date.fromtimestamp(mid_ts)
-        logger.debug(f'mid: {mid_date}')
+        logger.debug('mid: %s', mid_date)
         logger.debug(date)
         if mid_date > date:
             hi = mid
@@ -69,7 +69,7 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
             lo = mid
     hi = hi - 1
     block = hi if hi != height else None
-    logger.debug(f'last {Network.name()} block on date {date} -> {block}')
+    logger.debug('last %s block on date %s -> %s', Network.name(), date, block)
     return block
 
 class UnixTimestamp(int):
@@ -94,7 +94,7 @@ def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed
             time.sleep(.2)
     check_node()
     block = _closest_block_after_timestamp_cached(timestamp)
-    logger.debug(f'closest {Network.name()} block after timestamp {timestamp} -> {block}')
+    logger.debug('closest %s block after timestamp %s -> %s', Network.name(), timestamp, block)
     return block
 
 @a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)

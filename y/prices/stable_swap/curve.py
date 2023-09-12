@@ -372,7 +372,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
         await asyncio.gather(*[self._load_factory(factory) for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]])
         if not self._all_loaded.is_set():
-            logger.info(f'loaded {len(self.token_to_pool)} pools from {len(self.registries)} registries and {len(self.factories)} factories')
+            logger.info('loaded %s pools from %s registries and %s factories', len(self.token_to_pool), len(self.registries), len(self.factories))
             self._all_loaded.set()
     
     async def load_all(self) -> None:

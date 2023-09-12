@@ -123,7 +123,7 @@ async def get_chains() -> Dict[int, str]:
 async def chain_supported(chainid: int) -> bool:
     if chainid in await get_chains():
         return True
-    logger.info(f'ypriceAPI does not support {Network.name()} at this time.')
+    logger.info('ypriceAPI does not support %s at this time.', Network.name())
     return False
 
 async def get_price(
@@ -177,17 +177,17 @@ async def read_response(response: ClientResponse, token: Optional[Address] = Non
             
     # 404
     elif response.status == HTTPStatus.NOT_FOUND and token and block:
-        logger.debug(f"Failed to get price from API: {token} at {block}")
+        logger.debug("Failed to get price from API: %s at %s", token, block)
 
     # Server Errors
     
     # 502 & 503
     elif response.status in {HTTPStatus.BAD_GATEWAY, HTTPStatus.SERVICE_UNAVAILABLE}:
-        logger.warning(f"ypriceAPI returned status code {_get_err_reason(response)}")
+        logger.warning("ypriceAPI returned status code %s", _get_err_reason(response))
         try:
             msg = await response.json(content_type=None) or await response.text()
         except Exception:
-            logger.warning(f'exception decoding ypriceapi {response.status} response.{FALLBACK_STR}', exc_info=True)
+            logger.warning('exception decoding ypriceapi %s response.%s', response.status, FALLBACK_STR, exc_info=True)
             msg = ''
         if msg:
             logger.warning(msg)
@@ -210,7 +210,7 @@ def _get_err_reason(response: ClientResponse) -> str:
     
 def _set_resume_at(retry_after: float) -> None:
     global resume_at
-    logger.info(f"Falling back to your node for {int(retry_after/60)} minutes.")
+    logger.info("Falling back to your node for %s minutes.", int(retry_after/60))
     resume_from_this_err_at = time() + retry_after
     if resume_from_this_err_at > resume_at:
         resume_at = resume_from_this_err_at

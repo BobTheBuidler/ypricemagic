@@ -185,7 +185,7 @@ def _get_logs_no_cache(
     start: Block,
     end: Block
     ) -> List[LogReceipt]:
-    logger.debug(f'fetching logs {start} to {end}')
+    logger.debug('fetching logs %s to %s', start, end)
     try:
         if address is None:
             response = web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})

@@ -28,4 +28,4 @@ def _get_ethereum_client(client: str) -> str:
         return 'erigon'
     if client.lower().startswith('geth'):
         return 'geth'
-    logger.debug(f"client: {client}")
+    logger.debug("client: %s", client)
