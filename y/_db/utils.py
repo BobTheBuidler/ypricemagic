@@ -45,7 +45,7 @@ def get_chain() -> Chain:
     with suppress(TransactionIntegrityError):
         Chain(id=chain.id)
         commit()
-        logger.debug('chain %s added to ydb')
+        logger.debug('chain %s added to ydb', chain.id)
     return Chain.get(id=chain.id)
 
 @a_sync(default='async', executor=executor)
@@ -63,7 +63,7 @@ def get_token(address: str) -> Token:
         with suppress(TransactionIntegrityError):
             Token(chain=get_chain(sync=True), address=address)
             commit()
-            logger.debug('token %s added to ydb')
+            logger.debug('token %s added to ydb', address)
         if token := Token.get(chain=get_chain(sync=True), address=address):
             return token
     return token
