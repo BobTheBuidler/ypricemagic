@@ -134,16 +134,14 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
         # TODO make this properly async after extending for brownie ContractTx
         results = await fetch_multicall(
-            *[
-                [quoter, 'quoteExactInput', self._encode_path(path), amount_in]
-                for path in paths
-            ],
+            *[[quoter, 'quoteExactInput', self._encode_path(path), amount_in] for path in paths],
             block=block,
             sync=False
         )
 
+        # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
         outputs = [
-            amount / self._undo_fees(path) / 1e6
+            (amount if isinstance(amount, int) else amount[0]) / self._undo_fees(path) / 1e6
             for amount, path in zip(results, paths)
             if amount
         ]
