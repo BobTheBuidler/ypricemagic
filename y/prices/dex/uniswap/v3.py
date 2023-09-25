@@ -119,7 +119,9 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         block: Optional[Block] = None,
         ignore_pools: Tuple[Pool, ...] = (),
         ) -> Optional[UsdPrice]:
-        if block and block < await contract_creation_block_async(UNISWAP_V3_QUOTER, True):
+
+        quoter = await self.__quoter__(sync=False)
+        if block and block < await contract_creation_block_async(quoter, True):
             return None
 
         paths = [[token, fee, usdc.address] for fee in self.fee_tiers]
@@ -128,7 +130,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
                 [token, fee, weth.address, self.fee_tiers[0], usdc.address] for fee in self.fee_tiers
             ]
 
-        quoter, amount_in = await asyncio.gather(self.__quoter__(sync=False), ERC20(token, asynchronous=True).scale)
+        amount_in = await ERC20(token, asynchronous=True).scale
 
         # TODO make this properly async after extending for brownie ContractTx
         results = await fetch_multicall(
