@@ -1,8 +1,8 @@
 import asyncio
 import logging
 from collections import defaultdict
-from contextlib import suppress
 from enum import IntEnum
+from functools import cached_property
 from typing import Dict, List, NoReturn, Optional, Tuple
 
 import a_sync
@@ -233,12 +233,32 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         self.pools = set()
         self.token_to_pool = dict()  # lp_token -> pool
 
-        self._address_providers_loading = a_sync.Event()
-        self._address_providers_loaded = a_sync.Event()
-        self._registries_loaded = a_sync.Event()
         self._loaded_registries = set()
-        self._all_loading = a_sync.Event()
-        self._all_loaded = a_sync.Event()
+    
+    @cached_property
+    def _address_providers_loading(self) -> a_sync.Event:
+        """A helper function to ensure the Event is attached to the correct loop."""
+        return a_sync.Event()
+    
+    @cached_property
+    def _address_providers_loaded(self) -> a_sync.Event:
+        """A helper function to ensure the Event is attached to the correct loop."""
+        return a_sync.Event()
+    
+    @cached_property
+    def _registries_loaded(self) -> a_sync.Event:
+        """A helper function to ensure the Event is attached to the correct loop."""
+        return a_sync.Event()
+    
+    @cached_property
+    def _all_loading(self) -> a_sync.Event:
+        """A helper function to ensure the Event is attached to the correct loop."""
+        return a_sync.Event()
+    
+    @cached_property
+    def _all_loaded(self) -> a_sync.Event:
+        """A helper function to ensure the Event is attached to the correct loop."""
+        return a_sync.Event()
     
     def __repr__(self) -> str:
         return "<CurveRegistry>"
