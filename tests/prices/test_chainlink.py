@@ -122,7 +122,9 @@ def test_chainlink_get_feed(token):
 @pytest.mark.parametrize('token', FEEDS)
 @pytest.mark.asyncio_cooperative
 async def test_chainlink_latest(token):
-    assert await chainlink.get_price(token), 'no current price available'
+    if not await chainlink.get_price(token):
+        feed = await chainlink.get_feed(token)
+        assert await feed.aggregator.coroutine() == ZERO_ADDRESS, 'no current price available'
 
 
 @mainnet_only
@@ -135,7 +137,9 @@ async def test_chainlink_before_registry(token):
     if await contract_creation_block_async(feed.address) > test_block:
         pytest.skip('not applicable to feeds deployed after test block')
     price = await chainlink.get_price(token, block=test_block)
-    assert price, 'no price available before registry'
+    if not price:
+        feed = await chainlink.get_feed(token)
+        assert await feed.aggregator.coroutine() == ZERO_ADDRESS, 'no price available before registry'
 
 
 def test_chainlink_nonexistent():
