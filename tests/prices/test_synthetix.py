@@ -10,7 +10,7 @@ try:
     async_synthetix = Synthetix(asynchronous=True)
     SYNTHS = sync_synthetix.synths
 except UnsupportedNetwork:
-    pass
+    SYNTHS = []
 
 @mainnet_only
 def test_get_synths():
