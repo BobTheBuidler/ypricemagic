@@ -149,6 +149,12 @@ ACCEPTABLE_HIGH_PRICES = {
     Network.Arbitrum: [
         "0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2", # crv3crypto
     ],
+    Network.Base: [
+        # eth and eth-like
+        "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", # cbeth
+        # btc and btc-like
+        "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b", # tbtc
+    ],
 }.get(chain.id, []) + acceptable_all_chains
 
 async def _sense_check(
