@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from functools import cached_property
 from typing import Dict, NoReturn, Optional, Union
 
 import a_sync
@@ -177,8 +178,12 @@ class Chainlink(a_sync.ASyncGenericSingleton):
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
         self._cached_feeds = {ERC20(token, asynchronous=self.asynchronous): feed for token, feed in FEEDS.items()}
-        self._feeds_loaded = a_sync.Event()
         self._loading = False
+    
+    @cached_property
+    def _feeds_loaded(self) -> a_sync.Event:
+        """A helper function to ensure the Event is attached to the correct loop."""
+        return a_sync.Event()
     
     async def _start_feed_loop(self) -> Union[None, NoReturn]:
         if self._loading:
