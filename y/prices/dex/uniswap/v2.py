@@ -367,11 +367,10 @@ class UniswapRouterV2(ContractBase):
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for pool, params in (await self.__pools__(sync=False)).items():
-            token0, token1, stable = params.values()
-            if token_in == token0:
-                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = token1
-            if token_in == token1:
-                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = token0
+            if token_in == params['token0']:
+                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = params['token1']
+            if token_in == params['token1']:
+                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = params['token0']
         return pool_to_token_out
 
     async def pools_for_token(self, token_address: Address, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Dict[UniswapV2Pool, Address]:

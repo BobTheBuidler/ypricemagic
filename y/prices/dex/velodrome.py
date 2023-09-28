@@ -46,17 +46,6 @@ class VelodromeRouterV2(SolidlyRouterBase):
         if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
             return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
     
-    @a_sync.a_sync(ram_cache_maxsize=None)
-    async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
-        pool_to_token_out = {}
-        for pool, params in (await self.__pools__(sync=False)).items():
-            token0, token1, stable = params.values()
-            if token_in == token0:
-                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = token1
-            if token_in == token1:
-                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = token0
-        return pool_to_token_out
-    
     @a_sync.aka.cached_property
     async def pools(self) -> Dict[Address, Dict[Address,Address]]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
