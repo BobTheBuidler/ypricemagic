@@ -179,7 +179,7 @@ class Feeds:
         self._loaded_thru = 0
         for asset, feed in FEEDS.items():
             # Theyre not actually erc20s but this makes scaling convenient
-            feed = Feed(feed, asynchronous=asynchronous)
+            feed = Feed(feed)
             feed._event_block = 0
             self._feeds[ERC20(asset, asynchronous=asynchronous)] = feed
     
@@ -209,7 +209,7 @@ class Feeds:
         async for event in self._events:
             if event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS:
                 # Theyre not actually erc20s but this makes scaling convenient
-                feed = Feed(event["latestAggregator"], asynchronous=self.asynchronous)
+                feed = Feed(event["latestAggregator"])
                 feed._event_block = event.block_number
                 self._feeds[ERC20(event["asset"], asynchronous=self.asynchronous)] = feed
 
