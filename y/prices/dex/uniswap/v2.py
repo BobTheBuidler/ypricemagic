@@ -246,8 +246,8 @@ class UniswapRouterV2(ContractBase):
         
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (deepest_pool:= await self.deepest_pool(token_in, block, _ignore_pools=ignore_pools, sync=False)):
-            paired_with = (await self.get_pools_for(token_in, _ignore_pools=ignore_pools, sync=False))[deepest_pool]
-            path = [token_in,paired_with]
+            paired_with = (await self.get_pools_for(token_in, sync=False))[deepest_pool]
+            path = [token_in, paired_with]
             quote, out_scale = await asyncio.gather(self.get_quote(amount_in, path, block=block, sync=False), ERC20(path[-1], asynchronous=True).scale)
             if quote is not None:
                 amount_out = quote[-1] / out_scale  
