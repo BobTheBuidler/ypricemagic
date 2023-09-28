@@ -240,7 +240,7 @@ BIG_VALUE = 99999999999999999999999999999999999999999999999999999999999999999999
 def _cache_log(addresses: bytes, topics: bytes, log: dict):
     from y._db import utils as db
     from y._db.entities import Block, Log
-    chain = db.get_chain()
+    chain = db.get_chain(sync=True)
     if (block := Block.get(chain=chain, number=log['blockNumber'])) is None:
         block = Block(chain=chain, number=log['blockNumber'])
     Log(
@@ -271,22 +271,26 @@ class Logs:
         self._lock = CounterLock()
         self._exc = None
 
+    
+    async def _load_cache(self) -> None:
         from y._db import utils as db
         from y._db.entities import Log, LogCacheInfo
-        e: LogCacheInfo = LogCacheInfo.get(chain=db.get_chain(), addresses=json.encode(addresses), topics=json.encode(topics))
-        if e and from_block and e.cached_from >= from_block:
-            self._logs.extend(
-                json.decode(raw)
-                for raw in select(
-                    log.raw 
-                    for log in Log 
-                    if log.addresses == json.encode(addresses) 
-                    and log.topics == json.encode(topics) 
-                    and (from_block is None or log.block.number >= from_block)
+        with db_session:
+            chain = await db.get_chain(sync=False)
+            e: LogCacheInfo = LogCacheInfo.get(chain=chain, addresses=json.encode(self.addresses), topics=json.encode(self.topics))
+            if e and (self.from_block is None or e.cached_from >= self.from_block):
+                self._logs.extend(
+                    json.decode(raw)
+                    for raw in select(
+                        log.raw 
+                        for log in Log 
+                        if log.addresses == json.encode(self.addresses) 
+                        and log.topics == json.encode(self.topics) 
+                        and (self.from_block is None or log.block.number >= self.from_block)
+                    )
                 )
-            )
-            if self._logs:
-                self._lock.set(self._logs[-1]['blockNumber'])
+                if self._logs:
+                    self._lock.set(self._logs[-1]['blockNumber'])
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -313,7 +317,7 @@ class Logs:
                 yielded += 1
             await asyncio.gather(_tasks)
             with db_session:
-                chain = db.get_chain()
+                chain = await db.get_chain(sync=False)
                 if e:=LogCacheInfo.get(chain=chain, addresses=encoded[0], topics=encoded[1]):
                     if self.from_block < e.cached_from:
                         e.cached_from = self.from_block
