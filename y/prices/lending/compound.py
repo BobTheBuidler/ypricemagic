@@ -65,6 +65,7 @@ class CToken(ERC20):
     def __init__(self, address: AnyAddressType, comptroller: Optional["Comptroller"] = None, asynchronous: bool = False) -> None:
         self.troller = comptroller
         super().__init__(address, asynchronous=asynchronous)
+        self.exchange_rate_current = Call(self.address, 'exchangeRateCurrent()(uint)')
     
     async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
         if self.troller:
@@ -102,11 +103,8 @@ class CToken(ERC20):
 
     #yLazyLogger(logger)
     async def exchange_rate(self, block: Optional[Block] = None) -> float:
-        method = 'exchangeRateCurrent()(uint)'
-        call = Call(self.address, [method], block_id=block)
-
         try:
-            exchange_rate = await call.coroutine()
+            exchange_rate = await self.exchange_rate_current.coroutine(block_id=block)
         except Exception as e:
             if not call_reverted(e):
                 raise e
