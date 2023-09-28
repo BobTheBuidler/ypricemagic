@@ -39,6 +39,7 @@ class Block(db.Entity, _AsyncEntityMixin):
     composite_key(chain, hash)
 
     contracts_deployed = Set("Contract", reverse="deploy_block")
+    logs = Set("Log", reverse="block")
 
 class Address(db.Entity, _AsyncEntityMixin):
     _pk = PrimaryKey(int, auto=True)
@@ -68,10 +69,10 @@ class LogCacheInfo(db.Entity):
     cached_thru = Required(int)
 
 class Log(db.Entity):
-    addresses = Required(bytes)
-    topics = Required(bytes)
-    block = Required(Block)
-    transaction_hash = Required(str)
-    log_index = Required(int)
+    addresses = Required(bytes, lazy=True)
+    topics = Required(bytes, lazy=True)
+    block = Required(Block, lazy=True)
+    transaction_hash = Required(str, lazy=True)
+    log_index = Required(int, lazy=True)
     composite_key(addresses, topics, block, transaction_hash, log_index)
     raw = Required(bytes)
