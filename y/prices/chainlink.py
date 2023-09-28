@@ -3,6 +3,7 @@ import logging
 from typing import AsyncIterator, NoReturn, Optional, Tuple
 
 import a_sync
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
 
@@ -249,7 +250,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
             block = chain.height
         return await self._get_price(asset, block)
 
-    @a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000, ram_cache_ttl=ENVS.CACHE_TTL)
+    @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
     async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
