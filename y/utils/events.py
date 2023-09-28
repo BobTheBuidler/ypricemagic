@@ -20,8 +20,6 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
-from y._db import entities, utils
-from y._db.entities import Log, LogCacheInfo
 from y.constants import thread_pool_executor
 from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
@@ -240,9 +238,11 @@ BIG_VALUE = 99999999999999999999999999999999999999999999999999999999999999999999
 
 @db_session
 def _cache_log(addresses: bytes, topics: bytes, log: dict):
-    chain = utils.get_chain()
-    if (block := entities.Block.get(chain=chain, number=log['blockNumber'])) is None:
-        block = entities.Block(chain=chain, number=log['blockNumber'])
+    from y._db import utils as db
+    from y._db.entities import Block, Log
+    chain = db.get_chain()
+    if (block := Block.get(chain=chain, number=log['blockNumber'])) is None:
+        block = Block(chain=chain, number=log['blockNumber'])
     Log(
         addresses=addresses,
         topics=topics,
@@ -270,6 +270,7 @@ class Logs:
         self._lock = CounterLock()
         self._exc = None
 
+        from y._db.entities import Log, LogCacheInfo
         e: LogCacheInfo = LogCacheInfo.get(addresses=json.encode(addresses), topics=json.encode(topics))
         if e and from_block and e.cached_from >= from_block:
             self._logs.extend(
@@ -283,7 +284,7 @@ class Logs:
                 )
             )
             if self._logs:
-                self._lock.set(self._logs)
+                self._lock.set(self._logs[-1]['blockNumber'])
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -293,6 +294,7 @@ class Logs:
             self._logs_task = asyncio.create_task(self._fetch())
         yielded = 0
         done_thru = 0
+        from y._db.entities import LogCacheInfo
         encoded = json.encode(self.addresses), json.encode(self.topics)
         while True:
             _tasks = []
