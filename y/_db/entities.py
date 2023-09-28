@@ -27,6 +27,7 @@ class Chain(db.Entity, _AsyncEntityMixin):
 
     blocks = Set("Block")
     addresses = Set("Address")
+    log_cached = Set("LogCacheInfo")
 
 class Block(db.Entity, _AsyncEntityMixin):
     _pk = PrimaryKey(int, auto=True)
@@ -62,6 +63,7 @@ class Token(Contract):
     bucket = Optional(str, lazy=True)
 
 class LogCacheInfo(db.Entity):
+    chain = Required(Chain)
     addresses = Required(bytes)
     topics = Required(bytes)
     composite_key(addresses, topics)

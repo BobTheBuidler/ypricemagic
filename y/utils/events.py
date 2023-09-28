@@ -253,6 +253,7 @@ def _cache_log(addresses: bytes, topics: bytes, log: dict):
 
 class Logs:
     __slots__ = 'addresses', 'topics', 'from_block', 'interval', '_logs_task', '_logs', '_lock', '_exc'
+    @db_session
     def __init__(
         self, 
         *, 
@@ -270,8 +271,9 @@ class Logs:
         self._lock = CounterLock()
         self._exc = None
 
+        from y._db import utils as db
         from y._db.entities import Log, LogCacheInfo
-        e: LogCacheInfo = LogCacheInfo.get(addresses=json.encode(addresses), topics=json.encode(topics))
+        e: LogCacheInfo = LogCacheInfo.get(chain=db.get_chain(), addresses=json.encode(addresses), topics=json.encode(topics))
         if e and from_block and e.cached_from >= from_block:
             self._logs.extend(
                 json.decode(raw)
@@ -294,6 +296,7 @@ class Logs:
             self._logs_task = asyncio.create_task(self._fetch())
         yielded = 0
         done_thru = 0
+        from y._db import utils as db
         from y._db.entities import LogCacheInfo
         encoded = json.encode(self.addresses), json.encode(self.topics)
         while True:
@@ -310,13 +313,15 @@ class Logs:
                 yielded += 1
             await asyncio.gather(_tasks)
             with db_session:
-                if e:=LogCacheInfo.get(addresses=encoded[0], topics=encoded[1]):
+                chain = db.get_chain()
+                if e:=LogCacheInfo.get(chain=chain, addresses=encoded[0], topics=encoded[1]):
                     if self.from_block < e.cached_from:
                         e.cached_from = self.from_block
                     if block > e.cached_thru:
                         e.cached_thru = block
                 else:
                     LogCacheInfo(
+                        chain=chain, 
                         addresses=encoded[0],
                         topics=encoded[1],
                         cached_from = self.from_block,
