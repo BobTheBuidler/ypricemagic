@@ -199,6 +199,10 @@ class Feeds:
             if self._loaded_thru > block:
                 return
             await self._events._lock.wait_for(self._loaded_thru + 1)
+            if self._exc:
+                raise self._exc
+            if self._events._exc:
+                raise self._events._exc
             for (asset, feed) in list(self._feeds.items())[yielded:]:
                 if feed._event_block > block:
                     return
@@ -207,18 +211,22 @@ class Feeds:
             self._loaded_thru = self._events._lock.value
     
     async def _loader(self) -> NoReturn:
-        async for event in self._events:
-            if event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS:
-                # Theyre not actually erc20s but this makes scaling convenient
-                feed = Feed(event["latestAggregator"])
-                feed._event_block = event.block_number
-                self._feeds[ERC20(event["asset"], asynchronous=self.asynchronous)] = feed
+        try:
+            async for event in self._events:
+                if event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS:
+                    # Theyre not actually erc20s but this makes scaling convenient
+                    feed = Feed(event["latestAggregator"])
+                    feed._event_block = event.block_number
+                    self._feeds[ERC20(event["asset"], asynchronous=self.asynchronous)] = feed
+        except Exception as e:
+            self._exc = e
+
 
 class Feed:
     __slots__ = 'address', 'latest_answer', '_event_block'
     def __init__(self, address: AnyAddressType):
-        self.address = address
-        self.latest_answer = Call(address, 'latestAnswer()(uint)')
+        self.address = convert.to_address(address)
+        self.latest_answer = Call(self.address, 'latestAnswer()(uint)')
 
 class Chainlink(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = False) -> None:

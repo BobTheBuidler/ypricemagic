@@ -232,9 +232,10 @@ def _get_logs_batch_cached(
     ) -> List[LogReceipt]:
     return _get_logs_no_cache(address, topics, start, end)
 
+BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
 
 class Logs:
-    __slots__ = 'addresses', 'topics', 'from_block', 'interval', '_logs_task', '_logs', '_lock'
+    __slots__ = 'addresses', 'topics', 'from_block', 'interval', '_logs_task', '_logs', '_lock', '_exc'
     def __init__(
         self, 
         *, 
@@ -250,6 +251,7 @@ class Logs:
         self._logs_task = None
         self._logs = []
         self._lock = CounterLock()
+        self._exc = None
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -261,6 +263,8 @@ class Logs:
         done_thru = 0
         while True:
             await self._lock.wait_for(done_thru + 1)
+            if self._exc:
+                raise self._exc
             for log in self._logs[yielded:]:
                 block = log['blockNumber']
                 if to_block and block > to_block:
@@ -270,6 +274,13 @@ class Logs:
             done_thru = block
     
     async def _fetch(self) -> NoReturn:
+        try:
+            await self.__fetch()
+        except Exception as e:
+            self._exc = e
+            self._lock.set(BIG_VALUE)
+
+    async def __fetch(self) -> NoReturn:
         from_block = self.from_block
         if from_block is None:
             if self.addresses is None:
@@ -328,6 +339,8 @@ class Events(Logs):
         done_thru = 0
         while True:
             await self._lock.wait_for(done_thru + 1)
+            if self._exc:
+                raise self._exc
             for event in self._events[yielded:]:
                 block = event.block_number
                 if to_block and block > to_block:
@@ -337,9 +350,13 @@ class Events(Logs):
             done_thru = block
 
     async def _fetch(self) -> NoReturn:
-        async for log in self.logs():
-            decoded = decode_logs([log])
-            self._events.extend(decoded)
+        try:
+            async for log in self.logs():
+                decoded = decode_logs([log])
+                self._events.extend(decoded)
+        except Exception as e:
+            self._exc = e
+            self._lock.set(BIG_VALUE)
 
 from typing import TypeVar, Callable
 
