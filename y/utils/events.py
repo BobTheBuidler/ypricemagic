@@ -300,11 +300,7 @@ class Logs:
             self._logs_task = asyncio.create_task(self._fetch())
         yielded = 0
         done_thru = 0
-        from y._db import utils as db
-        from y._db.entities import LogCacheInfo
-        encoded = json.encode(self.addresses), json.encode(self.topics)
         while True:
-            _tasks = []
             await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
@@ -312,25 +308,8 @@ class Logs:
                 block = log['blockNumber']
                 if to_block and block > to_block:
                     return
-                _tasks.append(thread_pool_executor.submit(_cache_log, *encoded, log))
                 yield log
                 yielded += 1
-            await asyncio.gather(_tasks)
-            with db_session:
-                chain = await db.get_chain(sync=False)
-                if e:=LogCacheInfo.get(chain=chain, addresses=encoded[0], topics=encoded[1]):
-                    if self.from_block < e.cached_from:
-                        e.cached_from = self.from_block
-                    if block > e.cached_thru:
-                        e.cached_thru = block
-                else:
-                    LogCacheInfo(
-                        chain=chain, 
-                        addresses=encoded[0],
-                        topics=encoded[1],
-                        cached_from = self.from_block,
-                        cached_thru = block
-                    )
             done_thru = block
     
     async def _fetch(self) -> NoReturn:
@@ -351,7 +330,11 @@ class Logs:
                 from_block = await contract_creation_block_async(self.addresses, True)
     
         done_thru = from_block - 1
+        from y._db import utils as db
+        from y._db.entities import LogCacheInfo
+        encoded = json.encode(self.addresses), json.encode(self.topics)
         while True:
+            _tasks = []
             range_start, range_end = done_thru + 1, await dank_w3.eth.block_number
             ranges = list(block_ranges(range_start, range_end, BATCH_SIZE))
             coros = [_get_logs_async(self.addresses, self.topics, start, end) for start, end in ranges]
@@ -369,10 +352,27 @@ class Logs:
                         break
                     end, logs = done.pop(i)
                     for log in logs:
+                        _tasks.append(thread_pool_executor.submit(_cache_log, *encoded, log))
                         yield log
                     batches_yielded += 1
                     self._lock.set(end)
+            await asyncio.gather(*_tasks)
             done_thru = range_end
+            with db_session:
+                chain = await db.get_chain(sync=False)
+                if e:=LogCacheInfo.get(chain=chain, addresses=encoded[0], topics=encoded[1]):
+                    if self.from_block < e.cached_from:
+                        e.cached_from = self.from_block
+                    if done_thru > e.cached_thru:
+                        e.cached_thru = done_thru
+                else:
+                    LogCacheInfo(
+                        chain=chain, 
+                        addresses=encoded[0],
+                        topics=encoded[1],
+                        cached_from = self.from_block,
+                        cached_thru = done_thru,
+                    )
             await asyncio.sleep(self.interval)
 
 
