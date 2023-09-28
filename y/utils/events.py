@@ -234,17 +234,19 @@ def _get_logs_batch_cached(
 
 
 class Logs:
-    __slots__ = 'addresses', 'topics', 'from_block', '_logs_task', '_logs', '_lock'
+    __slots__ = 'addresses', 'topics', 'from_block', 'interval', '_logs_task', '_logs', '_lock'
     def __init__(
         self, 
         *, 
         addresses = [], 
         topics = [], 
         from_block: Optional[int] = None,
+        interval: int = 300,
     ):
         self.addresses = addresses
         self.topics = topics
         self.from_block = from_block
+        self.interval = interval
         self._logs_task = None
         self._logs = []
         self._lock = CounterLock()
@@ -268,10 +270,39 @@ class Logs:
             done_thru = block
     
     async def _fetch(self) -> NoReturn:
-        async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block):
-            if logs:
-                self._logs.extend(logs)
-                self._lock.set(logs[-1]['blockNumber'])
+        from_block = self.from_block
+        if from_block is None:
+            if self.addresses is None:
+                from_block = 0
+            elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
+                from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in self.addresses]))
+            else:
+                from_block = await contract_creation_block_async(self.addresses, True)
+    
+        done_thru = from_block - 1
+        while True:
+            range_start, range_end = done_thru + 1, await dank_w3.eth.block_number
+            ranges = list(block_ranges(range_start, range_end, BATCH_SIZE))
+            coros = [_get_logs_async(self.addresses, self.topics, start, end) for start, end in ranges]
+            async def wrap(i, end, coro):
+                return i, end, await coro
+            batches_yielded = 0
+            done = {}
+            for logs in asyncio.as_completed([wrap(i, end, coro) for i, (start, end), coro in enumerate(zip(ranges,coros))], timeout=None):
+                i, end, logs = await logs
+                done[i] = end, logs
+                for i in range(len(coros)):
+                    if batches_yielded > i:
+                        continue
+                    if i not in done:
+                        break
+                    end, logs = done.pop(i)
+                    for log in logs:
+                        yield log
+                    batches_yielded += 1
+                    self._lock.set(end)
+            done_thru = range_end
+            await asyncio.sleep(self.interval)
 
 
 class Events(Logs):
@@ -282,8 +313,9 @@ class Events(Logs):
         addresses = [], 
         topics = [], 
         from_block: Optional[int] = None,
+        interval: int = 300,
     ):
-        super().__init__(addresses=addresses, topics=topics, from_block=from_block)
+        super().__init__(addresses=addresses, topics=topics, from_block=from_block, interval=interval)
         self._events = []
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
