@@ -1,14 +1,17 @@
 import asyncio
 import logging
+import threading
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import Any, AsyncGenerator, Dict, Iterable, List, Optional
+from typing import (Any, AsyncGenerator, AsyncIterator, Dict, Iterable, List,
+                    NoReturn, Optional)
 
 import a_sync
 import eth_retry
+from a_sync.primitives.locks.counter import CounterLock
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
-from brownie.network.event import EventDict, _decode_logs
+from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
@@ -165,7 +168,7 @@ def _get_logs(
             ''' It will not impact your scripts. ''' 
             response.remove(log)
     return response
-import threading
+
 get_logs_semaphore = defaultdict(
     lambda: BlockSemaphore(
         thread_pool_executor._max_workers * 10, 
@@ -228,3 +231,121 @@ def _get_logs_batch_cached(
     end: Block
     ) -> List[LogReceipt]:
     return _get_logs_no_cache(address, topics, start, end)
+
+
+class Logs:
+    __slots__ = 'addresses', 'topics', 'from_block', '_logs_task', '_logs', '_lock'
+    def __init__(
+        self, 
+        *, 
+        addresses = [], 
+        topics = [], 
+        from_block: Optional[int] = None,
+    ):
+        self.addresses = addresses
+        self.topics = topics
+        self.from_block = from_block
+        self._logs_task = None
+        self._logs = []
+        self._lock = CounterLock()
+    
+    def __aiter__(self) -> AsyncIterator[_EventItem]:
+        return self.logs().__aiter__()
+    
+    async def logs(self, to_block: Optional[int] = None) -> AsyncIterator[dict]:
+        if self._logs_task is None:
+            self._logs_task = asyncio.create_task(self._fetch())
+        yielded = 0
+        done_thru = 0
+        while True:
+            await self._lock.wait_for(done_thru + 1)
+            for log in self._logs[yielded:]:
+                block = log['blockNumber']
+                if to_block and block > to_block:
+                    return
+                yield log
+                yielded += 1
+            done_thru = block
+    
+    async def _fetch(self) -> NoReturn:
+        async for logs in get_logs_asap_generator(self.addresses, self.topics, self.from_block):
+            if logs:
+                self._logs.extend(logs)
+                self._lock.set(logs[-1]['blockNumber'])
+
+
+class Events(Logs):
+    __slots__ = '_events', '_event_task'
+    def __init__(
+        self, 
+        *, 
+        addresses = [], 
+        topics = [], 
+        from_block: Optional[int] = None,
+    ):
+        super().__init__(addresses=addresses, topics=topics, from_block=from_block)
+        self._events = []
+    
+    def __aiter__(self) -> AsyncIterator[_EventItem]:
+        return self.events().__aiter__()
+
+    async def events(self, to_block: int) -> AsyncIterator[_EventItem]:
+        if self._event_task is None:
+            self._event_task = asyncio.create_task(self._fetch())
+        yielded = 0
+        done_thru = 0
+        while True:
+            await self._lock.wait_for(done_thru + 1)
+            for event in self._events[yielded:]:
+                block = event.block_number
+                if to_block and block > to_block:
+                    return
+                yield event
+                yielded += 1
+            done_thru = block
+
+    async def _fetch(self) -> NoReturn:
+        async for log in self.logs():
+            decoded = decode_logs([log])
+            self._events.extend(decoded)
+
+from typing import TypeVar, Callable
+
+T = TypeVar('T')
+
+class ProcessedEvents(Events, AsyncIterator[T]):
+    __slots__ = 'event_processor', '_processed_events'
+    def __init__(
+        self,
+        event_processor: Callable[[_EventItem], T],
+        *, 
+        addresses = [], 
+        topics = [], 
+        from_block: Optional[int] = None,
+    ):
+        super().__init__(addresses=addresses, topics=topics, from_block=from_block)
+        self._processed_events = []
+    
+    def __aiter__(self) -> AsyncIterator[_EventItem]:
+        return self.events().__aiter__()
+
+    async def processed_events(self, to_block: int) -> AsyncIterator[_EventItem]:
+        if self._event_task is None:
+            self._event_task = asyncio.create_task(self._fetch())
+        yielded = 0
+        done_thru = 0
+        while True:
+            await self._lock.wait_for(done_thru + 1)
+            for event in self._processed_events[yielded:]:
+                block = event.block_number
+                if to_block and block > to_block:
+                    return
+                yield event
+                yielded += 1
+            done_thru = block
+
+    async def _fetch(self) -> NoReturn:
+        async for log in self.logs():
+            decoded = decode_logs([log])
+            self._events.extend(decoded)
+    
