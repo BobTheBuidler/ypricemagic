@@ -42,7 +42,7 @@ Reserves = Tuple[int,int,int]
 class UniswapV2Pool(ERC20):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
-        self._reserves_types = 'uint112,uint112,uint32'
+        self.get_reserves = Call(self.address, 'getReserves()((uint112,uint112,uint32))')
         self._types_assumed = True
             
     @a_sync.aka.cached_property
@@ -90,10 +90,7 @@ class UniswapV2Pool(ERC20):
         return None
     
     async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        reserves, tokens = await asyncio.gather(
-            Call(self.address, [f'getReserves()(({self._reserves_types}))'], block_id=block).coroutine(),
-            self.__tokens__(sync=False),
-        )
+        reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False))
 
         if reserves is None and self._types_assumed:
             try:
@@ -103,6 +100,7 @@ class UniswapV2Pool(ERC20):
             return await self.reserves(block, sync=False)
         
         if reserves is None and self._verified:
+            # This shouldn't really run anymore, maybe delete
             try:
                 reserves = await self.contract.getReserves.coroutine(block_identifier=block)
                 types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
@@ -114,7 +112,7 @@ class UniswapV2Pool(ERC20):
         if reserves is None:
             reserves = 0, 0
 
-        return (WeiBalance(reserve, token, block=block) for reserve, token in zip(reserves, tokens))
+        return (WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
 
     async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
         prices, reserves = await asyncio.gather(
@@ -165,9 +163,10 @@ class UniswapV2Pool(ERC20):
         if not self._types_assumed:
             return
         try:
-            self._reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+            reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
             self._verified = True
-            assert self._reserves_types.count(',') == 2, self._reserves_types
+            assert reserves_types.count(',') == 2, reserves_types
+            self.get_reserves = Call(self.address, f'getReserves()(({reserves_types}))')
         except ContractNotVerified:
             self._verified = False
         self._types_assumed = False
@@ -200,6 +199,7 @@ class UniswapRouterV2(ContractBase):
         self.label = ROUTER_TO_PROTOCOL[self.address]
         self.factory = ROUTER_TO_FACTORY[self.address]
         self.special_paths = special_paths(self.address)
+        self.get_amounts_out = Call(self.address, "getAmountsOut(uint,address[])(uint[])")
 
         # we need the factory contract object cached in brownie so we can decode logs properly
         if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
@@ -288,11 +288,7 @@ class UniswapRouterV2(ContractBase):
                 if not call_reverted(e) and not any(s in str(e) for s in strings):
                     raise e
         else:
-            return await Call(
-                self.address,
-                ['getAmountsOut(uint,address[])(uint[])',amount_in,path],
-                block_id=block
-            ).coroutine()
+            return await self.get_amounts_out.coroutine((amount_in, path), block_id=block)
 
 
     def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:

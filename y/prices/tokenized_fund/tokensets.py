@@ -26,6 +26,10 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
 
 
 class TokenSet(ERC20):
+    def __init__(self, address: AnyAddressType, asynchronous: bool = False):
+        super().__init__(address, asynchronous=asynchronous)
+        self.get_total_component_real_units = Call(self.address, "getTotalComponentRealUnits(address)(int256)")
+
     @a_sync.a_sync(ram_cache_maxsize=100)
     async def components(self, block: Optional[Block] = None) -> List[ERC20]:
         components = await self.contract.getComponents.coroutine(block_identifier = block)
@@ -37,7 +41,7 @@ class TokenSet(ERC20):
             logger.debug("getUnits: %s", balances)
         elif hasattr(self.contract, 'getTotalComponentRealUnits'):
             balances = await asyncio.gather(*[
-                Call(self.address, ["getTotalComponentRealUnits(address)(int256)", component.address], block_id=block).coroutine()
+                self.get_total_component_real_units.coroutine((component.address, ), block_id=block)
                 for component in await self.components(block, sync=False)
             ])
             logger.debug("getTotalComponentRealUnits: %s", balances)
