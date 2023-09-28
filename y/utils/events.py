@@ -9,6 +9,7 @@ from typing import (Any, AsyncGenerator, AsyncIterator, Dict, Iterable, List,
 import a_sync
 import eth_retry
 from a_sync.primitives.locks.counter import CounterLock
+from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
@@ -252,44 +253,49 @@ def _cache_log(addresses: bytes, topics: bytes, log: dict):
     )
 
 class Logs:
-    __slots__ = 'addresses', 'topics', 'from_block', 'interval', '_logs_task', '_logs', '_lock', '_exc'
-    @db_session
+    __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_logs_task', '_logs', '_lock', '_exc'
     def __init__(
         self, 
         *, 
         addresses = [], 
         topics = [], 
         from_block: Optional[int] = None,
-        interval: int = 300,
+        fetch_interval: int = 300,
     ):
         self.addresses = addresses
         self.topics = topics
+        self.fetch_interval = fetch_interval
         self.from_block = from_block
-        self.interval = interval
         self._logs_task = None
         self._logs = []
         self._lock = CounterLock()
         self._exc = None
     
-    async def _load_cache(self) -> None:
+    async def _load_cache(self, from_block: int) -> None:
         from y._db import utils as db
         from y._db.entities import Log, LogCacheInfo
+
+        cache_info: LogCacheInfo
         with db_session:
             chain = await db.get_chain(sync=False)
-            e: LogCacheInfo = LogCacheInfo.get(chain=chain, addresses=json.encode(self.addresses), topics=json.encode(self.topics))
-            if e and (self.from_block is None or e.cached_from >= self.from_block):
-                self._logs.extend(
-                    json.decode(raw)
-                    for raw in select(
-                        log.raw 
-                        for log in Log 
-                        if log.addresses == json.encode(self.addresses) 
-                        and log.topics == json.encode(self.topics) 
-                        and (self.from_block is None or log.block.number >= self.from_block)
-                    )
+            cache_info = LogCacheInfo.get(
+                chain=chain,
+                addresses=json.encode(self.addresses), 
+                topics=json.encode(self.topics),
+            )
+            if cache_info is None:
+                return
+            if cache_info.cached_from >= from_block:
+                query = select(
+                    log.raw for log in Log 
+                    if log.block.chain == chain
+                    and log.addresses == json.encode(self.addresses) 
+                    and log.topics == json.encode(self.topics) 
+                    and log.block.number >= from_block
                 )
-                if self._logs:
-                    self._lock.set(self._logs[-1]['blockNumber'])
+                self._logs.extend(json.decode(log) for log in query)
+            if self._logs:
+                self._lock.set(self._logs[-1]['blockNumber'])
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -319,20 +325,12 @@ class Logs:
             self._lock.set(BIG_VALUE)
 
     async def __fetch(self) -> NoReturn:
-        from_block = self.from_block
-        if from_block is None:
-            if self.addresses is None:
-                from_block = 0
-            elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
-                from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in self.addresses]))
-            else:
-                from_block = await contract_creation_block_async(self.addresses, True)
-        
-        await self._load_cache()
-    
-        done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
         from y._db import utils as db
         from y._db.entities import LogCacheInfo
+        
+        from_block = await self._from_block()
+        await self._load_cache(from_block)
+        done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
         encoded = json.encode(self.addresses), json.encode(self.topics)
         while True:
             _tasks = []
@@ -362,8 +360,8 @@ class Logs:
             with db_session:
                 chain = await db.get_chain(sync=False)
                 if e:=LogCacheInfo.get(chain=chain, addresses=encoded[0], topics=encoded[1]):
-                    if self.from_block < e.cached_from:
-                        e.cached_from = self.from_block
+                    if self._from_block < e.cached_from:
+                        e.cached_from = self._from_block
                     if done_thru > e.cached_thru:
                         e.cached_thru = done_thru
                 else:
@@ -371,11 +369,21 @@ class Logs:
                         chain=chain, 
                         addresses=encoded[0],
                         topics=encoded[1],
-                        cached_from = self.from_block,
+                        cached_from = self._from_block,
                         cached_thru = done_thru,
                     )
-            await asyncio.sleep(self.interval)
+            await asyncio.sleep(self.fetch_interval)
 
+    @async_property
+    async def _from_block(self) -> int:
+        if self.from_block is None:
+            if self.addresses is None:
+                self.from_block = 0
+            elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
+                self.from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in self.addresses]))
+            else:
+                self.from_block = await contract_creation_block_async(self.addresses, True)
+        return self.from_block
 
 class Events(Logs):
     __slots__ = '_events', '_event_task'
@@ -385,9 +393,9 @@ class Events(Logs):
         addresses = [], 
         topics = [], 
         from_block: Optional[int] = None,
-        interval: int = 300,
+        fetch_interval: int = 300,
     ):
-        super().__init__(addresses=addresses, topics=topics, from_block=from_block, interval=interval)
+        super().__init__(addresses=addresses, topics=topics, from_block=from_block, fetch_interval=fetch_interval)
         self._events = []
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
