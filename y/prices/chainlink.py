@@ -186,7 +186,7 @@ class Feeds:
     
     async def feeds_thru_block(self, block: int) -> AsyncIterator[Tuple[Address, ERC20]]:
         yielded = 0
-        async for asset, feed in self._feeds.items():
+        for asset, feed in self._feeds.items():
             if feed._event_block > block:
                 return
             yield asset, feed
