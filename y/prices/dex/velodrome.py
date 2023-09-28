@@ -45,16 +45,6 @@ class VelodromeRouterV2(SolidlyRouterBase):
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
         if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
             return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
-
-    @a_sync.aka.cached_property
-    async def pool_mapping(self) -> Dict[Address,Dict[Address,Address]]:
-        pool_mapping = defaultdict(dict)
-        for pool, params in (await self.__pools__(sync=False)).items():
-            token0, token1, stable = params.values()
-            pool_mapping[token0][pool] = token1
-            pool_mapping[token1][pool] = token0
-        logger.info('Loaded %s pools supporting %s tokens on %s', len(await self.__pools__(sync=False)), len(pool_mapping), self.label)
-        return pool_mapping
     
     @a_sync.aka.cached_property
     async def pools(self) -> Dict[Address, Dict[Address,Address]]:
@@ -103,6 +93,11 @@ class VelodromeRouterV2(SolidlyRouterBase):
             }
             pools.update(pools_your_node_couldnt_get)
 
+        tokens = set()
+        for pool_params in pools.values():
+            tokens.add(pool_params['token0'])
+            tokens.add(pool_params['token1'])
+        logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
