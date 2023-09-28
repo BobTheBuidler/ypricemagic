@@ -215,8 +215,9 @@ class Feeds:
                 self._feeds[ERC20(event["asset"], asynchronous=self.asynchronous)] = feed
 
 class Feed:
-    __slots__ = 'latest_answer', '_event_block'
+    __slots__ = 'address', 'latest_answer', '_event_block'
     def __init__(self, address: AnyAddressType):
+        self.address = address
         self.latest_answer = Call(address, 'latestAnswer()(uint)')
 
 class Chainlink(a_sync.ASyncGenericSingleton):
