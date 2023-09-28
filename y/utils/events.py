@@ -270,7 +270,6 @@ class Logs:
         self._logs = []
         self._lock = CounterLock()
         self._exc = None
-
     
     async def _load_cache(self) -> None:
         from y._db import utils as db
@@ -328,8 +327,10 @@ class Logs:
                 from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in self.addresses]))
             else:
                 from_block = await contract_creation_block_async(self.addresses, True)
+        
+        await self._load_cache()
     
-        done_thru = from_block - 1
+        done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
         from y._db import utils as db
         from y._db.entities import LogCacheInfo
         encoded = json.encode(self.addresses), json.encode(self.topics)
