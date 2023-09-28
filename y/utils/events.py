@@ -14,10 +14,14 @@ from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
+from msgspec import json
+from pony.orm import db_session, select
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
+from y._db import entities, utils
+from y._db.entities import Log, LogCacheInfo
 from y.constants import thread_pool_executor
 from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
@@ -234,6 +238,19 @@ def _get_logs_batch_cached(
 
 BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
 
+@db_session
+def _cache_log(addresses: bytes, topics: bytes, log: dict):
+    chain = utils.get_chain()
+    if (block := entities.Block.get(chain=chain, number=log['blockNumber'])) is None:
+        block = entities.Block(chain=chain, number=log['blockNumber'])
+    Log(
+        addresses=addresses,
+        topics=topics,
+        block=block, 
+        transaction_hash = log['transactionHash'],
+        log_index = log['logIndex'],
+    )
+
 class Logs:
     __slots__ = 'addresses', 'topics', 'from_block', 'interval', '_logs_task', '_logs', '_lock', '_exc'
     def __init__(
@@ -252,16 +269,33 @@ class Logs:
         self._logs = []
         self._lock = CounterLock()
         self._exc = None
+
+        e: LogCacheInfo = LogCacheInfo.get(addresses=json.encode(addresses), topics=json.encode(topics))
+        if e and from_block and e.cached_from >= from_block:
+            self._logs.extend(
+                json.decode(raw)
+                for raw in select(
+                    log.raw 
+                    for log in Log 
+                    if log.addresses == json.encode(addresses) 
+                    and log.topics == json.encode(topics) 
+                    and (from_block is None or log.block.number >= from_block)
+                )
+            )
+            if self._logs:
+                self._lock.set(self._logs)
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
-    
+
     async def logs(self, to_block: Optional[int] = None) -> AsyncIterator[dict]:
         if self._logs_task is None:
             self._logs_task = asyncio.create_task(self._fetch())
         yielded = 0
         done_thru = 0
+        encoded = json.encode(self.addresses), json.encode(self.topics)
         while True:
+            _tasks = []
             await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
@@ -269,8 +303,23 @@ class Logs:
                 block = log['blockNumber']
                 if to_block and block > to_block:
                     return
+                _tasks.append(thread_pool_executor.submit(_cache_log, *encoded, log))
                 yield log
                 yielded += 1
+            await asyncio.gather(_tasks)
+            with db_session:
+                if e:=LogCacheInfo.get(addresses=encoded[0], topics=encoded[1]):
+                    if self.from_block < e.cached_from:
+                        e.cached_from = self.from_block
+                    if block > e.cached_thru:
+                        e.cached_thru = block
+                else:
+                    LogCacheInfo(
+                        addresses=encoded[0],
+                        topics=encoded[1],
+                        cached_from = self.from_block,
+                        cached_thru = block
+                    )
             done_thru = block
     
     async def _fetch(self) -> NoReturn:
@@ -358,7 +407,7 @@ class Events(Logs):
             self._exc = e
             self._lock.set(BIG_VALUE)
 
-from typing import TypeVar, Callable
+from typing import Callable, TypeVar
 
 T = TypeVar('T')
 

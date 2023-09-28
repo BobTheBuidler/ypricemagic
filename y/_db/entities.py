@@ -59,3 +59,19 @@ class Token(Contract):
     name = Optional(str, lazy=True)
     decimals = Optional(int, lazy=True)
     bucket = Optional(str, lazy=True)
+
+class LogCacheInfo(db.Entity):
+    addresses = Required(bytes)
+    topics = Required(bytes)
+    composite_key(addresses, topics)
+    cached_from = Required(int)
+    cached_thru = Required(int)
+
+class Log(db.Entity):
+    addresses = Required(bytes)
+    topics = Required(bytes)
+    block = Required(Block)
+    transaction_hash = Required(str)
+    log_index = Required(int)
+    composite_key(addresses, topics, block, transaction_hash, log_index)
+    raw = Required(bytes)
