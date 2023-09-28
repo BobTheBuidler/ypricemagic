@@ -1,10 +1,8 @@
 import asyncio
 import logging
-from contextlib import suppress
 from typing import AsyncIterator, NoReturn, Optional, Tuple
 
 import a_sync
-from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
 
@@ -13,7 +11,7 @@ from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
-from y.exceptions import ContractNotVerified, UnsupportedNetwork
+from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.dank_mids import dank_w3
 from y.utils.events import Events
@@ -231,7 +229,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
             self.registry = None
         self.feeds = Feeds(self.registry)
     
-    @alru_cache(maxsize=None)
+    @a_sync.a_sync(cache_type='memory')
     async def get_feed(self, asset: Address) -> Optional[Contract]:
         asset = convert.to_address(asset)
         async for feed_asset, feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
@@ -251,7 +249,7 @@ class Chainlink(a_sync.ASyncGenericSingleton):
             block = chain.height
         return await self._get_price(asset, block)
 
-    @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
+    @a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000, ram_cache_ttl=ENVS.CACHE_TTL)
     async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
