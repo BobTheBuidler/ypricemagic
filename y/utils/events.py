@@ -301,6 +301,7 @@ class Logs:
             self._logs.extend(await thread_pool_executor.run(self._select_from_cache, from_block))
         if self._logs:
             self._lock.set(self._logs[-1]['blockNumber'])
+            logger.info('loaded %s logs from disk', len(self._logs))
     
     @db_session
     def _select_from_cache(self, from_block: int) -> List[dict]:
@@ -377,7 +378,6 @@ class Logs:
             self._lock.set(BIG_VALUE)
 
     async def __fetch(self) -> NoReturn:
-        
         from_block = await self._from_block
         await self._load_cache(from_block)
         done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
