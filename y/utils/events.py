@@ -297,30 +297,32 @@ class Logs:
         return self.topics[3] if self.topics and len(self.topics) > 3 else None
     
     async def _load_cache(self, from_block: int) -> None:
-        from y._db import utils as db
-        from y._db.entities import Log
-
-        with db_session:
-            chain = await db.get_chain(sync=False)
-            if self._is_cached(chain, from_block):
-                self._logs.extend(
-                    json.decode(log) for log in select(
-                        log.raw for log in Log 
-                        if log.block.chain == chain
-                        and (not self.addresses or log.address in self.addresses)
-                        and (self.topic0 is None or log.topic0 in self.topic0)
-                        and (self.topic1 is None or log.topic1 in self.topic1)
-                        and (self.topic2 is None or log.topic2 in self.topic2)
-                        and (self.topic3 is None or log.topic3 in self.topic3)
-                        and log.block.number >= from_block
-                    )
-                )
+        if await thread_pool_executor.run(self._is_cached, from_block):
+            self._logs.extend(await thread_pool_executor.run(self._select_from_cache, from_block))
         if self._logs:
             self._lock.set(self._logs[-1]['blockNumber'])
     
-    def _is_cached(self, chain: "Chain", from_block: int) -> List["LogCacheInfo"]:
+    @db_session
+    def _select_from_cache(self, from_block: int) -> List[dict]:
+        from y._db import utils as db
+        from y._db.entities import Log
+        return [
+            json.decode(log) for log in select(
+                log.raw for log in Log 
+                if log.block.chain == db.get_chain(sync=True)
+                and (not self.addresses or log.address in self.addresses)
+                and (self.topic0 is None or log.topic0 in self.topic0)
+                and (self.topic1 is None or log.topic1 in self.topic1)
+                and (self.topic2 is None or log.topic2 in self.topic2)
+                and (self.topic3 is None or log.topic3 in self.topic3)
+                and log.block.number >= from_block
+            )
+        ]
+    @db_session
+    def _is_cached(self, from_block: int) -> List["LogCacheInfo"]:
+        from y._db import utils as db
         from y._db.entities import LogCacheInfo
-
+        chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
         if self.topics and self.topic0 and (info := LogCacheInfo.get(
             chain=chain,
