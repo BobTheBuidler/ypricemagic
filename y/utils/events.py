@@ -3,8 +3,8 @@ import logging
 import threading
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import (Any, AsyncGenerator, AsyncIterator, Dict, Iterable, List,
-                    NoReturn, Optional)
+from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
+                    Iterable, List, NoReturn, Optional)
 
 import a_sync
 import eth_retry
