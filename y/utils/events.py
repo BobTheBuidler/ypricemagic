@@ -409,7 +409,7 @@ class Logs:
             ranges = list(block_ranges(range_start, range_end, self._batch_size))
             coros = [_get_logs_async_no_cache(self.addresses, self.topics, start, end) for start, end in ranges]
             async def wrap(i, end, coro):
-                async with await self.semaphore:
+                async with self.semaphore:
                     return i, end, await coro
             batches_yielded = 0
             done = {}
