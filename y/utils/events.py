@@ -187,6 +187,14 @@ get_logs_semaphore = defaultdict(
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with get_logs_semaphore[threading.current_thread()][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
+    
+async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
+    if address is None:
+        return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+    elif topics is None:
+        return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+    else:
+        return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
 
 @eth_retry.auto_retry
 def _get_logs_no_cache(
@@ -262,7 +270,7 @@ def _cache_log(log: dict):
         commit()
 
 class Logs:
-    __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_logs_task', '_logs', '_lock', '_exc'
+    __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_batch_size', '_logs_task', '_logs', '_lock', '_exc', '_semaphore'
     def __init__(
         self, 
         *, 
@@ -270,11 +278,13 @@ class Logs:
         topics = [], 
         from_block: Optional[int] = None,
         fetch_interval: int = 300,
+        batch_size: int = BATCH_SIZE,
     ):
         self.addresses = addresses
         self.topics = topics
         self.fetch_interval = fetch_interval
         self.from_block = from_block
+        self._batch_size = batch_size
         self._logs_task = None
         self._logs = []
         self._lock = CounterLock()
@@ -319,6 +329,7 @@ class Logs:
                 and log.block.number >= from_block
             )
         ]
+    
     @db_session
     def _is_cached(self, from_block: int) -> List["LogCacheInfo"]:
         from y._db import utils as db
@@ -376,6 +387,12 @@ class Logs:
         except Exception as e:
             self._exc = e
             self._lock.set(BIG_VALUE)
+    
+    @async_property
+    def semaphore(self) -> asyncio.Semaphore:
+        if self._semaphore is None:
+            self._semaphore = asyncio.Semaphore(10)
+        return self._semaphore
 
     async def __fetch(self) -> NoReturn:
         from_block = await self._from_block
@@ -385,10 +402,11 @@ class Logs:
         while True:
             db_insert_tasks = []
             range_start, range_end = done_thru + 1, await dank_w3.eth.block_number
-            ranges = list(block_ranges(range_start, range_end, BATCH_SIZE))
-            coros = [_get_logs_async(self.addresses, self.topics, start, end) for start, end in ranges]
+            ranges = list(block_ranges(range_start, range_end, self._batch_size))
+            coros = [_get_logs_async_no_cache(self.addresses, self.topics, start, end) for start, end in ranges]
             async def wrap(i, end, coro):
-                return i, end, await coro
+                async with await self.semaphore:
+                    return i, end, await coro
             batches_yielded = 0
             done = {}
             for logs in asyncio.as_completed([wrap(i, end, coro) for i, ((start, end), coro) in enumerate(zip(ranges,coros))], timeout=None):
