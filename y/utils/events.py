@@ -19,6 +19,7 @@ from eth_typing import ChecksumAddress
 from msgspec import json
 from pony.orm import TransactionIntegrityError, commit, db_session, select
 from toolz import groupby
+from tqdm.asyncio import tqdm_asyncio
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
@@ -270,7 +271,7 @@ def _cache_log(log: dict):
         commit()
 
 class Logs:
-    __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_batch_size', '_logs_task', '_logs', '_lock', '_exc', '_semaphore'
+    __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_batch_size', '_logs_task', '_logs', '_lock', '_exc', '_semaphore', '_verbose'
     def __init__(
         self, 
         *, 
@@ -279,6 +280,7 @@ class Logs:
         from_block: Optional[int] = None,
         fetch_interval: int = 300,
         batch_size: int = BATCH_SIZE,
+        verbose: bool = False,
     ):
         self.addresses = addresses
         self.topics = topics
@@ -290,6 +292,7 @@ class Logs:
         self._lock = CounterLock()
         self._exc = None
         self._semaphore = None
+        self._verbose = verbose
     
     @property
     def topic0(self) -> str:
@@ -410,7 +413,8 @@ class Logs:
                     return i, end, await coro
             batches_yielded = 0
             done = {}
-            for logs in asyncio.as_completed([wrap(i, end, coro) for i, ((start, end), coro) in enumerate(zip(ranges,coros))], timeout=None):
+            as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
+            for logs in as_completed([wrap(i, end, coro) for i, ((start, end), coro) in enumerate(zip(ranges,coros))], timeout=None):
                 i, end, logs = await logs
                 done[i] = end, logs
                 for i in range(len(coros)):
