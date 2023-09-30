@@ -2,6 +2,7 @@ import asyncio
 import logging
 import threading
 from collections import Counter, defaultdict
+from contextlib import suppress
 from itertools import zip_longest
 from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
                     Iterable, List, NoReturn, Optional)
@@ -16,7 +17,7 @@ from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from msgspec import json
-from pony.orm import db_session, select
+from pony.orm import TransactionIntegrityError, db_session, select
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
@@ -246,17 +247,19 @@ def _cache_log(log: dict):
     from y._db.entities import Block, Log
     log_topics = log['topics']
     chain = db.get_chain(sync=True)
-    Log(
-        block=Block.get(chain=chain, number=log['blockNumber']) or Block(chain=chain, number=log['blockNumber']),
-        transaction_hash = log['transactionHash'],
-        log_index = log['logIndex'],
-        address = log['address'],
-        topic0=log_topics[0],
-        topic1=log_topics[1] if len(log_topics) >= 2 else None,
-        topic2=log_topics[2] if len(log_topics) >= 3 else None,
-        topic3=log_topics[3] if len(log_topics) >= 4 else None,
-        raw = json.encode(log),
-    )
+    with suppress(TransactionIntegrityError):
+        Log(
+            block=Block.get(chain=chain, number=log['blockNumber']) or Block(chain=chain, number=log['blockNumber']),
+            transaction_hash = log['transactionHash'],
+            log_index = log['logIndex'],
+            address = log['address'],
+            topic0=log_topics[0],
+            topic1=log_topics[1] if len(log_topics) >= 2 else None,
+            topic2=log_topics[2] if len(log_topics) >= 3 else None,
+            topic3=log_topics[3] if len(log_topics) >= 4 else None,
+            raw = json.encode(log),
+        )
+        commit()
 
 class Logs:
     __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_logs_task', '_logs', '_lock', '_exc'
@@ -380,7 +383,7 @@ class Logs:
         done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
         encoded_topics = json.encode(self.topics or None)
         while True:
-            _tasks = []
+            db_insert_tasks = []
             range_start, range_end = done_thru + 1, await dank_w3.eth.block_number
             ranges = list(block_ranges(range_start, range_end, BATCH_SIZE))
             coros = [_get_logs_async(self.addresses, self.topics, start, end) for start, end in ranges]
@@ -398,11 +401,11 @@ class Logs:
                         break
                     end, logs = done.pop(i)
                     for log in logs:
-                        _tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
-                        yield log
+                        self._logs.append(log)
+                        db_insert_tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
                     batches_yielded += 1
                     self._lock.set(end)
-            await asyncio.gather(*_tasks)
+            await asyncio.gather(*db_insert_tasks)
             done_thru = range_end
             with db_session:
                 chain = await db.get_chain(sync=False)
