@@ -393,7 +393,7 @@ class Logs:
                 return i, end, await coro
             batches_yielded = 0
             done = {}
-            for logs in asyncio.as_completed([wrap(i, end, coro) for i, (start, end), coro in enumerate(zip(ranges,coros))], timeout=None):
+            for logs in asyncio.as_completed([wrap(i, end, coro) for i, ((start, end), coro) in enumerate(zip(ranges,coros))], timeout=None):
                 i, end, logs = await logs
                 done[i] = end, logs
                 for i in range(len(coros)):
