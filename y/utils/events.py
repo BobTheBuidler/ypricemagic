@@ -377,8 +377,6 @@ class Logs:
             self._lock.set(BIG_VALUE)
 
     async def __fetch(self) -> NoReturn:
-        from y._db import utils as db
-        from y._db.entities import LogCacheInfo
         
         from_block = await self._from_block
         await self._load_cache(from_block)
@@ -407,44 +405,50 @@ class Logs:
                         db_insert_tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
                     batches_yielded += 1
                     self._lock.set(end)
-            await asyncio.gather(*db_insert_tasks)
             done_thru = range_end
-            with db_session:
-                chain = await db.get_chain(sync=False)
-                if self.addresses:
-                    for address in self.addresses:
-                        if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
-                            if from_block < e.cached_from:
-                                e.cached_from = from_block
-                            if done_thru > e.cached_thru:
-                                e.cached_thru = done_thru
-                        else:
-                            LogCacheInfo(
-                                chain=chain, 
-                                address=address,
-                                topics=encoded_topics,
-                                cached_from = from_block,
-                                cached_thru = done_thru,
-                            )
-                elif info := LogCacheInfo.get(
-                    chain=chain, 
-                    address=None,
-                    topics=encoded_topics,
-                    cached_from = from_block,
-                    cached_thru = done_thru,
-                ):
-                    if from_block < info.cached_from:
-                        info.cached_from = from_block
-                    if done_thru > info.cached_thru:
-                        info.cached_thru = done_thru
+            await asyncio.gather(*db_insert_tasks)
+            await thread_pool_executor.submit(self._set_cache_info(from_block, done_thru))
+            await asyncio.sleep(self.fetch_interval)
+    
+    @db_session
+    def _set_cache_info(self, from_block: int, done_thru: int) -> None:
+        from y._db import utils as db
+        from y._db.entities import LogCacheInfo
+        chain = db.get_chain(sync=True)
+        encoded_topics = json.encode(self.topics or None)
+        if self.addresses:
+            for address in self.addresses:
+                if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
+                    if from_block < e.cached_from:
+                        e.cached_from = from_block
+                    if done_thru > e.cached_thru:
+                        e.cached_thru = done_thru
                 else:
                     LogCacheInfo(
                         chain=chain, 
+                        address=address,
                         topics=encoded_topics,
                         cached_from = from_block,
                         cached_thru = done_thru,
                     )
-            await asyncio.sleep(self.fetch_interval)
+        elif info := LogCacheInfo.get(
+            chain=chain, 
+            address=None,
+            topics=encoded_topics,
+            cached_from = from_block,
+            cached_thru = done_thru,
+        ):
+            if from_block < info.cached_from:
+                info.cached_from = from_block
+            if done_thru > info.cached_thru:
+                info.cached_thru = done_thru
+        else:
+            LogCacheInfo(
+                chain=chain, 
+                topics=encoded_topics,
+                cached_from = from_block,
+                cached_thru = done_thru,
+            )
 
     @async_property
     async def _from_block(self) -> int:
