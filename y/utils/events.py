@@ -388,7 +388,7 @@ class Logs:
             self._exc = e
             self._lock.set(BIG_VALUE)
     
-    @async_property
+    @property
     def semaphore(self) -> asyncio.Semaphore:
         if self._semaphore is None:
             self._semaphore = asyncio.Semaphore(10)
