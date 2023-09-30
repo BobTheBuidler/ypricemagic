@@ -339,7 +339,7 @@ class Logs:
         )) and from_block >= info.cached_from:
             return True
 
-        return all(
+        return self.addresses and all(
             (info := (
                 # If we cached all logs for this address...
                 LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
