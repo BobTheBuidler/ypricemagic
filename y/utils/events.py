@@ -429,7 +429,7 @@ class Logs:
                     batches_yielded += 1
                     self._lock.set(end)
                 await asyncio.gather(*db_insert_tasks)
-                await thread_pool_executor.submit(self._set_cache_info(from_block, done_thru))
+                await thread_pool_executor.submit(self._set_cache_info, from_block, done_thru)
                 db_insert_tasks = []
             done_thru = range_end
             
