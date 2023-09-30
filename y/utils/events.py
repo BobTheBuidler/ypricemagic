@@ -17,7 +17,7 @@ from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from msgspec import json
-from pony.orm import TransactionIntegrityError, db_session, select
+from pony.orm import TransactionIntegrityError, commit, db_session, select
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
