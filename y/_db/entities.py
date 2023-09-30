@@ -66,7 +66,7 @@ class LogCacheInfo(db.Entity):
     chain = Required(Chain)
     address = Optional(str)
     topics = Required(bytes)
-    composite_key(address, topics)
+    composite_key(chain, address, topics)
     cached_from = Required(int)
     cached_thru = Required(int)
 
