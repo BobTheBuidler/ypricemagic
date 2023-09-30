@@ -289,6 +289,7 @@ class Logs:
         self._logs = []
         self._lock = CounterLock()
         self._exc = None
+        self._semaphore = None
     
     @property
     def topic0(self) -> str:
