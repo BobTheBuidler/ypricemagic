@@ -28,6 +28,9 @@ from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
+if TYPE_CHECKING:
+    from y._db.entities import Chain, LogCacheInfo
+
 logger = logging.getLogger(__name__)
 
 
@@ -238,18 +241,21 @@ def _get_logs_batch_cached(
 BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
 
 @db_session
-def _cache_log(addresses: bytes, topics: bytes, log: dict):
+def _cache_log(log: dict):
     from y._db import utils as db
     from y._db.entities import Block, Log
+    log_topics = log['topics']
     chain = db.get_chain(sync=True)
-    if (block := Block.get(chain=chain, number=log['blockNumber'])) is None:
-        block = Block(chain=chain, number=log['blockNumber'])
     Log(
-        addresses=addresses,
-        topics=topics,
-        block=block, 
+        block=Block.get(chain=chain, number=log['blockNumber']) or Block(chain=chain, number=log['blockNumber']),
         transaction_hash = log['transactionHash'],
         log_index = log['logIndex'],
+        address = log['address'],
+        topic0=log_topics[0],
+        topic1=log_topics[1] if len(log_topics) >= 2 else None,
+        topic2=log_topics[2] if len(log_topics) >= 3 else None,
+        topic3=log_topics[3] if len(log_topics) >= 4 else None,
+        raw = json.encode(log),
     )
 
 class Logs:
@@ -271,31 +277,73 @@ class Logs:
         self._lock = CounterLock()
         self._exc = None
     
+    @property
+    def topic0(self) -> str:
+        return self.topics[0] if self.topics else None
+    
+    @property
+    def topic1(self) -> str:
+        return self.topics[1] if self.topics and len(self.topics) > 1 else None
+    
+    @property
+    def topic2(self) -> str:
+        return self.topics[2] if self.topics and len(self.topics) > 2 else None
+    
+    @property
+    def topic3(self) -> str:
+        return self.topics[3] if self.topics and len(self.topics) > 3 else None
+    
     async def _load_cache(self, from_block: int) -> None:
         from y._db import utils as db
-        from y._db.entities import Log, LogCacheInfo
 
-        cache_info: LogCacheInfo
         with db_session:
             chain = await db.get_chain(sync=False)
-            cache_info = LogCacheInfo.get(
-                chain=chain,
-                addresses=json.encode(self.addresses), 
-                topics=json.encode(self.topics),
-            )
-            if cache_info is None:
-                return
-            if cache_info.cached_from >= from_block:
-                query = select(
-                    log.raw for log in Log 
-                    if log.block.chain == chain
-                    and log.addresses == json.encode(self.addresses) 
-                    and log.topics == json.encode(self.topics) 
-                    and log.block.number >= from_block
-                )
-                self._logs.extend(json.decode(log) for log in query)
+            if self._is_cached(chain, from_block):
+                self._logs.extend(json.decode(log) for log in self._get_cache_query(chain, from_block))
             if self._logs:
                 self._lock.set(self._logs[-1]['blockNumber'])
+    
+    def _get_cache_query(self, chain: "Chain", from_block: int) -> "Query":
+        from y._db.entities import Log
+        return select(
+            log.raw for log in Log 
+            if log.block.chain == chain
+            and (not self.addresses or log.address in self.addresses)
+            and (self.topic0 is None or log.topic0 in self.topic0)
+            and (self.topic1 is None or log.topic1 in self.topic1)
+            and (self.topic2 is None or log.topic1 in self.topic2)
+            and (self.topic3 is None or log.topic1 in self.topic3)
+            and log.block.number >= from_block
+        )
+    
+    def _is_cached(self, chain: "Chain", from_block: int) -> List["LogCacheInfo"]:
+        from y._db.entities import LogCacheInfo
+
+        # If we cached all of this topic0 with no filtering for all addresses
+        if self.topics and self.topic0 and (info := LogCacheInfo.get(
+            chain=chain,
+            address=None, 
+            topics=json.encode([self.topic0]),
+        )) and from_block >= info.cached_from:
+            return True
+        
+        # If we cached these specific topics for all addresses
+        elif self.topics and (info := LogCacheInfo.get(
+            chain=chain,
+            address=None,
+            topics=json.encode(self.topics),
+        )) and from_block >= info.cached_from:
+            return True
+
+        return all(
+            (info := (
+                # If we cached all logs for this address...
+                LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
+                # ... or we cached all logs for these specific topics for this address
+                or LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(self.topics))
+            )) and from_block >= info.cached_from 
+            for addr in self.addresses
+        )
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -331,7 +379,7 @@ class Logs:
         from_block = await self._from_block()
         await self._load_cache(from_block)
         done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
-        encoded = json.encode(self.addresses), json.encode(self.topics)
+        encoded_topics = json.encode(self.topics or None)
         while True:
             _tasks = []
             range_start, range_end = done_thru + 1, await dank_w3.eth.block_number
@@ -351,7 +399,7 @@ class Logs:
                         break
                     end, logs = done.pop(i)
                     for log in logs:
-                        _tasks.append(thread_pool_executor.submit(_cache_log, *encoded, log))
+                        _tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
                         yield log
                     batches_yielded += 1
                     self._lock.set(end)
@@ -359,16 +407,25 @@ class Logs:
             done_thru = range_end
             with db_session:
                 chain = await db.get_chain(sync=False)
-                if e:=LogCacheInfo.get(chain=chain, addresses=encoded[0], topics=encoded[1]):
-                    if self._from_block < e.cached_from:
-                        e.cached_from = self._from_block
-                    if done_thru > e.cached_thru:
-                        e.cached_thru = done_thru
+                if self.addresses:
+                    for address in self.addresses:
+                        if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
+                            if self._from_block < e.cached_from:
+                                e.cached_from = self._from_block
+                            if done_thru > e.cached_thru:
+                                e.cached_thru = done_thru
+                        else:
+                            LogCacheInfo(
+                                chain=chain, 
+                                address=address,
+                                topics=encoded_topics,
+                                cached_from = self._from_block,
+                                cached_thru = done_thru,
+                            )
                 else:
                     LogCacheInfo(
                         chain=chain, 
-                        addresses=encoded[0],
-                        topics=encoded[1],
+                        topics=encoded_topics,
                         cached_from = self._from_block,
                         cached_thru = done_thru,
                     )

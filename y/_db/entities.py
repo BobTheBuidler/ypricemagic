@@ -64,17 +64,21 @@ class Token(Contract):
 
 class LogCacheInfo(db.Entity):
     chain = Required(Chain)
-    addresses = Required(bytes)
+    address = Optional(str)
     topics = Required(bytes)
-    composite_key(addresses, topics)
+    composite_key(address, topics)
     cached_from = Required(int)
     cached_thru = Required(int)
 
 class Log(db.Entity):
-    addresses = Required(bytes, lazy=True)
-    topics = Required(bytes, lazy=True)
     block = Required(Block, lazy=True)
     transaction_hash = Required(str, lazy=True)
     log_index = Required(int, lazy=True)
-    composite_key(addresses, topics, block, transaction_hash, log_index)
-    raw = Required(bytes)
+    composite_key(block, transaction_hash, log_index)
+
+    address = Required(str, lazy=True)
+    topic0 = Optional(str, lazy=True)
+    topic1 = Optional(str, lazy=True)
+    topic2 = Optional(str, lazy=True)
+    topic3 = Optional(str, lazy=True)
+    raw = Required(bytes, lazy=True)
