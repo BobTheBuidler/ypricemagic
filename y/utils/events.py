@@ -378,7 +378,7 @@ class Logs:
         from y._db import utils as db
         from y._db.entities import LogCacheInfo
         
-        from_block = await self._from_block()
+        from_block = await self._from_block
         await self._load_cache(from_block)
         done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
         encoded_topics = json.encode(self.topics or None)
@@ -412,8 +412,8 @@ class Logs:
                 if self.addresses:
                     for address in self.addresses:
                         if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
-                            if self._from_block < e.cached_from:
-                                e.cached_from = self._from_block
+                            if from_block < e.cached_from:
+                                e.cached_from = from_block
                             if done_thru > e.cached_thru:
                                 e.cached_thru = done_thru
                         else:
@@ -421,14 +421,25 @@ class Logs:
                                 chain=chain, 
                                 address=address,
                                 topics=encoded_topics,
-                                cached_from = self._from_block,
+                                cached_from = from_block,
                                 cached_thru = done_thru,
                             )
+                elif info := LogCacheInfo.get(
+                    chain=chain, 
+                    address=None,
+                    topics=encoded_topics,
+                    cached_from = from_block,
+                    cached_thru = done_thru,
+                ):
+                    if from_block < info.cached_from:
+                        info.cached_from = from_block
+                    if done_thru > info.cached_thru:
+                        info.cached_thru = done_thru
                 else:
                     LogCacheInfo(
                         chain=chain, 
                         topics=encoded_topics,
-                        cached_from = self._from_block,
+                        cached_from = from_block,
                         cached_thru = done_thru,
                     )
             await asyncio.sleep(self.fetch_interval)
