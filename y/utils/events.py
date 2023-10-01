@@ -17,7 +17,8 @@ from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from msgspec import json
-from pony.orm import TransactionIntegrityError, commit, db_session, select
+from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
+                      db_session, select)
 from toolz import groupby
 from tqdm.asyncio import tqdm_asyncio
 from web3.middleware.filter import block_ranges
@@ -515,7 +516,7 @@ class Logs:
             if should_commit:
                 commit()
                 logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
-        except TransactionIntegrityError:
+        except (TransactionIntegrityError, OptimisticCheckError):
             return self._set_cache_info(from_block, done_thru)
 
     @async_property
