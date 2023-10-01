@@ -14,3 +14,5 @@ except TransactionError as e:
 except BindingError as e:
     if not str(e).startswith('Database object was already bound to'):
         raise e
+
+__all__ = 'get_chain', 'get_block'
