@@ -253,9 +253,8 @@ BIG_VALUE = 99999999999999999999999999999999999999999999999999999999999999999999
 @db_session
 def _cache_log(log: dict):
     from y._db import utils as db
-    from y._db.entities import Block, Log
+    from y._db.entities import Log
     log_topics = log['topics']
-    chain = db.get_chain(sync=True)
     with suppress(TransactionIntegrityError):
         Log(
             block=db.get_block(log['blockNumber'], sync=True),
@@ -460,7 +459,7 @@ class Logs:
                     end, logs = done.pop(i)
                     for log in logs:
                         self._logs.append(log)
-                        db_insert_tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
+                        db_insert_tasks.append(thread_pool_executor.submit(_cache_log, log))
                     db_insert_tasks.append(thread_pool_executor.submit(self._set_cache_info, from_block, end))
                     batches_yielded += 1
                     self._lock.set(end)
