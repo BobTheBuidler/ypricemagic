@@ -342,7 +342,7 @@ class Logs:
         # If we cached all of this topic0 with no filtering for all addresses
         if self.topics and self.topic0 and (info := LogCacheInfo.get(
             chain=chain,
-            address='',
+            address='None',
             topics=json.encode([self.topic0]),
         )) and from_block >= info.cached_from:
             return True
@@ -350,7 +350,7 @@ class Logs:
         # If we cached these specific topics for all addresses
         elif self.topics and (info := LogCacheInfo.get(
             chain=chain,
-            address='',
+            address='None',
             topics=json.encode(self.topics),
         )) and from_block >= info.cached_from:
             return True
@@ -458,7 +458,7 @@ class Logs:
                     )
         elif info := LogCacheInfo.get(
             chain=chain, 
-            address='',
+            address='None',
             topics=encoded_topics,
             cached_from = from_block,
             cached_thru = done_thru,
@@ -469,7 +469,8 @@ class Logs:
                 info.cached_thru = done_thru
         else:
             LogCacheInfo(
-                chain=chain, 
+                chain=chain,
+                address='None',
                 topics=encoded_topics,
                 cached_from = from_block,
                 cached_thru = done_thru,
