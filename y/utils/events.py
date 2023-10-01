@@ -423,8 +423,8 @@ class Logs:
                     if i not in done:
                         if db_insert_tasks:
                             await asyncio.gather(*db_insert_tasks)
-                            await thread_pool_executor.submit(self._set_cache_info, from_block, end)
                             db_insert_tasks = []
+                        await thread_pool_executor.submit(self._set_cache_info, from_block, end)
                         break
                     end, logs = done.pop(i)
                     for log in logs:
