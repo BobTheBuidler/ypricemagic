@@ -318,7 +318,7 @@ class Logs:
         from y._db.entities import LogCacheInfo
         chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
-        if self.topics and self.topic0 and (info := LogCacheInfo.get(
+        if self.topic0 and (info := LogCacheInfo.get(
             chain=chain,
             address='None',
             topics=json.encode([self.topic0]),
@@ -332,28 +332,47 @@ class Logs:
         )):
             return info
 
-    async def _load_cache(self, from_block: int) -> None:
+    async def _load_cache(self, from_block: int) -> int:
+        """
+        Loads cached logs from disk.
+        Returns max block of logs loaded from cache.
+        """
         if cached_thru := await thread_pool_executor.run(self._is_cached_thru, from_block):
             self._logs.extend(await thread_pool_executor.run(self._select_from_cache, from_block))
             logger.info('loaded %s logs thru block %s from disk', len(self._logs), cached_thru)
             self._lock.set(cached_thru)
+            return cached_thru
+        return from_block - 1
     
     @db_session
     def _select_from_cache(self, from_block: int) -> List[dict]:
         from y._db import utils as db
         from y._db.entities import Log
-        return [
-            json.decode(log) for log in select(
-                log.raw for log in Log 
-                if log.block.chain == db.get_chain(sync=True)
-                and (not self.addresses or log.address in self.addresses)
-                and (self.topic0 is None or log.topic0 in self.topic0)
-                and (self.topic1 is None or log.topic1 in self.topic1)
-                and (self.topic2 is None or log.topic2 in self.topic2)
-                and (self.topic3 is None or log.topic3 in self.topic3)
-                and log.block.number >= from_block
-            )
-        ]
+        if self.addresses:
+            return [
+                json.decode(log) for log in select(
+                    log.raw for log in Log 
+                    if log.block.chain == db.get_chain(sync=True)
+                    and log.address in self.addresses
+                    and (self.topic0 is None or log.topic0 in self.topic0)
+                    and (self.topic1 is None or log.topic1 in self.topic1)
+                    and (self.topic2 is None or log.topic2 in self.topic2)
+                    and (self.topic3 is None or log.topic3 in self.topic3)
+                    and log.block.number >= from_block
+                )
+            ]
+        else:
+            return [
+                json.decode(log) for log in select(
+                    log.raw for log in Log 
+                    if log.block.chain == db.get_chain(sync=True)
+                    and (self.topic0 is None or log.topic0 in self.topic0)
+                    and (self.topic1 is None or log.topic1 in self.topic1)
+                    and (self.topic2 is None or log.topic2 in self.topic2)
+                    and (self.topic3 is None or log.topic3 in self.topic3)
+                    and log.block.number >= from_block
+                )
+            ]
     
     @db_session
     def _is_cached_thru(self, from_block: int) -> int:
@@ -409,24 +428,25 @@ class Logs:
         if self._semaphore is None:
             self._semaphore = BlockSemaphore(32)
         return self._semaphore
+    
+    async def _get_logs(self, i: int, range_start: int, range_end: int) -> List[LogReceipt]:
+        async with self.semaphore[range_end]:
+            return i, range_end, await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
 
     async def __fetch(self) -> NoReturn:
         from_block = await self._from_block
-        await self._load_cache(from_block)
-        done_thru = (self._logs[-1]['blockNumber'] if self._logs else from_block) - 1
+        done_thru = await self._load_cache(from_block)
         encoded_topics = json.encode(self.topics or None)
+        as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         while True:
+            range_start = done_thru + 1
+            range_end = await dank_w3.eth.block_number
+            coros = [self._get_logs(i, start, end) for i, (start, end) in enumerate(block_ranges(range_start, range_end, self._batch_size))]
+
             db_insert_tasks = []
-            range_start, range_end = done_thru + 1, await dank_w3.eth.block_number
-            ranges = list(block_ranges(range_start, range_end, self._batch_size))
-            coros = [_get_logs_async_no_cache(self.addresses, self.topics, start, end) for start, end in ranges]
-            async def wrap(i, end, coro):
-                async with self.semaphore[end]:
-                    return i, end, await coro
             batches_yielded = 0
             done = {}
-            as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
-            for logs in as_completed([wrap(i, end, coro) for i, ((start, end), coro) in enumerate(zip(ranges,coros))], timeout=None):
+            for logs in as_completed(coros, timeout=None):
                 i, end, logs = await logs
                 done[i] = end, logs
                 for i in range(len(coros)):
@@ -441,11 +461,10 @@ class Logs:
                     for log in logs:
                         self._logs.append(log)
                         db_insert_tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
-                    thread_pool_executor.submit(self._set_cache_info, from_block, end)
+                    db_insert_tasks.append(thread_pool_executor.submit(self._set_cache_info, from_block, end))
                     batches_yielded += 1
                     self._lock.set(end)
             done_thru = range_end
-            
             await asyncio.sleep(self.fetch_interval)
     
     @db_session
