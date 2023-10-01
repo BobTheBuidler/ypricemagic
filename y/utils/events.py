@@ -268,9 +268,9 @@ def _cache_log(log: dict):
     with suppress(TransactionIntegrityError):
         Log(
             block=db.get_block(log['blockNumber'], sync=True),
-            transaction_hash = log['transactionHash'],
+            transaction_hash = log['transactionHash'].hex(),
             log_index = log['logIndex'],
-            address = log['address'],
+            address = log['address'].hex(),
             topic0=log_topics[0].hex(),
             topic1=log_topics[1].hex() if len(log_topics) >= 2 else None,
             topic2=log_topics[2].hex() if len(log_topics) >= 3 else None,
