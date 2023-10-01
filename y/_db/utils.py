@@ -51,6 +51,17 @@ def get_chain() -> Chain:
 
 @a_sync(default='async', executor=executor)
 @db_session
+def get_block(number: int) -> Block:
+    chain = get_chain(sync=True)
+    if block := Block.get(chain=chain, number=number):
+        return block
+    with suppress(TransactionIntegrityError):
+        block = Block(chain=chain, number=number)
+        commit()
+    return Block.get(chain=chain, number=number)
+
+@a_sync(default='async', executor=executor)
+@db_session
 def get_token(address: str) -> Token:
     address = convert.to_address(address)
     if address == constants.EEE_ADDRESS:
@@ -73,19 +84,17 @@ def get_token(address: str) -> Token:
 def get_price(address: str, block: int) -> Optional[Decimal]:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
-    chain = get_chain(sync=True)
     if price := Price.get(
         token = get_token(address, sync=True), 
-        block = Block.get(chain=chain, number=block) or Block(chain=chain, number=block), 
+        block = get_block(block, sync=True), 
     ) and price.price:
         return price.price
 
 @a_sync(default='async', executor=executor)
 @db_session
 def set_price(address: str, block: int, price: Decimal) -> None:
-    chain = get_chain(sync=True)
     Price(
-        block = Block.get(chain=chain, number=block) or Block(chain=chain, number=block),
+        block = get_block(block),
         token = get_token(address, sync=True),
         price = price,
     )

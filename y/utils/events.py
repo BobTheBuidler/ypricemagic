@@ -258,7 +258,7 @@ def _cache_log(log: dict):
     chain = db.get_chain(sync=True)
     with suppress(TransactionIntegrityError):
         Log(
-            block=Block.get(chain=chain, number=log['blockNumber']) or Block(chain=chain, number=log['blockNumber']),
+            block=db.get_block(log['blockNumber'], sync=True),
             transaction_hash = log['transactionHash'],
             log_index = log['logIndex'],
             address = log['address'],
