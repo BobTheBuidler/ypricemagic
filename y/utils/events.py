@@ -383,7 +383,7 @@ class Logs:
                     return
                 yield log
                 yielded += 1
-            done_thru = block
+            done_thru = self._lock.value
     
     async def _fetch(self) -> NoReturn:
         try:
