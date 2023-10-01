@@ -134,7 +134,7 @@ def __cache(get_price: GetPrice) -> GetPrice:
         ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
         silent: bool = False
     ) -> Optional[UsdPrice]:
-        from y._db import utils as db
+        from y._db.utils import price as db
         if not skip_cache and (price := await db.get_price(token, block)):
             cache_logger.debug('disk cache -> %s', price)
             return price

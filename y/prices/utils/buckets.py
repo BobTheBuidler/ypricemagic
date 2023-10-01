@@ -33,12 +33,12 @@ async def check_bucket(
     token: AnyAddressType
     ) -> str:
 
-    import y._db.utils as db
+    import y._db.utils.token as db
 
     token_address = convert.to_address(token)
     logger = get_price_logger(token_address, block=None, extra='buckets')
     
-    bucket = await db._get_token_bucket(token_address)
+    bucket = await db.get_bucket(token_address)
     if bucket:
         logger.debug('returning bucket %s from ydb', bucket)
         return bucket
@@ -47,7 +47,7 @@ async def check_bucket(
     for bucket, check in string_matchers.items():
         if check(token):
             logger.debug("%s is %s", token_address, bucket)
-            await db._set_token_bucket(token, bucket)
+            await db.set_bucket(token, bucket)
             return bucket
         else:
             logger.debug("%s is not %s", token_address, bucket)
@@ -66,7 +66,7 @@ async def check_bucket(
             logger.debug("%s is %s", token_address, bucket)
             for fut in futs:
                 fut.cancel()
-            await db._set_token_bucket(token, bucket)
+            await db.set_bucket(token, bucket)
             return bucket
         else:
             logger.debug("%s is not %s", token_address, bucket)
@@ -104,7 +104,7 @@ async def check_bucket(
         bucket = 'curve lp'
     logger.debug("%s bucket is %s", token_address, bucket)
     if bucket:
-        await db._set_token_bucket(token, bucket)
+        await db.set_bucket(token, bucket)
     return bucket
 
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)

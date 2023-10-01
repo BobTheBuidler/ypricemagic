@@ -262,7 +262,7 @@ def enc_hook(obj):
 
 @db_session
 def _cache_log(log: dict):
-    from y._db import utils as db
+    from y._db.utils import utils as db
     from y._db.entities import Log
     log_topics = log['topics']
     topics = {f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))}
@@ -328,7 +328,7 @@ class Logs:
         if self.addresses:
             raise NotImplementedError(self.addresses)
             
-        from y._db import utils as db
+        from y._db.utils import utils as db
         from y._db.entities import LogCacheInfo
         chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
@@ -360,7 +360,7 @@ class Logs:
     
     @db_session
     def _select_from_cache(self, from_block: int) -> List[dict]:
-        from y._db import utils as db
+        from y._db.utils import utils as db
         from y._db.entities import Log
         if self.addresses:
             return [
@@ -392,7 +392,7 @@ class Logs:
     def _is_cached_thru(self, from_block: int) -> int:
         """Returns max cached block for these getLogs params"""
 
-        from y._db import utils as db
+        from y._db.utils import utils as db
         from y._db.entities import LogCacheInfo
         
         if self.addresses:
@@ -486,7 +486,7 @@ class Logs:
     
     @db_session
     def _set_cache_info(self, from_block: int, done_thru: int) -> None:
-        from y._db import utils as db
+        from y._db.utils import utils as db
         from y._db.entities import LogCacheInfo
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)
