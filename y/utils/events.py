@@ -475,6 +475,7 @@ class Logs:
                 cached_thru = done_thru,
             )
         commit()
+        logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
 
     @async_property
     async def _from_block(self) -> int:
