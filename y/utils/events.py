@@ -5,7 +5,7 @@ from collections import Counter, defaultdict
 from contextlib import suppress
 from itertools import zip_longest
 from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
-                    Iterable, List, NoReturn, Optional)
+                    Iterable, List, NoReturn, Optional, Type)
 
 import a_sync
 import eth_retry
@@ -254,10 +254,10 @@ def _get_logs_batch_cached(
 BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
 
 def enc_hook(obj):
-    if isinstance(obj, HexBytes):
-        return obj.hex()
-    elif isinstance(obj, AttributeDict):
+    if isinstance(obj, AttributeDict):
         return dict(obj)
+    elif isinstance(obj, HexBytes):
+        return obj.hex()
     raise NotImplementedError(obj)
 
 @db_session
@@ -265,19 +265,24 @@ def _cache_log(log: dict):
     from y._db import utils as db
     from y._db.entities import Log
     log_topics = log['topics']
+    topics = {f"topic{i}": log_topics[i].hex() for i in range(min(len(topics), 4))}
     with suppress(TransactionIntegrityError):
         Log(
             block=db.get_block(log['blockNumber'], sync=True),
             transaction_hash = log['transactionHash'].hex(),
             log_index = log['logIndex'],
             address = log['address'],
-            topic0=log_topics[0].hex(),
-            topic1=log_topics[1].hex() if len(log_topics) >= 2 else None,
-            topic2=log_topics[2].hex() if len(log_topics) >= 3 else None,
-            topic3=log_topics[3].hex() if len(log_topics) >= 4 else None,
+            **topics,
             raw = json.encode(log, enc_hook=enc_hook),
         )
         commit()
+
+T = TypeVar('T')
+
+def dec_hook(typ: Type[T], obj: bytes) -> T:
+    if typ == HexBytes:
+        return HexBytes(obj)
+    raise ValueError(f"{typ} is not a valid type for decoding")
 
 class Logs:
     __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_batch_size', '_logs_task', '_logs', '_lock', '_exc', '_semaphore', '_verbose'
