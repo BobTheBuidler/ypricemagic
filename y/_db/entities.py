@@ -64,7 +64,7 @@ class Token(Contract):
 
 class LogCacheInfo(db.Entity):
     chain = Required(Chain)
-    address = Optional(str)
+    address = Required(str)
     topics = Required(bytes)
     composite_key(chain, address, topics)
     cached_from = Required(int)
