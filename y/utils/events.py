@@ -265,7 +265,7 @@ def _cache_log(log: dict):
     from y._db import utils as db
     from y._db.entities import Log
     log_topics = log['topics']
-    topics = {f"topic{i}": log_topics[i].hex() for i in range(min(len(topics), 4))}
+    topics = {f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))}
     with suppress(TransactionIntegrityError):
         Log(
             block=db.get_block(log['blockNumber'], sync=True),
