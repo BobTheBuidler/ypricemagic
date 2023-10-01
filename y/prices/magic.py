@@ -46,6 +46,7 @@ async def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
     fail_to_None: bool = False,
+    skip_cache: bool = False,
     ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:
@@ -65,10 +66,11 @@ async def get_price(
     token_address = convert.to_address(token_address)
     try:
         from y._db import utils as db
-        if price := await db.get_price(token_address, block):
+        if not skip_cache and price := await db.get_price(token_address, block):
             cache_logger.debug('disk cache -> %s', price)
             return price
-        if price := await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent):
+        price = await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
+        if price and not skip_cache:
             await db.set_price(token_address, block, price)
         return price
     except (ContractNotFound, NonStandardERC20, PriceError) as e:
@@ -81,6 +83,7 @@ async def get_prices(
     token_addresses: Iterable[AnyAddressType],
     block: Optional[Block] = None,
     fail_to_None: bool = False,
+    skip_cache: bool = False,
     silent: bool = False,
     ) -> List[Optional[float]]:
     '''
@@ -101,7 +104,14 @@ async def get_prices(
 
     prices = await asyncio.gather(
         *[
-            get_price(convert.to_address(token), block, fail_to_None=fail_to_None, silent=silent, sync=False)
+            get_price(
+                token_address=convert.to_address(token), 
+                block=block, 
+                fail_to_None=fail_to_None, 
+                skip_cache=skip_cache, 
+                silent=silent, 
+                sync=False,
+            )
             for token in token_addresses
         ],
         return_exceptions=True
