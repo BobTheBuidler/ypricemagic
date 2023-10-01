@@ -8,6 +8,8 @@ from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 
 from y._db.common import enc_hook
+from web3.types import LogReceipt
+
 from y._db.entities import Log, LogCacheInfo
 from y._db.utils import get_block
 
@@ -28,6 +30,9 @@ def insert_log(log: dict):
             raw = json.encode(log, enc_hook=enc_hook),
         )
         commit()
+
+class CacheNotPopulatedError(Exception):
+    pass
 
 class LogCache:
     __slots__ = 'addresses', 'topics'
@@ -95,7 +100,14 @@ class LogCache:
         return 0
     
     @db_session
-    def select(self, from_block: int, to_block: int) -> List[dict]:
+    def check_and_select(self, from_block: int, to_block: int) -> List[LogReceipt]:
+        if self.is_cached_thru(from_block) >= to_block:
+            return self.select(from_block, to_block)
+        else:
+            raise CacheNotPopulatedError(self, from_block, to_block)
+    
+    @db_session
+    def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
         from y._db.utils import utils as db
         return [
             json.decode(log) for log in select(
