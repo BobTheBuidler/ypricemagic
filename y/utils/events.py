@@ -342,7 +342,7 @@ class Logs:
         # If we cached all of this topic0 with no filtering for all addresses
         if self.topics and self.topic0 and (info := LogCacheInfo.get(
             chain=chain,
-            address=None, 
+            address=None,
             topics=json.encode([self.topic0]),
         )) and from_block >= info.cached_from:
             return True
@@ -429,7 +429,7 @@ class Logs:
                     batches_yielded += 1
                     self._lock.set(end)
                 await asyncio.gather(*db_insert_tasks)
-                await thread_pool_executor.submit(self._set_cache_info, from_block, done_thru)
+                await thread_pool_executor.submit(self._set_cache_info, from_block, end)
                 db_insert_tasks = []
             done_thru = range_end
             
