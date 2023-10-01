@@ -59,7 +59,7 @@ def get_block(number: int) -> Block:
     with suppress(TransactionIntegrityError):
         block = Block(chain=chain, number=number)
         commit()
-    return Block.get(chain=chain, number=number)
+    return Block.get(chain=get_chain(sync=True), number=number)
 
 @a_sync(default='async', executor=executor)
 @db_session
