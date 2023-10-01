@@ -1,5 +1,6 @@
 
 from datetime import datetime
+from decimal import Decimal
 
 from pony.orm import (Database, Optional, PrimaryKey, Required, Set,
                       composite_key)
@@ -61,6 +62,12 @@ class Token(Contract):
     name = Optional(str, lazy=True)
     decimals = Optional(int, lazy=True)
     bucket = Optional(str, lazy=True)
+
+class Price:
+    dbid = PrimaryKey(int, auto=True)
+    block = Required(Block, lazy=True)
+    token = Required(Token, lazy=True)
+    price = Required(Decimal)
 
 class LogCacheInfo(db.Entity):
     chain = Required(Chain)

@@ -2,6 +2,7 @@
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
+from decimal import Decimal
 from typing import Optional
 
 from a_sync import a_sync
@@ -10,7 +11,7 @@ from pony.orm import (BindingError, TransactionError,
                       TransactionIntegrityError, commit, db_session)
 
 from y._db.config import connection_settings
-from y._db.entities import Address, Chain, Token, db
+from y._db.entities import Address, Block, Chain, Price, Token, db
 from y.constants import EEE_ADDRESS
 from y.erc20 import decimals
 
@@ -66,7 +67,27 @@ def get_token(address: str) -> Token:
             logger.debug('token %s added to ydb', address)
         if token := Token.get(chain=get_chain(sync=True), address=address):
             return token
-    return token
+
+@a_sync(default='async', executor=executor)
+@db_session
+def get_price(address: str, block: int) -> Optional[Decimal]:
+    chain = get_chain(sync=True)
+    if price := Price.get(
+        token = get_token(address, sync=True), 
+        block = Block.get(chain=chain, number=block) or Block(chain=chain, number=block), 
+    ) and price.price:
+        return price.price
+
+@a_sync(default='async', executor=executor)
+@db_session
+def set_price(address: str, block: int, price: Decimal) -> None:
+    chain = get_chain(sync=True)
+    Price(
+        block = Block.get(chain=chain, number=block) or Block(chain=chain, number=block),
+        token = get_token(address, sync=True),
+        price = price,
+    )
+    commit()
 
 @a_sync(default='async', executor=executor)
 @db_session

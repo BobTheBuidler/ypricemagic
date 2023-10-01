@@ -39,6 +39,8 @@ from y.utils.dank_mids import dank_w3
 from y.utils.logging import get_price_logger
 
 
+cache_logger = logging.getLogger(f"{__name__}.cache")
+
 @a_sync.a_sync(default='sync')
 async def get_price(
     token_address: AnyAddressType,
@@ -62,7 +64,13 @@ async def get_price(
     block = block or await dank_w3.eth.block_number
     token_address = convert.to_address(token_address)
     try:
-        return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
+        from y._db import utils as db
+        if price := await db.get_price(token_address, block):
+            cache_logger.debug('disk cache -> %s', price)
+            return price
+        if price := await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent):
+            await db.set_price(token_address, block, price)
+        return price
     except (ContractNotFound, NonStandardERC20, PriceError) as e:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         if not fail_to_None:
