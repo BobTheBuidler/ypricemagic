@@ -7,8 +7,8 @@ from brownie import chain
 from pony.orm import (InterfaceError, TransactionIntegrityError, commit,
                       db_session)
 
+from y._db.common import executor
 from y._db.entities import Block, Chain
-from y._db.utils.common import executor
 
 logger = logging.getLogger(__name__)
 

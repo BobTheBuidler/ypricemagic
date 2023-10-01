@@ -2,10 +2,9 @@ import asyncio
 import logging
 import threading
 from collections import Counter, defaultdict
-from contextlib import suppress
 from itertools import zip_longest
-from typing import (Any, AsyncGenerator, AsyncIterator, Dict, Iterable, List,
-                    NoReturn, Optional, Type, TypeVar)
+from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
+                    Iterable, List, NoReturn, Optional, TypeVar)
 
 import a_sync
 import eth_retry
@@ -16,12 +15,8 @@ from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
-from hexbytes import HexBytes
-from msgspec import json
-from pony.orm import TransactionIntegrityError, commit, db_session
 from toolz import groupby
 from tqdm.asyncio import tqdm_asyncio
-from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
@@ -31,6 +26,9 @@ from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
+
+if TYPE_CHECKING:
+    from y._db.utils.logs import LogCache
 
 logger = logging.getLogger(__name__)
 
@@ -269,11 +267,18 @@ class Logs:
         self._logs_task = None
         self._logs = []
         self._lock = CounterLock()
+        self._cache = None
         self._exc = None
         self._semaphore = None
         self._verbose = verbose
+    
+    @property
+    def cache(self) -> "LogCache":
         from y._db.utils.logs import LogCache
-        self._cache = LogCache(self.addresses, self.topics)
+        if self._cache is None:
+            self._cache = LogCache(self.addresses, self.topics)
+        return self._cache
+
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -343,7 +348,7 @@ class Logs:
                     for log in logs:
                         self._logs.append(log)
                         db_insert_tasks.append(thread_pool_executor.submit(insert_log, log))
-                    db_insert_tasks.append(thread_pool_executor.submit(self._cache.set_metadata, from_block, end))
+                    db_insert_tasks.append(thread_pool_executor.submit(self.cache.set_metadata, from_block, end))
                     batches_yielded += 1
                     self._lock.set(end)
             done_thru = range_end
@@ -354,8 +359,8 @@ class Logs:
         Loads cached logs from disk.
         Returns max block of logs loaded from cache.
         """
-        if cached_thru := await thread_pool_executor.run(self._cache.is_cached_thru, from_block):
-            self._logs.extend(await thread_pool_executor.run(self._cache.select, from_block, cached_thru))
+        if cached_thru := await thread_pool_executor.run(self.cache.is_cached_thru, from_block):
+            self._logs.extend(await thread_pool_executor.run(self.cache.select, from_block, cached_thru))
             logger.info('loaded %s logs thru block %s from disk', len(self._logs), cached_thru)
             self._lock.set(cached_thru)
             return cached_thru

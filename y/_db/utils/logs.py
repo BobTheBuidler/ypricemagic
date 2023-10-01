@@ -7,9 +7,9 @@ from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 
+from y._db.common import enc_hook
 from y._db.entities import Log, LogCacheInfo
 from y._db.utils import get_block
-from y._db.utils.common import enc_hook
 
 logger = logging.getLogger(__name__)
 

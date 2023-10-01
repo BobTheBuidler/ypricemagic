@@ -7,8 +7,8 @@ from a_sync import a_sync
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
+from y._db.common import executor
 from y._db.entities import Price
-from y._db.utils.common import executor
 from y._db.utils.utils import get_block, get_token
 
 

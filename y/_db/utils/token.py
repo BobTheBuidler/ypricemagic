@@ -8,8 +8,8 @@ from brownie import convert
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
+from y._db.common import executor
 from y._db.entities import Address, Token
-from y._db.utils.common import executor
 from y._db.utils.utils import get_chain
 from y.erc20 import decimals
 
