@@ -55,7 +55,6 @@ class LogCache:
         if self.addresses:
             raise NotImplementedError(self.addresses)
             
-        from y._db.entities import LogCacheInfo
         from y._db.utils import utils as db
         chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
@@ -75,9 +74,8 @@ class LogCache:
     
     @db_session
     def is_cached_thru(self, from_block: int) -> int:
-        """Returns max cached block for these getLogs params"""
+        """Returns max cached block for these getLogs params or 0 if not cached."""
 
-        from y._db.entities import LogCacheInfo
         from y._db.utils import utils as db
         
         if self.addresses:
@@ -92,13 +90,12 @@ class LogCache:
             if all(info and from_block >= info.cached_from for info in infos):
                 return min(info.cached_thru for info in infos)
                 
-        elif (info := self._cache.load_metadata()) and from_block >= info.cached_from:
+        elif (info := self.load_metadata()) and from_block >= info.cached_from:
             return info.cached_thru
         return 0
     
     @db_session
     def select(self, from_block: int, to_block: int) -> List[dict]:
-        from y._db.entities import Log
         from y._db.utils import utils as db
         if self.addresses:
             return [
@@ -129,7 +126,6 @@ class LogCache:
     
     @db_session
     def set_metadata(self, from_block: int, done_thru: int) -> None:
-        from y._db.entities import LogCacheInfo
         from y._db.utils import utils as db
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)

@@ -317,7 +317,7 @@ class Logs:
             return i, range_end, await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
 
     async def __fetch(self) -> NoReturn:
-        from y._db.utils.logs import insert_log
+        from y._db.utils import logs as db
         from_block = await self._from_block
         done_thru = await self._load_cache(from_block)
         as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
@@ -347,7 +347,7 @@ class Logs:
                     end, logs = done.pop(i)
                     for log in logs:
                         self._logs.append(log)
-                        db_insert_tasks.append(thread_pool_executor.submit(insert_log, log))
+                        db_insert_tasks.append(thread_pool_executor.submit(db.insert_log, log))
                     db_insert_tasks.append(thread_pool_executor.submit(self.cache.set_metadata, from_block, end))
                     batches_yielded += 1
                     self._lock.set(end)
