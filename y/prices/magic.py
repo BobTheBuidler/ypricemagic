@@ -66,7 +66,7 @@ async def get_price(
     token_address = convert.to_address(token_address)
     try:
         from y._db import utils as db
-        if not skip_cache and price := await db.get_price(token_address, block):
+        if not skip_cache and (price := await db.get_price(token_address, block)):
             cache_logger.debug('disk cache -> %s', price)
             return price
         price = await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
