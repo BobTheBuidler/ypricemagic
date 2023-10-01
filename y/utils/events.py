@@ -460,8 +460,6 @@ class Logs:
             chain=chain, 
             address='None',
             topics=encoded_topics,
-            cached_from = from_block,
-            cached_thru = done_thru,
         ):
             if from_block < info.cached_from:
                 info.cached_from = from_block
