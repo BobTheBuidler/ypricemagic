@@ -10,9 +10,9 @@ from brownie import chain, convert
 from pony.orm import (BindingError, TransactionError,
                       TransactionIntegrityError, commit, db_session)
 
+from y import constants
 from y._db.config import connection_settings
 from y._db.entities import Address, Block, Chain, Price, Token, db
-from y.constants import EEE_ADDRESS
 from y.erc20 import decimals
 
 logger = logging.getLogger(__name__)
@@ -53,8 +53,8 @@ def get_chain() -> Chain:
 @db_session
 def get_token(address: str) -> Token:
     address = convert.to_address(address)
-    if address == EEE_ADDRESS:
-        raise ValueError(f"cannot create token entity for {EEE_ADDRESS}")
+    if address == constants.EEE_ADDRESS:
+        raise ValueError(f"cannot create token entity for {constants.EEE_ADDRESS}")
     while True:
         if entity := Address.get(chain=get_chain(sync=True), address=address):
             if isinstance(entity, Token):
@@ -71,6 +71,8 @@ def get_token(address: str) -> Token:
 @a_sync(default='async', executor=executor)
 @db_session
 def get_price(address: str, block: int) -> Optional[Decimal]:
+    if address == constants.EEE_ADDRESS:
+        address = constants.WRAPPED_GAS_COIN
     chain = get_chain(sync=True)
     if price := Price.get(
         token = get_token(address, sync=True), 
@@ -122,13 +124,13 @@ def _set_token_decimals(address: str, decimals: int) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _get_token_bucket(address: str) -> Optional[str]:
-    if address == EEE_ADDRESS:
+    if address == constants.EEE_ADDRESS:
         return
     return get_token(address, sync=True).bucket
 
 @a_sync(default='async', executor=executor)
 @db_session
 def _set_token_bucket(address: str, bucket: str) -> None:
-    if address == EEE_ADDRESS:
+    if address == constants.EEE_ADDRESS:
         return
     get_token(address, sync=True).bucket = bucket
