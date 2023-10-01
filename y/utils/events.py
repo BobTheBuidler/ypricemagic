@@ -22,6 +22,7 @@ from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 from toolz import groupby
 from tqdm.asyncio import tqdm_asyncio
+from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
@@ -252,6 +253,13 @@ def _get_logs_batch_cached(
 
 BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
 
+def enc_hook(obj):
+    if isinstance(obj, HexBytes):
+        return obj.hex()
+    elif isinstance(obj, AttributeDict):
+        return dict(obj)
+    raise NotImplementedError(obj)
+
 @db_session
 def _cache_log(log: dict):
     from y._db import utils as db
@@ -267,7 +275,7 @@ def _cache_log(log: dict):
             topic1=log_topics[1] if len(log_topics) >= 2 else None,
             topic2=log_topics[2] if len(log_topics) >= 3 else None,
             topic3=log_topics[3] if len(log_topics) >= 4 else None,
-            raw = json.encode({k: v.hex() if isinstance(v, HexBytes) else v for k, v in log.items()}),
+            raw = json.encode(log, enc_hook=enc_hook),
         )
         commit()
 
