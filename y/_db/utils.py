@@ -88,7 +88,7 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
     if price := Price.get(
         token = get_token(address, sync=True), 
         block = get_block(block, sync=True), 
-    ) and price.price:
+    ):
         return price.price
 
 async def set_price(address: str, block: int, price: Decimal) -> None:

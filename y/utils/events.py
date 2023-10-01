@@ -186,7 +186,7 @@ get_logs_semaphore = defaultdict(
 )
 
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
-    async with get_logs_semaphore[threading.current_thread()][end]:
+    async with get_logs_semaphore[asyncio.get_event_loop()][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
     
 async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
@@ -393,9 +393,9 @@ class Logs:
             self._lock.set(BIG_VALUE)
     
     @property
-    def semaphore(self) -> asyncio.Semaphore:
+    def semaphore(self) -> BlockSemaphore:
         if self._semaphore is None:
-            self._semaphore = asyncio.Semaphore(10)
+            self._semaphore = BlockSemaphore(32)
         return self._semaphore
 
     async def __fetch(self) -> NoReturn:
@@ -409,7 +409,7 @@ class Logs:
             ranges = list(block_ranges(range_start, range_end, self._batch_size))
             coros = [_get_logs_async_no_cache(self.addresses, self.topics, start, end) for start, end in ranges]
             async def wrap(i, end, coro):
-                async with self.semaphore:
+                async with self.semaphore[end]:
                     return i, end, await coro
             batches_yielded = 0
             done = {}
@@ -424,12 +424,12 @@ class Logs:
                         if db_insert_tasks:
                             await asyncio.gather(*db_insert_tasks)
                             db_insert_tasks = []
-                        await thread_pool_executor.submit(self._set_cache_info, from_block, end)
                         break
                     end, logs = done.pop(i)
                     for log in logs:
                         self._logs.append(log)
                         db_insert_tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
+                    thread_pool_executor.submit(self._set_cache_info, from_block, end)
                     batches_yielded += 1
                     self._lock.set(end)
             done_thru = range_end
@@ -442,40 +442,43 @@ class Logs:
         from y._db.entities import LogCacheInfo
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)
-        if self.addresses:
-            for address in self.addresses:
-                if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
-                    if from_block < e.cached_from:
-                        e.cached_from = from_block
-                    if done_thru > e.cached_thru:
-                        e.cached_thru = done_thru
-                else:
-                    LogCacheInfo(
-                        chain=chain, 
-                        address=address,
-                        topics=encoded_topics,
-                        cached_from = from_block,
-                        cached_thru = done_thru,
-                    )
-        elif info := LogCacheInfo.get(
-            chain=chain, 
-            address='None',
-            topics=encoded_topics,
-        ):
-            if from_block < info.cached_from:
-                info.cached_from = from_block
-            if done_thru > info.cached_thru:
-                info.cached_thru = done_thru
-        else:
-            LogCacheInfo(
-                chain=chain,
+        try:
+            if self.addresses:
+                for address in self.addresses:
+                    if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
+                        if from_block < e.cached_from:
+                            e.cached_from = from_block
+                        if done_thru > e.cached_thru:
+                            e.cached_thru = done_thru
+                    else:
+                        LogCacheInfo(
+                            chain=chain, 
+                            address=address,
+                            topics=encoded_topics,
+                            cached_from = from_block,
+                            cached_thru = done_thru,
+                        )
+            elif info := LogCacheInfo.get(
+                chain=chain, 
                 address='None',
                 topics=encoded_topics,
-                cached_from = from_block,
-                cached_thru = done_thru,
-            )
-        commit()
-        logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
+            ):
+                if from_block < info.cached_from:
+                    info.cached_from = from_block
+                if done_thru > info.cached_thru:
+                    info.cached_thru = done_thru
+            else:
+                LogCacheInfo(
+                    chain=chain,
+                    address='None',
+                    topics=encoded_topics,
+                    cached_from = from_block,
+                    cached_thru = done_thru,
+                )
+            commit()
+            logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
+        except TransactionIntegrityError:
+            return self._set_cache_info(from_block, done_thru)
 
     @async_property
     async def _from_block(self) -> int:
