@@ -5,7 +5,7 @@ from collections import Counter, defaultdict
 from contextlib import suppress
 from itertools import zip_longest
 from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
-                    Iterable, List, NoReturn, Optional, Type)
+                    Iterable, List, NoReturn, Optional, Type, TypeVar)
 
 import a_sync
 import eth_retry
