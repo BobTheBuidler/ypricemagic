@@ -421,6 +421,9 @@ class Logs:
                     if batches_yielded > i:
                         continue
                     if i not in done:
+                        await asyncio.gather(*db_insert_tasks)
+                        await thread_pool_executor.submit(self._set_cache_info, from_block, end)
+                        db_insert_tasks = []
                         break
                     end, logs = done.pop(i)
                     for log in logs:
@@ -428,9 +431,6 @@ class Logs:
                         db_insert_tasks.append(thread_pool_executor.submit(_cache_log, self.addresses, encoded_topics, log))
                     batches_yielded += 1
                     self._lock.set(end)
-                await asyncio.gather(*db_insert_tasks)
-                await thread_pool_executor.submit(self._set_cache_info, from_block, end)
-                db_insert_tasks = []
             done_thru = range_end
             
             await asyncio.sleep(self.fetch_interval)
