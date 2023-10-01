@@ -450,7 +450,6 @@ class Logs:
     async def __fetch(self) -> NoReturn:
         from_block = await self._from_block
         done_thru = await self._load_cache(from_block)
-        encoded_topics = json.encode(self.topics or None)
         as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         while True:
             range_start = done_thru + 1
@@ -458,6 +457,7 @@ class Logs:
             coros = [self._get_logs(i, start, end) for i, (start, end) in enumerate(block_ranges(range_start, range_end, self._batch_size))]
 
             db_insert_tasks = []
+            cache_info_tasks = []
             batches_yielded = 0
             done = {}
             for logs in as_completed(coros, timeout=None):
@@ -469,7 +469,10 @@ class Logs:
                     if i not in done:
                         if db_insert_tasks:
                             await asyncio.gather(*db_insert_tasks)
-                            db_insert_tasks = []
+                            db_insert_tasks.clear()
+                        if cache_info_tasks:
+                            await cache_info_tasks[-1]
+                            cache_info_tasks.clear()
                         break
                     end, logs = done.pop(i)
                     for log in logs:
@@ -529,7 +532,7 @@ class Logs:
                 should_commit = True
             if should_commit:
                 commit()
-                logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
+                logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
             return self._set_cache_info(from_block, done_thru)
 
