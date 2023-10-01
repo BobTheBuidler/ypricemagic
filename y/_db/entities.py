@@ -63,7 +63,7 @@ class Token(Contract):
     decimals = Optional(int, lazy=True)
     bucket = Optional(str, lazy=True)
 
-class Price:
+class Price(db.Entity):
     dbid = PrimaryKey(int, auto=True)
     block = Required(Block, lazy=True)
     token = Required(Token, lazy=True)
