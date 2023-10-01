@@ -310,12 +310,32 @@ class Logs:
     def topic3(self) -> str:
         return self.topics[3] if self.topics and len(self.topics) > 3 else None
     
+    def _load_cache_info(self) -> Optional["LogCacheInfo"]:
+        if self.addresses:
+            raise NotImplementedError(self.addresses)
+            
+        from y._db import utils as db
+        chain = db.get_chain(sync=True)
+        # If we cached all of this topic0 with no filtering for all addresses
+        if self.topics and self.topic0 and (info := LogCacheInfo.get(
+            chain=chain,
+            address='None',
+            topics=json.encode([self.topic0]),
+        )):
+            return info
+        # If we cached these specific topics for all addresses
+        elif self.topics and (info := LogCacheInfo.get(
+            chain=chain,
+            address='None',
+            topics=json.encode(self.topics),
+        )):
+            return info
+
     async def _load_cache(self, from_block: int) -> None:
-        if await thread_pool_executor.run(self._is_cached, from_block):
+        if cached_thru := await thread_pool_executor.run(self._is_cached_thru, from_block):
             self._logs.extend(await thread_pool_executor.run(self._select_from_cache, from_block))
-        if self._logs:
-            self._lock.set(self._logs[-1]['blockNumber'])
-            logger.info('loaded %s logs from disk', len(self._logs))
+            logger.info('loaded %s logs thru block %s from disk', len(self._logs), cached_thru)
+            self._lock.set(cached_thru)
     
     @db_session
     def _select_from_cache(self, from_block: int) -> List[dict]:
@@ -335,35 +355,27 @@ class Logs:
         ]
     
     @db_session
-    def _is_cached(self, from_block: int) -> List["LogCacheInfo"]:
+    def _is_cached_thru(self, from_block: int) -> int:
+        """Returns max cached block for these getLogs params"""
+
         from y._db import utils as db
         from y._db.entities import LogCacheInfo
-        chain = db.get_chain(sync=True)
-        # If we cached all of this topic0 with no filtering for all addresses
-        if self.topics and self.topic0 and (info := LogCacheInfo.get(
-            chain=chain,
-            address='None',
-            topics=json.encode([self.topic0]),
-        )) and from_block >= info.cached_from:
-            return True
         
-        # If we cached these specific topics for all addresses
-        elif self.topics and (info := LogCacheInfo.get(
-            chain=chain,
-            address='None',
-            topics=json.encode(self.topics),
-        )) and from_block >= info.cached_from:
-            return True
-
-        return self.addresses and all(
-            (info := (
+        if self.addresses:
+            chain = db.get_chain(sync=True)
+            infos: List[LogCacheInfo] = [
                 # If we cached all logs for this address...
                 LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
                 # ... or we cached all logs for these specific topics for this address
                 or LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(self.topics))
-            )) and from_block >= info.cached_from 
-            for addr in self.addresses
-        )
+                for addr in self.addresses
+            ]
+            if all(info and from_block >= info.cached_from for info in infos):
+                return min(info.cached_thru for info in infos)
+                
+        elif (info := self._load_cache_info()) and from_block >= info.cached_from:
+            return info.cached_thru
+        return 0
     
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
@@ -378,8 +390,7 @@ class Logs:
             if self._exc:
                 raise self._exc
             for log in self._logs[yielded:]:
-                block = log['blockNumber']
-                if to_block and block > to_block:
+                if to_block and log['blockNumber'] > to_block:
                     return
                 yield log
                 yielded += 1
@@ -442,14 +453,17 @@ class Logs:
         from y._db.entities import LogCacheInfo
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)
+        should_commit = False
         try:
             if self.addresses:
                 for address in self.addresses:
                     if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
                         if from_block < e.cached_from:
                             e.cached_from = from_block
+                            should_commit = True
                         if done_thru > e.cached_thru:
                             e.cached_thru = done_thru
+                            should_commit = True
                     else:
                         LogCacheInfo(
                             chain=chain, 
@@ -458,6 +472,7 @@ class Logs:
                             cached_from = from_block,
                             cached_thru = done_thru,
                         )
+                        should_commit = True
             elif info := LogCacheInfo.get(
                 chain=chain, 
                 address='None',
@@ -465,8 +480,10 @@ class Logs:
             ):
                 if from_block < info.cached_from:
                     info.cached_from = from_block
+                    should_commit = True
                 if done_thru > info.cached_thru:
                     info.cached_thru = done_thru
+                    should_commit = True
             else:
                 LogCacheInfo(
                     chain=chain,
@@ -475,8 +492,10 @@ class Logs:
                     cached_from = from_block,
                     cached_thru = done_thru,
                 )
-            commit()
-            logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
+                should_commit = True
+            if should_commit:
+                commit()
+                logger.info('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except TransactionIntegrityError:
             return self._set_cache_info(from_block, done_thru)
 
@@ -517,12 +536,11 @@ class Events(Logs):
             if self._exc:
                 raise self._exc
             for event in self._events[yielded:]:
-                block = event.block_number
-                if to_block and block > to_block:
+                if to_block and event.block_number > to_block:
                     return
                 yield event
                 yielded += 1
-            done_thru = block
+            done_thru = self._lock.value
 
     async def _fetch(self) -> NoReturn:
         try:
@@ -566,7 +584,7 @@ class ProcessedEvents(Events, AsyncIterator[T]):
                     return
                 yield event
                 yielded += 1
-            done_thru = block
+            done_thru = self._lock.value
 
     async def _fetch(self) -> NoReturn:
         async for log in self.logs():
