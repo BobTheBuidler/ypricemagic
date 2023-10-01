@@ -315,6 +315,7 @@ class Logs:
             raise NotImplementedError(self.addresses)
             
         from y._db import utils as db
+        from y._db.entities import LogCacheInfo
         chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
         if self.topics and self.topic0 and (info := LogCacheInfo.get(
