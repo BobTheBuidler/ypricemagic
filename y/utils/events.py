@@ -16,6 +16,7 @@ from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
+from hexbytes import HexBytes
 from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
@@ -266,7 +267,7 @@ def _cache_log(log: dict):
             topic1=log_topics[1] if len(log_topics) >= 2 else None,
             topic2=log_topics[2] if len(log_topics) >= 3 else None,
             topic3=log_topics[3] if len(log_topics) >= 4 else None,
-            raw = json.encode(dict(log)),
+            raw = json.encode({k: v.hex() if isinstance(v, HexBytes) else v for k, v in log.items()}),
         )
         commit()
 
