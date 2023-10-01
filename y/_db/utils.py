@@ -1,9 +1,10 @@
 
+import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import suppress
 from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 
 from a_sync import a_sync
 from brownie import chain, convert
@@ -90,11 +91,18 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
     ) and price.price:
         return price.price
 
+async def set_price(address: str, block: int, price: Decimal) -> None:
+    __tasks.append(asyncio.create_task(_set_price(address, block, price)))
+    for t in __tasks[:]:
+        if t.done():
+            await t
+            __tasks.remove(t)
+
 @a_sync(default='async', executor=executor)
 @db_session
-def set_price(address: str, block: int, price: Decimal) -> None:
+def _set_price(address: str, block: int, price: Decimal) -> None:
     Price(
-        block = get_block(block),
+        block = get_block(block, sync=True),
         token = get_token(address, sync=True),
         price = price,
     )
@@ -143,3 +151,5 @@ def _set_token_bucket(address: str, bucket: str) -> None:
     if address == constants.EEE_ADDRESS:
         return
     get_token(address, sync=True).bucket = bucket
+
+__tasks: List[asyncio.Task] = []
