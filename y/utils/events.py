@@ -475,6 +475,7 @@ class Logs:
                 cached_from = from_block,
                 cached_thru = done_thru,
             )
+        commit()
 
     @async_property
     async def _from_block(self) -> int:
