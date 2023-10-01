@@ -270,7 +270,7 @@ def _cache_log(log: dict):
             block=db.get_block(log['blockNumber'], sync=True),
             transaction_hash = log['transactionHash'].hex(),
             log_index = log['logIndex'],
-            address = log['address'].hex(),
+            address = log['address'],
             topic0=log_topics[0].hex(),
             topic1=log_topics[1].hex() if len(log_topics) >= 2 else None,
             topic2=log_topics[2].hex() if len(log_topics) >= 3 else None,
