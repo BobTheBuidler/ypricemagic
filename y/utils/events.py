@@ -274,12 +274,11 @@ class Logs:
     
     @property
     def cache(self) -> "LogCache":
-        from y._db.utils.logs import LogCache
         if self._cache is None:
+            from y._db.utils.logs import LogCache
             self._cache = LogCache(self.addresses, self.topics)
         return self._cache
 
-    
     def __aiter__(self) -> AsyncIterator[_EventItem]:
         return self.logs().__aiter__()
 
