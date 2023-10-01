@@ -40,6 +40,7 @@ class Block(db.Entity, _AsyncEntityMixin):
     composite_key(chain, number)
     composite_key(chain, hash)
 
+    prices = Set("Price", reverse="block")
     contracts_deployed = Set("Contract", reverse="deploy_block")
     logs = Set("Log", reverse="block")
 
@@ -62,6 +63,8 @@ class Token(Contract):
     name = Optional(str, lazy=True)
     decimals = Optional(int, lazy=True)
     bucket = Optional(str, lazy=True)
+
+    prices = Set("Price", reverse="token")
 
 class Price(db.Entity):
     dbid = PrimaryKey(int, auto=True)
