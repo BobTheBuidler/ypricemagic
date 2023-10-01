@@ -101,12 +101,18 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _set_price(address: str, block: int, price: Decimal) -> None:
-    Price(
-        block = get_block(block, sync=True),
-        token = get_token(address, sync=True),
-        price = price,
-    )
-    commit()
+    try:
+        Price(
+            block = get_block(block, sync=True),
+            token = get_token(address, sync=True),
+            price = price,
+        )
+        commit()
+    except TransactionIntegrityError:
+        assert (p := Price.get(
+            block = get_block(block, sync=True),
+            token = get_token(address, sync=True),
+        )) and p.price == price, (p.price, price)
 
 @a_sync(default='async', executor=executor)
 @db_session
