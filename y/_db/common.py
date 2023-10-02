@@ -6,7 +6,7 @@ from concurrent.futures import ThreadPoolExecutor
 from typing import (Any, AsyncIterable, AsyncIterator, Callable, Generic,
                     Iterator, List, NoReturn, Optional, Type, TypeVar)
 
-from a_sync.primitives.executor import _ASyncExecutorBase
+from a_sync.primitives.executor import _AsyncExecutorMixin
 from a_sync.primitives.locks.counter import CounterLock
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
@@ -62,7 +62,7 @@ C = TypeVar('C', bound=DiskCache)
 
 class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     __slots__ = '_cache', '_executor', '_objects'
-    def __init__(self, executor: _ASyncExecutorBase = thread_pool_executor):
+    def __init__(self, executor: _AsyncExecutorMixin = thread_pool_executor):
         self._cache = None
         self._executor = executor
         self._objects: List[T] = []
