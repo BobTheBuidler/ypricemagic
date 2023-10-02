@@ -300,7 +300,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
 
     async def _fetch(self) -> NoReturn:
         from_block = await self._from_block
-        await self._loop(self, from_block)
+        await self._loop(from_block)
 
 
 class Events(LogFilter):

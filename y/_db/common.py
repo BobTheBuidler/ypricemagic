@@ -189,7 +189,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     
     async def _fetch(self) -> NoReturn:
         """Override this if you want"""
-        await self._loop(self, self.from_block)
+        await self._loop(self.from_block)
     
     async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> List[T]:
         async with self.semaphore[range_end]:
