@@ -178,23 +178,24 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 yielded += 1
             done_thru = self._lock.value
     
-    async def _fetch(self) -> NoReturn:
+    async def __fetch(self) -> NoReturn:
         try:
-            await self.__fetch()
+            await self._fetch()
         except Exception as e:
+            logger.exception(e)
             self._exc = e
             self._lock.set(BIG_VALUE)
             raise e
     
-    async def __fetch(self) -> NoReturn:
+    async def _fetch(self) -> NoReturn:
         """Override this if you want"""
-        await self.__loop(self, self.from_block)
+        await self._loop(self, self.from_block)
     
     async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> List[T]:
         async with self.semaphore[range_end]:
             return i, range_end, await self._fetch_range(range_start, range_end)
 
-    async def __loop(self, from_block: int) -> NoReturn:
+    async def _loop(self, from_block: int) -> NoReturn:
         self._lock.set(await self._load_cache(from_block))
         while True:
             await self._load_new_objects(start_from_block=from_block)
@@ -239,5 +240,5 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
 
     def _ensure_task(self) -> None:
         if self._task is None:
-            self._task = asyncio.create_task(self._fetch())
+            self._task = asyncio.create_task(self.__fetch())
     

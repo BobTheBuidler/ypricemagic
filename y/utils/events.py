@@ -298,9 +298,9 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
     async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
         return await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
 
-    async def __fetch(self) -> NoReturn:
+    async def _fetch(self) -> NoReturn:
         from_block = await self._from_block
-        await self.__loop(self, from_block)
+        await self._loop(self, from_block)
 
 
 class Events(LogFilter):
