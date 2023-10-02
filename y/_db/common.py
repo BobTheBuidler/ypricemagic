@@ -193,6 +193,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     
     async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> List[T]:
         async with self.semaphore[range_end]:
+            logger.debug("fetching %s block %s to %s", self, range_start, range_end)
             return i, range_end, await self._fetch_range(range_start, range_end)
 
     async def _loop(self, from_block: int) -> NoReturn:
@@ -203,11 +204,13 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             await asyncio.sleep(self._interval)
     
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
+        logger.debug('loading new objects for %s', self)
         start = v + 1 if (v := self._lock.value) else start_from_block or self.from_block
         end = to_block or await dank_w3.eth.block_number
         await self._load_range(start, end)
 
     async def _load_range(self, from_block: int, to_block: int) -> None:
+        logger.debug('loading block range %s to %s', from_block, to_block)
         db_insert_tasks = []
         cache_info_tasks = []
         batches_yielded = 0
@@ -243,4 +246,6 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if self._task is None:
             logger.debug('creating task for %s', self)
             self._task = asyncio.create_task(self.__fetch())
+        if self._task.done() and (e := self._task.exception()):
+            raise e
     
