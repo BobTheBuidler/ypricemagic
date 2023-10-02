@@ -9,6 +9,7 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 
 import a_sync
 import eth_retry
+from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
@@ -29,6 +30,9 @@ from y.utils.middleware import BATCH_SIZE
 
 if TYPE_CHECKING:
     from y._db.utils.logs import LogCache
+
+
+T = TypeVar('T')
 
 logger = logging.getLogger(__name__)
 
@@ -245,7 +249,6 @@ def _get_logs_batch_cached(
     ) -> List[LogReceipt]:
     return _get_logs_no_cache(address, topics, start, end)
 
-T = TypeVar('T')
 
 class LogFilter(Filter[LogReceipt, "LogCache"]):
     __slots__ = 'addresses', 'topics', 'from_block'
@@ -257,11 +260,14 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         from_block: Optional[int] = None,
         fetch_interval: int = 300,
         batch_size: int = BATCH_SIZE,
+        semaphore: Optional[BlockSemaphore] = 32,
+        executor: _AsyncExecutorMixin = thread_pool_executor,
+        is_reusable: bool = True,
         verbose: bool = False,
     ):
         self.addresses = addresses
         self.topics = topics
-        super().__init__(from_block, batch_size=batch_size, interval=fetch_interval, verbose=verbose)
+        super().__init__(from_block, batch_size=batch_size, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
     
     @property
     def cache(self) -> "LogCache":
