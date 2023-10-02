@@ -32,6 +32,7 @@ class Chain(db.Entity, _AsyncEntityMixin):
     blocks = Set("Block")
     addresses = Set("Address")
     log_cached = Set("LogCacheInfo")
+    trace_caches = Set("TraceCacheInfo")
 
 class Block(db.Entity, _AsyncEntityMixin):
     _pk = PrimaryKey(int, auto=True)
@@ -79,9 +80,9 @@ class Price(db.Entity):
     
 class TraceCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
-    to_address = Required(str, index=True)
-    from_address = Required(str, index=True)
-    composite_key(chain, to_address, from_address)
+    to_addresses = Required(bytes, index=True)
+    from_addresses = Required(bytes, index=True)
+    composite_key(chain, to_addresses, from_addresses)
     cached_from = Required(int)
     cached_thru = Required(int)
 
