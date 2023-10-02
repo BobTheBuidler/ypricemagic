@@ -115,7 +115,7 @@ class Trace(db.Entity):
     raw = Required(bytes)
 
 @db_session
-def insert(typ: db.Entity, **kwargs: Any) -> None:
+def insert(type: db.Entity, **kwargs: Any) -> None:
     with suppress(TransactionIntegrityError):
-        typ(**kwargs)
+        type(**kwargs)
         commit()
