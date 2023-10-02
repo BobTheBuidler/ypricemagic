@@ -1,16 +1,15 @@
 
 import logging
-from contextlib import suppress
 from typing import List, Optional
 
 from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 
-from y._db.common import enc_hook
+from y._db.common import enc_hook, DiskCache
 from web3.types import LogReceipt
 
-from y._db.entities import Log, LogCacheInfo
+from y._db.entities import Log, LogCacheInfo, insert
 from y._db.utils import get_block
 
 logger = logging.getLogger(__name__)
@@ -19,23 +18,19 @@ logger = logging.getLogger(__name__)
 @db_session
 def insert_log(log: dict):
     log_topics = log['topics']
-    topics = {f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))}
-    with suppress(TransactionIntegrityError):
-        Log(
-            block=get_block(log['blockNumber'], sync=True),
-            transaction_hash = log['transactionHash'].hex(),
-            log_index = log['logIndex'],
-            address = log['address'],
-            **topics,
-            raw = json.encode(log, enc_hook=enc_hook),
-        )
-        commit()
+    insert(
+        type=Log,
+        block=get_block(log['blockNumber'], sync=True),
+        transaction_hash = log['transactionHash'].hex(),
+        log_index = log['logIndex'],
+        address = log['address'],
+        **{f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))},
+        raw = json.encode(log, enc_hook=enc_hook),
+    )
 
-class CacheNotPopulatedError(Exception):
-    pass
-
-class LogCache:
+class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
+
     def __init__(self, addresses, topics):
         self.addresses = addresses
         self.topics = topics
@@ -57,6 +52,7 @@ class LogCache:
         return self.topics[3] if self.topics and len(self.topics) > 3 else None
     
     def load_metadata(self) -> Optional["LogCacheInfo"]:
+        """Loads the cache metadata from the db."""
         if self.addresses:
             raise NotImplementedError(self.addresses)
             
@@ -79,8 +75,6 @@ class LogCache:
     
     @db_session
     def is_cached_thru(self, from_block: int) -> int:
-        """Returns max cached block for these getLogs params or 0 if not cached."""
-
         from y._db.utils import utils as db
         
         if self.addresses:
@@ -98,13 +92,6 @@ class LogCache:
         elif (info := self.load_metadata()) and from_block >= info.cached_from:
             return info.cached_thru
         return 0
-    
-    @db_session
-    def check_and_select(self, from_block: int, to_block: int) -> List[LogReceipt]:
-        if self.is_cached_thru(from_block) >= to_block:
-            return self.select(from_block, to_block)
-        else:
-            raise CacheNotPopulatedError(self, from_block, to_block)
     
     @db_session
     def select(self, from_block: int, to_block: int) -> List[LogReceipt]:

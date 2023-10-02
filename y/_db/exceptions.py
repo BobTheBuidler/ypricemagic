@@ -1,0 +1,3 @@
+
+class CacheNotPopulatedError(Exception):
+    pass

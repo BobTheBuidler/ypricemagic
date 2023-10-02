@@ -1,9 +1,12 @@
 
+from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
+from typing import Any
 
 from pony.orm import (Database, Optional, PrimaryKey, Required, Set,
-                      composite_key)
+                      TransactionIntegrityError, commit, composite_key,
+                      db_session)
 
 db = Database()
 
@@ -43,6 +46,7 @@ class Block(db.Entity, _AsyncEntityMixin):
     prices = Set("Price", reverse="block", cascade_delete=False)
     contracts_deployed = Set("Contract", reverse="deploy_block")
     logs = Set("Log", reverse="block", cascade_delete=False)
+    traces = Set("Trace", reverse="block", cascade_delete=False)
 
 class Address(db.Entity, _AsyncEntityMixin):
     _pk = PrimaryKey(int, auto=True)
@@ -72,6 +76,14 @@ class Price(db.Entity):
     token = Required(Token, index=True, lazy=True)
     composite_key(block, token)
     price = Required(Decimal)
+    
+class TraceCacheInfo(db.Entity):
+    chain = Required(Chain, index=True)
+    to_address = Required(str, index=True)
+    from_address = Required(str, index=True)
+    composite_key(chain, to_address, from_address)
+    cached_from = Required(int)
+    cached_thru = Required(int)
 
 class LogCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
@@ -93,3 +105,16 @@ class Log(db.Entity):
     topic2 = Optional(str, index=True, lazy=True)
     topic3 = Optional(str, index=True, lazy=True)
     raw = Required(bytes, lazy=True)
+
+class Trace(db.Entity):
+    block = Required(Block, index=True, lazy=True)
+    hash = Required(str, index=True, lazy=True)
+    from_address = Required(str, index=True, lazy=True)
+    to_address = Required(str, index=True, lazy=True)
+    raw = Required(bytes)
+
+@db_session
+def insert(typ: db.Entity, **kwargs: Any) -> None:
+    with suppress(TransactionIntegrityError):
+        typ(**kwargs)
+        commit()

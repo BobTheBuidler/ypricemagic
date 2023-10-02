@@ -8,7 +8,6 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
 
 import a_sync
 import eth_retry
-from a_sync.primitives.locks.counter import CounterLock
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
@@ -16,10 +15,10 @@ from brownie.network.event import EventDict, _decode_logs, _EventItem
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
-from tqdm.asyncio import tqdm_asyncio
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
+from y._db.common import Filter
 from y.constants import thread_pool_executor
 from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
@@ -245,10 +244,10 @@ def _get_logs_batch_cached(
     ) -> List[LogReceipt]:
     return _get_logs_no_cache(address, topics, start, end)
 
-BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
+T = TypeVar('T')
 
-class Logs:
-    __slots__ = 'addresses', 'topics', 'from_block', 'fetch_interval', '_cache', '_batch_size', '_logs_task', '_logs', '_lock', '_exc', '_semaphore', '_verbose'
+class LogFilter(Filter[LogReceipt, "LogCache"]):
+    __slots__ = 'addresses', 'topics', 'from_block'
     def __init__(
         self, 
         *, 
@@ -261,16 +260,7 @@ class Logs:
     ):
         self.addresses = addresses
         self.topics = topics
-        self.fetch_interval = fetch_interval
-        self.from_block = from_block
-        self._batch_size = batch_size
-        self._logs_task = None
-        self._logs = []
-        self._lock = CounterLock()
-        self._cache = None
-        self._exc = None
-        self._semaphore = None
-        self._verbose = verbose
+        super().__init__(from_block, batch_size=batch_size, interval=fetch_interval, verbose=verbose)
     
     @property
     def cache(self) -> "LogCache":
@@ -279,92 +269,14 @@ class Logs:
             self._cache = LogCache(self.addresses, self.topics)
         return self._cache
 
-    def __aiter__(self) -> AsyncIterator[_EventItem]:
-        return self.logs().__aiter__()
+    def logs(self, to_block: Optional[int]) -> AsyncIterator[LogReceipt]:
+        return self._objects_thru(block=to_block)
 
-    async def logs(self, to_block: Optional[int] = None) -> AsyncIterator[dict]:
-        if self._logs_task is None:
-            self._logs_task = asyncio.create_task(self._fetch())
-        yielded = 0
-        done_thru = 0
-        while True:
-            await self._lock.wait_for(done_thru + 1)
-            if self._exc:
-                raise self._exc
-            for log in self._logs[yielded:]:
-                if to_block and log['blockNumber'] > to_block:
-                    return
-                yield log
-                yielded += 1
-            done_thru = self._lock.value
-    
-    async def _fetch(self) -> NoReturn:
-        try:
-            await self.__fetch()
-        except Exception as e:
-            self._exc = e
-            self._lock.set(BIG_VALUE)
-    
     @property
-    def semaphore(self) -> BlockSemaphore:
-        if self._semaphore is None:
-            self._semaphore = BlockSemaphore(32)
-        return self._semaphore
+    def _db_insert_fn(self) -> Callable[[LogReceipt], None]:
+        from y._db.utils.logs import insert_log
+        return insert_log
     
-    async def _get_logs(self, i: int, range_start: int, range_end: int) -> List[LogReceipt]:
-        async with self.semaphore[range_end]:
-            return i, range_end, await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
-
-    async def __fetch(self) -> NoReturn:
-        from y._db.utils import logs as db
-        from_block = await self._from_block
-        done_thru = await self._load_cache(from_block)
-        as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
-        while True:
-            range_start = done_thru + 1
-            range_end = await dank_w3.eth.block_number
-            coros = [self._get_logs(i, start, end) for i, (start, end) in enumerate(block_ranges(range_start, range_end, self._batch_size))]
-
-            db_insert_tasks = []
-            cache_info_tasks = []
-            batches_yielded = 0
-            done = {}
-            for logs in as_completed(coros, timeout=None):
-                i, end, logs = await logs
-                done[i] = end, logs
-                for i in range(len(coros)):
-                    if batches_yielded > i:
-                        continue
-                    if i not in done:
-                        if db_insert_tasks:
-                            await asyncio.gather(*db_insert_tasks)
-                            db_insert_tasks.clear()
-                        if cache_info_tasks:
-                            await cache_info_tasks[-1]
-                            cache_info_tasks.clear()
-                        break
-                    end, logs = done.pop(i)
-                    for log in logs:
-                        self._logs.append(log)
-                        db_insert_tasks.append(thread_pool_executor.submit(db.insert_log, log))
-                    db_insert_tasks.append(thread_pool_executor.submit(self.cache.set_metadata, from_block, end))
-                    batches_yielded += 1
-                    self._lock.set(end)
-            done_thru = range_end
-            await asyncio.sleep(self.fetch_interval)
-
-    async def _load_cache(self, from_block: int) -> int:
-        """
-        Loads cached logs from disk.
-        Returns max block of logs loaded from cache.
-        """
-        if cached_thru := await thread_pool_executor.run(self.cache.is_cached_thru, from_block):
-            self._logs.extend(await thread_pool_executor.run(self.cache.select, from_block, cached_thru))
-            logger.info('loaded %s logs thru block %s from disk', len(self._logs), cached_thru)
-            self._lock.set(cached_thru)
-            return cached_thru
-        return from_block - 1
-
     @async_property
     async def _from_block(self) -> int:
         if self.from_block is None:
@@ -375,9 +287,18 @@ class Logs:
             else:
                 self.from_block = await contract_creation_block_async(self.addresses, True)
         return self.from_block
+    
+    async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
+        return await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
 
-class Events(Logs):
-    __slots__ = '_events', '_event_task'
+    async def __fetch(self) -> NoReturn:
+        from_block = await self._from_block
+        await self.__loop(self, from_block)
+
+
+class Events(LogFilter):
+    obj_type = _EventItem
+    __slots__ = []
     def __init__(
         self, 
         *, 
@@ -387,39 +308,14 @@ class Events(Logs):
         fetch_interval: int = 300,
     ):
         super().__init__(addresses=addresses, topics=topics, from_block=from_block, fetch_interval=fetch_interval)
-        self._events = []
+
+    def events(self, to_block: int) -> AsyncIterator[_EventItem]:
+        return self._objects_thru(block=to_block)
     
-    def __aiter__(self) -> AsyncIterator[_EventItem]:
-        return self.events().__aiter__()
+    def _extend(self, objs) -> None:
+        return self.__objects.extend(decode_logs(objs))
 
-    async def events(self, to_block: int) -> AsyncIterator[_EventItem]:
-        if self._event_task is None:
-            self._event_task = asyncio.create_task(self._fetch())
-        yielded = 0
-        done_thru = 0
-        while True:
-            await self._lock.wait_for(done_thru + 1)
-            if self._exc:
-                raise self._exc
-            for event in self._events[yielded:]:
-                if to_block and event.block_number > to_block:
-                    return
-                yield event
-                yielded += 1
-            done_thru = self._lock.value
-
-    async def _fetch(self) -> NoReturn:
-        try:
-            async for log in self.logs():
-                decoded = decode_logs([log])
-                self._events.extend(decoded)
-        except Exception as e:
-            self._exc = e
-            self._lock.set(BIG_VALUE)
-
-from typing import Callable, TypeVar
-
-T = TypeVar('T')
+from typing import Callable
 
 class ProcessedEvents(Events, AsyncIterator[T]):
     __slots__ = 'event_processor', '_processed_events'
@@ -433,9 +329,6 @@ class ProcessedEvents(Events, AsyncIterator[T]):
     ):
         super().__init__(addresses=addresses, topics=topics, from_block=from_block)
         self._processed_events = []
-    
-    def __aiter__(self) -> AsyncIterator[_EventItem]:
-        return self.events().__aiter__()
 
     async def processed_events(self, to_block: int) -> AsyncIterator[_EventItem]:
         if self._event_task is None:
@@ -451,6 +344,8 @@ class ProcessedEvents(Events, AsyncIterator[T]):
                 yield event
                 yielded += 1
             done_thru = self._lock.value
+    
+    _objects = processed_events
 
     async def _fetch(self) -> NoReturn:
         async for log in self.logs():
