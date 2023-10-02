@@ -61,11 +61,17 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
 C = TypeVar('C', bound=DiskCache)
 
 class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
-    __slots__ = '_cache', '_executor', '_objects'
-    def __init__(self, executor: _AsyncExecutorMixin = thread_pool_executor):
+    __slots__ = 'is_reusable', '_cache', '_executor', '_objects', '_pruned'
+    def __init__(
+        self, 
+        executor: _AsyncExecutorMixin = thread_pool_executor,
+        is_reusable: bool = True,
+    ):
+        self.is_reusable = is_reusable
         self._cache = None
         self._executor = executor
         self._objects: List[T] = []
+        self._pruned = 0
     @abc.abstractproperty
     def cache(self) -> C:
         ...
@@ -75,6 +81,9 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     def _extend(self, objs) -> None:
         """Override this to pre-process objects before storing."""
         return self._objects.extend(objs)
+    def _remove(self, obj: T) -> None:
+        self._objects.remove(obj)
+        self._pruned += 1
     async def _load_cache(self, from_block: int) -> int:
         """
         Loads cached logs from disk.
@@ -114,7 +123,7 @@ class ASyncWrappedIterator(ASyncWrappedIterable[T], ASyncIterator[T]):
         return await self.__iterable.__anext__()
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_batch_size', '_exc', '_interval', '_is_reusable', '_pruned', '_lock', '_semaphore', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_batch_size', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
@@ -131,12 +140,10 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._exc = None
         self._interval = interval
         self._lock = CounterLock()
-        self._is_reusable = is_reusable
-        self._pruned = 0
         self._semaphore = semaphore
         self._task = None
         self._verbose = verbose
-        super().__init__(executor=executor)
+        super().__init__(executor=executor, is_reusable=is_reusable)
 
     def __aiter__(self) -> AsyncIterator[T]:
         return self._objects_thru(block=None).__aiter__()
@@ -163,16 +170,15 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             for obj in self._objects[yielded-self._pruned:]:
                 if block and obj['blockNumber'] > block:
                     return
-                if not self._is_reusable:
-                    self._objects.remove(obj)
-                    self._pruned += 1
+                if not self.is_reusable:
+                    self._remove(obj)
                 yield obj
                 yielded += 1
             done_thru = self._lock.value
     
     async def _fetch(self) -> NoReturn:
         try:
-            await self.__fetch(self.from_block)
+            await self.__fetch()
         except Exception as e:
             self._exc = e
             self._lock.set(BIG_VALUE)
@@ -192,7 +198,9 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             await asyncio.sleep(self._interval)
     
     async def _load_new_objects(self, to_block: Optional[int] = None) -> None:
-        await self._load_range(self._lock.value + 1, to_block or await dank_w3.eth.block_number)
+        start = v + 1 if (v := self._lock.value) else self.from_block
+        end = to_block or await dank_w3.eth.block_number
+        await self._load_range(start, end)
 
     async def _load_range(self, from_block: int, to_block: int) -> None:
         db_insert_tasks = []
