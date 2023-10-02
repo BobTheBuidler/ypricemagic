@@ -196,6 +196,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             return i, range_end, await self._fetch_range(range_start, range_end)
 
     async def _loop(self, from_block: int) -> NoReturn:
+        logger.debug('starting work loop for %s', self)
         self._lock.set(await self._load_cache(from_block))
         while True:
             await self._load_new_objects(start_from_block=from_block)
@@ -240,5 +241,6 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
 
     def _ensure_task(self) -> None:
         if self._task is None:
+            logger.debug('creating task for %s', self)
             self._task = asyncio.create_task(self.__fetch())
     
