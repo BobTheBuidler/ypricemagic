@@ -89,7 +89,9 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         Loads cached logs from disk.
         Returns max block of logs loaded from cache.
         """
+        logger.debug('checking to see if %s is cached in local db', self)
         if cached_thru := await self._executor.run(self.cache.is_cached_thru, from_block):
+            logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
             self._extend(await self._executor.run(self.cache.select, from_block, cached_thru))
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
@@ -195,11 +197,11 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     async def __loop(self, from_block: int) -> NoReturn:
         self._lock.set(await self._load_cache(from_block))
         while True:
-            await self._load_new_objects()
+            await self._load_new_objects(start_from_block=from_block)
             await asyncio.sleep(self._interval)
     
-    async def _load_new_objects(self, to_block: Optional[int] = None) -> None:
-        start = v + 1 if (v := self._lock.value) else self.from_block
+    async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
+        start = v + 1 if (v := self._lock.value) else start_from_block or self.from_block
         end = to_block or await dank_w3.eth.block_number
         await self._load_range(start, end)
 
