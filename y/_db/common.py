@@ -182,6 +182,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         except Exception as e:
             self._exc = e
             self._lock.set(BIG_VALUE)
+            raise e
     
     async def __fetch(self) -> NoReturn:
         """Override this if you want"""
