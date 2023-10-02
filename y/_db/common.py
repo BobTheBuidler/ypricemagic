@@ -165,7 +165,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         yielded = 0
         done_thru = 0
         while True:
-            if block and done_thru < block:
+            if block is None or done_thru < block:
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
