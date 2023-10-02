@@ -3,9 +3,10 @@ import abc
 import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from typing import (Any, AsyncIterable, AsyncIterator, Callable, Generic,
-                    Iterator, List, NoReturn, Optional, Type, TypeVar)
+from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
+                    Optional, Type, TypeVar)
 
+from a_sync.iter import ASyncIterable
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from a_sync.primitives.locks.counter import CounterLock
 from dank_mids.semaphores import BlockSemaphore
@@ -96,33 +97,6 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return from_block - 1
-
-class ASyncIterable(AsyncIterable[T]):
-    """An iterable that can be used in both a `for` loop and an `async for` loop."""
-    def __iter__(self) -> Iterator[T]:
-        return self.__sync_iterator()
-    def __sync_iterator(self) -> Iterator[T]:
-        aiterator = self.__aiter__()
-        while True:
-            try:
-                yield asyncio.get_event_loop().run_until_complete(aiterator.__anext__())
-            except StopAsyncIteration as e:
-                raise StopIteration(*e.args) from e
-
-class ASyncIterator(ASyncIterable[T]):
-    """An iterator that can be used in both a `for` loop and an `async for` loop."""
-    def __next__(self) -> T:
-        return asyncio.get_event_loop().run_until_complete(self.__anext__())
-
-class ASyncWrappedIterable(ASyncIterable[T]):
-    def __init__(self, async_iterable: AsyncIterable[T]):
-        self.__iterable = async_iterable.__aiter__()
-    def __aiter__(self) -> AsyncIterable[T]:
-        return self.__iterable
-    
-class ASyncWrappedIterator(ASyncWrappedIterable[T], ASyncIterator[T]):
-    async def __anext__(self) -> T:
-        return await self.__iterable.__anext__()
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     __slots__ = 'from_block', 'to_block', '_batch_size', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
