@@ -3,9 +3,10 @@ import abc
 import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
-from typing import (Any, AsyncIterator, AsyncIterable, Callable, Generic, Iterator, List,
-                    NoReturn, Optional, Type, TypeVar)
+from typing import (Any, AsyncIterable, AsyncIterator, Callable, Generic,
+                    Iterator, List, NoReturn, Optional, Type, TypeVar)
 
+from a_sync.primitives.executor import _ASyncExecutorBase
 from a_sync.primitives.locks.counter import CounterLock
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
@@ -60,21 +61,27 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
 C = TypeVar('C', bound=DiskCache)
 
 class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
-    __slots__ = '_cache', '_objects'
-    def __init__(self):
+    __slots__ = '_cache', '_executor', '_objects'
+    def __init__(self, executor: _ASyncExecutorBase = thread_pool_executor):
         self._cache = None
+        self._executor = executor
         self._objects: List[T] = []
     @abc.abstractproperty
     def cache(self) -> C:
         ...
-    
+    @abc.abstractproperty
+    def insert_to_db(self) -> Callable[[T], None]:
+        ...
+    def _extend(self, objs) -> None:
+        """Override this to pre-process objects before storing."""
+        return self._objects.extend(objs)
     async def _load_cache(self, from_block: int) -> int:
         """
         Loads cached logs from disk.
         Returns max block of logs loaded from cache.
         """
-        if cached_thru := await thread_pool_executor.run(self.cache.is_cached_thru, from_block):
-            self._objects.extend(await thread_pool_executor.run(self.cache.select, from_block, cached_thru))
+        if cached_thru := await self._executor.run(self.cache.is_cached_thru, from_block):
+            self._extend(await self._executor.run(self.cache.select, from_block, cached_thru))
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return from_block - 1
@@ -114,7 +121,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         *, 
         batch_size: int = 1_000, 
         interval: int = 300, 
-        semaphore: Optional[BlockSemaphore] = 32, 
+        semaphore: Optional[BlockSemaphore] = 32,
+        executor: _ASyncExecutorBase = thread_pool_executor,
         verbose: bool = False,
     ):
         self.from_block = from_block
@@ -125,16 +133,13 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._semaphore = semaphore
         self._task = None
         self._verbose = verbose
-        super().__init__()
+        super().__init__(executor=executor)
 
     def __aiter__(self) -> AsyncIterator[T]:
         return self._objects_thru(block=None).__aiter__()
         
     @abc.abstractmethod
     async def _fetch_range(self, from_block: int, to_block: int) -> List[T]:
-        ...
-    @abc.abstractproperty
-    def _db_insert_fn(self) -> Callable[[T], None]:
         ...
         
     @property
@@ -210,8 +215,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                     break
                 end, objs = done.pop(i)
                 self._extend(objs)
-                db_insert_tasks.extend(thread_pool_executor.submit(self._db_insert_fn, obj) for obj in objs)
-                cache_info_tasks.append(thread_pool_executor.submit(self.cache.set_metadata, from_block, end))
+                db_insert_tasks.extend(self._executor.run(self.insert_to_db, obj) for obj in objs)
+                cache_info_tasks.append(self._executor.run(self.cache.set_metadata, from_block, end))
                 batches_yielded += 1
                 self._lock.set(end)
 
@@ -219,5 +224,3 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if self._task is None:
             self._task = asyncio.create_task(self._fetch())
     
-    def _extend(self, objs) -> None:
-        return self._objects.extend(objs)

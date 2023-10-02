@@ -161,7 +161,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
 
 
 class TraceFilter(Filter[dict, TraceCache]):
-    _db_insert_fn = insert_trace
+    insert_to_db = insert_trace
     __slots__ = "from_addresses", "to_addresses"
     def __init__(
         self, 

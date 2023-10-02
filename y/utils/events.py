@@ -274,7 +274,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         return self._objects_thru(block=to_block)
 
     @property
-    def _db_insert_fn(self) -> Callable[[LogReceipt], None]:
+    def insert_to_db(self) -> Callable[[LogReceipt], None]:
         from y._db.utils.logs import insert_log
         return insert_log
     
