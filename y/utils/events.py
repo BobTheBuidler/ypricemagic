@@ -3,8 +3,9 @@ import logging
 import threading
 from collections import Counter, defaultdict
 from itertools import zip_longest
-from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Dict,
-                    Iterable, List, NoReturn, Optional, TypeVar)
+from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
+                    Callable, Dict, Iterable, List, NoReturn, Optional,
+                    TypeVar)
 
 import a_sync
 import eth_retry
@@ -314,8 +315,6 @@ class Events(LogFilter):
     
     def _extend(self, objs) -> None:
         return self.__objects.extend(decode_logs(objs))
-
-from typing import Callable
 
 class ProcessedEvents(Events, AsyncIterator[T]):
     __slots__ = 'event_processor', '_processed_events'
