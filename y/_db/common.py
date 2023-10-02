@@ -114,7 +114,7 @@ class ASyncWrappedIterator(ASyncWrappedIterable[T], ASyncIterator[T]):
         return await self.__iterable.__anext__()
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_batch_size', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_batch_size', '_exc', '_interval', '_is_reusable', '_pruned', '_lock', '_semaphore', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
@@ -123,6 +123,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         interval: int = 300, 
         semaphore: Optional[BlockSemaphore] = 32,
         executor: _AsyncExecutorMixin = thread_pool_executor,
+        is_reusable: bool = True,
         verbose: bool = False,
     ):
         self.from_block = from_block
@@ -130,6 +131,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._exc = None
         self._interval = interval
         self._lock = CounterLock()
+        self._is_reusable = is_reusable
+        self._pruned = 0
         self._semaphore = semaphore
         self._task = None
         self._verbose = verbose
@@ -157,9 +160,12 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
-            for obj in self._objects[yielded:]:
+            for obj in self._objects[yielded-self._pruned:]:
                 if block and obj['blockNumber'] > block:
                     return
+                if not self._is_reusable:
+                    self._objects.remove(obj)
+                    self._pruned += 1
                 yield obj
                 yielded += 1
             done_thru = self._lock.value
