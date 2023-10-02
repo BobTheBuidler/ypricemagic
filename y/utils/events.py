@@ -10,6 +10,7 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 
 import a_sync
 import eth_retry
+from a_sync.iter import ASyncIterable
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
@@ -312,7 +313,7 @@ class Events(LogFilter):
     def _extend(self, objs) -> None:
         return self._objects.extend(decode_logs(objs))
 
-class ProcessedEvents(Events, AsyncIterator[T]):
+class ProcessedEvents(Events, ASyncIterable[T]):
     __slots__ = []
     @abc.abstractmethod
     def _include_event(self, event: _EventItem) -> bool:
