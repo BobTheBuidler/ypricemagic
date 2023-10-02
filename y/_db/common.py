@@ -122,7 +122,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         batch_size: int = 1_000, 
         interval: int = 300, 
         semaphore: Optional[BlockSemaphore] = 32,
-        executor: _ASyncExecutorBase = thread_pool_executor,
+        executor: _AsyncExecutorMixin = thread_pool_executor,
         verbose: bool = False,
     ):
         self.from_block = from_block
