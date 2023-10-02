@@ -60,10 +60,10 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
 C = TypeVar('C', bound=DiskCache)
 
 class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
-    __slots__ = '_cache', '__objects'
+    __slots__ = '_cache', '_objects'
     def __init__(self):
         self._cache = None
-        self.__objects: List[T] = []
+        self._objects: List[T] = []
     @abc.abstractproperty
     def cache(self) -> C:
         ...
@@ -74,8 +74,8 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         Returns max block of logs loaded from cache.
         """
         if cached_thru := await thread_pool_executor.run(self.cache.is_cached_thru, from_block):
-            self.__objects.extend(await thread_pool_executor.run(self.cache.select, from_block, cached_thru))
-            logger.info('%s loaded %s objects thru block %s from disk', self, len(self.__objects), cached_thru)
+            self._objects.extend(await thread_pool_executor.run(self.cache.select, from_block, cached_thru))
+            logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return from_block - 1
 
@@ -152,7 +152,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
-            for obj in self.__objects[yielded:]:
+            for obj in self._objects[yielded:]:
                 if block and obj['blockNumber'] > block:
                     return
                 yield obj
@@ -220,4 +220,4 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             self._task = asyncio.create_task(self._fetch())
     
     def _extend(self, objs) -> None:
-        return self.__objects.extend(objs)
+        return self._objects.extend(objs)

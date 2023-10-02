@@ -314,7 +314,7 @@ class Events(LogFilter):
         return self._objects_thru(block=to_block)
     
     def _extend(self, objs) -> None:
-        return self.__objects.extend(decode_logs(objs))
+        return self._objects.extend(decode_logs(objs))
 
 class ProcessedEvents(Events, AsyncIterator[T]):
     __slots__ = 'event_processor', '_processed_events'
