@@ -233,7 +233,7 @@ class Chainlink:
             self.registry = None
         self.feeds = Feeds(self.registry, asynchronous=True)
     
-    @a_sync.future(cache_type='memory', ram_cache_ttl=600)
+    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
     async def get_feed(self, asset: Address) -> Optional[ERC20]:
         asset = convert.to_address(asset)
         async for feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
@@ -281,7 +281,7 @@ class Chainlink:
         feed = await self.get_feed(asset, sync=False)
         return await Call(feed.address, ['decimals()(uint)'], []).coroutine()
 
-    @a_sync.future(cache_type='memory')
+    @a_sync.a_sync(cache_type='memory')
     async def feed_scale(self, asset: AnyAddressType) -> Optional[int]:
         return await (10 ** self.feed_decimals(asset))
 
