@@ -1,10 +1,12 @@
 import asyncio
 import logging
-from typing import AsyncIterator, NoReturn, Optional, Tuple
+from typing import AsyncIterator, Optional
 
 import a_sync
+from a_sync.base import ASyncGenericBase
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
+from brownie.network.event import _EventItem
 from multicall import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -15,7 +17,7 @@ from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.dank_mids import dank_w3
-from y.utils.events import Events
+from y.utils.events import ProcessedEvents
 
 logger = logging.getLogger(__name__)
 
@@ -169,25 +171,23 @@ FEEDS = {
 }.get(chain.id, {})
 
 
-from y.utils.events import ProcessedEvents
-from brownie.network.event import _EventItem
-
 class Feed:
     __slots__ = 'address', 'asset', 'latest_answer', 'start_block'
-    def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0):
+    def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0, asynchronous: bool = False):
         self.address = convert.to_address(address)
-        self.asset = ERC20(asset, asynchronous=True)
+        self.asset = ERC20(asset, asynchronous=asynchronous)
         self.start_block = start_block
         self.latest_answer = a_sync.future(Call(self.address, 'latestAnswer()(uint)').coroutine)
 
 class FeedsFromEvents(ProcessedEvents[Feed]):
-    __slots__ = '_feeds'
-    def __init__(self, addresses, topics):
+    __slots__ = '_asynchronous', 
+    def __init__(self, addresses, topics, asynchronous: bool = True):
+        self.asynchronous = asynchronous
         super().__init__(addresses=addresses, topics=topics)
     def _include_event(self, event: _EventItem) -> bool:
         return event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS
     def _process_event(self, event: _EventItem) -> Feed:
-        return Feed(event["latestAggregator"], event["asset"], event.block_number)
+        return Feed(event["latestAggregator"], event["asset"], event.block_number, asynchronous=asynchronous)
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[Feed]:
         obj: Feed
         self._ensure_task()
@@ -211,9 +211,8 @@ class Feeds:
     __slots__ = 'asynchronous', '_feeds', '_feeds_from_events', '_loaded_thru', '_task'
 
     def __init__(self, registry: Optional[Contract], asynchronous: bool = False):
-        self.asynchronous = asynchronous
         self._feeds = [Feed(feed, asset) for asset, feed in FEEDS.items()]
-        self._feeds_from_events = None if registry is None else FeedsFromEvents(addresses=str(registry), topics=[registry.topics['FeedConfirmed']])
+        self._feeds_from_events = None if registry is None else FeedsFromEvents(addresses=str(registry), topics=[registry.topics['FeedConfirmed']], asynchronous=asynchronous)
     
     async def feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
         for feed in self._feeds:
@@ -223,15 +222,16 @@ class Feeds:
         async for feed in self._feeds_from_events._objects_thru(block=block):
             yield feed
 
-class Chainlink:
-    def __init__(self) -> None:
+class Chainlink(ASyncGenericBase):
+    def __init__(self, asynchronous: bool = True) -> None:
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
         else:
             self.registry = None
-        self.feeds = Feeds(self.registry, asynchronous=True)
+        self.asynchronous = asynchronous
+        self.feeds = Feeds(self.registry, asynchronous=self.asynchronous)
     
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
     async def get_feed(self, asset: Address) -> Optional[ERC20]:
