@@ -1,3 +1,4 @@
+import abc
 import asyncio
 import logging
 import threading
@@ -306,54 +307,20 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
 class Events(LogFilter):
     obj_type = _EventItem
     __slots__ = []
-    def __init__(
-        self, 
-        *, 
-        addresses = [], 
-        topics = [], 
-        from_block: Optional[int] = None,
-        fetch_interval: int = 300,
-    ):
-        super().__init__(addresses=addresses, topics=topics, from_block=from_block, fetch_interval=fetch_interval)
-
     def events(self, to_block: int) -> AsyncIterator[_EventItem]:
         return self._objects_thru(block=to_block)
-    
     def _extend(self, objs) -> None:
         return self._objects.extend(decode_logs(objs))
 
 class ProcessedEvents(Events, AsyncIterator[T]):
-    __slots__ = 'event_processor', '_processed_events'
-    def __init__(
-        self,
-        event_processor: Callable[[_EventItem], T],
-        *, 
-        addresses = [], 
-        topics = [], 
-        from_block: Optional[int] = None,
-    ):
-        super().__init__(addresses=addresses, topics=topics, from_block=from_block)
-        self._processed_events = []
-
-    async def processed_events(self, to_block: int) -> AsyncIterator[_EventItem]:
-        if self._event_task is None:
-            self._event_task = asyncio.create_task(self._fetch())
-        yielded = 0
-        done_thru = 0
-        while True:
-            await self._lock.wait_for(done_thru + 1)
-            for event in self._processed_events[yielded:]:
-                block = event.block_number
-                if to_block and block > to_block:
-                    return
-                yield event
-                yielded += 1
-            done_thru = self._lock.value
-    
-    _objects = processed_events
-
-    async def _fetch(self) -> NoReturn:
-        async for log in self.logs():
-            decoded = decode_logs([log])
-            self._events.extend(decoded)
-    
+    __slots__ = []
+    @abc.abstractmethod
+    def _include_event(self, event: _EventItem) -> bool:
+        ...
+    @abc.abstractmethod
+    def _process_event(self, event: _EventItem) -> T:
+        ...
+    def _extend(self, logs: List[LogReceipt]) -> None:
+        for event in decode_logs(logs):
+            if self._include_event(event):
+                self._objects.append(self._process_event(event))

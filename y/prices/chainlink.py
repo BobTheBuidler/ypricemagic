@@ -169,91 +169,86 @@ FEEDS = {
 }.get(chain.id, {})
 
 
+from y.utils.events import ProcessedEvents
+from brownie.network.event import _EventItem
+
+class Feed:
+    __slots__ = 'address', 'asset', 'latest_answer', 'start_block'
+    def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0):
+        self.address = convert.to_address(address)
+        self.asset = ERC20(asset, asynchronous=True)
+        self.start_block = start_block
+        self.latest_answer = a_sync.future(Call(self.address, 'latestAnswer()(uint)').coroutine)
+
+class FeedsFromEvents(ProcessedEvents[Feed]):
+    __slots__ = '_feeds'
+    def __init__(self, addresses, topics):
+        super().__init__(addresses=addresses, topics=topics)
+    def _include_event(self, event: _EventItem) -> bool:
+        return event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS
+    def _process_event(self, event: _EventItem) -> Feed:
+        return Feed(event["latestAggregator"], event["asset"], event.block_number)
+    async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[Feed]:
+        obj: Feed
+        self._ensure_task()
+        yielded = 0
+        done_thru = 0
+        while True:
+            if block is None or done_thru < block:
+                await self._lock.wait_for(done_thru + 1)
+            if self._exc:
+                raise self._exc
+            for obj in self._objects[yielded-self._pruned:]:
+                if block and obj.start_block > block:
+                    return
+                if not self.is_reusable:
+                    self._remove(obj)
+                yield obj
+                yielded += 1
+            done_thru = self._lock.value
+    
 class Feeds:
-    __slots__ = 'asynchronous', '_feeds', '_events', '_loaded_thru', '_task'
+    __slots__ = 'asynchronous', '_feeds', '_feeds_from_events', '_loaded_thru', '_task'
 
     def __init__(self, registry: Optional[Contract], asynchronous: bool = False):
         self.asynchronous = asynchronous
-        self._feeds = {}
-        self._events = None if registry is None else Events(addresses=str(registry), topics=[registry.topics['FeedConfirmed']])
-        self._task = None
-        self._loaded_thru = 0
-        for asset, feed in FEEDS.items():
-            # Theyre not actually erc20s but this makes scaling convenient
-            feed = Feed(feed)
-            feed._event_block = 0
-            self._feeds[ERC20(asset, asynchronous=asynchronous)] = feed
+        self._feeds = [Feed(feed, asset) for asset, feed in FEEDS.items()]
+        self._feeds_from_events = None if registry is None else FeedsFromEvents(addresses=str(registry), topics=[registry.topics['FeedConfirmed']])
     
-    async def feeds_thru_block(self, block: int) -> AsyncIterator[Tuple[Address, ERC20]]:
-        yielded = 0
-        for asset, feed in self._feeds.items():
-            if feed._event_block > block:
-                return
-            yield asset, feed
-            yielded += 1
-        if self._events is None:
+    async def feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
+        for feed in self._feeds:
+            yield feed
+        if self._feeds_from_events is None:
             return
-        if self._task is None:
-            self._task = asyncio.create_task(self._loader())
-        while True:
-            if self._loaded_thru > block:
-                return
-            await self._events._lock.wait_for(self._loaded_thru + 1)
-            if self._exc:
-                raise self._exc
-            if self._events._exc:
-                raise self._events._exc
-            for (asset, feed) in list(self._feeds.items())[yielded:]:
-                if feed._event_block > block:
-                    return
-                yield asset, feed
-                yielded += 1
-            self._loaded_thru = self._events._lock.value
-    
-    async def _loader(self) -> NoReturn:
-        try:
-            async for event in self._events:
-                if event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS:
-                    # Theyre not actually erc20s but this makes scaling convenient
-                    feed = Feed(event["latestAggregator"])
-                    feed._event_block = event.block_number
-                    self._feeds[ERC20(event["asset"], asynchronous=self.asynchronous)] = feed
-        except Exception as e:
-            self._exc = e
+        async for feed in self._feeds_from_events._objects_thru(block=block):
+            yield feed
 
-
-class Feed:
-    __slots__ = 'address', 'latest_answer', '_event_block'
-    def __init__(self, address: AnyAddressType):
-        self.address = convert.to_address(address)
-        self.latest_answer = Call(self.address, 'latestAnswer()(uint)')
-
-class Chainlink(a_sync.ASyncGenericSingleton):
-    def __init__(self, asynchronous: bool = False) -> None:
-        self.asynchronous = asynchronous
+class Chainlink:
+    def __init__(self) -> None:
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
         else:
             self.registry = None
-        self.feeds = Feeds(self.registry)
+        self.feeds = Feeds(self.registry, asynchronous=True)
     
-    @a_sync.a_sync(cache_type='memory')
-    async def get_feed(self, asset: Address) -> Optional[Contract]:
+    @a_sync.future(cache_type='memory', ram_cache_ttl=600)
+    async def get_feed(self, asset: Address) -> Optional[ERC20]:
         asset = convert.to_address(asset)
-        async for feed_asset, feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
-            if asset == feed_asset:
+        async for feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
+            if asset == feed.asset:
                 return feed
     
     async def has_feed(self, asset: AnyAddressType) -> bool:
         # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
         asset = convert.to_address(asset)
-        async for feed_asset, feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
-            if asset == feed_asset:
+        async for feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
+            if asset == feed.asset:
                 return True
         return False
 
+    @a_sync.future
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
             block = chain.height
@@ -278,18 +273,17 @@ class Chainlink(a_sync.ASyncGenericSingleton):
             return None
 
         if latest_answer and scale:
-            price = latest_answer / scale
-            return price
+            return latest_answer / scale
 
+    @a_sync.future
     async def feed_decimals(self, asset: AnyAddressType) -> int:
         asset = convert.to_address(asset)
         feed = await self.get_feed(asset, sync=False)
         return await Call(feed.address, ['decimals()(uint)'], []).coroutine()
 
-    @a_sync.a_sync(cache_type='memory')
+    @a_sync.future(cache_type='memory')
     async def feed_scale(self, asset: AnyAddressType) -> Optional[int]:
-        if decimals := await self.feed_decimals(asset, sync=False):
-            return 10 ** decimals
+        return await (10 ** self.feed_decimals(asset))
 
 
 try: chainlink = Chainlink(asynchronous=True)
