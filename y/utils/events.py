@@ -261,15 +261,16 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         topics = [], 
         from_block: Optional[int] = None,
         fetch_interval: int = 300,
-        batch_size: int = BATCH_SIZE,
-        semaphore: Optional[BlockSemaphore] = 32,
+        chunk_size: int = BATCH_SIZE,
+        chunks_per_batch: int = 20,
+        semaphore: Optional[BlockSemaphore] = None,
         executor: _AsyncExecutorMixin = thread_pool_executor,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
         self.addresses = addresses
         self.topics = topics
-        super().__init__(from_block, batch_size=batch_size, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
+        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
     
     @property
     def cache(self) -> "LogCache":
@@ -277,6 +278,12 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             from y._db.utils.logs import LogCache
             self._cache = LogCache(self.addresses, self.topics)
         return self._cache
+    
+    @property
+    def semaphore(self) -> BlockSemaphore:
+        if self._semaphore is None:
+            self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
+        return self._semaphore
 
     def logs(self, to_block: Optional[int]) -> AsyncIterator[LogReceipt]:
         return self._objects_thru(block=to_block)

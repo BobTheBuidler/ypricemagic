@@ -99,20 +99,22 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         return from_block - 1
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_batch_size', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
         *, 
-        batch_size: int = 1_000, 
+        chunk_size: int = 10_000, 
+        chunks_per_batch: int = 20,
         interval: int = 300, 
-        semaphore: Optional[BlockSemaphore] = 32,
+        semaphore: Optional[BlockSemaphore] = None,
         executor: _AsyncExecutorMixin = thread_pool_executor,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
         self.from_block = from_block
-        self._batch_size = batch_size
+        self._chunk_size = chunk_size
+        self._chunks_per_batch = chunks_per_batch
         self._exc = None
         self._interval = interval
         self._lock = CounterLock()
@@ -130,8 +132,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         
     @property
     def semaphore(self) -> BlockSemaphore:
-        if isinstance(self._semaphore, int):
-            self._semaphore = BlockSemaphore(self._semaphore)
+        if self._semaphore is None:
+            self._semaphore = BlockSemaphore(self._chunks_per_batch)
         return self._semaphore
     
     def _get_block_for_obj(self, obj: T) -> int:
@@ -200,7 +202,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         coros = [
             self._fetch_range_wrapped(i, start, end) 
             for i, (start, end) 
-            in enumerate(block_ranges(from_block, to_block, self._batch_size))
+            in enumerate(block_ranges(from_block, to_block, self._chunk_size))
+            if i <= self._chunks_per_batch
         ]
         for objs in as_completed(coros, timeout=None):
             i, end, objs = await objs
