@@ -45,6 +45,6 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         assert (p := Price.get(
             block = get_block(block, sync=True),
             token = get_token(address, sync=True),
-        )) and p.price == price, (p.price, price)
+        )) and p.price == Decimal(price), (p.price, price)
 
 __tasks: List[asyncio.Task] = []
