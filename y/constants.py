@@ -206,3 +206,5 @@ WRAPPED_GAS_COIN = {
 thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 32)))
 
 SKIP_YPRICEAPI = bool(os.environ.get("SKIP_YPRICEAPI"))
+
+BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999

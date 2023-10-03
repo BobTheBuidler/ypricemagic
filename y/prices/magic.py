@@ -1,8 +1,8 @@
 import asyncio
 import logging
-from typing import Iterable, List, NoReturn, Optional, Tuple
+from typing import Iterable, List, NoReturn, Optional, Tuple, Callable, Awaitable
 
-import a_sync
+import a_sync, functools
 from brownie import ZERO_ADDRESS, chain
 from brownie.exceptions import ContractNotFound
 from multicall.utils import raise_if_exception_in
@@ -39,13 +39,17 @@ from y.utils.dank_mids import dank_w3
 from y.utils.logging import get_price_logger
 
 
+cache_logger = logging.getLogger(f"{__name__}.cache")
+
 @a_sync.a_sync(default='sync')
 async def get_price(
     token_address: AnyAddressType,
-    block: Optional[Block] = None, 
+    block: Optional[Block] = None,
+    *,
     fail_to_None: bool = False,
+    skip_cache: bool = False,
     ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
-    silent: bool = False
+    silent: bool = False,
     ) -> Optional[UsdPrice]:
     '''
     Don't pass an int like `123` into `token_address` please, that's just silly.
@@ -68,11 +72,16 @@ async def get_price(
         if not fail_to_None:
             raise yPriceMagicError(e, token_address, block, symbol) from e
 
+GetPrice = Callable[..., Awaitable[Optional[UsdPrice]]]
+
+
+
 @a_sync.a_sync(default='sync')
 async def get_prices(
     token_addresses: Iterable[AnyAddressType],
     block: Optional[Block] = None,
     fail_to_None: bool = False,
+    skip_cache: bool = False,
     silent: bool = False,
     ) -> List[Optional[float]]:
     '''
@@ -93,7 +102,14 @@ async def get_prices(
 
     prices = await asyncio.gather(
         *[
-            get_price(convert.to_address(token), block, fail_to_None=fail_to_None, silent=silent, sync=False)
+            get_price(
+                token_address=convert.to_address(token), 
+                block=block, 
+                fail_to_None=fail_to_None, 
+                skip_cache=skip_cache, 
+                silent=silent, 
+                sync=False,
+            )
             for token in token_addresses
         ],
         return_exceptions=True
@@ -107,11 +123,34 @@ async def get_prices(
                 raise p
     return prices
 
-@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+def __cache(get_price: GetPrice) -> GetPrice:
+    @functools.wraps(get_price)
+    async def cache_wrap(
+        token: AnyAddressType, 
+        block: Block,
+        *,
+        fail_to_None: bool = False, 
+        skip_cache: bool = False,
+        ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
+        silent: bool = False
+    ) -> Optional[UsdPrice]:
+        from y._db.utils import price as db
+        if not skip_cache and (price := await db.get_price(token, block)):
+            cache_logger.debug('disk cache -> %s', price)
+            return price
+        price = await get_price(token, block=block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
+        if price and not skip_cache:
+            await db.set_price(token, block, price)
+        return price
+    return cache_wrap
+
+@a_sync.a_sync(default="async", cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@__cache
 @stuck_coro_debugger
 async def _get_price(
     token: AnyAddressType, 
-    block: Block, 
+    block: Block,
+    *,
     fail_to_None: bool = False, 
     ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
     silent: bool = False

@@ -1,11 +1,13 @@
 import asyncio
 import logging
-from functools import cached_property
-from typing import Dict, NoReturn, Optional, Union
+from typing import AsyncIterator, Optional
 
 import a_sync
+from a_sync.base import ASyncGenericBase
+from a_sync.future import ASyncFuture
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
+from brownie.network.event import _EventItem
 from multicall import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -13,10 +15,10 @@ from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
-from y.exceptions import ContractNotVerified, UnsupportedNetwork
+from y.exceptions import UnsupportedNetwork
 from y.networks import Network
 from y.utils.dank_mids import dank_w3
-from y.utils.events import decode_logs, get_logs_asap_generator
+from y.utils.events import ProcessedEvents
 
 logger = logging.getLogger(__name__)
 
@@ -170,112 +172,112 @@ FEEDS = {
 }.get(chain.id, {})
 
 
-class Chainlink(a_sync.ASyncGenericSingleton):
-    def __init__(self, asynchronous: bool = False) -> None:
+class Feed:
+    __slots__ = 'address', 'asset', 'latest_answer', 'start_block'
+    def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0, asynchronous: bool = False):
+        self.address = convert.to_address(address)
+        self.asset = ERC20(asset, asynchronous=asynchronous)
+        self.start_block = start_block
+        self.latest_answer = a_sync.future(Call(self.address, 'latestAnswer()(uint)').coroutine)
+    
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} address={self.address} asset={self.asset}>"
+
+    @property
+    def contract(self) -> Contract:
+        return Contract(self.address)
+    
+    #@a_sync.future
+    async def decimals(self) -> int:
+        return await Call(self.address, ['decimals()(uint)'], []).coroutine()
+
+    #@a_sync.future(cache_type='memory')
+    @alru_cache(maxsize=None)
+    async def scale(self) -> Optional[int]:
+        return await (10 ** ASyncFuture(self.decimals()))
+
+    #@a_sync.future
+    async def get_price(self, block: Optional[int]) -> Optional[UsdPrice]:
+        latest_answer = self.latest_answer(block_id=block)
+        scale = ASyncFuture(self.scale())
+        price = latest_answer / scale
+        return UsdPrice(await price)
+        
+
+class FeedsFromEvents(ProcessedEvents[Feed]):
+    __slots__ = '_asynchronous', 
+    def __init__(self, addresses, topics, asynchronous: bool = True):
         self.asynchronous = asynchronous
+        super().__init__(addresses=addresses, topics=topics)
+    def _include_event(self, event: _EventItem) -> bool:
+        return event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS
+    def _process_event(self, event: _EventItem) -> Feed:
+        return Feed(event["latestAggregator"], event["asset"], event.block_number, asynchronous=self.asynchronous)
+    def _get_block_for_obj(self, obj: Feed) -> int:
+        return obj.start_block
+    
+
+class Chainlink(ASyncGenericBase):
+    def __init__(self, asynchronous: bool = True) -> None:
+        self.asynchronous = asynchronous
+        self._feeds = [Feed(feed, asset, asynchronous=self.asynchronous) for asset, feed in FEEDS.items()]
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
+            self._feeds_from_events = FeedsFromEvents(
+                addresses=str(self.registry), 
+                topics=[self.registry.topics['FeedConfirmed']], 
+                asynchronous=asynchronous,
+            )
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
-        self._cached_feeds = {ERC20(token, asynchronous=self.asynchronous): feed for token, feed in FEEDS.items()}
-        self._loading = False
+        else:
+            self.registry = None
+            self._feeds_from_events = None
     
-    @cached_property
-    def _feeds_loaded(self) -> a_sync.Event:
-        """A helper function to ensure the Event is attached to the correct loop."""
-        return a_sync.Event()
-    
-    async def _start_feed_loop(self) -> Union[None, NoReturn]:
-        if self._loading:
+    async def _feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
+        for feed in self._feeds:
+            yield feed
+        if self._feeds_from_events is None:
             return
+        async for feed in self._feeds_from_events.objects(to_block=block):
+            yield feed
 
-        self._loading = True
-        # for non-mainnet, we have no registry so must get feeds manually
-        if chain.id not in registries:
-            self._feeds_loaded.set()
-            self._loading = False
-            return
-
-        block = await dank_w3.eth.block_number
-        # for mainnet, we have some extra feeds to pull in
-        # cache feeds thru current block, log results.
-        async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], to_block=block):
-            for log in decode_logs(logs):
-                if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
-                    self._cached_feeds[log["asset"]] = ERC20(log["latestAggregator"], asynchronous=self.asynchronous)
-        
-        self._feeds_loaded.set()
-        logger.info('loaded %s feeds', len(self._cached_feeds))
-        
-        while await dank_w3.eth.block_number < block+1:
-            await asyncio.sleep(15)
-
-        # leave coroutine running for future blocks
-        async for logs in get_logs_asap_generator(str(self.registry), [self.registry.topics['FeedConfirmed']], from_block=block+1, run_forever=True):
-            for log in decode_logs(logs):
-                if log['denomination'] == DENOMINATIONS['USD'] and log['latestAggregator'] != ZERO_ADDRESS:
-                    asset, latest_aggregator = log["asset"], log["latestAggregator"]
-                    self._cached_feeds[asset] = ERC20(latest_aggregator, asynchronous=self.asynchronous)
-                    logger.info('loaded new feed %s', latest_aggregator)
-
-    @a_sync.aka.property
-    async def feeds(self) -> Dict[ERC20, str]:
-        if not self._feeds_loaded.is_set():
-            task = asyncio.get_event_loop().create_task(self._start_feed_loop())
-            def _on_completion(fut):
-                if e:=fut.exception():
-                    self._loading = False
-                    raise e
-            task.add_done_callback(_on_completion)
-        await self._feeds_loaded.wait()
-        return self._cached_feeds
-    
-    async def get_feed(self, asset: Address) -> Optional[Contract]:
-        feeds = await self.__feeds__(sync=False)
-        try:
-            return await Contract.coroutine(feeds[convert.to_address(asset)])
-        except ContractNotVerified:
-            return None
+    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
+    async def get_feed(self, asset: Address) -> Optional[Feed]:
+        asset = convert.to_address(asset)
+        async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
+            if asset == feed.asset:
+                return feed
     
     async def has_feed(self, asset: AnyAddressType) -> bool:
-        return convert.to_address(asset) in await self.__feeds__(sync=False)
+        # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
+        asset = convert.to_address(asset)
+        async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
+            if asset == feed.asset:
+                return True
+        return False
 
+   # @a_sync.future
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
-            block = chain.height
+            block = await dank_w3.eth.block_number
         return await self._get_price(asset, block)
 
-    alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
-    async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
+    @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
+    async def _get_price(self, asset: AnyAddressType, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
+        feed: Feed
         feed = await self.get_feed(asset, sync=False)
-        if feed is None or (block is not None and block < await contract_creation_block_async(feed.address, True)):
-            return None
+        if feed is None:
+            return
+        if block is not None and block < await contract_creation_block_async(feed.address, True):
+            return 
         try:
-            latest_answer, scale = await asyncio.gather(
-                Call(feed.address, 'latestAnswer()(uint)', block_id=block).coroutine(),
-                self.feed_scale(asset, sync=False),
-            )
-        except ValueError as e:
-            logger.debug("error for feed address %s:", feed.address)
-            logger.debug(str(e))
-            return None
-
-        if latest_answer and scale:
-            price = latest_answer / scale
-            return price
-
-    a_sync.a_sync(cache_type='memory')
-    async def feed_decimals(self, asset: AnyAddressType) -> int:
-        asset = convert.to_address(asset)
-        feed = await self.get_feed(asset, sync=False)
-        return await Call(feed.address, ['decimals()(uint)'], []).coroutine()
-
-    async def feed_scale(self, asset: AnyAddressType) -> Optional[int]:
-        if decimals:= await self.feed_decimals(asset, sync=False):
-            return 10 ** decimals
+            return await feed.get_price(block=block)
+        except (TypeError, ValueError) as e:
+            logger.debug("error for feed %s: %s", feed, e)
 
 
 try: chainlink = Chainlink(asynchronous=True)

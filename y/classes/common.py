@@ -86,9 +86,9 @@ class ERC20(ContractBase):
         if self.address == EEE_ADDRESS:
             return "ETH"
         
-        import y._db.utils as db
+        import y._db.utils.token as db
 
-        symbol = await db._get_token_symbol(self.address)
+        symbol = await db.get_symbol(self.address)
         if symbol:
             return symbol
         
@@ -100,7 +100,7 @@ class ERC20(ContractBase):
                 symbol = hex_to_string(symbol)
         
         if symbol:
-            await db._set_token_symbol(self.address, symbol)
+            await db.set_symbol(self.address, symbol)
             return symbol
         
         # we've failed to fetch
@@ -111,9 +111,9 @@ class ERC20(ContractBase):
         if self.address == EEE_ADDRESS:
             return "Ethereum"
         
-        import y._db.utils as db
+        import y._db.utils.token as db
 
-        name = await db._get_token_name(self.address)
+        name = await db.get_name(self.address)
         if name:
             return name
         
@@ -125,7 +125,7 @@ class ERC20(ContractBase):
                 name = hex_to_string(name)
         
         if name:
-            await db._set_token_name(self.address, name)
+            await db.set_name(self.address, name)
             return name
                 
         # we've failed to fetch
@@ -135,8 +135,8 @@ class ERC20(ContractBase):
     async def decimals(self) -> int:
         if self.address == EEE_ADDRESS:
             return 18
-        import y._db.utils as db
-        return await db.get_token_decimals(self.address)
+        import y._db.utils.token as db
+        return await db.get_decimals(self.address)
 
     @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
