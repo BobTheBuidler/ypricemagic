@@ -191,43 +191,43 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
     def _get_block_for_obj(self, obj: Feed) -> int:
         return obj.start_block
     
-class Feeds:
-    __slots__ = 'asynchronous', '_feeds', '_feeds_from_events', '_loaded_thru', '_task'
-
-    def __init__(self, registry: Optional[Contract], asynchronous: bool = False):
-        self._feeds = [Feed(feed, asset) for asset, feed in FEEDS.items()]
-        self._feeds_from_events = None if registry is None else FeedsFromEvents(addresses=str(registry), topics=[registry.topics['FeedConfirmed']], asynchronous=asynchronous)
-    
-    async def feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
-        for feed in self._feeds:
-            yield feed
-        if self._feeds_from_events is None:
-            return
-        async for feed in self._feeds_from_events._objects_thru(block=block):
-            yield feed
 
 class Chainlink(ASyncGenericBase):
     def __init__(self, asynchronous: bool = True) -> None:
+        self.asynchronous = asynchronous
+        self._feeds = [Feed(feed, asset, asynchronous=self.asynchronous) for asset, feed in FEEDS.items()]
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
+            self._feeds_from_events = FeedsFromEvents(
+                addresses=str(self.registry), 
+                topics=[self.registry.topics['FeedConfirmed']], 
+                asynchronous=asynchronous,
+            )
         elif len(FEEDS) == 0:
             raise UnsupportedNetwork('chainlink is not supported on this network')
         else:
             self.registry = None
-        self.asynchronous = asynchronous
-        self.feeds = Feeds(self.registry, asynchronous=self.asynchronous)
+            self._feeds_from_events = None
     
+    async def _feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
+        for feed in self._feeds:
+            yield feed
+        if self._feeds_from_events is None:
+            return
+        async for feed in self._feeds_from_events.objects(to_block=block):
+            yield feed
+
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
     async def get_feed(self, asset: Address) -> Optional[ERC20]:
         asset = convert.to_address(asset)
-        async for feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
+        async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
             if asset == feed.asset:
                 return feed
     
     async def has_feed(self, asset: AnyAddressType) -> bool:
         # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
         asset = convert.to_address(asset)
-        async for feed in self.feeds.feeds_thru_block(await dank_w3.eth.block_number):
+        async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
             if asset == feed.asset:
                 return True
         return False

@@ -321,6 +321,8 @@ class ProcessedEvents(Events, ASyncIterable[T]):
     @abc.abstractmethod
     def _process_event(self, event: _EventItem) -> T:
         ...
+    def objects(self, to_block: int) -> AsyncIterator[_EventItem]:
+        return self._objects_thru(block=to_block)
     def _extend(self, logs: List[LogReceipt]) -> None:
         for event in decode_logs(logs):
             if self._include_event(event):
