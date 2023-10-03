@@ -144,7 +144,7 @@ def __cache(get_price: GetPrice) -> GetPrice:
         return price
     return cache_wrap
 
-@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync.a_sync(default="async", cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
 @__cache
 @stuck_coro_debugger
 async def _get_price(

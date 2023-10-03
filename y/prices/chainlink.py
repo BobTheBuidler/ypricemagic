@@ -4,6 +4,7 @@ from typing import AsyncIterator, Optional
 
 import a_sync
 from a_sync.base import ASyncGenericBase
+from a_sync.future import ASyncFuture
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from brownie.network.event import _EventItem
@@ -178,6 +179,30 @@ class Feed:
         self.asset = ERC20(asset, asynchronous=asynchronous)
         self.start_block = start_block
         self.latest_answer = a_sync.future(Call(self.address, 'latestAnswer()(uint)').coroutine)
+    
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} address={self.address} asset={self.asset}>"
+
+    @property
+    def contract(self) -> Contract:
+        return Contract(self.address)
+    
+    #@a_sync.future
+    async def decimals(self) -> int:
+        return await Call(self.address, ['decimals()(uint)'], []).coroutine()
+
+    #@a_sync.future(cache_type='memory')
+    @alru_cache(maxsize=None)
+    async def scale(self) -> Optional[int]:
+        return await (10 ** ASyncFuture(self.decimals()))
+
+    #@a_sync.future
+    async def get_price(self, block: Optional[int]) -> Optional[UsdPrice]:
+        latest_answer = self.latest_answer(block_id=block)
+        scale = ASyncFuture(self.scale())
+        price = latest_answer / scale
+        return UsdPrice(await price)
+        
 
 class FeedsFromEvents(ProcessedEvents[Feed]):
     __slots__ = '_asynchronous', 
@@ -218,7 +243,7 @@ class Chainlink(ASyncGenericBase):
             yield feed
 
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
-    async def get_feed(self, asset: Address) -> Optional[ERC20]:
+    async def get_feed(self, asset: Address) -> Optional[Feed]:
         asset = convert.to_address(asset)
         async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
             if asset == feed.asset:
@@ -232,42 +257,27 @@ class Chainlink(ASyncGenericBase):
                 return True
         return False
 
-    @a_sync.future
+   # @a_sync.future
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
-            block = chain.height
+            block = await dank_w3.eth.block_number
         return await self._get_price(asset, block)
 
     @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
-    async def _get_price(self, asset, block: Block) -> Optional[UsdPrice]:
+    async def _get_price(self, asset: AnyAddressType, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
+        feed: Feed
         feed = await self.get_feed(asset, sync=False)
-        if feed is None or (block is not None and block < await contract_creation_block_async(feed.address, True)):
-            return None
+        if feed is None:
+            return
+        if block is not None and block < await contract_creation_block_async(feed.address, True):
+            return 
         try:
-            latest_answer, scale = await asyncio.gather(
-                feed.latest_answer.coroutine(block_id=block),
-                self.feed_scale(asset, sync=False),
-            )
-        except ValueError as e:
-            logger.debug("error for feed address %s:", feed.address)
-            logger.debug(str(e))
-            return None
-
-        if latest_answer and scale:
-            return latest_answer / scale
-
-    @a_sync.future
-    async def feed_decimals(self, asset: AnyAddressType) -> int:
-        asset = convert.to_address(asset)
-        feed = await self.get_feed(asset, sync=False)
-        return await Call(feed.address, ['decimals()(uint)'], []).coroutine()
-
-    @a_sync.a_sync(cache_type='memory')
-    async def feed_scale(self, asset: AnyAddressType) -> Optional[int]:
-        return await (10 ** self.feed_decimals(asset))
+            return await feed.get_price(block=block)
+        except (TypeError, ValueError) as e:
+            logger.debug("error for feed %s: %s", feed, e)
 
 
 try: chainlink = Chainlink(asynchronous=True)
