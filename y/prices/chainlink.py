@@ -187,25 +187,9 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
     def _include_event(self, event: _EventItem) -> bool:
         return event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS
     def _process_event(self, event: _EventItem) -> Feed:
-        return Feed(event["latestAggregator"], event["asset"], event.block_number, asynchronous=asynchronous)
-    async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[Feed]:
-        obj: Feed
-        self._ensure_task()
-        yielded = 0
-        done_thru = 0
-        while True:
-            if block is None or done_thru < block:
-                await self._lock.wait_for(done_thru + 1)
-            if self._exc:
-                raise self._exc
-            for obj in self._objects[yielded-self._pruned:]:
-                if block and obj.start_block > block:
-                    return
-                if not self.is_reusable:
-                    self._remove(obj)
-                yield obj
-                yielded += 1
-            done_thru = self._lock.value
+        return Feed(event["latestAggregator"], event["asset"], event.block_number, asynchronous=self.asynchronous)
+    def _get_block_for_obj(self, obj: Feed) -> int:
+        return obj.start_block
     
 class Feeds:
     __slots__ = 'asynchronous', '_feeds', '_feeds_from_events', '_loaded_thru', '_task'

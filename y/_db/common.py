@@ -133,6 +133,10 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if isinstance(self._semaphore, int):
             self._semaphore = BlockSemaphore(self._semaphore)
         return self._semaphore
+    
+    def _get_block_for_obj(self, obj: T) -> int:
+        """Override this as needed for different object types"""
+        return obj['blockNumber']
             
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
@@ -143,13 +147,16 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
-            for obj in self._objects[yielded-self._pruned:]:
-                if block and obj['blockNumber'] > block:
-                    return
-                if not self.is_reusable:
-                    self._remove(obj)
-                yield obj
-                yielded += 1
+            if to_yield := self._objects[yielded-self._pruned:]:
+                for obj in to_yield:
+                    if block and self._get_block_for_obj(obj) > block:
+                        return
+                    if not self.is_reusable:
+                        self._remove(obj)
+                    yield obj
+                    yielded += 1
+            elif block and done_thru > block:
+                return
             done_thru = self._lock.value
     
     async def __fetch(self) -> NoReturn:
