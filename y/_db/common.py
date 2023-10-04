@@ -16,7 +16,6 @@ from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
 from y._db.exceptions import CacheNotPopulatedError
-from y.constants import BIG_VALUE, thread_pool_executor
 from y.utils.dank_mids import dank_w3
 
 T = TypeVar('T')
@@ -65,10 +64,12 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     __slots__ = 'is_reusable', '_cache', '_executor', '_objects', '_pruned'
     def __init__(
         self, 
-        executor: _AsyncExecutorMixin = thread_pool_executor,
+        executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
     ):
         self.is_reusable = is_reusable
+        if executor is None:
+            from y.constants import thread_pool_executor as executor
         self._cache = None
         self._executor = executor
         self._objects: List[T] = []
@@ -108,7 +109,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         chunks_per_batch: int = 20,
         interval: int = 300, 
         semaphore: Optional[BlockSemaphore] = None,
-        executor: _AsyncExecutorMixin = thread_pool_executor,
+        executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
@@ -162,6 +163,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             done_thru = self._lock.value
     
     async def __fetch(self) -> NoReturn:
+        from y.constants import BIG_VALUE
         try:
             await self._fetch()
         except Exception as e:
