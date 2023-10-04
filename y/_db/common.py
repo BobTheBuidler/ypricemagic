@@ -225,7 +225,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                     if db_insert_tasks:
                         self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
                         db_insert_tasks, set_metadata_params_to = [], None
-                    await self._db_task
+                        await self._db_task
                     break
                 end, objs = done.pop(i)
                 self._extend(objs)
@@ -236,7 +236,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         
         if db_insert_tasks:
             self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
-        await self._db_task
+            await self._db_task
     
     def _insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int) -> None:
         if self._db_task and self._db_task.done() and (e := self._db_task.exception()):
