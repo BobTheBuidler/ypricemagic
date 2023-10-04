@@ -326,21 +326,14 @@ class UniswapRouterV2(ContractBase):
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         factory = await Contract.coroutine(self.factory)
 
+        to_block = await dank_w3.eth.block_number
         try:
-            events = factory.events.PairCreated.events(to_block=await dank_w3.eth.block_number)
+            events = factory.events.PairCreated.events(to_block=to_block)
         except AttributeError:
             PairCreated = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
-            events = Events(addresses=[factory.address], topics=[PairCreated])
+            events = Events(addresses=[factory.address], topics=[PairCreated]).events(to_block=to_block)
 
-        pools = [
-            UniswapV2Pool(
-                address=event["pool"], 
-                token0=event["token0"], 
-                token1=event["token1"], 
-                asynchronous=self.asynchronous,
-            )
-            async for event in events.events(to_block=await dank_w3.eth.block_number)
-        ]
+        pools = [UniswapV2Pool(address=event["pool"], token0=event["token0"], token1=event["token1"], asynchronous=self.asynchronous) async for event in events]
 
         all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
         if len(pools) == all_pairs_len:
