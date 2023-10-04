@@ -246,5 +246,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task]) -> None:
         if prev_chunk_task:
             await prev_chunk_task
-        await asyncio.gather(*tasks, self.executor.run(self.cache.set_metadata, from_block, done_thru))
+        if tasks:
+            await asyncio.gather(*tasks)
+        await self.executor.run(self.cache.set_metadata, from_block, done_thru)
     
