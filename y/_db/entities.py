@@ -1,4 +1,5 @@
 
+import logging
 from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
@@ -11,7 +12,7 @@ from pony.orm import (Database, Optional, PrimaryKey, Required, Set,
 db = Database()
 
 
-#E = TypeVar("E", bound=db.Entity)
+logger = logging.getLogger(__name__)
 
 class _AsyncEntityMixin:
     pass
@@ -119,8 +120,9 @@ from pony.orm import OperationalError, CommitException
 @db_session
 def insert(type: db.Entity, **kwargs: Any) -> None:
     with suppress(TransactionIntegrityError):
-        type(**kwargs)
+        entity = type(**kwargs)
         commit()
+        logger.debug("inserted %s to db", entity)
 
 def retry_locked(callable):
     @wraps(callable)
@@ -129,6 +131,7 @@ def retry_locked(callable):
             try:
                 return callable(*args, **kwargs)
             except (CommitException, OperationalError) as e:
+                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
                 if "database is locked" not in str(e):
                     raise e
     return retry_locked_wrap
