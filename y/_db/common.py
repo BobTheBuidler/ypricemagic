@@ -222,26 +222,19 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 if batches_yielded > i:
                     continue
                 if i not in done:
-                    if db_insert_tasks:
-                        self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
-                        db_insert_tasks, set_metadata_params_to = [], None
-                        await self._db_task
                     break
                 end, objs = done.pop(i)
+                self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
-                db_insert_tasks.extend(self.executor.run(self.insert_to_db, obj) for obj in objs)
-                set_metadata_params_to = from_block, end
+                await self._db_task
+                db_insert_tasks.extend()
                 batches_yielded += 1
                 self._lock.set(end)
-        
-        if db_insert_tasks:
-            self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
-            await self._db_task
     
-    def _insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int) -> None:
+    def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int) -> None:
         if self._db_task and self._db_task.done() and (e := self._db_task.exception()):
             raise e
-        self._db_task = asyncio.create_task(self.__insert_chunk(tasks, from_block, done_thru, self._db_task))
+        self._db_task = asyncio.create_task(self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, self._db_task))
 
     def _ensure_task(self) -> None:
         if self._task is None:
