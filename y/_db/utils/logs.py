@@ -1,6 +1,5 @@
 
 import logging
-from functools import lru_cache
 from typing import List, Optional
 
 from msgspec import json
@@ -8,9 +7,9 @@ from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 from web3.types import LogReceipt
 
-from y._db._ep import _get_get_block
 from y._db.common import DiskCache, enc_hook
 from y._db.entities import Log, LogCacheInfo, insert, retry_locked
+from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
 

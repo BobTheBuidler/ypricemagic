@@ -10,7 +10,7 @@ from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 
-from y._db._ep import _get_get_block
+from y._db.utils._ep import _get_get_block
 from y._db.common import DiskCache, Filter
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert, retry_locked
 from y.constants import thread_pool_executor
