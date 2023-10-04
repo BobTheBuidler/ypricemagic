@@ -250,7 +250,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
 
         for k, v in self.topics.items():
-            generator = Events(addresses=[self.address], topics=[[v]])
+            generator = Events(addresses=self.address, topics=[v])
             setattr(self.events, k, generator)
 
         self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
