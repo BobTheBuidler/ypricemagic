@@ -212,12 +212,6 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 if batches_yielded > i:
                     continue
                 if i not in done:
-                    if db_insert_tasks:
-                        await asyncio.gather(*db_insert_tasks)
-                        db_insert_tasks.clear()
-                    if cache_info_tasks:
-                        await cache_info_tasks[-1]
-                        cache_info_tasks.clear()
                     break
                 end, objs = done.pop(i)
                 self._extend(objs)
@@ -225,6 +219,12 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 cache_info_tasks.append(self._executor.run(self.cache.set_metadata, from_block, end))
                 batches_yielded += 1
                 self._lock.set(end)
+        if db_insert_tasks:
+            await asyncio.gather(*db_insert_tasks)
+            db_insert_tasks.clear()
+        if cache_info_tasks:
+            await cache_info_tasks[-1]
+            cache_info_tasks.clear()
 
     def _ensure_task(self) -> None:
         if self._task is None:
