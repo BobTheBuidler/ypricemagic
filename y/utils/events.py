@@ -300,9 +300,9 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             if self.addresses is None:
                 self.from_block = 0
             elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
-                self.from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in self.addresses]))
+                self.from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, when_no_history_return_0=True) for addr in self.addresses]))
             else:
-                self.from_block = await contract_creation_block_async(self.addresses, True)
+                self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
     async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
