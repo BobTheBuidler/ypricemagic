@@ -10,12 +10,12 @@ from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 
-from y._db.common import DiskCache
+from y._db.common import DiskCache, Filter
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils.utils import get_block
 from y.constants import thread_pool_executor
 from y.utils.dank_mids import dank_w3
-from y.utils.events import BATCH_SIZE, Filter
+from y.utils.middleware import BATCH_SIZE
 
 logger = logging.getLogger(__name__)
 
@@ -173,7 +173,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         from_block: int,
         *,
         chunk_size: int = BATCH_SIZE,
-        chunks_per_batch: int = 20,
+        chunks_per_batch: Optional[int] = None,
         interval: int = 300,
         semaphore: Optional[BlockSemaphore] = None,
         executor: _AsyncExecutorMixin = thread_pool_executor,

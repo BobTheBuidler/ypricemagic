@@ -17,6 +17,7 @@ from web3.middleware.filter import block_ranges
 
 from y._db.exceptions import CacheNotPopulatedError
 from y.utils.dank_mids import dank_w3
+from y.utils.middleware import BATCH_SIZE
 
 T = TypeVar('T')
 S = TypeVar('S')
@@ -110,8 +111,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self, 
         from_block: int,
         *, 
-        chunk_size: int = 10_000, 
-        chunks_per_batch: int = 20,
+        chunk_size: int = BATCH_SIZE, 
+        chunks_per_batch: Optional[int] = None,
         interval: int = 300, 
         semaphore: Optional[BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
@@ -210,7 +211,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             self._fetch_range_wrapped(i, start, end) 
             for i, (start, end) 
             in enumerate(block_ranges(from_block, to_block, self._chunk_size))
-            if i <= self._chunks_per_batch
+            if (self._chunks_per_batch is None or i <= self._chunks_per_batch)
         ]
         for objs in as_completed(coros, timeout=None):
             i, end, objs = await objs

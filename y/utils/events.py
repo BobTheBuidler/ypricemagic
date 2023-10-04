@@ -262,7 +262,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         from_block: Optional[int] = None,
         fetch_interval: int = 300,
         chunk_size: int = BATCH_SIZE,
-        chunks_per_batch: int = 20,
+        chunks_per_batch: Optional[int] = None,
         semaphore: Optional[BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
