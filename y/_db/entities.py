@@ -112,7 +112,12 @@ class Log(db.Entity):
     composite_index(topic0, topic1)
     composite_index(topic0, topic2)
     composite_index(topic0, topic3)
+    composite_index(block, address, topic0)
+    composite_index(block, topic0, topic1)
+    composite_index(block, topic0, topic2)
+    composite_index(block, topic0, topic3)
     composite_index(topic0, topic1, topic2, topic3)
+    composite_index(block, topic0, topic1, topic2, topic3)
     raw = Required(bytes, lazy=True)
 
 class Trace(db.Entity):
