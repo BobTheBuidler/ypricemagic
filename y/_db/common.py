@@ -106,7 +106,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         return from_block - 1
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
@@ -125,6 +125,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._exc = None
         self._interval = interval
         self._lock = CounterLock()
+        self._db_task = None
         self._semaphore = semaphore
         self._task = None
         self._verbose = verbose
@@ -221,9 +222,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                     continue
                 if i not in done:
                     if db_insert_tasks:
-                        await asyncio.gather(*db_insert_tasks)
+                        self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
                         db_insert_tasks.clear()
-                        await self.executor.run(self.cache.set_metadata, *set_metadata_params_to)
                         set_metadata_params_to = None
                     break
                 end, objs = done.pop(i)
@@ -232,9 +232,14 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 set_metadata_params_to = from_block, end
                 batches_yielded += 1
                 self._lock.set(end)
+        
         if db_insert_tasks:
-            await asyncio.gather(*db_insert_tasks)
-            await self.executor.run(self.cache.set_metadata, *set_metadata_params_to)
+            self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
+    
+    def _insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int) -> None:
+        if self._db_task.done() and (e := self._db_task.exception()):
+            raise e
+        self._db_task = asyncio.create_task(self.__insert_chunk(tasks, from_block, done_thru, self._db_task))
 
     def _ensure_task(self) -> None:
         if self._task is None:
@@ -242,4 +247,9 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             self._task = asyncio.create_task(self.__fetch())
         if self._task.done() and (e := self._task.exception()):
             raise e
+        
+    async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task]) -> None:
+        if prev_chunk_task:
+            await prev_chunk_task
+        await asyncio.gather(*tasks, self.executor.run(self.cache.set_metadata, from_block, done_thru))
     
