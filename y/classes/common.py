@@ -28,6 +28,7 @@ def hex_to_string(h: HexString) -> str:
     return bytes.fromhex(h).decode("utf-8")
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
+    __slots__ = "address", "asynchronous"
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         self.address = convert.to_address(address)
         self.asynchronous = asynchronous
