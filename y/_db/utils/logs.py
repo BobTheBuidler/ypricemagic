@@ -97,6 +97,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     @db_session
     def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
         from y._db.utils import utils as db
+        
         query = select(
             log.raw for log in Log 
             if log.block.chain == db.get_chain(sync=True)
@@ -107,8 +108,10 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
             and (self.topic3 is None or log.topic3 in self.topic3)
             and log.block.number >= from_block
             and log.block.number <= to_block
-        )
+        ).without_distinct()
+
         logger.info(query.get_sql())
+
         return [json.decode(log) for log in query]
     
     @db_session
