@@ -8,13 +8,14 @@ from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
 from y._db.common import executor
-from y._db.entities import Price
+from y._db.entities import Price, retry_locked
 from y._db.utils.token import get_token
 from y._db.utils.utils import get_block
 
 
 @a_sync(default='async', executor=executor)
 @db_session
+@retry_locked
 def get_price(address: str, block: int) -> Optional[Decimal]:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
@@ -33,6 +34,7 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 
 @a_sync(default='async', executor=executor)
 @db_session
+@retry_locked
 def _set_price(address: str, block: int, price: Decimal) -> None:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
@@ -50,5 +52,3 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         )) and p.price == Decimal(price), (p.price, price)
 
 __tasks: List[asyncio.Task] = []
-
-from y.datatypes import UsdPrice

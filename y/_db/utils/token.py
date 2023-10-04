@@ -9,7 +9,7 @@ from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
 from y._db.common import executor
-from y._db.entities import Address, Token
+from y._db.entities import Address, Token, retry_locked
 from y._db.utils.utils import get_chain
 from y.erc20 import decimals
 
@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 
 @a_sync(default='async', executor=executor)
 @db_session
+@retry_locked
 def get_token(address: str) -> Token:
     address = convert.to_address(address)
     if address == constants.EEE_ADDRESS:
