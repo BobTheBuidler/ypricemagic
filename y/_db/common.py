@@ -103,7 +103,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
             self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
-        return from_block - 1
+        return None
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
@@ -190,7 +190,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
 
     async def _loop(self, from_block: int) -> NoReturn:
         logger.debug('starting work loop for %s', self)
-        self._lock.set(await self._load_cache(from_block))
+        if cached_thru := await self._load_cache(from_block):
+            self._lock.set(cached_thru)
         while True:
             await self._load_new_objects(start_from_block=from_block)
             await asyncio.sleep(self._interval)
