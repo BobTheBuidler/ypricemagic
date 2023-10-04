@@ -97,9 +97,9 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         Returns max block of logs loaded from cache.
         """
         logger.debug('checking to see if %s is cached in local db', self)
-        if cached_thru := await self._executor.run(self.cache.is_cached_thru, from_block):
+        if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
             logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
-            self._extend(await self._executor.run(self.cache.select, from_block, cached_thru))
+            self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return from_block - 1
@@ -228,8 +228,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                     break
                 end, objs = done.pop(i)
                 self._extend(objs)
-                db_insert_tasks.extend(self._executor.run(self.insert_to_db, obj) for obj in objs)
-                cache_info_tasks.append(self._executor.run(self.cache.set_metadata, from_block, end))
+                db_insert_tasks.extend(self.executor.run(self.insert_to_db, obj) for obj in objs)
+                cache_info_tasks.append(self.executor.run(self.cache.set_metadata, from_block, end))
                 batches_yielded += 1
                 self._lock.set(end)
         if db_insert_tasks:
