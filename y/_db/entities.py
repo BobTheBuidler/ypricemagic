@@ -5,6 +5,7 @@ from datetime import datetime
 from decimal import Decimal
 from functools import wraps
 from typing import Any
+from typing import Optional as typing_Optional
 
 from pony.orm import (CommitException, Database, OperationalError, Optional,
                       PrimaryKey, Required, Set, TransactionIntegrityError,
@@ -118,7 +119,7 @@ class Trace(db.Entity):
 
 
 @db_session
-def insert(type: db.Entity, **kwargs: Any) -> Optional[db.Entity]:
+def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
     with suppress(TransactionIntegrityError):
         entity = type(**kwargs)
         commit()
