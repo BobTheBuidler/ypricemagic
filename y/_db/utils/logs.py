@@ -3,18 +3,19 @@ import logging
 from typing import List, Optional
 
 from msgspec import json
-from pony.orm import (CommitException, OptimisticCheckError,
-                      TransactionIntegrityError, commit, db_session, select)
+from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
+                      db_session, select)
 from web3.types import LogReceipt
 
 from y._db.common import DiskCache, enc_hook
-from y._db.entities import Log, LogCacheInfo, insert
+from y._db.entities import Log, LogCacheInfo, insert, retry_locked
 from y._db.utils import get_block
 
 logger = logging.getLogger(__name__)
 
 
 @db_session
+@retry_locked
 def insert_log(log: dict):
     log_topics = log['topics']
     insert(
@@ -110,6 +111,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         ]
     
     @db_session
+    @retry_locked
     def set_metadata(self, from_block: int, done_thru: int) -> None:
         from y._db.utils import utils as db
         chain = db.get_chain(sync=True)
@@ -158,8 +160,4 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                 commit()
                 logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
-            return self.set_metadata(from_block, done_thru)
-        except CommitException as e:
-            if "database is locked" not in str(e):
-                raise e
             return self.set_metadata(from_block, done_thru)
