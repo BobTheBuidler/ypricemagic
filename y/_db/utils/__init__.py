@@ -5,6 +5,7 @@ from y._db.config import connection_settings
 from y._db.entities import db
 from y._db.utils.utils import get_chain, get_block
 
+from eth_portfolio._db import utils
 try:
     db.bind(**connection_settings, create_db=True)
     db.generate_mapping(create_tables=True)

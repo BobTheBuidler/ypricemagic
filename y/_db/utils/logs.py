@@ -1,5 +1,6 @@
 
 import logging
+from functools import lru_cache
 from typing import List, Optional
 
 from msgspec import json
@@ -7,13 +8,9 @@ from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 from web3.types import LogReceipt
 
+from y._db._ep import _get_get_block
 from y._db.common import DiskCache, enc_hook
 from y._db.entities import Log, LogCacheInfo, insert, retry_locked
-
-try:
-    from eth_portfolio._db.utils import get_block
-except ImportError:
-    from y._db.utils import get_block
 
 logger = logging.getLogger(__name__)
 
@@ -21,6 +18,7 @@ logger = logging.getLogger(__name__)
 @db_session
 @retry_locked
 def insert_log(log: dict):
+    get_block = _get_get_block()
     log_topics = log['topics']
     insert(
         type=Log,

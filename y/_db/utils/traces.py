@@ -10,22 +10,19 @@ from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
 
+from y._db._ep import _get_get_block
 from y._db.common import DiskCache, Filter
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert, retry_locked
 from y.constants import thread_pool_executor
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
-try:
-    from eth_portfolio._db.utils import get_block
-except ImportError:
-    from y._db.utils.utils import get_block
-
 logger = logging.getLogger(__name__)
 
 @db_session
 @retry_locked
 def insert_trace(trace: dict) -> None:
+    get_block = _get_get_block()
     kwargs = {
         "block": get_block(trace['blockNumber'], sync=True),
         "hash": trace['transactionHash'],

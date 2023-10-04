@@ -7,20 +7,17 @@ from a_sync import a_sync
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
+from y._db._ep import _get_get_block, _get_get_token
 from y._db.common import executor
 from y._db.entities import Price, retry_locked
-
-try:
-    from eth_portfolio._db.utils import get_block, get_token
-except ImportError:
-    from y._db.utils.token import get_token
-    from y._db.utils.utils import get_block
 
 
 @a_sync(default='async', executor=executor)
 @db_session
 @retry_locked
 def get_price(address: str, block: int) -> Optional[Decimal]:
+    get_block = _get_get_block()
+    get_token = _get_get_token()
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     if price := Price.get(
