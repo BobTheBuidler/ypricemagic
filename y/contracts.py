@@ -4,7 +4,6 @@ import json
 import logging
 import threading
 from collections import defaultdict
-from functools import partial
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import a_sync
@@ -33,6 +32,7 @@ from y.networks import Network
 from y.time import check_node, check_node_async
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
+from y.utils.events import Events
 
 logger = logging.getLogger(__name__)
 
@@ -248,6 +248,9 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
+
+        for k, v in self.topics.items():
+            setattr(self.events, k, Events([self.address], [v], from_block=0))
 
         self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
         try:
