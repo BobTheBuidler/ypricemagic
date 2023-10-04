@@ -7,9 +7,10 @@ from functools import wraps
 from typing import Any
 from typing import Optional as typing_Optional
 
-from pony.orm import (CommitException, Database, OperationalError, Optional,
-                      PrimaryKey, Required, Set, TransactionIntegrityError,
-                      commit, composite_key, composite_index, db_session)
+from pony.orm import (CommitException, Database, InterfaceError,
+                      OperationalError, Optional, PrimaryKey, Required, Set,
+                      TransactionIntegrityError, commit, composite_index,
+                      composite_key, db_session)
 
 db = Database()
 
@@ -132,10 +133,14 @@ class Trace(db.Entity):
 @db_session
 def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
     with suppress(TransactionIntegrityError):
-        entity = type(**kwargs)
-        commit()
-        logger.debug("inserted %s to db", entity)
-        return entity
+        while True:
+            try:
+                entity = type(**kwargs)
+                commit()
+                logger.debug("inserted %s to db", entity)
+                return entity
+            except InterfaceError as e:
+                logger.debug("%s while inserting %s", e, type.__name__)
 
 def retry_locked(callable):
     @wraps(callable)
