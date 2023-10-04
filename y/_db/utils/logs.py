@@ -3,12 +3,11 @@ import logging
 from typing import List, Optional
 
 from msgspec import json
-from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
-                      db_session, select)
-
-from y._db.common import enc_hook, DiskCache
+from pony.orm import (OperationalError, OptimisticCheckError,
+                      TransactionIntegrityError, commit, db_session, select)
 from web3.types import LogReceipt
 
+from y._db.common import DiskCache, enc_hook
 from y._db.entities import Log, LogCacheInfo, insert
 from y._db.utils import get_block
 
@@ -159,4 +158,8 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                 commit()
                 logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
+            return self.set_metadata(from_block, done_thru)
+        except OperationalError as e:
+            if "database is locked" not in str(e):
+                raise e
             return self.set_metadata(from_block, done_thru)
