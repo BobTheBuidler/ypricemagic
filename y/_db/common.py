@@ -203,15 +203,15 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     async def _load_range(self, from_block: int, to_block: int) -> None:
         logger.debug('loading block range %s to %s', from_block, to_block)
         db_insert_tasks = []
-        cache_info_tasks = []
         batches_yielded = 0
+        set_metadata_params_to = None
         done = {}
         as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         coros = [
             self._fetch_range_wrapped(i, start, end) 
             for i, (start, end) 
             in enumerate(block_ranges(from_block, to_block, self._chunk_size))
-            if (self._chunks_per_batch is None or i <= self._chunks_per_batch)
+            if self._chunks_per_batch is None or i < self._chunks_per_batch
         ]
         for objs in as_completed(coros, timeout=None):
             i, end, objs = await objs
@@ -223,22 +223,18 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                     if db_insert_tasks:
                         await asyncio.gather(*db_insert_tasks)
                         db_insert_tasks.clear()
-                    if cache_info_tasks:
-                        await cache_info_tasks[-1]
-                        cache_info_tasks.clear()
+                        await self.executor.run(self.cache.set_metadata, *set_metadata_params_to)
+                        set_metadata_params_to = None
                     break
                 end, objs = done.pop(i)
                 self._extend(objs)
                 db_insert_tasks.extend(self.executor.run(self.insert_to_db, obj) for obj in objs)
-                cache_info_tasks.append(self.executor.run(self.cache.set_metadata, from_block, end))
+                set_metadata_params_to = from_block, end
                 batches_yielded += 1
                 self._lock.set(end)
         if db_insert_tasks:
             await asyncio.gather(*db_insert_tasks)
-            db_insert_tasks.clear()
-        if cache_info_tasks:
-            await cache_info_tasks[-1]
-            cache_info_tasks.clear()
+            await self.executor.run(self.cache.set_metadata, *set_metadata_params_to)
 
     def _ensure_task(self) -> None:
         if self._task is None:
