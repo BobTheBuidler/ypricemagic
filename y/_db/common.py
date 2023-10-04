@@ -223,8 +223,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 if i not in done:
                     if db_insert_tasks:
                         self._insert_chunk(db_insert_tasks, *set_metadata_params_to)
-                        db_insert_tasks.clear()
-                        set_metadata_params_to = None
+                        db_insert_tasks, set_metadata_params_to = [], None
                     break
                 end, objs = done.pop(i)
                 self._extend(objs)
