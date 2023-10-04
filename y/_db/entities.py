@@ -114,8 +114,18 @@ class Trace(db.Entity):
     to_address = Required(str, index=True, lazy=True)
     raw = Required(bytes)
 
+from pony.orm import OperationalError, CommitException
 @db_session
 def insert(type: db.Entity, **kwargs: Any) -> None:
-    with suppress(TransactionIntegrityError):
-        type(**kwargs)
-        commit()
+    while True:
+        try:
+            with suppress(TransactionIntegrityError):
+                type(**kwargs)
+                commit()
+                return
+        except CommitException as e:
+            if "database is locked" not in str(e):
+                raise e
+
+def _insert(type: db.Entity, **kwargs: Any) -> None:
+    
