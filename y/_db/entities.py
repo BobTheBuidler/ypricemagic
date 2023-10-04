@@ -9,7 +9,7 @@ from typing import Optional as typing_Optional
 
 from pony.orm import (CommitException, Database, OperationalError, Optional,
                       PrimaryKey, Required, Set, TransactionIntegrityError,
-                      commit, composite_key, db_session)
+                      commit, composite_key, composite_index, db_session)
 
 db = Database()
 
@@ -108,9 +108,15 @@ class Log(db.Entity):
     topic1 = Optional(str, index=True, lazy=True)
     topic2 = Optional(str, index=True, lazy=True)
     topic3 = Optional(str, index=True, lazy=True)
+    composite_index(address, topic0)
+    composite_index(topic0, topic1)
+    composite_index(topic0, topic2)
+    composite_index(topic0, topic3)
+    composite_index(topic0, topic1, topic2, topic3)
     raw = Required(bytes, lazy=True)
 
 class Trace(db.Entity):
+    id = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
     hash = Required(str, index=True, lazy=True)
     from_address = Required(str, index=True, lazy=True)
