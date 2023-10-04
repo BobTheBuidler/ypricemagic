@@ -113,7 +113,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
 
-        query = select(log.raw for log in generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
+        query = select(log for log in generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
 
         logger.info(query.get_sql())
 
@@ -123,7 +123,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         logger.debug("query has %s pages", pages)
         decoded = []
         for i in range(pages):
-            decoded.extend(json.decode(log) for log in query.page(i, page_size))
+            decoded.extend(json.decode(log.raw) for log in query.page(i, page_size))
             logger.debug("page %s complete", i)
         return decoded
     
