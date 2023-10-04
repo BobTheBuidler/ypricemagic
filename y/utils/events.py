@@ -306,7 +306,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         return self.from_block
     
     async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
-        return await _get_logs_async(self.addresses, self.topics, range_start, range_end)
+        return await _get_logs(self.addresses, self.topics, range_start, range_end, sync=False)
 
     async def _fetch(self) -> NoReturn:
         from_block = await self._from_block
