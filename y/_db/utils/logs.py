@@ -113,7 +113,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
 
-        query = select(log.raw for log in generator).without_distinct()
+        query = select(log.raw for log in generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
 
         logger.info(query.get_sql())
 
