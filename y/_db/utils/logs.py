@@ -112,7 +112,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
 
-        return select(log.raw for log in generator).without_distinct()
+        return [json.decode(log) for log in select(log.raw for log in generator).without_distinct()]
     
     @db_session
     @retry_locked
