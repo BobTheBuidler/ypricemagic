@@ -3,11 +3,12 @@ import logging
 from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
+from functools import wraps
 from typing import Any
 
-from pony.orm import (Database, Optional, PrimaryKey, Required, Set,
-                      TransactionIntegrityError, commit, composite_key,
-                      db_session)
+from pony.orm import (CommitException, Database, OperationalError, Optional,
+                      PrimaryKey, Required, Set, TransactionIntegrityError,
+                      commit, composite_key, db_session)
 
 db = Database()
 
@@ -115,14 +116,14 @@ class Trace(db.Entity):
     to_address = Required(str, index=True, lazy=True)
     raw = Required(bytes)
 
-from functools import wraps
-from pony.orm import OperationalError, CommitException
+
 @db_session
-def insert(type: db.Entity, **kwargs: Any) -> None:
+def insert(type: db.Entity, **kwargs: Any) -> Optional[db.Entity]:
     with suppress(TransactionIntegrityError):
         entity = type(**kwargs)
         commit()
         logger.debug("inserted %s to db", entity)
+        return entity
 
 def retry_locked(callable):
     @wraps(callable)
