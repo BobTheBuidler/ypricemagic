@@ -23,7 +23,6 @@ from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y._db.common import Filter
-from y.constants import thread_pool_executor
 from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
 from y.utils.cache import memory
@@ -162,7 +161,7 @@ def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> 
         total += checkpoints[a] * (b - a) / (end_block - start_block)
     return total
 
-@a_sync.a_sync(executor=thread_pool_executor)
+@a_sync.a_sync
 def _get_logs(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],
@@ -182,7 +181,7 @@ def _get_logs(
 
 get_logs_semaphore = defaultdict(
     lambda: BlockSemaphore(
-        thread_pool_executor._max_workers * 10, 
+        128, 
         # We need to do this in case users use the sync api in a multithread context
         name="y.get_logs" + "" if threading.current_thread() == threading.main_thread() else f".{threading.current_thread()}",
     )
@@ -264,7 +263,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: int = 20,
         semaphore: Optional[BlockSemaphore] = None,
-        executor: _AsyncExecutorMixin = thread_pool_executor,
+        executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
