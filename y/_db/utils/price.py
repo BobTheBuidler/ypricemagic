@@ -37,6 +37,8 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 @db_session
 @retry_locked
 def _set_price(address: str, block: int, price: Decimal) -> None:
+    get_block = _get_get_block()
+    get_token = _get_get_token()
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     try:
