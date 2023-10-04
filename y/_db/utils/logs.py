@@ -9,7 +9,11 @@ from web3.types import LogReceipt
 
 from y._db.common import DiskCache, enc_hook
 from y._db.entities import Log, LogCacheInfo, insert, retry_locked
-from y._db.utils import get_block
+
+try:
+    from eth_portfolio._db.utils import get_block
+except ImportError:
+    from y._db.utils import get_block
 
 logger = logging.getLogger(__name__)
 

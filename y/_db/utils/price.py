@@ -9,8 +9,12 @@ from pony.orm import TransactionIntegrityError, commit, db_session
 from y import constants
 from y._db.common import executor
 from y._db.entities import Price, retry_locked
-from y._db.utils.token import get_token
-from y._db.utils.utils import get_block
+
+try:
+    from eth_portfolio._db.utils import get_block, get_token
+except ImportError:
+    from y._db.utils.token import get_token
+    from y._db.utils.utils import get_block
 
 
 @a_sync(default='async', executor=executor)
