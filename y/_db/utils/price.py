@@ -38,7 +38,7 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         Price(
             block = get_block(block, sync=True),
             token = get_token(address, sync=True),
-            price = price,
+            price = Decimal(price),
         )
         commit()
     except TransactionIntegrityError:
@@ -48,3 +48,5 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         )) and p.price == Decimal(price), (p.price, price)
 
 __tasks: List[asyncio.Task] = []
+
+from y.datatypes import UsdPrice
