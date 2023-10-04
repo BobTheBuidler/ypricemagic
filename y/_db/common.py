@@ -68,8 +68,6 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         is_reusable: bool = True,
     ):
         self.is_reusable = is_reusable
-        if executor is None:
-            from y.constants import thread_pool_executor as executor
         self._cache = None
         self._executor = executor
         self._objects: List[T] = []
@@ -77,6 +75,13 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def cache(self) -> C:
         ...
+    @property
+    def executor(self) -> _AsyncExecutorMixin:
+        if self._executor is None:
+            from y.constants import thread_pool_executor
+            self._executor = thread_pool_executor
+        return self.executor
+
     @abc.abstractproperty
     def insert_to_db(self) -> Callable[[T], None]:
         ...
