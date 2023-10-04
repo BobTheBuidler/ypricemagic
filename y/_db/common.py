@@ -204,9 +204,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
 
     async def _load_range(self, from_block: int, to_block: int) -> None:
         logger.debug('loading block range %s to %s', from_block, to_block)
-        db_insert_tasks = []
         batches_yielded = 0
-        set_metadata_params_to = None
         done = {}
         as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         coros = [
@@ -227,7 +225,6 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
                 await self._db_task
-                db_insert_tasks.extend()
                 batches_yielded += 1
                 self._lock.set(end)
     
