@@ -34,6 +34,8 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 @a_sync(default='async', executor=executor)
 @db_session
 def _set_price(address: str, block: int, price: Decimal) -> None:
+    if address == constants.EEE_ADDRESS:
+        address = constants.WRAPPED_GAS_COIN
     try:
         Price(
             block = get_block(block, sync=True),
