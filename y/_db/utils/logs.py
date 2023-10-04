@@ -1,5 +1,6 @@
 
 import logging
+from math import ceil
 from typing import List, Optional
 
 from msgspec import json
@@ -112,7 +113,19 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
 
-        return [json.decode(log) for log in select(log.raw for log in generator).without_distinct()]
+        query = select(log.raw for log in generator).without_distinct()
+
+        logger.info(query.get_sql())
+
+        page_size = 100
+        count = query.count()
+        pages = ceil(count/page_size)
+        logger.debug("query has %s pages", pages)
+        decoded = []
+        for i in range(pages):
+            decoded.extend(json.decode(log) for log in query.page(i, page_size))
+            logger.debug("page %s complete", i)
+        return decoded
     
     @db_session
     @retry_locked
