@@ -4,7 +4,7 @@ from contextlib import suppress
 
 from a_sync import a_sync
 from brownie import chain
-from pony.orm import (InterfaceError, OperationalError,
+from pony.orm import (CommitException, InterfaceError,
                       TransactionIntegrityError, commit, db_session)
 
 from y._db.common import executor
@@ -25,7 +25,7 @@ def get_chain() -> Chain:
         return Chain.get(id=chain.id)
     except TransactionIntegrityError:
         return get_chain(sync=False)
-    except OperationalError as e:
+    except CommitException as e:
         if "database is locked" not in str(e):
             raise e
         return get_chain(sync=False)
@@ -36,7 +36,7 @@ def get_block(number: int) -> Block:
     chain = get_chain(sync=True)
     if block := Block.get(chain=chain, number=number):
         return block
-    with suppress(TransactionIntegrityError, InterfaceError, OperationalError):
+    with suppress(TransactionIntegrityError, InterfaceError, CommitException):
         block = Block(chain=chain, number=number)
         commit()
     return get_block(number, sync=True)

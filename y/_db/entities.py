@@ -126,6 +126,3 @@ def insert(type: db.Entity, **kwargs: Any) -> None:
         except CommitException as e:
             if "database is locked" not in str(e):
                 raise e
-
-def _insert(type: db.Entity, **kwargs: Any) -> None:
-    
