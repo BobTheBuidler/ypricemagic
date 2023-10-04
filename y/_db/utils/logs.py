@@ -5,6 +5,7 @@ from typing import List, Optional
 from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
+from pony.orm.core import Query
 from web3.types import LogReceipt
 
 from y._db.common import DiskCache, enc_hook
@@ -97,22 +98,21 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     @db_session
     def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
         from y._db.utils import utils as db
-        
-        query = select(
-            log.raw for log in Log 
+
+        generator = (
+            log 
+            for log in Log
             if log.block.chain == db.get_chain(sync=True)
-            and (not self.addresses or log.address in self.addresses)
-            and (self.topic0 is None or log.topic0 in self.topic0)
-            and (self.topic1 is None or log.topic1 in self.topic1)
-            and (self.topic2 is None or log.topic2 in self.topic2)
-            and (self.topic3 is None or log.topic3 in self.topic3)
             and log.block.number >= from_block
             and log.block.number <= to_block
-        ).without_distinct()
+        )
 
-        logger.info(query.get_sql())
+        self._wrap_query_with_addresses(generator)
+        
+        for topic in [f"topic{i}" for i in range(4)]:
+            generator = self._wrap_query_with_topic(generator, topic)
 
-        return [json.decode(log) for log in query]
+        return select(log.raw for log in generator).without_distinct()
     
     @db_session
     @retry_locked
@@ -165,3 +165,13 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                 logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
             return self.set_metadata(from_block, done_thru)
+    
+    def _wrap_query_with_addresses(self, generator) -> Query:
+        if addresses := self.addresses:
+            return (log for log in generator if log.address in addresses)
+        return generator
+    
+    def _wrap_query_with_topic(self, generator, topic: str) -> Query:
+        if value := getattr(self, topic):
+            return (log for log in generator if getattr(log, topic) in value)
+        return generator
