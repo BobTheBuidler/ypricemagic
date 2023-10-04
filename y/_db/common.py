@@ -80,7 +80,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         if self._executor is None:
             from y.constants import thread_pool_executor
             self._executor = thread_pool_executor
-        return self.executor
+        return self._executor
 
     @abc.abstractproperty
     def insert_to_db(self) -> Callable[[T], None]:

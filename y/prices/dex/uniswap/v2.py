@@ -29,7 +29,8 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
-from y.utils.events import decode_logs, get_logs_asap
+from y.utils.dank_mids import dank_w3
+from y.utils.events import Events, decode_logs
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
@@ -322,10 +323,15 @@ class UniswapRouterV2(ContractBase):
     
     @a_sync.aka.cached_property
     async def pools(self) -> List[UniswapV2Pool]:
-        PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         factory = await Contract.coroutine(self.factory)
-        from y.utils.dank_mids import dank_w3
+
+        try:
+            events = factory.events.PairCreated.events(to_block=await dank_w3.eth.block_number)
+        except AttributeError:
+            PairCreated = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
+            events = Events(addresses=[factory.address], topics=[PairCreated])
+
         pools = [
             UniswapV2Pool(
                 address=event["pool"], 
@@ -333,7 +339,7 @@ class UniswapRouterV2(ContractBase):
                 token1=event["token1"], 
                 asynchronous=self.asynchronous,
             )
-            async for event in factory.events.PairCreated.events(to_block=await dank_w3.eth.block_number)
+            async for event in events.events(to_block=await dank_w3.eth.block_number)
         ]
 
         all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
