@@ -23,7 +23,6 @@ from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y._db.common import Filter
-from y.contracts import contract_creation_block_async
 from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
@@ -60,6 +59,7 @@ async def get_logs_asap(
 ) -> List[Any]:
 
     if from_block is None:
+        from y.contracts import contract_creation_block_async
         from_block = 0 if address is None else await contract_creation_block_async(address, True)
     if to_block is None:
         to_block = await dank_w3.eth.block_number
@@ -85,6 +85,7 @@ async def get_logs_asap_generator(
     # NOTE: If you don't need the logs in order, you will get your logs faster if you set `chronological` to False.
 
     if from_block is None:
+        from y.contracts import contract_creation_block_async
         if address is None:
             from_block = 0
         elif isinstance(address, Iterable) and not isinstance(address, str):
@@ -295,6 +296,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
     @async_property
     async def _from_block(self) -> int:
         if self.from_block is None:
+            from y.contracts import contract_creation_block_async
             if self.addresses is None:
                 self.from_block = 0
             elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
