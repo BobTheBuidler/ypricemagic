@@ -36,11 +36,7 @@ def get_block(number: int) -> Block:
     chain = get_chain(sync=True)
     if block := Block.get(chain=chain, number=number):
         return block
-    with suppress(TransactionIntegrityError, InterfaceError):
-        try:
-            block = Block(chain=chain, number=number)
-            commit()
-        except OperationalError as e:
-            if "database is locked" not in str(e):
-                raise e
+    with suppress(TransactionIntegrityError, InterfaceError, OperationalError):
+        block = Block(chain=chain, number=number)
+        commit()
     return get_block(number, sync=True)
