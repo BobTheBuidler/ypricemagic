@@ -40,9 +40,12 @@ Path = List[AddressOrContract]
 Reserves = Tuple[int,int,int]
 
 class UniswapV2Pool(ERC20):
-    def __init__(self, address: AnyAddressType, asynchronous: bool = False):
+    __slots__ = 'get_reserves', '_token0', '_token1', '_types_assumed'
+    def __init__(self, address: AnyAddressType, token0: Optional[Address] = None, token1: Optional[Address] = None, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self.get_reserves = Call(self.address, 'getReserves()((uint112,uint112,uint32))')
+        self._token0 = token0
+        self._token1 = token1
         self._types_assumed = True
             
     @a_sync.aka.cached_property
@@ -68,19 +71,25 @@ class UniswapV2Pool(ERC20):
     async def tokens(self) -> Tuple[ERC20, ERC20]:
         return await asyncio.gather(self.__token0__(sync=False), self.__token1__(sync=False))
     
-    @a_sync.aka.cached_property
+    @a_sync.aka.property
     async def token0(self) -> ERC20:
-        with suppress(ContractLogicError):
-            if token0 := await Call(self.address, ['token0()(address)']).coroutine():
-                return ERC20(token0, asynchronous=self.asynchronous)
-        raise NotAUniswapV2Pool(self.address)
+        if self._token0 is None:
+            with suppress(ContractLogicError):
+                if token0 := await Call(self.address, ['token0()(address)']).coroutine():
+                    self._token0 = ERC20(token0, asynchronous=self.asynchronous)
+        if self._token0 is None:
+            raise NotAUniswapV2Pool(self.address)
+        return self._token0
 
-    @a_sync.aka.cached_property
+    @a_sync.aka.property
     async def token1(self) -> ERC20:
-        with suppress(ContractLogicError):
-            if token1 := await Call(self.address, ['token1()(address)']).coroutine():
-                return ERC20(token1, asynchronous=self.asynchronous)
-        raise NotAUniswapV2Pool(self.address)
+        if self._token1 is None:
+            with suppress(ContractLogicError):
+                if token1 := await Call(self.address, ['token1()(address)']).coroutine():
+                    return ERC20(token1, asynchronous=self.asynchronous)
+        if self._token1 is None:
+            raise NotAUniswapV2Pool(self.address)
+        return self._token1
     
     @a_sync.a_sync(cache_type='memory')
     async def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
@@ -312,65 +321,58 @@ class UniswapRouterV2(ContractBase):
         return path
     
     @a_sync.aka.cached_property
-    async def pools(self) -> Dict[Address,Dict[Address,Address]]:
+    async def pools(self) -> List[UniswapV2Pool]:
         PairCreated = ['0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9']
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
-        try:
-            logs = await get_logs_asap(self.factory, PairCreated, sync=False)
-            pairs, pools = await _parse_pairs_from_events(logs)
-        except Exception as e:
-            print(e)
-            raise e
-        all_pairs_len = await raw_call(self.factory,'allPairsLength()',block=chain.height,output='int', sync=False)
+        factory = await Contract.coroutine(self.factory)
+        from y.utils.dank_mids import dank_w3
+        pools = [
+            UniswapV2Pool(
+                address=event["pool"], 
+                token0=event["token0"], 
+                token1=event["token1"], 
+                asynchronous=self.asynchronous,
+            )
+            async for event in factory.events.PairCreated.events(to_block=await dank_w3.eth.block_number)
+        ]
 
-        if len(pairs) == all_pairs_len:
+        all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
+        if len(pools) == all_pairs_len:
             return pools
-        elif len(pairs) > all_pairs_len:
-            if self.factory == "0x115934131916C8b277DD010Ee02de363c09d037c":
-                for id, pair in pairs.items():
-                    if id > all_pairs_len:
-                        logger.debug(id, pair)
-            logger.debug('factory: %s', self.factory)
-            logger.debug('len pairs: %s', len(pairs))
-            logger.debug('len allPairs: %s', all_pairs_len)
-            # TODO debug why this scenario occurs. Likely a strange interation between asyncio and joblib, or an incorrect cache value. 
-            #raise ValueError("Returning more pairs than allPairsLength, something is wrong.")
+        elif len(pools) > all_pairs_len:
+            raise NotImplementedError('this shouldnt happen again')
         else: # <
-            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pairs))
-            pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in pairs]
-            logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools_your_node_couldnt_get = await multicall_same_func_same_contract_different_inputs(
-                self.factory, 'allPairs(uint256)(address)', inputs=[i for i in pools_your_node_couldnt_get], sync=False
+            to_get = all_pairs_len - len(pools)
+            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", to_get)
+            pools_your_node_couldnt_get = (
+                await multicall_same_func_same_contract_different_inputs(
+                    self.factory,
+                    'allPairs(uint256)(address)',
+                    inputs=range(to_get),
+                    sync=False,
+                )
             )
-            token0s, token1s = await asyncio.gather(
-                asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-            )
-            pools_your_node_couldnt_get = {
-                convert.to_address(pool): {
-                    'token0':convert.to_address(token0),
-                    'token1':convert.to_address(token1),
-                }
-                for pool, token0, token1
-                in zip(pools_your_node_couldnt_get,token0s,token1s)
-            }
-            pools.update(pools_your_node_couldnt_get)
 
-        tokens = set()
-        for pool_params in pools.values():
-            tokens.add(pool_params['token0'])
-            tokens.add(pool_params['token1'])
+            for pool in pools_your_node_couldnt_get:
+                pools.insert(0, UniswapV2Pool(address=pool, asynchronous=self.asynchronous))
+
+        tokens = []
+        for pool in pools:
+            tokens.extend((pool.token0, pool.token1))
+        tokens = set(await asyncio.gather(*tokens))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
     @a_sync.a_sync(ram_cache_maxsize=None)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
+        pool: UniswapV2Pool
         pool_to_token_out = {}
-        for pool, params in (await self.__pools__(sync=False)).items():
-            if token_in == params['token0']:
-                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = params['token1']
-            if token_in == params['token1']:
-                pool_to_token_out[UniswapV2Pool(pool, asynchronous=self.asynchronous)] = params['token0']
+        for pool in await self.__pools__(sync=False):
+            token0, token1 = await asyncio.gather(pool.token0, pool.token1)
+            if token_in == token0:
+                pool_to_token_out[pool] = token1
+            elif token_in == token1:
+                pool_to_token_out[pool] = token0
         return pool_to_token_out
 
     async def pools_for_token(self, token_address: Address, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Dict[UniswapV2Pool, Address]:
