@@ -128,7 +128,7 @@ def retry_locked(callable):
         while True:
             try:
                 return callable(*args, **kwargs)
-            except CommitException as e:
+            except (CommitException, OperationalError) as e:
                 if "database is locked" not in str(e):
                     raise e
     return retry_locked_wrap
