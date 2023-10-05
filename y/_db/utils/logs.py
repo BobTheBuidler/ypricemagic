@@ -180,7 +180,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                 commit()
                 logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
-            return self._set_metadata(from_block, done_thru)
+            return self.set_metadata(from_block, done_thru)
     
     def _wrap_query_with_addresses(self, generator) -> Query:
         if addresses := self.addresses:

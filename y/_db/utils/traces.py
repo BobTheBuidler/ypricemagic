@@ -160,7 +160,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                 commit()
                 logger.debug('cached %s %s thru %s', self.from_addresses, self.to_addresses, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
-            return self._set_metadata(from_block, done_thru)
+            return self.set_metadata(from_block, done_thru)
 
 
 class TraceFilter(Filter[dict, TraceCache]):
