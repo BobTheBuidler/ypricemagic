@@ -302,6 +302,8 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         self.topics = topics
         super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
     
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} addresses={self.addresses} topics={self.topics}>"
     @property
     def cache(self) -> "LogCache":
         if self._cache is None:
