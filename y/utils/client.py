@@ -29,5 +29,4 @@ def _get_ethereum_client(client: str) -> str:
         return 'erigon'
     if client.lower().startswith('geth'):
         return 'geth'
-    else:
-        return client
+    return client

@@ -50,8 +50,8 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
                 # get some help for debugging
                 decoded.extend(_decode_logs([log]))
             except Exception as e:
-                raise (log, *e.args)
-            
+                raise (log, *e.args) from e
+
     for i, log in enumerate(logs):
         setattr(decoded[i], "block_number", log["blockNumber"])
         setattr(decoded[i], "transaction_hash", log["transactionHash"])

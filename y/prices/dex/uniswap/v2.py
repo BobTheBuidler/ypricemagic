@@ -2,12 +2,11 @@
 import asyncio
 import logging
 from contextlib import suppress
-from typing import Any, Dict, List, Optional, Tuple, Literal
+from typing import Any, Dict, List, Optional, Tuple, Literal, AsyncIterator
 
 import a_sync
 import brownie
 from brownie import chain
-from brownie.exceptions import EventLookupError
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import ContractLogicError
@@ -15,7 +14,7 @@ from web3.exceptions import ContractLogicError
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import (STABLECOINS, WRAPPED_GAS_COIN, sushi,
-                         thread_pool_executor, usdc, weth)
+                          usdc, weth)
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
@@ -29,7 +28,7 @@ from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.utils.dank_mids import dank_w3
-from y.utils.events import Events, ProcessedEvents
+from y.utils.events import ProcessedEvents
 from brownie.network.event import _EventItem
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
@@ -137,12 +136,11 @@ class UniswapV2Pool(ERC20):
             None if price is None else await reserve.__readable__(sync=False) * price
             for reserve, price in zip(reserves, prices)
         ]
-        
-        if not vals[0] or not vals[1]:
-            if vals[0] is not None and not vals[1]:
-                vals[1] = vals[0]
-            if vals[1] is not None and not vals[0]:
-                vals[0] = vals[1]
+
+        if vals[0] is not None and not vals[1]:
+            vals[1] = vals[0]
+        if vals[1] is not None and not vals[0]:
+            vals[0] = vals[1]
 
         logger.debug('reserves: %s', reserves)
         logger.debug('prices: %s', prices)
@@ -238,9 +236,9 @@ class UniswapRouterV2(ContractBase):
             busd = await Contract.coroutine("0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56")
             token_out = busd.address
 
-        if str(token_in) in STABLECOINS:
+        if token_in in STABLECOINS:
             return 1
-        
+
         try:
             amount_in = await ERC20(token_in, asynchronous=True).scale
         except NonStandardERC20:
@@ -253,7 +251,7 @@ class UniswapRouterV2(ContractBase):
             with suppress(CantFindSwapPath):
                 path = await self.get_path_to_stables(token_in, block, _ignore_pools=ignore_pools, sync=False)
                 logger.debug('smrt')
-        
+
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (deepest_pool:= await self.deepest_pool(token_in, block, _ignore_pools=ignore_pools, sync=False)):
             paired_with = (await self.get_pools_for(token_in, sync=False))[deepest_pool]
@@ -264,7 +262,7 @@ class UniswapRouterV2(ContractBase):
                 fees = 0.997 ** (len(path) - 1)
                 amount_out /= fees
                 paired_with_price = await magic.get_price(paired_with, block, fail_to_None=True, ignore_pools=(*ignore_pools, deepest_pool), sync=False)
-                
+
                 if paired_with_price:
                     return amount_out * paired_with_price
 
@@ -272,7 +270,7 @@ class UniswapRouterV2(ContractBase):
         if path is None:
             path = self._smol_brain_path_selector(token_in, token_out, paired_against)
             logger.debug('smol')
-        
+
         fees = 0.997 ** (len(path) - 1)
         logger.debug('router: %s     path: %s', self.label, path)
         quote, out_scale = await asyncio.gather(self.get_quote(amount_in, path, block=block, sync=False), ERC20(path[-1],asynchronous=True).scale)
@@ -283,23 +281,21 @@ class UniswapRouterV2(ContractBase):
 
     @continue_on_revert
     async def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
-        if self._is_cached:
-            try:
-                return await self.contract.getAmountsOut.coroutine(amount_in, path, block_identifier=block)
-            # TODO figure out how to best handle uni forks with slight modifications.
-            # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
-            except Exception as e:
-                strings = [
-                    "INSUFFICIENT_INPUT_AMOUNT",
-                    "INSUFFICIENT_LIQUIDITY",
-                    "INSUFFICIENT_OUT_LIQUIDITY",
-                    "Sequence has incorrect length",
-                ]
-                if not call_reverted(e) and not any(s in str(e) for s in strings):
-                    raise e
-        else:
+        if not self._is_cached:
             return await self.get_amounts_out.coroutine((amount_in, path), block_id=block)
-
+        try:
+            return await self.contract.getAmountsOut.coroutine(amount_in, path, block_identifier=block)
+        # TODO figure out how to best handle uni forks with slight modifications.
+        # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
+        except Exception as e:
+            strings = [
+                "INSUFFICIENT_INPUT_AMOUNT",
+                "INSUFFICIENT_LIQUIDITY",
+                "INSUFFICIENT_OUT_LIQUIDITY",
+                "Sequence has incorrect length",
+            ]
+            if not call_reverted(e) and all(s not in str(e) for s in strings):
+                raise e
 
     def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
