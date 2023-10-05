@@ -22,10 +22,12 @@ async def get_ethereum_client_async() -> str:
 
 @yLazyLogger(logger)
 def _get_ethereum_client(client: str) -> str:
+    logger.debug("client: %s", client)
     if client.startswith('TurboGeth'):
         return 'tg'
     if client.lower().startswith('erigon'):
         return 'erigon'
     if client.lower().startswith('geth'):
         return 'geth'
-    logger.debug("client: %s", client)
+    else:
+        return client

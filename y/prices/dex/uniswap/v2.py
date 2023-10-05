@@ -1,9 +1,8 @@
 
 import asyncio
 import logging
-from collections import defaultdict
 from contextlib import suppress
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Literal
 
 import a_sync
 import brownie
@@ -30,7 +29,8 @@ from y.prices import magic
 from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.utils.dank_mids import dank_w3
-from y.utils.events import Events, decode_logs
+from y.utils.events import Events, ProcessedEvents
+from brownie.network.event import _EventItem
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
@@ -181,25 +181,22 @@ class UniswapV2Pool(ERC20):
             self._verified = False
         self._types_assumed = False
 
-@a_sync.a_sync(default='async', executor=thread_pool_executor)
-def _parse_pairs_from_events(logs):
-    events = decode_logs(logs)
-    try:
-        pairs = {
-            event['']: {
-                convert.to_address(event['pair']): {
-                    'token0':convert.to_address(event['token0']),
-                    'token1':convert.to_address(event['token1']),
-                }
-            }
-            for event in events
-        }
-        pools = {pool: tokens for pair in pairs.values() for pool, tokens in pair.items()}
-    # In at least one edge case, we have trouble getting the pools the easy way.
-    # They will be gathered later, the harder way. 
-    except EventLookupError:
-        pairs, pools = {}, {}
-    return pairs, pools
+
+class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
+    PairCreated = "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
+    def __init__(self, factory: AnyAddressType):
+        super().__init__(addresses=[factory], topics=[[self.PairCreated]])
+    async def pools(self, to_block: Optional[int] = None) -> AsyncIterator[UniswapV2Pool]:
+        async for pool in self._objects_thru(block=to_block):
+            yield pool
+    def _get_block_for_obj(self, obj: UniswapV2Pool) -> int:
+        return obj._deploy_block
+    def _include_event(self, event: _EventItem) -> Literal[True]:
+        return True
+    def _process_event(self, event: _EventItem) -> UniswapV2Pool:
+        pool = UniswapV2Pool(address=event["pair"], token0=event["token0"], token1=event["token1"], asynchronous=self.asynchronous)
+        pool._deploy_block = event.block_number
+        return pool
     
 
 class UniswapRouterV2(ContractBase):
@@ -214,6 +211,9 @@ class UniswapRouterV2(ContractBase):
         # we need the factory contract object cached in brownie so we can decode logs properly
         if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
             brownie.Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
+
+        self._events = PoolsFromEvents(self.factory)
+        
     
     def __repr__(self) -> str:
         return f"<UniswapV2Router {self.label} '{self.address}'>"
@@ -324,17 +324,7 @@ class UniswapRouterV2(ContractBase):
     @a_sync.aka.cached_property
     async def pools(self) -> List[UniswapV2Pool]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
-        factory = await Contract.coroutine(self.factory)
-
-        to_block = await dank_w3.eth.block_number
-        try:
-            events = factory.events.PairCreated.events(to_block=to_block)
-        except AttributeError:
-            PairCreated = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
-            events = Events(addresses=[factory.address], topics=[[PairCreated]]).events(to_block=to_block)
-
-        pools = [UniswapV2Pool(address=event["pair"], token0=event["token0"], token1=event["token1"], asynchronous=self.asynchronous) async for event in events]
-
+        pools = [pool async for pool in self._events.pools(to_block=await dank_w3.eth.block_number)]
         all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
         if len(pools) == all_pairs_len:
             return pools

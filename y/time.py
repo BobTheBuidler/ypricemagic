@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import logging
 import time
-from typing import NewType, Union
+from typing import Union
 
 from a_sync import a_sync
 from async_lru import alru_cache
