@@ -7,7 +7,7 @@ _envs = EnvVarFactory("YPRICEMAGIC")
 CACHE_TTL = _envs.create_env("CACHE_TTL", int, default=60*60, verbose=False)
 CONTRACT_CACHE_TTL = _envs.create_env("CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False)
 
-GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int)
+GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int, default=0)
 
 DB_PROVIDER = _envs.create_env("DB_PROVIDER", str, default="sqlite", verbose=False)
 DB_HOST = _envs.create_env("DB_HOST", str, default="", verbose=False)

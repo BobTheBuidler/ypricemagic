@@ -35,7 +35,7 @@ fallback_batch_size = 10_000
 
 def _get_batch_size() -> int:
     if batch_size := ENVS.GETLOGS_BATCH_SIZE:
-        return int(batch_size)
+        return batch_size
     for provider, size in provider_specific_batch_sizes.items():
         if provider in web3.provider.endpoint_uri:
             return size
