@@ -81,7 +81,7 @@ class Price(db.Entity):
     block = Required(Block, index=True, lazy=True)
     token = Required(Token, index=True, lazy=True)
     composite_key(block, token)
-    price = Required(Decimal)
+    price = Required(Decimal, 38, 18)
     
 class TraceCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
