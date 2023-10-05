@@ -11,7 +11,8 @@ from a_sync.primitives.executor import _AsyncExecutorMixin
 from a_sync.primitives.locks.counter import CounterLock
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
-from pony.orm import db_session
+from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
+                      db_session)
 from tqdm.asyncio import tqdm_asyncio
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
@@ -59,7 +60,7 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
             return self._set_metadata(from_block, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
             return self._set_metadata(from_block, done_thru)
-
+    @db_session
     @retry_locked
     def select(self, from_block: int, to_block: int) -> List[S]:
         """Selects all cached objects from block `from_block` to block `to_block`"""
