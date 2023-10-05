@@ -10,6 +10,7 @@ from web3 import HTTPProvider, Web3
 from web3.middleware import filter
 from web3.middleware.geth_poa import geth_poa_middleware
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.networks import Network
 from y.utils.cache import memory
 
@@ -33,7 +34,7 @@ chain_specific_max_batch_sizes = {
 fallback_batch_size = 10_000
 
 def _get_batch_size() -> int:
-    if batch_size := os.environ.get("YPRICEMAGIC_GETLOGS_BATCH_SIZE"):
+    if batch_size := ENVS.GETLOGS_BATCH_SIZE:
         return int(batch_size)
     for provider, size in provider_specific_batch_sizes.items():
         if provider in web3.provider.endpoint_uri:

@@ -47,7 +47,7 @@ async def get_price(
     block: Optional[Block] = None,
     *,
     fail_to_None: bool = False,
-    skip_cache: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
     silent: bool = False,
     ) -> Optional[UsdPrice]:
@@ -66,7 +66,7 @@ async def get_price(
     block = block or await dank_w3.eth.block_number
     token_address = convert.to_address(token_address)
     try:
-        return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
+        return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, skip_cache=skip_cache, silent=silent)
     except (ContractNotFound, NonStandardERC20, PriceError) as e:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         if not fail_to_None:
@@ -81,7 +81,7 @@ async def get_prices(
     token_addresses: Iterable[AnyAddressType],
     block: Optional[Block] = None,
     fail_to_None: bool = False,
-    skip_cache: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
     ) -> List[Optional[float]]:
     '''
@@ -130,7 +130,7 @@ def __cache(get_price: GetPrice) -> GetPrice:
         block: Block,
         *,
         fail_to_None: bool = False, 
-        skip_cache: bool = False,
+        skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
         silent: bool = False
     ) -> Optional[UsdPrice]:
