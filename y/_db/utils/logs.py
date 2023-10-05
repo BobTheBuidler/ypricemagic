@@ -189,5 +189,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     
     def _wrap_query_with_topic(self, generator, topic: str) -> Query:
         if value := getattr(self, topic):
+            if isinstance(value, (bytes, str)):
+                return (log for log in generator if getattr(log, topic) == value)
             return (log for log in generator if getattr(log, topic) in value)
         return generator
