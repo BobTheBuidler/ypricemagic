@@ -101,12 +101,17 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     @db_session
     def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
         query = self._get_query(from_block, to_block)
-        pages = ceil(query.count() / page_size)
-        logger.debug("%s has %s pages", self, pages)
+        logger.debug("%s has %s-ish pages", self, ceil(query.count() / page_size))
+        
+        page = 0
         decoded = []
-        for i in range(pages):
-            decoded.extend(json.decode(log.raw) for log in query.page(i, page_size))
-            logger.debug("%s page %s complete", self, i)
+        while True:
+            content = [json.decode(log.raw) for log in query.page(page, page_size)]
+            if not content:
+                break
+            decoded.extend(content)
+            logger.debug("%s page %s complete", self, page)
+            page += 1
         return decoded
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
