@@ -1,6 +1,7 @@
 
 import asyncio
 from contextlib import suppress
+from decimal import Decimal
 from functools import cached_property
 from typing import Any, Optional, Tuple, Union
 
@@ -205,7 +206,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         ) -> None:
 
         self.asynchronous = asynchronous
-        self.balance = balance
+        self.balance = Decimal(balance)
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
@@ -258,6 +259,6 @@ class WeiBalance(a_sync.ASyncGenericBase):
             self.__readable__(sync=False),
             self.token.price(block=self.block, ignore_pools=self._ignore_pools, sync=False),
         )
-        value = balance * price
+        value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
