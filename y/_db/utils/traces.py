@@ -7,12 +7,11 @@ from typing import AsyncIterator, List, Optional
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from dank_mids.semaphores import BlockSemaphore
 from msgspec import json
-from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
-                      db_session, select)
+from pony.orm import commit, db_session, select
 
-from y._db.utils._ep import _get_get_block
 from y._db.common import DiskCache, Filter
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert, retry_locked
+from y._db.utils._ep import _get_get_block
 from y.constants import thread_pool_executor
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
@@ -75,92 +74,90 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
         from y._db.utils import utils as db
         chain = db.get_chain(sync=True)
         should_commit = False
-        try:
-            if self.to_addresses and self.from_addresses:
-                for from_address in self.from_addresses:
-                    for to_address in self.to_addresses:
-                        if info := TraceCacheInfo.get(
-                                chain=chain, 
-                                from_address=json.encode([from_address]),
-                                to_address=json.encode([to_address])
-                            ):
-                                if from_block < info.cached_from:
-                                    info.cached_from = from_block
-                                    should_commit = True
-                                if done_thru > info.cached_thru:
-                                    info.cached_thru = done_thru
-                                    should_commit = True
-                        else:
-                            TraceCacheInfo(
-                                chain=chain, 
-                                from_address=json.encode([from_address]),
-                                to_address=json.encode([to_address])
-                            )
-                            should_commit = True
-            elif self.from_addresses:
-                for from_address in self.from_addresses:
+        if self.to_addresses and self.from_addresses:
+            for from_address in self.from_addresses:
+                for to_address in self.to_addresses:
                     if info := TraceCacheInfo.get(
-                        chain=chain, 
-                        from_address=json.encode([from_address]),
-                        to_address=json.encode([])
-                    ):
-                        if from_block < info.cached_from:
-                            info.cached_from = from_block
-                            should_commit = True
-                        if done_thru > info.cached_thru:
-                            info.cached_thru = done_thru
-                            should_commit = True
+                            chain=chain, 
+                            from_address=json.encode([from_address]),
+                            to_address=json.encode([to_address])
+                        ):
+                            if from_block < info.cached_from:
+                                info.cached_from = from_block
+                                should_commit = True
+                            if done_thru > info.cached_thru:
+                                info.cached_thru = done_thru
+                                should_commit = True
                     else:
                         TraceCacheInfo(
                             chain=chain, 
                             from_address=json.encode([from_address]),
-                            to_address=json.encode([])
-                        )
-                        should_commit = True
-            elif self.to_addresses:
-                for to_address in self.to_addresses:
-                    if info := TraceCacheInfo.get(
-                        chain=chain, 
-                        from_address=json.encode([]),
-                        to_address=json.encode([to_address])
-                    ):
-                        if from_block < info.cached_from:
-                            info.cached_from = from_block
-                            should_commit = True
-                        if done_thru > info.cached_thru:
-                            info.cached_thru = done_thru
-                            should_commit = True
-                    else:
-                        TraceCacheInfo(
-                            chain=chain, 
-                            from_address=json.encode([]),
                             to_address=json.encode([to_address])
                         )
                         should_commit = True
-            elif info := TraceCacheInfo.get(
+        elif self.from_addresses:
+            for from_address in self.from_addresses:
+                if info := TraceCacheInfo.get(
+                    chain=chain, 
+                    from_address=json.encode([from_address]),
+                    to_address=json.encode([])
+                ):
+                    if from_block < info.cached_from:
+                        info.cached_from = from_block
+                        should_commit = True
+                    if done_thru > info.cached_thru:
+                        info.cached_thru = done_thru
+                        should_commit = True
+                else:
+                    TraceCacheInfo(
+                        chain=chain, 
+                        from_address=json.encode([from_address]),
+                        to_address=json.encode([])
+                    )
+                    should_commit = True
+        elif self.to_addresses:
+            for to_address in self.to_addresses:
+                if info := TraceCacheInfo.get(
+                    chain=chain, 
+                    from_address=json.encode([]),
+                    to_address=json.encode([to_address])
+                ):
+                    if from_block < info.cached_from:
+                        info.cached_from = from_block
+                        should_commit = True
+                    if done_thru > info.cached_thru:
+                        info.cached_thru = done_thru
+                        should_commit = True
+                else:
+                    TraceCacheInfo(
+                        chain=chain, 
+                        from_address=json.encode([]),
+                        to_address=json.encode([to_address])
+                    )
+                    should_commit = True
+        elif info := TraceCacheInfo.get(
+            chain=chain, 
+            from_address=json.encode([]),
+            to_address=json.encode([])
+        ):
+            if from_block < info.cached_from:
+                info.cached_from = from_block
+                should_commit = True
+            if done_thru > info.cached_thru:
+                info.cached_thru = done_thru
+                should_commit = True
+        else:
+            TraceCacheInfo(
                 chain=chain, 
                 from_address=json.encode([]),
                 to_address=json.encode([])
-            ):
-                if from_block < info.cached_from:
-                    info.cached_from = from_block
-                    should_commit = True
-                if done_thru > info.cached_thru:
-                    info.cached_thru = done_thru
-                    should_commit = True
-            else:
-                TraceCacheInfo(
-                    chain=chain, 
-                    from_address=json.encode([]),
-                    to_address=json.encode([])
-                )
-                should_commit = True
+            )
+            should_commit = True
 
-            if should_commit:
-                commit()
-                logger.debug('cached %s %s thru %s', self.from_addresses, self.to_addresses, done_thru)
-        except (TransactionIntegrityError, OptimisticCheckError):
-            return self.set_metadata(from_block, done_thru)
+        if should_commit:
+            commit()
+            logger.debug('cached %s %s thru %s', self.from_addresses, self.to_addresses, done_thru)
+        
 
 
 class TraceFilter(Filter[dict, TraceCache]):

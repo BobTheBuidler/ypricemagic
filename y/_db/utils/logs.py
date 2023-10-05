@@ -4,8 +4,7 @@ from typing import List, Optional
 
 from brownie.convert import EthAddress
 from msgspec import json
-from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
-                      db_session, select)
+from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 from web3.types import LogReceipt
 
@@ -125,50 +124,47 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)
         should_commit = False
-        try:
-            if self.addresses:
-                for address in self.addresses:
-                    if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
-                        if from_block < e.cached_from:
-                            e.cached_from = from_block
-                            should_commit = True
-                        if done_thru > e.cached_thru:
-                            e.cached_thru = done_thru
-                            should_commit = True
-                    else:
-                        LogCacheInfo(
-                            chain=chain, 
-                            address=address,
-                            topics=encoded_topics,
-                            cached_from = from_block,
-                            cached_thru = done_thru,
-                        )
+        if self.addresses:
+            for address in self.addresses:
+                if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
+                    if from_block < e.cached_from:
+                        e.cached_from = from_block
                         should_commit = True
-            elif info := LogCacheInfo.get(
-                chain=chain, 
+                    if done_thru > e.cached_thru:
+                        e.cached_thru = done_thru
+                        should_commit = True
+                else:
+                    LogCacheInfo(
+                        chain=chain, 
+                        address=address,
+                        topics=encoded_topics,
+                        cached_from = from_block,
+                        cached_thru = done_thru,
+                    )
+                    should_commit = True
+        elif info := LogCacheInfo.get(
+            chain=chain, 
+            address='None',
+            topics=encoded_topics,
+        ):
+            if from_block < info.cached_from:
+                info.cached_from = from_block
+                should_commit = True
+            if done_thru > info.cached_thru:
+                info.cached_thru = done_thru
+                should_commit = True
+        else:
+            LogCacheInfo(
+                chain=chain,
                 address='None',
                 topics=encoded_topics,
-            ):
-                if from_block < info.cached_from:
-                    info.cached_from = from_block
-                    should_commit = True
-                if done_thru > info.cached_thru:
-                    info.cached_thru = done_thru
-                    should_commit = True
-            else:
-                LogCacheInfo(
-                    chain=chain,
-                    address='None',
-                    topics=encoded_topics,
-                    cached_from = from_block,
-                    cached_thru = done_thru,
-                )
-                should_commit = True
-            if should_commit:
-                commit()
-                logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
-        except (TransactionIntegrityError, OptimisticCheckError):
-            return self.set_metadata(from_block, done_thru)
+                cached_from = from_block,
+                cached_thru = done_thru,
+            )
+            should_commit = True
+        if should_commit:
+            commit()
+            logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
     
     def _wrap_query_with_addresses(self, generator) -> Query:
         if addresses := self.addresses:
