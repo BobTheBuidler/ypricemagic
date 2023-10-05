@@ -125,7 +125,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
             and log.block.number <= to_block
         )
 
-        self._wrap_query_with_addresses(generator)
+        generator = self._wrap_query_with_addresses(generator)
         
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
