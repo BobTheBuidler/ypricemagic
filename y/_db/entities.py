@@ -31,8 +31,7 @@ class _AsyncEntityMixin:
         return super(db.Entity).select(*args, **kwargs)'''
     
 class Chain(db.Entity, _AsyncEntityMixin):
-    _pk = PrimaryKey(int, auto=True)
-    id = Required(int, unique=True, lazy=True)
+    id = PrimaryKey(int)
 
     blocks = Set("Block")
     addresses = Set("Address")
@@ -40,9 +39,9 @@ class Chain(db.Entity, _AsyncEntityMixin):
     trace_caches = Set("TraceCacheInfo")
 
 class Block(db.Entity, _AsyncEntityMixin):
-    _pk = PrimaryKey(int, auto=True)
     chain = Required(Chain, reverse="blocks")
     number = Required(int, lazy=True)
+    composite_key(chain, number)
     hash = Optional(int, lazy=True)
     timestamp = Optional(datetime, lazy=True)
     
@@ -55,9 +54,9 @@ class Block(db.Entity, _AsyncEntityMixin):
     traces = Set("Trace", reverse="block", cascade_delete=False)
 
 class Address(db.Entity, _AsyncEntityMixin):
-    _pk = PrimaryKey(int, auto=True)
     chain = Required(Chain, lazy=True, reverse="addresses")
     address = Required(str, lazy=True)
+    composite_key(chain, address)
     notes = Optional(str, lazy=True)
     
     composite_key(chain, address)
@@ -77,7 +76,6 @@ class Token(Contract):
     prices = Set("Price", reverse="token")
 
 class Price(db.Entity):
-    dbid = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
     token = Required(Token, index=True, lazy=True)
     composite_key(block, token)
