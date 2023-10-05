@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from decimal import Decimal
 from typing import Optional
 
 import a_sync
@@ -112,7 +113,7 @@ class YearnInspiredVault(ERC20):
         else: raise CantFetchParam(f'underlying for {self.__repr__()}')
 
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
-    async def share_price(self, block: Optional[Block] = None) -> Optional[float]:
+    async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
         method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
 
         if share_price is None:
@@ -129,7 +130,7 @@ class YearnInspiredVault(ERC20):
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / 1e18
             underlying = await self.__underlying__(sync=False)
-            return share_price / await underlying.__scale__(sync=False)
+            return Decimal(share_price / await underlying.__scale__(sync=False))
             
         elif await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False) == 0:
             return None
@@ -142,4 +143,4 @@ class YearnInspiredVault(ERC20):
         share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__(sync=False))
         if share_price is None:
             return None
-        return UsdPrice(share_price * await underlying.price(block=block, sync=False))
+        return UsdPrice(share_price * Decimal(await underlying.price(block=block, sync=False)))
