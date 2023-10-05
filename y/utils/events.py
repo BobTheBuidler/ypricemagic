@@ -41,7 +41,17 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
-    decoded = _decode_logs(logs)
+    try:
+        decoded = _decode_logs(logs)
+    except:
+        decoded = []
+        for log in logs:
+            try:
+                # get some help for debugging
+                decoded.extend(_decode_logs([log]))
+            except Exception as e:
+                raise (log, *e.args)
+            
     for i, log in enumerate(logs):
         setattr(decoded[i], "block_number", log["blockNumber"])
         setattr(decoded[i], "transaction_hash", log["transactionHash"])
