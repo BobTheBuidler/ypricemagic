@@ -100,14 +100,16 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     
     @db_session
     def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
-        query, pages = self._get_query(self, from_block, to_block)
+        query = self._get_query(self, from_block, to_block)
+        pages = ceil(query.count() / page_size)
+        logger.debug("%s has %s pages", self, pages)
         decoded = []
         for i in range(pages):
             decoded.extend(json.decode(log.raw) for log in query.page(i, page_size))
-            logger.debug("page %s complete", i)
+            logger.debug("%s page %s complete", self, i)
         return decoded
     
-    def _get_query(self, from_block: int, to_block: int) -> Tuple[Query, int]:
+    def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
 
         generator = (
@@ -125,10 +127,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
 
         query = select(generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
         logger.debug(query.get_sql())
-        count = query.count()
-        pages = ceil(count/page_size)
-        logger.debug("query has %s pages", pages)
-        return query, pages
+        return query
     
     @db_session
     @retry_locked
