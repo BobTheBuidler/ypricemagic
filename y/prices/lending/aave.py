@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from decimal import Decimal
 from typing import List, Optional, Union
 
 import a_sync
@@ -235,7 +236,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
             )
         except ContractLogicError:
             return None
-        price_per_share /= scale
+        price_per_share /= Decimal(scale)
         return price_per_share * await ERC20(underlying, asynchronous=True).price(block)
 
 
