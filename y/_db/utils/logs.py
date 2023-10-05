@@ -100,7 +100,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     
     @db_session
     def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
-        query = self._get_query(self, from_block, to_block)
+        query = self._get_query(from_block, to_block)
         pages = ceil(query.count() / page_size)
         logger.debug("%s has %s pages", self, pages)
         decoded = []
