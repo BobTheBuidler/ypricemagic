@@ -41,17 +41,11 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
     get_token = _get_get_token()
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
-    entity = insert(
+    insert(
         type = Price,
         block = get_block(block, sync=True),
         token = get_token(address, sync=True),
         price = Decimal(price),
     )
-    if entity is None: 
-        # Price was inserted by some other thread/source between first checking and now
-        assert (p := Price.get(
-            block = get_block(block, sync=True),
-            token = get_token(address, sync=True),
-        )) and p.price == Decimal(price), (p.price, price)
-
+    
 __tasks: List[asyncio.Task] = []
