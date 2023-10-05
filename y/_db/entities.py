@@ -9,8 +9,9 @@ from typing import Optional as typing_Optional
 
 from pony.orm import (CommitException, Database, InterfaceError,
                       OperationalError, Optional, PrimaryKey, Required, Set,
-                      TransactionIntegrityError, UnexpectedError, commit,
-                      composite_index, composite_key, db_session)
+                      TransactionError, TransactionIntegrityError,
+                      UnexpectedError, commit, composite_index, composite_key,
+                      db_session)
 
 db = Database()
 
@@ -151,5 +152,9 @@ def retry_locked(callable):
             except (CommitException, OperationalError, UnexpectedError) as e:
                 logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
                 if "database is locked" not in str(e):
+                    raise e
+            except TransactionError as e:
+                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
+                if "An attempt to mix objects belonging to different transactions" not in str(e):
                     raise e
     return retry_locked_wrap
