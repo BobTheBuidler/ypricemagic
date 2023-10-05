@@ -99,7 +99,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         return 0
     
     @db_session
-    async def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
+    def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
         query, pages = self._get_query(self, from_block, to_block)
         decoded = []
         for i in range(pages):
