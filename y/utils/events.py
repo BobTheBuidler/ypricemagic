@@ -22,7 +22,7 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
-from y._db.common import Filter
+from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
@@ -298,7 +298,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         is_reusable: bool = True,
         verbose: bool = False,
     ):
-        self.addresses = addresses
+        self.addresses = _clean_addresses(addresses)
         self.topics = topics
         super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
     

@@ -4,7 +4,7 @@ import asyncio
 import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
-                    Optional, Type, TypeVar)
+                    Optional, Type, TypeVar, Union)
 
 from a_sync.iter import ASyncIterable
 from a_sync.primitives.executor import _AsyncExecutorMixin
@@ -17,6 +17,7 @@ from tqdm.asyncio import tqdm_asyncio
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
+from y import convert
 from y._db.entities import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y.utils.dank_mids import dank_w3
@@ -268,3 +269,11 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             await asyncio.gather(*tasks)
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
     
+def _clean_addresses(addresses) -> Union[str, List[str]]:
+    if not addresses:
+        return addresses
+    if isinstance(addresses, str):
+        return convert.to_address(addresses)
+    elif hasattr(addresses, '__iter__'):
+        return [convert.to_address(address) for address in addresses]
+    return convert.to_address(addresses)

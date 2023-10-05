@@ -9,7 +9,7 @@ from dank_mids.semaphores import BlockSemaphore
 from msgspec import json
 from pony.orm import commit, db_session, select
 
-from y._db.common import DiskCache, Filter
+from y._db.common import DiskCache, Filter, _clean_addresses
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert, retry_locked
 from y._db.utils._ep import _get_get_block
 from y.constants import thread_pool_executor
@@ -37,8 +37,8 @@ def insert_trace(trace: dict) -> None:
 class TraceCache(DiskCache[dict, TraceCacheInfo]):
     __slots__ = "from_addresses", "to_addresses"
     def __init__(self, from_addresses: List[str], to_addresses: List[str]):
-        self.from_addresses = from_addresses
-        self.to_addresses = to_addresses
+        self.from_addresses = _clean_addresses(from_addresses)
+        self.to_addresses = _clean_addresses(to_addresses)
     
     def load_metadata(self, chain: Chain, from_address: Optional[str], to_address: Optional[str]) -> Optional[TraceCacheInfo]:
         return TraceCacheInfo.get(chain=chain, from_address=str(from_address), to_address=str(to_address))
@@ -80,7 +80,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                     if info := TraceCacheInfo.get(
                             chain=chain, 
                             from_address=json.encode([from_address]),
-                            to_address=json.encode([to_address])
+                            to_address=json.encode([to_address]),
                         ):
                             if from_block < info.cached_from:
                                 info.cached_from = from_block
@@ -92,7 +92,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                         TraceCacheInfo(
                             chain=chain, 
                             from_address=json.encode([from_address]),
-                            to_address=json.encode([to_address])
+                            to_address=json.encode([to_address]),
                         )
                         should_commit = True
         elif self.from_addresses:
@@ -100,7 +100,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                 if info := TraceCacheInfo.get(
                     chain=chain, 
                     from_address=json.encode([from_address]),
-                    to_address=json.encode([])
+                    to_address=json.encode([]),
                 ):
                     if from_block < info.cached_from:
                         info.cached_from = from_block
@@ -112,7 +112,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                     TraceCacheInfo(
                         chain=chain, 
                         from_address=json.encode([from_address]),
-                        to_address=json.encode([])
+                        to_address=json.encode([]),
                     )
                     should_commit = True
         elif self.to_addresses:
@@ -120,7 +120,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                 if info := TraceCacheInfo.get(
                     chain=chain, 
                     from_address=json.encode([]),
-                    to_address=json.encode([to_address])
+                    to_address=json.encode([to_address]),
                 ):
                     if from_block < info.cached_from:
                         info.cached_from = from_block
@@ -132,7 +132,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
                     TraceCacheInfo(
                         chain=chain, 
                         from_address=json.encode([]),
-                        to_address=json.encode([to_address])
+                        to_address=json.encode([to_address]),
                     )
                     should_commit = True
         elif info := TraceCacheInfo.get(
