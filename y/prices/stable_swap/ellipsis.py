@@ -1,6 +1,7 @@
 
 import asyncio
 import logging
+from decimal import Decimal
 from typing import Optional
 
 import a_sync
@@ -38,4 +39,4 @@ async def get_price(token_address: AddressOrContract, block: Optional[Block] = N
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )
     tvl = sum(coin_values)
-    return UsdPrice(tvl / total_supply)
+    return UsdPrice(tvl / Decimal(total_supply))

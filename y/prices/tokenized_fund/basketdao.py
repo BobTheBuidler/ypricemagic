@@ -1,5 +1,6 @@
 
 import asyncio
+from decimal import Decimal
 from typing import Optional
 
 import a_sync
@@ -32,4 +33,4 @@ async def get_price(address: EthAddress, block: Optional[Block] = None) -> UsdPr
     ]
 
     tvl = sum(await asyncio.gather(*[bal.__value_usd__(sync=False) for bal in balances]))
-    return UsdPrice(tvl / total_supply)
+    return UsdPrice(tvl / Decimal(total_supply))
