@@ -1,8 +1,8 @@
 
 import logging
-from math import ceil
 from typing import List, Optional
 
+from brownie.convert import EthAddress
 from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
                       db_session, select)
@@ -172,6 +172,8 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     
     def _wrap_query_with_addresses(self, generator) -> Query:
         if addresses := self.addresses:
+            if isinstance(addresses, str):
+                return (log for log in generator if log.address == str(EthAddress(addresses)))
             return (log for log in generator if log.address in addresses)
         return generator
     
