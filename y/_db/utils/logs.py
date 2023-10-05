@@ -1,7 +1,7 @@
 
 import logging
 from math import ceil
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
@@ -30,6 +30,8 @@ def insert_log(log: dict):
         **{f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))},
         raw = json.encode(log, enc_hook=enc_hook),
     )
+
+page_size = 100
 
 class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
@@ -97,7 +99,15 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         return 0
     
     @db_session
-    def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
+    async def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
+        query, pages = self._get_query(self, from_block, to_block)
+        decoded = []
+        for i in range(pages):
+            decoded.extend(json.decode(log.raw) for log in query.page(i, page_size))
+            logger.debug("page %s complete", i)
+        return decoded
+    
+    def _get_query(self, from_block: int, to_block: int) -> Tuple[Query, int]:
         from y._db.utils import utils as db
 
         generator = (
@@ -113,19 +123,12 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
 
-        query = select(log for log in generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
-
-        logger.info(query.get_sql())
-
-        page_size = 100
+        query = select(generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
+        logger.debug(query.get_sql())
         count = query.count()
         pages = ceil(count/page_size)
         logger.debug("query has %s pages", pages)
-        decoded = []
-        for i in range(pages):
-            decoded.extend(json.decode(log.raw) for log in query.page(i, page_size))
-            logger.debug("page %s complete", i)
-        return decoded
+        return query, pages
     
     @db_session
     @retry_locked
