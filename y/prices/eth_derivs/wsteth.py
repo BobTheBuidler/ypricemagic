@@ -31,7 +31,7 @@ class wstEth(a_sync.ASyncGenericBase):
             magic.get_price(weth, block, sync=False),
         )
         share_price /= Decimal(10 ** 18)
-        return UsdPrice(share_price * weth_price)
+        return UsdPrice(share_price * Decimal(float(weth_price)))
 
 wsteth = wstEth(asynchronous=True)
 
