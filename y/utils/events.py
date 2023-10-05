@@ -203,12 +203,32 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
     
 async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
-    if address is None:
-        return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
-    elif topics is None:
-        return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
-    else:
-        return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+    try:
+        if address is None:
+            return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+        elif topics is None:
+            return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+        else:
+            return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+    except Exception as e:
+        errs = [
+            "Service Unavailable for url:",
+            "exceed maximum block range",
+            "block range is too wide",
+            "request timed out",
+        ]
+        if any(err in str(e) for err in errs):
+            logger.debug('your node is having trouble, breaking batch in half')
+            batch_size = (end - start + 1)
+            half_of_batch = batch_size // 2
+            batch1_end = start + half_of_batch
+            batch2_start = batch1_end + 1
+            batch1 = await _get_logs_async_no_cache(address, topics, start, batch1_end)
+            batch2 = await _get_logs_async_no_cache(address, topics, batch2_start, end)
+            response = batch1 + batch2
+        else:
+            raise
+    return response
 
 @eth_retry.auto_retry
 def _get_logs_no_cache(
