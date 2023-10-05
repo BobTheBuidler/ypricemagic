@@ -101,6 +101,8 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         query = self._get_query(from_block, to_block)
         logger.debug("%s has %s-ish pages", self, ceil(query.count() / page_size))
         
+        return [json.decode(log.raw) for log in query]
+    
         page = 0
         decoded = []
         while True:
@@ -110,6 +112,8 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
             decoded.extend(content)
             logger.debug("%s page %s complete", self, page)
             page += 1
+        
+        _decoded = set(decoded)
         return decoded
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
