@@ -125,7 +125,10 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         encoded_topics = json.encode(self.topics or None)
         should_commit = False
         if self.addresses:
-            for address in self.addresses:
+            addresses = self.addresses
+            if isinstance(addresses, str):
+                addresses = [addresses]
+            for address in addresses:
                 if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
                     if from_block < e.cached_from:
                         e.cached_from = from_block
