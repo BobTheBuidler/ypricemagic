@@ -331,7 +331,7 @@ class UniswapRouterV2(ContractBase):
             events = factory.events.PairCreated.events(to_block=to_block)
         except AttributeError:
             PairCreated = '0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9'
-            events = Events(addresses=[factory.address], topics=[PairCreated]).events(to_block=to_block)
+            events = Events(addresses=[factory.address], topics=[[PairCreated]]).events(to_block=to_block)
 
         pools = [UniswapV2Pool(address=event["pair"], token0=event["token0"], token1=event["token1"], asynchronous=self.asynchronous) async for event in events]
 
