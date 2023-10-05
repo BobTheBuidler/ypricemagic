@@ -190,6 +190,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             elif block and done_thru > block:
                 return
             done_thru = self._lock.value
+            logger.debug('%s lock value %s', self, done_thru)
     
     async def __fetch(self) -> NoReturn:
         from y.constants import BIG_VALUE
@@ -243,11 +244,13 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                     continue
                 if i not in done:
                     break
+
                 end, objs = done.pop(i)
                 self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
                 batches_yielded += 1
                 self._lock.set(end)
+                logger.debug("%s loaded thru block %s", self, end)
     
     def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int) -> None:
         if (prev_task := self._db_task) and prev_task.done() and (e := prev_task.exception()):

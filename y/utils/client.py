@@ -1,6 +1,5 @@
 import logging
 
-import a_sync
 from async_lru import alru_cache
 from brownie import web3
 from cachetools.func import lru_cache
