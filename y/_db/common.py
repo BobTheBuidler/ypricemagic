@@ -11,10 +11,12 @@ from a_sync.primitives.executor import _AsyncExecutorMixin
 from a_sync.primitives.locks.counter import CounterLock
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
+from pony.orm import db_session
 from tqdm.asyncio import tqdm_asyncio
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
+from y._db.entities import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
@@ -41,21 +43,36 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
 class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
     __slots__ = []
     @abc.abstractmethod
-    def set_metadata(self, from_block: int, done_thru: int) -> None:
+    def _set_metadata(self, from_block: int, done_thru: int) -> None:
         """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
     @abc.abstractmethod
-    def is_cached_thru(self, from_block: int) -> int:
+    def _is_cached_thru(self, from_block: int) -> int:
         """Returns max cached block for this cache or 0 if not cached."""
     @abc.abstractmethod
+    def _select(self, from_block: int, to_block: int) -> List[S]:
+        """Selects all cached objects from block `from_block` to block `to_block`"""
+    @db_session
+    @retry_locked
+    def set_metadata(self, from_block: int, done_thru: int) -> None:
+        """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
+        return self._set_metadata(from_block, done_thru)
+    @db_session
+    @retry_locked
     def select(self, from_block: int, to_block: int) -> List[S]:
         """Selects all cached objects from block `from_block` to block `to_block`"""
+        return self._select(from_block, to_block)
+    @db_session
+    @retry_locked
+    def is_cached_thru(self, from_block: int) -> int:
+        """Returns max cached block for this cache or 0 if not cached."""
+        return self._is_cached_thru(from_block)
     def check_and_select(self, from_block: int, to_block: int) -> List[S]:
         """
         Selects all cached objects from block `from_block` to block `to_block` if the cache is fully populated.
         Raises `CacheNotPopulatedError` if it is not.
         """
-        if self.is_cached_thru(from_block) >= to_block:
-            return self.select(from_block, to_block)
+        if self._is_cached_thru(from_block) >= to_block:
+            return self._select(from_block, to_block)
         else:
             raise CacheNotPopulatedError(self, from_block, to_block)
 
@@ -98,9 +115,9 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         Returns max block of logs loaded from cache.
         """
         logger.debug('checking to see if %s is cached in local db', self)
-        if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
+        if cached_thru := await self.executor.run(self.cache._is_cached_thru, from_block):
             logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
-            self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
+            self._extend(await self.executor.run(self.cache._select, from_block, cached_thru))
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return None
@@ -245,5 +262,5 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             await prev_chunk_task
         if tasks:
             await asyncio.gather(*tasks)
-        await self.executor.run(self.cache.set_metadata, from_block, done_thru)
+        await self.executor.run(self.cache._set_metadata, from_block, done_thru)
     

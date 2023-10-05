@@ -1,7 +1,7 @@
 
 import logging
 from math import ceil
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from msgspec import json
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError, commit,
@@ -78,8 +78,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         )):
             return info
     
-    @db_session
-    def is_cached_thru(self, from_block: int) -> int:
+    def _is_cached_thru(self, from_block: int) -> int:
         from y._db.utils import utils as db
         
         if self.addresses:
@@ -98,8 +97,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    @db_session
-    def select(self, from_block: int, to_block: int) -> List[LogReceipt]:
+    def _select(self, from_block: int, to_block: int) -> List[LogReceipt]:
         query = self._get_query(from_block, to_block)
         logger.debug("%s has %s-ish pages", self, ceil(query.count() / page_size))
         
@@ -134,9 +132,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         logger.debug(query.get_sql())
         return query
     
-    @db_session
-    @retry_locked
-    def set_metadata(self, from_block: int, done_thru: int) -> None:
+    def _set_metadata(self, from_block: int, done_thru: int) -> None:
         from y._db.utils import utils as db
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)
@@ -184,7 +180,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                 commit()
                 logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         except (TransactionIntegrityError, OptimisticCheckError):
-            return self.set_metadata(from_block, done_thru)
+            return self._set_metadata(from_block, done_thru)
     
     def _wrap_query_with_addresses(self, generator) -> Query:
         if addresses := self.addresses:
