@@ -11,14 +11,14 @@ if ENVS.DB_PROVIDER == "sqlite":
             raise
 
     connection_settings = {
-        'provider': ENVS.DB_PROVIDER,
+        'provider': str(ENVS.DB_PROVIDER),
         'filename': f"{path.expanduser( '~' )}/.ypricemagic/ypricemagic.sqlite"
     }
 else:
     connection_settings = {
-        'provider': ENVS.DB_PROVIDER,
-        'host': ENVS.DB_HOST,
-        'user': ENVS.DB_USER,
-        'password': ENVS.DB_PASSWORD,
-        'database': ENVS.DB_DATABASE,
+        'provider': str(ENVS.DB_PROVIDER),
+        'host': str(ENVS.DB_HOST),
+        'user': str(ENVS.DB_USER),
+        'password': str(ENVS.DB_PASSWORD),
+        'database': str(ENVS.DB_DATABASE),
     }
