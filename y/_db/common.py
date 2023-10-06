@@ -216,9 +216,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if cached_thru := await self._load_cache(from_block):
             self._lock.set(cached_thru)
         while True:
-            # TODO: make this configuarable
-            to_block = await dank_w3.eth.block_number
-            await self._load_new_objects(start_from_block=from_block, to_block=to_block)
+            await self._load_new_objects(start_from_block=from_block)
             await asyncio.sleep(self._interval)
     
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
