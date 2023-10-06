@@ -12,7 +12,8 @@ if ENVS.DB_PROVIDER == "sqlite":
 
     connection_settings = {
         'provider': str(ENVS.DB_PROVIDER),
-        'filename': f"{path.expanduser( '~' )}/.ypricemagic/ypricemagic.sqlite"
+        'filename': f"{path.expanduser( '~' )}/.ypricemagic/ypricemagic.sqlite",
+        'create_db': True,
     }
 else:
     connection_settings = {
