@@ -350,7 +350,7 @@ class UniswapRouterV2(ContractBase):
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
-    @a_sync.a_sync(ram_cache_maxsize=None)
+    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=600)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool: UniswapV2Pool
         pool_to_token_out = {}
