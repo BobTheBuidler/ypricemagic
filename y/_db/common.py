@@ -190,7 +190,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             elif block and done_thru > block:
                 return
             done_thru = self._lock.value
-            logger.debug('%s lock value %s to_block %s', self, done_thru, to_block)
+            logger.debug('%s lock value %s to_block %s', self, done_thru, block)
     
     async def __fetch(self) -> NoReturn:
         from y.constants import BIG_VALUE
