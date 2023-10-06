@@ -128,7 +128,7 @@ class YearnInspiredVault(ERC20):
         if share_price is not None:
             if method == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
-                return share_price / 1e18
+                return share_price / Decimal(10 ** 18)
             underlying = await self.__underlying__(sync=False)
             return Decimal(share_price / await underlying.__scale__(sync=False))
             
