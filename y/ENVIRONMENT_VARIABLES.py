@@ -11,9 +11,9 @@ GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int, default=0)
 
 DB_PROVIDER = _envs.create_env("DB_PROVIDER", str, default="sqlite", verbose=False)
 DB_HOST = _envs.create_env("DB_HOST", str, default="", verbose=False)
-DB_USER = _envs.create_env("CACHE_TTL", str, default="", verbose=False)
-DB_PASSWORD = _envs.create_env("CACHE_TTL", str, default="", verbose=False)
-DB_DATABASE = _envs.create_env("CACHE_TTL", str, default="ypricemagic", verbose=False)
+DB_USER = _envs.create_env("DB_USER", str, default="", verbose=False)
+DB_PASSWORD = _envs.create_env("DB_PASSWORD", str, default="", verbose=False)
+DB_DATABASE = _envs.create_env("DB_DATABASE", str, default="ypricemagic", verbose=False)
 SKIP_CACHE = _envs.create_env("SKIP_CACHE", bool, default=False, verbose=False)
 
 # ypriceapi
