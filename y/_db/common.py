@@ -264,9 +264,14 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int) -> None:
         if (prev_task := self._db_task) and prev_task.done() and (e := prev_task.exception()):
             raise e
-        self._db_task = asyncio.create_task(
-            self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task)
+        depth = prev_task._depth + 1 if prev_task else 0
+        logger.debug("%s queuing next db insert chunk %s thru block %s", self, depth, done_thru)
+        task = asyncio.create_task(
+            self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task, depth)
         )
+        task._depth = depth
+        task._prev_task = prev_task
+        self._db_task = task
 
     def _ensure_task(self) -> None:
         if self._task is None:
@@ -275,12 +280,13 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if self._task.done() and (e := self._task.exception()):
             raise e
         
-    async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task]) -> None:
+    async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task], depth: int) -> None:
         if prev_chunk_task:
             await prev_chunk_task
         if tasks:
             await asyncio.gather(*tasks)
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
+        logger.debug("%s chunk %s thru block %s is now in db", self, depth, done_thru)
     
 def _clean_addresses(addresses) -> Union[str, List[str]]:
     if not addresses:
