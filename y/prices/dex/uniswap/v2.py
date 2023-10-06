@@ -355,7 +355,7 @@ class UniswapRouterV2(ContractBase):
         pool: UniswapV2Pool
         pool_to_token_out = {}
         for pool in await self.__pools__(sync=False):
-            token0, token1 = await asyncio.gather(pool.token0, pool.token1)
+            token0, token1 = await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
