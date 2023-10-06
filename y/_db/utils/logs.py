@@ -82,13 +82,22 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         
         if self.addresses:
             chain = db.get_chain(sync=True)
-            infos: List[LogCacheInfo] = [
-                # If we cached all logs for this address...
-                LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
-                # ... or we cached all logs for these specific topics for this address
-                or LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(self.topics))
-                for addr in self.addresses
-            ]
+            infos: List[LogCacheInfo]
+            if isinstance(self.addresses, str):
+                infos = [
+                    # If we cached all logs for this address...
+                    LogCacheInfo.get(chain=chain, address=self.addresses, topics=json.encode(None))
+                    # ... or we cached all logs for these specific topics for this address
+                    or LogCacheInfo.get(chain=chain, address=self.addresses, topics=json.encode(self.topics))
+                ]
+            else:
+                infos = [
+                    # If we cached all logs for this address...
+                    LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
+                    # ... or we cached all logs for these specific topics for this address
+                    or LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(self.topics))
+                    for addr in self.addresses
+                ]
             if all(info and from_block >= info.cached_from for info in infos):
                 return min(info.cached_thru for info in infos)
                 
