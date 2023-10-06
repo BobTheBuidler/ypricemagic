@@ -15,7 +15,6 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
-from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.multicall import fetch_multicall
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
