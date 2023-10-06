@@ -187,7 +187,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                         self._remove(obj)
                     yield obj
                     yielded += 1
-            elif block and done_thru > block:
+            elif block and done_thru >= block:
                 return
             done_thru = self._lock.value
             logger.debug('%s lock value %s to_block %s', self, done_thru, block)
