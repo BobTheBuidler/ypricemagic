@@ -212,7 +212,7 @@ class UniswapRouterV2(ContractBase):
         if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
             brownie.Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
 
-        self._events = PoolsFromEvents(self.factory)
+        self._events = PoolsFromEvents(self.factory, asynchronous=self.asynchronous)
         
     
     def __repr__(self) -> str:
