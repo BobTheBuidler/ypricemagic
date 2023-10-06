@@ -216,13 +216,22 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if cached_thru := await self._load_cache(from_block):
             self._lock.set(cached_thru)
         while True:
-            await self._load_new_objects(start_from_block=from_block)
+            # TODO: make this configuarable
+            to_block = await dank_w3.eth.block_number
+            await self._load_new_objects(start_from_block=from_block, to_block=to_block)
             await asyncio.sleep(self._interval)
     
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
         logger.debug('loading new objects for %s', self)
         start = v + 1 if (v := self._lock.value) else start_from_block or self.from_block
-        end = to_block or await dank_w3.eth.block_number
+        if to_block:
+            end = to_block
+            if start > end:
+                raise ValueError(f"start {start} is bigger than end {end}, can't do that")
+        else:
+            while start > (end := await dank_w3.eth.block_number):
+                logger.debug('start %s is greater than end %s, sleeping...', start, end)
+                await asyncio.sleep(1)
         await self._load_range(start, end)
 
     async def _load_range(self, from_block: int, to_block: int) -> None:
