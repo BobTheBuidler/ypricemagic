@@ -182,7 +182,9 @@ class UniswapV2Pool(ERC20):
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     PairCreated = "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
-    def __init__(self, factory: AnyAddressType):
+    __slots__ = "asynchronous",
+    def __init__(self, factory: AnyAddressType, asynchronous: bool = False):
+        self.asynchronous = asynchronous
         super().__init__(addresses=[factory], topics=[[self.PairCreated]])
     async def pools(self, to_block: Optional[int] = None) -> AsyncIterator[UniswapV2Pool]:
         async for pool in self._objects_thru(block=to_block):
