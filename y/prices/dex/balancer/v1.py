@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from decimal import Decimal
 from typing import Dict, List, Optional, Tuple
 
 import a_sync
@@ -48,22 +49,22 @@ class BalancerV1Pool(ERC20):
         prices = await asyncio.gather(*[token.price(block=block, return_None_on_failure = True, sync=False) for token in good_balances])
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
-        good_value = sum(balance * price for balance, price in zip(good_balances.values(),prices))
+        good_value = sum(balance * Decimal(price) for balance, price in zip(good_balances.values(),prices))
         if len(good_balances):
             return good_value / len(good_balances) * len(token_balances)
         return None
     
-    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, float]:
+    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
         tokens = await self.tokens(block=block, sync=False)
         balances = await asyncio.gather(*[self.get_balance(token, block or 'latest', sync=False) for token in tokens])
         return dict(zip(tokens, balances))
 
-    async def get_balance(self, token: AnyAddressType, block: Block) -> float:
+    async def get_balance(self, token: AnyAddressType, block: Block) -> Decimal:
         balance, scale = await asyncio.gather(
             self.check_liquidity(str(token), block, sync=False),
             ERC20(token, asynchronous=True).scale,
         )
-        return balance / scale
+        return Decimal(balance) / scale
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
