@@ -27,11 +27,11 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
         return price.price
 
 async def set_price(address: str, block: int, price: Decimal) -> None:
-    __tasks.append(asyncio.create_task(_set_price(address, block, price)))
-    for t in __tasks[:]:
+    _tasks.append(asyncio.create_task(_set_price(address, block, price)))
+    for t in _tasks[:]:
         if t.done():
             await t
-            __tasks.remove(t)
+            _tasks.remove(t)
 
 @a_sync(default='async', executor=executor)
 @db_session
@@ -48,4 +48,4 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         price = Decimal(price),
     )
     
-__tasks: List[asyncio.Task] = []
+_tasks: List[asyncio.Task] = []
