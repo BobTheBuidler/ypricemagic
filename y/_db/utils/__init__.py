@@ -7,7 +7,7 @@ from y._db.utils.utils import get_chain, get_block
 
         
 try:
-    db.bind(**connection_settings, create_db=True)
+    db.bind(**connection_settings)
     db.generate_mapping(create_tables=True)
 except TransactionError as e:
     if str(e) != "@db_session-decorated create_tables() function with `ddl` option cannot be called inside of another db_session":
