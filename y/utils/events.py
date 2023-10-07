@@ -357,9 +357,9 @@ class Events(LogFilter):
 
 class ProcessedEvents(Events, ASyncIterable[T]):
     __slots__ = []
-    @abc.abstractmethod
     def _include_event(self, event: _EventItem) -> bool:
-        ...
+        """Override this to exclude specific events from processing and collection."""
+        return True
     @abc.abstractmethod
     def _process_event(self, event: _EventItem) -> T:
         ...

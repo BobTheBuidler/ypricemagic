@@ -91,8 +91,8 @@ class ERC20(ContractBase):
         if symbol := await db.get_symbol(self.address):
             return symbol
         symbol = await self._symbol()
-        __tasks.append(asyncio.create_task(db.set_symbol(self.address, symbol)))
-        await __clear_finished_tasks()
+        _tasks.append(asyncio.create_task(db.set_symbol(self.address, symbol)))
+        await _clear_finished_tasks()
         return symbol
     
     @a_sync.aka.property
@@ -104,8 +104,8 @@ class ERC20(ContractBase):
         if name:
             return name
         name = await self._name()
-        __tasks.append(asyncio.create_task(db.set_name(self.address, name)))
-        await __clear_finished_tasks()
+        _tasks.append(asyncio.create_task(db.set_name(self.address, name)))
+        await _clear_finished_tasks()
         return name
     
     @a_sync.aka.cached_property
@@ -263,10 +263,10 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return value
 
 
-__tasks: List[asyncio.Task] = []
+_tasks: List[asyncio.Task] = []
 
-async def __clear_finished_tasks() -> None:
-    for t in __tasks[:]:
+async def _clear_finished_tasks() -> None:
+    for t in _tasks[:]:
         if t.done():
             await t
-            __tasks.remove(t)
+            _tasks.remove(t)

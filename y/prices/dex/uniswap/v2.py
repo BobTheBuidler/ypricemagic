@@ -2,19 +2,20 @@
 import asyncio
 import logging
 from contextlib import suppress
-from typing import Any, Dict, List, Optional, Tuple, Literal, AsyncIterator
+from decimal import Decimal
+from typing import Any, AsyncIterator, Dict, List, Literal, Optional, Tuple
 
 import a_sync
 import brownie
 from brownie import chain
+from brownie.network.event import _EventItem
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import ContractLogicError
 
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import (STABLECOINS, WRAPPED_GAS_COIN, sushi,
-                          usdc, weth)
+from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
@@ -29,7 +30,6 @@ from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.utils.dank_mids import dank_w3
 from y.utils.events import ProcessedEvents
-from brownie.network.event import _EventItem
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
@@ -95,7 +95,8 @@ class UniswapV2Pool(ERC20):
     async def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
         tvl = await self.tvl(block=block, sync=False)
         if tvl is not None:
-            return UsdPrice(tvl / await self.total_supply_readable(block=block, sync=False))
+            # TODO: move decimal conversion into total_supply_readable
+            return UsdPrice(tvl / Decimal(await self.total_supply_readable(block=block, sync=False)))
         return None
     
     async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
@@ -123,7 +124,7 @@ class UniswapV2Pool(ERC20):
 
         return (WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
 
-    async def tvl(self, block: Optional[Block] = None) -> Optional[float]:
+    async def tvl(self, block: Optional[Block] = None) -> Optional[Decimal]:
         prices, reserves = await asyncio.gather(
             asyncio.gather(*[token.price(block=block, return_None_on_failure=True, sync=False) for token in await self.__tokens__(sync=False)]),
             self.reserves(block=block, sync=False),
@@ -133,7 +134,7 @@ class UniswapV2Pool(ERC20):
             return None
 
         vals = [
-            None if price is None else await reserve.__readable__(sync=False) * price
+            None if price is None else Decimal(await reserve.__readable__(sync=False)) * Decimal(price)
             for reserve, price in zip(reserves, prices)
         ]
 
@@ -182,10 +183,13 @@ class UniswapV2Pool(ERC20):
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     PairCreated = "0x0d3648bd0f6ba80134a33ba9275ac585d9d315f0ad8355cddefde31afa28d0e9"
-    __slots__ = "asynchronous",
-    def __init__(self, factory: AnyAddressType, asynchronous: bool = False):
+    __slots__ = "asynchronous", "label"
+    def __init__(self, factory: AnyAddressType, label: str, asynchronous: bool = False):
         self.asynchronous = asynchronous
+        self.label = label
         super().__init__(addresses=[factory], topics=[[self.PairCreated]])
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} label={self.label}>"
     async def pools(self, to_block: Optional[int] = None) -> AsyncIterator[UniswapV2Pool]:
         async for pool in self._objects_thru(block=to_block):
             yield pool
@@ -212,7 +216,7 @@ class UniswapRouterV2(ContractBase):
         if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
             brownie.Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
 
-        self._events = PoolsFromEvents(self.factory, asynchronous=self.asynchronous)
+        self._events = PoolsFromEvents(self.factory, self.label, asynchronous=self.asynchronous)
         
     
     def __repr__(self) -> str:

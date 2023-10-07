@@ -144,7 +144,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def pools(self) -> List[UniswapV3Pool]:
         factory = await self.__factory__(sync=False)
-        return Pools(factory, asynchronous=self.asynchronous)
+        return UniV3Pools(factory, asynchronous=self.asynchronous)
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
@@ -173,11 +173,13 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 from y.utils.events import ProcessedEvents
 from brownie.network.event import _EventItem
 
-class Pools(ProcessedEvents[UniswapV3Pool]):
+class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     __slots__ = "asynchronous", 
     def __init__(self, factory: Contract, asynchronous: bool = False):
         self.asynchronous = asynchronous
         super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]], fetch_interval=60)
+    def __repr__(self) -> str:
+        return object.__repr__(self)
     def _include_event(self, event: _EventItem):
         return True
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
