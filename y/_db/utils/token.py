@@ -1,4 +1,5 @@
 
+import asyncio
 import logging
 from typing import Optional
 
@@ -80,7 +81,8 @@ async def get_decimals(address: str) -> int:
     d = await _get_token_decimals(address)
     if d is None:
         d = await decimals(address, sync=False)
-        await set_decimals(address, d)
+        if d:
+            asyncio.create_task(set_decimals(address, d))
     return d
 
 @a_sync(default='async', executor=executor)
