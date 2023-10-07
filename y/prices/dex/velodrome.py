@@ -70,28 +70,27 @@ class VelodromeRouterV2(SolidlyRouterBase):
 
         if len(pools) == all_pairs_len:
             return pools
-        else:
-            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pools))
-            pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
-            logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools_your_node_couldnt_get = await asyncio.gather(
-                *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
-            )
-            token0s, token1s, stables = await asyncio.gather(
-                asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['stable()(bool)']).coroutine() for pool in pools_your_node_couldnt_get]),
-            )
-            pools_your_node_couldnt_get = {
-                convert.to_address(pool): {
-                    'token0': convert.to_address(token0),
-                    'token1': convert.to_address(token1),
-                    'stable': stable
-                }
-                for pool, token0, token1, stable
-                in zip(pools_your_node_couldnt_get, token0s, token1s, stables)
+        logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pools))
+        pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
+        logger.debug('pools: %s', pools_your_node_couldnt_get)
+        pools_your_node_couldnt_get = await asyncio.gather(
+            *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
+        )
+        token0s, token1s, stables = await asyncio.gather(
+            asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+            asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
+            asyncio.gather(*[Call(pool, ['stable()(bool)']).coroutine() for pool in pools_your_node_couldnt_get]),
+        )
+        pools_your_node_couldnt_get = {
+            convert.to_address(pool): {
+                'token0': convert.to_address(token0),
+                'token1': convert.to_address(token1),
+                'stable': stable
             }
-            pools.update(pools_your_node_couldnt_get)
+            for pool, token0, token1, stable
+            in zip(pools_your_node_couldnt_get, token0s, token1s, stables)
+        }
+        pools.update(pools_your_node_couldnt_get)
 
         tokens = set()
         for pool_params in pools.values():

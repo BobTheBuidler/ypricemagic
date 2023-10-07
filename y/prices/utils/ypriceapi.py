@@ -17,6 +17,7 @@ from async_lru import alru_cache
 from brownie import chain
 
 from y import constants
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
 from y.networks import Network
@@ -47,7 +48,7 @@ if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
         if not AUTH_HEADERS[header]:
             raise EnvironmentError(f'You must also pass in a value for {header_env_names[header]} in order to use ypriceAPI.')
                 
-should_use = not constants.SKIP_YPRICEAPI 
+should_use = not ENVS.SKIP_YPRICEAPI 
 notified = set()
 auth_notifs = defaultdict(int)
 resume_at = 0

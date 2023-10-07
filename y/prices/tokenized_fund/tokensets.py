@@ -1,6 +1,7 @@
 
 import asyncio
 import logging
+from decimal import Decimal
 from typing import List, Optional
 
 import a_sync
@@ -49,7 +50,7 @@ class TokenSet(ERC20):
         return balances
     
     async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
-        total_supply = await self.total_supply_readable(block=block, sync=False)
+        total_supply = Decimal(await self.total_supply_readable(block=block, sync=False))
         if total_supply == 0:
             logger.debug("total supply is 0, forcing price to $0")
             return UsdPrice(0)

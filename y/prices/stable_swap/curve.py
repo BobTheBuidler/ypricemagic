@@ -1,6 +1,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from decimal import Decimal
 from enum import IntEnum
 from functools import cached_property
 from typing import Dict, List, NoReturn, Optional, Tuple
@@ -137,7 +138,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         return [ERC20(coin, asynchronous=self.asynchronous) for coin in coins if coin != ZERO_ADDRESS]
     
     @a_sync.a_sync(ram_cache_maxsize=1000)
-    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, int]:
+    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
         """
         Get {token: balance} of liquidity in the pool.
         """
@@ -164,7 +165,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
 
         return {
-            coin: balance / 10 ** dec
+            coin: Decimal(balance / 10 ** dec)
             for coin, balance, dec in zip(coins, balances, decimals)
             if coin != ZERO_ADDRESS
         }
@@ -191,7 +192,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         prices = await asyncio.gather(*[coin.price(block=block, sync=False) for coin in balances])
 
         return UsdValue(
-            sum(balance * price for balance, price in zip(balances.values(),prices))
+            sum(balance * Decimal(price) for balance, price in zip(balances.values(), prices))
         )
     
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)

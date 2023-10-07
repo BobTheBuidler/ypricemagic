@@ -1,6 +1,7 @@
 
 import asyncio
 from contextlib import suppress
+from decimal import Decimal
 from functools import cached_property
 from typing import Any, Optional, Tuple, Union
 
@@ -28,6 +29,7 @@ def hex_to_string(h: HexString) -> str:
     return bytes.fromhex(h).decode("utf-8")
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
+    __slots__ = "address", "asynchronous"
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         self.address = convert.to_address(address)
         self.asynchronous = asynchronous
@@ -85,51 +87,24 @@ class ERC20(ContractBase):
     async def symbol(self) -> str:
         if self.address == EEE_ADDRESS:
             return "ETH"
-        
         import y._db.utils.token as db
-
-        symbol = await db.get_symbol(self.address)
-        if symbol:
+        if symbol := await db.get_symbol(self.address):
             return symbol
-        
-        symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
-        if symbol is None:
-            # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
-            symbol = await probe(self.address, ["symbol()(bytes32)"])
-            if symbol:
-                symbol = hex_to_string(symbol)
-        
-        if symbol:
-            await db.set_symbol(self.address, symbol)
-            return symbol
-        
-        # we've failed to fetch
-        self.__raise_exception('symbol')
+        symbol = await self._symbol()
+        await db.set_symbol(self.address, symbol)
+        return symbol
     
     @a_sync.aka.property
     async def name(self) -> str:
         if self.address == EEE_ADDRESS:
             return "Ethereum"
-        
         import y._db.utils.token as db
-
         name = await db.get_name(self.address)
         if name:
             return name
-        
-        name = await probe(self.address, ["name()(string)", "NAME()(string)", "getName()(string)"])
-        if name is None:
-            # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
-            name = await probe(self.address, ["name()(bytes32)"])
-            if name:
-                name = hex_to_string(name)
-        
-        if name:
-            await db.set_name(self.address, name)
-            return name
-                
-        # we've failed to fetch
-        self.__raise_exception('name')
+        name = await self._name()
+        await db.set_name(self.address, name)
+        return name
     
     @a_sync.aka.cached_property
     async def decimals(self) -> int:
@@ -184,7 +159,31 @@ class ERC20(ContractBase):
             ignore_pools=ignore_pools,
             sync=False,
         )
+        
+    async def _symbol(self) -> str:
+        symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
+        if symbol is None:
+            # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
+            symbol = await probe(self.address, ["symbol()(bytes32)"])
+            if symbol:
+                symbol = hex_to_string(symbol)
+        if symbol:
+            return symbol
+        # we've failed to fetch
+        self.__raise_exception('symbol')
     
+    async def _name(self) -> str:
+        name = await probe(self.address, ["name()(string)", "NAME()(string)", "getName()(string)"])
+        if name is None:
+            # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
+            name = await probe(self.address, ["name()(bytes32)"])
+            if name:
+                name = hex_to_string(name)
+        if name:
+            return name
+        # we've failed to fetch
+        self.__raise_exception('name')
+
     def __raise_exception(self, fn_name: str):
         raise NonStandardERC20(f'''
             Unable to fetch `{fn_name}` for {self.address} on {Network.printable()}
@@ -204,7 +203,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         ) -> None:
 
         self.asynchronous = asynchronous
-        self.balance = balance
+        self.balance = Decimal(balance)
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
@@ -257,6 +256,6 @@ class WeiBalance(a_sync.ASyncGenericBase):
             self.__readable__(sync=False),
             self.token.price(block=self.block, ignore_pools=self._ignore_pools, sync=False),
         )
-        value = balance * price
+        value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value

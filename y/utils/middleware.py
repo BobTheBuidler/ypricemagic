@@ -1,4 +1,5 @@
 import logging
+import os
 from typing import Any, Callable
 
 import eth_retry
@@ -9,6 +10,7 @@ from web3 import HTTPProvider, Web3
 from web3.middleware import filter
 from web3.middleware.geth_poa import geth_poa_middleware
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.networks import Network
 from y.utils.cache import memory
 
@@ -32,6 +34,8 @@ chain_specific_max_batch_sizes = {
 fallback_batch_size = 10_000
 
 def _get_batch_size() -> int:
+    if batch_size := ENVS.GETLOGS_BATCH_SIZE:
+        return batch_size
     for provider, size in provider_specific_batch_sizes.items():
         if provider in web3.provider.endpoint_uri:
             return size

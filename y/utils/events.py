@@ -22,9 +22,7 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
-from y._db.common import Filter
-from y.constants import thread_pool_executor
-from y.contracts import contract_creation_block_async
+from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
@@ -43,7 +41,17 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
-    decoded = _decode_logs(logs)
+    try:
+        decoded = _decode_logs(logs)
+    except:
+        decoded = []
+        for log in logs:
+            try:
+                # get some help for debugging
+                decoded.extend(_decode_logs([log]))
+            except Exception as e:
+                raise (log, *e.args) from e
+
     for i, log in enumerate(logs):
         setattr(decoded[i], "block_number", log["blockNumber"])
         setattr(decoded[i], "transaction_hash", log["transactionHash"])
@@ -61,6 +69,7 @@ async def get_logs_asap(
 ) -> List[Any]:
 
     if from_block is None:
+        from y.contracts import contract_creation_block_async
         from_block = 0 if address is None else await contract_creation_block_async(address, True)
     if to_block is None:
         to_block = await dank_w3.eth.block_number
@@ -86,6 +95,7 @@ async def get_logs_asap_generator(
     # NOTE: If you don't need the logs in order, you will get your logs faster if you set `chronological` to False.
 
     if from_block is None:
+        from y.contracts import contract_creation_block_async
         if address is None:
             from_block = 0
         elif isinstance(address, Iterable) and not isinstance(address, str):
@@ -162,7 +172,7 @@ def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> 
         total += checkpoints[a] * (b - a) / (end_block - start_block)
     return total
 
-@a_sync.a_sync(executor=thread_pool_executor)
+@a_sync.a_sync
 def _get_logs(
     address: Optional[ChecksumAddress],
     topics: Optional[List[str]],
@@ -182,7 +192,7 @@ def _get_logs(
 
 get_logs_semaphore = defaultdict(
     lambda: BlockSemaphore(
-        thread_pool_executor._max_workers * 10, 
+        128, 
         # We need to do this in case users use the sync api in a multithread context
         name="y.get_logs" + "" if threading.current_thread() == threading.main_thread() else f".{threading.current_thread()}",
     )
@@ -193,12 +203,32 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
     
 async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
-    if address is None:
-        return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
-    elif topics is None:
-        return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
-    else:
-        return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+    try:
+        if address is None:
+            return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+        elif topics is None:
+            return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+        else:
+            return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+    except Exception as e:
+        errs = [
+            "Service Unavailable for url:",
+            "exceed maximum block range",
+            "block range is too wide",
+            "request timed out",
+        ]
+        if any(err in str(e) for err in errs):
+            logger.debug('your node is having trouble, breaking batch in half')
+            batch_size = (end - start + 1)
+            half_of_batch = batch_size // 2
+            batch1_end = start + half_of_batch
+            batch2_start = batch1_end + 1
+            batch1 = await _get_logs_async_no_cache(address, topics, start, batch1_end)
+            batch2 = await _get_logs_async_no_cache(address, topics, batch2_start, end)
+            response = batch1 + batch2
+        else:
+            raise
+    return response
 
 @eth_retry.auto_retry
 def _get_logs_no_cache(
@@ -262,16 +292,18 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         from_block: Optional[int] = None,
         fetch_interval: int = 300,
         chunk_size: int = BATCH_SIZE,
-        chunks_per_batch: int = 20,
+        chunks_per_batch: Optional[int] = None,
         semaphore: Optional[BlockSemaphore] = None,
-        executor: _AsyncExecutorMixin = thread_pool_executor,
+        executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
-        self.addresses = addresses
+        self.addresses = _clean_addresses(addresses)
         self.topics = topics
         super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
     
+    def __repr__(self) -> str:
+        return f"<{self.__class__.__name__} addresses={self.addresses} topics={self.topics}>"
     @property
     def cache(self) -> "LogCache":
         if self._cache is None:
@@ -296,12 +328,13 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
     @async_property
     async def _from_block(self) -> int:
         if self.from_block is None:
+            from y.contracts import contract_creation_block_async
             if self.addresses is None:
                 self.from_block = 0
             elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
-                self.from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in self.addresses]))
+                self.from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, when_no_history_return_0=True) for addr in self.addresses]))
             else:
-                self.from_block = await contract_creation_block_async(self.addresses, True)
+                self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
     async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
@@ -319,6 +352,8 @@ class Events(LogFilter):
         return self._objects_thru(block=to_block)
     def _extend(self, objs) -> None:
         return self._objects.extend(decode_logs(objs))
+    def _get_block_for_obj(self, obj: _EventItem) -> int:
+        return obj.block_number
 
 class ProcessedEvents(Events, ASyncIterable[T]):
     __slots__ = []

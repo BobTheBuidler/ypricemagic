@@ -8,14 +8,16 @@ from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
 from y._db.common import executor
-from y._db.entities import Price
-from y._db.utils.token import get_token
-from y._db.utils.utils import get_block
+from y._db.entities import Price, retry_locked, insert
+from y._db.utils._ep import _get_get_block, _get_get_token
 
 
 @a_sync(default='async', executor=executor)
 @db_session
+@retry_locked
 def get_price(address: str, block: int) -> Optional[Decimal]:
+    get_block = _get_get_block()
+    get_token = _get_get_token()
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     if price := Price.get(
@@ -33,20 +35,17 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 
 @a_sync(default='async', executor=executor)
 @db_session
+@retry_locked
 def _set_price(address: str, block: int, price: Decimal) -> None:
-    try:
-        Price(
-            block = get_block(block, sync=True),
-            token = get_token(address, sync=True),
-            price = Decimal(price),
-        )
-        commit()
-    except TransactionIntegrityError:
-        assert (p := Price.get(
-            block = get_block(block, sync=True),
-            token = get_token(address, sync=True),
-        )) and p.price == Decimal(price), (p.price, price)
-
+    get_block = _get_get_block()
+    get_token = _get_get_token()
+    if address == constants.EEE_ADDRESS:
+        address = constants.WRAPPED_GAS_COIN
+    insert(
+        type = Price,
+        block = get_block(block, sync=True),
+        token = get_token(address, sync=True),
+        price = Decimal(price),
+    )
+    
 __tasks: List[asyncio.Task] = []
-
-from y.datatypes import UsdPrice

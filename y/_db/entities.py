@@ -1,17 +1,22 @@
 
+import logging
 from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
+from functools import wraps
 from typing import Any
+from typing import Optional as typing_Optional
 
-from pony.orm import (Database, Optional, PrimaryKey, Required, Set,
-                      TransactionIntegrityError, commit, composite_key,
+from pony.orm import (CommitException, Database, InterfaceError,
+                      OperationalError, Optional, PrimaryKey, Required, Set,
+                      TransactionError, TransactionIntegrityError,
+                      UnexpectedError, commit, composite_index, composite_key,
                       db_session)
 
 db = Database()
 
 
-#E = TypeVar("E", bound=db.Entity)
+logger = logging.getLogger(__name__)
 
 class _AsyncEntityMixin:
     pass
@@ -26,8 +31,7 @@ class _AsyncEntityMixin:
         return super(db.Entity).select(*args, **kwargs)'''
     
 class Chain(db.Entity, _AsyncEntityMixin):
-    _pk = PrimaryKey(int, auto=True)
-    id = Required(int, unique=True, lazy=True)
+    id = PrimaryKey(int)
 
     blocks = Set("Block")
     addresses = Set("Address")
@@ -35,9 +39,9 @@ class Chain(db.Entity, _AsyncEntityMixin):
     trace_caches = Set("TraceCacheInfo")
 
 class Block(db.Entity, _AsyncEntityMixin):
-    _pk = PrimaryKey(int, auto=True)
     chain = Required(Chain, reverse="blocks")
     number = Required(int, lazy=True)
+    composite_key(chain, number)
     hash = Optional(int, lazy=True)
     timestamp = Optional(datetime, lazy=True)
     
@@ -50,9 +54,9 @@ class Block(db.Entity, _AsyncEntityMixin):
     traces = Set("Trace", reverse="block", cascade_delete=False)
 
 class Address(db.Entity, _AsyncEntityMixin):
-    _pk = PrimaryKey(int, auto=True)
     chain = Required(Chain, lazy=True, reverse="addresses")
     address = Required(str, lazy=True)
+    composite_key(chain, address)
     notes = Optional(str, lazy=True)
     
     composite_key(chain, address)
@@ -72,11 +76,10 @@ class Token(Contract):
     prices = Set("Price", reverse="token")
 
 class Price(db.Entity):
-    dbid = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
     token = Required(Token, index=True, lazy=True)
     composite_key(block, token)
-    price = Required(Decimal)
+    price = Required(Decimal, 38, 18)
     
 class TraceCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
@@ -105,17 +108,51 @@ class Log(db.Entity):
     topic1 = Optional(str, index=True, lazy=True)
     topic2 = Optional(str, index=True, lazy=True)
     topic3 = Optional(str, index=True, lazy=True)
+    composite_index(address, topic0)
+    composite_index(topic0, topic1)
+    composite_index(topic0, topic2)
+    composite_index(topic0, topic3)
+    composite_index(block, address, topic0)
+    composite_index(block, topic0, topic1)
+    composite_index(block, topic0, topic2)
+    composite_index(block, topic0, topic3)
+    composite_index(topic0, topic1, topic2, topic3)
+    composite_index(block, topic0, topic1, topic2, topic3)
     raw = Required(bytes, lazy=True)
 
 class Trace(db.Entity):
+    id = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
     hash = Required(str, index=True, lazy=True)
     from_address = Required(str, index=True, lazy=True)
     to_address = Required(str, index=True, lazy=True)
     raw = Required(bytes)
 
+
 @db_session
-def insert(type: db.Entity, **kwargs: Any) -> None:
+def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
     with suppress(TransactionIntegrityError):
-        type(**kwargs)
-        commit()
+        while True:
+            try:
+                entity = type(**kwargs)
+                commit()
+                logger.debug("inserted %s to db", entity)
+                return entity
+            except InterfaceError as e:
+                logger.debug("%s while inserting %s", e, type.__name__)
+
+def retry_locked(callable):
+    @wraps(callable)
+    def retry_locked_wrap(*args, **kwargs):
+        while True:
+            try:
+                return callable(*args, **kwargs)
+            except (CommitException, OperationalError, UnexpectedError) as e:
+                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
+                if "database is locked" not in str(e):
+                    raise e
+            except TransactionError as e:
+                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
+                if "An attempt to mix objects belonging to different transactions" not in str(e):
+                    raise e
+    return retry_locked_wrap

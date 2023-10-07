@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import logging
 import time
-from typing import NewType, Union
+from typing import Union
 
 from a_sync import a_sync
 from async_lru import alru_cache
@@ -28,11 +28,10 @@ logger = logging.getLogger(__name__)
 @yLazyLogger(logger)
 def get_block_timestamp(height: int) -> int:
     client = get_ethereum_client()
-    if client in ['tg', 'erigon']:
-        header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
-        return int(header.timestamp, 16)
-    else:
+    if client not in ['tg', 'erigon']:
         return chain[height].timestamp
+    header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
+    return int(header.timestamp, 16)
 
 @a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
 async def get_block_timestamp_async(height: int) -> int:

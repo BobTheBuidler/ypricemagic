@@ -1,6 +1,5 @@
 import logging
 
-import a_sync
 from async_lru import alru_cache
 from brownie import web3
 from cachetools.func import lru_cache
@@ -22,10 +21,11 @@ async def get_ethereum_client_async() -> str:
 
 @yLazyLogger(logger)
 def _get_ethereum_client(client: str) -> str:
+    logger.debug("client: %s", client)
     if client.startswith('TurboGeth'):
         return 'tg'
     if client.lower().startswith('erigon'):
         return 'erigon'
     if client.lower().startswith('geth'):
         return 'geth'
-    logger.debug("client: %s", client)
+    return client

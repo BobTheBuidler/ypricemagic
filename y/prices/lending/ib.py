@@ -1,6 +1,7 @@
 
 import asyncio
 import logging
+from decimal import Decimal
 from typing import Optional
 
 import a_sync
@@ -27,8 +28,8 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
         contract.totalSupply.coroutine(block_identifier=block),
     )
     token_scale, pool_scale = await asyncio.gather(ERC20(token, asynchronous=True).scale, ERC20(address, asynchronous=True).scale)
-    total_bal /= token_scale
-    total_supply /= pool_scale
+    total_bal /= Decimal(token_scale)
+    total_supply /= Decimal(pool_scale)
     share_price = total_bal / total_supply
     token_price = await magic.get_price(token, block, sync=False)
     price = share_price * token_price

@@ -1,7 +1,7 @@
 import asyncio
 import math
 from itertools import cycle
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, AsyncIterator
 
 import a_sync
 from brownie import chain
@@ -15,7 +15,6 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
-from y.utils.events import decode_logs, get_logs_asap_generator
 from y.utils.multicall import fetch_multicall
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
@@ -50,6 +49,7 @@ FEE_DENOMINATOR = 1_000_000
 
 
 class UniswapV3Pool(ContractBase):
+    __slots__ = 'deploy_block', 'fee', 'token0', 'token1', 'tick_spacing'
     def __init__(
         self,
         address: Address,
@@ -57,9 +57,11 @@ class UniswapV3Pool(ContractBase):
         token1: Address, 
         tick_spacing: int, 
         fee: int, 
+        deploy_block: int,
         asynchronous: bool = True
     ) -> None:
         super().__init__(address, asynchronous=asynchronous)
+        self.deploy_block = deploy_block
         self.token0 = ERC20(token0, asynchronous=asynchronous)
         self.token1 = ERC20(token1, asynchronous=asynchronous)
         self.tick_spacing = tick_spacing
@@ -103,14 +105,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             return await Contract.coroutine(quoter)
         except ContractNotVerified:
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
-
-    def _encode_path(self, path) -> bytes:
-        types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
-        return encode_abi_packed(types, path)
-
-    def _undo_fees(self, path) -> float:
-        fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
-        return math.prod(fees)
     
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_price(
@@ -150,24 +144,48 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def pools(self) -> List[UniswapV3Pool]:
         factory = await self.__factory__(sync=False)
-        pools = []
-        async for logs in get_logs_asap_generator(factory.address, [factory.topics["PoolCreated"]], chronological=False):
-            for event in decode_logs(logs):
-                token0, token1, fee, tick_spacing, pool = event.values()
-                pools.append(UniswapV3Pool(pool, token0, token1, fee, tick_spacing, asynchronous=self.asynchronous))
-        return pools
-
-    @a_sync.a_sync(ram_cache_maxsize=None)
-    async def pools_for_token(self, token: Address) -> List[Address]:
-        return [pool for pool in await self.__pools__(sync=False) if token in pool]
+        return Pools(factory, asynchronous=self.asynchronous)
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0
-        pools: List[UniswapV3Pool] = await self.pools_for_token(token, sync=False)
-        pools = [pool for pool in pools if pool not in ignore_pools]
-        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
+        tasks = []
+        async for pool in self._pools_for_token(token, block):
+            if pool not in ignore_pools:
+                tasks.append(pool.check_liquidity(token, block, sync=False))
+        return max(await asyncio.gather(*tasks)) if tasks else 0
+
+    async def _pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
+        pools = await self.__pools__(sync=False)
+        async for pool in pools.objects(to_block=block):
+            if token in pool:
+                yield pool
+
+    def _encode_path(self, path) -> bytes:
+        types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
+        return encode_abi_packed(types, path)
+
+    def _undo_fees(self, path) -> float:
+        fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
+        return math.prod(fees)
+
+from y.utils.events import ProcessedEvents
+from brownie.network.event import _EventItem
+
+class Pools(ProcessedEvents[UniswapV3Pool]):
+    __slots__ = "asynchronous", 
+    def __init__(self, factory: Contract, asynchronous: bool = False):
+        self.asynchronous = asynchronous
+        super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]], fetch_interval=60)
+    def _include_event(self, event: _EventItem):
+        return True
+    def _process_event(self, event: _EventItem) -> UniswapV3Pool:
+        token0, token1, fee, tick_spacing, pool = event.values()
+        return UniswapV3Pool(pool, token0, token1, fee, tick_spacing, event.block_number, asynchronous=self.asynchronous)
+    def _get_block_for_obj(self, obj: UniswapV3Pool) -> int:
+        return obj.deploy_block
+
 
 try:
     uniswap_v3 = UniswapV3(asynchronous=True)

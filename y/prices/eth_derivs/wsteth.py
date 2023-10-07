@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from decimal import Decimal
 from typing import Optional
 
 import a_sync
@@ -29,8 +30,8 @@ class wstEth(a_sync.ASyncGenericBase):
             raw_call(self.address, 'stEthPerToken()', output='int', block=block, sync=False),
             magic.get_price(weth, block, sync=False),
         )
-        share_price /= 1e18
-        return UsdPrice(share_price * weth_price)
+        share_price /= Decimal(10 ** 18)
+        return UsdPrice(share_price * Decimal(float(weth_price)))
 
 wsteth = wstEth(asynchronous=True)
 
