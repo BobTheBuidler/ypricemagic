@@ -3,7 +3,7 @@ import asyncio
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
-from typing import Any, Optional, Tuple, Union
+from typing import Any, Optional, Tuple, Union, List
 
 import a_sync
 from brownie.convert.datatypes import HexString
@@ -91,7 +91,8 @@ class ERC20(ContractBase):
         if symbol := await db.get_symbol(self.address):
             return symbol
         symbol = await self._symbol()
-        await db.set_symbol(self.address, symbol)
+        __tasks.append(asyncio.create_task(db.set_symbol(self.address, symbol)))
+        await __clear_finished_tasks()
         return symbol
     
     @a_sync.aka.property
@@ -103,7 +104,8 @@ class ERC20(ContractBase):
         if name:
             return name
         name = await self._name()
-        await db.set_name(self.address, name)
+        __tasks.append(asyncio.create_task(db.set_name(self.address, name)))
+        await __clear_finished_tasks()
         return name
     
     @a_sync.aka.cached_property
@@ -259,3 +261,12 @@ class WeiBalance(a_sync.ASyncGenericBase):
         value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
+
+
+__tasks: List[asyncio.Task] = []
+
+async def __clear_finished_tasks() -> None:
+    for t in __tasks[:]:
+        if t.done():
+            await t
+            __tasks.remove(t)
