@@ -35,7 +35,7 @@ class BalancerV1Pool(ERC20):
         supply = await self.total_supply_readable(block=block, sync=False)
         if supply == 0:
             return 0
-        return UsdPrice(await self.get_tvl(block=block, sync=False) / supply)
+        return UsdPrice(await self.get_tvl(block=block, sync=False) / Decimal(supply))
 
     async def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         token_balances = await self.get_balances(block=block, sync=False)
