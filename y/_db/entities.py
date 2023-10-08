@@ -45,8 +45,7 @@ class Block(db.Entity, _AsyncEntityMixin):
     hash = Optional(int, lazy=True)
     timestamp = Optional(datetime, lazy=True)
     
-    composite_key(chain, number)
-    composite_key(chain, hash)
+    composite_index(chain, hash)
 
     prices = Set("Price", reverse="block", cascade_delete=False)
     contracts_deployed = Set("Contract", reverse="deploy_block")
@@ -59,8 +58,6 @@ class Address(db.Entity, _AsyncEntityMixin):
     composite_key(chain, address)
     notes = Optional(str, lazy=True)
     
-    composite_key(chain, address)
-
     contracts_deployed = Set("Contract", reverse="deployer")
 
 class Contract(Address):
