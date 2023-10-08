@@ -1,10 +1,12 @@
 import asyncio
 import math
+from functools import cached_property
 from itertools import cycle
-from typing import List, Optional, Tuple, AsyncIterator
+from typing import AsyncIterator, List, Optional, Tuple
 
 import a_sync
 from brownie import chain
+from brownie.network.event import _EventItem
 from eth_abi.packed import encode_abi_packed
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -15,6 +17,7 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
+from y.utils.events import ProcessedEvents
 from y.utils.multicall import fetch_multicall
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
@@ -49,7 +52,7 @@ FEE_DENOMINATOR = 1_000_000
 
 
 class UniswapV3Pool(ContractBase):
-    __slots__ = 'deploy_block', 'fee', 'token0', 'token1', 'tick_spacing'
+    __slots__ = 'fee', 'token0', 'token1', 'tick_spacing'
     def __init__(
         self,
         address: Address,
@@ -61,11 +64,11 @@ class UniswapV3Pool(ContractBase):
         asynchronous: bool = True
     ) -> None:
         super().__init__(address, asynchronous=asynchronous)
-        self.deploy_block = deploy_block
         self.token0 = ERC20(token0, asynchronous=asynchronous)
         self.token1 = ERC20(token1, asynchronous=asynchronous)
         self.tick_spacing = tick_spacing
         self.fee = fee
+        self._deploy_block = deploy_block
 
     def __contains__(self, token: Address) -> bool:
         return token in [self.token0, self.token1]
@@ -76,7 +79,7 @@ class UniswapV3Pool(ContractBase):
         return ERC20(token, asynchronous=self.asynchronous)
 
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
-        if block < await contract_creation_block_async(self.address):
+        if block < await self.deploy_block(sync=False):
             return 0
         return await self[token].balance_of(self.address, block, sync=False)
 
@@ -88,7 +91,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             raise UnsupportedNetwork('compound is not supported on this network')
         self.fee_tiers = addresses[chain.id]['fee_tiers']
         self.loading = False
-        self.loaded = a_sync.Event()
         self._pools = {}
 
     def __contains__(self, asset) -> bool:
@@ -97,6 +99,10 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def factory(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id]['factory'])
+    
+    @cached_property
+    def loaded(self) -> a_sync.Event:
+        return a_sync.Event(name="uniswap v3")
     
     @a_sync.aka.cached_property
     async def quoter(self) -> Contract:
@@ -170,8 +176,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
         return math.prod(fees)
 
-from y.utils.events import ProcessedEvents
-from brownie.network.event import _EventItem
 
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     __slots__ = "asynchronous", 
@@ -186,7 +190,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         token0, token1, fee, tick_spacing, pool = event.values()
         return UniswapV3Pool(pool, token0, token1, fee, tick_spacing, event.block_number, asynchronous=self.asynchronous)
     def _get_block_for_obj(self, obj: UniswapV3Pool) -> int:
-        return obj.deploy_block
+        return obj._deploy_block
 
 
 try:

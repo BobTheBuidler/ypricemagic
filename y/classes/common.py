@@ -1,25 +1,34 @@
 
+import abc
 import asyncio
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
-from typing import Any, Optional, Tuple, Union, List
+from logging import getLogger
+from typing import (TYPE_CHECKING, Any, Awaitable, List, Literal, NoReturn,
+                    Optional, Tuple, Union)
 
 import a_sync
+from brownie import chain
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
 
 from y import convert
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
-from y.contracts import Contract, build_name, has_method, probe
-from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
+from y.contracts import (Contract, build_name, contract_creation_block_async,
+                         has_method, probe)
+from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.erc20 import decimals, totalSupply
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
 from y.utils import logging, raw_calls
 
+if TYPE_CHECKING:
+    from y.utils.events import Events
+
+logger = getLogger(__name__)
 
 def hex_to_string(h: HexString) -> str:
     '''returns a string from a HexString'''
@@ -29,10 +38,13 @@ def hex_to_string(h: HexString) -> str:
     return bytes.fromhex(h).decode("utf-8")
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
-    __slots__ = "address", "asynchronous"
+    __slots__ = "address", "asynchronous", "_deploy_block"
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         self.address = convert.to_address(address)
         self.asynchronous = asynchronous
+        # NOTE: This may have already been set by a subclass implementation, don't want to overwrite
+        if not hasattr(self, "_deploy_block"):
+            self._deploy_block = None
         super().__init__()
     
     def __str__(self) -> str:
@@ -68,6 +80,11 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     async def build_name(self) -> str:
         return await build_name(self.address, sync=False)
 
+    async def deploy_block(self, when_no_history_return_0: bool = False) -> int:
+        if self._deploy_block is None:
+            self._deploy_block = await contract_creation_block_async(self.address, when_no_history_return_0=when_no_history_return_0)
+        return self._deploy_block
+    
     async def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return await has_method(self.address, method, return_response=return_response, sync=False)
 
@@ -270,3 +287,60 @@ async def _clear_finished_tasks() -> None:
         if t.done():
             await t
             _tasks.remove(t)
+
+
+class _Loader(ContractBase):
+    """Used for use cases where you need to load data thru present time before proceeding, and then continue loading data in the background."""
+    __slots__ = "_loaded", "_init_block", "__exc", "__task",
+    def __init__(self, address: Address, asynchronous: bool = False):
+        super().__init__(address, asynchronous=asynchronous)
+        self._init_block = chain.height
+        self._loaded = None
+        self.__exc = None
+        self.__task = None
+    @abc.abstractmethod
+    async def _load(self) -> NoReturn:
+        ...
+    @abc.abstractproperty
+    def loaded(self) -> Awaitable[Literal[True]]:
+        ...
+    @property
+    def _task(self) -> "asyncio.Task[NoReturn]":
+        if self.__exc:
+            raise self.__exc
+        if self.__task is None:
+            logger.debug("creating loader task for %s", self)
+            self.__task = asyncio.create_task(self.__load())
+            self.__task.add_done_callback(self._done_callback)
+            return self._task
+        return self.__task
+    def _done_callback(self, task: "asyncio.Task[Any]") -> None:
+        if e := task.exception():
+            logger.error("exception while loading %s: %s", self, e)
+            logger.exception(e)
+            self.__exc = e
+            self.__task = None
+            raise e
+    async def __load(self) -> NoReturn:
+        """Loads the loader and catches any exceptions"""
+        try:
+            await self._load()
+        except Exception as e:
+            self.__exc = e
+            raise e
+
+
+class _EventsLoader(_Loader):
+    """Used for use cases where you need to load event data thru present time before proceeding, and then continue loading data in the background."""
+    @abc.abstractproperty
+    def _events(self) -> "Events":
+        ...
+    @property
+    def loaded(self) -> Awaitable[Literal[True]]:
+        if self._loaded is None:
+            self._task  # ensure task is running
+            self._loaded = self._events._lock.wait_for(self._init_block)
+        return self._loaded
+    async def _load(self) -> NoReturn:
+        async for _ in self._events:
+            pass

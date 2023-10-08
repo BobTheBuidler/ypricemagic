@@ -68,7 +68,7 @@ class BalancerV1Pool(ERC20):
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
-        if block < await contract_creation_block_async(self.address):
+        if block < await self.deploy_block(sync=False):
             return 0
         return await self.contract.getBalance.coroutine(token, block_identifier=block)
     

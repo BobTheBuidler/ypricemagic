@@ -1,9 +1,10 @@
 
 import asyncio
+import itertools
 import logging
 from contextlib import suppress
 from decimal import Decimal
-from typing import Any, AsyncIterator, Dict, List, Literal, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
@@ -41,13 +42,21 @@ Reserves = Tuple[int,int,int]
 
 class UniswapV2Pool(ERC20):
     __slots__ = 'get_reserves', '_token0', '_token1', '_types_assumed'
-    def __init__(self, address: AnyAddressType, token0: Optional[Address] = None, token1: Optional[Address] = None, asynchronous: bool = False):
+    def __init__(
+        self, 
+        address: AnyAddressType, 
+        token0: Optional[Address] = None, 
+        token1: Optional[Address] = None, 
+        deploy_block: Optional[int] = None, 
+        asynchronous: bool = False,
+    ):
         super().__init__(address, asynchronous=asynchronous)
         self.get_reserves = Call(self.address, 'getReserves()((uint112,uint112,uint32))')
+        self._deploy_block = deploy_block
         self._token0 = token0
         self._token1 = token1
         self._types_assumed = True
-            
+        
     @a_sync.aka.cached_property
     async def factory(self) -> Address:
         try: return await raw_call(self.address, 'factory()', output='address', sync=False)
@@ -150,7 +159,7 @@ class UniswapV2Pool(ERC20):
             return sum(vals)
     
     async def check_liquidity(self, token: Address, block: Block) -> int:
-        if block < await contract_creation_block_async(self.address):
+        if block < await self.deploy_block(sync=False):
             return 0
         try:
             if reserves := await self.reserves(block, sync=False):
@@ -198,9 +207,13 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     def _include_event(self, event: _EventItem) -> Literal[True]:
         return True
     def _process_event(self, event: _EventItem) -> UniswapV2Pool:
-        pool = UniswapV2Pool(address=event["pair"], token0=event["token0"], token1=event["token1"], asynchronous=self.asynchronous)
-        pool._deploy_block = event.block_number
-        return pool
+        return UniswapV2Pool(
+            address=event["pair"], 
+            token0=event["token0"], 
+            token1=event["token1"], 
+            deploy_block=event.block_number, 
+            asynchronous=self.asynchronous,
+        )
     
 
 class UniswapRouterV2(ContractBase):
@@ -328,29 +341,14 @@ class UniswapRouterV2(ContractBase):
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         pools = [pool async for pool in self._events.pools(to_block=await dank_w3.eth.block_number)]
         all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
-        if len(pools) == all_pairs_len:
-            return pools
-        elif len(pools) > all_pairs_len:
+        if len(pools) > all_pairs_len:
             raise NotImplementedError('this shouldnt happen again')
-        else: # <
+        elif len(pools) < all_pairs_len: # <
             to_get = all_pairs_len - len(pools)
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", to_get)
-            pools_your_node_couldnt_get = (
-                await multicall_same_func_same_contract_different_inputs(
-                    self.factory,
-                    'allPairs(uint256)(address)',
-                    inputs=range(to_get),
-                    sync=False,
-                )
-            )
-
-            for pool in pools_your_node_couldnt_get:
+            for pool in await multicall_same_func_same_contract_different_inputs(self.factory, 'allPairs(uint256)(address)', inputs=range(to_get), sync=False):
                 pools.insert(0, UniswapV2Pool(address=pool, asynchronous=self.asynchronous))
-
-        tokens = []
-        for pool in pools:
-            tokens.extend((pool.token0, pool.token1))
-        tokens = set(await asyncio.gather(*tokens))
+        tokens = set(await asyncio.gather(*itertools.chain(*((pool.token0, pool.token1) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
@@ -367,10 +365,11 @@ class UniswapRouterV2(ContractBase):
         return pool_to_token_out
 
     async def pools_for_token(self, token_address: Address, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Dict[UniswapV2Pool, Address]:
+        pools: Dict[UniswapV2Pool, Address]
         pools = await self.get_pools_for(token_address, sync=False)
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(k, True) for k in pools])
+            deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
@@ -395,6 +394,7 @@ class UniswapRouterV2(ContractBase):
     @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         token_address = convert.to_address(token_address)
+        pools: Dict[UniswapV2Pool, Address]
         pools = {
             pool: paired_with
             for pool, paired_with in (await self.pools_for_token(token_address, None, _ignore_pools=_ignore_pools, sync=False)).items()
@@ -402,7 +402,7 @@ class UniswapRouterV2(ContractBase):
         }
 
         if pools and block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool, True) for pool in pools])
+            deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
             pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
             
         if not pools:
