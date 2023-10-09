@@ -253,7 +253,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
 
         self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
         try:
-            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, __pop, self._ChecksumAddressSingletonMeta__instances, self.address)
+            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, _pop, self._ChecksumAddressSingletonMeta__instances, self.address)
         except RuntimeError:
             self._ttl_cache_popper = cache_ttl
 
@@ -275,7 +275,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         _setup_events(self)             # Init an event container for each topic
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
         try:
-            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, __pop, cls._ChecksumAddressSingletonMeta__instances, self.address)
+            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, self.address)
         except RuntimeError:
             self._ttl_cache_popper = cache_ttl
         return self
@@ -304,11 +304,11 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     
         elif isinstance(contract._ttl_cache_popper, int):
             cache_ttl = max(contract._ttl_cache_popper, cache_ttl)
-            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, __pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
+            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
 
         elif asyncio.get_running_loop().time() + cache_ttl > contract._ttl_cache_popper.when():
             contract._ttl_cache_popper.cancel()
-            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, __pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
+            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
         return contract
     
     def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
@@ -545,7 +545,7 @@ def _setup_events(contract: Contract) -> None:
     for k, v in contract.topics.items():
         setattr(contract.events, k, Events(addresses=[contract.address], topics=[[v]]))
 
-def __pop(d: dict, k: Any) -> None:
+def _pop(d: dict, k: Any) -> None:
     """Pops an item from a dict if present"""
     with suppress(KeyError):
         d.pop(k)
