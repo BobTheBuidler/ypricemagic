@@ -80,9 +80,13 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
     return await YearnInspiredVault(token).price(block=block, sync=False)
 
 class YearnInspiredVault(ERC20):
+    __slots__ = "_share_price_method"
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
+    def __init__(self, address: AnyAddressType, asynchronous: bool = False):
+        super().__init__(address, asynchronous=asynchronous)
+        self._share_price_method = None
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
@@ -109,24 +113,27 @@ class YearnInspiredVault(ERC20):
             if lend_platform:
                 underlying = await has_method(lend_platform, 'underlying()(address)', return_response=True, sync=False)
 
-        if underlying: return ERC20(underlying)
-        else: raise CantFetchParam(f'underlying for {self.__repr__()}')
+        if underlying: 
+            return ERC20(underlying, asynchronous=self.asynchronous)
+        raise CantFetchParam(f'underlying for {self.__repr__()}')
 
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
-        method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
+        if self._share_price_method:
+            share_price = await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False)
+        else:
+            self._share_price_method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
 
         if share_price is None:
             # this is for element vaults, probe fails because method requires input
             try:
-                contract = self.contract
-                if hasattr(contract, 'getSharesToUnderlying'):
-                    share_price = contract.getSharesToUnderlying.coroutine(await self.scale, block_identifier=block)
+                if hasattr(self.contract, 'getSharesToUnderlying'):
+                    share_price = self.contract.getSharesToUnderlying.coroutine(await self.scale, block_identifier=block)
             except ContractNotVerified:
                 pass
 
         if share_price is not None:
-            if method == 'getPricePerFullShare()(uint)':
+            if self._share_price_method == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / Decimal(10 ** 18)
             underlying = await self.__underlying__(sync=False)
