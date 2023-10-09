@@ -12,8 +12,8 @@ import eth_retry
 from a_sync.primitives import PruningThreadPoolExecutor, ThreadsafeSemaphore
 from brownie import chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
-from brownie.network.contract import (_add_deployment, _ContractBase,
-                                      _DeployedContractBase,
+from brownie.network.contract import (ContractEvents, _add_deployment,
+                                      _ContractBase, _DeployedContractBase,
                                       _fetch_from_explorer, _resolve_address)
 from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
@@ -247,11 +247,8 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                         self._verified = None
         
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
+        _setup_events(self)             # Init an event container for each topic
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
-
-        for k, v in self.topics.items():
-            generator = Events(addresses=[self.address], topics=[[v]])
-            setattr(self.events, k, generator)
 
         self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
         try:
@@ -274,6 +271,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
         self.__init_from_abi__(build, owner, persist)
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
+        _setup_events(self)             # Init an event container for each topic
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
         try:
             self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, self.address)
@@ -538,3 +536,10 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     if as_proxy_for:
         name, abi, _ = _extract_abi_data(as_proxy_for)
     return name, abi
+
+def _setup_events(contract: Contract) -> None:
+    """Helper function used to init contract event containers on a newly created `y.Contract` object."""
+    if not hasattr(contract, 'events'):
+        contract.events = ContractEvents(contract)
+    for k, v in contract.topics.items():
+        setattr(contract.events, k, Events(addresses=[contract.address], topics=[[v]]))
