@@ -11,6 +11,7 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 import a_sync
 import eth_retry
 from a_sync.iter import ASyncIterable
+from y import ENVIRONMENT_VARIABLES as ENVS
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
@@ -192,7 +193,7 @@ def _get_logs(
 
 get_logs_semaphore = defaultdict(
     lambda: BlockSemaphore(
-        128, 
+        ENVS.GETLOGS_DOP, 
         # We need to do this in case users use the sync api in a multithread context
         name="y.get_logs" + "" if threading.current_thread() == threading.main_thread() else f".{threading.current_thread()}",
     )
