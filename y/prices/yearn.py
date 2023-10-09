@@ -120,7 +120,11 @@ class YearnInspiredVault(ERC20):
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
         if self._share_price_method:
-            share_price = await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False)
+            try:
+                share_price = await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False)
+            except Exception as e:
+                logger.debug("exc %s when fetching share price for %s", e, self)
+                share_price = await probe(self.address, share_price_methods, block=block)
         else:
             self._share_price_method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
 
