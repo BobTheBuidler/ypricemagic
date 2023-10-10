@@ -171,7 +171,6 @@ class TraceFilter(Filter[dict, TraceCache]):
         *,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
-        interval: int = 300,
         semaphore: Optional[BlockSemaphore] = None,
         executor: _AsyncExecutorMixin = thread_pool_executor,
         is_reusable: bool = True,
@@ -179,7 +178,7 @@ class TraceFilter(Filter[dict, TraceCache]):
     ):
         self.from_addresses = from_addresses
         self.to_addresses = to_addresses
-        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
+        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
 
     @property
     def cache(self) -> TraceCache:

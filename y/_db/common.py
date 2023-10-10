@@ -14,6 +14,7 @@ from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
                       db_session)
 from tqdm.asyncio import tqdm_asyncio
+from async_property import async_property
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
@@ -128,14 +129,13 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         return None
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
         *, 
         chunk_size: int = BATCH_SIZE, 
         chunks_per_batch: Optional[int] = None,
-        interval: int = 300, 
         semaphore: Optional[BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
@@ -145,10 +145,10 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._chunk_size = chunk_size
         self._chunks_per_batch = chunks_per_batch
         self._exc = None
-        self._interval = interval
         self._lock = CounterLock()
         self._db_task = None
         self._semaphore = semaphore
+        self._sleep_fut = None
         self._task = None
         self._verbose = verbose
         super().__init__(executor=executor, is_reusable=is_reusable)
@@ -165,6 +165,10 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if self._semaphore is None:
             self._semaphore = BlockSemaphore(self._chunks_per_batch)
         return self._semaphore
+
+    @property
+    def is_asleep(self) -> bool:
+        return not self._sleep_fut.done() if self._sleep_fut else False
     
     def _get_block_for_obj(self, obj: T) -> int:
         """Override this as needed for different object types"""
@@ -176,6 +180,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         done_thru = 0
         while True:
             if block is None or done_thru < block:
+                if self.is_asleep:
+                    self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
@@ -191,6 +197,15 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 return
             done_thru = self._lock.value
             logger.debug('%s lock value %s to_block %s', self, done_thru, block)
+
+    @async_property  
+    async def _sleep(self) -> None:
+        if self._sleep_fut is None or self._sleep_fut.done():
+            self._sleep_fut = asyncio.get_event_loop().create_future()
+        await self._sleep_fut
+    
+    def _wakeup(self) -> None:
+        self._sleep_fut.set_result(None)
     
     async def __fetch(self) -> NoReturn:
         from y.constants import BIG_VALUE
@@ -217,7 +232,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             self._lock.set(cached_thru)
         while True:
             await self._load_new_objects(start_from_block=from_block)
-            await asyncio.sleep(self._interval)
+            await self._sleep
     
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
         logger.debug('loading new objects for %s', self)
@@ -256,8 +271,12 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
                 batches_yielded += 1
-                self._lock.set(end)
+                await self._set_lock(end)
                 logger.debug("%s loaded thru block %s", self, end)
+    
+    async def _set_lock(self, block: int) -> None:
+        """Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module"""
+        self._lock.set(block)
     
     def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int) -> None:
         if (prev_task := self._db_task) and prev_task.done() and (e := prev_task.exception()):

@@ -181,7 +181,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     __slots__ = "asynchronous", 
     def __init__(self, factory: Contract, asynchronous: bool = False):
         self.asynchronous = asynchronous
-        super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]], fetch_interval=60)
+        super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]])
     def __repr__(self) -> str:
         return object.__repr__(self)
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
