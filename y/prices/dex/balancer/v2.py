@@ -97,6 +97,7 @@ class BalancerV2Vault(ContractBase):
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     __slots__ = "asynchronous", 
     def __init__(self, *args, asynchronous: bool = False, **kwargs):
+        super().__init__(*args, **kwargs)
         self.asynchronous = asynchronous
     def _include_event(self, event: _EventItem) -> bool:
         # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
