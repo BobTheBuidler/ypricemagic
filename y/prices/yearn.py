@@ -82,14 +82,13 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
     return await YearnInspiredVault(token).price(block=block, sync=False)
 
 class YearnInspiredVault(ERC20):
-    __slots__ = "_get_share_price", "_share_price_method"
+    __slots__ = "_get_share_price", 
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
     def __init__(self, address: AnyAddressType, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self._get_share_price = None
-        self._share_price_method = None
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
@@ -101,12 +100,7 @@ class YearnInspiredVault(ERC20):
             underlying = await probe(self.address, underlying_methods)
         except AssertionError:
             # special handler for some strange beefy vaults
-            method = {
-                "BeefyVaultV6Matic": "wmatic()",
-                "BeefyVenusVaultBNB": "wbnb()",
-            }.get(self.build_name, None)
-
-            if not method:
+            if not (method := {"BeefyVaultV6Matic": "wmatic()", "BeefyVenusVaultBNB": "wbnb()"}.get(self.build_name)):
                 raise
             underlying = await raw_call(self.address, method, output='address', sync=False)
         
@@ -124,14 +118,14 @@ class YearnInspiredVault(ERC20):
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
         if self._get_share_price:
             try:
-                share_price = await self._get_share_price(block_id=block)
+                share_price = await self._get_share_price.coroutine(block_id=block)
             except Exception as e:
                 logger.debug("exc %s when fetching share price for %s", e, self)
                 share_price = await probe(self.address, share_price_methods, block=block)
         else:
-            self._share_price_method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
-            if self._share_price_method:
-                self._get_share_price = Call(self.address, [self._get_share_price]).coroutine
+            share_price_method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
+            if share_price_method:
+                self._get_share_price = Call(self.address, [self._get_share_price])
 
         if share_price is None:
             # this is for element vaults, probe fails because method requires input
@@ -142,7 +136,7 @@ class YearnInspiredVault(ERC20):
                 pass
 
         if share_price is not None:
-            if self._share_price_method == 'getPricePerFullShare()(uint)':
+            if self._get_share_price.function == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / Decimal(10 ** 18)
             underlying = await self.__underlying__(sync=False)
