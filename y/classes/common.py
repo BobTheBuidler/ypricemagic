@@ -39,12 +39,15 @@ def hex_to_string(h: HexString) -> str:
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
     __slots__ = "address", "asynchronous", "_deploy_block"
-    def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
+    def __init__(
+        self, 
+        address: AnyAddressType, 
+        asynchronous: bool = False, 
+        _deploy_block: Optional[int] = None,
+    ) -> None:
         self.address = convert.to_address(address)
         self.asynchronous = asynchronous
-        # NOTE: This may have already been set by a subclass implementation, don't want to overwrite
-        if not hasattr(self, "_deploy_block"):
-            self._deploy_block = None
+        self._deploy_block = _deploy_block
         super().__init__()
     
     def __str__(self) -> str:
