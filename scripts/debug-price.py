@@ -14,4 +14,4 @@ def main():
     logger = logging.getLogger('y')
     logger.setLevel(logging.DEBUG)
     logger.addHandler(logging.StreamHandler())
-    y.get_price(BAD, int(BLOCK))
+    y.get_price(BAD, int(BLOCK), skip_cache=True)
