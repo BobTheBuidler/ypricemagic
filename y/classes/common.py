@@ -342,7 +342,7 @@ class _EventsLoader(_Loader):
     def loaded(self) -> Awaitable[Literal[True]]:
         if self._loaded is None:
             self._task  # ensure task is running
-            self._loaded = self._events._lock.wait_for(self._init_block)
+            self._loaded = asyncio.ensure_future(self._events._lock.wait_for(self._init_block))
         return self._loaded
     async def _load(self) -> NoReturn:
         async for _ in self._events:
