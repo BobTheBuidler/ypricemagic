@@ -5,15 +5,15 @@ from typing import Optional
 
 import a_sync
 from brownie import chain
+from multicall.call import Call
 
 from y import Network
 from y.classes.common import ERC20
-from y.utils.logging import get_price_logger
-
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
+from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -82,12 +82,13 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
     return await YearnInspiredVault(token).price(block=block, sync=False)
 
 class YearnInspiredVault(ERC20):
-    __slots__ = "_share_price_method"
+    __slots__ = "_get_share_price", "_share_price_method"
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
     def __init__(self, address: AnyAddressType, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
+        self._get_share_price = None
         self._share_price_method = None
     
     @a_sync.aka.cached_property
@@ -121,14 +122,16 @@ class YearnInspiredVault(ERC20):
 
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
-        if self._share_price_method:
+        if self._get_share_price:
             try:
-                share_price = await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False)
+                share_price = await self._get_share_price(block_id=block)
             except Exception as e:
                 logger.debug("exc %s when fetching share price for %s", e, self)
                 share_price = await probe(self.address, share_price_methods, block=block)
         else:
             self._share_price_method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
+            if self._share_price_method:
+                self._get_share_price = Call(self.address, [self._get_share_price]).coroutine
 
         if share_price is None:
             # this is for element vaults, probe fails because method requires input
