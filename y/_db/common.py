@@ -251,7 +251,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
 
     async def _load_range(self, from_block: int, to_block: int) -> None:
         logger.debug('loading block range %s to %s', from_block, to_block)
-        batches_yielded = 0
+        chunks_yielded = 0
         done = {}
         as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         coros = [
@@ -261,20 +261,20 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             if self._chunks_per_batch is None or i < self._chunks_per_batch
         ]
         for objs in as_completed(coros, timeout=None):
+            next_chunk_loaded = False
             i, end, objs = await objs
             done[i] = end, objs
-            for i in range(batches_yielded, len(coros)):
-                if batches_yielded > i:
-                    continue
+            for i in range(chunks_yielded, len(coros)):
                 if i not in done:
                     break
-
                 end, objs = done.pop(i)
                 self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
-                batches_yielded += 1
-            await self._set_lock(end)
-            logger.debug("%s loaded thru block %s", self, end)
+                next_chunk_loaded = True
+                chunks_yielded += 1
+            if next_chunk_loaded:
+                await self._set_lock(end)
+                logger.debug("%s loaded thru block %s", self, end)
     
     async def _set_lock(self, block: int) -> None:
         """Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module"""
