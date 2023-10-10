@@ -160,7 +160,6 @@ class Registry(_CurveEventsLoader):
         return self.loaded.__await__()
 
 class Factory(_CurveLoader):
-    _loaded: a_sync.Event
     def __await__(self):
         return self.loaded.__await__()
     @property
@@ -395,7 +394,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def registry(self) -> brownie.Contract:
         try:
-            return await Contract.coroutine(self.address_provider.identifiers[0][-1])
+            return await Contract.coroutine(self.identifiers[0][-1])
         except IndexError: # if we couldn't get the registry via logs
             return await Contract.coroutine(await raw_call(self.address_provider, 'get_registry()', output='address', sync=False))
     

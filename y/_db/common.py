@@ -175,7 +175,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     def _get_block_for_obj(self, obj: T) -> int:
         """Override this as needed for different object types"""
         return obj['blockNumber']
-            
+    
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         yielded = 0
@@ -223,6 +223,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         """Override this if you want"""
         await self._loop(self.from_block)
     
+    @stuck_coro_debugger
     async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> List[T]:
         async with self.semaphore[range_end]:
             logger.debug("fetching %s block %s to %s", self, range_start, range_end)
@@ -236,6 +237,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             await self._load_new_objects(start_from_block=cached_thru or from_block)
             await self._sleep
     
+    @stuck_coro_debugger
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
         logger.debug('loading new objects for %s', self)
         start = v + 1 if (v := self._lock.value) else start_from_block or self.from_block
@@ -249,6 +251,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 await asyncio.sleep(1)
         await self._load_range(start, end)
 
+    @stuck_coro_debugger
     async def _load_range(self, from_block: int, to_block: int) -> None:
         logger.debug('loading block range %s to %s', from_block, to_block)
         chunks_yielded = 0
@@ -276,6 +279,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 await self._set_lock(end)
                 logger.debug("%s loaded thru block %s", self, end)
     
+    @stuck_coro_debugger
     async def _set_lock(self, block: int) -> None:
         """Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module"""
         self._lock.set(block)
@@ -300,6 +304,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if self._task.done() and (e := self._task.exception()):
             raise e
         
+    @stuck_coro_debugger
     async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task], depth: int) -> None:
         if prev_chunk_task:
             await prev_chunk_task
