@@ -8,6 +8,8 @@ from brownie import chain
 
 from y import Network
 from y.classes.common import ERC20
+from y.utils.logging import get_price_logger
+
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
@@ -151,7 +153,11 @@ class YearnInspiredVault(ERC20):
     
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def price(self, block: Optional[Block] = None) -> UsdPrice:
+        logger = get_price_logger(self.address, block=None, extra='yearn')
         share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__(sync=False))
         if share_price is None:
             return None
-        return UsdPrice(share_price * Decimal(await underlying.price(block=block, sync=False)))
+        logger.debug("%s share price at block %s: %s", self, block, share_price)
+        price = UsdPrice(share_price * Decimal(await underlying.price(block=block, sync=False)))
+        logger.debug("%s price at block %s: %s", self, block, price)
+        return price

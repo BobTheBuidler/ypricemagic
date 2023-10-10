@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+from typing import Optional
 
 from brownie import chain
 
@@ -159,6 +160,7 @@ ACCEPTABLE_HIGH_PRICES = {
 
 async def _sense_check(
     token_address: str, 
+    block: Optional[int],
     price: float
     ):
 
@@ -180,9 +182,9 @@ async def _sense_check(
     network = Network.name(chain.id)
     try:
         symbol = await ERC20(token_address, asynchronous=True).symbol
-        logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+        logger.warning(f'unusually high price (${price_readable}) returned for {symbol} {token_address} on {network} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
     except NonStandardERC20:
-        logger.warning(f'unusually high price (${price_readable}) returned for {token_address} on {network}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
+        logger.warning(f'unusually high price (${price_readable}) returned for {token_address} on {network} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.')
 
 
 #yLazyLogger(logger)

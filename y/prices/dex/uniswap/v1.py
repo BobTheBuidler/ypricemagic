@@ -10,6 +10,7 @@ from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, Pool, UsdPrice
+from y.decorators import stuck_coro_debugger
 from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
 from y.utils.raw_calls import _decimals
@@ -25,12 +26,14 @@ class UniswapV1(a_sync.ASyncGenericBase):
         self.asynchronous = asynchronous
         
     @a_sync.a_sync(ram_cache_maxsize=None)
+    @stuck_coro_debugger
     async def get_exchange(self, token_address: Address) -> Optional[Contract]:
         factory = await Contract.coroutine(self.factory)
         exchange = await factory.getExchange.coroutine(token_address)
         if exchange != ZERO_ADDRESS:
             return await Contract.coroutine(exchange)
 
+    @stuck_coro_debugger
     async def get_price(
         self, 
         token_address: Address, 
@@ -56,6 +59,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
             continue_if_call_reverted(e)
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @stuck_coro_debugger
     async def check_liquidity(self, token_address: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
         if exchange is None or exchange in ignore_pools:

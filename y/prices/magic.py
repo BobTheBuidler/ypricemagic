@@ -164,7 +164,7 @@ async def _get_price(
 
     logger = get_price_logger(token, block, 'magic')
     logger.debug('fetching price for %s', symbol)
-    logger._debugger = asyncio.create_task(_debug_tsk(symbol, logger))
+    logger._debugger = asyncio.create_task(coro=_debug_tsk(symbol, logger), name=f"_debug_tsk({symbol}, {logger})")
 
     # Helps to detect stuck code
     try:
@@ -184,7 +184,7 @@ async def _get_price(
         price = await _exit_early_for_known_tokens(token, block=block)
         logger.debug("early exit -> %s", price)
         if price is not None:
-            await _sense_check(token, price)
+            await _sense_check(token, block, price)
             logger.debug("%s price: %s", symbol, price)
             logger._debugger.cancel()
             return price
@@ -215,7 +215,7 @@ async def _get_price(
         if price is None:
             _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
         if price:
-            await _sense_check(token, price)
+            await _sense_check(token, block, price)
 
         logger.debug("%s price: %s", symbol, price)
         # Don't need this anymore
@@ -226,6 +226,7 @@ async def _get_price(
         raise e
 
 
+@stuck_coro_debugger
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block

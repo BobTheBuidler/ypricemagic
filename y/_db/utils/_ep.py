@@ -19,5 +19,5 @@ def _get_get_token():
     try:
         from eth_portfolio._db.utils import get_token
     except ImportError:
-        from y._db.utils import get_token
+        from y._db.utils.token import get_token
     return get_token

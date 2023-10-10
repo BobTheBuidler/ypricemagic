@@ -2,13 +2,14 @@
 import abc
 import asyncio
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
 from a_sync.iter import ASyncIterable
-from a_sync.primitives.executor import _AsyncExecutorMixin
+from a_sync.primitives.executor import (PruningThreadPoolExecutor,
+                                        _AsyncExecutorMixin)
 from a_sync.primitives.locks.counter import CounterLock
+from async_property import async_property
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
@@ -20,6 +21,7 @@ from web3.middleware.filter import block_ranges
 from y import convert
 from y._db.entities import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
+from y.decorators import stuck_coro_debugger
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
@@ -28,7 +30,8 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-executor = ThreadPoolExecutor(16)
+token_attr_threads = PruningThreadPoolExecutor(32)
+filter_threads = PruningThreadPoolExecutor(16)
 
 def enc_hook(obj: Any) -> bytes:
     if isinstance(obj, AttributeDict):
@@ -101,8 +104,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     @property
     def executor(self) -> _AsyncExecutorMixin:
         if self._executor is None:
-            from y.constants import thread_pool_executor
-            self._executor = thread_pool_executor
+            self._executor = filter_threads
         return self._executor
 
     @abc.abstractproperty
@@ -123,19 +125,20 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
             logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
             self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
-            logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
-            return cached_thru
+            if self._objects:
+                # TODO: figure out why the log filter with no addresses is busted and then get rid of the if check and do this always
+                logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
+                return cached_thru
         return None
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
         *, 
         chunk_size: int = BATCH_SIZE, 
         chunks_per_batch: Optional[int] = None,
-        interval: int = 300, 
         semaphore: Optional[BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
@@ -145,16 +148,19 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._chunk_size = chunk_size
         self._chunks_per_batch = chunks_per_batch
         self._exc = None
-        self._interval = interval
         self._lock = CounterLock()
         self._db_task = None
         self._semaphore = semaphore
+        self._sleep_fut = None
         self._task = None
         self._verbose = verbose
         super().__init__(executor=executor, is_reusable=is_reusable)
 
     def __aiter__(self) -> AsyncIterator[T]:
         return self._objects_thru(block=None).__aiter__()
+        
+    def __del__(self) -> None:
+        self._task.cancel()
         
     @abc.abstractmethod
     async def _fetch_range(self, from_block: int, to_block: int) -> List[T]:
@@ -165,17 +171,23 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if self._semaphore is None:
             self._semaphore = BlockSemaphore(self._chunks_per_batch)
         return self._semaphore
+
+    @property
+    def is_asleep(self) -> bool:
+        return not self._sleep_fut.done() if self._sleep_fut else False
     
     def _get_block_for_obj(self, obj: T) -> int:
         """Override this as needed for different object types"""
         return obj['blockNumber']
-            
+    
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         yielded = 0
         done_thru = 0
         while True:
             if block is None or done_thru < block:
+                if self.is_asleep:
+                    self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 raise self._exc
@@ -191,6 +203,15 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 return
             done_thru = self._lock.value
             logger.debug('%s lock value %s to_block %s', self, done_thru, block)
+
+    @async_property  
+    async def _sleep(self) -> None:
+        if self._sleep_fut is None or self._sleep_fut.done():
+            self._sleep_fut = asyncio.get_event_loop().create_future()
+        await self._sleep_fut
+    
+    def _wakeup(self) -> None:
+        self._sleep_fut.set_result(None)
     
     async def __fetch(self) -> NoReturn:
         from y.constants import BIG_VALUE
@@ -206,6 +227,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         """Override this if you want"""
         await self._loop(self.from_block)
     
+    @stuck_coro_debugger
     async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> List[T]:
         async with self.semaphore[range_end]:
             logger.debug("fetching %s block %s to %s", self, range_start, range_end)
@@ -216,9 +238,10 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if cached_thru := await self._load_cache(from_block):
             self._lock.set(cached_thru)
         while True:
-            await self._load_new_objects(start_from_block=from_block)
-            await asyncio.sleep(self._interval)
+            await self._load_new_objects(start_from_block=cached_thru or from_block)
+            await self._sleep
     
+    @stuck_coro_debugger
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
         logger.debug('loading new objects for %s', self)
         start = v + 1 if (v := self._lock.value) else start_from_block or self.from_block
@@ -228,13 +251,14 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 raise ValueError(f"start {start} is bigger than end {end}, can't do that")
         else:
             while start > (end := await dank_w3.eth.block_number):
-                logger.debug('start %s is greater than end %s, sleeping...', start, end)
+                logger.debug('%s start %s is greater than end %s, sleeping...', self, start, end)
                 await asyncio.sleep(1)
         await self._load_range(start, end)
 
+    @stuck_coro_debugger
     async def _load_range(self, from_block: int, to_block: int) -> None:
         logger.debug('loading block range %s to %s', from_block, to_block)
-        batches_yielded = 0
+        chunks_yielded = 0
         done = {}
         as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         coros = [
@@ -244,20 +268,25 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             if self._chunks_per_batch is None or i < self._chunks_per_batch
         ]
         for objs in as_completed(coros, timeout=None):
+            next_chunk_loaded = False
             i, end, objs = await objs
             done[i] = end, objs
-            for i in range(len(coros)):
-                if batches_yielded > i:
-                    continue
+            for i in range(chunks_yielded, len(coros)):
                 if i not in done:
                     break
-
                 end, objs = done.pop(i)
                 self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
-                batches_yielded += 1
-                self._lock.set(end)
+                next_chunk_loaded = True
+                chunks_yielded += 1
+            if next_chunk_loaded:
+                await self._set_lock(end)
                 logger.debug("%s loaded thru block %s", self, end)
+    
+    @stuck_coro_debugger
+    async def _set_lock(self, block: int) -> None:
+        """Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module"""
+        self._lock.set(block)
     
     def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int) -> None:
         if (prev_task := self._db_task) and prev_task.done() and (e := prev_task.exception()):
@@ -265,7 +294,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         depth = prev_task._depth + 1 if prev_task else 0
         logger.debug("%s queuing next db insert chunk %s thru block %s", self, depth, done_thru)
         task = asyncio.create_task(
-            self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task, depth)
+            coro = self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task, depth),
+            name = f"_insert_chunk from {from_block} to {done_thru}",
         )
         task._depth = depth
         task._prev_task = prev_task
@@ -274,10 +304,11 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     def _ensure_task(self) -> None:
         if self._task is None:
             logger.debug('creating task for %s', self)
-            self._task = asyncio.create_task(self.__fetch())
+            self._task = asyncio.create_task(coro=self.__fetch(), name=f"{self}.__fetch")
         if self._task.done() and (e := self._task.exception()):
             raise e
         
+    @stuck_coro_debugger
     async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task], depth: int) -> None:
         if prev_chunk_task:
             await prev_chunk_task

@@ -11,7 +11,6 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 import a_sync
 import eth_retry
 from a_sync.iter import ASyncIterable
-from y import ENVIRONMENT_VARIABLES as ENVS
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
@@ -23,6 +22,7 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
@@ -291,7 +291,6 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         addresses = [], 
         topics = [], 
         from_block: Optional[int] = None,
-        fetch_interval: int = 300,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
         semaphore: Optional[BlockSemaphore] = None,
@@ -301,7 +300,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
     ):
         self.addresses = _clean_addresses(addresses)
         self.topics = topics
-        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=fetch_interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
+        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
     
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} addresses={self.addresses} topics={self.topics}>"

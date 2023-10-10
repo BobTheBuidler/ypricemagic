@@ -1,6 +1,7 @@
 
 import asyncio
 import logging
+from decimal import Decimal
 from typing import Optional
 
 import a_sync
@@ -55,7 +56,7 @@ async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -
     elif token1 == ZERO_ADDRESS:
         bal1 /= 1e18
 
-    totalVal = bal0 * price0 + bal1 * price1
+    totalVal = bal0 * float(price0) + bal1 * float(price1)
     price = totalVal / total_supply
-    return price
+    return Decimal(price)
     

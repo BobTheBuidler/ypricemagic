@@ -39,12 +39,15 @@ def hex_to_string(h: HexString) -> str:
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
     __slots__ = "address", "asynchronous", "_deploy_block"
-    def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
+    def __init__(
+        self, 
+        address: AnyAddressType, 
+        asynchronous: bool = False, 
+        _deploy_block: Optional[int] = None,
+    ) -> None:
         self.address = convert.to_address(address)
         self.asynchronous = asynchronous
-        # NOTE: This may have already been set by a subclass implementation, don't want to overwrite
-        if not hasattr(self, "_deploy_block"):
-            self._deploy_block = None
+        self._deploy_block = _deploy_block
         super().__init__()
     
     def __str__(self) -> str:
@@ -108,7 +111,7 @@ class ERC20(ContractBase):
         if symbol := await db.get_symbol(self.address):
             return symbol
         symbol = await self._symbol()
-        _tasks.append(asyncio.create_task(db.set_symbol(self.address, symbol)))
+        _tasks.append(asyncio.create_task(coro=db.set_symbol(self.address, symbol), name=f"set_symbol {symbol} for {self.address}"))
         await _clear_finished_tasks()
         return symbol
     
@@ -121,7 +124,7 @@ class ERC20(ContractBase):
         if name:
             return name
         name = await self._name()
-        _tasks.append(asyncio.create_task(db.set_name(self.address, name)))
+        _tasks.append(asyncio.create_task(coro=db.set_name(self.address, name), name=f"set_name {name} for {self.address}"))
         await _clear_finished_tasks()
         return name
     
@@ -310,7 +313,7 @@ class _Loader(ContractBase):
             raise self.__exc
         if self.__task is None:
             logger.debug("creating loader task for %s", self)
-            self.__task = asyncio.create_task(self.__load())
+            self.__task = asyncio.create_task(coro=self.__load(), name=f"{self}.__load()")
             self.__task.add_done_callback(self._done_callback)
             return self._task
         return self.__task
@@ -339,8 +342,9 @@ class _EventsLoader(_Loader):
     def loaded(self) -> Awaitable[Literal[True]]:
         if self._loaded is None:
             self._task  # ensure task is running
-            self._loaded = self._events._lock.wait_for(self._init_block)
+            self._loaded = asyncio.ensure_future(self._events._lock.wait_for(self._init_block))
         return self._loaded
     async def _load(self) -> NoReturn:
-        async for _ in self._events:
+        # TODO: extend this for constant loading
+        async for _ in self._events.events(self._init_block):
             pass

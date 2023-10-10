@@ -180,6 +180,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     
     def _wrap_query_with_addresses(self, generator) -> Query:
         if addresses := self.addresses:
+            logger.debug("%s addresses: %s", self, addresses)
             if isinstance(addresses, str):
                 return (log for log in generator if log.address == str(EthAddress(addresses)))
             return (log for log in generator if log.address in addresses)
@@ -187,6 +188,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     
     def _wrap_query_with_topic(self, generator, topic: str) -> Query:
         if value := getattr(self, topic):
+            logger.debug("%s %s is %s", self, topic, value)
             if isinstance(value, (bytes, str)):
                 return (log for log in generator if getattr(log, topic) == value)
             return (log for log in generator if getattr(log, topic) in value)

@@ -11,6 +11,7 @@ from web3.exceptions import ContractLogicError
 from y import convert
 from y.classes.common import ERC20
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
+from y.decorators import stuck_coro_debugger
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
@@ -59,6 +60,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self.v2_factories = [UNISWAPS[name]['factory'] for name in UNISWAPS]
         self._uid_lock = threading.Lock()
 
+    @stuck_coro_debugger
     async def is_uniswap_pool(self, token_address: AnyAddressType) -> bool:
         token_address = convert.to_address(token_address)
         try:
@@ -76,6 +78,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
                 return True
         return False
 
+    @stuck_coro_debugger
     async def get_price(
         self, 
         token_in: AnyAddressType, 
@@ -96,6 +99,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             if price:
                 return price
 
+    @stuck_coro_debugger
     async def routers_by_depth(
         self, 
         token_in: AnyAddressType, 
@@ -109,6 +113,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
         return [depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance]
     
+    @stuck_coro_debugger
     async def check_liquidity(
         self, 
         token: Address, 

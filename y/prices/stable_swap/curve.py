@@ -70,7 +70,7 @@ _LT = TypeVar("_LT", bound=_CurveLoader)
 class _CurveEventsLoader(_CurveLoader, _EventsLoader):
     _events: "CurveEvents"
 
-class CurveEvents(ProcessedEvents[None]):
+class CurveEvents(ProcessedEvents[_EventItem]):
     __slots__ = "_base",
     def __init__(self, base: _LT):
         super().__init__(addresses=base.address)
@@ -86,21 +86,33 @@ class AddressProviderEvents(CurveEvents):
         elif event.name == 'AddressModified' and event['new_address'] != ZERO_ADDRESS:
             self.provider.identifiers[Ids(event['id'])].append(event['new_address'])
         logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
+        return event
         
 class RegistryEvents(CurveEvents):
+    __slots__ = "_tasks",
+    def __init__(self, base: _LT):
+        super().__init__(base)
+        self._tasks: List["asyncio.Task[EthAddress]"] = []
     @property
     def registry(self) -> "Registry":
         return self._base
     def _process_event(self, event: _EventItem) -> None:
         if event.name == 'PoolAdded':
             # TODO async this
-            lp_token = self.registry.contract.get_lp_token(event['pool'])
-            #lp_token = await self.contract.get_lp_token.coroutine(event['pool'])
-            self.registry.curve.registries[event.address].add(event['pool'])
-            self.registry.curve.token_to_pool[lp_token] = event['pool']
+            pool = event['pool']
+            self._tasks.append(asyncio.create_task(coro=self._add_pool(pool), name=f"Registry._add_pool for pool {pool}"))
+            self.registry.curve.registries[event.address].add(pool)
         elif event.name == 'PoolRemoved':
             self.registry.curve.registries[event.address].discard(event['pool'])
         logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
+        return event
+    async def _add_pool(self, pool: Address) -> EthAddress:
+        lp_token = await self.registry.contract.get_lp_token.coroutine(pool)
+        self.registry.curve.token_to_pool[lp_token] = pool
+    async def _set_lock(self, block: int) -> None:
+        await asyncio.gather(*self._tasks)
+        self._tasks.clear()
+        self._lock.set(block)
 
 
 
@@ -150,7 +162,6 @@ class Registry(_CurveEventsLoader):
         return self.loaded.__await__()
 
 class Factory(_CurveLoader):
-    _loaded: a_sync.Event
     def __await__(self):
         return self.loaded.__await__()
     @property
@@ -385,7 +396,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def registry(self) -> brownie.Contract:
         try:
-            return await Contract.coroutine(self.address_provider.identifiers[0][-1])
+            return await Contract.coroutine(self.identifiers[0][-1])
         except IndexError: # if we couldn't get the registry via logs
             return await Contract.coroutine(await raw_call(self.address_provider, 'get_registry()', output='address', sync=False))
     
@@ -500,7 +511,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     @cached_property
     def _task(self) -> asyncio.Task:
         logger.debug("creating loader task for %s", self)
-        task = asyncio.create_task(self._load_all())
+        task = asyncio.create_task(coro=self._load_all(), name=f"{self}._load_all()")
         def done_callback(t: asyncio.Task):
             if e := t.exception():
                 logger.error("exception while loading %s: %s", self, e)

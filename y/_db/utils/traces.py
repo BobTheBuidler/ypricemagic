@@ -9,10 +9,9 @@ from dank_mids.semaphores import BlockSemaphore
 from msgspec import json
 from pony.orm import commit, db_session, select
 
-from y._db.common import DiskCache, Filter, _clean_addresses
+from y._db.common import DiskCache, Filter, _clean_addresses, filter_threads
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert, retry_locked
 from y._db.utils._ep import _get_get_block
-from y.constants import thread_pool_executor
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
@@ -171,15 +170,14 @@ class TraceFilter(Filter[dict, TraceCache]):
         *,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
-        interval: int = 300,
         semaphore: Optional[BlockSemaphore] = None,
-        executor: _AsyncExecutorMixin = thread_pool_executor,
+        executor: _AsyncExecutorMixin = filter_threads,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
         self.from_addresses = from_addresses
         self.to_addresses = to_addresses
-        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, interval=interval, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
+        super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
 
     @property
     def cache(self) -> TraceCache:
