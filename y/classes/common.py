@@ -345,5 +345,6 @@ class _EventsLoader(_Loader):
             self._loaded = asyncio.ensure_future(self._events._lock.wait_for(self._init_block))
         return self._loaded
     async def _load(self) -> NoReturn:
-        async for _ in self._events:
+        # TODO: extend this for constant loading
+        async for _ in self._events(self._init_block):
             pass
