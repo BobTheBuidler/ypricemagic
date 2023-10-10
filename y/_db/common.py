@@ -261,7 +261,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         for objs in as_completed(coros, timeout=None):
             i, end, objs = await objs
             done[i] = end, objs
-            for i in range(len(coros)):
+            for i in range(batches_yielded, len(coros)):
                 if batches_yielded > i:
                     continue
                 if i not in done:
@@ -271,8 +271,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 self._insert_chunk(objs, from_block, end)
                 self._extend(objs)
                 batches_yielded += 1
-                await self._set_lock(end)
-                logger.debug("%s loaded thru block %s", self, end)
+            await self._set_lock(end)
+            logger.debug("%s loaded thru block %s", self, end)
     
     async def _set_lock(self, block: int) -> None:
         """Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module"""

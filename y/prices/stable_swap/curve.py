@@ -88,19 +88,29 @@ class AddressProviderEvents(CurveEvents):
         logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
         
 class RegistryEvents(CurveEvents):
+    __slots__ = "_tasks",
+    def __init__(self, base: _LT):
+        super().__init__(base)
+        self._tasks: List["asyncio.Task[EthAddress]"] = []
     @property
     def registry(self) -> "Registry":
         return self._base
     def _process_event(self, event: _EventItem) -> None:
         if event.name == 'PoolAdded':
             # TODO async this
-            lp_token = self.registry.contract.get_lp_token(event['pool'])
-            #lp_token = await self.contract.get_lp_token.coroutine(event['pool'])
-            self.registry.curve.registries[event.address].add(event['pool'])
-            self.registry.curve.token_to_pool[lp_token] = event['pool']
+            pool = event['pool']
+            self._tasks.append(asyncio.create_task(self._add_pool(pool)))
+            self.registry.curve.registries[event.address].add(pool)
         elif event.name == 'PoolRemoved':
             self.registry.curve.registries[event.address].discard(event['pool'])
         logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
+    async def _add_pool(self, pool: Address) -> EthAddress:
+        lp_token = await self.registry.contract.get_lp_token.coroutine(pool)
+        self.registry.curve.token_to_pool[lp_token] = pool
+    async def _set_lock(self, block: int) -> None:
+        await asyncio.gather(*self._tasks)
+        self._tasks.clear()
+        self._lock.set(block)
 
 
 
