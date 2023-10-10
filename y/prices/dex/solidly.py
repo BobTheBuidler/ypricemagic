@@ -33,7 +33,9 @@ class SolidlyRouterBase(UniswapRouterV2):
             ]
             if not call_reverted(e) and not any(s in str(e) for s in strings):
                 raise e
-    
+
+class SolidlyPool(UniswapV2Pool):
+    pass
 
 class SolidlyRouter(SolidlyRouterBase):
 
@@ -42,10 +44,10 @@ class SolidlyRouter(SolidlyRouterBase):
         return await self.contract.pairFor.coroutine(input_token, output_token, stable)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
+    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[SolidlyPool]:
         pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
         if await self.contract.isPair.coroutine(pool_address, block_identifier=block):
-            return UniswapV2Pool(pool_address)
+            return SolidlyPool(pool_address, asynchronous=self.asynchronous)
 
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
         routes = []
