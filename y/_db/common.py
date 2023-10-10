@@ -2,19 +2,19 @@
 import abc
 import asyncio
 import logging
-from concurrent.futures import ThreadPoolExecutor
 from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
 from a_sync.iter import ASyncIterable
-from a_sync.primitives.executor import _AsyncExecutorMixin
+from a_sync.primitives.executor import (PruningThreadPoolExecutor,
+                                        _AsyncExecutorMixin)
 from a_sync.primitives.locks.counter import CounterLock
+from async_property import async_property
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
                       db_session)
 from tqdm.asyncio import tqdm_asyncio
-from async_property import async_property
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
@@ -29,7 +29,8 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-executor = ThreadPoolExecutor(16)
+token_attr_threads = PruningThreadPoolExecutor(32)
+filter_threads = PruningThreadPoolExecutor(16)
 
 def enc_hook(obj: Any) -> bytes:
     if isinstance(obj, AttributeDict):
@@ -102,8 +103,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     @property
     def executor(self) -> _AsyncExecutorMixin:
         if self._executor is None:
-            from y.constants import thread_pool_executor
-            self._executor = thread_pool_executor
+            self._executor = filter_threads
         return self._executor
 
     @abc.abstractproperty

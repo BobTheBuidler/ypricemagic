@@ -7,12 +7,12 @@ from a_sync import a_sync
 from pony.orm import TransactionIntegrityError, commit, db_session
 
 from y import constants
-from y._db.common import executor
+from y._db.common import token_attr_threads
 from y._db.entities import Price, retry_locked, insert
 from y._db.utils._ep import _get_get_block, _get_get_token
 
 
-@a_sync(default='async', executor=executor)
+@a_sync(default='async', executor=token_attr_threads)
 @db_session
 @retry_locked
 def get_price(address: str, block: int) -> Optional[Decimal]:
@@ -33,7 +33,7 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
             await t
             _tasks.remove(t)
 
-@a_sync(default='async', executor=executor)
+@a_sync(default='async', executor=token_attr_threads)
 @db_session
 @retry_locked
 def _set_price(address: str, block: int, price: Decimal) -> None:
