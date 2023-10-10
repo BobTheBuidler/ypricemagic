@@ -1,7 +1,6 @@
 bobs_lazy_logging==0.0.4
 cachetools>=4.1.1,<4.3
 checksum_dict>=1.1.1
-git+https://www.github.com/crebsy/dank_mids@83e599f14316a4e2742806bb191d53ea3c03fb85
 eth-brownie>=1.18.1,<1.20
 eth_retry>=0.1.17,<0.2
 ez-a-sync>=0.10.1
