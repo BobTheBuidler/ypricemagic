@@ -346,5 +346,5 @@ class _EventsLoader(_Loader):
         return self._loaded
     async def _load(self) -> NoReturn:
         # TODO: extend this for constant loading
-        async for _ in self._events(self._init_block):
+        async for _ in self._events.events(self._init_block):
             pass
