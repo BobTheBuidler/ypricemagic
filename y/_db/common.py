@@ -124,8 +124,10 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
             logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
             self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
-            logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
-            return cached_thru
+            if self._objects:
+                # TODO: figure out why the log filter with no addresses is busted and then get rid of the if check and do this always
+                logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
+                return cached_thru
         return None
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
@@ -231,7 +233,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         if cached_thru := await self._load_cache(from_block):
             self._lock.set(cached_thru)
         while True:
-            await self._load_new_objects(start_from_block=from_block)
+            await self._load_new_objects(start_from_block=cached_thru or from_block)
             await self._sleep
     
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
