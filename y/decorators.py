@@ -41,8 +41,12 @@ def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[
         if not logger.isEnabledFor(logging.DEBUG):
             return await fn(*args, **kwargs)
         t = asyncio.create_task(coro=_stuck_debug_task(logger, fn, args, kwargs), name="_stuck_debug_task")
-        retval = await fn(*args, **kwargs)
-        t.cancel()
+        try:
+            retval = await fn(*args, **kwargs)
+            t.cancel()
+        except Exception as e:
+            t.cancel()
+            raise e
         return retval
     return stuck_coro_wrap
 
