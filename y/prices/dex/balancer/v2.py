@@ -95,12 +95,9 @@ class BalancerV2Vault(ContractBase):
                 if pool_infos[k].done():
                     if token in await pool_infos.pop(k):
                         yield pool
-        for task in asyncio.as_completed(pool_infos.values()):
-            await task
-            for pool in list(pool_infos.keys()):
-                if pool_infos[pool].done():
-                    if token in await pool_infos.pop(pool):
-                        yield pool
+        async for pool, info in a_sync.as_completed(pool_infos, aiter=True):
+            if token in info:
+                yield pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     __slots__ = "asynchronous", 

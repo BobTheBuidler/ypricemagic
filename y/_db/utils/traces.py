@@ -1,9 +1,9 @@
 
-import asyncio
 import logging
 from itertools import chain
 from typing import AsyncIterator, List, Optional
 
+import a_sync
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from dank_mids.semaphores import BlockSemaphore
 from msgspec import json
@@ -196,8 +196,7 @@ class TraceFilter(Filter[dict, TraceCache]):
                 return number, await dank_w3.provider.make_request("TraceBlock", number)
             
             results = {}
-            for fut in asyncio.as_completed([trace_block(i) for i in range(from_block, to_block)]):
-                block, traces = await fut
+            async for block, traces in a_sync.as_completed([trace_block(i) for i in range(from_block, to_block)], aiter=True):
                 results[block] = [
                     trace for trace in traces
                     if (not self.from_addresses or any("from" in x and x["from"] in self.from_addresses for x in [trace, trace.values()]))
