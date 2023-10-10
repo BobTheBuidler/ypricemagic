@@ -115,12 +115,9 @@ async def get_logs_asap_generator(
             logger.info('fetching %d batches', len(ranges))
         coros = [_get_logs_async(address, topics, start, end) for start, end in ranges]
         if chronological:
-            async def wrap(i, coro):
-                return i, await coro
             yielded = 0
             done = {}
-            for logs in asyncio.as_completed([wrap(i, coro) for i, coro in enumerate(coros)], timeout=None):
-                i, result = await logs
+            async for i, result in a_sync.as_completed(dict(enumerate(coros)), aiter=True):
                 done[i] = result
                 for i in range(len(coros)):
                     if yielded > i:

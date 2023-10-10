@@ -5,6 +5,7 @@ import logging
 from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
+import a_sync
 from a_sync.iter import ASyncIterable
 from a_sync.primitives.executor import (PruningThreadPoolExecutor,
                                         _AsyncExecutorMixin)
@@ -261,16 +262,14 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         logger.debug('loading block range %s to %s', from_block, to_block)
         chunks_yielded = 0
         done = {}
-        as_completed = tqdm_asyncio.as_completed if self._verbose else asyncio.as_completed
         coros = [
             self._fetch_range_wrapped(i, start, end) 
             for i, (start, end) 
             in enumerate(block_ranges(from_block, to_block, self._chunk_size))
             if self._chunks_per_batch is None or i < self._chunks_per_batch
         ]
-        for objs in as_completed(coros, timeout=None):
+        async for i, end, objs in a_sync.as_completed(coros, aiter=True, tqdm=self._verbose):
             next_chunk_loaded = False
-            i, end, objs = await objs
             done[i] = end, objs
             for i in range(chunks_yielded, len(coros)):
                 if i not in done:
