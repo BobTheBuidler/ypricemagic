@@ -164,7 +164,7 @@ async def _get_price(
 
     logger = get_price_logger(token, block, 'magic')
     logger.debug('fetching price for %s', symbol)
-    logger._debugger = asyncio.create_task(_debug_tsk(symbol, logger))
+    logger._debugger = asyncio.create_task(coro=_debug_tsk(symbol, logger), name=f"_debug_tsk({symbol}, {logger})")
 
     # Helps to detect stuck code
     try:

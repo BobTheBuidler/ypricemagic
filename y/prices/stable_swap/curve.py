@@ -99,7 +99,7 @@ class RegistryEvents(CurveEvents):
         if event.name == 'PoolAdded':
             # TODO async this
             pool = event['pool']
-            self._tasks.append(asyncio.create_task(self._add_pool(pool)))
+            self._tasks.append(asyncio.create_task(coro=self._add_pool(pool), name=f"Registry._add_pool for pool {pool}"))
             self.registry.curve.registries[event.address].add(pool)
         elif event.name == 'PoolRemoved':
             self.registry.curve.registries[event.address].discard(event['pool'])
@@ -510,7 +510,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     @cached_property
     def _task(self) -> asyncio.Task:
         logger.debug("creating loader task for %s", self)
-        task = asyncio.create_task(self._load_all())
+        task = asyncio.create_task(coro=self._load_all(), name=f"{self}._load_all()")
         def done_callback(t: asyncio.Task):
             if e := t.exception():
                 logger.error("exception while loading %s: %s", self, e)

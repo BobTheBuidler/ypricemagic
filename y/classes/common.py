@@ -111,7 +111,7 @@ class ERC20(ContractBase):
         if symbol := await db.get_symbol(self.address):
             return symbol
         symbol = await self._symbol()
-        _tasks.append(asyncio.create_task(db.set_symbol(self.address, symbol)))
+        _tasks.append(asyncio.create_task(coro=db.set_symbol(self.address, symbol), name=f"set_symbol {symbol} for {self.address}"))
         await _clear_finished_tasks()
         return symbol
     
@@ -124,7 +124,7 @@ class ERC20(ContractBase):
         if name:
             return name
         name = await self._name()
-        _tasks.append(asyncio.create_task(db.set_name(self.address, name)))
+        _tasks.append(asyncio.create_task(coro=db.set_name(self.address, name), name=f"set_name {name} for {self.address}"))
         await _clear_finished_tasks()
         return name
     
@@ -313,7 +313,7 @@ class _Loader(ContractBase):
             raise self.__exc
         if self.__task is None:
             logger.debug("creating loader task for %s", self)
-            self.__task = asyncio.create_task(self.__load())
+            self.__task = asyncio.create_task(coro=self.__load(), name=f"{self}.__load()")
             self.__task.add_done_callback(self._done_callback)
             return self._task
         return self.__task

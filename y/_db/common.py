@@ -286,7 +286,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         depth = prev_task._depth + 1 if prev_task else 0
         logger.debug("%s queuing next db insert chunk %s thru block %s", self, depth, done_thru)
         task = asyncio.create_task(
-            self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task, depth)
+            coro = self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task, depth),
+            name = f"_insert_chunk from {from_block} to {done_thru}",
         )
         task._depth = depth
         task._prev_task = prev_task
@@ -295,7 +296,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     def _ensure_task(self) -> None:
         if self._task is None:
             logger.debug('creating task for %s', self)
-            self._task = asyncio.create_task(self.__fetch())
+            self._task = asyncio.create_task(coro=self.__fetch(), name=f"{self}.__fetch")
         if self._task.done() and (e := self._task.exception()):
             raise e
         

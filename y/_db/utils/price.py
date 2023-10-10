@@ -27,7 +27,7 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
         return price.price
 
 async def set_price(address: str, block: int, price: Decimal) -> None:
-    _tasks.append(asyncio.create_task(_set_price(address, block, price)))
+    _tasks.append(asyncio.create_task(coro=_set_price(address, block, price), name=f"set_price {price} for {address} at {block}"))
     for t in _tasks[:]:
         if t.done():
             await t

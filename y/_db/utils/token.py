@@ -82,7 +82,7 @@ async def get_decimals(address: str) -> int:
     if d is None:
         d = await decimals(address, sync=False)
         if d:
-            asyncio.create_task(set_decimals(address, d))
+            asyncio.create_task(coro=set_decimals(address, d), name=f"set_decimals {address}")
     return d
 
 @a_sync(default='async', executor=executor)

@@ -82,7 +82,7 @@ class BalancerV2Vault(ContractBase):
         pool_infos = {}
         pool: BalancerV2Pool
         async for pool in self._events.events(to_block=block):
-            pool_infos[pool] = asyncio.create_task(pool.tokens(sync=False))
+            pool_infos[pool] = asyncio.create_task(coro=pool.tokens(sync=False), name=f"pool.tokens for {pool}")
             for k in list(pool_infos.keys()):
                 if pool_infos[k].done():
                     if token in await pool_infos.pop(k):
@@ -118,7 +118,7 @@ class BalancerV2Pool(ERC20):
     @a_sync.aka.property
     async def id(self) -> PoolId:
         if self._id is None:
-            self._id = asyncio.create_task(Call(self.address, ['getPoolId()(bytes32)']).coroutine())
+            self._id = asyncio.create_task(coro=Call(self.address, ['getPoolId()(bytes32)']).coroutine(), name=f"pool.id for {self}")
         if hasattr(self._id, "__await__"):
             self._id = PoolId(await self._id)
         return self._id
