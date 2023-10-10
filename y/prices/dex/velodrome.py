@@ -91,7 +91,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             pools_your_node_couldnt_get = [i for i in range(all_pools_len) if i not in range(len(pools))]
             logger.debug('pools: %s', pools_your_node_couldnt_get)
             pools_your_node_couldnt_get = await asyncio.gather(
-                *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
+                *[Call(self.factory, ['allPools(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
             )
             token0s, token1s, stables = await asyncio.gather(
                 asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
