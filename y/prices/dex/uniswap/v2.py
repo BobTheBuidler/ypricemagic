@@ -210,13 +210,15 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     def _get_block_for_obj(self, obj: UniswapV2Pool) -> int:
         return obj._deploy_block
     def _process_event(self, event: _EventItem) -> UniswapV2Pool:
-        return UniswapV2Pool(
+        pool = UniswapV2Pool(
             address=event["pair"], 
             token0=event["token0"], 
             token1=event["token1"], 
-            deploy_block=event.block_number, 
             asynchronous=self.asynchronous,
         )
+        # Do this here instead of in the init in case the user inited their own UniswapV2Pool object previoulsy, which is now the singleton
+        pool._deploy_block = event.block_number
+        return pool
     
 
 class UniswapRouterV2(ContractBase):
