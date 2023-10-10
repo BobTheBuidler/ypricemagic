@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale: float, block) -> float:
     out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, sync=False))
-    return (total_outout / out_scale) * out_price / scale
+    return (total_outout / out_scale) * float(out_price) / scale
 
 class BalancerV1Pool(ERC20):
     async def tokens(self, block: Optional[Block] = None) -> List[ERC20]:
