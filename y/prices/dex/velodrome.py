@@ -81,15 +81,14 @@ class VelodromeRouterV2(SolidlyRouterBase):
             print(e)
             raise e
         
-        all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
+        all_pools_len = await raw_call(self.factory, 'allPoolsLength()', block=chain.height, output='int', sync=False)
 
-        #if len(pools) > all_pairs_len:
-        # NOTE: uhh, why is the velo router showing allPairsLength == 0 but also retuning events?
-        #    raise ValueError('wtf')
+        if len(pools) > all_pools_len:
+            raise ValueError('wtf')
         
-        if len(pools) < all_pairs_len:
-            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pools))
-            pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
+        if len(pools) < all_pools_len:
+            logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pools_len - len(pools))
+            pools_your_node_couldnt_get = [i for i in range(all_pools_len) if i not in range(len(pools))]
             logger.debug('pools: %s', pools_your_node_couldnt_get)
             pools_your_node_couldnt_get = await asyncio.gather(
                 *[Call(self.factory, ['allPairs(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
@@ -114,9 +113,8 @@ class VelodromeRouterV2(SolidlyRouterBase):
             pools = pools_your_node_couldnt_get + pools
 
         tokens = set()
-        for pool_params in pools.values():
-            tokens.add(pool_params['token0'])
-            tokens.add(pool_params['token1'])
+        for pool in pools:
+            tokens.update(asyncio.gather(pool.token0, pool.token1))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     
