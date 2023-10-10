@@ -54,7 +54,6 @@ class BalancerV2Vault(ContractBase):
     async def list_pools(self, block: Optional[Block] = None) -> List["BalancerV2Pool"]:
         return [pool async for pool in self._events.events(to_block=block)]
     
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def yield_pools_for(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
         pool_infos = {}
         pool: BalancerV2Pool
@@ -82,6 +81,7 @@ class BalancerV2Vault(ContractBase):
             for poolId in poolids
         ])
     
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress], int]:
         logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool, deepest_balance = None, 0
