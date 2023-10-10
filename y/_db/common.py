@@ -159,6 +159,9 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
     def __aiter__(self) -> AsyncIterator[T]:
         return self._objects_thru(block=None).__aiter__()
         
+    def __del__(self) -> None:
+        self._task.cancel()
+        
     @abc.abstractmethod
     async def _fetch_range(self, from_block: int, to_block: int) -> List[T]:
         ...
