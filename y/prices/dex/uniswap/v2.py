@@ -204,8 +204,6 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
             yield pool
     def _get_block_for_obj(self, obj: UniswapV2Pool) -> int:
         return obj._deploy_block
-    def _include_event(self, event: _EventItem) -> Literal[True]:
-        return True
     def _process_event(self, event: _EventItem) -> UniswapV2Pool:
         return UniswapV2Pool(
             address=event["pair"], 

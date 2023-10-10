@@ -184,8 +184,6 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]], fetch_interval=60)
     def __repr__(self) -> str:
         return object.__repr__(self)
-    def _include_event(self, event: _EventItem):
-        return True
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         token0, token1, fee, tick_spacing, pool = event.values()
         return UniswapV3Pool(pool, token0, token1, fee, tick_spacing, event.block_number, asynchronous=self.asynchronous)
