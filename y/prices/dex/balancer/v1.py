@@ -13,6 +13,7 @@ from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async, has_methods
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
+from y.decorators import stuck_coro_debugger
 from y.networks import Network
 from y.prices import magic
 
@@ -31,12 +32,14 @@ class BalancerV1Pool(ERC20):
         tokens = await self.contract.getCurrentTokens.coroutine(block_identifier=block)
         return [ERC20(token, asynchronous=self.asynchronous) for token in tokens]
     
+    @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
         supply = await self.total_supply_readable(block=block, sync=False)
         if supply == 0:
             return 0
         return UsdPrice(await self.get_tvl(block=block, sync=False) / Decimal(supply))
 
+    @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
         token_balances = await self.get_balances(block=block, sync=False)
         good_balances = {
@@ -54,11 +57,13 @@ class BalancerV1Pool(ERC20):
             return good_value / len(good_balances) * len(token_balances)
         return None
     
+    @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
         tokens = await self.tokens(block=block, sync=False)
         balances = await asyncio.gather(*[self.get_balance(token, block or 'latest', sync=False) for token in tokens])
         return dict(zip(tokens, balances))
 
+    @stuck_coro_debugger
     async def get_balance(self, token: AnyAddressType, block: Block) -> Decimal:
         balance, scale = await asyncio.gather(
             self.check_liquidity(str(token), block, sync=False),
@@ -67,6 +72,7 @@ class BalancerV1Pool(ERC20):
         return Decimal(balance) / scale
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block < await self.deploy_block(sync=False):
             return 0
@@ -84,16 +90,16 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
     def __repr__(self) -> str:
         return "<BalancerV1>"
     
-    #yLazyLogger(logger)
+    @stuck_coro_debugger
     async def is_pool(self, token_address: AnyAddressType) -> bool:
         return await has_methods(token_address ,("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"), sync=False)
 
-    #yLazyLogger(logger)
+    @stuck_coro_debugger
     async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         assert await self.is_pool(token_address, sync=False)
         return await BalancerV1Pool(token_address, asynchronous=True).get_pool_price(block=block)
     
-    #yLazyLogger(logger)
+    @stuck_coro_debugger
     async def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if block is not None and block < await contract_creation_block_async(self.exchange_proxy, True):
             return None
@@ -113,7 +119,7 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
             return await _calc_out_value(out, totalOutput, scale, block=block)
         return None
     
-    #yLazyLogger(logger)
+    @stuck_coro_debugger
     async def check_liquidity_against(
         self,
         token_in: AddressOrContract,
@@ -135,7 +141,7 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
 
         return token_out, output
     
-    #yLazyLogger(logger)
+    @stuck_coro_debugger
     async def get_some_output(
         self,
         token_in: AddressOrContract,
@@ -159,6 +165,7 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
                         totalOutput = None
         return out, totalOutput
 
+    @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         pools = []
         pools = [pool for pool in pools if pool not in ignore_pools]

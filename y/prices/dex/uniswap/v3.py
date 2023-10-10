@@ -14,6 +14,7 @@ from y.classes.common import ERC20, ContractBase
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
+from y.decorators import stuck_coro_debugger
 from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
@@ -113,6 +114,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
     
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+    @stuck_coro_debugger
     async def get_price(
         self, 
         token: Address, 
@@ -153,6 +155,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return UniV3Pools(factory, asynchronous=self.asynchronous)
 
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0

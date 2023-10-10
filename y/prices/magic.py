@@ -226,6 +226,7 @@ async def _get_price(
         raise e
 
 
+@stuck_coro_debugger
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block

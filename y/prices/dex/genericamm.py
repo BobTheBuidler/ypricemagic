@@ -8,6 +8,7 @@ from multicall import Call
 from y import Contract
 from y.classes.common import ERC20, WeiBalance
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
+from y.decorators import stuck_coro_debugger
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract
 from y.utils.cache import memory
 
@@ -30,6 +31,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
     def __contains__(self, lp_token_address: AnyAddressType) -> bool:
         return is_generic_amm(lp_token_address)
     
+    @stuck_coro_debugger
     async def get_price(self, lp_token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
         tvl, total_supply = await asyncio.gather(
             self.get_tvl(lp_token_address, block=block, sync=False),
@@ -42,6 +44,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
         return UsdPrice(tvl / total_supply)
     
     @a_sync.a_sync(cache_type='memory')
+    @stuck_coro_debugger
     async def get_tokens(self, lp_token_address: AnyAddressType) -> Tuple[ERC20,ERC20]:
         tokens = await asyncio.gather(
             Call(lp_token_address, ['token0()(address)']).coroutine(),
@@ -49,6 +52,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
         )
         return ERC20(tokens[0]), ERC20(tokens[1])
     
+    @stuck_coro_debugger
     async def get_tvl(self, lp_token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
         lp_token_contract = await Contract.coroutine(lp_token_address)
         tokens = await self.get_tokens(lp_token_address, sync=False)

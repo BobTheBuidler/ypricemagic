@@ -6,6 +6,7 @@ import a_sync
 from brownie import chain
 
 from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.decorators import stuck_coro_debugger
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
@@ -34,9 +35,11 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         try: return BalancerV2(asynchronous=self.asynchronous)
         except ImportError: return None
 
+    @stuck_coro_debugger
     async def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
         return any(await asyncio.gather(*[v.is_pool(token_address, sync=False) for v in await self.versions]))
     
+    @stuck_coro_debugger
     async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         versions: List[Union[BalancerV1, BalancerV2]] = await self.versions
         for v in versions:
@@ -44,6 +47,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
                 return UsdPrice(await v.get_pool_price(token_address, block, sync=False))
             
     @a_sync.a_sync(cache_type='memory')
+    @stuck_coro_debugger
     async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         if await self.is_balancer_pool(token_address, sync=False):
             return await self.get_pool_price(token_address, block=block, sync=False)
