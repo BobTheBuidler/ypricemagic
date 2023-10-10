@@ -11,7 +11,6 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 import a_sync
 import eth_retry
 from a_sync.iter import ASyncIterable
-from y import ENVIRONMENT_VARIABLES as ENVS
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
@@ -23,6 +22,7 @@ from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
