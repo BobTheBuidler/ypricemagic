@@ -81,12 +81,13 @@ class VelodromeRouterV2(SolidlyRouterBase):
             print(e)
             raise e
         
-        all_pairs_len = await raw_call(self.factory,'allPairsLength()',block=chain.height,output='int', sync=False)
+        all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
 
-        if len(pools) > all_pairs_len:
-            raise ValueError('wtf')
+        #if len(pools) > all_pairs_len:
+        # NOTE: uhh, why is the velo router showing allPairsLength == 0 but also retuning events?
+        #    raise ValueError('wtf')
         
-        elif len(pools) < all_pairs_len:
+        if len(pools) < all_pairs_len:
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pairs_len - len(pools))
             pools_your_node_couldnt_get = [i for i in range(all_pairs_len) if i not in range(len(pools))]
             logger.debug('pools: %s', pools_your_node_couldnt_get)
