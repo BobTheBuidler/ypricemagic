@@ -281,11 +281,14 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         address: AnyAddressType, 
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> "Contract":
+        
         # We do this so we don't clog the threadpool with multiple jobs for the same contract.
         async with address_semaphores[address]:
             try:
                 contract = cls._ChecksumAddressSingletonMeta__instances[address]
             except KeyError:
+                if str(address).lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
+                    raise ContractNotFound(f"{address} is not a contract.") from None
                 contract = await contract_threads.run(Contract, address)
 
         if contract._ttl_cache_popper == "disabled":
