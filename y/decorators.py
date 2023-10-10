@@ -56,7 +56,7 @@ async def _stuck_debug_task(logger: logging.Logger, fn: Callable[P, T], *args: P
         await asyncio.sleep(300)
         logger._log(
             logging.DEBUG, 
-            f"{fn.__module__}.{fn.__name__} still executing after {round(time.time() - start, 2)}s with"
+            f"{fn.__module__}.{fn.__name__} still executing after {round((time.time() - start)/60, 2)}m with"
             + f" args {tuple(str(arg) for arg in args)}"
             + f" kwargs {dict((k, str(v)) for k, v in kwargs.items())}",
             (),
