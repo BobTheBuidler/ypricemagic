@@ -284,7 +284,7 @@ class UniswapRouterV2(ContractBase):
             quote, out_scale = await asyncio.gather(self.get_quote(amount_in, path, block=block, sync=False), ERC20(path[-1], asynchronous=True).scale)
             if quote is not None:
                 amount_out = Decimal(quote[-1]) / out_scale  
-                fees = 0.997 ** (len(path) - 1)
+                fees = Decimal(0.997 ** (len(path) - 1))
                 amount_out /= fees
                 paired_with_price = Decimal(await magic.get_price(paired_with, block, fail_to_None=True, ignore_pools=(*ignore_pools, deepest_pool), sync=False))
 
