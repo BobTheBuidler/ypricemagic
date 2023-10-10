@@ -1,4 +1,5 @@
 import asyncio
+import logging
 from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
@@ -41,6 +42,8 @@ BALANCER_V2_VAULTS = {
 
 
 PoolId = NewType('PoolId', bytes)
+
+logger = logging.getLogger(__name__)
 
 
 class BalancerV2Vault(ContractBase):
@@ -87,7 +90,7 @@ class BalancerV2Vault(ContractBase):
         pool_infos = {}
         pool: BalancerV2Pool
         async for pool in self._events.events(to_block=block):
-            pool_infos[pool] = asyncio.create_task(coro=pool.tokens(sync=False), name=f"pool.tokens for {pool}")
+            pool_infos[pool] = asyncio.create_task(coro=pool.tokens(block=block, sync=False), name=f"pool.tokens for {pool}")
             for k in list(pool_infos.keys()):
                 if pool_infos[k].done():
                     if token in await pool_infos.pop(k):
@@ -194,8 +197,17 @@ class BalancerV2Pool(ERC20):
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def tokens(self, block: Optional[Block] = None) -> List[ERC20]:
-        return list((await self.get_balances(block=block, sync=False)).keys())
+    async def tokens(self, block: Optional[Block] = None) -> Tuple[ERC20]:
+        tokens = tuple((await self.get_balances(block=block, sync=False)).keys())
+        tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
+        tokens_history[tokens] += 1
+        from brownie.network.contract import (ContractCall, ContractTx,
+                                              OverloadedMethod)
+        if len(tokens_history) == 1 and tokens_history[tokens] > 100:
+            methods = [k for k, v in self.contract.__dict__().items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
+            logger.debug(
+                "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
+        return tokens
 
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
@@ -205,6 +217,9 @@ class BalancerV2Pool(ERC20):
         except (AttributeError,ValueError):
             return len(await self.tokens(block=block, sync=False))
 
+from collections import defaultdict
+
+_tasks_to_help_me_find_pool_types_that_cant_change_tokens = defaultdict(lambda: defaultdict(int))
 
 #yLazyLogger(logger)
 @a_sync.a_sync(cache_type='memory')
