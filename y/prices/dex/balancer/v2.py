@@ -53,22 +53,6 @@ class BalancerV2Vault(ContractBase):
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def list_pools(self, block: Optional[Block] = None) -> List["BalancerV2Pool"]:
         return [pool async for pool in self._events.events(to_block=block)]
-    
-    async def yield_pools_for(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
-        pool_infos = {}
-        pool: BalancerV2Pool
-        async for pool in self._events.events(to_block=block):
-            pool_infos[pool] = asyncio.create_task(pool.tokens(sync=False))
-            for k in list(pool_infos.keys()):
-                if pool_infos[k].done():
-                    if token in await pool_infos.pop(k):
-                        yield pool
-        for task in asyncio.as_completed(pool_infos.values()):
-            await task
-            for pool in list(pool_infos.keys()):
-                if pool_infos[pool].done():
-                    if token in await pool_infos.pop(pool):
-                        yield pool
 
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_pool_tokens(self, pool_id: HexBytes, block: Optional[Block] = None):
@@ -85,7 +69,7 @@ class BalancerV2Vault(ContractBase):
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress], int]:
         logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool, deepest_balance = None, 0
-        async for pool in self.yield_pools_for(token_address, block=block):
+        async for pool in self._yield_pools_for(token_address, block=block):
             info: Dict[ERC20, WeiBalance]
             if info := await pool.tokens(pool._id, block=block, sync=False):
                 pool_balance = info[token_address].balance
@@ -94,6 +78,21 @@ class BalancerV2Vault(ContractBase):
         logger.debug("deepest pool %s balance %s", deepest_pool, deepest_balance)
         return deepest_pool, deepest_balance
 
+    async def _yield_pools_for(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
+        pool_infos = {}
+        pool: BalancerV2Pool
+        async for pool in self._events.events(to_block=block):
+            pool_infos[pool] = asyncio.create_task(pool.tokens(sync=False))
+            for k in list(pool_infos.keys()):
+                if pool_infos[k].done():
+                    if token in await pool_infos.pop(k):
+                        yield pool
+        for task in asyncio.as_completed(pool_infos.values()):
+            await task
+            for pool in list(pool_infos.keys()):
+                if pool_infos[pool].done():
+                    if token in await pool_infos.pop(pool):
+                        yield pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     __slots__ = "asynchronous", 
