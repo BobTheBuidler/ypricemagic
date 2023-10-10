@@ -245,7 +245,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 raise ValueError(f"start {start} is bigger than end {end}, can't do that")
         else:
             while start > (end := await dank_w3.eth.block_number):
-                logger.debug('start %s is greater than end %s, sleeping...', start, end)
+                logger.debug('%s start %s is greater than end %s, sleeping...', self, start, end)
                 await asyncio.sleep(1)
         await self._load_range(start, end)
 
