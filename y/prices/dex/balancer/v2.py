@@ -1,10 +1,11 @@
 import asyncio
-import logging
-from typing import Awaitable, Dict, List, NewType, Optional, Tuple
+from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
+                    Tuple)
 
 import a_sync
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
+from brownie.network.event import _EventItem
 from hexbytes import HexBytes
 from multicall import Call
 
@@ -13,7 +14,7 @@ from y import constants, contracts
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.networks import Network
-from y.utils.events import decode_logs, get_logs_asap
+from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
@@ -38,27 +39,38 @@ BALANCER_V2_VAULTS = {
 
 PoolId = NewType('PoolId', bytes)
 
+
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         super().__init__(address, asynchronous=asynchronous)
+        self._events = BalancerEvents(addresses=address, topics=['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e'])
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
-            
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def get_pool_tokens(self, pool_id: int, block: Optional[Block] = None):
-        return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def list_pools(self, block: Optional[Block] = None) -> Dict[HexBytes,EthAddress]:
-        topics = ['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e']
-        events = decode_logs(await get_logs_asap(self.address, topics, to_block=block, sync=False))
-        return {
-            event['poolId'].hex(): event['poolAddress'] for event in events
-            # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
-            #       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.
-            if contracts.is_contract(event['poolAddress'])
-        }
+        return {id: address async for id, address, block in self._events.events(to_block=block)}
+    
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    async def yield_pools_for(self, token: Address, block: Optional[Block] = None) -> AsyncIterator[Tuple[HexBytes, EthAddress]]:
+        pool_infos = {}
+        async for id, address, _ in self._events.events(to_block=block):
+            pool_infos[id] = asyncio.create_task(self.get_pool_tokens(id, block=block))
+            for k in list(pool_infos.keys()):
+                if pool_infos[k].done():
+                    if token in await pool_infos.pop(k):
+                        yield id, address
+        for task in asyncio.as_completed(pool_infos.values()):
+            await task
+            for k in list(pool_infos.keys()):
+                if pool_infos[k].done():
+                    if token in await pool_infos.pop(k):
+                        yield id, address
+
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    async def get_pool_tokens(self, pool_id: bytes, block: Optional[Block] = None):
+        return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
@@ -68,27 +80,30 @@ class BalancerV2Vault(ContractBase):
         ])
     
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress],int]:
-        # sourcery skip: simplify-len-comparison
-        pools = await self.list_pools(block=block, sync=False)
-        poolids = tuple(pools.keys())
-        pools_info = await self.get_pool_info(poolids, block=block, sync=False)
-        all_pools = await self.list_pools(block=block, sync=False)
-        pools_info = {all_pools[poolid]: info for poolid, info in zip(poolids, pools_info) if str(info) != "((), (), 0)"}
-        
         logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool = {'pool': None, 'balance': 0}
-        for pool, info in pools_info.items():
+        async for poolid, pool_address in self.yield_pools_for(token_address, block=block):
+            info = await self.get_pool_info([poolid], block=block)
+            if str(info) == "((), (), 0)":
+                continue
             num_tokens = len(info[0])
             pool_balances = {info[0][i]: info[1][i] for i in range(num_tokens)}
-            pool_balance = [balance for token, balance in pool_balances.items() if token == token_address]
-            if len(pool_balance) == 0:
-                continue
-            assert len(pool_balance) == 1
-            pool_balance = pool_balance[0]
+            pool_balance = pool_balances[token_address]
             if pool_balance > deepest_pool['balance']:
-                deepest_pool = {'pool': pool, 'balance': pool_balance}
+                deepest_pool = {'pool': pool_address, 'balance': pool_balance}
         logger.debug("deepest pool %s", deepest_pool)
         return tuple(deepest_pool.values())
+
+
+class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
+    def _include_event(self, event: _EventItem) -> bool:
+        # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
+        #       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.
+        return contracts.is_contract(event['poolAddress'])
+    def _process_event(self, event: _EventItem) -> _EventItem:
+        return event['poolId'].hex(), event['poolAddress'], event.block_number
+    def _get_block_for_obj(self, obj: Tuple[HexBytes, EthAddress, Block]) -> int:
+        return obj[2]
 
 
 class BalancerV2Pool(ERC20):
