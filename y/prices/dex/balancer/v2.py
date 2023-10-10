@@ -204,7 +204,7 @@ class BalancerV2Pool(ERC20):
         from brownie.network.contract import (ContractCall, ContractTx,
                                               OverloadedMethod)
         if len(tokens_history) == 1 and tokens_history[tokens] > 100:
-            methods = [k for k, v in self.contract.__dict__().items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
+            methods = [k for k, v in self.contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
             logger.debug(
                 "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
         return tokens
