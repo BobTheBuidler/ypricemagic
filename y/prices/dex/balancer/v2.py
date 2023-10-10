@@ -3,7 +3,7 @@ from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
 import a_sync
-from brownie import chain
+from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import _EventItem
 from hexbytes import HexBytes
@@ -124,9 +124,9 @@ class BalancerV2Pool(ERC20):
         return self._id
     
     @a_sync.aka.cached_property
-    async def vault(self) -> BalancerV2Vault:
-        vault = await raw_call(self.address,'getVault()',output='address', sync=False)
-        return BalancerV2Vault(vault, asynchronous=True)
+    async def vault(self) -> Optional[BalancerV2Vault]:
+        vault = await raw_call(self.address, 'getVault()', output='address', sync=False)
+        return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
     
     async def get_pool_price(self, block: Optional[Block] = None) -> Awaitable[UsdPrice]:
         tvl, total_supply = await asyncio.gather(
@@ -135,16 +135,19 @@ class BalancerV2Pool(ERC20):
         )
         return UsdPrice(tvl / total_supply)
         
-    async def get_tvl(self, block: Optional[Block] = None) -> Awaitable[UsdValue]:
+    async def get_tvl(self, block: Optional[Block] = None) -> Optional[Awaitable[UsdValue]]:
         balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, sync=False)
-        return UsdValue(sum(await asyncio.gather(*[
-            balance.__value_usd__(sync=False) for balance in balances.values()
-            if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
-        ])))
+        if balances:
+            return UsdValue(sum(await asyncio.gather(*[
+                balance.__value_usd__(sync=False) for balance in balances.values()
+                if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
+            ])))
 
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
         vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
+        if vault is None:
+            return {}
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
         return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
 

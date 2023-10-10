@@ -11,7 +11,7 @@ import a_sync
 import brownie
 import eth_retry
 from a_sync.primitives import PruningThreadPoolExecutor, ThreadsafeSemaphore
-from brownie import chain, web3
+from brownie import ZERO_ADDRESS, chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.network.contract import (ContractEvents, _add_deployment,
                                       _ContractBase, _DeployedContractBase,
@@ -77,7 +77,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     height = chain.height
 
     if height == 0:
-        raise NodeNotSynced(f'''
+        raise NodeNotSynced('''
             `chain.height` returns 0 on your node, which means it is not fully synced.
             You can only use this function on a fully synced node.''')
     
@@ -95,9 +95,8 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
             else:
                 lo = mid
         except ValueError as e:
-            if 'missing trie node' in str(e):
-                if not warned:
-                    logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
+            if 'missing trie node' in str(e) and not warned:
+                logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
             elif 'Server error: account aurora does not exist while viewing' in str(e):
                 if not warned:
                     logger.warning(str(e))
@@ -211,7 +210,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     ) -> None:
         
         address = str(address)
-        if address.lower() == "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee":
+        if address.lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
             raise ContractNotFound(f"{address} is not a contract.")
 
         with _contract_lock:
@@ -223,14 +222,12 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                     self.verified = True
                 except AttributeError:
                     logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
-            # This error happens on occasion, it comes from brownie's compiling process. But we shoulnd't be using that anyway. Check config.
             except AssertionError as e:
                 raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
             except IndexError as e:
                 if str(e) == "pop from an empty deque":
                     raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
                 raise e
-            # If we don't already have the contract in the db, we'll try to fetch it from the explorer.
             except ValueError as e:
                 if not str(e).startswith("Unknown contract address: "):
                     raise e
@@ -242,11 +239,8 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                 except (ContractNotFound, ContractNotVerified) as e:
                     if require_success:
                         raise
-                    if type(e) == ContractNotVerified:
-                        self._verified = False
-                    else:
-                        self._verified = None
-        
+                    self._verified = False if type(e) == ContractNotVerified else None
+                    
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
         _setup_events(self)             # Init an event container for each topic
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
