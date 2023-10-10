@@ -184,7 +184,7 @@ async def _get_price(
         price = await _exit_early_for_known_tokens(token, block=block)
         logger.debug("early exit -> %s", price)
         if price is not None:
-            await _sense_check(token, price)
+            await _sense_check(token, block, price)
             logger.debug("%s price: %s", symbol, price)
             logger._debugger.cancel()
             return price
@@ -215,7 +215,7 @@ async def _get_price(
         if price is None:
             _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
         if price:
-            await _sense_check(token, price)
+            await _sense_check(token, block, price)
 
         logger.debug("%s price: %s", symbol, price)
         # Don't need this anymore
