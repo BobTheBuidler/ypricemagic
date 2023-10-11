@@ -467,5 +467,5 @@ class UniswapRouterV2(ContractBase):
     async def check_liquidity(self, token: Address, block: Block, ignore_pools = []) -> int:
         if block < await contract_creation_block_async(self.factory):
             return 0
-        pools = await self.pools_for_token(token, _ignore_pools=ignore_pools, sync=False)
+        pools = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
