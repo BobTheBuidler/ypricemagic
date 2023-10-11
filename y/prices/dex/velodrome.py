@@ -114,7 +114,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
 
         tokens = set()
         for pool in pools:
-            tokens.update(asyncio.gather(pool.token0, pool.token1))
+            tokens.update(await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False)))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     
