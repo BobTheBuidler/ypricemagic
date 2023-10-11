@@ -286,7 +286,7 @@ class UniswapRouterV2(ContractBase):
                 amount_out = Decimal(quote[-1]) / out_scale  
                 fees = Decimal(0.997 ** (len(path) - 1))
                 amount_out /= fees
-                paired_with_price = Decimal(await magic.get_price(paired_with, block, fail_to_None=True, ignore_pools=(*ignore_pools, deepest_pool), sync=False))
+                paired_with_price = await magic.get_price(paired_with, block, fail_to_None=True, ignore_pools=(*ignore_pools, deepest_pool), sync=False)
 
                 if paired_with_price:
                     return amount_out * Decimal(paired_with_price)
