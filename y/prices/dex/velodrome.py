@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import List, Optional, Tuple
+from typing import List, Optional, Set, Tuple
 
 import a_sync
 from async_lru import alru_cache
@@ -58,7 +58,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
     
     @a_sync.aka.cached_property
-    async def pools(self) -> List[UniswapV2Pool]:
+    async def pools(self) -> Set[UniswapV2Pool]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         factory = await Contract.coroutine(self.factory)
         if 'PoolCreated' not in factory.topics:
@@ -66,7 +66,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
 
         try:
-            pools = [
+            pools = {
                 VelodromePool(
                     address=event['pool'],
                     token0=event['token0'], 
@@ -76,7 +76,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
                     asynchronous=self.asynchronous,
                 )
                 async for event in factory.events.PoolCreated.events(to_block=await dank_w3.eth.block_number)
-            ]       
+            }
         except Exception as e:
             print(e)
             raise e
@@ -84,33 +84,16 @@ class VelodromeRouterV2(SolidlyRouterBase):
         all_pools_len = await raw_call(self.factory, 'allPoolsLength()', block=chain.height, output='int', sync=False)
 
         if len(pools) > all_pools_len:
-            raise ValueError('wtf')
+            raise ValueError('wtf', len(pools), all_pools_len)
         
         if len(pools) < all_pools_len:
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pools_len - len(pools))
-            pools_your_node_couldnt_get = [i for i in range(all_pools_len) if i not in range(len(pools))]
+            pools_your_node_couldnt_get = {
+                i: asyncio.create_task(coro=self._init_pool_from_poolid(i), name=f"load {self} poolId {i}") 
+                for i in [i for i in range(all_pools_len) if i not in range(len(pools))]
+            }
             logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools_your_node_couldnt_get = await asyncio.gather(
-                *[Call(self.factory, ['allPools(uint256)(address)']).coroutine(i) for i in pools_your_node_couldnt_get]
-            )
-            token0s, token1s, stables = await asyncio.gather(
-                asyncio.gather(*[Call(pool, ['token0()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['token1()(address)']).coroutine() for pool in pools_your_node_couldnt_get]),
-                asyncio.gather(*[Call(pool, ['stable()(bool)']).coroutine() for pool in pools_your_node_couldnt_get]),
-            )
-            pools_your_node_couldnt_get = [
-                VelodromePool(
-                    address=pool,
-                    token0=token0,
-                    token1=token1, 
-                    stable=stable, 
-                    asynchronous=self.asynchronous,
-                )
-                for pool, token0, token1, stable
-                in zip(pools_your_node_couldnt_get, token0s, token1s, stables)
-            ]
-
-            pools = pools_your_node_couldnt_get + pools
+            pools.update((pool async for addr, pool in a_sync.as_completed(pools_your_node_couldnt_get, aiter=True)))
 
         tokens = set()
         for pool in pools:
@@ -162,6 +145,21 @@ class VelodromeRouterV2(SolidlyRouterBase):
                 raise ValueError("Not sure why this function is even running if no pool is found")
             
         return routes
+
+    async def _init_pool_from_poolid(self, poolid: int) -> VelodromePool:
+        pool = await Call(self.factory, ['allPools(uint256)(address)']).coroutine(poolid)
+        token0, token1, stable = await asyncio.gather(
+            Call(pool, ['token0()(address)']).coroutine(),
+            Call(pool, ['token1()(address)']).coroutine(),
+            Call(pool, ['stable()(bool)']).coroutine(),
+        )
+        return VelodromePool(
+            address=pool,
+            token0=token0,
+            token1=token1, 
+            stable=stable, 
+            asynchronous=self.asynchronous,
+        )
 
 
 _get_code = alru_cache(maxsize=None)(dank_w3.eth.get_code)
