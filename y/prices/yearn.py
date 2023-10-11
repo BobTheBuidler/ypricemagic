@@ -125,7 +125,7 @@ class YearnInspiredVault(ERC20):
         else:
             share_price_method, share_price = await probe(self.address, share_price_methods, block=block, return_method=True)
             if share_price_method:
-                self._get_share_price = Call(self.address, [self._get_share_price])
+                self._get_share_price = Call(self.address, [share_price_method])
 
         if share_price is None:
             # this is for element vaults, probe fails because method requires input
