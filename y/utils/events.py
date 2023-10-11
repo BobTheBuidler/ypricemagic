@@ -214,6 +214,7 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogRecei
             "exceed maximum block range",
             "block range is too wide",
             "request timed out",
+            "parse error",
         ]
         if any(err in str(e) for err in errs):
             logger.debug('your node is having trouble, breaking batch in half')
@@ -249,6 +250,7 @@ def _get_logs_no_cache(
             "exceed maximum block range",
             "block range is too wide",
             "request timed out",
+            "parse error",
         ]
         if any(err in str(e) for err in errs):
             logger.debug('your node is having trouble, breaking batch in half')
