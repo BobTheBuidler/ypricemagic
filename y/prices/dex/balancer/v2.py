@@ -79,7 +79,7 @@ class BalancerV2Vault(ContractBase):
         deepest_pool, deepest_balance = None, 0
         async for pool in self._yield_pools_for(token_address, block=block):
             info: Dict[ERC20, WeiBalance]
-            if info := await pool.tokens(pool._id, block=block, sync=False):
+            if info := await pool.tokens(block=block, sync=False):
                 pool_balance = info[token_address].balance
                 if pool_balance > deepest_balance:
                     deepest_pool = {'pool': pool.address, 'balance': pool_balance}
