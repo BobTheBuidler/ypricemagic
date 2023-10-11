@@ -138,50 +138,55 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         chain = db.get_chain(sync=True)
         encoded_topics = json.encode(self.topics or None)
         should_commit = False
-        if self.addresses:
-            addresses = self.addresses
-            if isinstance(addresses, str):
-                addresses = [addresses]
-            for address in addresses:
-                if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
-                    if from_block < e.cached_from:
-                        e.cached_from = from_block
+        while True:
+            try:
+                if self.addresses:
+                    addresses = self.addresses
+                    if isinstance(addresses, str):
+                        addresses = [addresses]
+                    for address in addresses:
+                        if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
+                            if from_block < e.cached_from:
+                                e.cached_from = from_block
+                                should_commit = True
+                            if done_thru > e.cached_thru:
+                                e.cached_thru = done_thru
+                                should_commit = True
+                        else:
+                            LogCacheInfo(
+                                chain=chain, 
+                                address=address,
+                                topics=encoded_topics,
+                                cached_from = from_block,
+                                cached_thru = done_thru,
+                            )
+                            should_commit = True
+                elif info := LogCacheInfo.get(
+                    chain=chain, 
+                    address='None',
+                    topics=encoded_topics,
+                ):
+                    if from_block < info.cached_from:
+                        info.cached_from = from_block
                         should_commit = True
-                    if done_thru > e.cached_thru:
-                        e.cached_thru = done_thru
+                    if done_thru > info.cached_thru:
+                        info.cached_thru = done_thru
                         should_commit = True
                 else:
                     LogCacheInfo(
-                        chain=chain, 
-                        address=address,
+                        chain=chain,
+                        address='None',
                         topics=encoded_topics,
                         cached_from = from_block,
                         cached_thru = done_thru,
                     )
                     should_commit = True
-        elif info := LogCacheInfo.get(
-            chain=chain, 
-            address='None',
-            topics=encoded_topics,
-        ):
-            if from_block < info.cached_from:
-                info.cached_from = from_block
-                should_commit = True
-            if done_thru > info.cached_thru:
-                info.cached_thru = done_thru
-                should_commit = True
-        else:
-            LogCacheInfo(
-                chain=chain,
-                address='None',
-                topics=encoded_topics,
-                cached_from = from_block,
-                cached_thru = done_thru,
-            )
-            should_commit = True
-        if should_commit:
-            commit()
-            logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
+                if should_commit:
+                    commit()
+                    logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
+                return
+            except OptimisticCheckError as e:
+                logger.debug("%s got exc %s when updating cache metadata, retrying...", self, e)
     
     def _wrap_query_with_addresses(self, generator) -> Query:
         if addresses := self.addresses:
