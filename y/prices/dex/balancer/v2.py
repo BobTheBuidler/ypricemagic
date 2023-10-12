@@ -15,6 +15,7 @@ from y import constants, contracts
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.decorators import stuck_coro_debugger
+from y.exceptions import ContractNotVerified
 from y.networks import Network
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
@@ -201,9 +202,10 @@ class BalancerV2Pool(ERC20):
         from brownie.network.contract import (ContractCall, ContractTx,
                                               OverloadedMethod)
         if len(tokens_history) == 1 and tokens_history[tokens] > 100:
-            methods = [k for k, v in self.contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
-            logger.debug(
-                "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
+            with suppress(ContractNotVerified):
+                methods = [k for k, v in self.contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
+                logger.debug(
+                    "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
         return tokens
 
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
