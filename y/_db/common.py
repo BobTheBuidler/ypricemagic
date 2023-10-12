@@ -57,15 +57,17 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _select(self, from_block: int, to_block: int) -> List[S]:
         """Selects all cached objects from block `from_block` to block `to_block`"""
+    @db_session
     @retry_locked
     def set_metadata(self, from_block: int, done_thru: int) -> None:
         """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
-        while True:
-            try:
-                with db_session:
-                    return self._set_metadata(from_block, done_thru)
-            except (TransactionIntegrityError, OptimisticCheckError) as e:
-                logger.debug("%s got exc %s when setting cache metadata", self, e)
+        try:
+            return self._set_metadata(from_block, done_thru)
+        except TransactionIntegrityError as e:
+            logger.debug("%s got exc %s when setting cache metadata", self, e)
+            return self.set_metadata(from_block, done_thru)
+        except OptimisticCheckError as e:
+            logger.debug("%s got exc %s when setting cache metadata", self, e)
         
     @db_session
     @retry_locked
@@ -208,7 +210,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             done_thru = self._lock.value
             logger.debug('%s lock value %s to_block %s', self, done_thru, block)
             if block is None:
-                await asyncio.sleep(5)
+                await asyncio.sleep(15)
 
     @async_property  
     async def _sleep(self) -> None:
