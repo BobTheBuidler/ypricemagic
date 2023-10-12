@@ -207,6 +207,8 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
                 return
             done_thru = self._lock.value
             logger.debug('%s lock value %s to_block %s', self, done_thru, block)
+            if block is None:
+                await asyncio.sleep(5)
 
     @async_property  
     async def _sleep(self) -> None:
