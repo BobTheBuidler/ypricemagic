@@ -9,15 +9,19 @@ pip install ypricemagic
 
 To use:
 ```
-from ypricemagic import magic
-magic.get_price(token,block)
+from y import get_price
+get_price(token,block)
 ```
 
 Or:
 ```
-from ypricemagic.magic import get_price
-get_price(token,block)
+from y import get_prices
+get_prices(tokens, block)
 ```
+
+You can also use ypricemagic asynchronously
+```
+get_price(token, block, sync=False)
 
 You can also import protocol specific modules. For example:
 ```
@@ -28,3 +32,6 @@ uniswap.get_price(token, block)
 from ypricemagic.compound import get_price
 get_price(compoundToken, block)
 ```
+These are not 'supported' per se and are subject to change at any time. But they can come in handy.
+
+Enjoy!
