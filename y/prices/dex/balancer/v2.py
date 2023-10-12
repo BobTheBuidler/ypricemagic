@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from contextlib import suppress
 from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
