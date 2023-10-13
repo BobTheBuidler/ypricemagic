@@ -57,15 +57,17 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _select(self, from_block: int, to_block: int) -> List[S]:
         """Selects all cached objects from block `from_block` to block `to_block`"""
+    @db_session
     @retry_locked
     def set_metadata(self, from_block: int, done_thru: int) -> None:
         """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
-        while True:
-            try:
-                with db_session:
-                    return self._set_metadata(from_block, done_thru)
-            except (TransactionIntegrityError, OptimisticCheckError) as e:
-                logger.debug("%s got exc %s when setting cache metadata", self, e)
+        try:
+            return self._set_metadata(from_block, done_thru)
+        except TransactionIntegrityError as e:
+            logger.debug("%s got exc %s when setting cache metadata", self, e)
+            return self.set_metadata(from_block, done_thru)
+        except OptimisticCheckError as e:
+            logger.debug("%s got exc %s when setting cache metadata", self, e)
         
     @db_session
     @retry_locked
@@ -135,13 +137,14 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         return None
     
 class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_sleep_time', '_task', '_verbose'
     def __init__(
         self, 
         from_block: int,
         *, 
         chunk_size: int = BATCH_SIZE, 
         chunks_per_batch: Optional[int] = None,
+        sleep_time: int = 60,
         semaphore: Optional[BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
@@ -155,6 +158,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._db_task = None
         self._semaphore = semaphore
         self._sleep_fut = None
+        self._sleep_time = sleep_time
         self._task = None
         self._verbose = verbose
         super().__init__(executor=executor, is_reusable=is_reusable)
@@ -208,7 +212,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             done_thru = self._lock.value
             logger.debug('%s lock value %s to_block %s', self, done_thru, block)
             if block is None:
-                await asyncio.sleep(5)
+                await asyncio.sleep(self._sleep_time)
 
     @async_property  
     async def _sleep(self) -> None:

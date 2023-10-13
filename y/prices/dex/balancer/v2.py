@@ -76,15 +76,15 @@ class BalancerV2Vault(ContractBase):
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
-    async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional[EthAddress], int]:
+    async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional["BalancerV2Pool"], int]:
         logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool, deepest_balance = None, 0
         async for pool in self._yield_pools_for(token_address, block=block):
             info: Dict[ERC20, WeiBalance]
-            if info := await pool.tokens(block=block, sync=False):
+            if info := await pool.get_balances(block=block, sync=False):
                 pool_balance = info[token_address].balance
                 if pool_balance > deepest_balance:
-                    deepest_pool = {'pool': pool.address, 'balance': pool_balance}
+                    deepest_pool = pool
         logger.debug("deepest pool %s balance %s", deepest_pool, deepest_balance)
         return deepest_pool, deepest_balance
 
@@ -261,7 +261,9 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         deepest_pools = await asyncio.gather(*[vault.deepest_pool_for(token_address, block=block, sync=False) for vault in self.vaults])
         deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in zip(self.vaults, deepest_pools) if deepest_pool is not None}
-        deepest_pool_balance = max(pool_balance for pool_address, pool_balance in deepest_pools.values())
+        if not deepest_pools:
+            return None
+        deepest_pool_balance = max(deepest_pools.values())
         for pool_address, pool_balance in deepest_pools.values():
             if pool_balance == deepest_pool_balance and pool_address:
                 return BalancerV2Pool(pool_address, asynchronous=self.asynchronous)
