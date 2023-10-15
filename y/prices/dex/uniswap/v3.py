@@ -157,7 +157,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
-        if block < await contract_creation_block_async(await self.__quoter__(sync=False)):
+        if block and block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0
         tasks = []
         async for pool in self._pools_for_token(token, block):
