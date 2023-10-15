@@ -57,16 +57,17 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def _select(self, from_block: int, to_block: int) -> List[S]:
         """Selects all cached objects from block `from_block` to block `to_block`"""
-    @db_session
     @retry_locked
     def set_metadata(self, from_block: int, done_thru: int) -> None:
         """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
         try:
-            return self._set_metadata(from_block, done_thru)
+            with db_session:
+                return self._set_metadata(from_block, done_thru)
         except TransactionIntegrityError as e:
             logger.debug("%s got exc %s when setting cache metadata", self, e)
             return self.set_metadata(from_block, done_thru)
         except OptimisticCheckError as e:
+            # Don't need to update in this case
             logger.debug("%s got exc %s when setting cache metadata", self, e)
         
     @db_session
