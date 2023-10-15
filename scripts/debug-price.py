@@ -6,6 +6,9 @@ from brownie import chain
 
 import y
 
+y_logger = logging.getLogger('y')
+y_logger.setLevel(logging.DEBUG)
+y_logger.addHandler(logging.StreamHandler())
 
 def main():
     BAD = os.environ.get("BAD")
@@ -14,9 +17,5 @@ def main():
         raise ValueError("You must specify a token to debug by setting BAD env var")
     if not BLOCK:
         BLOCK = chain.height
-        logger.warning("no BLOCK specified, using %s", BLOCK)
-        raise ValueError("You must specify a block to debug at by setting BLOCK env var")
-    logger = logging.getLogger('y')
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(logging.StreamHandler())
+        y_logger.warning("no BLOCK specified, using %s", BLOCK)
     y.get_price(BAD, int(BLOCK), skip_cache=True)
