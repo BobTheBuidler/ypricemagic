@@ -79,6 +79,7 @@ class UniswapV3Pool(ContractBase):
             raise TokenNotFound(f"{token} is not in {self}")
         return ERC20(token, asynchronous=self.asynchronous)
 
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         if block < await self.deploy_block(sync=False):
             return 0
