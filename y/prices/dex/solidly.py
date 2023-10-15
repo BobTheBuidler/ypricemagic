@@ -6,9 +6,9 @@ import a_sync
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Address, Block
-from y.decorators import continue_on_revert
+from y.decorators import continue_on_revert, stuck_coro_debugger
 from y.exceptions import call_reverted
-from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool, UniswapRouterV2
+from y.prices.dex.uniswap.v2 import Path, UniswapRouterV2, UniswapV2Pool
 
 
 class SolidlyRouterBase(UniswapRouterV2):
@@ -18,6 +18,7 @@ class SolidlyRouterBase(UniswapRouterV2):
     """
         
     @continue_on_revert
+    @stuck_coro_debugger
     async def get_quote(self, amount_in: int, path: Path, block: Optional[Block] = None) -> Tuple[int,int]:
         routes = await self.get_routes_from_path(path, block)
         try:
@@ -40,15 +41,18 @@ class SolidlyPool(UniswapV2Pool):
 class SolidlyRouter(SolidlyRouterBase):
 
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @stuck_coro_debugger
     async def pair_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.pairFor.coroutine(input_token, output_token, stable)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @stuck_coro_debugger
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[SolidlyPool]:
         pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
         if await self.contract.isPair.coroutine(pool_address, block_identifier=block):
             return SolidlyPool(pool_address, asynchronous=self.asynchronous)
 
+    @stuck_coro_debugger
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
         routes = []
         for i in range(len(path) - 1):
