@@ -10,6 +10,7 @@ from multicall.call import Call
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block
+from y.decorators import stuck_coro_debugger
 from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
@@ -48,16 +49,19 @@ class VelodromeRouterV2(SolidlyRouterBase):
         self.default_factory = default_factory[chain.id]
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @stuck_coro_debugger
     async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @stuck_coro_debugger
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
         if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
             return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def pools(self) -> Set[UniswapV2Pool]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         factory = await Contract.coroutine(self.factory)
@@ -90,10 +94,10 @@ class VelodromeRouterV2(SolidlyRouterBase):
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pools_len - len(pools))
             pools_your_node_couldnt_get = {
                 i: asyncio.create_task(coro=self._init_pool_from_poolid(i), name=f"load {self} poolId {i}") 
-                for i in [i for i in range(all_pools_len) if i not in range(len(pools))]
+                for i in range(all_pools_len - len(pools))
             }
             logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools.update((pool async for addr, pool in a_sync.as_completed(pools_your_node_couldnt_get, aiter=True)))
+            pools.update((pool async for id, pool in a_sync.as_completed(pools_your_node_couldnt_get, aiter=True)))
 
         tokens = set()
         for pool in pools:
@@ -101,6 +105,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     
+    @stuck_coro_debugger
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
         routes = []
         for i in range(len(path) - 1):
@@ -146,7 +151,9 @@ class VelodromeRouterV2(SolidlyRouterBase):
             
         return routes
 
+    @stuck_coro_debugger
     async def _init_pool_from_poolid(self, poolid: int) -> VelodromePool:
+        logger.debug("initing poolid %s", poolid)
         pool = await Call(self.factory, ['allPools(uint256)(address)']).coroutine(poolid)
         token0, token1, stable = await asyncio.gather(
             Call(pool, ['token0()(address)']).coroutine(),
