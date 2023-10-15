@@ -282,6 +282,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def coroutine(
         cls, 
         address: AnyAddressType, 
+        require_success: bool = True, 
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> "Contract":
         
@@ -292,7 +293,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
             except KeyError:
                 if str(address).lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
                     raise ContractNotFound(f"{address} is not a contract.") from None
-                contract = await contract_threads.run(Contract, address)
+                contract = await contract_threads.run(Contract, address, require_success=require_success)
 
         if contract._ttl_cache_popper == "disabled":
             pass
