@@ -163,7 +163,7 @@ class UniswapV2Pool(ERC20):
     
     @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block) -> int:
-        if block < await self.deploy_block(sync=False):
+        if block and block < await self.deploy_block(sync=False):
             return 0
         try:
             if reserves := await self.reserves(block, sync=False):
@@ -465,7 +465,7 @@ class UniswapRouterV2(ContractBase):
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block, ignore_pools = []) -> int:
-        if block < await contract_creation_block_async(self.factory):
+        if block and block < await contract_creation_block_async(self.factory):
             return 0
         pools = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
