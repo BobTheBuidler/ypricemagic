@@ -237,7 +237,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         except ContractLogicError:
             return None
         price_per_share /= Decimal(scale)
-        return price_per_share * await ERC20(underlying, asynchronous=True).price(block)
+        return price_per_share * Decimal(await ERC20(underlying, asynchronous=True).price(block))
 
 
 aave = AaveRegistry(asynchronous=True)
