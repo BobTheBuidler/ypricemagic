@@ -242,10 +242,10 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                 except (ContractNotFound, ContractNotVerified) as e:
                     if require_success:
                         raise
-                try:
-                    self.verified = False if type(e) == ContractNotVerified else None
-                except AttributeError:
-                    logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
+                    try:
+                        self.verified = False if type(e) == ContractNotVerified else None
+                    except AttributeError:
+                        logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
                     
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
         if self.verified:
