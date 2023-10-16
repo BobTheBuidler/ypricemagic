@@ -1,12 +1,13 @@
+
 import asyncio
 import logging
-from contextlib import suppress
 from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
 import a_sync
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
+from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
 from brownie.network.event import _EventItem
 from hexbytes import HexBytes
 from multicall import Call
@@ -16,7 +17,6 @@ from y import constants, contracts
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.decorators import stuck_coro_debugger
-from y.exceptions import ContractNotVerified
 from y.networks import Network
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
@@ -200,10 +200,9 @@ class BalancerV2Pool(ERC20):
         tokens = tuple((await self.get_balances(block=block, sync=False)).keys())
         tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
         tokens_history[tokens] += 1
-        from brownie.network.contract import (ContractCall, ContractTx,
-                                              OverloadedMethod)
         if len(tokens_history) == 1 and tokens_history[tokens] > 100:
-            with suppress(ContractNotVerified):
+            contract = await contracts.Contract.coroutine(self.address, require_success=False)
+            if contract._verified:
                 methods = [k for k, v in self.contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
                 logger.debug(
                     "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
