@@ -242,11 +242,15 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                 except (ContractNotFound, ContractNotVerified) as e:
                     if require_success:
                         raise
-                    self._verified = False if type(e) == ContractNotVerified else None
+                try:
+                    self.verified = False if type(e) == ContractNotVerified else None
+                except AttributeError:
+                    logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
                     
         patch_contract(self, dank_w3)   # Patch the Contract with coroutines for each method.
-        _setup_events(self)             # Init an event container for each topic
-        _squeeze(self)                  # Get rid of unnecessary memory-hog properties
+        if self.verified:
+            _setup_events(self)         # Init an event container for each topic
+            _squeeze(self)              # Get rid of unnecessary memory-hog properties
 
         self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
         try:
@@ -541,13 +545,10 @@ def _resolve_proxy(address) -> Tuple[str, List]:
 
 def _setup_events(contract: Contract) -> None:
     """Helper function used to init contract event containers on a newly created `y.Contract` object."""
-    # contracts with a screwy build name cause RecursionError on the hasattr call
-    # we can just skip those, they're usually garbage
-    with suppress(RecursionError):
-        if not hasattr(contract, 'events'):
-            contract.events = ContractEvents(contract)
-        for k, v in contract.topics.items():
-            setattr(contract.events, k, Events(addresses=[contract.address], topics=[[v]]))
+    if not hasattr(contract, 'events'):
+        contract.events = ContractEvents(contract)
+    for k, v in contract.topics.items():
+        setattr(contract.events, k, Events(addresses=[contract.address], topics=[[v]]))
 
 def _pop(d: dict, k: Any) -> None:
     """Pops an item from a dict if present"""
