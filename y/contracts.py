@@ -541,7 +541,11 @@ def _resolve_proxy(address) -> Tuple[str, List]:
 
 def _setup_events(contract: Contract) -> None:
     """Helper function used to init contract event containers on a newly created `y.Contract` object."""
-    if not hasattr(contract, 'events'):
+    try:
+        # contracts with a screwy build name cause RecursionError on the hasattr call
+        if not hasattr(contract, 'events'):
+            contract.events = ContractEvents(contract)
+    except RecursionError:
         contract.events = ContractEvents(contract)
     for k, v in contract.topics.items():
         setattr(contract.events, k, Events(addresses=[contract.address], topics=[[v]]))
