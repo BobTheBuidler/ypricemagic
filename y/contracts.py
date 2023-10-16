@@ -252,11 +252,11 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
             _setup_events(self)         # Init an event container for each topic
             _squeeze(self)              # Get rid of unnecessary memory-hog properties
 
-        self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
-        try:
-            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, _pop, self._ChecksumAddressSingletonMeta__instances, self.address)
-        except RuntimeError:
-            self._ttl_cache_popper = cache_ttl
+            self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
+            try:
+                self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, _pop, self._ChecksumAddressSingletonMeta__instances, self.address)
+            except RuntimeError:
+                self._ttl_cache_popper = cache_ttl
 
     @classmethod
     @a_sync.a_sync
@@ -299,7 +299,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                     raise ContractNotFound(f"{address} is not a contract.") from None
                 contract = await contract_threads.run(Contract, address, require_success=require_success)
 
-        if contract._ttl_cache_popper == "disabled":
+        if not contract.verified or contract._ttl_cache_popper == "disabled":
             pass
     
         elif cache_ttl is None:
