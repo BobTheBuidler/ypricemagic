@@ -216,17 +216,19 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogRecei
             "request timed out",
             "parse error",
         ]
-        if any(err in str(e) for err in errs):
-            logger.debug('your node is having trouble, breaking batch in half')
-            batch_size = (end - start + 1)
-            half_of_batch = batch_size // 2
-            batch1_end = start + half_of_batch
-            batch2_start = batch1_end + 1
-            batch1 = await _get_logs_async_no_cache(address, topics, start, batch1_end)
-            batch2 = await _get_logs_async_no_cache(address, topics, batch2_start, end)
-            response = batch1 + batch2
-        else:
+        if all(err not in str(e) for err in errs):
             raise
+        logger.debug('your node is having trouble, breaking batch in half')
+        batch_size = (end - start + 1)
+        if batch_size <= 2:
+            # breaks the logic below and usually just succeeds on retry anyway
+            return await _get_logs_async_no_cache(address, topics, start, end)
+        half_of_batch = batch_size // 2
+        batch1_end = start + half_of_batch
+        batch2_start = batch1_end + 1
+        batch1 = await _get_logs_async_no_cache(address, topics, start, batch1_end)
+        batch2 = await _get_logs_async_no_cache(address, topics, batch2_start, end)
+        response = batch1 + batch2
     return response
 
 @eth_retry.auto_retry

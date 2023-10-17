@@ -315,7 +315,6 @@ class _Loader(ContractBase):
             logger.debug("creating loader task for %s", self)
             self.__task = asyncio.create_task(coro=self.__load(), name=f"{self}.__load()")
             self.__task.add_done_callback(self._done_callback)
-            return self._task
         return self.__task
     def _done_callback(self, task: "asyncio.Task[Any]") -> None:
         if e := task.exception():

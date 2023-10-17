@@ -166,8 +166,8 @@ class Factory(_CurveLoader):
         return self.loaded.__await__()
     @property
     def loaded(self) -> Awaitable[T]:
+        self._task  # ensure task is running and not errd
         if self._loaded is None:
-            self._task  # ensure task is running
             self._loaded = a_sync.Event(name=f"curve factory {self.address}")
         return self._loaded.wait()
     async def get_pool(self, i: int) -> EthAddress:
