@@ -364,7 +364,7 @@ class UniswapRouterV2(ContractBase):
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
-    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=600)
+    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=1800)
     @stuck_coro_debugger
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool: UniswapV2Pool
@@ -467,7 +467,7 @@ class UniswapRouterV2(ContractBase):
 
         return path
 
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=30*60)
     @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block, ignore_pools = []) -> int:
         if block and block < await contract_creation_block_async(self.factory):
