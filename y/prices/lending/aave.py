@@ -240,4 +240,4 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         return price_per_share * Decimal(await ERC20(underlying, asynchronous=True).price(block))
 
 
-aave = AaveRegistry(asynchronous=True)
+aave: AaveRegistry = AaveRegistry(asynchronous=True)

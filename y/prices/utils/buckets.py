@@ -7,7 +7,7 @@ import a_sync
 from y import convert
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
-from y.prices import convex, one_to_one, popsicle, solidex, yearn
+from y.prices import convex, one_to_one, popsicle, rkp3r, solidex, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -117,6 +117,7 @@ string_matchers = {
     'belt lp': belt.is_belt_lp,
     'froyo': froyo.is_froyo,
     'convex': convex.is_convex_lp,
+    'rkp3r': rkp3r.is_rkp3r,
 }
 
 # these just require calls
