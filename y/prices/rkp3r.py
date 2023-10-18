@@ -23,7 +23,7 @@ def is_rkp3r(address: Address) -> bool:
 @a_sync(default="sync")
 async def get_price(address: Address, block: Optional[Block] = None) -> Decimal:
     price, discount = await asyncio.gather(magic.get_price(KP3R, block=block, sync=False), get_discount(block))
-    return price * (100 - discount) / 100
+    return Decimal(price) * (100 - discount) / 100
 
 async def get_discount(block: Optional[Block] = None) -> Decimal:
     rkp3r = await Contract.coroutine(RKP3R)
