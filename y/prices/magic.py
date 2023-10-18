@@ -61,6 +61,7 @@ async def get_price(
     '''
     block = block or await dank_w3.eth.block_number
     token_address = convert.to_address(token_address)
+    ignore_pools += _get_default_ignore_pools()
     try:
         return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
     except (ContractNotFound, NonStandardERC20, PriceError) as e:
@@ -186,6 +187,19 @@ async def _get_price(
         logger._debugger.cancel()
         raise e
 
+def _get_default_ignore_pools():
+    DEFAULT_IGNORE_POOLS = {
+        Network.Optimism: [
+            "0x4706e50fDe911525e4B904c240056c4Ea0884AA6", # stERN/ERN
+            "0x5e4A183Fa83C52B1c55b11f2682f6a8421206633", # USDC/ERN
+            "0xEea82dCab12C855E3736558d80500ED52c8598cd", # DOLA/ERN
+            "0xF31cbe21Bbbb8056b75d6ca21e8fFd2CD38bD5C5"  # LUSD/ERN
+        ]
+    }
+    if chain.id not in DEFAULT_IGNORE_POOLS:
+        return ()
+
+    return tuple(DEFAULT_IGNORE_POOLS[chain.id])
 
 async def _exit_early_for_known_tokens(
     token_address: str,
