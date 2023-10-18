@@ -216,6 +216,13 @@ class BalancerV2Pool(ERC20):
         except (AttributeError,ValueError):
             return len(await self.tokens(block=block, sync=False))
 
+class ImmutableTokensBalancerV2Pool(BalancerV2Pool):
+    async def tokens(self, _: Optional[Block] = None) -> List[ERC20]:
+        return await self.__tokens
+    @a_sync.aka.cached_property
+    async def __tokens(self) -> List[ERC20]:
+        return await super().tokens()
+
 from collections import defaultdict
 
 _tasks_to_help_me_find_pool_types_that_cant_change_tokens = defaultdict(lambda: defaultdict(int))
