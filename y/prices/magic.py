@@ -35,6 +35,7 @@ from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils import ypriceapi
 from y.prices.utils.buckets import check_bucket
 from y.prices.utils.sense_check import _sense_check
+from y.networks import Network
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import get_price_logger
 
