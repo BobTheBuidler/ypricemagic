@@ -48,13 +48,13 @@ class VelodromeRouterV2(SolidlyRouterBase):
         super().__init__(*args, **kwargs)
         self.default_factory = default_factory[chain.id]
     
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory)
     
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
         if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:

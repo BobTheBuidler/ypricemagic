@@ -1,7 +1,8 @@
 import asyncio
 import logging
+from contextlib import suppress
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, Tuple
 
 import a_sync
 from brownie import chain
@@ -10,7 +11,7 @@ from multicall.call import Call
 from y import Network
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method, has_methods, probe
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
 from y.utils.logging import get_price_logger
@@ -53,7 +54,7 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
     # TODO figure out a better fix. For now I need a fix asap so this works.
     if chain.id == Network.Mainnet and str(token) == "0x8751D4196027d4e6DA63716fA7786B5174F04C15":
         return False
-    
+
     # Yearn-like contracts can use these formats
     result = any(
         await asyncio.gather(
@@ -64,8 +65,8 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
 
     # pricePerShare can revert if totalSupply == 0, which would cause `has_methods` to return `False`,
     # but it might still be a vault. This section will correct `result` for problematic vaults.
-    if result is False:
-        try: 
+    if not result:
+        with suppress(ContractNotVerified, MessedUpBrownieContract):
             contract = await Contract.coroutine(token)
             result = any([
                 hasattr(contract,'pricePerShare'),
@@ -73,13 +74,16 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
                 hasattr(contract,'getPricePerFullShare'),
                 hasattr(contract,'getSharesToUnderlying'),
             ])
-        except (ContractNotVerified, MessedUpBrownieContract): pass
 
     return result
 
 @a_sync.a_sync(default='sync')
-async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return await YearnInspiredVault(token).price(block=block, sync=False)
+async def get_price(
+    token: AnyAddressType, 
+    block: Optional[Block] = None,
+    ignore_pools: Tuple[Pool, ...] = (),
+) -> UsdPrice:
+    return await YearnInspiredVault(token).price(block=block, ignore_pools=ignore_pools, sync=False)
 
 class YearnInspiredVault(ERC20):
     __slots__ = "_get_share_price", 
@@ -149,12 +153,17 @@ class YearnInspiredVault(ERC20):
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
-    async def price(self, block: Optional[Block] = None) -> UsdPrice:
+    async def price(
+        self, 
+        block: Optional[Block] = None,
+        ignore_pools: Tuple[Pool, ...] = (),
+    ) -> UsdPrice:
         logger = get_price_logger(self.address, block=None, extra='yearn')
+        underlying: ERC20
         share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__(sync=False))
         if share_price is None:
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)
-        price = UsdPrice(share_price * Decimal(await underlying.price(block=block, sync=False)))
+        price = UsdPrice(share_price * Decimal(await underlying.price(block=block, ignore_pools=ignore_pools, sync=False)))
         logger.debug("%s price at block %s: %s", self, block, price)
         return price

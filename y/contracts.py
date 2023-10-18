@@ -377,8 +377,8 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
     return True
 
 
-@a_sync.a_sync(default='sync', cache_type='memory')
 @stuck_coro_debugger
+@a_sync.a_sync(default='sync', cache_type='memory')
 async def has_methods(
     address: AnyAddressType, 
     methods: Tuple[str],

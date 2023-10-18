@@ -114,8 +114,8 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         except ContractNotVerified:
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
     
-    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
+    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_price(
         self, 
         token: Address, 
@@ -151,12 +151,13 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return UsdPrice(max(outputs)) if outputs else None
 
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def pools(self) -> List[UniswapV3Pool]:
         factory = await self.__factory__(sync=False)
         return UniV3Pools(factory, asynchronous=self.asynchronous)
 
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=30*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         if block and block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0

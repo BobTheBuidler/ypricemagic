@@ -25,8 +25,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
             raise UnsupportedNetwork(f"UniswapV1 does not suppport chainid {chain.id}")
         self.asynchronous = asynchronous
         
-    @a_sync.a_sync(ram_cache_maxsize=None)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=None)
     async def get_exchange(self, token_address: Address) -> Optional[Contract]:
         factory = await Contract.coroutine(self.factory)
         exchange = await factory.getExchange.coroutine(token_address)
@@ -58,8 +58,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
                 return None
             continue_if_call_reverted(e)
 
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token_address: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
         if exchange is None or exchange in ignore_pools:

@@ -71,8 +71,8 @@ class BalancerV1Pool(ERC20):
         )
         return Decimal(balance) / scale
 
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block < await self.deploy_block(sync=False):
             return 0
