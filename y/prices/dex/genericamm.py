@@ -43,8 +43,8 @@ class GenericAmm(a_sync.ASyncGenericBase):
             return 0
         return UsdPrice(tvl / total_supply)
     
-    @a_sync.a_sync(cache_type='memory')
     @stuck_coro_debugger
+    @a_sync.a_sync(cache_type='memory')
     async def get_tokens(self, lp_token_address: AnyAddressType) -> Tuple[ERC20,ERC20]:
         tokens = await asyncio.gather(
             Call(lp_token_address, ['token0()(address)']).coroutine(),

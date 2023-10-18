@@ -161,8 +161,8 @@ class UniswapV2Pool(ERC20):
         if vals[0] is not None and vals[1] is not None:
             return sum(vals)
     
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block and block < await self.deploy_block(sync=False):
             return 0
@@ -241,8 +241,8 @@ class UniswapRouterV2(ContractBase):
     def __repr__(self) -> str:
         return f"<UniswapV2Router {self.label} '{self.address}'>"
 
-    @a_sync.a_sync(ram_cache_maxsize=500)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=500)
     async def get_price(
         self,
         token_in: Address,
@@ -364,8 +364,8 @@ class UniswapRouterV2(ContractBase):
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
-    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=1800)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=1800)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool: UniswapV2Pool
         pool_to_token_out = {}
@@ -387,8 +387,8 @@ class UniswapRouterV2(ContractBase):
             pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
         return pools
 
-    @a_sync.a_sync(ram_cache_maxsize=500)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
@@ -406,8 +406,8 @@ class UniswapRouterV2(ContractBase):
                 deepest_pool_balance = depth
         return deepest_pool
 
-    @a_sync.a_sync(ram_cache_maxsize=500)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         token_address = convert.to_address(token_address)
         pools: Dict[UniswapV2Pool, Address]
@@ -433,9 +433,8 @@ class UniswapRouterV2(ContractBase):
                 deepest_stable_pool_balance = depth
         return deepest_stable_pool
 
-
-    @a_sync.a_sync(ram_cache_maxsize=500)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=500)
     async def get_path_to_stables(self, token: AnyAddressType, block: Optional[Block] = None, _loop_count: int = 0, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Path:
         if _loop_count > 10:
             raise CantFindSwapPath
@@ -467,8 +466,8 @@ class UniswapRouterV2(ContractBase):
 
         return path
 
-    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=30*60)
     @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=30*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools = []) -> int:
         if block and block < await contract_creation_block_async(self.factory):
             return 0
