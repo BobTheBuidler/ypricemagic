@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from typing import Optional
+from typing import Optional, Tuple
 
 import a_sync
 from brownie import chain
@@ -8,7 +8,7 @@ from brownie import chain
 from y import Network
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method, has_methods, probe
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract)
 from y.utils.raw_calls import raw_call
@@ -75,8 +75,12 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
     return result
 
 @a_sync.a_sync(default='sync')
-async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return await YearnInspiredVault(token).price(block=block, sync=False)
+async def get_price(
+    token: AnyAddressType,
+    block: Optional[Block] = None,
+    ignore_pools: Tuple[Pool, ...] = (),
+) -> UsdPrice:
+    return await YearnInspiredVault(token).price(block=block, ignore_pools=ignore_pools, sync=False)
 
 class YearnInspiredVault(ERC20):
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
@@ -138,8 +142,12 @@ class YearnInspiredVault(ERC20):
             raise CantFetchParam(f'share_price for {self.__repr__()}')
     
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
-    async def price(self, block: Optional[Block] = None) -> UsdPrice:
+    async def price(
+        self,
+        block: Optional[Block] = None,
+        ignore_pools: Tuple[Pool, ...] = (),
+    ) -> UsdPrice:
         share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__(sync=False))
         if share_price is None:
             return None
-        return UsdPrice(share_price * await underlying.price(block=block, sync=False))
+        return UsdPrice(share_price * await underlying.price(block=block, ignore_pools=ignore_pools, sync=False))

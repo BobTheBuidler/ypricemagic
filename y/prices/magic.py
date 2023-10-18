@@ -10,7 +10,7 @@ from multicall.utils import raise_if_exception_in
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
 from y.classes.common import ERC20
-from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.decorators import stuck_coro_debugger
 from y.exceptions import NonStandardERC20, PriceError, yPriceMagicError
 from y.prices import convex, one_to_one, popsicle, solidex, yearn
@@ -29,7 +29,7 @@ from y.prices.lending.aave import aave
 from y.prices.lending.compound import compound
 from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
                                   saddle)
-from y.prices.stable_swap.curve import CurvePool, curve
+from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
 from y.prices.utils import ypriceapi
@@ -44,7 +44,7 @@ async def get_price(
     token_address: AnyAddressType,
     block: Optional[Block] = None, 
     fail_to_None: bool = False,
-    ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
+    ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:
     '''
@@ -113,7 +113,7 @@ async def _get_price(
     token: AnyAddressType, 
     block: Block, 
     fail_to_None: bool = False, 
-    ignore_pools: Tuple[UniswapV2Pool, CurvePool] = (),
+    ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 
@@ -142,7 +142,7 @@ async def _get_price(
                 logger._debugger.cancel()
                 return price
 
-        price = await _exit_early_for_known_tokens(token, block=block)
+        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools)
         logger.debug("early exit -> %s", price)
         if price is not None:
             await _sense_check(token, price)
@@ -189,7 +189,8 @@ async def _get_price(
 
 async def _exit_early_for_known_tokens(
     token_address: str,
-    block: Block
+    block: Block,
+    ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
 
     bucket = await check_bucket(token_address, sync=False)
@@ -237,7 +238,7 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'wrapped atoken v3':     price = await aave.get_price_wrapped_v3(token_address, block, sync=False)
 
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, sync=False)
-    elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, sync=False)
+    elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, ignore_pools=ignore_pools, sync=False)
 
     return price
 
