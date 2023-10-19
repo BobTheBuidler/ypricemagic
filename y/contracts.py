@@ -363,19 +363,12 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
     '''
     address = convert.to_address(address)
     try:
-        response = await Call(address, [method], [['key', None]]).coroutine()
-        response = response['key']
+        response = await Call(address, [method]).coroutine()
+        return False if response is None else response if return_response else True
     except Exception as e:
         if call_reverted(e):
             return False
         raise
-    
-    if response is None:
-        return False
-    if return_response:
-        return response
-    return True
-
 
 @stuck_coro_debugger
 @a_sync.a_sync(default='sync', cache_type='memory')
@@ -393,11 +386,7 @@ async def has_methods(
 
     address = convert.to_address(address)
     try:
-        return _func([
-            False if call is None else True
-            for call
-            in await asyncio.gather(*[Call(address, [method]).coroutine() for method in methods])
-        ])
+        return _func([result is not None for result in await asyncio.gather(*[Call(address, [method]).coroutine() for method in methods])])
     except Exception as e:
         if not call_reverted(e): raise # and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
@@ -420,25 +409,16 @@ async def probe(
     results = [(method, result) for method, result in zip(methods, results) if not isinstance(result, Exception) and result is not None]
     if len(results) not in [1,0]:
         logger.debug('multiple results: %s', results)
-        if len(results) == 2 and results[0][1] == results[1][1]:
-            method = results[0][0], results[1][0]
-            result = results[0][1]
-            results = [(method, result)]
-            logger.debug('final results: %s', results)
-        else:
+        if len(results) != 2 or results[0][1] != results[1][1]:
             raise AssertionError(f'`probe` returned multiple results for {address}: {results}. Must debug')
-    if len(results) == 1:
-        method, result = results[0]
-    else:
-        method, result = None, None
-    
+        method = results[0][0], results[1][0]
+        result = results[0][1]
+        results = [(method, result)]
+        logger.debug('final results: %s', results)
+    method, result = results[0] if len(results) == 1 else (None, None)
     if method:
         assert result is not None
-
-    if not return_method:
-        return result
-    else:
-        return method, result
+    return (method, result) if return_method else result
     
 
 @a_sync.a_sync(default='sync')
@@ -469,22 +449,22 @@ def _extract_abi_data(address):
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
-                raise ValueError(f'Rate limited by Blockscout. Please try again.')
+                raise ValueError('Rate limited by Blockscout. Please try again.') from e
             if web3.eth.get_code(address):
-                raise ContractNotVerified(address)
+                raise ContractNotVerified(address) from e
             else:
-                raise ContractNotFound(address)
+                raise ContractNotFound(address) from e
         raise
     except ValueError as e:
         if contract_not_verified(e):
-            raise ContractNotVerified(f'{address} on {Network.printable()}')
+            raise ContractNotVerified(f'{address} on {Network.printable()}') from e
         elif "Unknown contract address:" in str(e):
             if not is_contract(address):
-                raise ContractNotFound(str(e))
-            raise ContractNotVerified(str(e)) # avax snowtrace
+                raise ContractNotFound(str(e)) from e
+            raise ContractNotVerified(str(e)) from e
         else:
             raise
-    
+
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
         raise ContractNotVerified(f"Contract source code not verified: {address}")
