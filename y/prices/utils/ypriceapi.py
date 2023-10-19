@@ -7,22 +7,21 @@ from collections import defaultdict
 from http import HTTPStatus
 from random import randint
 from time import time
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Optional
 
-from a_sync.primitives import ThreadsafeSemaphore
 from aiohttp import (BasicAuth, ClientResponse, ClientSession, ClientTimeout,
                      TCPConnector)
-from aiohttp.client_exceptions import ClientError, ContentTypeError
+from aiohttp.client_exceptions import (ClientConnectorSSLError, ClientError,
+                                       ContentTypeError)
 from async_lru import alru_cache
 from brownie import chain
+from dank_mids.semaphores import BlockSemaphore
 
-from y import constants
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
 from y.networks import Network
 from y.utils.dank_mids import dank_w3
-from dank_mids.semaphores import BlockSemaphore
 
 logger = logging.getLogger(__name__)
 
@@ -145,12 +144,18 @@ async def get_price(
 
     async with YPRICEAPI_SEMAPHORE[block]:
         try:
-            if not await chain_supported(chain.id):
-                return None
-            session = await get_session()
-            async with session.get(f'/get_price/{chain.id}/{token}?block={block}') as response:
-                if price := await read_response(response, token, block):
-                    return UsdPrice(price)
+            tries = 0
+            while True:
+                try:
+                    if not await chain_supported(chain.id):
+                        return None
+                    session = await get_session()
+                    async with session.get(f'/get_price/{chain.id}/{token}?block={block}') as response:
+                        return UsdPrice(price) if (price := await read_response(response, token, block)) else None
+                except ClientConnectorSSLError as e:
+                    if "[[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1129)]" not in str(e) or tries >= 50:
+                        raise e
+                    tries += 1
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
         except ContentTypeError:
