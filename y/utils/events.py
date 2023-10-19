@@ -44,14 +44,14 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
     """
     try:
         decoded = _decode_logs(logs)
-    except:
+    except Exception:
         decoded = []
         for log in logs:
             try:
                 # get some help for debugging
                 decoded.extend(_decode_logs([log]))
             except Exception as e:
-                raise (log, *e.args) from e
+                raise e.__class__(log, *e.args) from e
 
     for i, log in enumerate(logs):
         setattr(decoded[i], "block_number", log["blockNumber"])
