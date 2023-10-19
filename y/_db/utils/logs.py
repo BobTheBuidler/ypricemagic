@@ -1,28 +1,27 @@
 
 import logging
-from contextlib import suppress
 from typing import List, Optional
 
 from brownie.convert import EthAddress
 from msgspec import json
-from pony.orm import OptimisticCheckError, commit, db_session, select
+from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 from web3.types import LogReceipt
 
+from y._db import entities, structs
 from y._db.common import DiskCache, enc_hook
-from y._db.entities import Log, LogCacheInfo, insert, retry_locked
 from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
 
 
 @db_session
-@retry_locked
+@entities.retry_locked
 def insert_log(log: dict):
     get_block = _get_get_block()
     log_topics = log['topics']
-    insert(
-        type=Log,
+    entities.insert(
+        type=entities.Log,
         block=get_block(log['blockNumber'], sync=True),
         transaction_hash = log['transactionHash'].hex(),
         log_index = log['logIndex'],
@@ -33,7 +32,7 @@ def insert_log(log: dict):
 
 page_size = 100
 
-class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
+class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -56,7 +55,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
     def topic3(self) -> str:
         return self.topics[3] if self.topics and len(self.topics) > 3 else None
     
-    def load_metadata(self) -> Optional["LogCacheInfo"]:
+    def load_metadata(self) -> Optional["entities.LogCacheInfo"]:
         """Loads the cache metadata from the db."""
         if self.addresses:
             raise NotImplementedError(self.addresses)
@@ -64,14 +63,14 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         from y._db.utils import utils as db
         chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
-        if self.topic0 and (info := LogCacheInfo.get(
+        if self.topic0 and (info := entities.LogCacheInfo.get(
             chain=chain,
             address='None',
             topics=json.encode([self.topic0]),
         )):
             return info
         # If we cached these specific topics for all addresses
-        elif self.topics and (info := LogCacheInfo.get(
+        elif self.topics and (info := entities.LogCacheInfo.get(
             chain=chain,
             address='None',
             topics=json.encode(self.topics),
@@ -82,20 +81,20 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         from y._db.utils import utils as db
         if self.addresses:
             chain = db.get_chain(sync=True)
-            infos: List[LogCacheInfo]
+            infos: List[entities.LogCacheInfo]
             if isinstance(self.addresses, str):
                 infos = [
                     # If we cached all logs for this address...
-                    LogCacheInfo.get(chain=chain, address=self.addresses, topics=json.encode(None))
+                    entities.LogCacheInfo.get(chain=chain, address=self.addresses, topics=json.encode(None))
                     # ... or we cached all logs for these specific topics for this address
-                    or LogCacheInfo.get(chain=chain, address=self.addresses, topics=json.encode(self.topics))
+                    or entities.LogCacheInfo.get(chain=chain, address=self.addresses, topics=json.encode(self.topics))
                 ]
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
+                    entities.LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(None))
                     # ... or we cached all logs for these specific topics for this address
-                    or LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(self.topics))
+                    or entities.LogCacheInfo.get(chain=chain, address=addr, topics=json.encode(self.topics))
                     for addr in self.addresses
                 ]
             if all(info and from_block >= info.cached_from for info in infos):
@@ -106,14 +105,14 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
         return 0
     
     def _select(self, from_block: int, to_block: int) -> List[LogReceipt]:
-        return [json.decode(log.raw) for log in self._get_query(from_block, to_block)]
+        return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
 
         generator = (
             log 
-            for log in Log
+            for log in entities.Log
             if log.block.chain == db.get_chain(sync=True)
             and log.block.number >= from_block
             and log.block.number <= to_block
@@ -138,7 +137,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
             if isinstance(addresses, str):
                 addresses = [addresses]
             for address in addresses:
-                if e:=LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
+                if e:=entities.LogCacheInfo.get(chain=chain, address=address, topics=encoded_topics):
                     if from_block < e.cached_from:
                         e.cached_from = from_block
                         should_commit = True
@@ -146,7 +145,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                         e.cached_thru = done_thru
                         should_commit = True
                 else:
-                    LogCacheInfo(
+                    entities.LogCacheInfo(
                         chain=chain, 
                         address=address,
                         topics=encoded_topics,
@@ -154,7 +153,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                         cached_thru = done_thru,
                     )
                     should_commit = True
-        elif info := LogCacheInfo.get(
+        elif info := entities.LogCacheInfo.get(
             chain=chain, 
             address='None',
             topics=encoded_topics,
@@ -166,7 +165,7 @@ class LogCache(DiskCache[LogReceipt, LogCacheInfo]):
                 info.cached_thru = done_thru
                 should_commit = True
         else:
-            LogCacheInfo(
+            entities.LogCacheInfo(
                 chain=chain,
                 address='None',
                 topics=encoded_topics,
