@@ -19,7 +19,7 @@ from y.prices import magic
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
-}.get(chain.id, None)
+}.get(chain.id)
 
 logger = logging.getLogger(__name__)
 

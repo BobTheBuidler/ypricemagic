@@ -133,12 +133,13 @@ class UniswapV2Pool(ERC20):
         if reserves is None:
             reserves = 0, 0
 
-        return (WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
+        return tuple(WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
 
     @stuck_coro_debugger
     async def tvl(self, block: Optional[Block] = None) -> Optional[Decimal]:
+        tokens: List[ERC20] = await self.__tokens__(sync=False)
         prices, reserves = await asyncio.gather(
-            asyncio.gather(*[token.price(block=block, return_None_on_failure=True, sync=False) for token in await self.__tokens__(sync=False)]),
+            asyncio.gather(*[token.price(block=block, return_None_on_failure=True, sync=False) for token in tokens]),
             self.reserves(block=block, sync=False),
         )
 
@@ -360,7 +361,7 @@ class UniswapRouterV2(ContractBase):
             for pool in await multicall_same_func_same_contract_different_inputs(self.factory, 'allPairs(uint256)(address)', inputs=range(to_get), sync=False):
                 logger.debug('pool: %s', pool)
                 pools.insert(0, UniswapV2Pool(address=pool, asynchronous=self.asynchronous))
-        tokens = set(await asyncio.gather(*itertools.chain(*((pool.token0, pool.token1) for pool in pools))))
+        tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
