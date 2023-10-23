@@ -1,4 +1,5 @@
 import os
+from contextlib import suppress
 
 from brownie import network
 
@@ -10,6 +11,10 @@ if not network.is_connected():
     if 'BROWNIE_NETWORK_ID' not in os.environ:
         raise NetworkNotSpecified('In order to use pricemagic outside of a brownie project directory, you will need to set $BROWNIE_NETWORK_ID environment variable with the id of your preferred brownie network connection.')
     network.connect(os.environ['BROWNIE_NETWORK_ID'])
+
+with suppress(ImportError):
+    """If eth_portfolio is also installed in this env, we will use its extended version of our db schema"""
+    from eth_portfolio._db import utils
 
 from y import time
 from y.classes.common import ERC20
@@ -25,9 +30,9 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices
 from y.utils.dank_mids import dank_w3
+from y.utils.logging import enable_debug_logging
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import balanceOf, raw_call
-from y.utils.logging import enable_debug_logging
 
 __all__ = [
     ### you can reach the below functions, classes, and variables using ###
