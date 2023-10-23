@@ -6,7 +6,7 @@ from typing import Optional
 import a_sync
 from brownie import chain
 
-from y import convert
+from y import convert, Contract
 from y.constants import weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
@@ -39,4 +39,8 @@ def is_wsteth(address: AnyAddressType) -> bool:
     if chain.id != Network.Mainnet:
         return False
     address = convert.to_address(address)
-    return address == wsteth.address
+    if address == wsteth.address:
+        return True
+
+    wrapped = Contract(address)
+    return hasattr(wrapped, 'token') and wrapped.token() == wsteth.address
