@@ -22,6 +22,9 @@ class wstEth(a_sync.ASyncGenericBase):
             self.address = {
                 Network.Mainnet: '0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0'
             }[chain.id]
+            self.wrapped_for_curve = {
+                Network.Mainnet: '0xb82CFa4325568748506dC7cF267857Ff1e3b8d39'
+            }[chain.id]
         except KeyError:
             self.address = None
 
@@ -36,11 +39,4 @@ class wstEth(a_sync.ASyncGenericBase):
 wsteth = wstEth(asynchronous=True)
 
 def is_wsteth(address: AnyAddressType) -> bool:
-    if chain.id != Network.Mainnet:
-        return False
-    address = convert.to_address(address)
-    if address == wsteth.address:
-        return True
-
-    wrapped = Contract(address)
-    return hasattr(wrapped, 'token') and wrapped.token() == wsteth.address
+    return chain.id == Network.Mainnet and convert.to_address(address) in [wsteth.address, wsteth.wrapped_for_curve]
