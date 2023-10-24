@@ -95,7 +95,7 @@ class UniswapV2Pool(ERC20):
         if self._token1 is None:
             with suppress(ContractLogicError):
                 if token1 := await Call(self.address, ['token1()(address)']).coroutine():
-                    return ERC20(token1, asynchronous=self.asynchronous)
+                    self._token1 = ERC20(token1, asynchronous=self.asynchronous)
         if self._token1 is None:
             raise NotAUniswapV2Pool(self.address)
         return self._token1
@@ -358,9 +358,15 @@ class UniswapRouterV2(ContractBase):
         elif len(pools) < all_pairs_len: # <
             to_get = all_pairs_len - len(pools)
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", to_get)
-            for pool in await multicall_same_func_same_contract_different_inputs(self.factory, 'allPairs(uint256)(address)', inputs=range(to_get), sync=False):
+            factory = await Contract.coroutine(self.factory)
+            async def _load_pool(i):
+                pool = await factory.allPairs.coroutine(i)
                 logger.debug('pool: %s', pool)
-                pools.insert(0, UniswapV2Pool(address=pool, asynchronous=self.asynchronous))
+                pool = UniswapV2Pool(address=pool, asynchronous=self.asynchronous)
+                await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
+                return pool
+            pools = await asyncio.gather(*[_load_pool(i) for i in range(to_get)]) + pools
+            logger.info('Done fetching %s missing pools on %s', to_get, self.label)
         tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
