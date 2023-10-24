@@ -1,10 +1,10 @@
 import asyncio
+import contextlib
 import logging
 from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import a_sync
 import brownie
-import contextlib
 from brownie import chain
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
@@ -13,6 +13,7 @@ from web3.exceptions import CannotHandleRequest
 from y import convert
 from y.contracts import Contract, contract_creation_block
 from y.datatypes import Address, AddressOrContract, AnyAddressType, Block
+from y.decorators import stuck_coro_debugger
 from y.exceptions import continue_if_call_reverted
 from y.interfaces.multicall2 import MULTICALL2_ABI
 from y.networks import Network
@@ -48,6 +49,7 @@ multicall_deploy_block = contract_creation_block(multicall2.address)
 
 
 @a_sync.a_sync(default='sync')
+@stuck_coro_debugger
 async def multicall_same_func_no_input(
     addresses: Iterable[AnyAddressType],
     method: str, 
@@ -62,6 +64,7 @@ async def multicall_same_func_no_input(
 
 
 @a_sync.a_sync(default='sync')
+@stuck_coro_debugger
 async def multicall_same_func_same_contract_different_inputs(
     address: AnyAddressType, 
     method: str, 
@@ -73,7 +76,7 @@ async def multicall_same_func_same_contract_different_inputs(
     assert inputs
     address = convert.to_address(address)
     results = await asyncio.gather(
-        *[Call(address, [method, input], [[input,apply_func]], block_id=block).coroutine() for input in inputs],
+        *[Call(address, [method, input], [[input, apply_func]], block_id=block).coroutine() for input in inputs],
         return_exceptions=return_None_on_failure,
     )
     if return_None_on_failure:
@@ -85,6 +88,7 @@ async def multicall_same_func_same_contract_different_inputs(
 
 
 @a_sync.a_sync(default='sync')
+@stuck_coro_debugger
 async def multicall_decimals(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
@@ -101,6 +105,7 @@ async def multicall_decimals(
     return await asyncio.gather(*[_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses])
 
 @a_sync.a_sync(default='sync')
+@stuck_coro_debugger
 async def multicall_totalSupply(
     addresses: Iterable[AddressOrContract], 
     block: Optional[Block] = None,
@@ -114,6 +119,7 @@ async def multicall_totalSupply(
 
 #yLazyLogger(logger)
 @a_sync.a_sync(default='sync')
+@stuck_coro_debugger
 async def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Optional[Any]]:
     # https://github.com/makerdao/multicall
     multicall_input = []
