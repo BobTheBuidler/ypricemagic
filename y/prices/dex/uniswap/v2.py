@@ -110,7 +110,7 @@ class UniswapV2Pool(ERC20):
         return None
     
     @stuck_coro_debugger
-    async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
+    async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False))
 
         if reserves is None and self._types_assumed:
@@ -118,7 +118,7 @@ class UniswapV2Pool(ERC20):
                 self._check_return_types()
             except AttributeError as e:
                 raise NotAUniswapV2Pool(self.address) from e
-            return await self.reserves(block, sync=False)
+            return await self.reserves(block=block, sync=False)
         
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
@@ -168,7 +168,7 @@ class UniswapV2Pool(ERC20):
         if block and block < await self.deploy_block(sync=False):
             return 0
         try:
-            if reserves := await self.reserves(block, sync=False):
+            if reserves := await self.reserves(block=block, sync=False):
                 balance: WeiBalance
                 for balance in reserves:
                     if token == balance.token:
@@ -180,7 +180,7 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
-            return all(await asyncio.gather(self.reserves(block, sync=False), self.total_supply(block, sync=False)))
+            return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
         except (NotAUniswapV2Pool, InsufficientDataBytes):
             return False
         
