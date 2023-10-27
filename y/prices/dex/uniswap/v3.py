@@ -79,7 +79,7 @@ class UniswapV3Pool(ContractBase):
             raise TokenNotFound(f"{token} is not in {self}")
         return ERC20(token, asynchronous=self.asynchronous)
 
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         if block < await self.deploy_block(sync=False):
             return 0
@@ -157,7 +157,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return UniV3Pools(factory, asynchronous=self.asynchronous)
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=30*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         if block and block < await contract_creation_block_async(await self.__quoter__(sync=False)):
             return 0

@@ -59,7 +59,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
             continue_if_call_reverted(e)
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token_address: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         exchange = await self.get_exchange(token_address, sync=False)
         if exchange is None or exchange in ignore_pools:
