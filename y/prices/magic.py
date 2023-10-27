@@ -182,8 +182,7 @@ async def _get_price(
                 logger._debugger.cancel()
                 return price
 
-        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools)
-        logger.debug("early exit -> %s", price)
+        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, logger=logger)
         if price is not None:
             await _sense_check(token, block, price)
             logger.debug("%s price: %s", symbol, price)
@@ -231,6 +230,7 @@ async def _get_price(
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block,
+    logger: logging.Logger,
     ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
 
@@ -282,6 +282,7 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, sync=False)
     elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, ignore_pools=ignore_pools, sync=False)
 
+    logger.debug("%s -> %s", bucket, price)
     return price
 
          
