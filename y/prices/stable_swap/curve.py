@@ -345,7 +345,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             sum(balance * Decimal(price) for balance, price in zip(balances.values(), prices))
         )
     
-    @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         deploy_block = await contract_creation_block_async(self.address)
         if block < deploy_block:
