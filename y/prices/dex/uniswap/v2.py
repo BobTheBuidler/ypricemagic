@@ -366,7 +366,7 @@ class UniswapRouterV2(ContractBase):
                 await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
                 return pool
             pools = await asyncio.gather(*[_load_pool(i) for i in range(to_get)]) + pools
-            logger.info('Done fetching %s missing pools on %s', to_get, self.label)
+            logger.debug('Done fetching %s missing pools on %s', to_get, self.label)
         tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
