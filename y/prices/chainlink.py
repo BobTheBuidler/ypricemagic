@@ -1,8 +1,8 @@
-import asyncio
 import logging
 from typing import AsyncIterator, Optional
 
 import a_sync
+from y import time
 from a_sync.base import ASyncGenericBase
 from a_sync.future import ASyncFuture
 from async_lru import alru_cache
@@ -173,12 +173,13 @@ FEEDS = {
 
 
 class Feed:
-    __slots__ = 'address', 'asset', 'latest_answer', 'start_block'
+    __slots__ = 'address', 'asset', 'latest_answer', 'latest_timestamp', 'start_block'
     def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0, asynchronous: bool = False):
         self.address = convert.to_address(address)
         self.asset = ERC20(asset, asynchronous=asynchronous)
         self.start_block = start_block
         self.latest_answer = a_sync.future(Call(self.address, 'latestAnswer()(uint)').coroutine)
+        self.latest_timestamp = a_sync.future(Call(self.address, 'latestTimestamp()(uint)').coroutine)
     
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} address={self.address} asset={self.asset}>"
@@ -198,10 +199,18 @@ class Feed:
 
     #@a_sync.future
     async def get_price(self, block: Optional[int]) -> Optional[UsdPrice]:
+        if await (self.latest_timestamp(block_id=block) + 24 * 60 * 60 < time.get_block_timestamp_async(block)):
+            # if 24h have passed since last feed update, we can't trust it
+            logger.debug('%s is stale, must fetch price from elsewhere', self)
+            return None
         latest_answer = self.latest_answer(block_id=block)
+        # NOTE: just playing with smth here
         scale = ASyncFuture(self.scale())
         price = latest_answer / scale
-        return UsdPrice(await price)
+        price = UsdPrice(await price)
+        logger.debug('latest_answer: %s', await latest_answer)
+        logger.debug('%s price at %s: %s', self, block, price)
+        return price
         
 
 class FeedsFromEvents(ProcessedEvents[Feed]):
@@ -261,6 +270,7 @@ class Chainlink(ASyncGenericBase):
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
             block = await dank_w3.eth.block_number
+        logger.debug("getting price for %s at %s", asset, block)
         return await self._get_price(asset, block)
 
     @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
