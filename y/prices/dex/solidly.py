@@ -66,8 +66,8 @@ class SolidlyRouter(SolidlyRouterBase):
             if stable_pool and unstable_pool:
                 # We have to find out which of these pools is deepest
                 stable_reserves, unstable_reserves = await asyncio.gather(
-                    stable_pool.reserves(block, sync=False),
-                    unstable_pool.reserves(block, sync=False),
+                    stable_pool.reserves(block=block, sync=False),
+                    unstable_pool.reserves(block=block, sync=False),
                 )
                 stable_reserves = tuple(stable_reserves)
                 unstable_reserves = tuple(unstable_reserves)

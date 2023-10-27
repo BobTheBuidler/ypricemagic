@@ -95,7 +95,7 @@ class UniswapV2Pool(ERC20):
         if self._token1 is None:
             with suppress(ContractLogicError):
                 if token1 := await Call(self.address, ['token1()(address)']).coroutine():
-                    return ERC20(token1, asynchronous=self.asynchronous)
+                    self._token1 = ERC20(token1, asynchronous=self.asynchronous)
         if self._token1 is None:
             raise NotAUniswapV2Pool(self.address)
         return self._token1
@@ -110,7 +110,7 @@ class UniswapV2Pool(ERC20):
         return None
     
     @stuck_coro_debugger
-    async def reserves(self, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
+    async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False))
 
         if reserves is None and self._types_assumed:
@@ -118,7 +118,7 @@ class UniswapV2Pool(ERC20):
                 self._check_return_types()
             except AttributeError as e:
                 raise NotAUniswapV2Pool(self.address) from e
-            return await self.reserves(block, sync=False)
+            return await self.reserves(block=block, sync=False)
         
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
@@ -168,7 +168,7 @@ class UniswapV2Pool(ERC20):
         if block and block < await self.deploy_block(sync=False):
             return 0
         try:
-            if reserves := await self.reserves(block, sync=False):
+            if reserves := await self.reserves(block=block, sync=False):
                 balance: WeiBalance
                 for balance in reserves:
                     if token == balance.token:
@@ -180,7 +180,7 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
-            return all(await asyncio.gather(self.reserves(block, sync=False), self.total_supply(block, sync=False)))
+            return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
         except (NotAUniswapV2Pool, InsufficientDataBytes):
             return False
         
@@ -358,9 +358,15 @@ class UniswapRouterV2(ContractBase):
         elif len(pools) < all_pairs_len: # <
             to_get = all_pairs_len - len(pools)
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", to_get)
-            for pool in await multicall_same_func_same_contract_different_inputs(self.factory, 'allPairs(uint256)(address)', inputs=range(to_get), sync=False):
+            factory = await Contract.coroutine(self.factory)
+            async def _load_pool(i):
+                pool = await factory.allPairs.coroutine(i)
                 logger.debug('pool: %s', pool)
-                pools.insert(0, UniswapV2Pool(address=pool, asynchronous=self.asynchronous))
+                pool = UniswapV2Pool(address=pool, asynchronous=self.asynchronous)
+                await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
+                return pool
+            pools = await asyncio.gather(*[_load_pool(i) for i in range(to_get)]) + pools
+            logger.info('Done fetching %s missing pools on %s', to_get, self.label)
         tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
