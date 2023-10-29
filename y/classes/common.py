@@ -9,7 +9,7 @@ from typing import (TYPE_CHECKING, Any, Awaitable, List, Literal, NoReturn,
                     Optional, Tuple, Union)
 
 import a_sync
-from brownie import chain
+from brownie import Contract, chain
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
 
@@ -57,6 +57,11 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         return f"<{self.__class__.__name__} '{self.address}'"
     
     def __eq__(self, __o: object) -> bool:
+        if isinstance(__o, (ContractBase, Contract)):
+            return __o.address == self.address
+        # Skip checksumming if applicable, its computationally expensive
+        elif isinstance(__o, str) and __o == self.address:
+            return True
         try:
             return convert.to_address(__o) == self.address
         except Exception:
