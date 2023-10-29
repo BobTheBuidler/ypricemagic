@@ -60,8 +60,8 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         if isinstance(__o, (ContractBase, Contract)):
             return __o.address == self.address
         # Skip checksumming if applicable, its computationally expensive
-        elif isinstance(__o, str) and __o == self.address:
-            return True
+        elif isinstance(__o, str) and __o != __o.lower() and __o != __o.upper():
+            return __o == self.address
         try:
             return convert.to_address(__o) == self.address
         except Exception:
