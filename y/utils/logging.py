@@ -23,9 +23,10 @@ def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '
     if extra: 
         name += f".{extra}"
     logger = logging.getLogger(name)
-    logger.setLevel(logger.parent.level)
     logger.address = address
     logger.block = block
+    if logger.level != logger.parent.level:
+        logger.setLevel(logger.parent.level)
     return logger
 
 def enable_debug_logging(logger: str = 'y') -> None:
