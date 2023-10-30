@@ -13,6 +13,7 @@ from a_sync.modified import ASyncFunction
 from brownie import Contract, chain
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
+from typing_extensions import Self
 
 from y import convert
 from y.classes.singleton import ChecksumASyncSingletonMeta
@@ -221,10 +222,10 @@ class ERC20(ContractBase):
             with the contract address and correct method name so we can keep things going smoothly :)''')
 
     # These dundermethods are created by a_sync for the async_properties on this class
-    __symbol__: ASyncFunction[[], str]
-    __name__: ASyncFunction[[], str]
-    __decimals__: ASyncFunction[[], int]
-    __scale__: ASyncFunction[[], int]
+    __symbol__: ASyncFunction[[Self], str]
+    __name__: ASyncFunction[[Self], str]
+    __decimals__: ASyncFunction[[Self], int]
+    __scale__: ASyncFunction[[Self], int]
 
 
 class WeiBalance(a_sync.ASyncGenericBase):
@@ -299,7 +300,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return logging.get_price_logger(self.token.address, self.block, self.__class__.__name__)
 
     # This dundermethod is created by a_sync for the async_property on this class
-    __readable__: ASyncFunction[[], Decimal]
+    __readable__: ASyncFunction[[Self], Decimal]
 
 
 _tasks: List[asyncio.Task] = []
