@@ -8,6 +8,7 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
+from a_sync.modified import ASyncFunction
 from brownie import chain
 from brownie.network.event import _EventItem
 from eth_abi.exceptions import InsufficientDataBytes
@@ -195,6 +196,11 @@ class UniswapV2Pool(ERC20):
         except ContractNotVerified:
             self._verified = False
         self._types_assumed = False
+    
+    # These dundermethods are created by a_sync for the async_properties on this class
+    __token0__: ASyncFunction[[], ERC20]
+    __token1__: ASyncFunction[[], ERC20]
+    __tokens__: ASyncFunction[[], Tuple[ERC20, ERC20]]
 
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
@@ -480,3 +486,6 @@ class UniswapRouterV2(ContractBase):
             return 0
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+
+    # This dundermethod is created by a_sync for the async_property on this class
+    __pools__: ASyncFunction[[], List[UniswapV2Pool]]
