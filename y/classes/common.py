@@ -222,10 +222,10 @@ class ERC20(ContractBase):
             with the contract address and correct method name so we can keep things going smoothly :)''')
 
     # These dundermethods are created by a_sync for the async_properties on this class
-    __symbol__: ASyncFunction[[Self], str]
-    __name__: ASyncFunction[[Self], str]
-    __decimals__: ASyncFunction[[Self], int]
-    __scale__: ASyncFunction[[Self], int]
+    __symbol__: ASyncFunction[Tuple[Self], str]
+    __name__: ASyncFunction[Tuple[Self], str]
+    __decimals__: ASyncFunction[Tuple[Self], int]
+    __scale__: ASyncFunction[Tuple[Self], int]
 
 
 class WeiBalance(a_sync.ASyncGenericBase):
@@ -300,7 +300,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return logging.get_price_logger(self.token.address, self.block, self.__class__.__name__)
 
     # This dundermethod is created by a_sync for the async_property on this class
-    __readable__: ASyncFunction[[Self], Decimal]
+    __readable__: ASyncFunction[Tuple[Self], Decimal]
 
 
 _tasks: List[asyncio.Task] = []
