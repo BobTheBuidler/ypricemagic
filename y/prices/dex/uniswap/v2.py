@@ -381,10 +381,9 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
-        pool: UniswapV2Pool
+        pools = await self.__pools__(sync=False)
         pool_to_token_out = {}
-        for pool in await self.__pools__(sync=False):
-            token0, token1 = await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
+        async for pool, (token0, token1) in a_sync.as_completed({pool: asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools})
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
