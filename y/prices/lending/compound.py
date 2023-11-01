@@ -112,8 +112,9 @@ class CToken(ERC20):
 
         if exchange_rate is None:
             # NOTE: Sometimes this works, not sure why
+            contract = await Contract.coroutine(self.address)
             try:
-                exchange_rate = self.contract.exchangeRateCurrent.call(block_identifier=block)
+                exchange_rate = contract.exchangeRateCurrent.call(block_identifier=block)
             except Exception as e:
                 if 'borrow rate is absurdly high' not in str(e):
                     raise
@@ -179,13 +180,14 @@ class Comptroller(ContractBase):
         return markets
     
     async def oracle(self, block: Optional[Block] = None) -> Contract:
+        contract = await Contract.coroutine(self.address)
         try:
-            oracle = await self.contract.oracle.coroutine(block_identifier=block)
+            oracle = await contract.oracle.coroutine(block_identifier=block)
         except Exception as e:
             # TODO debug why this occurs and refactor. only found on arbitrum cream
             if not call_reverted(e):
                 raise
-            oracle = self.contract.oracle(block_identifier=block)
+            oracle = contract.oracle(block_identifier=block)
         return await Contract.coroutine(oracle)
 
 

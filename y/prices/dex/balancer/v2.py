@@ -1,6 +1,7 @@
 
 import asyncio
 import logging
+from collections import defaultdict
 from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
@@ -15,6 +16,7 @@ from multicall import Call
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, contracts
 from y.classes.common import ERC20, ContractBase, WeiBalance
+from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.decorators import stuck_coro_debugger
 from y.networks import Network
@@ -64,13 +66,15 @@ class BalancerV2Vault(ContractBase):
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
     async def get_pool_tokens(self, pool_id: HexBytes, block: Optional[Block] = None):
-        return await self.contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
+        contract = await contracts.Contract.coroutine(self.address)
+        return await contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
+        contract = await contracts.Contract.coroutine(self.address)
         return await asyncio.gather(*[
-            self.contract.getPoolTokens.coroutine(poolId, block_identifier=block)
+            contract.getPoolTokens.coroutine(poolId, block_identifier=block)
             for poolId in poolids
         ])
     
@@ -203,7 +207,7 @@ class BalancerV2Pool(ERC20):
         if len(tokens_history) == 1 and tokens_history[tokens] > 100:
             contract = await contracts.Contract.coroutine(self.address, require_success=False)
             if contract.verified:
-                methods = [k for k, v in self.contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
+                methods = [k for k, v in contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
                 logger.debug(
                     "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
         return tokens
@@ -211,8 +215,9 @@ class BalancerV2Pool(ERC20):
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
     async def weights(self, block: Optional[Block] = None) -> List[int]:
+        contract = await Contract.coroutine(self.address)
         try:
-            return await self.contract.getNormalizedWeights.coroutine(block_identifier = block)
+            return await contract.getNormalizedWeights.coroutine(block_identifier = block)
         except (AttributeError,ValueError):
             return len(await self.tokens(block=block, sync=False))
 
@@ -222,8 +227,6 @@ class ImmutableTokensBalancerV2Pool(BalancerV2Pool):
     @a_sync.aka.cached_property
     async def __tokens(self) -> List[ERC20]:
         return await super().tokens()
-
-from collections import defaultdict
 
 _tasks_to_help_me_find_pool_types_that_cant_change_tokens = defaultdict(lambda: defaultdict(int))
 

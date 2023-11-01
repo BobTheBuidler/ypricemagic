@@ -117,17 +117,18 @@ class UniswapV2Pool(ERC20):
 
         if reserves is None and self._types_assumed:
             try:
-                self._check_return_types()
+                await self._check_return_types()
             except AttributeError as e:
                 raise NotAUniswapV2Pool(self.address) from e
             return await self.reserves(block=block, sync=False)
         
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
+            contract = await Contract.coroutine(self.address)
             try:
-                reserves = await self.contract.getReserves.coroutine(block_identifier=block)
-                types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
-                logger.warning(f'abi for getReserves for {self.contract} is {types}')
+                reserves = await contract.getReserves.coroutine(block_identifier=block)
+                types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
+                logger.warning(f'abi for getReserves for {contract} is {types}')
             except Exception as e:
                 if not call_reverted(e):
                     raise e
@@ -186,11 +187,12 @@ class UniswapV2Pool(ERC20):
         except (NotAUniswapV2Pool, InsufficientDataBytes):
             return False
         
-    def _check_return_types(self) -> None:
+    async def _check_return_types(self) -> None:
         if not self._types_assumed:
             return
         try:
-            reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+            contract = await Contract.coroutine(self.address)
+            reserves_types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
             self._verified = True
             assert reserves_types.count(',') == 2, reserves_types
             self.get_reserves = Call(self.address, f'getReserves()(({reserves_types}))')
