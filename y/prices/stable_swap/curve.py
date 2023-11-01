@@ -125,7 +125,8 @@ class AddressProvider(_CurveEventsLoader):
     def __await__(self):
         return self.loaded.__await__()
     async def get_registry(self) -> EthAddress:
-        return await self.contract.get_registry.coroutine()
+        contract = await Contract.coroutine(self.address)
+        return await contract.get_registry.coroutine()
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
         logger.debug("loading pools from metapool factories")
@@ -171,9 +172,11 @@ class Factory(_CurveLoader):
             self._loaded = a_sync.Event(name=f"curve factory {self.address}")
         return self._loaded.wait()
     async def get_pool(self, i: int) -> EthAddress:
-        return await self.contract.pool_list.coroutine(i)
+        contract = await Contract.coroutine(self.address)
+        return await contract.pool_list.coroutine(i)
     async def pool_count(self, block: Optional[int] = None) -> int:
-        return await self.contract.pool_count.coroutine(block_identifier=block)
+        contract = await Contract.coroutine(self.address)
+        return await contract.pool_count.coroutine(block_identifier=block)
     async def read_pools(self) -> List[EthAddress]:
         try:
             # lets load the contract async and then we can use the sync property more conveniently
@@ -247,8 +250,9 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         token_in = tokens[coin_ix_in]
         token_out = tokens[coin_ix_out]
         amount_in = await token_in.__scale__(sync=False)
+        contract = await Contract.coroutine(self.address)
         try:
-            amount_out = await self.contract.get_dy.coroutine(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
+            amount_out = await contract.get_dy.coroutine(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
             return WeiBalance(amount_out, token_out, block=block, ignore_pools=(*ignore_pools, self))
         except Exception as e:
             if call_reverted(e):
@@ -321,8 +325,9 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         }
     
     async def _get_balance(self, i: int, block: Optional[Block] = None) -> Optional[int]:
+        contract = await Contract.coroutine(self.address)
         try:
-            return await self.contract.balances.coroutine(i, block_identifier=block)
+            return await contract.balances.coroutine(i, block_identifier=block)
         except ValueError as e:
             if str(e) == "No data was returned - the call likely reverted":
                 return None

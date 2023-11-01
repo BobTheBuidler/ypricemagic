@@ -29,7 +29,8 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
 
 class BalancerV1Pool(ERC20):
     async def tokens(self, block: Optional[Block] = None) -> List[ERC20]:
-        tokens = await self.contract.getCurrentTokens.coroutine(block_identifier=block)
+        contract = await Contract.coroutine(self.address)
+        tokens = await contract.getCurrentTokens.coroutine(block_identifier=block)
         return [ERC20(token, asynchronous=self.asynchronous) for token in tokens]
     
     @stuck_coro_debugger
@@ -76,7 +77,8 @@ class BalancerV1Pool(ERC20):
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block < await self.deploy_block(sync=False):
             return 0
-        return await self.contract.getBalance.coroutine(token, block_identifier=block)
+        contract = await Contract.coroutine(self.address)
+        return await contract.getBalance.coroutine(token, block_identifier=block)
     
 
 class BalancerV1(a_sync.ASyncGenericSingleton):

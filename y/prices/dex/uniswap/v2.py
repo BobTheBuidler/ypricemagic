@@ -8,10 +8,12 @@ from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
+from a_sync.modified import ASyncFunction
 from brownie import chain
 from brownie.network.event import _EventItem
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
+from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
 from y import convert
@@ -115,17 +117,18 @@ class UniswapV2Pool(ERC20):
 
         if reserves is None and self._types_assumed:
             try:
-                self._check_return_types()
+                await self._check_return_types()
             except AttributeError as e:
                 raise NotAUniswapV2Pool(self.address) from e
             return await self.reserves(block=block, sync=False)
         
         if reserves is None and self._verified:
             # This shouldn't really run anymore, maybe delete
+            contract = await Contract.coroutine(self.address)
             try:
-                reserves = await self.contract.getReserves.coroutine(block_identifier=block)
-                types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
-                logger.warning(f'abi for getReserves for {self.contract} is {types}')
+                reserves = await contract.getReserves.coroutine(block_identifier=block)
+                types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
+                logger.warning(f'abi for getReserves for {contract} is {types}')
             except Exception as e:
                 if not call_reverted(e):
                     raise e
@@ -184,17 +187,23 @@ class UniswapV2Pool(ERC20):
         except (NotAUniswapV2Pool, InsufficientDataBytes):
             return False
         
-    def _check_return_types(self) -> None:
+    async def _check_return_types(self) -> None:
         if not self._types_assumed:
             return
         try:
-            reserves_types = ",".join(output["type"] for output in self.contract.getReserves.abi["outputs"])
+            contract = await Contract.coroutine(self.address)
+            reserves_types = ",".join(output["type"] for output in contract.getReserves.abi["outputs"])
             self._verified = True
             assert reserves_types.count(',') == 2, reserves_types
             self.get_reserves = Call(self.address, f'getReserves()(({reserves_types}))')
         except ContractNotVerified:
             self._verified = False
         self._types_assumed = False
+    
+    # These dundermethods are created by a_sync for the async_properties on this class
+    __token0__: ASyncFunction[Tuple[Self], ERC20]
+    __token1__: ASyncFunction[Tuple[Self], ERC20]
+    __tokens__: ASyncFunction[Tuple[Self], Tuple[ERC20, ERC20]]
 
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
@@ -374,10 +383,10 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
-        pool: UniswapV2Pool
+        pools = await self.__pools__(sync=False)
+        pool_to_tokens = {pool: asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools}
         pool_to_token_out = {}
-        for pool in await self.__pools__(sync=False):
-            token0, token1 = await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
+        async for pool, (token0, token1) in a_sync.as_completed(pool_to_tokens, aiter=True):
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
@@ -480,3 +489,6 @@ class UniswapRouterV2(ContractBase):
             return 0
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+
+    # This dundermethod is created by a_sync for the async_property on this class
+    __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]]

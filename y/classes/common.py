@@ -9,9 +9,11 @@ from typing import (TYPE_CHECKING, Any, Awaitable, List, Literal, NoReturn,
                     Optional, Tuple, Union)
 
 import a_sync
-from brownie import chain
+from a_sync.modified import ASyncFunction
+from brownie import Contract, chain
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
+from typing_extensions import Self
 
 from y import convert
 from y.classes.singleton import ChecksumASyncSingletonMeta
@@ -57,6 +59,12 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         return f"<{self.__class__.__name__} '{self.address}'"
     
     def __eq__(self, __o: object) -> bool:
+        if isinstance(__o, (ContractBase, Contract)):
+            return __o.address == self.address
+        # Skip checksumming if applicable, its computationally expensive
+        # NOTE: We assume a mixed-case address is checksummed. If it isn't, wtf are you doing?
+        elif isinstance(__o, str) and __o != __o.lower() and __o != __o.upper():
+            return __o == self.address
         try:
             return convert.to_address(__o) == self.address
         except Exception:
@@ -213,6 +221,12 @@ class ERC20(ContractBase):
             `{fn_name}` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
             with the contract address and correct method name so we can keep things going smoothly :)''')
 
+    # These dundermethods are created by a_sync for the async_properties on this class
+    __symbol__: ASyncFunction[Tuple[Self], str]
+    __name__: ASyncFunction[Tuple[Self], str]
+    __decimals__: ASyncFunction[Tuple[Self], int]
+    __scale__: ASyncFunction[Tuple[Self], int]
+
 
 class WeiBalance(a_sync.ASyncGenericBase):
     def __init__(
@@ -229,7 +243,6 @@ class WeiBalance(a_sync.ASyncGenericBase):
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
-        self._logger = logging.get_price_logger(token, block, self.__class__.__name__)
         self._ignore_pools = ignore_pools
 
     def __str__(self) -> str:
@@ -262,7 +275,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         raise TypeError(f"'>=' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'")
     
     @a_sync.aka.property
-    async def readable(self) -> float:
+    async def readable(self) -> Decimal:
         if self.balance == 0:
             return 0
         scale = await self.token.__scale__(sync=False)
@@ -281,6 +294,13 @@ class WeiBalance(a_sync.ASyncGenericBase):
         value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
+    
+    @cached_property
+    def _logger(self) -> logging.logging.Logger:
+        return logging.get_price_logger(self.token.address, self.block, self.__class__.__name__)
+
+    # This dundermethod is created by a_sync for the async_property on this class
+    __readable__: ASyncFunction[Tuple[Self], Decimal]
 
 
 _tasks: List[asyncio.Task] = []
