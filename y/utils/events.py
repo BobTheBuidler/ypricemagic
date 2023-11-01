@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from itertools import zip_longest
 from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
                     Callable, Dict, Iterable, List, NoReturn, Optional,
-                    TypeVar)
+                    TypeVar, Union)
 
 import a_sync
 import eth_retry
@@ -23,6 +23,7 @@ from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y._db import structs
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
@@ -38,7 +39,7 @@ T = TypeVar('T')
 logger = logging.getLogger(__name__)
 
 
-def decode_logs(logs: List[LogReceipt]) -> EventDict:
+def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
@@ -53,10 +54,17 @@ def decode_logs(logs: List[LogReceipt]) -> EventDict:
             except Exception as e:
                 raise e.__class__(log, *e.args) from e
 
-    for i, log in enumerate(logs):
-        setattr(decoded[i], "block_number", log["blockNumber"])
-        setattr(decoded[i], "transaction_hash", log["transactionHash"])
-        setattr(decoded[i], "log_index", log["logIndex"])
+    if logs and isinstance(logs[0], structs.Log):
+        for i, log in enumerate(logs):
+            # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
+            setattr(decoded[i], "block_number", log.block_number)
+            setattr(decoded[i], "transaction_hash", log.transaction_hash)
+            setattr(decoded[i], "log_index", log.log_index)
+    else:
+        for i, log in enumerate(logs):
+            setattr(decoded[i], "block_number", log["blockNumber"])
+            setattr(decoded[i], "transaction_hash", log["transactionHash"])
+            setattr(decoded[i], "log_index", log["logIndex"])
     return decoded
 
 
