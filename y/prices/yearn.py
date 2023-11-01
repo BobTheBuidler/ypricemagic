@@ -69,10 +69,11 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
         with suppress(ContractNotVerified, MessedUpBrownieContract):
             contract = await Contract.coroutine(token)
             result = any([
-                hasattr(contract,'pricePerShare'),
-                hasattr(contract,'getPricePerShare'),
-                hasattr(contract,'getPricePerFullShare'),
-                hasattr(contract,'getSharesToUnderlying'),
+                hasattr(contract, 'pricePerShare'),
+                hasattr(contract, 'getPricePerShare'),
+                hasattr(contract, 'getPricePerFullShare'),
+                hasattr(contract, 'getSharesToUnderlying'),
+                hasattr(contract, 'convertToAssets'),
             ])
 
     return result
@@ -132,19 +133,21 @@ class YearnInspiredVault(ERC20):
                 self._get_share_price = Call(self.address, [share_price_method])
 
         if share_price is None:
-            # this is for element vaults, probe fails because method requires input
+            # this is for element vaults and other 'scaled' share price functions. probe fails because method requires input
             try:
-                if hasattr(self.contract, 'getSharesToUnderlying'):
-                    share_price = self.contract.getSharesToUnderlying.coroutine(await self.scale, block_identifier=block)
+                contract = await Contract.coroutine(self.address)
+                for method in ['convertToAssets', 'getSharesToUnderlying']:
+                    if hasattr(contract, method):
+                        share_price = await getattr(contract, method).coroutine(await self.__scale__(sync=False), block_identifier=block)
             except ContractNotVerified:
                 pass
 
         if share_price is not None:
-            if self._get_share_price.function == 'getPricePerFullShare()(uint)':
+            if self._get_share_price and self._get_share_price.function == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / Decimal(10 ** 18)
-            underlying = await self.__underlying__(sync=False)
-            return Decimal(share_price / await underlying.__scale__(sync=False))
+            underlying: ERC20 = await self.__underlying__(sync=False)
+            return Decimal(share_price) / await underlying.__scale__(sync=False)
             
         elif await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False) == 0:
             return None
