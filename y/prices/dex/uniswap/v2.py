@@ -2,6 +2,7 @@
 import asyncio
 import itertools
 import logging
+import sys
 from contextlib import suppress
 from decimal import Decimal
 from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
@@ -201,9 +202,9 @@ class UniswapV2Pool(ERC20):
         self._types_assumed = False
     
     # These dundermethods are created by a_sync for the async_properties on this class
-    __token0__: ASyncFunction[Tuple[Self], ERC20]
-    __token1__: ASyncFunction[Tuple[Self], ERC20]
-    __tokens__: ASyncFunction[Tuple[Self], Tuple[ERC20, ERC20]]
+    __token0__: ASyncFunction[Tuple[Self], ERC20] if sys.version_info < (3, 10) else ASyncFunction[[Self], ERC20]
+    __token1__: ASyncFunction[Tuple[Self], ERC20] if sys.version_info < (3, 10) else ASyncFunction[[Self], ERC20]
+    __tokens__: ASyncFunction[Tuple[Self], Tuple[ERC20, ERC20]] if sys.version_info < (3, 10) else ASyncFunction[[Self], Tuple[ERC20, ERC20]]
 
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
@@ -491,4 +492,4 @@ class UniswapRouterV2(ContractBase):
         return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
 
     # This dundermethod is created by a_sync for the async_property on this class
-    __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]]
+    __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]] if sys.version_info < (3, 10) else ASyncFunction[[Self], List[UniswapV2Pool]]
