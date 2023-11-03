@@ -1,5 +1,8 @@
+import time
+
 import pytest
 from brownie import ZERO_ADDRESS, chain
+
 from tests.fixtures import mainnet_only
 from y.contracts import contract_creation_block_async
 from y.networks import Network
@@ -112,11 +115,12 @@ FEEDS = list(feeds)
 
 
 @pytest.mark.parametrize('token', FEEDS)
-def test_chainlink_get_feed(token):
+@pytest.mark.asyncio_cooperative
+async def test_chainlink_get_feed(token):
     """
     Tests `chainlink.get_feed` with both lowercase address and checksum address.
     """
-    assert chainlink.get_feed(token, sync=True) != ZERO_ADDRESS, 'no feed available'
+    assert chainlink.get_feed(token, sync=False) != ZERO_ADDRESS, 'no feed available'
 
 
 @pytest.mark.parametrize('token', FEEDS)
@@ -124,7 +128,13 @@ def test_chainlink_get_feed(token):
 async def test_chainlink_latest(token):
     if not await chainlink.get_price(token):
         feed = await chainlink.get_feed(token)
-        assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, 'no current price available'
+        latest_timestamp = await feed.latest_timestamp()
+        if latest_timestamp and latest_timestamp + 24 * 60 * 60 < time.time():
+            pytest.skip("feed is stale")
+        try:
+            assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, 'no current price available'
+        except AttributeError as e:
+            raise AttributeError(*e.args, feed)
 
 
 @mainnet_only
@@ -136,21 +146,27 @@ async def test_chainlink_before_registry(token):
     feed = await chainlink.get_feed(token, sync=False)
     if await contract_creation_block_async(feed.address) > test_block:
         pytest.skip('not applicable to feeds deployed after test block')
-    print(type(chainlink.get_price))
     price = chainlink.get_price(token, block=test_block)
     price = await price
     if not price:
         feed = await chainlink.get_feed(token)
-        assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, 'no price available before registry'
+        latest_timestamp = await feed.latest_timestamp()
+        if latest_timestamp and latest_timestamp + 24 * 60 * 60 < time.time():
+            pytest.skip("feed is stale")
+        try:
+            assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, f'{feed} no price available before registry'
+        except AttributeError as e:
+            raise AttributeError(*e.args, feed)
 
 
-def test_chainlink_nonexistent():
-    with pytest.raises(KeyError):
-        chainlink.get_feed(ZERO_ADDRESS, sync=True)
-    assert chainlink.get_price(ZERO_ADDRESS, sync=True) is None
+@pytest.mark.asyncio_cooperative
+async def test_chainlink_nonexistent():
+    assert await chainlink.get_feed(ZERO_ADDRESS, sync=False) is None
+    assert await chainlink.get_price(ZERO_ADDRESS, sync=False) is None
 
 
 @mainnet_only
-def test_chainlink_before_feed():
+@pytest.mark.asyncio_cooperative
+async def test_chainlink_before_feed():
     # try to fetch yfi price one block before feed is deployed
-    assert chainlink.get_price('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', 12742718, sync=True) is None
+    assert await chainlink.get_price('0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e', 12742718, sync=False) is None
