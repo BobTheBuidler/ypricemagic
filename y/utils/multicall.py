@@ -139,7 +139,7 @@ async def fetch_multicall(*calls: Any, block: Optional[Block] = None) -> List[Op
     if isinstance(block, int) and block < multicall_deploy_block:
         # use state override to resurrect the contract prior to deployment
         data = multicall2.tryAggregate.encode_input(False, multicall_input)
-        call = dank_w3.eth.call(
+        call = await dank_w3.eth.call(
             {'to': str(multicall2), 'data': data},
             block or 'latest',
             {str(multicall2): {'code': f'0x{multicall2.bytecode}'}},
