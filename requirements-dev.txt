@@ -1,5 +1,5 @@
 wheel
 numpy
-pytest
+pytest>=7.0.0
 pytest-asyncio-cooperative
 pandas==1.3.1
