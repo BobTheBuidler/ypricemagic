@@ -116,6 +116,9 @@ class UniswapV2Pool(ERC20):
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False), return_exceptions=True)
 
+        if isinstance(tokens, Exception):
+            raise tokens
+
         if reserves is None and self._types_assumed:
             try:
                 await self._check_return_types()
