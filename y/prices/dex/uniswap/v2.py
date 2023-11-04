@@ -114,7 +114,7 @@ class UniswapV2Pool(ERC20):
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False))
+        reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False), return_exceptions=True)
 
         if reserves is None and self._types_assumed:
             try:
@@ -134,7 +134,7 @@ class UniswapV2Pool(ERC20):
                 if not call_reverted(e):
                     raise e
                     
-        if reserves is None:
+        if reserves is None or isinstance(reserves, ContractLogicError):
             reserves = 0, 0
 
         return tuple(WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
