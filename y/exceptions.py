@@ -79,7 +79,8 @@ class CantFindSwapPath(Exception):
     pass
 
 class TokenNotFound(Exception):
-    pass
+    def __init__(self, token, container):
+        super().__init__(f"{token} is not in {container}")
 
 # Calls
 

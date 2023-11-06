@@ -180,7 +180,7 @@ class UniswapV2Pool(ERC20):
                 for balance in reserves:
                     if token == balance.token:
                         return balance.balance
-                raise TokenNotFound(f"{token} not found in {reserves}")
+                raise TokenNotFound(token, reserves)
         except InsufficientDataBytes:
             return 0
 
