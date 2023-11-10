@@ -207,7 +207,8 @@ get_logs_semaphore = defaultdict(
 async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
     async with get_logs_semaphore[asyncio.get_event_loop()][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
-    
+
+@eth_retry.auto_retry
 async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
     try:
         if address is None:
