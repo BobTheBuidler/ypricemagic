@@ -172,14 +172,18 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
+        logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if block and block < await self.deploy_block(sync=False):
+            logger.debug("block %s is before %s deploy block", block, self)
             return 0
         try:
             if reserves := await self.reserves(block=block, sync=False):
                 balance: WeiBalance
                 for balance in reserves:
                     if token == balance.token:
-                        return balance.balance
+                        liquidity = balance.balance
+                        logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+                        return liquidity
                 raise TokenNotFound(token, reserves)
         except InsufficientDataBytes:
             return 0
@@ -342,6 +346,7 @@ class UniswapRouterV2(ContractBase):
 
     def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
         '''Chooses swap path to use for quote'''
+        # NOTE: can we just delete this now? probably, must test
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
 
         if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
@@ -489,10 +494,14 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools = []) -> int:
+        logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if block and block < await contract_creation_block_async(self.factory):
+            logger.debug("block %s is before %s deploy block")
             return 0
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
-        return max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+        liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+        logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+        return liquidity
 
     # This dundermethod is created by a_sync for the async_property on this class
     __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]] if sys.version_info < (3, 10) else ASyncFunction[[Self], List[UniswapV2Pool]]
