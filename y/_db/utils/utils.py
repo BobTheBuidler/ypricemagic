@@ -1,5 +1,7 @@
 
 import logging
+from datetime import datetime
+from typing import Optional
 
 from a_sync import a_sync
 from brownie import chain
@@ -24,3 +26,16 @@ def get_block(number: int) -> Block:
     if block := Block.get(chain=chain, number=number):
         return block
     return insert(type=Block, chain=chain, number=number) or get_block(number, sync=True)
+
+@a_sync(default='async', executor=token_attr_threads)
+@db_session
+@retry_locked
+def get_block_timestamp(number: int) -> Optional[int]:
+    if ts := get_block(number, sync=True).timestamp:
+        return ts.timestamp()
+    
+@a_sync(default='async', executor=token_attr_threads)
+@db_session
+@retry_locked
+def set_block_timestamp(block: int, timestamp: int) -> None:
+    get_block(block, sync=True).timestamp = datetime.fromtimestamp(timestamp)
