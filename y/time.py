@@ -4,6 +4,7 @@ import logging
 import time
 from typing import Union
 
+import eth_retry
 from a_sync import a_sync
 from async_lru import alru_cache
 from brownie import chain, web3
@@ -26,22 +27,34 @@ logger = logging.getLogger(__name__)
 
 @memory.cache()
 @yLazyLogger(logger)
+@eth_retry.auto_retry
 def get_block_timestamp(height: int) -> int:
+    import y._db.utils.utils as db
+    if ts := db.get_block_timestamp(height, sync=True):
+        return ts
     client = get_ethereum_client()
     if client not in ['tg', 'erigon']:
         return chain[height].timestamp
     header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
-    return int(header.timestamp, 16)
+    ts = int(header.timestamp, 16)
+    db.set_block_timestamp(height, ts, sync=True)
+    return ts
 
 @a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@eth_retry.auto_retry
 async def get_block_timestamp_async(height: int) -> int:
+    import y._db.utils.utils as db
+    if ts := await db.get_block_timestamp(height, sync=False):
+        return ts
     client = await get_ethereum_client_async()
     if client in ['tg', 'erigon']:
         header = await dank_w3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
-        return int(header.timestamp, 16)
+        ts = int(header.timestamp, 16)
     else:
         block = await dank_w3.eth.get_block(height)
-        return block.timestamp
+        ts = block.timestamp
+    await db.set_block_timestamp(height, ts, sync=False)
+    return ts
 
 @memory.cache()
 def last_block_on_date(date: Union[str, datetime.date]) -> int:
