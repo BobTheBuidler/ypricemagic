@@ -149,6 +149,7 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> int:
 
 
 @ttl_cache(ttl=300)
+@eth_retry.auto_retry
 def check_node() -> None:
     if GANACHE_FORK:
         return
@@ -158,6 +159,7 @@ def check_node() -> None:
         raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")
 
 @alru_cache(ttl=300)
+@eth_retry.auto_retry
 async def check_node_async() -> None:
     if GANACHE_FORK:
         return
