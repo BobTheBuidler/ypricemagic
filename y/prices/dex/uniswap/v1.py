@@ -61,9 +61,14 @@ class UniswapV1(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token_address: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
+        logger.debug("checking %s liquidity for %s at %s ignoring %s", self, token_address, block, ignore_pools)
         exchange = await self.get_exchange(token_address, sync=False)
         if exchange is None or exchange in ignore_pools:
+            logger.debug("no %s exchange found for %s", self, token_address)
             return 0
         if block < await contract_creation_block_async(exchange):
+            logger.debug("block %s prior to %s deploy block", block, exchange)
             return 0
-        return await ERC20(token_address, asynchronous=True).balance_of(exchange, block)
+        liquidity = await ERC20(token_address, asynchronous=True).balance_of(exchange, block)
+        logger.debug("%s liquidity for %s at %s is %s", self, token_address, block, liquidity)
+        return liquidity

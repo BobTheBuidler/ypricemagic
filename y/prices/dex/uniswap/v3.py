@@ -85,7 +85,9 @@ class UniswapV3Pool(ContractBase):
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
+        logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if block < await self.deploy_block(sync=False):
+            logger.debug("block %s prior to %s deploy block", block, self)
             return 0
         liquidity = await self[token].balance_of(self.address, block, sync=False)
         logger.debug("%s liquidity for %s at %s: %s", self, token, block, liquidity)
@@ -175,11 +177,14 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
+        logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if chain.id == Network.Mainnet and token == "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D":
             # LQTY, TODO refactor this somehow
             return 0
         
-        if block and block < await contract_creation_block_async(await self.__quoter__(sync=False)):
+        quoter = await self.__quoter__(sync=False)
+        if block and block < await contract_creation_block_async(quoter):
+            logger.debug("block %s is before %s deploy block", block, quoter)
             return 0
         
         token_in_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
@@ -208,7 +213,9 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
                 logger.debug("insufficient liquidity for %s", pool)
                 token_in_tasks.pop(pool)
 
-        return max(await asyncio.gather(*token_in_tasks.values())) if token_in_tasks else 0
+        liquidity = max(await asyncio.gather(*token_in_tasks.values())) if token_in_tasks else 0
+        logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+        return liquidity
 
     async def _pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
         pools = await self.__pools__(sync=False)

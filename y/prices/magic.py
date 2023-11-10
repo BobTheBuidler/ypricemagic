@@ -196,13 +196,17 @@ async def _get_price(
                 dexes.append(curve)
             liquidity = await asyncio.gather(*[dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes])
             depth_to_dex = dict(zip(liquidity, dexes))
-            dexes_by_depth = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True)}
+            dexes_by_depth = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth}
+            logger.debug('dexes by depth: %s', dexes_by_depth)
             for dex in dexes_by_depth.values():
                 method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
+                logger.debug("trying %s", dex)
                 price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, sync=False)
                 logger.debug("%s -> %s", dex, price)
                 if price:
                     break
+
+        logger.debug('no %s liquidity found on primary markets', token)
 
         # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
         if price is None or price == 0:
