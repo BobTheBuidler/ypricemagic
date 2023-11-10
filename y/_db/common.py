@@ -6,6 +6,7 @@ from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
 import a_sync
+import eth_retry
 from a_sync.iter import ASyncIterable
 from a_sync.primitives.executor import (PruningThreadPoolExecutor,
                                         _AsyncExecutorMixin)
@@ -250,6 +251,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             await self._load_new_objects(start_from_block=cached_thru or from_block)
             await self._sleep
     
+    @eth_retry.auto_retry
     @stuck_coro_debugger
     async def _load_new_objects(self, to_block: Optional[int] = None, start_from_block: Optional[int] = None) -> None:
         logger.debug('loading new objects for %s', self)
