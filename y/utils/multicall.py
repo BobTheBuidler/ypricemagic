@@ -97,7 +97,7 @@ async def multicall_decimals(
 
     try: 
         return await asyncio.gather(*[Call(str(address), ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
-    except (CannotHandleRequest,InsufficientDataBytes):
+    except (CannotHandleRequest, InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:
         continue_if_call_reverted(e)

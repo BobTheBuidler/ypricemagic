@@ -12,7 +12,6 @@ import brownie
 from a_sync.modified import ASyncFunction
 from brownie import chain
 from brownie.network.event import _EventItem
-from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -176,23 +175,21 @@ class UniswapV2Pool(ERC20):
         if block and block < await self.deploy_block(sync=False):
             logger.debug("block %s is before %s deploy block", block, self)
             return 0
-        try:
-            if reserves := await self.reserves(block=block, sync=False):
-                balance: WeiBalance
-                for balance in reserves:
-                    if token == balance.token:
-                        liquidity = balance.balance
-                        logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
-                        return liquidity
-                raise TokenNotFound(token, reserves)
-        except InsufficientDataBytes:
-            return 0
+        if reserves := await self.reserves(block=block, sync=False):
+            balance: WeiBalance
+            for balance in reserves:
+                if token == balance.token:
+                    liquidity = balance.balance
+                    logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+                    return liquidity
+            raise TokenNotFound(token, reserves)
+        return 0
 
     @stuck_coro_debugger
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
             return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
-        except (NotAUniswapV2Pool, InsufficientDataBytes):
+        except NotAUniswapV2Pool:
             return False
         
     async def _check_return_types(self) -> None:
