@@ -12,6 +12,7 @@ from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
 from brownie.network.event import _EventItem
 from hexbytes import HexBytes
 from multicall import Call
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, contracts
@@ -120,11 +121,18 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         return pool._deploy_block
 
 
+MESSED_UP_POOLS = {
+    Network.Mainnet: [
+        "0xF3799CBAe9c028c1A590F4463dFF039b8F4986BE",
+    ],
+}.get(chain.id, [])
+
 class BalancerV2Pool(ERC20):
-    __slots__ = "_id"
+    __slots__ = "_id", "_messed_up"
     def __init__(self, address: AnyAddressType, *args, id: Optional[HexBytes] = None, **kwargs):
         super().__init__(address, *args, **kwargs)
         self._id = id
+        self._messed_up = self.address in MESSED_UP_POOLS
 
     @a_sync.aka.property
     async def id(self) -> PoolId:
@@ -159,7 +167,13 @@ class BalancerV2Pool(ERC20):
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
-        vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
+        if self._messed_up:
+            return {}
+        try:
+            vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
+        except ContractLogicError:
+            logger.error("%s is messed up", self)
+            return {}
         if vault is None:
             return {}
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
