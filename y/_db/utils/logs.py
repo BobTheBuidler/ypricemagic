@@ -102,6 +102,7 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
         
         elif self.topic0 and not self.topic1 and not self.topic2 and not self.topic3:
             info = self.load_metadata()
+            chain = db.get_chain(sync=True)
             # lets see if we cached all logs for each topic
             infos = [entities.LogCacheInfo.get(chain=chain, topics=json.encode(topic)) for topic in self.topic0]
             if info and from_block >= info.cached_from and all(from_block >= i.cached_from for i in infos):
