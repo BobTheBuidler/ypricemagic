@@ -25,7 +25,7 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
 from y.decorators import continue_on_revert, stuck_coro_debugger
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           NonStandardERC20, NotAUniswapV2Pool, TokenNotFound,
-                          call_reverted)
+                          call_reverted, continue_if_call_reverted)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
@@ -33,8 +33,6 @@ from y.prices.dex.uniswap.v2_forks import (ROUTER_TO_FACTORY,
                                            ROUTER_TO_PROTOCOL, special_paths)
 from y.utils.dank_mids import dank_w3
 from y.utils.events import ProcessedEvents
-from y.utils.multicall import \
-    multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
@@ -85,9 +83,11 @@ class UniswapV2Pool(ERC20):
     @a_sync.aka.property
     async def token0(self) -> ERC20:
         if self._token0 is None:
-            with suppress(ContractLogicError):
+            try:
                 if token0 := await Call(self.address, ['token0()(address)']).coroutine():
                     self._token0 = ERC20(token0, asynchronous=self.asynchronous)
+            except ValueError as e:
+                continue_if_call_reverted(e)
         if self._token0 is None:
             raise NotAUniswapV2Pool(self.address)
         return self._token0
@@ -95,9 +95,11 @@ class UniswapV2Pool(ERC20):
     @a_sync.aka.property
     async def token1(self) -> ERC20:
         if self._token1 is None:
-            with suppress(ContractLogicError):
+            try:
                 if token1 := await Call(self.address, ['token1()(address)']).coroutine():
                     self._token1 = ERC20(token1, asynchronous=self.asynchronous)
+            except ValueError as e:
+                continue_if_call_reverted(e)
         if self._token1 is None:
             raise NotAUniswapV2Pool(self.address)
         return self._token1
