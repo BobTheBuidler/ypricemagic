@@ -140,6 +140,8 @@ class UniswapV2Pool(ERC20):
                     
         if reserves is None or isinstance(reserves, ContractLogicError):
             reserves = 0, 0
+        elif isinstance(reserves, Exception):
+            raise reserves
 
         return tuple(WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
 
