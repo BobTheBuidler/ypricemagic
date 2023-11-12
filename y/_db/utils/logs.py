@@ -99,7 +99,17 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
                 ]
             if all(info and from_block >= info.cached_from for info in infos):
                 return min(info.cached_thru for info in infos)
-                
+        
+        elif self.topic0 and not self.topic1 and not self.topic2 and not self.topic3:
+            info = self.load_metadata()
+            # lets see if we cached all logs for each topic
+            infos = [entities.LogCacheInfo.get(chain=chain, topics=json.encode(topic)) for topic in self.topic0]
+            if info and from_block >= info.cached_from and all(from_block >= i.cached_from for i in infos):
+                return max([info.cached_thru, min(i.cached_thru for i in infos)])
+            elif all(from_block >= i.cached_from for i in infos):
+                return min(i.cached_thru for i in infos)
+            elif info and from_block >= info.cached_from:
+                return info.cached_thru
         elif (info := self.load_metadata()) and from_block >= info.cached_from:
             return info.cached_thru
         return 0
@@ -164,6 +174,28 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
             if done_thru > info.cached_thru:
                 info.cached_thru = done_thru
                 should_commit = True
+        elif self.topic0 and not self.topic1 and not self.topic2 and not self.topic3:
+            for topic in self.topic0:
+                encoded_topics = json.encode(topic)
+                info = entities.LogCacheInfo.get(
+                    chain=chain,
+                    address='None',
+                    topics=encoded_topics,
+                    cached_from = from_block,
+                    cached_thru = done_thru,
+                ) or entities.LogCacheInfo.get(
+                    chain=chain,
+                    address='None',
+                    topics=encoded_topics,
+                    cached_from = from_block,
+                    cached_thru = done_thru,
+                )
+                if from_block < info.cached_from:
+                    info.cached_from = from_block
+                    should_commit = True
+                if done_thru > info.cached_thru:
+                    info.cached_thru = done_thru
+                    should_commit = True
         else:
             entities.LogCacheInfo(
                 chain=chain,
