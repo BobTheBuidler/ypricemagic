@@ -105,7 +105,7 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
             chain = db.get_chain(sync=True)
             # lets see if we cached all logs for each topic
             infos = [entities.LogCacheInfo.get(chain=chain, topics=json.encode(topic)) for topic in self.topic0]
-            if info and from_block >= info.cached_from and all(from_block >= i.cached_from for i in infos):
+            if info and from_block >= info.cached_from and all(i and from_block >= i.cached_from for i in infos):
                 return max([info.cached_thru, min(i.cached_thru for i in infos)])
             elif all(from_block >= i.cached_from for i in infos):
                 return min(i.cached_thru for i in infos)
