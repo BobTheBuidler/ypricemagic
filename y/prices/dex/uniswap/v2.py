@@ -470,7 +470,7 @@ class UniswapRouterV2(ContractBase):
         if deepest_pool:
             paired_with = (await self.get_pools_for(token_address, sync=False))[deepest_pool]
             from y.prices.utils.buckets import check_bucket
-            if await check_bucket(paired_with, sync=False):
+            if await check_bucket(paired_with, sync=False) and _loop_count == 0:
                 # let's just use the other token to get the price
                 return None
             deepest_stable_pool = await self.deepest_stable_pool(token_address, block, _ignore_pools=_ignore_pools, sync=False)
