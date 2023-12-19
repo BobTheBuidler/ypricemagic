@@ -56,6 +56,7 @@ class Ids(IntEnum):
     crvUSD_Plain_Pools_deprecated_2 = 9
     crvUSD_Plain_Pools = 10
     Curve_Tricrypto_Factory = 11
+    CurveStableswapFactoryNG = 12
 
 
 
@@ -130,9 +131,12 @@ class AddressProvider(_CurveEventsLoader):
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
         logger.debug("loading pools from metapool factories")
+        # TODO: remove this once curve adds to address provider
+        if chain.id == Network.Mainnet:
+            self.identifiers[Ids.CurveStableswapFactoryNG] = ['0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf']
         metapool_factories = [
             Factory(factory, self.curve, asynchronous=self.asynchronous)
-            for i in [Ids.Metapool_Factory, Ids.crvUSD_Plain_Pools, Ids.Curve_Tricrypto_Factory]
+            for i in [Ids.Metapool_Factory, Ids.crvUSD_Plain_Pools, Ids.Curve_Tricrypto_Factory, Ids.CurveStableswapFactoryNG]
             for factory in self.identifiers[i]
         ]
 
@@ -150,6 +154,7 @@ class AddressProvider(_CurveEventsLoader):
             Factory(factory, self.curve, asynchronous=self.asynchronous) 
             for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]
         ])
+
         if not self.curve._done.is_set():
             logger.info('loaded %s pools from %s registries and %s factories', len(self.curve.token_to_pool), len(self.curve.registries), len(self.curve.factories))
             self.curve._done.set()
