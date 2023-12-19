@@ -23,7 +23,10 @@ class DieselPool(ContractBase):
     @a_sync.aka.cached_property
     async def diesel_token(self) -> ERC20:
         contract = await self.__contract__(sync=False)
-        return ERC20(await contract.dieselToken.coroutine(), asynchronous=self.asynchronous)
+        try:
+            return ERC20(await contract.dieselToken.coroutine(), asynchronous=self.asynchronous)
+        except AttributeError: # NOTE: there could be better ways of doing this with hueristics, not sure yet
+            return ERC20(self.address, asynchronous=self.asynchronous)
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
