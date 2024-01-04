@@ -316,6 +316,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
     
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} addresses={self.addresses} topics={self.topics}>"
+    
     @property
     def cache(self) -> "LogCache":
         if self._cache is None:

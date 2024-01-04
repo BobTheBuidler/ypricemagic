@@ -1,6 +1,7 @@
 
 import logging
 from datetime import datetime
+from functools import lru_cache
 from typing import Optional
 
 from a_sync import a_sync
@@ -17,16 +18,20 @@ logger = logging.getLogger(__name__)
 @db_session
 @retry_locked
 def get_chain() -> Chain:
-    return Chain.get(id=chain.id) or insert(type=Chain, id=chain.id) or Chain.get(id=chain.id)
+    return Chain.get(id=chain.id) or insert(type=Chain, id=chain.id) or Chain[chain.id]
+
+@lru_cache
+def ensure_chain() -> None:
+    get_chain(sync=True)
 
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
 @retry_locked
 def get_block(number: int) -> Block:
-    chain = get_chain(sync=True)
-    if block := Block.get(chain=chain, number=number):
+    ensure_chain()
+    if block := Block.get(chain=chain.id, number=number):
         return block
-    return insert(type=Block, chain=chain, number=number) or get_block(number, sync=True)
+    return insert(type=Block, chain=chain.id, number=number) or get_block(number, sync=True)
 
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
