@@ -19,7 +19,7 @@ def get_deploy_block(address: str) -> Optional[int]:
     if deploy_block := get_token(address, sync=True).deploy_block:
         logger.debug('%s deploy block from cache: %s', address, deploy_block.number)
         return deploy_block.number
-    logger.debug('%s deploy block not cached, fetching from chain')
+    logger.debug('%s deploy block not cached, fetching from chain', address)
 
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
