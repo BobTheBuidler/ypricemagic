@@ -127,7 +127,7 @@ class Trace(db.Entity):
 
 @db_session
 def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
-    with suppress(TransactionIntegrityError):
+    try:
         while True:
             try:
                 entity = type(**kwargs)
@@ -136,6 +136,8 @@ def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
                 return entity
             except InterfaceError as e:
                 logger.debug("%s while inserting %s", e, type.__name__)
+    except TransactionIntegrityError as e:
+        logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
 
 def retry_locked(callable):
     @wraps(callable)
