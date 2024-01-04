@@ -117,6 +117,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
+get_code = eth_retry.auto_retry(dank_w3.eth.get_code)
 creation_block_semaphore = ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
@@ -150,7 +151,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
         mid = lo + (hi - lo) // 2
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
-            if await dank_w3.eth.get_code(address, mid):
+            if await get_code(address, mid):
                 hi = mid
             else:
                 lo = mid
@@ -339,7 +340,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         return await build_name(self.address, return_None_on_failure=return_None_on_failure, sync=False)
     
     async def get_code(self, block: Optional[Block] = None) -> HexBytes:
-        return await dank_w3.eth.get_code(self.address, block=block)
+        return await get_code(self.address, block=block)
 
 
 @memory.cache()
