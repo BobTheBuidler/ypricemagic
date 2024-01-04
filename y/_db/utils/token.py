@@ -1,6 +1,7 @@
 
 import asyncio
 import logging
+from functools import lru_cache
 from typing import Optional
 
 from a_sync import a_sync
@@ -32,6 +33,7 @@ def get_token(address: str) -> Token:
             commit()
         return insert(type=Token, chain=chain.id, address=address) or Token.get(chain=chain.id, address=address)
 
+@lru_cache(maxsize=None)
 def ensure_token(address: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True)

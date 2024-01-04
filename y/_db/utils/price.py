@@ -20,7 +20,7 @@ from y._db.utils.utils import ensure_block
 @retry_locked
 def get_price(address: str, block: int) -> Optional[Decimal]:
     ensure_block(block, sync=True)
-    ensure_token(address, sync=True)
+    ensure_token(address)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     if price := Price.get(
@@ -42,7 +42,7 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 def _set_price(address: str, block: int, price: Decimal) -> None:
     with suppress(InvalidOperation): # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         ensure_block(block, sync=True)
-        ensure_token(address, sync=True)
+        ensure_token(address)
         if address == constants.EEE_ADDRESS:
             address = constants.WRAPPED_GAS_COIN
         insert(
