@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 @db_session
 @retry_locked
 def get_token(address: str) -> Token:
-    ensure_chain(sync=True)
+    ensure_chain()
     address = convert.to_address(address)
     if address == constants.EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {constants.EEE_ADDRESS}")
