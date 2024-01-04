@@ -34,6 +34,15 @@ def get_block(number: int) -> Block:
     return insert(type=Block, chain=chain.id, number=number) or get_block(number, sync=True)
 
 @a_sync(default='async', executor=token_attr_threads)
+@retry_locked
+@lru_cache(maxsize=None)
+@db_session
+def ensure_block(number: int) -> None:
+    get_block = _get_get_block()
+    get_block(number, sync=True)
+
+
+@a_sync(default='async', executor=token_attr_threads)
 @db_session
 @retry_locked
 def get_block_timestamp(number: int) -> Optional[int]:
