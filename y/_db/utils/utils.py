@@ -2,7 +2,7 @@
 import logging
 from datetime import datetime
 from functools import lru_cache
-from typing import Optional
+from typing import Optional, Tuple
 
 from a_sync import a_sync
 from brownie import chain
@@ -11,6 +11,8 @@ from pony.orm import db_session
 from y._db.common import token_attr_threads
 from y._db.entities import Block, Chain, insert, retry_locked
 from y._db.utils._ep import _get_get_block
+from y.networks import Network
+from y.datatypes import BlockNumber
 
 logger = logging.getLogger(__name__)
 
@@ -32,6 +34,14 @@ def get_block(number: int) -> Block:
     if block := Block.get(chain=chain.id, number=number):
         return block
     return insert(type=Block, chain=chain.id, number=number) or get_block(number, sync=True)
+
+@a_sync(default='async', executor=token_attr_threads)
+@lru_cache(maxsize=None)
+@db_session
+@retry_locked
+def get_block_pk(number: int) -> Tuple[Network, BlockNumber]:
+    return chain.id, get_block(number).number
+
 
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
