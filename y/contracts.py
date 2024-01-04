@@ -120,25 +120,21 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
 creation_block_semaphore = ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
-async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
-    logger.debug('getting contract creation block for %s', address)
-    async with creation_block_semaphore:
-        block = await constants.thread_pool_executor.run(contract_creation_block, str(address), when_no_history_return_0=when_no_history_return_0)
-        logger.debug('%s deployed at block %s', address, block)
-        return block
-
-''' # NOTE: We will just do this until I find/build a good async disc caching lib
-@a_sync.a_sync(cache_type='memory')
 @stuck_coro_debugger
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
     """
+    from y._db.utils import contract as db
+
     address = convert.to_address(address)
+    if deploy_block := await db.get_deploy_block(address):
+        return deploy_block
+    
     logger.debug(f"contract creation block {address}")
     height = await dank_w3.eth.block_number
-'''"""
+
     if height == 0:
         raise NodeNotSynced(f'''
             `chain.height` returns 0 on your node, which means it is not fully synced.
@@ -178,9 +174,10 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
         return 0
     if hi != height:
         logger.debug(f"contract creation block {address} -> {hi}")
+        await db.set_deploy_block(address, hi)
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
-"""
+
 
 # this defaultdict prevents congestion in the contracts thread pool
 address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(1))

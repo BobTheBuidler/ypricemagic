@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Optional
 
 from a_sync import a_sync
+from async_lru import alru_cache
 from brownie import chain
 from pony.orm import db_session
 
@@ -18,6 +19,10 @@ logger = logging.getLogger(__name__)
 @retry_locked
 def get_chain() -> Chain:
     return Chain.get(id=chain.id) or insert(type=Chain, id=chain.id) or Chain.get(id=chain.id)
+
+@alru_cache
+async def ensure_chain() -> None:
+    await get_chain(sync=False)
 
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
