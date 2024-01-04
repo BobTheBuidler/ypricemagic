@@ -4,14 +4,13 @@ import logging
 from typing import Optional
 
 from a_sync import a_sync
-from brownie import convert
+from brownie import chain, convert
 from pony.orm import commit, db_session
 
 from y import constants
 from y._db.common import token_attr_threads
 from y._db.entities import Address, Token, insert, retry_locked
 from y._db.utils._ep import _get_get_token
-from y._db.utils.utils import get_chain
 from y.erc20 import decimals
 
 logger = logging.getLogger(__name__)
@@ -24,12 +23,12 @@ def get_token(address: str) -> Token:
     if address == constants.EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {constants.EEE_ADDRESS}")
     while True:
-        if entity := Address.get(chain=get_chain(sync=True), address=address):
+        if entity := Address.get(chain=chain.id, address=address):
             if isinstance(entity, Token):
                 return entity
             entity.delete()
             commit()
-        return insert(type=Token, chain=get_chain(sync=True), address=address) or Token.get(chain=get_chain(sync=True), address=address)
+        return insert(type=Token, chain=chain.id, address=address) or Token.get(chain=chain.id, address=address)
         
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
