@@ -121,6 +121,7 @@ creation_block_semaphore = ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
 @stuck_coro_debugger
+@eth_retry.auto_retry
 async def contract_creation_block_async(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
