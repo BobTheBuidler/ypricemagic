@@ -11,7 +11,7 @@ from pony.orm import db_session
 from y import constants
 from y._db.common import token_attr_threads
 from y._db.entities import Price, insert, retry_locked
-from y._db.utils._ep import _get_get_token
+from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 
 
@@ -20,11 +20,11 @@ from y._db.utils.utils import ensure_block
 @retry_locked
 def get_price(address: str, block: int) -> Optional[Decimal]:
     ensure_block(block, sync=True)
-    get_token = _get_get_token()
+    ensure_token(address, sync=True)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     if price := Price.get(
-        token = get_token(address, sync=True), 
+        token = (chain.id, address), 
         block = (chain.id, block), 
     ):
         return price.price
@@ -42,13 +42,13 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
 def _set_price(address: str, block: int, price: Decimal) -> None:
     with suppress(InvalidOperation): # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         ensure_block(block, sync=True)
-        get_token = _get_get_token()
+        ensure_token(address, sync=True)
         if address == constants.EEE_ADDRESS:
             address = constants.WRAPPED_GAS_COIN
         insert(
             type = Price,
             block = (chain.id, block),
-            token = get_token(address, sync=True),
+            token = (chain.id, address),
             price = Decimal(price),
         )
         

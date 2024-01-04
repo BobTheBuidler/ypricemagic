@@ -11,6 +11,7 @@ from y import constants
 from y._db.common import token_attr_threads
 from y._db.entities import Address, Token, insert, retry_locked
 from y._db.utils._ep import _get_get_token
+from y._db.utils.utils import ensure_chain
 from y.erc20 import decimals
 
 logger = logging.getLogger(__name__)
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 @db_session
 @retry_locked
 def get_token(address: str) -> Token:
+    ensure_chain(sync=True)
     address = convert.to_address(address)
     if address == constants.EEE_ADDRESS:
         raise ValueError(f"cannot create token entity for {constants.EEE_ADDRESS}")
@@ -29,7 +31,11 @@ def get_token(address: str) -> Token:
             entity.delete()
             commit()
         return insert(type=Token, chain=chain.id, address=address) or Token.get(chain=chain.id, address=address)
-        
+
+def ensure_token(address: str) -> None:
+    get_token = _get_get_token()
+    get_token(address, sync=True)
+
 @a_sync(default='async', executor=token_attr_threads)
 @db_session
 @retry_locked
