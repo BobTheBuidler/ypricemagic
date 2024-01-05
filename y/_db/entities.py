@@ -137,7 +137,11 @@ def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
             except InterfaceError as e:
                 logger.debug("%s while inserting %s", e, type.__name__)
     except TransactionIntegrityError as e:
-        logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
+        if "UNIQUE constraint failed" in str(e):
+            logger.debug("UNIQUE constraint failed: %s %s", type.__name__, kwargs)
+        else:
+            logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
+            raise e
 
 def retry_locked(callable):
     @wraps(callable)
