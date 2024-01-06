@@ -6,15 +6,17 @@ from typing import Callable, TypeVar
 from typing_extensions import ParamSpec
 
 from a_sync import a_sync
+from a_sync.primitives.executor import PruningThreadPoolExecutor
 from pony.orm import (CommitException, OperationalError, TransactionError,
-                      UnexpectedError, db_session)
-
-from y._db.common import token_attr_threads
+                      UnexpectedError, commit, db_session)
 
 _T = TypeVar('_T')
 _P = ParamSpec('_P')
 
 logger = logging.getLogger(__name__)
+
+
+token_attr_threads = PruningThreadPoolExecutor(32)
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
     @wraps(callable)
@@ -22,7 +24,9 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
         sleep = 0.05
         while True:
             try:
-                return callable(*args, **kwargs)
+                retval = callable(*args, **kwargs)
+                commit()
+                return retval
             except (CommitException, OperationalError, UnexpectedError) as e:
                 logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
                 if "database is locked" not in str(e):

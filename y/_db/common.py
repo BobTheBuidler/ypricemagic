@@ -32,7 +32,6 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-token_attr_threads = PruningThreadPoolExecutor(32)
 filter_threads = PruningThreadPoolExecutor(16)
 
 def enc_hook(obj: Any) -> bytes:
