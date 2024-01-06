@@ -10,7 +10,8 @@ from pony.orm import db_session
 
 from y import constants
 from y._db.common import token_attr_threads
-from y._db.entities import Price, insert, retry_locked
+from y._db.entities import Price, insert
+from y._db.utils.decorators import retry_locked
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 

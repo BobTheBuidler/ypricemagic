@@ -11,13 +11,14 @@ from web3.types import LogReceipt
 
 from y._db import entities, structs
 from y._db.common import DiskCache, enc_hook
+from y._db.utils import decorators
 from y._db.utils.utils import ensure_block
 
 logger = logging.getLogger(__name__)
 
 
 @db_session
-@entities.retry_locked
+@decorators.retry_locked
 def insert_log(log: dict):
     block = log['blockNumber']
     ensure_block(block, sync=True)

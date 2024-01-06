@@ -10,8 +10,9 @@ from pony.orm import commit, db_session
 
 from y import constants
 from y._db.common import token_attr_threads
-from y._db.entities import Address, Token, insert, retry_locked
+from y._db.entities import Address, Token, insert
 from y._db.utils._ep import _get_get_token
+from y._db.utils.decorators import retry_locked
 from y._db.utils.utils import ensure_chain
 from y.erc20 import decimals
 

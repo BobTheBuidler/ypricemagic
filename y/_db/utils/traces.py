@@ -10,8 +10,9 @@ from msgspec import json
 from pony.orm import commit, db_session, select
 
 from y._db.common import DiskCache, Filter, _clean_addresses, filter_threads
-from y._db.entities import Chain, Trace, TraceCacheInfo, insert, retry_locked
+from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils._ep import _get_get_block
+from y._db.utils.decorators import retry_locked
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
