@@ -4,20 +4,16 @@ from contextlib import suppress
 from decimal import Decimal, InvalidOperation
 from typing import List, Optional
 
-from a_sync import a_sync
 from brownie import chain
-from pony.orm import db_session
 
 from y import constants
 from y._db.entities import Price, insert
-from y._db.utils.decorators import retry_locked, token_attr_threads
+from y._db.utils.decorators import a_sync_db_session
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 
 
-@a_sync(default='async', executor=token_attr_threads)
-@db_session
-@retry_locked
+@a_sync_db_session
 def get_price(address: str, block: int) -> Optional[Decimal]:
     ensure_block(block, sync=True)
     ensure_token(address)
@@ -36,9 +32,7 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
             await t
             _tasks.remove(t)
 
-@a_sync(default='async', executor=token_attr_threads)
-@db_session
-@retry_locked
+@a_sync_db_session
 def _set_price(address: str, block: int, price: Decimal) -> None:
     with suppress(InvalidOperation): # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         ensure_block(block, sync=True)
