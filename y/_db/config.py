@@ -3,16 +3,19 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 import errno
 from os import mkdir, path
 
+SQLITE_DIR = f"{path.expanduser( '~' )}/.ypricemagic"
+SQLITE_PATH = f"{SQLITE_DIR}/ypricemagic.sqlite"
+
 if ENVS.DB_PROVIDER == "sqlite":
     try:
-        mkdir(f"{path.expanduser( '~' )}/.ypricemagic")
+        mkdir(SQLITE_DIR)
     except OSError as e:
         if e.errno != errno.EEXIST:
             raise
 
     connection_settings = {
         'provider': str(ENVS.DB_PROVIDER),
-        'filename': f"{path.expanduser( '~' )}/.ypricemagic/ypricemagic.sqlite",
+        'filename': SQLITE_PATH,
         'create_db': True,
     }
 else:
