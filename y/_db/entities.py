@@ -7,11 +7,9 @@ from functools import wraps
 from typing import Any
 from typing import Optional as typing_Optional
 
-from pony.orm import (CommitException, Database, InterfaceError,
-                      OperationalError, Optional, PrimaryKey, Required, Set,
-                      TransactionError, TransactionIntegrityError,
-                      UnexpectedError, commit, composite_index, composite_key,
-                      db_session)
+from pony.orm import (Database, InterfaceError, Optional, PrimaryKey, 
+                      Required, Set, TransactionIntegrityError, commit,
+                      composite_index, db_session)
 
 db = Database()
 
@@ -41,7 +39,7 @@ class Chain(db.Entity, _AsyncEntityMixin):
 class Block(db.Entity, _AsyncEntityMixin):
     chain = Required(Chain, reverse="blocks")
     number = Required(int, lazy=True)
-    composite_key(chain, number)
+    PrimaryKey(chain, number)
     hash = Optional(int, lazy=True)
     timestamp = Optional(datetime, lazy=True)
     
@@ -55,7 +53,7 @@ class Block(db.Entity, _AsyncEntityMixin):
 class Address(db.Entity, _AsyncEntityMixin):
     chain = Required(Chain, lazy=True, reverse="addresses")
     address = Required(str, lazy=True)
-    composite_key(chain, address)
+    PrimaryKey(chain, address)
     notes = Optional(str, lazy=True)
     
     contracts_deployed = Set("Contract", reverse="deployer")
@@ -75,14 +73,14 @@ class Token(Contract):
 class Price(db.Entity):
     block = Required(Block, index=True, lazy=True)
     token = Required(Token, index=True, lazy=True)
-    composite_key(block, token)
+    PrimaryKey(block, token)
     price = Required(Decimal, 38, 18)
     
 class TraceCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
     to_addresses = Required(bytes, index=True)
     from_addresses = Required(bytes, index=True)
-    composite_key(chain, to_addresses, from_addresses)
+    PrimaryKey(chain, to_addresses, from_addresses)
     cached_from = Required(int)
     cached_thru = Required(int)
 
@@ -90,7 +88,7 @@ class LogCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
     address = Required(str, index=True)
     topics = Required(bytes)
-    composite_key(chain, address, topics)
+    PrimaryKey(chain, address, topics)
     cached_from = Required(int)
     cached_thru = Required(int)
 
@@ -98,7 +96,7 @@ class Log(db.Entity):
     block = Required(Block, index=True, lazy=True)
     transaction_hash = Required(str, lazy=True)
     log_index = Required(int, lazy=True)
-    composite_key(block, transaction_hash, log_index)
+    PrimaryKey(block, transaction_hash, log_index)
 
     address = Required(str, index=True, lazy=True)
     topic0 = Required(str, index=True, lazy=True)
@@ -128,7 +126,7 @@ class Trace(db.Entity):
 
 @db_session
 def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
-    with suppress(TransactionIntegrityError):
+    try:
         while True:
             try:
                 entity = type(**kwargs)
@@ -137,19 +135,9 @@ def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
                 return entity
             except InterfaceError as e:
                 logger.debug("%s while inserting %s", e, type.__name__)
-
-def retry_locked(callable):
-    @wraps(callable)
-    def retry_locked_wrap(*args, **kwargs):
-        while True:
-            try:
-                return callable(*args, **kwargs)
-            except (CommitException, OperationalError, UnexpectedError) as e:
-                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
-                if "database is locked" not in str(e):
-                    raise e
-            except TransactionError as e:
-                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
-                if "An attempt to mix objects belonging to different transactions" not in str(e):
-                    raise e
-    return retry_locked_wrap
+    except TransactionIntegrityError as e:
+        if "UNIQUE constraint failed" in str(e):
+            logger.debug("UNIQUE constraint failed: %s %s", type.__name__, kwargs)
+        else:
+            logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
+            raise e

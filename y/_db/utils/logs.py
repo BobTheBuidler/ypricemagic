@@ -2,6 +2,7 @@
 import logging
 from typing import List, Optional
 
+from brownie import chain
 from brownie.convert import EthAddress
 from msgspec import json
 from pony.orm import commit, db_session, select
@@ -10,19 +11,21 @@ from web3.types import LogReceipt
 
 from y._db import entities, structs
 from y._db.common import DiskCache, enc_hook
-from y._db.utils._ep import _get_get_block
+from y._db.utils import decorators
+from y._db.utils.utils import ensure_block
 
 logger = logging.getLogger(__name__)
 
 
 @db_session
-@entities.retry_locked
+@decorators.retry_locked
 def insert_log(log: dict):
-    get_block = _get_get_block()
+    block = log['blockNumber']
+    ensure_block(block, sync=True)
     log_topics = log['topics']
     entities.insert(
         type=entities.Log,
-        block=get_block(log['blockNumber'], sync=True),
+        block=(chain.id, block),
         transaction_hash = log['transactionHash'].hex(),
         log_index = log['logIndex'],
         address = log['address'],

@@ -4,26 +4,24 @@ from contextlib import suppress
 from decimal import Decimal, InvalidOperation
 from typing import List, Optional
 
-from a_sync import a_sync
-from pony.orm import db_session
+from brownie import chain
 
 from y import constants
-from y._db.common import token_attr_threads
-from y._db.entities import Price, insert, retry_locked
-from y._db.utils._ep import _get_get_block, _get_get_token
+from y._db.entities import Price, insert
+from y._db.utils.decorators import a_sync_db_session
+from y._db.utils.token import ensure_token
+from y._db.utils.utils import ensure_block
 
 
-@a_sync(default='async', executor=token_attr_threads)
-@db_session
-@retry_locked
+@a_sync_db_session
 def get_price(address: str, block: int) -> Optional[Decimal]:
-    get_block = _get_get_block()
-    get_token = _get_get_token()
+    ensure_block(block, sync=True)
+    ensure_token(address)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     if price := Price.get(
-        token = get_token(address, sync=True), 
-        block = get_block(block, sync=True), 
+        token = (chain.id, address), 
+        block = (chain.id, block), 
     ):
         return price.price
 
@@ -34,19 +32,17 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
             await t
             _tasks.remove(t)
 
-@a_sync(default='async', executor=token_attr_threads)
-@db_session
-@retry_locked
+@a_sync_db_session
 def _set_price(address: str, block: int, price: Decimal) -> None:
     with suppress(InvalidOperation): # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
-        get_block = _get_get_block()
-        get_token = _get_get_token()
+        ensure_block(block, sync=True)
+        ensure_token(address)
         if address == constants.EEE_ADDRESS:
             address = constants.WRAPPED_GAS_COIN
         insert(
             type = Price,
-            block = get_block(block, sync=True),
-            token = get_token(address, sync=True),
+            block = (chain.id, block),
+            token = (chain.id, address),
             price = Decimal(price),
         )
         
