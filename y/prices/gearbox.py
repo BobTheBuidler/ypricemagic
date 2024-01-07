@@ -69,9 +69,9 @@ class Gearbox(a_sync.ASyncGenericBase):
     async def is_diesel_token(self, token: Address) -> bool:
         return token in await self.diesel_tokens(sync=False)
     
-    async def get_price(self, token: Address, block: Block) -> Decimal:
+    async def get_price(self, token: Address, block: Block, skip_cache: bool = ENVS.SKIP_CACHE) -> Decimal:
         dtokens = await self.diesel_tokens()
-        return await dtokens[token].get_price(block, sync=False)
+        return await dtokens[token].get_price(block, skip_cache=skip_cache, sync=False)
     
 try:
     gearbox = Gearbox(asynchronous=True)

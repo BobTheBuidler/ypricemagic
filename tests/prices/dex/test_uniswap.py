@@ -50,7 +50,7 @@ V2_TOKENS = mutate_addresses(V2_TOKENS)
 async def test_uniswap_v1(token, async_uni_v1):
     price, alt_price = await asyncio.gather(
         async_uni_v1.get_price(token, None),
-        magic.get_price(token, sync=False),
+        magic.get_price(token, skip_cache=True, sync=False),
     )
     print(token, price, alt_price)
     # check if price is within 5% range
@@ -62,8 +62,8 @@ async def test_uniswap_v1(token, async_uni_v1):
 async def test_uniswap_v2(token):
     deepest_router = await uniswap_multiplexer.deepest_router(token, sync=False)
     price, alt_price = await asyncio.gather(
-        deepest_router.get_price(token, sync=False),
-        magic.get_price(token, sync=False),
+        deepest_router.get_price(token, skip_cache=True, sync=False),
+        magic.get_price(token, skip_cache=True, sync=False),
     )
     print(token, price, alt_price)
     assert price == pytest.approx(alt_price, rel=5e-2)
@@ -73,8 +73,8 @@ async def test_uniswap_v2(token):
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v3(token):
     price, alt_price = await asyncio.gather(
-        v3.uniswap_v3.get_price(token, sync=False),
-        magic.get_price(token, sync=False),
+        v3.uniswap_v3.get_price(token, skip_cache=True, sync=False),
+        magic.get_price(token, skip_cache=True, sync=False),
     )
     print(token, price, alt_price)
     assert price == pytest.approx(alt_price, rel=5e-2)

@@ -16,6 +16,7 @@ from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
 from typing_extensions import Self
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
@@ -180,6 +181,7 @@ class ERC20(ContractBase):
         self, 
         block: Optional[Block] = None, 
         return_None_on_failure: bool = False, 
+        skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:
         from y.prices.magic import get_price
@@ -187,6 +189,7 @@ class ERC20(ContractBase):
             self.address, 
             block=block, 
             fail_to_None=return_None_on_failure,
+            skip_cache=skip_cache,
             ignore_pools=ignore_pools,
             sync=False,
         )
@@ -235,6 +238,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
+        skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
         asynchronous: bool = False,
         ) -> None:
@@ -244,6 +248,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
         self.block = block
         super().__init__()
+        self._skip_cache = skip_cache
         self._ignore_pools = ignore_pools
 
     def __str__(self) -> str:
@@ -290,7 +295,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
             return 0
         balance, price = await asyncio.gather(
             self.__readable__(sync=False),
-            self.token.price(block=self.block, ignore_pools=self._ignore_pools, sync=False),
+            self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False),
         )
         value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)

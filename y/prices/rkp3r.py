@@ -7,6 +7,7 @@ from typing import Optional
 from a_sync import a_sync
 from brownie import chain
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.networks import Network
@@ -21,8 +22,8 @@ def is_rkp3r(address: Address) -> bool:
     return chain.id == Network.Mainnet and address == RKP3R
 
 @a_sync(default="sync")
-async def get_price(address: Address, block: Optional[Block] = None) -> Decimal:
-    price, discount = await asyncio.gather(magic.get_price(KP3R, block=block, sync=False), get_discount(block))
+async def get_price(address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Decimal:
+    price, discount = await asyncio.gather(magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False), get_discount(block))
     return Decimal(price) * (100 - discount) / 100
 
 async def get_discount(block: Optional[Block] = None) -> Decimal:

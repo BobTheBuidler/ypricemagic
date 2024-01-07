@@ -8,6 +8,7 @@ from brownie import chain
 from multicall import Call
 from web3.exceptions import ContractLogicError
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.contracts import Contract
@@ -217,17 +218,17 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = await self.pool_for_atoken(token_address, sync=False)
         return await pool.underlying(token_address, sync=False)
     
-    async def get_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> UsdPrice:
-        underlying = await self.underlying(token_address, sync=False)
-        return await underlying.price(block, sync=False)
+    async def get_price(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+        underlying: ERC20 = await self.underlying(token_address, sync=False)
+        return await underlying.price(block, skip_cache=skip_cache, sync=False)
 
-    async def get_price_wrapped_v2(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await self._get_price_wrapped(token_address, 'staticToDynamicAmount', block=block)
+    async def get_price_wrapped_v2(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+        return await self._get_price_wrapped(token_address, 'staticToDynamicAmount', block=block, skip_cache=skip_cache)
 
-    async def get_price_wrapped_v3(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        return await self._get_price_wrapped(token_address, 'convertToAssets', block=block)
+    async def get_price_wrapped_v3(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+        return await self._get_price_wrapped(token_address, 'convertToAssets', block=block, skip_cache=skip_cache)
     
-    async def _get_price_wrapped(self, token_address: AddressOrContract, method: str, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def _get_price_wrapped(self, token_address: AddressOrContract, method: str, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         contract, scale = await asyncio.gather(Contract.coroutine(token_address), ERC20(token_address, asynchronous=True).scale)
         try:
             underlying, price_per_share = await asyncio.gather(
@@ -237,7 +238,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         except ContractLogicError:
             return None
         price_per_share /= Decimal(scale)
-        return price_per_share * Decimal(await ERC20(underlying, asynchronous=True).price(block))
+        return price_per_share * Decimal(await ERC20(underlying, asynchronous=True).price(block, skip_cache=skip_cache))
 
 
 aave: AaveRegistry = AaveRegistry(asynchronous=True)

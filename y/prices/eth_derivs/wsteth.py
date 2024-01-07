@@ -6,7 +6,8 @@ from typing import Optional
 import a_sync
 from brownie import chain
 
-from y import convert, Contract
+from y import ENVIRONMENT_VARIABLES as ENVS
+from y import convert
 from y.constants import weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
@@ -28,10 +29,10 @@ class wstEth(a_sync.ASyncGenericBase):
         except KeyError:
             self.address = None
 
-    async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         share_price, weth_price = await asyncio.gather(
             raw_call(self.address, 'stEthPerToken()', output='int', block=block, sync=False),
-            magic.get_price(weth, block, sync=False),
+            magic.get_price(weth, block, skip_cache=skip_cache, sync=False),
         )
         share_price /= Decimal(10 ** 18)
         return UsdPrice(share_price * Decimal(float(weth_price)))

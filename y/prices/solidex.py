@@ -6,6 +6,7 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.contracts import Contract
 from y.datatypes import AnyAddressType
@@ -29,9 +30,9 @@ async def is_solidex_deposit(token: AnyAddressType) -> bool:
     return name.startswith("Solidex") and name.endswith("Deposit")
 
 @a_sync.a_sync(default='sync')
-async def get_price(token: AnyAddressType, block: Optional[int] = None):
+async def get_price(token: AnyAddressType, block: Optional[int] = None, skip_cache: bool = ENVS.SKIP_CACHE):
     pool = await _get_pool(token)
-    return await magic.get_price(pool, block, sync=False)
+    return await magic.get_price(pool, block, skip_cache=skip_cache, sync=False)
 
 @alru_cache(maxsize=None)
 async def _get_pool(token) -> EthAddress:
