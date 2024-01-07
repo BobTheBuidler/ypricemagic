@@ -55,14 +55,14 @@ async def test_get_prices(block):
     """
     tokens = await relevant_tokens(ALL_TOKENS, block)
     checked_separately = await asyncio.gather(*[get_price(token, block) for token in tokens])
-    checked_together = await magic.get_prices(tokens, block, fail_to_None=True, sync=False)
+    checked_together = await magic.get_prices(tokens, block, fail_to_None=True, skip_cache=True, sync=False)
     for i in range(len(checked_together)):
         assert checked_together[i] == checked_separately[i], f'magic.get_prices price discrepancy for {tokens[i]}'
 
 async def get_price(token, block):
     """ This is just to diagnose issues with the test itself. We may need to exclude certain tokens. """
     try:
-        return await magic.get_price(token, block, fail_to_None=True, asynchronous=True)
+        return await magic.get_price(token, block, fail_to_None=True, skip_cache=True, asynchronous=True)
     except CantFetchParam as e:
         raise CantFetchParam(token, str(e))
     except PriceError:

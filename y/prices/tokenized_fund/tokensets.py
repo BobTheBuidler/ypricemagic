@@ -7,6 +7,7 @@ from typing import List, Optional
 import a_sync
 from multicall import Call
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice
@@ -22,8 +23,8 @@ async def is_token_set(token: AnyAddressType) -> bool:
     ))
 
 @a_sync.a_sync(default='sync')
-async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    return await TokenSet(token, asynchronous=True).get_price(block=block)
+async def get_price(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+    return await TokenSet(token, asynchronous=True).get_price(block=block, skip_cache=skip_cache)
 
 
 class TokenSet(ERC20):

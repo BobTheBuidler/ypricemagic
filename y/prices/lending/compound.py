@@ -7,6 +7,7 @@ from brownie import chain, convert
 from brownie.exceptions import VirtualMachineError
 from multicall import Call
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
 from y.constants import EEE_ADDRESS
 from y.contracts import Contract, has_methods
@@ -166,7 +167,7 @@ class Comptroller(ContractBase):
     #yLazyLogger(logger)
     def __contains__(self, token_address: AnyAddressType) -> bool:
         if self.asynchronous:
-            raise RuntimeError(f"'self.asynchronous' must be False to use Comptroller.__contains__")
+            raise RuntimeError("'self.asynchronous' must be False to use Comptroller.__contains__")
         return token_address in self.markets
 
     @a_sync.aka.cached_property
@@ -222,9 +223,9 @@ class Compound(a_sync.ASyncGenericSingleton):
             await self.__notify_if_unknown_comptroller(token_address)
         return result
     
-    async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         troller = await self.get_troller(token_address)
-        return await CToken(token_address, comptroller=troller, asynchronous=True).get_price(block=block)
+        return await CToken(token_address, comptroller=troller, asynchronous=True).get_price(block=block, skip_cache=skip_cache)
 
     async def __notify_if_unknown_comptroller(self, token_address: AddressOrContract) -> None:
         comptroller = await raw_call(token_address,'comptroller()',output='address', sync=False)

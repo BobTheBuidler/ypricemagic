@@ -7,6 +7,7 @@ from typing import Optional
 import a_sync
 from brownie import ZERO_ADDRESS, chain
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.constants import weth
@@ -30,12 +31,10 @@ else:
 @a_sync.a_sync(default='sync', cache_type='memory')
 async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
-    if router is None:
-        return False
-    return await router.isPool.coroutine(address)
+    return False if router is None else await router.isPool.coroutine(address)
 
 @a_sync.a_sync(default='sync')
-async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
     address = convert.to_address(token)
     token = await Contract.coroutine(address)
     token0, token1 = await asyncio.gather(
@@ -46,8 +45,8 @@ async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None) -
     bal0, bal1, price0, price1, total_supply = await asyncio.gather(
         dank_w3.eth.get_balance(token.address) if token0 == ZERO_ADDRESS else ERC20(token0, asynchronous=True).balance_of_readable(token.address, block),
         dank_w3.eth.get_balance(token.address) if token1 == ZERO_ADDRESS else ERC20(token1, asynchronous=True).balance_of_readable(token.address, block),
-        magic.get_price(gas_coin, block, sync=False) if token0 == ZERO_ADDRESS else magic.get_price(token0, block, sync=False),
-        magic.get_price(gas_coin, block, sync=False) if token1 == ZERO_ADDRESS else magic.get_price(token1, block, sync=False),
+        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False) if token0 == ZERO_ADDRESS else magic.get_price(token0, block, skip_cache=skip_cache, sync=False),
+        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False) if token1 == ZERO_ADDRESS else magic.get_price(token1, block, skip_cache=skip_cache, sync=False),
         ERC20(address, asynchronous=True).total_supply_readable(block),
     )
 

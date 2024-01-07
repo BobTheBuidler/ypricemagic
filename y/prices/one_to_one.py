@@ -5,6 +5,7 @@ import a_sync
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
@@ -20,5 +21,5 @@ def is_one_to_one_token(token_address: EthAddress) -> bool:
     return token_address in MAPPING
 
 @a_sync.a_sync(default='sync')
-async def get_price(token_address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
-    return await magic.get_price(MAPPING[token_address], block=block, sync=False)
+async def get_price(token_address: EthAddress, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+    return await magic.get_price(MAPPING[token_address], block=block, skip_cache=skip_cache, sync=False)

@@ -16,6 +16,7 @@ from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
@@ -67,14 +68,13 @@ class UniswapV2Pool(ERC20):
             # but couldn't convert to address. If it happens to be a goofy but
             # verified uni fork, maybe we can get factory this way
             okay_errors = ['is not a valid ETH address','invalid opcode','invalid jump destination']
-            if any([msg in str(e) for msg in okay_errors]):
-                contract = await Contract.coroutine(self.address)
-                try: 
-                    return await contract.factory.coroutine()
-                except AttributeError as exc:
-                    raise NotAUniswapV2Pool from exc
-            else:
+            if all(msg not in str(e) for msg in okay_errors):
                 raise
+            contract = await Contract.coroutine(self.address)
+            try: 
+                return await contract.factory.coroutine()
+            except AttributeError as exc:
+                raise NotAUniswapV2Pool from exc
 
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
@@ -106,8 +106,8 @@ class UniswapV2Pool(ERC20):
     
     @a_sync.a_sync(cache_type='memory')
     @stuck_coro_debugger
-    async def get_price(self, block: Optional[Block] = None) -> Optional[UsdPrice]:
-        tvl = await self.tvl(block=block, sync=False)
+    async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+        tvl = await self.tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is not None:
             # TODO: move decimal conversion into total_supply_readable
             return UsdPrice(tvl / Decimal(await self.total_supply_readable(block=block, sync=False)))
@@ -146,10 +146,10 @@ class UniswapV2Pool(ERC20):
         return tuple(WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
 
     @stuck_coro_debugger
-    async def tvl(self, block: Optional[Block] = None) -> Optional[Decimal]:
+    async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
         tokens: List[ERC20] = await self.__tokens__(sync=False)
         prices, reserves = await asyncio.gather(
-            asyncio.gather(*[token.price(block=block, return_None_on_failure=True, sync=False) for token in tokens]),
+            asyncio.gather(*[token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) for token in tokens]),
             self.reserves(block=block, sync=False),
         )
 
@@ -268,6 +268,7 @@ class UniswapRouterV2(ContractBase):
         block: Optional[Block] = None,
         token_out: Address = usdc.address,
         paired_against: Address = WRAPPED_GAS_COIN,
+        skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
         ) -> Optional[UsdPrice]:
         """
@@ -308,7 +309,7 @@ class UniswapRouterV2(ContractBase):
                 amount_out = Decimal(quote[-1]) / out_scale  
                 fees = Decimal(0.997 ** (len(path) - 1))
                 amount_out /= fees
-                paired_with_price = await magic.get_price(paired_with, block, fail_to_None=True, ignore_pools=(*ignore_pools, deepest_pool), sync=False)
+                paired_with_price = await magic.get_price(paired_with, block, fail_to_None=True, skip_cache=skip_cache, ignore_pools=(*ignore_pools, deepest_pool), sync=False)
 
                 if paired_with_price:
                     return amount_out * Decimal(paired_with_price)

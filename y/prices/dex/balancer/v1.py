@@ -8,6 +8,7 @@ from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import VirtualMachineError
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async, has_methods
@@ -23,8 +24,8 @@ EXCHANGE_PROXY = {
 
 logger = logging.getLogger(__name__)
 
-async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale: float, block) -> float:
-    out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, sync=False))
+async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale: float, block: int, skip_cache: bool = ENVS.SKIP_CACHE) -> float:
+    out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, skip_cache=skip_cache, sync=False))
     return (total_outout / out_scale) * float(out_price) / scale
 
 class BalancerV1Pool(ERC20):
@@ -34,20 +35,20 @@ class BalancerV1Pool(ERC20):
         return [ERC20(token, asynchronous=self.asynchronous) for token in tokens]
     
     @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None) -> UsdPrice:
+    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         supply = await self.total_supply_readable(block=block, sync=False)
         if supply == 0:
             return 0
-        return UsdPrice(await self.get_tvl(block=block, sync=False) / Decimal(supply))
+        return UsdPrice(await self.get_tvl(block=block, skip_cache=skip_cache, sync=False) / Decimal(supply))
 
     @stuck_coro_debugger
-    async def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
+    async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
         token_balances = await self.get_balances(block=block, sync=False)
         good_balances = {
             token: balance
             for token, balance
             in token_balances.items()
-            if await token.price(block=block, return_None_on_failure=True, sync=False) is not None
+            if await token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) is not None
         }
         
         prices = await asyncio.gather(*[token.price(block=block, return_None_on_failure = True, sync=False) for token in good_balances])
@@ -97,28 +98,28 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
         return await has_methods(token_address ,("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"), sync=False)
 
     @stuck_coro_debugger
-    async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         assert await self.is_pool(token_address, sync=False)
-        return await BalancerV1Pool(token_address, asynchronous=True).get_pool_price(block=block)
+        return await BalancerV1Pool(token_address, asynchronous=True).get_pool_price(block=block, skip_cache=skip_cache)
     
     @stuck_coro_debugger
-    async def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         if block is not None and block < await contract_creation_block_async(self.exchange_proxy, True):
             return None
         scale = 1.0
         out, totalOutput = await self.get_some_output(token_address, block=block, sync=False)
         if out:
-            return await _calc_out_value(out, totalOutput, scale, block=block)
+            return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
         # Can we get an output if we try smaller size?
         scale = 0.5
         out, totalOutput = await self.get_some_output(token_address, block=block, scale=scale, sync=False) 
         if out:
-            return await _calc_out_value(out, totalOutput, scale, block=block)
+            return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
         # How about now? 
         scale = 0.1
         out, totalOutput = await self.get_some_output(token_address, block=block, scale=scale, sync=False)
         if out:
-            return await _calc_out_value(out, totalOutput, scale, block=block)
+            return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
         return None
     
     @stuck_coro_debugger

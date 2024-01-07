@@ -14,6 +14,7 @@ from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound
 from brownie.network.event import _EventItem
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20, WeiBalance, _EventsLoader, _Loader
 from y.contracts import Contract, contract_creation_block_async
@@ -229,13 +230,13 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         else:
             registry = await curve.__registry__(sync=False)
             coins = await registry.get_coins.coroutine(self.address)
-        
+
         # pool not in registry
         if set(coins) == {ZERO_ADDRESS}:
             coins = await multicall_same_func_same_contract_different_inputs(
-                self.address, 
-                'coins(uint256)(address)', 
-                inputs = [i for i in range(8)],
+                self.address,
+                'coins(uint256)(address)',
+                inputs=list(range(8)),
                 return_None_on_failure=True,
                 sync=False,
             )
@@ -338,7 +339,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
                 return None
             raise
 
-    async def get_tvl(self, block: Optional[Block] = None) -> Optional[UsdValue]:
+    async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
         """
         Get total value in Curve pool.
         """
@@ -349,7 +350,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
                 return None
             raise e
         
-        prices = await asyncio.gather(*[coin.price(block=block, sync=False) for coin in balances])
+        prices = await asyncio.gather(*[coin.price(block=block, skip_cache=skip_cache, sync=False) for coin in balances])
 
         return UsdValue(
             sum(balance * Decimal(price) for balance, price in zip(balances.values(), prices))
@@ -428,9 +429,9 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return None    
     
     @a_sync.a_sync(cache_type='memory')
-    async def get_price(self, token: Address, block: Optional[Block] = None) -> Optional[float]:
+    async def get_price(self, token: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[float]:
         pool = await self.get_pool(token, sync=False)
-        tvl = await pool.get_tvl(block=block, sync=False)
+        tvl = await pool.get_tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is None:
             return None
         return tvl / await ERC20(token, asynchronous=True).total_supply_readable(block)

@@ -148,16 +148,16 @@ class BalancerV2Pool(ERC20):
         return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
     
     @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None) -> Awaitable[UsdPrice]:
+    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Awaitable[UsdPrice]:
         tvl, total_supply = await asyncio.gather(
-            self.get_tvl(block=block, sync=False),
+            self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
             self.total_supply_readable(block=block, sync=False),
         )
         return UsdPrice(tvl / total_supply)
         
     @stuck_coro_debugger
-    async def get_tvl(self, block: Optional[Block] = None) -> Optional[Awaitable[UsdValue]]:
-        balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, sync=False)
+    async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Awaitable[UsdValue]]:
+        balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if balances:
             return UsdValue(sum(await asyncio.gather(*[
                 balance.__value_usd__(sync=False) for balance in balances.values()
@@ -166,7 +166,7 @@ class BalancerV2Pool(ERC20):
 
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     @stuck_coro_debugger
-    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, WeiBalance]:
+    async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Dict[ERC20, WeiBalance]:
         if self._messed_up:
             return {}
         try:
@@ -178,12 +178,12 @@ class BalancerV2Pool(ERC20):
         if vault is None:
             return {}
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
-        return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block) for token, balance in zip(tokens, balances)}
+        return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block, skip_cache=skip_cache) for token, balance in zip(tokens, balances)}
 
     @stuck_coro_debugger
-    async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
+    async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         token_balances, weights = await asyncio.gather(
-            self.get_balances(block=block, sync=False),
+            self.get_balances(block=block, skip_cache=skip_cache, sync=False),
             self.weights(block=block, sync=False),
         )
         pool_token_info = list(zip(token_balances.keys(),token_balances.values(), weights))
@@ -215,8 +215,8 @@ class BalancerV2Pool(ERC20):
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
-    async def tokens(self, block: Optional[Block] = None) -> Tuple[ERC20]:
-        tokens = tuple((await self.get_balances(block=block, sync=False)).keys())
+    async def tokens(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Tuple[ERC20]:
+        tokens = tuple((await self.get_balances(block=block, skip_cache=skip_cache, sync=False)).keys())
         tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
         tokens_history[tokens] += 1
         if len(tokens_history) == 1 and tokens_history[tokens] > 100:
@@ -271,15 +271,15 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
         return await contracts.has_methods(token_address, methods, sync=False)
     
     @stuck_coro_debugger
-    async def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-        return await BalancerV2Pool(pool_address, asynchronous=True).get_pool_price(block=block)
+    async def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+        return await BalancerV2Pool(pool_address, asynchronous=True).get_pool_price(block=block, skip_cache=skip_cache)
 
     @stuck_coro_debugger
-    async def get_token_price(self, token_address: Address, block: Optional[Block] = None) -> UsdPrice:
+    async def get_token_price(self, token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         deepest_pool: Optional[BalancerV2Pool] = await self.deepest_pool_for(token_address, block=block, sync=False)
         if deepest_pool is None:
             return
-        return await deepest_pool.get_token_price(token_address, block, sync=False)
+        return await deepest_pool.get_token_price(token_address, block, skip_cache=skip_cache, sync=False)
     
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:

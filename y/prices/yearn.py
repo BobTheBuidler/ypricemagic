@@ -8,6 +8,7 @@ import a_sync
 from brownie import chain
 from multicall.call import Call
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method, has_methods, probe
@@ -82,9 +83,10 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
 async def get_price(
     token: AnyAddressType, 
     block: Optional[Block] = None,
+    skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
 ) -> UsdPrice:
-    return await YearnInspiredVault(token).price(block=block, ignore_pools=ignore_pools, sync=False)
+    return await YearnInspiredVault(token).price(block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False)
 
 class YearnInspiredVault(ERC20):
     __slots__ = "_get_share_price", 

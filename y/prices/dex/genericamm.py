@@ -5,6 +5,7 @@ import a_sync
 from brownie.exceptions import ContractNotFound
 from multicall import Call
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Contract
 from y.classes.common import ERC20, WeiBalance
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
@@ -32,9 +33,9 @@ class GenericAmm(a_sync.ASyncGenericBase):
         return is_generic_amm(lp_token_address)
     
     @stuck_coro_debugger
-    async def get_price(self, lp_token_address: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         tvl, total_supply = await asyncio.gather(
-            self.get_tvl(lp_token_address, block=block, sync=False),
+            self.get_tvl(lp_token_address, block=block, skip_cache=skip_cache, sync=False),
             ERC20(lp_token_address, asynchronous=True).total_supply_readable(block=block),
         )
         if total_supply is None:
@@ -53,11 +54,11 @@ class GenericAmm(a_sync.ASyncGenericBase):
         return ERC20(tokens[0]), ERC20(tokens[1])
     
     @stuck_coro_debugger
-    async def get_tvl(self, lp_token_address: AnyAddressType, block: Optional[Block] = None) -> UsdValue:
+    async def get_tvl(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
         lp_token_contract = await Contract.coroutine(lp_token_address)
         tokens = await self.get_tokens(lp_token_address, sync=False)
         reserves = await lp_token_contract.getReserves.coroutine(block_identifier=block)
-        reserves = [WeiBalance(reserve,token,block) for token, reserve in zip(tokens,reserves)]
+        reserves = [WeiBalance(reserve, token, block=block, skip_cache=skip_cache) for token, reserve in zip(tokens,reserves)]
         return UsdValue(sum(await asyncio.gather(*[reserve.__value_usd__(sync=False) for reserve in reserves])))
 
 

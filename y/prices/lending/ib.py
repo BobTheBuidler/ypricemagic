@@ -6,6 +6,7 @@ from typing import Optional
 
 import a_sync
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, has_methods
@@ -19,7 +20,7 @@ async def is_ib_token(token: AnyAddressType) -> bool:
     return await has_methods(token, ('debtShareToVal(uint)(uint)','debtValToShare(uint)(uint)','token()(address)','totalToken()(uint)','totalSupply()(uint)'), sync=False)
 
 @a_sync.a_sync(default='sync')
-async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+async def get_price(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
     address = convert.to_address(token)
     contract = await Contract.coroutine(address)
     token, total_bal, total_supply = await asyncio.gather(
@@ -31,6 +32,5 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
     total_bal /= Decimal(token_scale)
     total_supply /= Decimal(pool_scale)
     share_price = total_bal / total_supply
-    token_price = await magic.get_price(token, block, sync=False)
-    price = share_price * token_price
-    return price
+    token_price = await magic.get_price(token, block, skip_cache=skip_cache, sync=False)
+    return share_price * token_price

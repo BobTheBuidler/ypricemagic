@@ -6,6 +6,7 @@ import a_sync
 from brownie import ZERO_ADDRESS
 from multicall import Call
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.contracts import has_method
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
@@ -21,9 +22,9 @@ async def is_pie(token: AnyAddressType) -> bool:
     return await has_method(token, "getCap()(uint)", sync=False)
 
 @a_sync.a_sync(default='sync')
-async def get_price(pie: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+async def get_price(pie: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
     tvl, total_supply = await asyncio.gather(
-        get_tvl(pie, block),
+        get_tvl(pie, block, skip_cache=skip_cache),
         # TODO: debug why we need sync kwarg here
         ERC20(pie, asynchronous=True).total_supply_readable(block, sync=False),
     )
@@ -43,7 +44,7 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
             raise
         return pie_address
 
-async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdValue:
+async def get_tvl(pie_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
     tokens: List[ERC20]
     pool, tokens = await asyncio.gather(
         get_bpool(pie_address, block),
@@ -52,7 +53,7 @@ async def get_tvl(pie_address: Address, block: Optional[Block] = None) -> UsdVal
     token_balances, token_scales, prices = await asyncio.gather(
         asyncio.gather(*[Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block).coroutine() for token in tokens]),
         asyncio.gather(*[token.__scale__(sync=False) for token in tokens]),
-        magic.get_prices(tokens, block, sync=False),
+        magic.get_prices(tokens, block, skip_cache=skip_cache, sync=False),
     )
     token_balances = [bal / scale for bal, scale in zip(token_balances, token_scales)]
     return UsdValue(

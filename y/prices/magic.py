@@ -153,6 +153,7 @@ async def _get_price(
     block: Block,
     *,
     fail_to_None: bool = False, 
+    skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
@@ -182,7 +183,7 @@ async def _get_price(
                 logger._debugger.cancel()
                 return price
 
-        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, logger=logger)
+        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
         if price is not None:
             await _sense_check(token, block, price)
             logger.debug("%s price: %s", symbol, price)
@@ -201,7 +202,7 @@ async def _get_price(
             for dex in dexes_by_depth.values():
                 method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
                 logger.debug("trying %s", dex)
-                price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, sync=False)
+                price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
                 logger.debug("%s -> %s", dex, price)
                 if price:
                     break
@@ -210,7 +211,7 @@ async def _get_price(
 
         # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
         if price is None or price == 0:
-            new_price = await balancer_multiplexer.get_price(token, block=block, sync=False)
+            new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
             logger.debug("balancer -> %s", price)
             if new_price:
                 logger.debug("replacing price %s with new price %s", price, new_price)
@@ -235,6 +236,7 @@ async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block,
     logger: logging.Logger,
+    skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
 
@@ -242,49 +244,49 @@ async def _exit_early_for_known_tokens(
 
     price = None
 
-    if bucket == 'atoken':                  price = await aave.get_price(token_address, block=block, sync=False)
-    elif bucket == 'balancer pool':         price = await balancer_multiplexer.get_price(token_address, block, sync=False)
-    elif bucket == 'basketdao':             price = await basketdao.get_price(token_address, block, sync=False)
+    if bucket == 'atoken':                  price = await aave.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'balancer pool':         price = await balancer_multiplexer.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'basketdao':             price = await basketdao.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == 'belt lp':               price = await belt.get_price(token_address, block, sync=False)
     elif bucket == 'chainlink and band':    price = await chainlink.get_price(token_address, block, sync=False) or await band.get_price(token_address, block, sync=False)
     elif bucket == 'chainlink feed':        price = await chainlink.get_price(token_address, block, sync=False)
 
-    elif bucket == 'compound':              price = await compound.get_price(token_address, block=block, sync=False)
-    elif bucket == 'convex':                price = await convex.get_price(token_address,block, sync=False)
-    elif bucket == 'creth':                 price = await creth.get_price_creth(token_address, block, sync=False)
+    elif bucket == 'compound':              price = await compound.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'convex':                price = await convex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'creth':                 price = await creth.get_price_creth(token_address, block, skip_cache=skip_cache, sync=False)
 
-    elif bucket == 'curve lp':              price = await curve.get_price(token_address, block, sync=False)
-    elif bucket == 'ellipsis lp':           price = await ellipsis.get_price(token_address, block=block, sync=False)
+    elif bucket == 'curve lp':              price = await curve.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'ellipsis lp':           price = await ellipsis.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     elif bucket == 'froyo':                 price = await froyo.get_price(token_address, block=block, sync=False)
 
-    elif bucket == 'gearbox':               price = await gearbox.get_price(token_address, block=block, sync=False)
-    elif bucket == 'gelato':                price = await gelato.get_price(token_address, block=block, sync=False)
-    elif bucket == 'generic amm':           price = await generic_amm.get_price(token_address, block=block, sync=False)
+    elif bucket == 'gearbox':               price = await gearbox.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'gelato':                price = await gelato.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'generic amm':           price = await generic_amm.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     
-    elif bucket == 'ib token':              price = await ib.get_price(token_address, block=block, sync=False)
-    elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price(token_address, block=block, sync=False)
-    elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price(token_address,block=block, sync=False)
+    elif bucket == 'ib token':              price = await ib.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'mooniswap lp':          price = await mooniswap.get_pool_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'mstable feeder pool':   price = await mstablefeederpool.get_price(token_address,block=block, skip_cache=skip_cache, sync=False)
     
-    elif bucket == 'one to one':            price = await one_to_one.get_price(token_address, block, sync=False)
-    elif bucket == 'piedao lp':             price = await piedao.get_price(token_address, block=block, sync=False)
-    elif bucket == 'popsicle':              price = await popsicle.get_price(token_address, block=block, sync=False)
+    elif bucket == 'one to one':            price = await one_to_one.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'piedao lp':             price = await piedao.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'popsicle':              price = await popsicle.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     
-    elif bucket == 'rkp3r':                 price = await rkp3r.get_price(token_address, block, sync=False)
-    elif bucket == 'saddle':                price = await saddle.get_price(token_address, block, sync=False)
-    elif bucket == 'solidex':               price = await solidex.get_price(token_address, block, sync=False)
+    elif bucket == 'rkp3r':                 price = await rkp3r.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'saddle':                price = await saddle.get_price(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'solidex':               price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
     elif bucket == 'stable usd':            price = 1
     elif bucket == 'synthetix':             price = await synthetix.get_price(token_address, block, sync=False)
-    elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, sync=False)
+    elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
 
-    elif bucket == 'uni or uni-like lp':    price = await UniswapV2Pool(token_address).get_price(block=block, sync=False)
-    elif bucket == 'wrapped gas coin':      price = await get_price(constants.WRAPPED_GAS_COIN, block, sync=False)
-    elif bucket == 'wrapped atoken v2':     price = await aave.get_price_wrapped_v2(token_address, block, sync=False)
+    elif bucket == 'uni or uni-like lp':    price = await UniswapV2Pool(token_address).get_price(block=block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'wrapped gas coin':      price = await get_price(constants.WRAPPED_GAS_COIN, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'wrapped atoken v2':     price = await aave.get_price_wrapped_v2(token_address, block, skip_cache=skip_cache, sync=False)
 
-    elif bucket == 'wrapped atoken v3':     price = await aave.get_price_wrapped_v3(token_address, block, sync=False)
-    elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, sync=False)
-    elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, ignore_pools=ignore_pools, sync=False)
+    elif bucket == 'wrapped atoken v3':     price = await aave.get_price_wrapped_v3(token_address, block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, skip_cache=skip_cache, sync=False)
+    elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False)
 
     logger.debug("%s -> %s", bucket, price)
     return price
