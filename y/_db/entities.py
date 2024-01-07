@@ -7,10 +7,9 @@ from functools import wraps
 from typing import Any
 from typing import Optional as typing_Optional
 
-from pony.orm import (CommitException, Database, InterfaceError,
-                      OperationalError, Optional, PrimaryKey, Required, Set,
-                      TransactionError, TransactionIntegrityError,
-                      UnexpectedError, commit, composite_index, db_session)
+from pony.orm import (Database, InterfaceError, Optional, PrimaryKey, 
+                      Required, Set, TransactionIntegrityError, commit,
+                      composite_index, db_session)
 
 db = Database()
 
@@ -142,19 +141,3 @@ def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
         else:
             logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
             raise e
-
-def retry_locked(callable):
-    @wraps(callable)
-    def retry_locked_wrap(*args, **kwargs):
-        while True:
-            try:
-                return callable(*args, **kwargs)
-            except (CommitException, OperationalError, UnexpectedError) as e:
-                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
-                if "database is locked" not in str(e):
-                    raise e
-            except TransactionError as e:
-                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
-                if "An attempt to mix objects belonging to different transactions" not in str(e):
-                    raise e
-    return retry_locked_wrap

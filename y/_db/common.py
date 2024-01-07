@@ -21,8 +21,8 @@ from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
 from y import convert
-from y._db.entities import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
+from y._db.utils.decorators import retry_locked
 from y.decorators import stuck_coro_debugger
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
@@ -32,7 +32,6 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-token_attr_threads = PruningThreadPoolExecutor(32)
 filter_threads = PruningThreadPoolExecutor(16)
 
 def enc_hook(obj: Any) -> bytes:
