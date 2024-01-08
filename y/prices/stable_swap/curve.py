@@ -251,7 +251,14 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     async def num_coins(self) -> int:
         return len(await self.__coins__(sync=False))
     
-    async def get_dy(self, coin_ix_in: int, coin_ix_out: int, block: Optional[Block] = None, ignore_pools: Tuple[Pool, ...] = ()) -> Optional[WeiBalance]:
+    async def get_dy(
+        self, 
+        coin_ix_in: int, 
+        coin_ix_out: int, 
+        block: Optional[Block] = None, 
+        ignore_pools: Tuple[Pool, ...] = (),
+        skip_cache: bool = ENVS.SKIP_CACHE,
+    ) -> Optional[WeiBalance]:
         tokens = await self.__coins__(sync=False)
         token_in = tokens[coin_ix_in]
         token_out = tokens[coin_ix_out]
@@ -259,7 +266,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         contract = await Contract.coroutine(self.address)
         try:
             amount_out = await contract.get_dy.coroutine(coin_ix_in, coin_ix_out, amount_in, block_identifier=block)
-            return WeiBalance(amount_out, token_out, block=block, ignore_pools=(*ignore_pools, self))
+            return WeiBalance(amount_out, token_out, block=block, ignore_pools=(*ignore_pools, self), skip_cache=skip_cache)
         except Exception as e:
             if call_reverted(e):
                 return None
@@ -448,7 +455,13 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 
     @a_sync.a_sync(cache_type='memory')
-    async def get_price_for_underlying(self, token_in: Address, block: Optional[Block] = None, ignore_pools: Tuple[Pool, ...] = ()) -> Optional[UsdPrice]:
+    async def get_price_for_underlying(
+        self, 
+        token_in: Address, 
+        block: Optional[Block] = None, 
+        ignore_pools: Tuple[Pool, ...] = (),
+        skip_cache: bool = ENVS.SKIP_CACHE,
+    ) -> Optional[UsdPrice]:
         try:
             pools: List[CurvePool] = (await self.__coin_to_pools__(sync=False))[token_in]
         except KeyError:
@@ -485,7 +498,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
 
         token_in_ix = await pool.get_coin_index(token_in, sync=False)
         token_out_ix = 0 if token_in_ix == 1 else 1 if token_in_ix == 0 else None
-        dy = await pool.get_dy(token_in_ix, token_out_ix, block=block, ignore_pools=ignore_pools, sync=False)
+        dy = await pool.get_dy(token_in_ix, token_out_ix, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
         if dy is None:
             return None
 
