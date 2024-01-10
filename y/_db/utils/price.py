@@ -9,14 +9,14 @@ from brownie import chain
 
 from y import constants
 from y._db.entities import Price, insert
-from y._db.utils.decorators import a_sync_db_session
+from y._db.utils.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 
 
 logger = logging.getLogger(__name__)
 
-@a_sync_db_session
+@a_sync_read_db_session
 def get_price(address: str, block: int) -> Optional[Decimal]:
     ensure_block(block, sync=True)
     ensure_token(address)
@@ -33,7 +33,7 @@ async def set_price(address: str, block: int, price: Decimal) -> None:
             await t
             _tasks.remove(t)
 
-@a_sync_db_session
+@a_sync_write_db_session
 def _set_price(address: str, block: int, price: Decimal) -> None:
     with suppress(InvalidOperation): # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         ensure_block(block, sync=True)

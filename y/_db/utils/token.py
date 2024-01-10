@@ -10,13 +10,13 @@ from pony.orm import commit
 from y import constants
 from y._db.entities import Address, Token, insert
 from y._db.utils._ep import _get_get_token
-from y._db.utils.decorators import a_sync_db_session
+from y._db.utils.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.utils.utils import ensure_chain
 from y.erc20 import decimals
 
 logger = logging.getLogger(__name__)
 
-@a_sync_db_session
+@a_sync_read_db_session
 def get_token(address: str) -> Token:
     ensure_chain()
     address = convert.to_address(address)
@@ -35,7 +35,7 @@ def ensure_token(address: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True)
 
-@a_sync_db_session
+@a_sync_read_db_session
 def get_bucket(address: str) -> Optional[str]:
     if address == constants.EEE_ADDRESS:
         return
@@ -45,7 +45,7 @@ def get_bucket(address: str) -> Optional[str]:
         logger.debug("found %s bucket %s in ydb", address, bucket)
     return bucket
 
-@a_sync_db_session
+@a_sync_write_db_session
 def set_bucket(address: str, bucket: str) -> None:
     if address == constants.EEE_ADDRESS:
         return
@@ -53,7 +53,7 @@ def set_bucket(address: str, bucket: str) -> None:
     get_token(address, sync=True).bucket = bucket
     logger.debug("updated %s bucket in ydb: %s", address, bucket)
 
-@a_sync_db_session
+@a_sync_read_db_session
 def get_symbol(address: str) -> Optional[str]:
     get_token = _get_get_token()
     symbol = get_token(address, sync=True).symbol
@@ -61,13 +61,13 @@ def get_symbol(address: str) -> Optional[str]:
         logger.debug("found %s symbol %s in ydb", address, symbol)
     return symbol
 
-@a_sync_db_session
+@a_sync_write_db_session
 def set_symbol(address: str, symbol: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).symbol = symbol
     logger.debug("updated %s symbol in ydb: %s", address, symbol)
 
-@a_sync_db_session
+@a_sync_read_db_session
 def get_name(address: str) -> Optional[str]:
     get_token = _get_get_token()
     name = get_token(address, sync=True).name
@@ -75,7 +75,7 @@ def get_name(address: str) -> Optional[str]:
         logger.debug("found %s name %s in ydb", address, name)
     return name
 
-@a_sync_db_session
+@a_sync_write_db_session
 def set_name(address: str, name: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).name = name
@@ -89,7 +89,7 @@ async def get_decimals(address: str) -> int:
             asyncio.create_task(coro=set_decimals(address, d), name=f"set_decimals {address}")
     return d
 
-@a_sync_db_session
+@a_sync_read_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
     get_token = _get_get_token()
     decimals = get_token(address, sync=True).decimals
@@ -97,7 +97,7 @@ def _get_token_decimals(address: str) -> Optional[int]:
     if decimals:
         return decimals
 
-@a_sync_db_session
+@a_sync_write_db_session
 def set_decimals(address: str, decimals: int) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).decimals = decimals
