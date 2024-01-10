@@ -57,7 +57,8 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
 
 @a_sync_read_db_session
 def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
-    if block := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):
+    if entity := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):
+        block = entity.block
         logger.debug("found block %s for %s in ydb", block, timestamp)
         return block
     
