@@ -123,6 +123,12 @@ class Trace(db.Entity):
     to_address = Required(str, index=True, lazy=True)
     raw = Required(bytes)
 
+class BlockAtTimestamp(db.Entity):
+    chainid = Required(int)
+    timestamp = Required(datetime)
+    PrimaryKey(chainid, timestamp)
+    block = Required(int)
+
 
 @db_session
 def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:

@@ -56,6 +56,7 @@ async def get_block_timestamp_async(height: int) -> int:
     await db.set_block_timestamp(height, ts, sync=False)
     return ts
 
+# TODO: deprecate
 @memory.cache()
 def last_block_on_date(date: Union[str, datetime.date]) -> int:
     """ Returns the last block on a given `date`. You can pass either a `datetime.date` object or a date string formatted as 'YYYY-MM-DD'. """
@@ -83,6 +84,20 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     block = hi if hi != height else None
     logger.debug('last %s block on date %s -> %s', Network.name(), date, block)
     return block
+
+
+@a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+async def get_block_at_timestamp(timestamp: datetime) -> int:
+    import y._db.utils.utils as db
+    if block_at_timestamp := await db.get_block_at_timestamp(timestamp):
+        return block_at_timestamp
+    
+    # TODO: invert this and use this fn inside of closest_block_after_timestamp for backwards compatability before deprecating closest_block_after_timestamp
+    block_after_timestamp = await closest_block_after_timestamp_async(timestamp)
+    block_at_timestamp = block_after_timestamp - 1
+    await db.set_block_at_timestamp(timestamp, block_at_timestamp)
+    return block_at_timestamp
+
 
 class UnixTimestamp(int):
     pass
@@ -131,7 +146,6 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
     if hi == height:
         raise NoBlockFound(f"No block found after timestamp {timestamp}")
     return hi
-
 
 @memory.cache()
 def _closest_block_after_timestamp_cached(timestamp: int) -> int:
