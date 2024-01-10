@@ -63,5 +63,5 @@ def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
     
 @a_sync_write_db_session
 def set_block_at_timestamp(timestamp: datetime, block: int) -> None:
-    BlockAtTimestamp(chainid=chain.id, timestamp=timestamp, block=block)
+    insert(BlockAtTimestamp, chainid=chain.id, timestamp=timestamp, block=block)
     logger.debug("inserted block %s for %s", block, timestamp)
