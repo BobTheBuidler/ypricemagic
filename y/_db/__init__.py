@@ -1,7 +1,7 @@
 
 import os
 
-from pony.orm import Database, BindingError, OperationalError, TransactionError
+from pony.orm import Database, BindingError, DatabaseError, TransactionError
 
 from y._db.config import SQLITE_PATH
 
@@ -16,11 +16,10 @@ def bind_db(db: Database, **connection_settings) -> None:
 def generate_mapping(db: Database) -> None:
     try:
         db.generate_mapping(create_tables=True)
-    except OperationalError as e:
-        if "no such column: " in str(e):
+    except DatabaseError as e:
+        if "no such column: " in str(e) or ("column" in str(e) and " does not exist" in str(e)):
             from y._db.exceptions import NewDatabaseSchemaError
             raise NewDatabaseSchemaError from e
-        raise e
     except TransactionError as e:
         if str(e) != "@db_session-decorated create_tables() function with `ddl` option cannot be called inside of another db_session":
             raise e
