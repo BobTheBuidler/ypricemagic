@@ -41,7 +41,8 @@ def get_bucket(address: str) -> Optional[str]:
         return
     get_token = _get_get_token()
     bucket = get_token(address, sync=True).bucket
-    logger.debug("found %s bucket %s in ydb", address, bucket)
+    if bucket:
+        logger.debug("found %s bucket %s in ydb", address, bucket)
     return bucket
 
 @a_sync_db_session
@@ -56,7 +57,8 @@ def set_bucket(address: str, bucket: str) -> None:
 def get_symbol(address: str) -> Optional[str]:
     get_token = _get_get_token()
     symbol = get_token(address, sync=True).symbol
-    logger.debug("found %s symbol %s in ydb", address, symbol)
+    if symbol:
+        logger.debug("found %s symbol %s in ydb", address, symbol)
     return symbol
 
 @a_sync_db_session
@@ -69,7 +71,8 @@ def set_symbol(address: str, symbol: str) -> None:
 def get_name(address: str) -> Optional[str]:
     get_token = _get_get_token()
     name = get_token(address, sync=True).name
-    logger.debug("found %s name %s in ydb", address, name)
+    if name:
+        logger.debug("found %s name %s in ydb", address, name)
     return name
 
 @a_sync_db_session
@@ -91,7 +94,8 @@ def _get_token_decimals(address: str) -> Optional[int]:
     get_token = _get_get_token()
     decimals = get_token(address, sync=True).decimals
     logger.debug("found %s decimals %s in ydb", address, decimals)
-    return decimals
+    if decimals:
+        return decimals
 
 @a_sync_db_session
 def set_decimals(address: str, decimals: int) -> None:
