@@ -68,7 +68,7 @@ class CToken(ERC20):
         super().__init__(address, asynchronous=asynchronous)
         self.exchange_rate_current = Call(self.address, 'exchangeRateCurrent()(uint)')
     
-    async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         if self.troller:
             # We can use the protocol's oracle which will be quick (if it works)
             underlying_per_ctoken, underlying_price = await asyncio.gather(
@@ -82,7 +82,7 @@ class CToken(ERC20):
         underlying = await self.__underlying__(asynchronous=True)
         underlying_per_ctoken, underlying_price = await asyncio.gather(
             self.underlying_per_ctoken(block=block, asynchronous=True),
-            underlying.price(block=block, asynchronous=True)
+            underlying.price(block=block, skip_cache=skip_cache, asynchronous=True)
         )
         return UsdPrice(underlying_per_ctoken * underlying_price)
     
@@ -123,7 +123,7 @@ class CToken(ERC20):
         
         return exchange_rate / 1e18
     
-    async def get_underlying_price(self, block: Optional[Block] = None) -> Optional[float]:
+    async def get_underlying_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[float]:
         # always query the oracle in case it was changed
         oracle, underlying = await asyncio.gather(
             self.troller.oracle(block, asynchronous=True),

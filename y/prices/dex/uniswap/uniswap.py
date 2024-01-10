@@ -8,6 +8,7 @@ import a_sync
 from brownie import ZERO_ADDRESS, chain
 from web3.exceptions import ContractLogicError
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
@@ -84,6 +85,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         token_in: AnyAddressType, 
         block: Optional[Block] = None, 
         ignore_pools: Tuple[Pool, ...] = (),
+        skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
@@ -94,7 +96,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         for router in await self.routers_by_depth(token_in, block=block, ignore_pools=ignore_pools, sync=False):
             # tries each known router from most to least liquid
             # returns the first price we get back, almost always from the deepest router
-            price = await router.get_price(token_in, block=block, ignore_pools=ignore_pools, sync=False)
+            price = await router.get_price(token_in, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
             logger.debug("%s -> %s", router, price)
             if price:
                 return price

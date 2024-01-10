@@ -162,6 +162,7 @@ class YearnInspiredVault(ERC20):
         self, 
         block: Optional[Block] = None,
         ignore_pools: Tuple[Pool, ...] = (),
+        skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:
         logger = get_price_logger(self.address, block=None, extra='yearn')
         underlying: ERC20
@@ -169,6 +170,6 @@ class YearnInspiredVault(ERC20):
         if share_price is None:
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)
-        price = UsdPrice(share_price * Decimal(await underlying.price(block=block, ignore_pools=ignore_pools, sync=False)))
+        price = UsdPrice(share_price * Decimal(await underlying.price(block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)))
         logger.debug("%s price at block %s: %s", self, block, price)
         return price

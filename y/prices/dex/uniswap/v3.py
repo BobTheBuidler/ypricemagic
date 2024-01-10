@@ -136,7 +136,8 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         self, 
         token: Address, 
         block: Optional[Block] = None,
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: Tuple[Pool, ...] = (), # unused
+        skip_cache: bool = ENVS.SKIP_CACHE,  # unused
         ) -> Optional[UsdPrice]:
 
         quoter = await self.__quoter__(sync=False)

@@ -38,9 +38,9 @@ class DieselPool(ContractBase):
         scale = await underlying.__scale__(sync=False)
         return Decimal(await pool.fromDiesel.coroutine(scale, block_identifier=block)) / Decimal(scale)
     
-    async def get_price(self, block: Block) -> Decimal:
+    async def get_price(self, block: Block, skip_cache: bool = ENVS.SKIP_CACHE) -> Decimal:
         underlying, exchange_rate = await asyncio.gather(self.__underlying__(sync=False), self.exchange_rate(block, sync=False))
-        und_price = await underlying.price(block, sync=False)
+        und_price = await underlying.price(block, skip_cache=skip_cache, sync=False)
         return Decimal(und_price) * exchange_rate
         
 
