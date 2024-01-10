@@ -1,6 +1,7 @@
 
 import logging
 from datetime import datetime, timezone
+from dateutil import parser
 from functools import lru_cache
 from typing import Optional
 
@@ -39,6 +40,9 @@ def get_block_timestamp(number: int) -> Optional[int]:
     get_block = _get_get_block()
     block = get_block(number, sync=True)
     if ts := block.timestamp:
+        if isinstance(ts, str):
+            # TODO: debug why this happens, but only sometimes
+            ts = parser.parse(ts)
         unix = ts.timestamp()
         logger.debug("got %s.timestamp from cache: %s, %s", block, unix, ts)
         return unix
