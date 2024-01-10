@@ -136,8 +136,9 @@ def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
             except InterfaceError as e:
                 logger.debug("%s while inserting %s", e, type.__name__)
     except TransactionIntegrityError as e:
-        if "UNIQUE constraint failed" in str(e):
-            logger.debug("UNIQUE constraint failed: %s %s", type.__name__, kwargs)
+        constraint_errs = "UNIQUE constraint failed", "duplicate key value violates unique constraint"
+        if any(err in (msg:=str(e)) for err in constraint_errs):
+            logger.debug("%s: %s %s", msg, type.__name__, kwargs)
         else:
             logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
             raise e

@@ -1,5 +1,6 @@
 
 import asyncio
+import logging
 from contextlib import suppress
 from decimal import Decimal, InvalidOperation
 from typing import List, Optional
@@ -13,17 +14,17 @@ from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 
 
+logger = logging.getLogger(__name__)
+
 @a_sync_db_session
 def get_price(address: str, block: int) -> Optional[Decimal]:
     ensure_block(block, sync=True)
     ensure_token(address)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
-    if price := Price.get(
-        token = (chain.id, address), 
-        block = (chain.id, block), 
-    ):
-        return price.price
+    if price := Price.get(token = (chain.id, address), block = (chain.id, block)) and (price:=price.price):
+        logger.debug("found %s block %s price %s in ydb", address, block, price)
+        return price
 
 async def set_price(address: str, block: int, price: Decimal) -> None:
     _tasks.append(asyncio.create_task(coro=_set_price(address, block, price), name=f"set_price {price} for {address} at {block}"))
@@ -45,5 +46,6 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
             token = (chain.id, address),
             price = Decimal(price),
         )
+        logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
         
 _tasks: List[asyncio.Task] = []

@@ -40,7 +40,9 @@ def get_bucket(address: str) -> Optional[str]:
     if address == constants.EEE_ADDRESS:
         return
     get_token = _get_get_token()
-    return get_token(address, sync=True).bucket
+    bucket = get_token(address, sync=True).bucket
+    logger.debug("found %s bucket %s in ydb", address, bucket)
+    return bucket
 
 @a_sync_db_session
 def set_bucket(address: str, bucket: str) -> None:
@@ -48,26 +50,33 @@ def set_bucket(address: str, bucket: str) -> None:
         return
     get_token = _get_get_token()
     get_token(address, sync=True).bucket = bucket
+    logger.debug("updated %s bucket in ydb: %s", address, bucket)
 
 @a_sync_db_session
 def get_symbol(address: str) -> Optional[str]:
     get_token = _get_get_token()
-    return get_token(address, sync=True).symbol
+    symbol = get_token(address, sync=True).symbol
+    logger.debug("found %s symbol %s in ydb", address, symbol)
+    return symbol
 
 @a_sync_db_session
 def set_symbol(address: str, symbol: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).symbol = symbol
+    logger.debug("updated %s symbol in ydb: %s", address, symbol)
 
 @a_sync_db_session
 def get_name(address: str) -> Optional[str]:
     get_token = _get_get_token()
-    return get_token(address, sync=True).name
+    name = get_token(address, sync=True).name
+    logger.debug("found %s name %s in ydb", address, name)
+    return name
 
 @a_sync_db_session
 def set_name(address: str, name: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).name = name
+    logger.debug("updated %s name in ydb: %s", address, name)
 
 async def get_decimals(address: str) -> int:
     d = await _get_token_decimals(address)
@@ -80,9 +89,12 @@ async def get_decimals(address: str) -> int:
 @a_sync_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
     get_token = _get_get_token()
-    return get_token(address, sync=True).decimals
+    decimals = get_token(address, sync=True).decimals
+    logger.debug("found %s decimals %s in ydb", address, decimals)
+    return decimals
 
 @a_sync_db_session
 def set_decimals(address: str, decimals: int) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).decimals = decimals
+    logger.debug("updated %s decimals in ydb: %s", address, decimals)
