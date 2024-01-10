@@ -16,7 +16,8 @@ _P = ParamSpec('_P')
 logger = logging.getLogger(__name__)
 
 
-token_attr_threads = PruningThreadPoolExecutor(32)
+ydb_read_threads = PruningThreadPoolExecutor(32)
+ydb_write_threads = PruningThreadPoolExecutor(16)
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
     @wraps(callable)
@@ -39,14 +40,33 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                     raise e
     return retry_locked_wrap
 
-a_sync_db_session = lambda fn: a_sync(default='async', executor=token_attr_threads)(
+a_sync_read_db_session = lambda fn: a_sync(default='async', executor=ydb_write_threads)(
     db_session(
         retry_locked(
             fn
         )
     )
 )
-a_sync_db_session_cached = lambda fn: a_sync(default='async', executor=token_attr_threads)(
+
+a_sync_write_db_session = lambda fn: a_sync(default='async', executor=ydb_read_threads)(
+    db_session(
+        retry_locked(
+            fn
+        )
+    )
+)
+
+a_sync_read_db_session_cached = lambda fn: a_sync(default='async', executor=ydb_read_threads)(
+    retry_locked(
+        lru_cache(maxsize=None)(
+            db_session(
+                fn
+            )
+        )
+    )
+)
+
+a_sync_write_db_session_cached = lambda fn: a_sync(default='async', executor=ydb_read_threads)(
     retry_locked(
         lru_cache(maxsize=None)(
             db_session(
