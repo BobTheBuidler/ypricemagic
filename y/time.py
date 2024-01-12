@@ -129,7 +129,7 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
         try:
-            return await closest_block_after_timestamp_async(timestamp)
+            return await get_block_at_timestamp(datetime.datetime.fromtimestamp(timestamp, tzinfo=datetime.timezone.utc), sync=False) + 1
         except NoBlockFound:
             await asyncio.sleep(0.2)
     
