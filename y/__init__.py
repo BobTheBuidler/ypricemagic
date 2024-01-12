@@ -76,5 +76,5 @@ __all__ = [
 
 with suppress(ModuleNotFoundError):
     """If eth_portfolio is also installed in this env, we will use its extended version of our db schema"""
-    from eth_portfolio._db.entities import *
+    from eth_portfolio._db import entities as _db_entities
     #from eth_portfolio._db import utils
