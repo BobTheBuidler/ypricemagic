@@ -15,8 +15,9 @@ if not network.is_connected():
 from y import time
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
-from y.contracts import (Contract, Contract_erc20,
-                         Contract_with_erc20_fallback, has_method, has_methods)
+from y.contracts import (Contract, Contract_erc20, Contract_with_erc20_fallback, 
+                         contract_creation_block, contract_creation_block_async, 
+                         has_method, has_methods)
 from y.erc20 import decimals, totalSupply, totalSupplyReadable
 from y.exceptions import (CalldataPreparationError, CallReverted,
                           ContractNotVerified, MessedUpBrownieContract,
