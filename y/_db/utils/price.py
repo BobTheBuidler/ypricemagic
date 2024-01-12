@@ -8,8 +8,8 @@ from typing import List, Optional
 from brownie import chain
 
 from y import constants
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.entities import Price, insert
-from y._db.utils.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 

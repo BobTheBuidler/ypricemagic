@@ -9,9 +9,8 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 from web3.types import LogReceipt
 
-from y._db import entities, structs
+from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook
-from y._db.utils import decorators
 from y._db.utils.utils import ensure_block
 
 logger = logging.getLogger(__name__)

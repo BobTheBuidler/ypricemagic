@@ -7,9 +7,9 @@ from typing import Optional
 
 from brownie import chain
 
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
 from y._db.utils._ep import _get_get_block
-from y._db.utils.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached
 
 logger = logging.getLogger(__name__)
 

@@ -38,7 +38,7 @@ class Chain(db.Entity, _AsyncEntityMixin):
 
 class Block(db.Entity, _AsyncEntityMixin):
     chain = Required(Chain, reverse="blocks")
-    number = Required(int, lazy=True)
+    number = Required(int)
     PrimaryKey(chain, number)
     hash = Optional(int, lazy=True)
     timestamp = Optional(datetime, lazy=True)

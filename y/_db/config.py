@@ -1,7 +1,9 @@
 
-from y import ENVIRONMENT_VARIABLES as ENVS
+
 import errno
 from os import mkdir, path
+
+from y import ENVIRONMENT_VARIABLES as ENVS
 
 SQLITE_DIR = f"{path.expanduser( '~' )}/.ypricemagic"
 SQLITE_PATH = f"{SQLITE_DIR}/ypricemagic.sqlite"

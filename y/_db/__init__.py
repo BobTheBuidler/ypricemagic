@@ -16,6 +16,9 @@ def bind_db(db: Database, **connection_settings) -> None:
 def generate_mapping(db: Database) -> None:
     try:
         db.generate_mapping(create_tables=True)
+    except BindingError as e:
+        if str(e) != "Mapping was already generated":
+            raise e
     except DatabaseError as e:
         if "no such column: " in str(e) or ("column" in str(e) and " does not exist" in str(e)):
             from y._db.exceptions import NewDatabaseSchemaError

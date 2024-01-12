@@ -10,7 +10,7 @@ The functions in this file lets us do that.
 def _get_get_block():
     try:
         from eth_portfolio._db.utils import get_block
-    except ImportError:
+    except ModuleNotFoundError:
         from y._db.utils import get_block
     return get_block
     
@@ -18,6 +18,6 @@ def _get_get_block():
 def _get_get_token():
     try:
         from eth_portfolio._db.utils import get_token
-    except ImportError:
+    except ModuleNotFoundError:
         from y._db.utils.token import get_token
     return get_token

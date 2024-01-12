@@ -8,9 +8,9 @@ from brownie import chain, convert
 from pony.orm import commit
 
 from y import constants
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.entities import Address, Token, insert
 from y._db.utils._ep import _get_get_token
-from y._db.utils.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.utils.utils import ensure_chain
 from y.erc20 import decimals
 

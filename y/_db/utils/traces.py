@@ -7,12 +7,12 @@ import a_sync
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from dank_mids.semaphores import BlockSemaphore
 from msgspec import json
-from pony.orm import commit, db_session, select
+from pony.orm import commit, select
 
 from y._db.common import DiskCache, Filter, _clean_addresses, filter_threads
+from y._db.decorators import a_sync_write_db_session
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils._ep import _get_get_block
-from y._db.utils.decorators import a_sync_write_db_session
 from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
