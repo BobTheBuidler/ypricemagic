@@ -12,6 +12,7 @@ if not network.is_connected():
         raise NetworkNotSpecified('In order to use pricemagic outside of a brownie project directory, you will need to set $BROWNIE_NETWORK_ID environment variable with the id of your preferred brownie network connection.')
     network.connect(os.environ['BROWNIE_NETWORK_ID'])
 
+
 from y import time
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
@@ -73,6 +74,7 @@ __all__ = [
     'time',
 ]
 
-with suppress(ImportError):
+with suppress(ModuleNotFoundError):
     """If eth_portfolio is also installed in this env, we will use its extended version of our db schema"""
-    from eth_portfolio._db import utils
+    from eth_portfolio._db.entities import *
+    #from eth_portfolio._db import utils
