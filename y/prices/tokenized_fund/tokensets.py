@@ -38,7 +38,7 @@ class TokenSet(ERC20):
         components = await contract.getComponents.coroutine(block_identifier = block)
         return [ERC20(component, asynchronous=self.asynchronous) for component in components]
     
-    async def balances(self, block: Optional[Block] = None) -> List[WeiBalance]:
+    async def balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> List[WeiBalance]:
         contract = await Contract.coroutine(self.address)
         if hasattr(contract, 'getUnits'):
             balances = await contract.getUnits.coroutine(block_identifier = block)
@@ -49,17 +49,17 @@ class TokenSet(ERC20):
                 for component in await self.components(block, sync=False)
             ])
             logger.debug("getTotalComponentRealUnits: %s", balances)
-        balances = [WeiBalance(balance, component, block=block) for component, balance in zip(await self.components(block=block, sync=False), balances)]
+        balances = [WeiBalance(balance, component, block=block, skip_cache=skip_cache) for component, balance in zip(await self.components(block=block, sync=False), balances)]
         return balances
     
-    async def get_price(self, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         total_supply = Decimal(await self.total_supply_readable(block=block, sync=False))
         if total_supply == 0:
             logger.debug("total supply is 0, forcing price to $0")
             return UsdPrice(0)
         contract = await Contract.coroutine(self.address)
         if hasattr(contract, "getUnits"):
-            balances = await self.balances(block=block, sync=False)
+            balances = await self.balances(block=block, skip_cache=skip_cache, sync=False)
             values = await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in balances])
             logger.debug("balances: %s  values: %s", balances, values)
             tvl = sum(values)
