@@ -6,7 +6,7 @@ from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from msgspec import json
-from pony.orm import commit, db_session, select
+from pony.orm import ProgrammingError, commit, db_session, select
 from pony.orm.core import Query
 from web3.types import LogReceipt
 
@@ -53,7 +53,7 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
             "raw": json.encode(log, enc_hook=enc_hook),
         }
         items.append(item)
-    
+
     def _make_sqlable(value: Any) -> str:
         if value is None:
             return 'null'
@@ -72,8 +72,9 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
             raise NotImplementedError(type(value), value)
 
     def _build_item(item: dict) -> Tuple[str, ...]:
-        return "(" + ",".join(_make_sqlable(v) for v in item.values()) + ")"
-    
+        joined = ",".join(_make_sqlable(v) for v in item.values())
+        return joined if len(items) == 1 else f"({joined})"
+
     data = ",".join(_build_item(i) for i in items)
 
     if ENVS.DB_PROVIDER == 'sqlite':
@@ -83,8 +84,12 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
         sql = f'insert into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data} on conflict do nothing'
     else:
         raise NotImplementedError(ENVS.DB_PROVIDER)
-    
-    entities.db.execute(sql)
+
+    try:
+        entities.db.execute(sql)
+    except ProgrammingError as e:
+        if str(e) == "INSERT has more target columns than expressions":
+            raise ValueError(e, sql)
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
