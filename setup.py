@@ -21,4 +21,5 @@ setup(
     setup_requires=[
         'setuptools_scm',
     ],
+    package_data={'y': ['py.typed']},
 )
