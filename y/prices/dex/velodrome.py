@@ -97,7 +97,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
                 for i in range(all_pools_len - len(pools))
             }
             logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools.update((pool async for id, pool in a_sync.as_completed(pools_your_node_couldnt_get, aiter=True)))
+            pools.update([pool async for id, pool in a_sync.as_completed(pools_your_node_couldnt_get, aiter=True)])
 
         tokens = set()
         for pool in pools:
