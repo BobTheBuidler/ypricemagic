@@ -6,6 +6,7 @@ from typing import Optional, Tuple
 import a_sync
 from brownie import ZERO_ADDRESS, chain
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract, contract_creation_block_async
@@ -38,7 +39,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
         self, 
         token_address: Address, 
         block: Optional[Block],
-        ignore_pools: Tuple[Pool, ...] = (),
+        ignore_pools: Tuple[Pool, ...] = (),  # unused
+        skip_cache: bool = ENVS.SKIP_CACHE,  # unused
         ) -> Optional[UsdPrice]:
         exchange, usdc_exchange, decimals = await asyncio.gather(
             self.get_exchange(token_address, sync=False),
