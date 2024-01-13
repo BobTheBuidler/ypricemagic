@@ -1,24 +1,28 @@
 
 import logging
-from typing import List, Optional
+from typing import Any, List, Optional, Tuple
 
 from brownie import chain
 from brownie.convert import EthAddress
+from brownie.network.event import _EventItem
 from msgspec import json
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
+from psycopg2 import Binary
+from psycopg2.extras import execute_values
 from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook
 from y._db.utils.utils import ensure_block
+from y import ENVIRONMENT_VARIABLES as ENVS
 
 logger = logging.getLogger(__name__)
 
 
 @db_session
 @decorators.retry_locked
-def insert_log(log: dict):
+def insert_log(log: LogReceipt) -> None:
     block = log['blockNumber']
     ensure_block(block, sync=True)
     log_topics = log['topics']
@@ -31,6 +35,69 @@ def insert_log(log: dict):
         **{f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))},
         raw = json.encode(log, enc_hook=enc_hook),
     )
+
+@db_session
+@decorators.retry_locked
+def bulk_insert(logs: List[LogReceipt]) -> None:
+    items = []
+    for log in logs:
+        block = log['blockNumber']
+        ensure_block(block, sync=True)
+        log_topics = log['topics']
+        topics = {f"topic{i}": log_topics[i].hex() if i < len(log_topics) else None for i in range(4)}
+        item = {
+            "block_chain": chain.id,
+            "block_number": block,
+            "transaction_hash": log['transactionHash'].hex(),
+            "log_index": log['logIndex'],
+            "address": log['address'],
+            **topics,
+            "raw": json.encode(log, enc_hook=enc_hook),
+        }
+        items.append(item)
+    
+    def _make_sqlable(value: Any) -> str:
+        if value is None:
+            return 'null'
+        elif isinstance(value, bytes):
+            if ENVS.DB_PROVIDER == 'postgres':
+                #return f"E'\\x{value.hex()}"
+                return f"'{value.decode()}'::bytea"
+            elif ENVS.DB_PROVIDER == 'sqlite':
+                return f"X'{value.hex()}'"
+            raise NotImplementedError(ENVS.DB_PROVIDER)
+        elif isinstance(value, str):
+            return f"'{value}'"
+        elif isinstance(value, int):
+            return str(value)
+        else:
+            raise NotImplementedError(type(value), value)
+
+    def _build_item(item: dict) -> Tuple[str, ...]:
+        return "(" + ",".join(_make_sqlable(v) for v in item.values()) + ")"
+    
+    data = ",".join(_build_item(i) for i in items)
+
+    if ENVS.DB_PROVIDER == 'sqlite':
+        sql = f'insert or ignore into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data}'
+    elif ENVS.DB_PROVIDER == 'postgres':
+        data = f"({data})"
+        sql = f'insert into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data} on conflict do nothing'
+    else:
+        raise NotImplementedError(ENVS.DB_PROVIDER)
+    
+    entities.db.execute(sql)
+
+def get_decoded(log: structs.Log) -> _EventItem:
+    # TODO: load these in bulk
+    log = entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index]
+    if decoded := log.decoded:
+        return _EventItem(decoded['name'], decoded['address'], decoded['event_data'], decoded['pos'])
+
+@db_session
+@decorators.retry_locked
+def set_decoded(log: structs.Log, decoded: _EventItem):
+    entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index].decoded = decoded
 
 page_size = 100
 
