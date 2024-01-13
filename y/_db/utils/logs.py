@@ -1,17 +1,18 @@
 
 import logging
-from typing import Any, List, Iterable, Optional
+from typing import List, Optional
 
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from msgspec import json
-from pony.orm import ProgrammingError, commit, db_session, select
+from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook
+from y._db.utils import bulk
 from y._db.utils.utils import ensure_block
 from y import ENVIRONMENT_VARIABLES as ENVS
 
@@ -55,21 +56,27 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
         }
         items.append(item)
 
-    
-    blocks = ",".join(_build_row((chain.id, block)) for block in blocks)
-    data = ",".join(_build_row(i.values()) for i in items)
+    for block in blocks:
+        ensure_block(block, sync=True)
+    #bulk.insert(entities.Block, ["chain", "number"], ((chain.id, block) for block in blocks))
+    bulk.insert(entities.Log, ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"], items)
+
+    '''
+    blocks = ",".join(bulk.build_row((chain.id, block)) for block in blocks)
+    data = ",".join(bulk.build_row(i.values()) for i in items)
     if ENVS.DB_PROVIDER == 'sqlite':
         sql = f'insert or ignore into block(chain, number) values {blocks}'
-        _execute(sql)
+        bulk.execute(sql)
         sql = f'insert or ignore into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data}'
-        _execute(sql)
+        bulk.execute(sql)
     elif ENVS.DB_PROVIDER == 'postgres':
         sql = f'insert into block(chain, number) values {blocks} on conflict do nothing'
-        _execute(sql)
+        bulk.execute(sql)
         sql = f'insert into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data} on conflict do nothing'
-        _execute(sql)
+        bulk.execute(sql)
     else:
         raise NotImplementedError(ENVS.DB_PROVIDER)
+    '''
     logger.debug('inserted %s logs to ydb', len(items))
 
 def get_decoded(log: structs.Log) -> _EventItem:
@@ -247,40 +254,3 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
                 return (log for log in generator if getattr(log, topic) == value)
             return (log for log in generator if getattr(log, topic) in value)
         return generator
-
-
-
-def _execute(sql: str) -> None:
-    try:
-        entities.db.execute(sql)
-    except ProgrammingError as e:
-        raise ValueError(e, sql) from e
-
-def _stringify_column_value(value: Any) -> str:
-    if value is None:
-        return 'null'
-    elif isinstance(value, bytes):
-        if ENVS.DB_PROVIDER == 'postgres':
-            #return f"E'\\x{value.hex()}"
-            return f"'{value.decode()}'::bytea"
-        elif ENVS.DB_PROVIDER == 'sqlite':
-            return f"X'{value.hex()}'"
-        raise NotImplementedError(ENVS.DB_PROVIDER)
-    elif isinstance(value, str):
-        return f"'{value}'"
-    elif isinstance(value, int):
-        return str(value)
-    else:
-        raise NotImplementedError(type(value), value)
-        
-def _build_row(row: Iterable[Any]) -> str:
-    return f"({','.join(_stringify_column_value(col) for col in row)})"
-    
-def _bulk_insert(entity_type, columns, items: Iterable[Iterable[Any]]):
-    data = ",".join(_build_row(i) for i in items)
-    if ENVS.DB_PROVIDER == 'sqlite':
-        sql = f'insert or ignore into {entity_type.__name__.lower()} ({",".join(columns)}) values {data}'
-    elif ENVS.DB_PROVIDER == 'postgres':
-        sql = f'insert into {entity_type.__name__.lower()} ({",".join(columns)}) values {data} on conflict do nothing'
-    else:
-        raise NotImplementedError(ENVS.DB_PROVIDER)
