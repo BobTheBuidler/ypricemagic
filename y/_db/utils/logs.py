@@ -8,6 +8,8 @@ from brownie.network.event import _EventItem
 from msgspec import json
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
+from psycopg2 import Binary
+from psycopg2.extras import execute_values
 from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
