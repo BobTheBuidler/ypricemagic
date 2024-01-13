@@ -22,7 +22,7 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
     ensure_token(address)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
-    if price := Price.get(token = (chain.id, address), block = (chain.id, block)) and (price:=price.price):
+    if (price := Price.get(token = (chain.id, address), block = (chain.id, block))) and (price:=price.price):
         logger.debug("found %s block %s price %s in ydb", address, block, price)
         return price
 
