@@ -116,6 +116,11 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     @abc.abstractproperty
     def insert_to_db(self) -> Callable[[T], None]:
         ...
+    
+    #abc.abstractproperty
+    def bulk_insert(self) -> Callable[[List[T]], None]:
+        ...
+        
     def _extend(self, objs) -> None:
         """Override this to pre-process objects before storing."""
         return self._objects.extend(objs)
@@ -302,7 +307,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         depth = prev_task._depth + 1 if prev_task else 0
         logger.debug("%s queuing next db insert chunk %s thru block %s", self, depth, done_thru)
         task = asyncio.create_task(
-            coro = self.__insert_chunk([self.executor.run(self.insert_to_db, obj) for obj in objs], from_block, done_thru, prev_task, depth),
+            coro = self.__insert_chunk(objs, from_block, done_thru, prev_task, depth),
             name = f"_insert_chunk from {from_block} to {done_thru}",
         )
         task._depth = depth
@@ -320,11 +325,11 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
             raise e
         
     @stuck_coro_debugger
-    async def __insert_chunk(self, tasks: List[asyncio.Task], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task], depth: int) -> None:
+    async def __insert_chunk(self, objs: List[T], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task], depth: int) -> None:
         if prev_chunk_task:
             await prev_chunk_task
-        if tasks:
-            await asyncio.gather(*tasks)
+        if objs:
+            await self.executor.run(self.bulk_insert, objs)
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         logger.debug("%s chunk %s thru block %s is now in db", self, depth, done_thru)
     

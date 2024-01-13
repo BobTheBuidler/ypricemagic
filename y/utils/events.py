@@ -338,6 +338,11 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         from y._db.utils.logs import insert_log
         return insert_log
     
+    @property
+    def bulk_insert(self) -> Callable[[List[LogReceipt]], None]:
+        from y._db.utils.logs import bulk_insert
+        return bulk_insert
+    
     @async_property
     async def _from_block(self) -> int:
         if self.from_block is None:
