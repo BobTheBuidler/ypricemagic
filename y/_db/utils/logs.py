@@ -1,6 +1,6 @@
 
 import logging
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Iterable, Optional
 
 from brownie import chain
 from brownie.convert import EthAddress
@@ -38,9 +38,10 @@ def insert_log(log: LogReceipt) -> None:
 @decorators.retry_locked
 def bulk_insert(logs: List[LogReceipt]) -> None:
     items = []
+    blocks = set()
     for log in logs:
         block = log['blockNumber']
-        ensure_block(block, sync=True)
+        blocks.add(block)
         log_topics = log['topics']
         topics = {f"topic{i}": log_topics[i].hex() if i < len(log_topics) else None for i in range(4)}
         item = {
@@ -54,42 +55,22 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
         }
         items.append(item)
 
-    def _make_sqlable(value: Any) -> str:
-        if value is None:
-            return 'null'
-        elif isinstance(value, bytes):
-            if ENVS.DB_PROVIDER == 'postgres':
-                #return f"E'\\x{value.hex()}"
-                return f"'{value.decode()}'::bytea"
-            elif ENVS.DB_PROVIDER == 'sqlite':
-                return f"X'{value.hex()}'"
-            raise NotImplementedError(ENVS.DB_PROVIDER)
-        elif isinstance(value, str):
-            return f"'{value}'"
-        elif isinstance(value, int):
-            return str(value)
-        else:
-            raise NotImplementedError(type(value), value)
-
-    def _build_item(item: dict) -> Tuple[str, ...]:
-        joined = ",".join(_make_sqlable(v) for v in item.values())
-        return joined if len(items) == 1 else f"({joined})"
-
-    data = ",".join(_build_item(i) for i in items)
-
+    
+    blocks = ",".join(_build_row((chain.id, block)) for block in blocks)
+    data = ",".join(_build_row(i.values()) for i in items)
     if ENVS.DB_PROVIDER == 'sqlite':
+        sql = f'insert or ignore into block(chain, number) values {blocks}'
+        _execute(sql)
         sql = f'insert or ignore into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data}'
+        _execute(sql)
     elif ENVS.DB_PROVIDER == 'postgres':
-        data = f"({data})"
+        sql = f'insert into block(chain, number) values {blocks} on conflict do nothing'
+        _execute(sql)
         sql = f'insert into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data} on conflict do nothing'
+        _execute(sql)
     else:
         raise NotImplementedError(ENVS.DB_PROVIDER)
-
-    try:
-        entities.db.execute(sql)
-    except ProgrammingError as e:
-        if str(e) == "INSERT has more target columns than expressions":
-            raise ValueError(e, sql)
+    logger.debug('inserted %s logs to ydb', len(items))
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
@@ -266,3 +247,40 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
                 return (log for log in generator if getattr(log, topic) == value)
             return (log for log in generator if getattr(log, topic) in value)
         return generator
+
+
+
+def _execute(sql: str) -> None:
+    try:
+        entities.db.execute(sql)
+    except ProgrammingError as e:
+        raise ValueError(e, sql) from e
+
+def _stringify_column_value(value: Any) -> str:
+    if value is None:
+        return 'null'
+    elif isinstance(value, bytes):
+        if ENVS.DB_PROVIDER == 'postgres':
+            #return f"E'\\x{value.hex()}"
+            return f"'{value.decode()}'::bytea"
+        elif ENVS.DB_PROVIDER == 'sqlite':
+            return f"X'{value.hex()}'"
+        raise NotImplementedError(ENVS.DB_PROVIDER)
+    elif isinstance(value, str):
+        return f"'{value}'"
+    elif isinstance(value, int):
+        return str(value)
+    else:
+        raise NotImplementedError(type(value), value)
+        
+def _build_row(row: Iterable[Any]) -> str:
+    return f"({','.join(_stringify_column_value(col) for col in row)})"
+    
+def _bulk_insert(entity_type, columns, items: Iterable[Iterable[Any]]):
+    data = ",".join(_build_row(i) for i in items)
+    if ENVS.DB_PROVIDER == 'sqlite':
+        sql = f'insert or ignore into {entity_type.__name__.lower()} ({",".join(columns)}) values {data}'
+    elif ENVS.DB_PROVIDER == 'postgres':
+        sql = f'insert into {entity_type.__name__.lower()} ({",".join(columns)}) values {data} on conflict do nothing'
+    else:
+        raise NotImplementedError(ENVS.DB_PROVIDER)
