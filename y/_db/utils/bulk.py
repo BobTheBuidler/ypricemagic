@@ -4,6 +4,7 @@ from pony.orm import ProgrammingError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db import entities
+from y._db.decorators import a_sync_write_db_session
 
 def execute(sql: str) -> None:
     try:
@@ -30,12 +31,13 @@ def stringify_column_value(value: Any) -> str:
         
 def build_row(row: Iterable[Any]) -> str:
     return f"({','.join(stringify_column_value(col) for col in row)})"
-    
+
+@a_sync_write_db_session
 def insert(entity_type: entities.db.Entity, columns: Iterable[str], items: Iterable[Iterable[Any]]):
     data = ",".join(build_row(i) for i in items)
     if ENVS.DB_PROVIDER == 'sqlite':
-        sql = f'insert or ignore into {entity_type.__name__.lower()} ({",".join(columns)}) values {data}'
+        execute(f'insert or ignore into {entity_type.__name__.lower()} ({",".join(columns)}) values {data}')
     elif ENVS.DB_PROVIDER == 'postgres':
-        sql = f'insert into {entity_type.__name__.lower()} ({",".join(columns)}) values {data} on conflict do nothing'
+        execute(f'insert into {entity_type.__name__.lower()} ({",".join(columns)}) values {data} on conflict do nothing')
     else:
         raise NotImplementedError(ENVS.DB_PROVIDER)
