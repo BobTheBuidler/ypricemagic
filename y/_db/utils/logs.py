@@ -56,10 +56,11 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
         }
         items.append(item)
 
+    # TODO: replace this with bulk insert for big data projects
     for block in blocks:
         ensure_block(block, sync=True)
     #bulk.insert(entities.Block, ["chain", "number"], ((chain.id, block) for block in blocks))
-    bulk.insert(entities.Log, ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"], items)
+    bulk.insert(entities.Log, ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"], items, sync=True)
 
     '''
     blocks = ",".join(bulk.build_row((chain.id, block)) for block in blocks)
