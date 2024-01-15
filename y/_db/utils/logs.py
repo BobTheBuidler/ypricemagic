@@ -62,6 +62,7 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
     #bulk.insert(entities.Block, ["chain", "number"], ((chain.id, block) for block in blocks))
     columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
     bulk.insert(entities.Log, columns, [tuple(i.values) for i in items], sync=True)
+    commit()
     logger.debug('inserted %s logs to ydb', len(items))
 
 def get_decoded(log: structs.Log) -> _EventItem:
