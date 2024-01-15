@@ -1,6 +1,6 @@
 
 import logging
-from typing import Any, List, Optional, Tuple
+from typing import List, Optional
 
 from brownie import chain
 from brownie.convert import EthAddress
@@ -12,6 +12,7 @@ from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook
+from y._db.utils import bulk
 from y._db.utils.utils import ensure_block
 from y import ENVIRONMENT_VARIABLES as ENVS
 
@@ -38,9 +39,10 @@ def insert_log(log: LogReceipt) -> None:
 @decorators.retry_locked
 def bulk_insert(logs: List[LogReceipt]) -> None:
     items = []
+    blocks = set()
     for log in logs:
         block = log['blockNumber']
-        ensure_block(block, sync=True)
+        blocks.add(block)
         log_topics = log['topics']
         topics = {f"topic{i}": log_topics[i].hex() if i < len(log_topics) else None for i in range(4)}
         item = {
@@ -53,38 +55,15 @@ def bulk_insert(logs: List[LogReceipt]) -> None:
             "raw": json.encode(log, enc_hook=enc_hook),
         }
         items.append(item)
-    
-    def _make_sqlable(value: Any) -> str:
-        if value is None:
-            return 'null'
-        elif isinstance(value, bytes):
-            if ENVS.DB_PROVIDER == 'postgres':
-                #return f"E'\\x{value.hex()}"
-                return f"'{value.decode()}'::bytea"
-            elif ENVS.DB_PROVIDER == 'sqlite':
-                return f"X'{value.hex()}'"
-            raise NotImplementedError(ENVS.DB_PROVIDER)
-        elif isinstance(value, str):
-            return f"'{value}'"
-        elif isinstance(value, int):
-            return str(value)
-        else:
-            raise NotImplementedError(type(value), value)
 
-    def _build_item(item: dict) -> Tuple[str, ...]:
-        return "(" + ",".join(_make_sqlable(v) for v in item.values()) + ")"
-    
-    data = ",".join(_build_item(i) for i in items)
-
-    if ENVS.DB_PROVIDER == 'sqlite':
-        sql = f'insert or ignore into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data}'
-    elif ENVS.DB_PROVIDER == 'postgres':
-        data = f"({data})"
-        sql = f'insert into log(block_chain, block_number, transaction_hash, log_index, address, topic0, topic1, topic2, topic3, raw) values {data} on conflict do nothing'
-    else:
-        raise NotImplementedError(ENVS.DB_PROVIDER)
-    
-    entities.db.execute(sql)
+    # TODO: replace this with bulk insert for big data projects
+    for block in blocks:
+        ensure_block(block, sync=True)
+    #bulk.insert(entities.Block, ["chain", "number"], ((chain.id, block) for block in blocks))
+    columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
+    bulk.insert(entities.Log, columns, [tuple(i.values()) for i in items], sync=True)
+    commit()
+    logger.debug('inserted %s logs to ydb', len(items))
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
