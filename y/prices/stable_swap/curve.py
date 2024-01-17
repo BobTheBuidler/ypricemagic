@@ -11,7 +11,7 @@ import a_sync
 import brownie
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
-from brownie.exceptions import ContractNotFound
+from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -101,7 +101,10 @@ class RegistryEvents(CurveEvents):
     def _process_event(self, event: _EventItem) -> None:
         if event.name == 'PoolAdded':
             # TODO async this
-            pool = event['pool']
+            try:
+                pool = event['pool']
+            except EventLookupError:
+                pool = event['newPool']
             self._tasks.append(asyncio.create_task(coro=self._add_pool(pool), name=f"Registry._add_pool for pool {pool}"))
             self.registry.curve.registries[event.address].add(pool)
         elif event.name == 'PoolRemoved':
