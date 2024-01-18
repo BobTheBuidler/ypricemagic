@@ -12,6 +12,7 @@ from a_sync.primitives.executor import (PruningThreadPoolExecutor,
                                         _AsyncExecutorMixin)
 from a_sync.primitives.locks.counter import CounterLock
 from async_property import async_property
+from brownie import ZERO_ADDRESS
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
@@ -334,10 +335,14 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         logger.debug("%s chunk %s thru block %s is now in db", self, depth, done_thru)
     
 def _clean_addresses(addresses) -> Union[str, List[str]]:
+    if addresses == ZERO_ADDRESS:
+        raise ValueError("Cannot make a LogFilter for the zero address")
     if not addresses:
         return addresses
     if isinstance(addresses, str):
         return convert.to_address(addresses)
     elif hasattr(addresses, '__iter__'):
+        if ZERO_ADDRESS in addresses:
+            raise ValueError("Cannot make a LogFilter for the zero address")
         return [convert.to_address(address) for address in addresses]
     return convert.to_address(addresses)
