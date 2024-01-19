@@ -28,3 +28,6 @@ class NewDatabaseSchemaError(yDBError):
             confirmation_prompt=True, 
             show_default=False,
         ) == "yes"
+
+class EEEError(ValueError):
+    """raised when trying to do stuff with the eee address in the token db"""
