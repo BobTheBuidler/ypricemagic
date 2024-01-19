@@ -34,6 +34,7 @@ _special_routers = {
     "velodrome v1": SolidlyRouter,
     "velodrome v2": VelodromeRouterV2,
     "aerodrome": VelodromeRouterV2,
+    "ramses": SolidlyRouter,
 }
 
 Uniswap = Union[UniswapV1, UniswapRouterV2, UniswapV3]
