@@ -552,8 +552,8 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         await self.address_provider
         logger.debug("curve address provider events loaded, now loading factories and pools")
         # NOTE: Gnosis chain's address provider fails to provide registry via events. Maybe other chains as well.
-        if not self.identifiers[Ids.Main_Registry]:
-            self.identifiers[Ids.Main_Registry] = [await self.address_provider.get_registry()]
+        if not self.identifiers[Ids.Main_Registry] and (registry := await self.address_provider.get_registry()) != ZERO_ADDRESS:
+            self.identifiers[Ids.Main_Registry] = [registry]
         while True:
             # Check if any registries were updated, then ensure all old and new are loaded
             await asyncio.gather(*[
