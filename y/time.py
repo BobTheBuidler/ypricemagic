@@ -4,8 +4,8 @@ import logging
 import time
 from typing import Union
 
+import a_sync
 import eth_retry
-from a_sync import a_sync
 from async_lru import alru_cache
 from brownie import chain, web3
 from cachetools.func import ttl_cache
@@ -40,7 +40,7 @@ def get_block_timestamp(height: int) -> int:
     db.set_block_timestamp(height, ts, sync=True)
     return ts
 
-@a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
 @eth_retry.auto_retry
 async def get_block_timestamp_async(height: int) -> int:
     import y._db.utils.utils as db
@@ -86,7 +86,7 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     return block
 
 
-@a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
 async def get_block_at_timestamp(timestamp: datetime) -> int:
     import y._db.utils.utils as db
     if block_at_timestamp := await db.get_block_at_timestamp(timestamp):
@@ -124,7 +124,7 @@ def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed
     logger.debug('closest %s block after timestamp %s -> %s', Network.name(), timestamp, block)
     return block
 
-@a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
 async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_block_if_needed: bool = False) -> int:
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:

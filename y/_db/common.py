@@ -7,10 +7,7 @@ from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
 
 import a_sync
 import eth_retry
-from a_sync.iter import ASyncIterable
-from a_sync.primitives.executor import (PruningThreadPoolExecutor,
-                                        _AsyncExecutorMixin)
-from a_sync.primitives.locks.counter import CounterLock
+from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
 from dank_mids.semaphores import BlockSemaphore
@@ -33,7 +30,7 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-filter_threads = PruningThreadPoolExecutor(16)
+filter_threads = a_sync.PruningThreadPoolExecutor(16)
 
 def enc_hook(obj: Any) -> bytes:
     if isinstance(obj, AttributeDict):
@@ -140,8 +137,10 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
             logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return None
+
+_E = TypeVar("_E", bound=_AsyncExecutorMixin)
     
-class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
+class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
     __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_sleep_time', '_task', '_verbose'
     def __init__(
         self, 
@@ -159,7 +158,7 @@ class Filter(ASyncIterable[T], _DiskCachedMixin[T, C]):
         self._chunk_size = chunk_size
         self._chunks_per_batch = chunks_per_batch
         self._exc = None
-        self._lock = CounterLock()
+        self._lock = a_sync.CounterLock()
         self._db_task = None
         self._semaphore = semaphore
         self._sleep_fut = None

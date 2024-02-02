@@ -1,7 +1,7 @@
-import logging
+
 import os
 
-from a_sync.primitives import PruningThreadPoolExecutor
+import a_sync
 from brownie import Contract as _Contract
 from brownie import chain
 
@@ -203,6 +203,6 @@ WRAPPED_GAS_COIN = {
     Network.Base:               "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
 
-thread_pool_executor = PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 32)))
+thread_pool_executor = a_sync.PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 32)))
 
 BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999

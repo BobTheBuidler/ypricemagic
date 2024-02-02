@@ -10,7 +10,6 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 
 import a_sync
 import eth_retry
-from a_sync.iter import ASyncIterable
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
@@ -380,7 +379,7 @@ class Events(LogFilter):
     def _get_block_for_obj(self, obj: _EventItem) -> int:
         return obj.block_number
 
-class ProcessedEvents(Events, ASyncIterable[T]):
+class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     __slots__ = []
     def _include_event(self, event: _EventItem) -> bool:
         """Override this to exclude specific events from processing and collection."""
