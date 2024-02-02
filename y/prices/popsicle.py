@@ -42,7 +42,7 @@ async def get_balances(token: AnyAddressType, block: Optional[Block] = None, ski
     address = convert.to_address(token)
     methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
     try:
-        token0, token1, (balance0, balance1) = await asyncio.gather(*[Call(address, method, block_id=block).coroutine() for method in methods])
+        token0, token1, (balance0, balance1) = await asyncio.gather(*[Call(address, method, block_id=block) for method in methods])
     except Exception as e:
         if call_reverted(e):
             return None

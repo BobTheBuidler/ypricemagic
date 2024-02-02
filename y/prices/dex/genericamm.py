@@ -13,12 +13,14 @@ from y.decorators import stuck_coro_debugger
 from y.exceptions import ContractNotVerified, MessedUpBrownieContract
 from y.utils.cache import memory
 
+_CHECK_METHODS = 'getReserves','token0','token1'
+_TOKEN_METHODS = 'token0()(address)', 'token1()(address)'
 
 @memory.cache()
 def is_generic_amm(lp_token_address: AnyAddressType) -> bool:
     try:
         token_contract = Contract(lp_token_address)
-        return all(hasattr(token_contract, attr) for attr in ['getReserves','token0','token1'])
+        return all(hasattr(token_contract, attr) for attr in _CHECK_METHODS)
     except (ContractNotFound, ContractNotVerified):
         return False
     except MessedUpBrownieContract:
@@ -47,11 +49,8 @@ class GenericAmm(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type='memory')
     async def get_tokens(self, lp_token_address: AnyAddressType) -> Tuple[ERC20,ERC20]:
-        tokens = await asyncio.gather(
-            Call(lp_token_address, ['token0()(address)']).coroutine(),
-            Call(lp_token_address, ['token1()(address)']).coroutine(),
-        )
-        return ERC20(tokens[0]), ERC20(tokens[1])
+        tokens = await asyncio.gather(*[Call(lp_token_address, [method]) for method in _TOKEN_METHODS])
+        return tuple(ERC20(token, asynchronous=self.asynchronous) for token in tokens)
     
     @stuck_coro_debugger
     async def get_tvl(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:

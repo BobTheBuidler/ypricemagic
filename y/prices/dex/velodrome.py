@@ -18,8 +18,9 @@ from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils.dank_mids import dank_w3
 from y.utils.raw_calls import raw_call
 
-logger = logging.getLogger(__name__)
+_INIT_METHODS = 'token0()(address)', 'token1()(address)', 'stable()(bool)'
 
+logger = logging.getLogger(__name__)
 
 class NoReservesError(Exception):
     pass
@@ -158,11 +159,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         if pool is None: # TODO: debug why this happens sometimes
             factory = await Contract.coroutine(self.factory)
             pool = await factory.allPools(poolid)
-        token0, token1, stable = await asyncio.gather(
-            Call(pool, ['token0()(address)']).coroutine(),
-            Call(pool, ['token1()(address)']).coroutine(),
-            Call(pool, ['stable()(bool)']).coroutine(),
-        )
+        token0, token1, stable = await asyncio.gather(*[Call(pool, method) for method in _INIT_METHODS])
         return VelodromePool(
             address=pool,
             token0=token0,

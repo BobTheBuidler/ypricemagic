@@ -14,15 +14,14 @@ from y.datatypes import Block, UsdPrice
 @a_sync.a_sync(default='sync')
 async def is_basketdao_index(address: EthAddress) -> bool:
     try:
-        if await Call(address, 'getAssetsAndBalances()(address[],uint[])').coroutine():
-            return True
-    except:
+        return await Call(address, 'getAssetsAndBalances()(address[],uint[])')
+    except ValueError:
         return False
 
 @a_sync.a_sync(default='sync')
 async def get_price(address: EthAddress, block: Optional[Block] = None) -> UsdPrice:
     balances, total_supply = await asyncio.gather(
-        Call(address, 'getAssetsAndBalances()(address[],uint[])',block_id=block).coroutine(),
+        Call(address, 'getAssetsAndBalances()(address[],uint[])',block_id=block),
         ERC20(address, asynchronous=True).total_supply_readable(block=block),
     )
 

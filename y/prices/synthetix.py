@@ -57,21 +57,19 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         return synths
         
     async def is_synth(self, token: AnyAddressType) -> bool:
-        """
-        Check if a token is a synth.
-        """
+        """returns `True` if a `token` is a synth, `False` if not"""
         token = convert.to_address(token)
         if await synthetix.get_currency_key(token, sync=False):
             return True
         if await has_method(token, 'target()(address)', sync=False):
-            target = await Call(token, 'target()(address)').coroutine()
-            return target in await synthetix.synths and await Call(target, 'proxy()(address)').coroutine() == token
+            target = await Call(token, 'target()(address)')
+            return target in await synthetix.synths and await Call(target, 'proxy()(address)') == token
         return False
     
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
-        target = await Call(token, ['target()(address)']).coroutine() if await has_method(token, 'target()(address)', sync=False) else token
-        return await Call(target, ['currencyKey()(bytes32)']).coroutine() if await has_method(token, 'currencyKey()(bytes32)', sync=False) else None
+        target = await Call(token, ['target()(address)']) if await has_method(token, 'target()(address)', sync=False) else token
+        return await Call(target, ['currencyKey()(bytes32)']) if await has_method(token, 'currencyKey()(bytes32)', sync=False) else None
     
     async def get_price(self, token: AnyAddressType, block: Optional[Block] = None) -> Optional[UsdPrice]:
         """
