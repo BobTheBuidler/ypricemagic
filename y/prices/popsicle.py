@@ -11,6 +11,9 @@ from y.classes.common import ERC20, WeiBalance
 from y.contracts import has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
+from y.utils import gather_methods
+
+_RESERVES_METHODS = 'token0()(address)', 'token1()(address)', 'usersAmounts()((uint,uint))'
 
 logger = logging.getLogger(__name__)
 
@@ -39,10 +42,8 @@ async def get_tvl(token: AnyAddressType, block: Optional[Block] = None, skip_cac
 
 @a_sync.a_sync(default='sync')
 async def get_balances(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE, _async_balance_objects: bool = False) -> Optional[Tuple[WeiBalance,WeiBalance]]:
-    address = convert.to_address(token)
-    methods = 'token0()(address)','token1()(address)','usersAmounts()((uint,uint))'
     try:
-        token0, token1, (balance0, balance1) = await asyncio.gather(*[Call(address, method, block_id=block) for method in methods])
+        token0, token1, (balance0, balance1) = await gather_methods(convert.to_address(token), _RESERVES_METHODS, block=block)
     except Exception as e:
         if call_reverted(e):
             return None

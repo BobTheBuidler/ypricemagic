@@ -44,10 +44,7 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
 
 async def get_tvl(pie_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
     tokens: List[ERC20]
-    pool, tokens = await asyncio.gather(
-        get_bpool(pie_address, block),
-        get_tokens(pie_address, block),
-    )
+    pool, tokens = await asyncio.gather(get_bpool(pie_address, block), get_tokens(pie_address, block))
     token_balances, token_scales, prices = await asyncio.gather(
         asyncio.gather(*[Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block) for token in tokens]),
         asyncio.gather(*[token.__scale__(sync=False) for token in tokens]),

@@ -15,6 +15,7 @@ from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
+from y.utils import gather_methods
 from y.utils.dank_mids import dank_w3
 from y.utils.raw_calls import raw_call
 
@@ -159,7 +160,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         if pool is None: # TODO: debug why this happens sometimes
             factory = await Contract.coroutine(self.factory)
             pool = await factory.allPools(poolid)
-        token0, token1, stable = await asyncio.gather(*[Call(pool, method) for method in _INIT_METHODS])
+        token0, token1, stable = await gather_methods(pool, _INIT_METHODS)
         return VelodromePool(
             address=pool,
             token0=token0,
