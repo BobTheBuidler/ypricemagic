@@ -403,7 +403,7 @@ async def probe(
     return_method: bool = False
 ) -> Any:
     address = convert.to_address(address)
-    reults = await gather_methods(address, methods, block=block, return_exceptions=True)
+    results = await gather_methods(address, methods, block=block, return_exceptions=True)
     logger.debug('probe results: %s', results)
     results = [(method, result) for method, result in zip(methods, results) if not isinstance(result, Exception) and result is not None]
     if len(results) not in [1,0]:
