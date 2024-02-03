@@ -157,6 +157,7 @@ ACCEPTABLE_HIGH_PRICES = {
     Network.Base: [
         # eth and eth-like
         "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", # cbeth
+        "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452", # wsteth
         # btc and btc-like
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b", # tbtc
     ],
