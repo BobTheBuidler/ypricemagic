@@ -163,11 +163,12 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def pools(self) -> List[AaveMarket]:
-        return sum(await asyncio.gather(
+        v1, v2, v3 = await asyncio.gather(
             self.__pools_v1__(sync=False),
             self.__pools_v2__(sync=False), 
             self.__pools_v3__(sync=False),
-        ))
+        )
+        return v1 + v2 + v3
     
     @a_sync.aka.cached_property
     async def pools_v1(self) -> List[AaveMarketV1]:
