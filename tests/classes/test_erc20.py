@@ -65,7 +65,7 @@ async def test_erc20_at_block(token, block):
 
     # NOTE Some proxy tokens would fail tests in early days because no implementation is specified.
     try:
-        if await Call(token.address, 'implementation()(address)', [['imp',None]], block_id = block).coroutine() == ZERO_ADDRESS:
+        if await Call(token.address, 'implementation()(address)', block_id = block) == ZERO_ADDRESS:
             pytest.skip(f"Not applicable to proxy contracts with implementation not set.")
     except Exception as e:
         if not call_reverted(e):

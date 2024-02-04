@@ -31,9 +31,7 @@ async def get_price(pie: AnyAddressType, block: Optional[Block] = None, skip_cac
     return UsdPrice(tvl / total_supply)
 
 async def get_tokens(pie_address: Address, block: Optional[Block] = None) -> List[ERC20]:
-    tokens = await Call(pie_address, ['getTokens()(address[])'], [['tokens',None]], block_id=block).coroutine()
-    tokens = tokens['tokens']
-    return [ERC20(t) for t in tokens]
+    return [ERC20(t) for t in await Call(pie_address, ['getTokens()(address[])'], block_id=block)]
 
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
     try:
@@ -46,12 +44,9 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
 
 async def get_tvl(pie_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
     tokens: List[ERC20]
-    pool, tokens = await asyncio.gather(
-        get_bpool(pie_address, block),
-        get_tokens(pie_address, block),
-    )
+    pool, tokens = await asyncio.gather(get_bpool(pie_address, block), get_tokens(pie_address, block))
     token_balances, token_scales, prices = await asyncio.gather(
-        asyncio.gather(*[Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block).coroutine() for token in tokens]),
+        asyncio.gather(*[Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block) for token in tokens]),
         asyncio.gather(*[token.__scale__(sync=False) for token in tokens]),
         magic.get_prices(tokens, block, skip_cache=skip_cache, sync=False),
     )

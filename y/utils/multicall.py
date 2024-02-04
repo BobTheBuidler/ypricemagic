@@ -59,8 +59,8 @@ async def multicall_same_func_no_input(
     ) -> List[Any]:
 
     addresses = _clean_addresses(addresses)
-    results = await asyncio.gather(*[Call(address, [method], [[address,apply_func]], block_id=block).coroutine() for address in addresses])
-    return [v for call in results for k, v in call.items()]
+    results = await asyncio.gather(*[Call(address, [method], [[address, apply_func]], block_id=block) for address in addresses])
+    return [v for call in results for v in call.values()]
 
 
 @a_sync.a_sync(default='sync')
@@ -76,7 +76,7 @@ async def multicall_same_func_same_contract_different_inputs(
     assert inputs
     address = convert.to_address(address)
     results = await asyncio.gather(
-        *[Call(address, [method, input], [[input, apply_func]], block_id=block).coroutine() for input in inputs],
+        *[Call(address, [method, input], [[input, apply_func]], block_id=block) for input in inputs],
         return_exceptions=return_None_on_failure,
     )
     if return_None_on_failure:
@@ -84,7 +84,7 @@ async def multicall_same_func_same_contract_different_inputs(
             if isinstance(result, Exception):
                 continue_if_call_reverted(result)
                 results[i] = {i: None}
-    return [result for call in results for key, result in call.items()]
+    return [result for call in results for result in call.values()]
 
 
 @a_sync.a_sync(default='sync')
@@ -96,7 +96,7 @@ async def multicall_decimals(
     ) -> List[int]:
 
     try: 
-        return await asyncio.gather(*[Call(str(address), ['decimals()(uint256)'], block_id=block).coroutine() for address in addresses])
+        return await asyncio.gather(*[Call(str(address), ['decimals()(uint256)'], block_id=block) for address in addresses])
     except (CannotHandleRequest, InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:

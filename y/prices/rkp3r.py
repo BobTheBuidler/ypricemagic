@@ -4,7 +4,7 @@ import logging
 from decimal import Decimal
 from typing import Optional
 
-from a_sync import a_sync
+import a_sync
 from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -21,7 +21,7 @@ RKP3R = "0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9"
 def is_rkp3r(address: Address) -> bool:
     return chain.id == Network.Mainnet and address == RKP3R
 
-@a_sync(default="sync")
+@a_sync.a_sync(default="sync")
 async def get_price(address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Decimal:
     price, discount = await asyncio.gather(magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False), get_discount(block))
     return Decimal(price) * (100 - discount) / 100

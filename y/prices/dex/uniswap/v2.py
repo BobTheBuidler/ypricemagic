@@ -84,7 +84,7 @@ class UniswapV2Pool(ERC20):
     async def token0(self) -> ERC20:
         if self._token0 is None:
             try:
-                if token0 := await Call(self.address, ['token0()(address)']).coroutine():
+                if token0 := await Call(self.address, ['token0()(address)']):
                     self._token0 = ERC20(token0, asynchronous=self.asynchronous)
             except ValueError as e:
                 continue_if_call_reverted(e)
@@ -96,7 +96,7 @@ class UniswapV2Pool(ERC20):
     async def token1(self) -> ERC20:
         if self._token1 is None:
             try:
-                if token1 := await Call(self.address, ['token1()(address)']).coroutine():
+                if token1 := await Call(self.address, ['token1()(address)']):
                     self._token1 = ERC20(token1, asynchronous=self.asynchronous)
             except ValueError as e:
                 continue_if_call_reverted(e)

@@ -10,7 +10,6 @@ from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 import a_sync
 import brownie
 import eth_retry
-from a_sync.primitives import PruningThreadPoolExecutor, ThreadsafeSemaphore
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.network.contract import (ContractEvents, _add_deployment,
@@ -34,10 +33,11 @@ from y.time import check_node, check_node_async
 from y.utils.cache import memory
 from y.utils.dank_mids import dank_w3
 from y.utils.events import Events
+from y.utils.gather import gather_methods
 
 logger = logging.getLogger(__name__)
 
-contract_threads = PruningThreadPoolExecutor(16)
+contract_threads = a_sync.PruningThreadPoolExecutor(16)
 
 # cached Contract instance, saves about 20ms of init time
 _contract_lock = threading.Lock()
@@ -118,7 +118,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 get_code = eth_retry.auto_retry(dank_w3.eth.get_code)
-creation_block_semaphore = ThreadsafeSemaphore(10)
+creation_block_semaphore = a_sync.ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
 @stuck_coro_debugger
@@ -138,7 +138,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     height = await dank_w3.eth.block_number
 
     if height == 0:
-        raise NodeNotSynced(f'''
+        raise NodeNotSynced('''
             `chain.height` returns 0 on your node, which means it is not fully synced.
             You can only use this function on a fully synced node.''')
     
@@ -182,7 +182,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
 
 
 # this defaultdict prevents congestion in the contracts thread pool
-address_semaphores = defaultdict(lambda: ThreadsafeSemaphore(1))
+address_semaphores = defaultdict(lambda: a_sync.ThreadsafeSemaphore(1))
 
 class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
@@ -362,7 +362,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
     '''
     address = convert.to_address(address)
     try:
-        response = await Call(address, [method]).coroutine()
+        response = await Call(address, [method])
         return False if response is None else response if return_response else True
     except Exception as e:
         if call_reverted(e):
@@ -385,7 +385,7 @@ async def has_methods(
 
     address = convert.to_address(address)
     try:
-        return _func([result is not None for result in await asyncio.gather(*[Call(address, [method]).coroutine() for method in methods])])
+        return _func([result is not None for result in await gather_methods(address, methods)])
     except Exception as e:
         if not call_reverted(e): raise # and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
@@ -403,7 +403,7 @@ async def probe(
     return_method: bool = False
 ) -> Any:
     address = convert.to_address(address)
-    results = await asyncio.gather(*[Call(address, [method], block_id=block).coroutine() for method in methods], return_exceptions=True)
+    results = await gather_methods(address, methods, block=block, return_exceptions=True)
     logger.debug('probe results: %s', results)
     results = [(method, result) for method, result in zip(methods, results) if not isinstance(result, Exception) and result is not None]
     if len(results) not in [1,0]:

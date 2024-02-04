@@ -3,8 +3,6 @@ from typing import AsyncIterator, Optional
 
 import a_sync
 from y import time
-from a_sync.base import ASyncGenericBase
-from a_sync.future import ASyncFuture
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from brownie.network.event import _EventItem
@@ -190,12 +188,12 @@ class Feed:
     
     #@a_sync.future
     async def decimals(self) -> int:
-        return await Call(self.address, ['decimals()(uint)'], []).coroutine()
+        return await Call(self.address, ['decimals()(uint)'], [])
 
     #@a_sync.future(cache_type='memory')
     @alru_cache(maxsize=None)
     async def scale(self) -> Optional[int]:
-        return await (10 ** ASyncFuture(self.decimals()))
+        return await (10 ** a_sync.ASyncFuture(self.decimals()))
 
     #@a_sync.future
     async def get_price(self, block: Optional[int]) -> Optional[UsdPrice]:
@@ -205,7 +203,7 @@ class Feed:
             return None
         latest_answer = self.latest_answer(block_id=block)
         # NOTE: just playing with smth here
-        scale = ASyncFuture(self.scale())
+        scale = a_sync.ASyncFuture(self.scale())
         price = latest_answer / scale
         price = UsdPrice(await price)
         logger.debug('latest_answer: %s', await latest_answer)
@@ -226,7 +224,7 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
         return obj.start_block
     
 
-class Chainlink(ASyncGenericBase):
+class Chainlink(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = True) -> None:
         self.asynchronous = asynchronous
         self._feeds = [Feed(feed, asset, asynchronous=self.asynchronous) for asset, feed in FEEDS.items()]

@@ -137,7 +137,7 @@ class BalancerV2Pool(ERC20):
     @a_sync.aka.property
     async def id(self) -> PoolId:
         if self._id is None:
-            self._id = asyncio.create_task(coro=Call(self.address, ['getPoolId()(bytes32)']).coroutine(), name=f"pool.id for {self}")
+            self._id = a_sync.create_task(Call(self.address, ['getPoolId()(bytes32)']), name=f"pool.id for {self}")
         if hasattr(self._id, "__await__"):
             self._id = PoolId(await self._id)
         return self._id
