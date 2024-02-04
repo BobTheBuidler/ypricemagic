@@ -1,10 +1,10 @@
 
-import asyncio
 import logging
 from contextlib import suppress
 from decimal import Decimal, InvalidOperation
-from typing import List, Optional
+from typing import Optional
 
+import a_sync
 from brownie import chain
 
 from y import constants
@@ -26,12 +26,12 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
         logger.debug("found %s block %s price %s in ydb", address, block, price)
         return price
 
-async def set_price(address: str, block: int, price: Decimal) -> None:
-    _tasks.append(asyncio.create_task(coro=_set_price(address, block, price), name=f"set_price {price} for {address} at {block}"))
-    for t in _tasks[:]:
-        if t.done():
-            await t
-            _tasks.remove(t)
+def set_price(address: str, block: int, price: Decimal) -> None:
+    a_sync.create_task(
+        coro=_set_price(address, block, price), 
+        name=f"set_price {price} for {address} at {block}", 
+        skip_gc_until_done=True,
+    )
 
 @a_sync_write_db_session
 def _set_price(address: str, block: int, price: Decimal) -> None:
@@ -47,5 +47,3 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
             price = Decimal(price),
         )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
-        
-_tasks: List[asyncio.Task] = []

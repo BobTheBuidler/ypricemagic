@@ -2,6 +2,7 @@
 import logging
 from typing import Optional
 
+import a_sync
 from brownie import chain
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
 from y._db.utils._ep import _get_get_token
@@ -18,8 +19,15 @@ def get_deploy_block(address: str) -> Optional[int]:
         return deploy_block.number
     logger.debug('%s deploy block not cached, fetching from chain', address)
 
-@a_sync_write_db_session
 def set_deploy_block(address: str, deploy_block: int) -> None:
+    a_sync.create_task(
+        coro=_set_deploy_block(address, deploy_block),
+        name=f"set_deploy_block {address}: {deploy_block}",
+        skip_gc_until_done=True,
+    )
+
+@a_sync_write_db_session
+def _set_deploy_block(address: str, deploy_block: int) -> None:
     from y._db.utils._ep import _get_get_token
     get_token = _get_get_token()
     ensure_block(deploy_block, sync=True)

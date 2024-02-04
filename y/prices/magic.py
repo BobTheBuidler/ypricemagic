@@ -141,7 +141,7 @@ def __cache(get_price: GetPrice) -> GetPrice:
             return price
         price = await get_price(token, block=block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, silent=silent)
         if price and not skip_cache:
-            await db.set_price(token, block, price)
+            db.set_price(token, block, price)
         return price
     return cache_wrap
 

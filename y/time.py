@@ -53,7 +53,7 @@ async def get_block_timestamp_async(height: int) -> int:
     else:
         block = await dank_w3.eth.get_block(height)
         ts = block.timestamp
-    await db.set_block_timestamp(height, ts, sync=False)
+    db.set_block_timestamp(height, ts)
     return ts
 
 # TODO: deprecate
@@ -95,7 +95,7 @@ async def get_block_at_timestamp(timestamp: datetime) -> int:
     # TODO: invert this and use this fn inside of closest_block_after_timestamp for backwards compatability before deprecating closest_block_after_timestamp
     block_after_timestamp = await closest_block_after_timestamp_async(timestamp)
     block_at_timestamp = block_after_timestamp - 1
-    await db.set_block_at_timestamp(timestamp, block_at_timestamp)
+    db.set_block_at_timestamp(timestamp, block_at_timestamp)
     return block_at_timestamp
 
 

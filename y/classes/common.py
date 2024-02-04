@@ -121,8 +121,7 @@ class ERC20(ContractBase):
         if symbol := await db.get_symbol(self.address):
             return symbol
         symbol = await self._symbol()
-        _tasks.append(asyncio.create_task(coro=db.set_symbol(self.address, symbol), name=f"set_symbol {symbol} for {self.address}"))
-        await _clear_finished_tasks()
+        db.set_symbol(self.address, symbol)
         return symbol
     
     @a_sync.aka.property
@@ -134,8 +133,7 @@ class ERC20(ContractBase):
         if name:
             return name
         name = await self._name()
-        _tasks.append(asyncio.create_task(coro=db.set_name(self.address, name), name=f"set_name {name} for {self.address}"))
-        await _clear_finished_tasks()
+        db.set_name(self.address, name)
         return name
     
     @a_sync.aka.cached_property
@@ -307,15 +305,6 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
     # This dundermethod is created by a_sync for the async_property on this class
     __readable__: ASyncFunction[Tuple[Self], Decimal] if sys.version_info < (3, 10) else ASyncFunction[[Self], Decimal]
-
-
-_tasks: List[asyncio.Task] = []
-
-async def _clear_finished_tasks() -> None:
-    for t in _tasks[:]:
-        if t.done():
-            await t
-            _tasks.remove(t)
 
 
 class _Loader(ContractBase):
