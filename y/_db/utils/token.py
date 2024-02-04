@@ -1,9 +1,9 @@
 
-import asyncio
 import logging
 from functools import lru_cache
 from typing import Optional
 
+import a_sync
 from brownie import chain, convert
 from pony.orm import commit
 
@@ -46,8 +46,15 @@ def get_bucket(address: str) -> Optional[str]:
         logger.debug("found %s bucket %s in ydb", address, bucket)
     return bucket
 
-@a_sync_write_db_session
 def set_bucket(address: str, bucket: str) -> None:
+    a_sync.create_task(
+        coro=_set_bucket(address, bucket),
+        name=f"set_bucket {address}: {bucket}",
+        skip_gc_until_done=True,
+    )
+
+@a_sync_write_db_session
+def _set_bucket(address: str, bucket: str) -> None:
     if address == constants.EEE_ADDRESS:
         return
     get_token = _get_get_token()
@@ -62,11 +69,12 @@ def get_symbol(address: str) -> Optional[str]:
         logger.debug("found %s symbol %s in ydb", address, symbol)
     return symbol
 
-@a_sync_write_db_session
-def set_symbol(address: str, symbol: str) -> None:
-    get_token = _get_get_token()
-    get_token(address, sync=True).symbol = symbol
-    logger.debug("updated %s symbol in ydb: %s", address, symbol)
+def set_symbol(address: str, symbol: str):
+    a_sync.create_task(
+        coro=_set_symbol(address, symbol), 
+        name=f"set_symbol {symbol} for {address}",
+        skip_gc_until_done=True,
+    )
 
 @a_sync_read_db_session
 def get_name(address: str) -> Optional[str]:
@@ -76,19 +84,38 @@ def get_name(address: str) -> Optional[str]:
         logger.debug("found %s name %s in ydb", address, name)
     return name
 
-@a_sync_write_db_session
 def set_name(address: str, name: str) -> None:
-    get_token = _get_get_token()
-    get_token(address, sync=True).name = name
-    logger.debug("updated %s name in ydb: %s", address, name)
+    a_sync.create_task(
+        coro=_set_name(address, name), 
+        name=f"set_name {name} for {address}",
+        skip_gc_until_done=True,
+    )
 
 async def get_decimals(address: str) -> int:
     d = await _get_token_decimals(address)
     if d is None:
         d = await decimals(address, sync=False)
         if d:
-            asyncio.create_task(coro=set_decimals(address, d), name=f"set_decimals {address}")
+            a_sync.create_task(coro=set_decimals(address, d), name=f"set_decimals {address}", skip_gc_until_done=True)
     return d
+
+@a_sync_write_db_session
+def set_decimals(address: str, decimals: int) -> None:
+    get_token = _get_get_token()
+    get_token(address, sync=True).decimals = decimals
+    logger.debug("updated %s decimals in ydb: %s", address, decimals)
+
+@a_sync_write_db_session
+def _set_symbol(address: str, symbol: str) -> None:
+    get_token = _get_get_token()
+    get_token(address, sync=True).symbol = symbol
+    logger.debug("updated %s symbol in ydb: %s", address, symbol)
+    
+@a_sync_write_db_session
+def _set_name(address: str, name: str) -> None:
+    get_token = _get_get_token()
+    get_token(address, sync=True).name = name
+    logger.debug("updated %s name in ydb: %s", address, name)
 
 @a_sync_read_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
@@ -97,9 +124,3 @@ def _get_token_decimals(address: str) -> Optional[int]:
     logger.debug("found %s decimals %s in ydb", address, decimals)
     if decimals:
         return decimals
-
-@a_sync_write_db_session
-def set_decimals(address: str, decimals: int) -> None:
-    get_token = _get_get_token()
-    get_token(address, sync=True).decimals = decimals
-    logger.debug("updated %s decimals in ydb: %s", address, decimals)

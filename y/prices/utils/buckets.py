@@ -47,7 +47,7 @@ async def check_bucket(
     for bucket, check in string_matchers.items():
         if check(token):
             logger.debug("%s is %s", token_address, bucket)
-            await db.set_bucket(token, bucket)
+            db.set_bucket(token, bucket)
             return bucket
         else:
             logger.debug("%s is not %s", token_address, bucket)
@@ -66,7 +66,7 @@ async def check_bucket(
             logger.debug("%s is %s", token_address, bucket)
             for fut in futs:
                 fut.cancel()
-            await db.set_bucket(token, bucket)
+            db.set_bucket(token, bucket)
             return bucket
         else:
             logger.debug("%s is not %s", token_address, bucket)
@@ -104,7 +104,7 @@ async def check_bucket(
         bucket = 'curve lp'
     logger.debug("%s bucket is %s", token_address, bucket)
     if bucket:
-        await db.set_bucket(token, bucket)
+        db.set_bucket(token, bucket)
     return bucket
 
 # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)

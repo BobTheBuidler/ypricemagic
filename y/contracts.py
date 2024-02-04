@@ -176,7 +176,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
         return 0
     if hi != height:
         logger.debug(f"contract creation block {address} -> {hi}")
-        await db.set_deploy_block(address, hi)
+        db.set_deploy_block(address, hi)
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
