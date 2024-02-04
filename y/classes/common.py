@@ -122,7 +122,6 @@ class ERC20(ContractBase):
             return symbol
         symbol = await self._symbol()
         db.set_symbol(self.address, symbol)
-        await _clear_finished_tasks()
         return symbol
     
     @a_sync.aka.property
