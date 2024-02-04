@@ -120,7 +120,7 @@ async def test_chainlink_get_feed(token):
     """
     Tests `chainlink.get_feed` with both lowercase address and checksum address.
     """
-    assert chainlink.get_feed(token, sync=False) != ZERO_ADDRESS, 'no feed available'
+    assert await chainlink.get_feed(token, sync=False) != ZERO_ADDRESS, 'no feed available'
 
 
 @pytest.mark.parametrize('token', FEEDS)
