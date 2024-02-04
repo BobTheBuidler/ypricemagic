@@ -6,7 +6,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db import entities
 from y._db.decorators import a_sync_write_db_session
 
-def execute(sql: str, db: Database = entities.db) -> None:
+def execute(sql: str, *, db: Database = entities.db) -> None:
     try:
         db.execute(sql)
     except ProgrammingError as e:
