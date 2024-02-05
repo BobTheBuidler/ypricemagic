@@ -1,5 +1,7 @@
 
 import logging
+from datetime import datetime, timezone
+from decimal import Decimal
 from typing import Any, Iterable
 from pony.orm import Database, ProgrammingError
 
@@ -30,8 +32,10 @@ def stringify_column_value(value: Any, provider: str) -> str:
         raise NotImplementedError(provider)
     elif isinstance(value, str):
         return f"'{value}'"
-    elif isinstance(value, int):
+    elif isinstance(value, (int, Decimal)):
         return str(value)
+    elif isinstance(value, datetime):
+        return value.astimezone(timezone.utc).isoformat()
     else:
         raise NotImplementedError(type(value), value)
         
