@@ -35,7 +35,7 @@ def stringify_column_value(value: Any, provider: str) -> str:
     elif isinstance(value, (int, Decimal)):
         return str(value)
     elif isinstance(value, datetime):
-        return value.astimezone(timezone.utc).isoformat()
+        return f"'{value.astimezone(timezone.utc).isoformat()}'"
     else:
         raise NotImplementedError(type(value), value)
         
