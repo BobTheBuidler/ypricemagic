@@ -1,15 +1,21 @@
 
+import logging
 from typing import Any, Iterable
 from pony.orm import Database, ProgrammingError
 
-from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db import entities
 from y._db.decorators import a_sync_write_db_session
 
+
+logger = logging.getLogger(__name__)
+
 def execute(sql: str, *, db: Database = entities.db) -> None:
     try:
+        logger.debug("EXECUTING SQL")
+        logger.debug(sql)
         db.execute(sql)
     except ProgrammingError as e:
+        logger.debug("%s %s when executing SQL`%s`", e.__class__.__name__, e, sql)
         raise ValueError(e, sql) from e
 
 def stringify_column_value(value: Any, provider: str) -> str:
