@@ -18,8 +18,11 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
         logger.debug(sql)
         db.execute(sql)
     except DatabaseError as e:
+        if str(e) == "database is locked":
+            raise e
         logger.warning("%s %s when executing SQL`%s`", e.__class__.__name__, e, sql)
         raise ValueError(e, sql) from e
+            
 
 def stringify_column_value(value: Any, provider: str) -> str:
     if value is None:
