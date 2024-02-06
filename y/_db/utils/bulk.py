@@ -6,11 +6,12 @@ from typing import Any, Iterable
 from pony.orm import Database, DatabaseError
 
 from y._db import entities
-from y._db.decorators import a_sync_write_db_session
+from y._db.decorators import a_sync_write_db_session, retry_locked
 
 
 logger = logging.getLogger(__name__)
 
+@retry_locked
 def execute(sql: str, *, db: Database = entities.db) -> None:
     try:
         logger.debug("EXECUTING SQL")
