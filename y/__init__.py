@@ -15,7 +15,7 @@ if not network.is_connected():
 
 from y import time
 from y.classes.common import ERC20
-from y.constants import dai, usdc, wbtc, weth
+from y.constants import EEE_ADDRESS, dai, usdc, wbtc, weth
 from y.contracts import (Contract, Contract_erc20, Contract_with_erc20_fallback, 
                          contract_creation_block, contract_creation_block_async, 
                          has_method, has_methods)
@@ -53,6 +53,7 @@ __all__ = [
     'get_prices',
 
     # constants
+    'EEE_ADDRESS',
     'weth',
     'dai',
     'usdc',
