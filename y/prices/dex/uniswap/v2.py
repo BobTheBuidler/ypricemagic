@@ -5,7 +5,7 @@ import logging
 import sys
 from contextlib import suppress
 from decimal import Decimal
-from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
@@ -224,9 +224,8 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
         super().__init__(addresses=[factory], topics=[[self.PairCreated]])
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} label={self.label}>"
-    async def pools(self, to_block: Optional[int] = None) -> AsyncIterator[UniswapV2Pool]:
-        async for pool in self._objects_thru(block=to_block):
-            yield pool
+    def pools(self, to_block: Optional[int] = None) -> AsyncIterator[UniswapV2Pool]:
+        return self._objects_thru(block=to_block)
     def _get_block_for_obj(self, obj: UniswapV2Pool) -> int:
         return obj._deploy_block
     def _process_event(self, event: _EventItem) -> UniswapV2Pool:
@@ -394,10 +393,8 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
-        pools = await self.__pools__(sync=False)
-        pool_to_tokens = {pool: asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools}
         pool_to_token_out = {}
-        async for pool, (token0, token1) in a_sync.as_completed(pool_to_tokens, aiter=True):
+        async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__(sync=False)):
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
@@ -511,3 +508,5 @@ class UniswapRouterV2(ContractBase):
 
     # This dundermethod is created by a_sync for the async_property on this class
     __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]] if sys.version_info < (3, 10) else ASyncFunction[[Self], List[UniswapV2Pool]]
+
+_get_tokens: Callable[[UniswapV2Pool], Tuple[ERC20, ERC20]] = lambda pool: asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
