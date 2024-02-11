@@ -27,7 +27,7 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices
-from y.time import get_block_at_timestamp
+from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.dank_mids import dank_w3
 from y.utils.logging import enable_debug_logging
 from y.utils.multicall import fetch_multicall
