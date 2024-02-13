@@ -96,6 +96,10 @@ async def get_decimals(address: str) -> int:
     if d is None:
         d = await decimals(address, sync=False)
         if d:
+            if d > 2147483647:
+                # raise this here so the task doesnt break
+                # TODO debug where this comes from
+                raise ValueError(f"Value {d} of attr Token.decimals is greater than the maximum allowed value 2147483647")
             a_sync.create_task(coro=set_decimals(address, d), name=f"set_decimals {address}", skip_gc_until_done=True)
     return d
 
