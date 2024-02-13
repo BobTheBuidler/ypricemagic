@@ -25,7 +25,6 @@ from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
 from y.networks import Network
 from y.utils.events import ProcessedEvents
-from y.utils.middleware import ensure_middleware
 from y.utils.multicall import \
     multicall_same_func_same_contract_different_inputs
 from y.utils.raw_calls import raw_call
@@ -33,8 +32,6 @@ from y.utils.raw_calls import raw_call
 T = TypeVar('T')
 
 logger = logging.getLogger(__name__)
-
-ensure_middleware()
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
 ADDRESS_PROVIDER = '0x0000000022D53366457F9d5E68Ec105046FC4383'
@@ -120,8 +117,6 @@ class AddressProvider(_CurveEventsLoader):
         super().__init__(address, asynchronous=asynchronous)
         self.identifiers = defaultdict(list)
         self._events = AddressProviderEvents(self)
-    def __await__(self):
-        return self.loaded.__await__()
     async def get_registry(self) -> EthAddress:
         contract = await Contract.coroutine(self.address)
         return await contract.get_registry.coroutine()
@@ -161,18 +156,8 @@ class Registry(_CurveEventsLoader):
     def __init__(self, address: Address, curve: "CurveRegistry", asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self._events = RegistryEvents(self)
-    def __await__(self):
-        return self.loaded.__await__()
 
 class Factory(_Loader):
-    def __await__(self):
-        return self.loaded.__await__()
-    @property
-    def loaded(self) -> Awaitable[T]:
-        self._task  # ensure task is running and not errd
-        if self._loaded is None:
-            self._loaded = a_sync.Event(name=f"curve factory {self.address}")
-        return self._loaded.wait()
     async def get_pool(self, i: int) -> EthAddress:
         contract = await Contract.coroutine(self.address)
         return await contract.pool_list.coroutine(i)

@@ -120,7 +120,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     
     @cached_property
     def loaded(self) -> a_sync.Event:
-        return a_sync.Event(name="uniswap v3")
+        return a_sync.Event(name=self)
     
     @a_sync.aka.cached_property
     async def quoter(self) -> Contract:

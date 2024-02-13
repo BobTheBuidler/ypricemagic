@@ -6,7 +6,7 @@ from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
-from typing import (TYPE_CHECKING, Any, Awaitable, List, Literal, NoReturn,
+from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
                     Optional, Tuple, Union)
 
 import a_sync
@@ -316,14 +316,25 @@ class _Loader(ContractBase):
         self._loaded = None
         self.__exc = None
         self.__task = None
+    def __await__(self) -> Generator[Any, None, Literal[True]]:
+        """Returns `True` once the `_Loader` has loaded all relevant data thru the current block"""
+        return self.loaded.__await__()
     @abc.abstractmethod
     async def _load(self) -> NoReturn:
-        ...
-    @abc.abstractproperty
+        """
+        `self._load` is the coro that will run in the daemon task associated with this _Loader.
+        Your implementation MUST set Event `self._loaded` once data has been loaded thru the current block, or it will hang indefinitely.
+        """
+    @property
     def loaded(self) -> Awaitable[Literal[True]]:
-        ...
+        """Returns `True` once the `_Loader` has loaded all relevant data thru the current block"""
+        self._task  # ensure task is running and not errd
+        if self._loaded is None:
+            self._loaded = a_sync.Event(name=self)
+        return self._loaded.wait()
     @property
     def _task(self) -> "asyncio.Task[NoReturn]":
+        """The task that runs `self._load() for this `_Loader`"""
         if self.__exc:
             raise self.__exc
         if self.__task is None:
@@ -332,6 +343,7 @@ class _Loader(ContractBase):
             self.__task.add_done_callback(self._done_callback)
         return self.__task
     def _done_callback(self, task: "asyncio.Task[Any]") -> None:
+        """called on `self._task` when it completes, if applicable"""
         if e := task.exception():
             logger.error("exception while loading %s: %s", self, e)
             logger.exception(e)
@@ -339,7 +351,7 @@ class _Loader(ContractBase):
             self.__task = None
             raise e
     async def __load(self) -> NoReturn:
-        """Loads the loader and catches any exceptions"""
+        """loads the loader and catches any exceptions"""
         try:
             await self._load()
         except Exception as e:
@@ -354,8 +366,8 @@ class _EventsLoader(_Loader):
         ...
     @property
     def loaded(self) -> Awaitable[Literal[True]]:
+        self._task  # ensure task is running and not err'd
         if self._loaded is None:
-            self._task  # ensure task is running
             self._loaded = asyncio.ensure_future(self._events._lock.wait_for(self._init_block))
         return self._loaded
     async def _load(self) -> NoReturn:
