@@ -60,16 +60,9 @@ class Ids(IntEnum):
     CurveStableswapFactoryNG = 12
 
 
+_LT = TypeVar("_LT", bound=_Loader)
 
-class _CurveLoader(_Loader):
-    __slots__ = "curve",
-    def __init__(self, address: Address, curve: "CurveRegistry", asynchronous: bool = False):
-        super().__init__(address, asynchronous=asynchronous)
-        self.curve = curve
-
-_LT = TypeVar("_LT", bound=_CurveLoader)
-
-class _CurveEventsLoader(_CurveLoader, _EventsLoader):
+class _CurveEventsLoader(_EventsLoader):
     _events: "CurveEvents"
 
 class CurveEvents(ProcessedEvents[_EventItem]):
@@ -106,14 +99,14 @@ class RegistryEvents(CurveEvents):
             except EventLookupError:
                 pool = event['newPool']
             self._tasks.append(asyncio.create_task(coro=self._add_pool(pool), name=f"Registry._add_pool for pool {pool}"))
-            self.registry.curve.registries[event.address].add(pool)
+            curve.registries[event.address].add(pool)
         elif event.name == 'PoolRemoved':
-            self.registry.curve.registries[event.address].discard(event['pool'])
+            curve.registries[event.address].discard(event['pool'])
         logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
         return event
     async def _add_pool(self, pool: Address) -> EthAddress:
         lp_token = await self.registry.contract.get_lp_token.coroutine(pool)
-        self.registry.curve.token_to_pool[lp_token] = pool
+        curve.token_to_pool[lp_token] = pool
     async def _set_lock(self, block: int) -> None:
         await asyncio.gather(*self._tasks)
         self._tasks.clear()
@@ -123,8 +116,8 @@ class RegistryEvents(CurveEvents):
 
 class AddressProvider(_CurveEventsLoader):
     __slots__ = "identifiers", "_events", 
-    def __init__(self, address: Address, curve: "CurveRegistry", asynchronous: bool = False):
-        super().__init__(address, curve, asynchronous=asynchronous)
+    def __init__(self, address: Address, asynchronous: bool = False):
+        super().__init__(address, asynchronous=asynchronous)
         self.identifiers = defaultdict(list)
         self._events = AddressProviderEvents(self)
     def __await__(self):
@@ -139,7 +132,7 @@ class AddressProvider(_CurveEventsLoader):
         if chain.id == Network.Mainnet:
             self.identifiers[Ids.CurveStableswapFactoryNG] = ['0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf']
         metapool_factories = [
-            Factory(factory, self.curve, asynchronous=self.asynchronous)
+            Factory(factory, asynchronous=self.asynchronous)
             for i in [Ids.Metapool_Factory, Ids.crvUSD_Plain_Pools, Ids.Curve_Tricrypto_Factory, Ids.CurveStableswapFactoryNG]
             for factory in self.identifiers[i]
         ]
@@ -148,30 +141,30 @@ class AddressProvider(_CurveEventsLoader):
         for factory, pool_list in zip(metapool_factories, metapool_factory_pools):
             for pool in pool_list:
                 # for metpool factories pool is the same as lp token
-                self.curve.token_to_pool[pool] = pool
-                self.curve.factories[factory].add(pool)
+                curve.token_to_pool[pool] = pool
+                curve.factories[factory].add(pool)
 
         # if there are factories that haven't yet been added to the on-chain address provider,
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
         logger.debug("loading pools from cryptopool factories")
         await asyncio.gather(*[
-            Factory(factory, self.curve, asynchronous=self.asynchronous) 
+            Factory(factory, asynchronous=self.asynchronous) 
             for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]
         ])
 
-        if not self.curve._done.is_set():
-            logger.info('loaded %s pools from %s registries and %s factories', len(self.curve.token_to_pool), len(self.curve.registries), len(self.curve.factories))
-            self.curve._done.set()
+        if not curve._done.is_set():
+            logger.info('loaded %s pools from %s registries and %s factories', len(curve.token_to_pool), len(curve.registries), len(curve.factories))
+            curve._done.set()
 
 class Registry(_CurveEventsLoader):
     __slots__ = "_events"
     def __init__(self, address: Address, curve: "CurveRegistry", asynchronous: bool = False):
-        super().__init__(address, curve, asynchronous=asynchronous)
+        super().__init__(address, asynchronous=asynchronous)
         self._events = RegistryEvents(self)
     def __await__(self):
         return self.loaded.__await__()
 
-class Factory(_CurveLoader):
+class Factory(_Loader):
     def __await__(self):
         return self.loaded.__await__()
     @property
@@ -199,7 +192,7 @@ class Factory(_CurveLoader):
         return await asyncio.gather(*[self.get_pool(i) for i in range(await self.pool_count())])
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
-        await asyncio.gather(*[self._load_pool(pool) for pool in pool_list if pool not in self.curve.factories[self.address]])
+        await asyncio.gather(*[self._load_pool(pool) for pool in pool_list if pool not in curve.factories[self.address]])
         logger.debug("loaded %s pools for %s", len(pool_list), self)
         self._loaded.set()
     async def _load_pool(self, pool: Address) -> None:
@@ -211,8 +204,8 @@ class Factory(_CurveLoader):
             lp_token = await factory.get_lp_token.coroutine(pool)
         else:
             raise NotImplementedError(f"New factory {factory.address} is not yet supported. Please notify a ypricemagic maintainer.")
-        self.curve.token_to_pool[lp_token] = pool
-        self.curve.factories[factory.address].add(pool)
+        curve.token_to_pool[lp_token] = pool
+        curve.factories[factory.address].add(pool)
         logger.debug("loaded %s pool %s", self, pool)
         
 
@@ -566,6 +559,6 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             await asyncio.sleep(600)
    
 try: 
-    curve = CurveRegistry(asynchronous=True)
+    curve: CurveRegistry = CurveRegistry(asynchronous=True)
 except UnsupportedNetwork: 
     curve = set()
