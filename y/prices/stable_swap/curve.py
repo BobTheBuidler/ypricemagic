@@ -1,11 +1,11 @@
-import abc
+
 import asyncio
 import logging
 from collections import defaultdict
 from decimal import Decimal
 from enum import IntEnum
 from functools import cached_property
-from typing import Awaitable, Dict, List, Optional, Tuple, TypeVar
+from typing import Dict, List, Optional, Tuple, TypeVar
 
 import a_sync
 import brownie
@@ -371,7 +371,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         super().__init__()
         self.asynchronous = asynchronous
         try: 
-            self.address_provider = AddressProvider(ADDRESS_PROVIDER, self, asynchronous=self.asynchronous)
+            self.address_provider = AddressProvider(ADDRESS_PROVIDER, asynchronous=self.asynchronous)
             self.address_provider.contract
         except (ContractNotFound, ContractNotVerified) as e:
             raise UnsupportedNetwork("curve is not supported on this network") from e
