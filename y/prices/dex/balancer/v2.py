@@ -94,15 +94,7 @@ class BalancerV2Vault(ContractBase):
         return deepest_pool, deepest_balance
 
     async def _yield_pools_for(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
-        pool_infos = {}
-        pool: BalancerV2Pool
-        async for pool in self._events.events(to_block=block):
-            pool_infos[pool] = asyncio.create_task(coro=pool.tokens(block=block, sync=False), name=f"pool.tokens for {pool}")
-            for k in list(pool_infos.keys()):
-                if pool_infos[k].done():
-                    if token in await pool_infos.pop(k):
-                        yield pool
-        async for pool, info in a_sync.as_completed(pool_infos, aiter=True):
+        async for pool, info in a_sync.map(lambda pool: pool.tokens(block=block, sync=False), self._events.events(to_block=block)):
             if token in info:
                 yield pool
 

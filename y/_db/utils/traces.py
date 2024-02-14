@@ -192,14 +192,12 @@ class TraceFilter(Filter[dict, TraceCache]):
         try:
             return await dank_w3.provider.make_request("TraceFilter", {})
         except NotImplementedError:
-            async def trace_block(number: int) -> List[dict]:
-                return number, await dank_w3.provider.make_request("TraceBlock", number)
-            
-            results = {}
-            async for block, traces in a_sync.as_completed([trace_block(i) for i in range(from_block, to_block)], aiter=True):
-                results[block] = [
-                    trace for trace in traces
-                    if (not self.from_addresses or any("from" in x and x["from"] in self.from_addresses for x in [trace, trace.values()]))
-                    and (not self.to_addresses or any("to" in x and x["to"] in self.to_addresses for x in [trace, trace.values()]))
-                ]
+            results = {block: traces async for block, traces in a_sync.map(self._trace_block, range(from_block, to_block))}
             return list(chain(*[results[i] for i in range(from_block, to_block)]))
+        
+    async def _trace_block(self, block: int) -> List[dict]:
+        return [
+            trace for trace in await dank_w3.provider.make_request("TraceBlock", block)
+            if (not self.from_addresses or any("from" in x and x["from"] in self.from_addresses for x in [trace, trace.values()]))
+            and (not self.to_addresses or any("to" in x and x["to"] in self.to_addresses for x in [trace, trace.values()]))
+        ]
