@@ -3,6 +3,7 @@ import logging
 from typing import List, Optional, Set, Tuple
 
 import a_sync
+import eth_retry
 from async_lru import alru_cache
 from brownie import chain
 from multicall.call import Call
@@ -57,6 +58,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
     
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @eth_retry.auto_retry
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
         if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
