@@ -7,6 +7,19 @@ To install:
 pip install ypricemagic
 ```
 
+
+**Known Issues**  
+Make sure you are using Python >= 3.8 and < 3.11  
+If you have a PyYaml Issue with 3.4.1 not installing due to an issue with cython, try the following:  
+```
+pip install wheel
+pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
+```
+then try again
+`
+pip install ypricemagic
+`
+
 To use:
 ```
 from y import get_price
