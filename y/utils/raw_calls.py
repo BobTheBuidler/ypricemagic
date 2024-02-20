@@ -63,10 +63,11 @@ async def _decimals(
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
     try: decimals = await raw_call(contract_address, "decimals()", block=block, output='int', return_None_on_failure=True, sync=False)
-    except OverflowError:
+    except (OverflowError, ValueError):
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch 
         # using the verified non standard abi as a fallback
+        # ValueError means the call failed for some other reason, but let's try this anyway
         try: 
             contract = await Contract.coroutine(contract_address)
             decimals = await contract.decimals.coroutine(block_identifier=block)
@@ -87,10 +88,11 @@ async def _decimals(
 
     # method 2
     try: decimals = await raw_call(contract_address, "DECIMALS()", block=block, output='int', return_None_on_failure=True, sync=False)
-    except OverflowError: 
+    except (OverflowError, ValueError): 
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
+        # ValueError means the call failed for some other reason, but let's try this anyway
         try: 
             contract = await Contract.coroutine(contract_address)
             decimals = await contract.DECIMALS.coroutine(block_identifier=block)
@@ -111,10 +113,11 @@ async def _decimals(
 
     # method 3
     try: decimals = await raw_call(contract_address, "getDecimals()", block=block, output='int', return_None_on_failure=True, sync=False)
-    except OverflowError: 
+    except (OverflowError, ValueError): 
         # OverflowError means the call didn't revert, but we can't decode it correctly
         # the contract might not comply with standards, so we can possibly fetch DECIMALS 
         # using the verified non standard abi as a fallback
+        # ValueError means the call failed for some other reason, but let's try this anyway
         try: 
             contract = await Contract.coroutine(contract_address)
             decimals = await contract.getDecimals.coroutine(block_identifier=block)
