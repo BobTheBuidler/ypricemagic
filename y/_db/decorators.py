@@ -40,17 +40,21 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
     return retry_locked_wrap
 
 a_sync_read_db_session = lambda fn: a_sync.a_sync(default='async', executor=ydb_write_threads)(
-    db_session(
-        retry_locked(
-            fn
+    retry_locked(
+        db_session(
+            retry_locked(
+                fn
+            )
         )
     )
 )
 
 a_sync_write_db_session = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads)(
-    db_session(
-        retry_locked(
-            fn
+    retry_locked(
+        db_session(
+            retry_locked(
+                fn
+            )
         )
     )
 )
