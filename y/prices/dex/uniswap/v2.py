@@ -371,7 +371,7 @@ class UniswapRouterV2(ContractBase):
     async def pools(self) -> List[UniswapV2Pool]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         pools = [pool async for pool in self._events.pools(to_block=await dank_w3.eth.block_number)]
-        all_pairs_len = await raw_call(self.factory, 'allPairsLength()', block=chain.height, output='int', sync=False)
+        all_pairs_len = await raw_call(self.factory, 'allPairsLength()', output='int', sync=False)
         if len(pools) > all_pairs_len:
             raise NotImplementedError('this shouldnt happen again')
         elif len(pools) < all_pairs_len: # <

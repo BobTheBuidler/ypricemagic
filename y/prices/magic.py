@@ -99,7 +99,7 @@ async def get_prices(
     '''
 
     if block is None:
-        block = chain.height
+        block = await dank_w3.eth.block_number
 
     prices = await asyncio.gather(
         *[

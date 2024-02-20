@@ -89,7 +89,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             print(e)
             raise e
         
-        all_pools_len = await raw_call(self.factory, 'allPoolsLength()', block=chain.height, output='int', sync=False)
+        all_pools_len = await raw_call(self.factory, 'allPoolsLength()', output='int', sync=False)
 
         if len(pools) > all_pools_len:
             raise ValueError('wtf', len(pools), all_pools_len)
