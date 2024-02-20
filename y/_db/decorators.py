@@ -64,19 +64,21 @@ a_sync_read_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T
     retry_locked(
         lru_cache(maxsize=None)(
             db_session(
-                fn
+                retry_locked(
+                    fn
+                )
             )
         )
     )
 )
 
-
-
 a_sync_write_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads)(
     retry_locked(
         lru_cache(maxsize=None)(
             db_session(
-                fn
+                retry_locked(
+                    fn
+                )
             )
         )
     )
