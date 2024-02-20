@@ -46,6 +46,7 @@ _contract_lock = threading.Lock()
 FORCE_IMPLEMENTATION = {
     Network.Mainnet: {
         "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": "0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF", # USDC as of 2022-08-10
+        "0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5": "0xf51fC5ae556F5B8c6dCf50f70167B81ceb02a2b2", # dETH as of 2024-02-15
     },
 }.get(chain.id, {})
 
