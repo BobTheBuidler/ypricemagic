@@ -70,6 +70,10 @@ def get_symbol(address: str) -> Optional[str]:
     return symbol
 
 def set_symbol(address: str, symbol: str):
+    if not symbol:
+        raise ValueError("`symbol` is required")
+    if not isinstance(symbol, str):
+        raise TypeError(f"`symbol` must be a string. You passed {symbol}")
     a_sync.create_task(
         coro=_set_symbol(address, symbol), 
         name=f"set_symbol {symbol} for {address}",
@@ -85,6 +89,10 @@ def get_name(address: str) -> Optional[str]:
     return name
 
 def set_name(address: str, name: str) -> None:
+    if not name:
+        raise ValueError("`name` is required")
+    if not isinstance(name, str):
+        raise TypeError(f"`name` must be a string. You passed {name}")
     a_sync.create_task(
         coro=_set_name(address, name), 
         name=f"set_name {name} for {address}",
