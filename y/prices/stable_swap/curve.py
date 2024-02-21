@@ -319,7 +319,11 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         }
     
     async def _get_balance(self, i: int, block: Optional[Block] = None) -> Optional[int]:
-        contract = await Contract.coroutine(self.address)
+        try:
+            contract = await Contract.coroutine(self.address)
+        except ContractNotVerified:
+            # TODO: figure out if we need to build this, usually they get verified quickly 
+            return None
         try:
             return await contract.balances.coroutine(i, block_identifier=block)
         except ValueError as e:
@@ -345,7 +349,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         )
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
-    async def check_liquidity(self, token: Address, block: Block) -> int:
+    async def check_liquidity(self, token: Address, block: Block) -> Optional[int]:
         deploy_block = await contract_creation_block_async(self.address)
         if block < deploy_block:
             return 0
@@ -504,7 +508,13 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if token not in pools:
             return 0
         if pools := [pool for pool in pools[token] if pool not in ignore_pools]:
-            return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools]))
+            liqs = [
+                liq for liq
+                in await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])
+                if liq
+            ]
+            if liqs:
+                return max(liqs)
         return 0
     
     @cached_property
