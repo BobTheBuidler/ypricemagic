@@ -19,6 +19,7 @@ from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
 from multicall import Call
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
@@ -267,7 +268,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         owner: Optional[AccountsType] = None,
         persist: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
-    ) -> "Contract":
+    ) -> Self:
         self = cls.__new__(cls)
         build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
         self.__init_from_abi__(build, owner, persist)
@@ -287,7 +288,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         address: AnyAddressType, 
         require_success: bool = True, 
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
-    ) -> "Contract":
+    ) -> Self:
         
         # We do this so we don't clog the threadpool with multiple jobs for the same contract.
         async with address_semaphores[address]:
@@ -296,7 +297,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             except KeyError:
                 if str(address).lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
                     raise ContractNotFound(f"{address} is not a contract.") from None
-                contract = await contract_threads.run(Contract, address, require_success=require_success)
+                contract = await contract_threads.run(cls, address, require_success=require_success)
 
         if not contract.verified or contract._ttl_cache_popper == "disabled":
             pass
