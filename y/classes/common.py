@@ -11,9 +11,10 @@ from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
 
 import a_sync
 from a_sync.modified import ASyncFunction
-from brownie import Contract, chain
+from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
+from eth_retry import auto_retry
 from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -312,7 +313,7 @@ class _Loader(ContractBase):
     __slots__ = "_loaded", "_init_block", "__exc", "__task",
     def __init__(self, address: Address, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
-        self._init_block = chain.height
+        self._init_block = auto_retry(web3.eth.get_block_number)()
         self._loaded = None
         self.__exc = None
         self.__task = None

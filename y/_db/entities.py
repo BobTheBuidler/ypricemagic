@@ -1,15 +1,15 @@
 
 import logging
-from contextlib import suppress
 from datetime import datetime
 from decimal import Decimal
-from functools import wraps
 from typing import Any
 from typing import Optional as typing_Optional
 
 from pony.orm import (Database, InterfaceError, Optional, PrimaryKey, 
                       Required, Set, TransactionIntegrityError, commit,
                       composite_index, db_session)
+
+from y._db.decorators import retry_locked
 
 db = Database()
 
@@ -131,6 +131,7 @@ class BlockAtTimestamp(db.Entity):
 
 
 @db_session
+@retry_locked
 def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
     try:
         while True:
