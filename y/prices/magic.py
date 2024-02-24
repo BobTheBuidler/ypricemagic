@@ -5,9 +5,9 @@ from typing import (Awaitable, Callable, Iterable, List, NoReturn, Optional,
                     Tuple)
 
 import a_sync
-from brownie import ZERO_ADDRESS, chain
+import dank_mids
+from brownie import ZERO_ADDRESS
 from brownie.exceptions import ContractNotFound
-from dank_mids import dank_web3
 from multicall.utils import raise_if_exception_in
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -64,7 +64,7 @@ async def get_price(
     - If `fail_to_None == True`, ypricemagic will return `None`
     - If `fail_to_None == False`, ypricemagic will raise a PriceError
     '''
-    block = block or await dank_web3.eth.block_number
+    block = block or await dank_mids.eth.block_number
     token_address = convert.to_address(token_address)
     try:
         return await _get_price(token_address, block, fail_to_None=fail_to_None, ignore_pools=ignore_pools, skip_cache=skip_cache, silent=silent)
@@ -99,7 +99,7 @@ async def get_prices(
     '''
 
     if block is None:
-        block = await dank_web3.eth.block_number
+        block = await dank_mids.eth.block_number
 
     prices = await asyncio.gather(
         *[

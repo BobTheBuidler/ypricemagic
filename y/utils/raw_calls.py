@@ -4,9 +4,9 @@ from typing import Any, Callable, Optional, Union
 
 import a_sync
 import brownie
+import dank_mids
 from brownie import ZERO_ADDRESS, convert
 from brownie.convert.datatypes import EthAddress
-from dank_mids import dank_web3
 from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 
@@ -276,7 +276,7 @@ async def raw_call(
 
     data = {'to': convert.to_address(contract_address),'data': prepare_data(method,inputs)}
 
-    try: response = await dank_web3.eth.call(data,block_identifier=block)
+    try: response = await dank_mids.eth.call(data,block_identifier=block)
     except ValueError as e:
         if return_None_on_failure is False:                 raise
         if call_reverted(e):                                return None

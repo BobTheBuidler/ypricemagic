@@ -6,12 +6,11 @@ from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
 import a_sync
+import dank_mids
 import eth_retry
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
-from dank_mids import dank_web3
-from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
                       db_session)
@@ -149,7 +148,7 @@ class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
         chunk_size: int = BATCH_SIZE, 
         chunks_per_batch: Optional[int] = None,
         sleep_time: int = 60,
-        semaphore: Optional[BlockSemaphore] = None,
+        semaphore: Optional[dank_mids.BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
         verbose: bool = False,
@@ -179,9 +178,9 @@ class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
         ...
         
     @property
-    def semaphore(self) -> BlockSemaphore:
+    def semaphore(self) -> dank_mids.BlockSemaphore:
         if self._semaphore is None:
-            self._semaphore = BlockSemaphore(self._chunks_per_batch)
+            self._semaphore = dank_mids.BlockSemaphore(self._chunks_per_batch)
         return self._semaphore
 
     @property
@@ -265,7 +264,7 @@ class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
             if start > end:
                 raise ValueError(f"start {start} is bigger than end {end}, can't do that")
         else:
-            while start > (end := await dank_web3.eth.block_number):
+            while start > (end := await dank_mids.eth.block_number):
                 logger.debug('%s start %s is greater than end %s, sleeping...', self, start, end)
                 await asyncio.sleep(1)
         await self._load_range(start, end)

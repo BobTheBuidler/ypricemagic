@@ -9,10 +9,10 @@ from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
+import dank_mids
 from a_sync.modified import ASyncFunction
 from brownie import chain
 from brownie.network.event import _EventItem
-from dank_mids import dank_web3
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -370,7 +370,7 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     async def pools(self) -> List[UniswapV2Pool]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
-        pools = [pool async for pool in self._events.pools(to_block=await dank_web3.eth.block_number)]
+        pools = [pool async for pool in self._events.pools(to_block=await dank_mids.eth.block_number)]
         all_pairs_len = await raw_call(self.factory, 'allPairsLength()', output='int', sync=False)
         if len(pools) > all_pairs_len:
             raise NotImplementedError('this shouldnt happen again')

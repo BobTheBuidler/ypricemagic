@@ -1,6 +1,7 @@
+
+import dank_mids
 import pytest
 from brownie import ZERO_ADDRESS, chain
-from dank_mids import dank_web3
 from multicall import Call
 
 from tests.fixtures import blocks_for_contract
@@ -46,7 +47,7 @@ async def test_erc20_async(token):
     if token.address == OLD_SUSD:
         pytest.skip('Not applicable to deprecated sUSD.')
 
-    block = await dank_web3.eth.block_number
+    block = await dank_mids.eth.block_number
     assert isinstance(token.contract, Contract), f'Cannot fetch contract for token {token}'
     assert isinstance(await token.build_name, str), f'Cannot fetch build name for token {token}'
     assert isinstance(await token.symbol, str), f'Cannot fetch symbol for token {token}'

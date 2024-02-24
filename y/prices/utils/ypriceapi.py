@@ -9,14 +9,13 @@ from random import randint
 from time import time
 from typing import Any, Callable, Dict, Optional
 
+import dank_mids
 from aiohttp import (BasicAuth, ClientResponse, ClientSession, ClientTimeout,
                      TCPConnector)
 from aiohttp.client_exceptions import (ClientConnectorSSLError, ClientError,
                                        ContentTypeError)
 from async_lru import alru_cache
 from brownie import chain
-from dank_mids import dank_web3
-from dank_mids.semaphores import BlockSemaphore
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
@@ -40,7 +39,7 @@ ONE_HOUR = ONE_MINUTE * 60
 FALLBACK_STR = "Falling back to your node for pricing."
 
 YPRICEAPI_TIMEOUT = ClientTimeout(int(os.environ.get("YPRICEAPI_TIMEOUT", 5 * ONE_MINUTE)))  # Five minutes is the default timeout from aiohttp.
-YPRICEAPI_SEMAPHORE = BlockSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
+YPRICEAPI_SEMAPHORE = dank_mids.BlockSemaphore(int(os.environ.get("YPRICEAPI_SEMAPHORE", 100)))
 
 if any(AUTH_HEADERS.values()) and not AUTH_HEADERS_PRESENT:
     for header in AUTH_HEADERS:
@@ -140,7 +139,7 @@ async def get_price(
         return None
 
     if block is None:
-        block = await dank_web3.eth.block_number
+        block = await dank_mids.eth.block_number
 
     async with YPRICEAPI_SEMAPHORE[block]:
         try:

@@ -8,7 +8,7 @@ from contextlib import suppress
 from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
 
 import a_sync
-import brownie
+import dank_mids
 import eth_retry
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie.exceptions import CompilerError, ContractNotFound
@@ -17,8 +17,6 @@ from brownie.network.contract import (ContractEvents, _add_deployment,
                                       _fetch_from_explorer, _resolve_address)
 from brownie.typing import AccountsType
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
-from dank_mids import dank_web3
-from dank_mids.brownie_patch import patch_contract
 from hexbytes import HexBytes
 from multicall import Call
 
@@ -118,7 +116,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
-get_code = eth_retry.auto_retry(dank_web3.eth.get_code)
+get_code = eth_retry.auto_retry(dank_mids.eth.get_code)
 creation_block_semaphore = a_sync.ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
@@ -136,7 +134,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
         return deploy_block
     
     logger.debug(f"contract creation block {address}")
-    height = await dank_web3.eth.block_number
+    height = await dank_mids.eth.block_number
 
     if height == 0:
         raise NodeNotSynced('''
@@ -185,7 +183,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
 # this defaultdict prevents congestion in the contracts thread pool
 address_semaphores = defaultdict(lambda: a_sync.ThreadsafeSemaphore(1))
 
-class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
+class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
     1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
@@ -246,8 +244,9 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
                         self.verified = False if type(e) == ContractNotVerified else None
                     except AttributeError:
                         logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
-                    
-        patch_contract(self, dank_web3)   # Patch the Contract with coroutines for each method.
+                # Patch the Contract with coroutines for each method.
+                dank_mids.patch_contract(self)
+
         if self.verified:
             _setup_events(self)         # Init an event container for each topic
             _squeeze(self)              # Get rid of unnecessary memory-hog properties
@@ -272,7 +271,7 @@ class Contract(brownie.Contract, metaclass=ChecksumAddressSingletonMeta):
         self = cls.__new__(cls)
         build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
         self.__init_from_abi__(build, owner, persist)
-        patch_contract(self, dank_web3)   # Patch the Contract with coroutines for each method.
+        dank_mids.patch_contract(self)  # Patch the Contract with coroutines for each method.
         _setup_events(self)             # Init an event container for each topic
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
         try:
