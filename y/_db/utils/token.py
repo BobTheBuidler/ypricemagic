@@ -148,25 +148,25 @@ def _get_token_decimals(address: str) -> Optional[int]:
     
 @ttl_cache(maxsize=1, ttl=60*60)
 def known_tokens() -> Set[str]:
-    """cache and return all known Tokens to minimize db reads"""
+    """cache and return all known Tokens for this chain to minimize db reads"""
     return set(select(t.address for t in Token if t.chain.id == chain.id))
 
 @ttl_cache(maxsize=1, ttl=60*60)
 def known_buckets() -> Dict[str, str]:
-    """cache and return all known token buckets to minimize db reads"""
+    """cache and return all known token buckets for this chain to minimize db reads"""
     return dict(select((t.address, t.bucket) for t in Token if t.chain.id == chain.id and t.bucket))
 
 @ttl_cache(maxsize=1, ttl=60*60)
 def known_decimals() -> Dict[Address, int]:
-    """cache and return all known token decimals to minimize db reads"""
+    """cache and return all known token decimals for this chain to minimize db reads"""
     return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
 
 @ttl_cache(maxsize=1, ttl=60*60)
 def known_symbols() -> Dict[Address, str]:
-    """cache and return all known token symbols to minimize db reads"""
+    """cache and return all known token symbols for this chain to minimize db reads"""
     return dict(select((t.address, t.symbol) for t in Token if t.chain.id == chain.id and t.symbol))
 
 @ttl_cache(maxsize=1, ttl=60*60)
 def known_names() -> Dict[Address, str]:
-    """cache and return all known token names to minimize db reads"""
+    """cache and return all known token names for this chain to minimize db reads"""
     return dict(select((t.address, t.name) for t in Token if t.chain.id == chain.id and t.name))
