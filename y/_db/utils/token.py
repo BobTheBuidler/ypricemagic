@@ -1,10 +1,12 @@
 
 import logging
+import threading
 from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
 from brownie import chain, convert
+from cachetools import cached
 from cachetools.func import ttl_cache
 from pony.orm import commit, select
 
@@ -146,31 +148,31 @@ def _get_token_decimals(address: str) -> Optional[int]:
 
 # startup caches
     
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("tokens")
 def known_tokens() -> Set[str]:
     """cache and return all known Tokens for this chain to minimize db reads"""
     return set(select(t.address for t in Token if t.chain.id == chain.id))
 
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("buckets")
 def known_buckets() -> Dict[str, str]:
     """cache and return all known token buckets for this chain to minimize db reads"""
     return dict(select((t.address, t.bucket) for t in Token if t.chain.id == chain.id and t.bucket))
 
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("token decimals")
 def known_decimals() -> Dict[Address, int]:
     """cache and return all known token decimals for this chain to minimize db reads"""
     return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
 
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("token symbols")
 def known_symbols() -> Dict[Address, str]:
     """cache and return all known token symbols for this chain to minimize db reads"""
     return dict(select((t.address, t.symbol) for t in Token if t.chain.id == chain.id and t.symbol))
 
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("token names")
 def known_names() -> Dict[Address, str]:
     """cache and return all known token names for this chain to minimize db reads"""

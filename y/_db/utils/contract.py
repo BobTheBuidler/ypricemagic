@@ -1,9 +1,11 @@
 
 import logging
+import threading
 from typing import Dict, Optional
 
 import a_sync
 from brownie import chain
+from cachetools import cached
 from cachetools.func import ttl_cache
 from pony.orm import select
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, log_result_count
@@ -43,8 +45,8 @@ def _set_deploy_block(address: str, deploy_block: int) -> None:
 
 
 # startup caches
-    
-@ttl_cache(maxsize=1, ttl=60*60)
+
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("deploy blocks")
 def known_deploy_blocks() -> Dict[Address, Block]:
     """cache and return all known contract deploy blocks for this chain to minimize db reads"""

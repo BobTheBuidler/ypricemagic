@@ -1,11 +1,13 @@
 
 import logging
+import threading
 from datetime import datetime, timezone
 from dateutil import parser
 from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
+from cachetools import cached
 from cachetools.func import ttl_cache
 from pony.orm import select
 from brownie import chain
@@ -92,19 +94,19 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
 
 # startup caches
     
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("blocks")
 def known_blocks() -> Set[int]:
     """cache and return all known blocks for this chain to minimize db reads"""
     return set(select(b.number for b in Block if b.chain.id == chain.id))
 
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("block timestamps")
 def known_block_timestamps() -> Dict[int, datetime]:
     """cache and return all known block timestamps for this chain to minimize db reads"""
     return dict(select((b.number, b.timestamp) for b in Block if b.chain.id == chain.id and b.timestamp))
 
-@ttl_cache(maxsize=1, ttl=60*60)
+@cached(ttl_cache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("blocks for timestamps")
 def known_blocks_for_timestamps() -> Dict[datetime, int]:
     """return all known blocks for timestamps for this chain to minimize db reads"""

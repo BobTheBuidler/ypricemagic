@@ -1,7 +1,7 @@
 
 import logging
 import time
-from functools import lru_cache, wraps
+from functools import _Wrapped, lru_cache, wraps
 from typing import Callable, Iterable, TypeVar
 from typing_extensions import ParamSpec
 
@@ -88,8 +88,9 @@ a_sync_write_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _
 
 _result_count_logger = logging.getLogger(f"{__name__}.result_count")
 
-def log_result_count(name: str, arg_names: Iterable[str] = []) -> Callable[[Callable[_P, _T]], Callable[_P, _T]]:
-    def result_count_deco(fn: Callable[_P, _T]) -> Callable[_P, _T]:
+def log_result_count(name: str, arg_names: Iterable[str] = []) -> Callable[[Callable[_P, _T]], _Wrapped[_P, _T, _P, _T]]:
+    def result_count_deco(fn: Callable[_P, _T]) -> _Wrapped[_P, _T, _P, _T]:
+        @wraps(fn)
         def result_count_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _T:
             results = fn(*args, **kwargs)
             if _result_count_logger.isEnabledFor(logging.DEBUG):

@@ -1,11 +1,13 @@
 
 import logging
+import threading
 from contextlib import suppress
 from decimal import Decimal, InvalidOperation
 from typing import Dict, Optional
 
 import a_sync
 from brownie import chain
+from cachetools import cached
 from cachetools.func import ttl_cache
 from pony.orm import select
 
@@ -52,7 +54,7 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
 
-@ttl_cache(maxsize=1_000, ttl=5*60)
+@cached(ttl_cache(maxsize=1_000, ttl=5*60), lock=threading.Lock())
 @log_result_count("prices", ["block"])
 def known_prices_at_block(number: int) -> Dict[Address, Decimal]:
     """cache and return all known prices at block `number` to minimize db reads"""
