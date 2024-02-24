@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 @a_sync_read_db_session
 def get_deploy_block(address: str) -> Optional[int]:
-    if deploy_block := known_deploy_blocks().get(address):
+    if deploy_block := known_deploy_blocks().pop(address, None):
         logger.debug('%s deploy block from cache: %s', address, deploy_block)
         return deploy_block
     get_token = _get_get_token()

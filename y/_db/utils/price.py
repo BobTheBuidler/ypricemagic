@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 def get_price(address: str, block: int) -> Optional[Decimal]:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
-    if price := known_prices_at_block(block).get(address):
+    if price := known_prices_at_block(block).pop(address, None):
         logger.debug("found %s block %s price %s in ydb", address, block, price)
         return price
     if (price := Price.get(token = (chain.id, address), block = (chain.id, block))) and (price:=price.price):

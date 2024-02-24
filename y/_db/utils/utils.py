@@ -41,7 +41,7 @@ def ensure_block(number: int) -> None:
 
 @a_sync_read_db_session
 def get_block_timestamp(number: int) -> Optional[int]:
-    if (ts := known_block_timestamps().get(number)) is None:
+    if (ts := known_block_timestamps().pop(number, None)) is None:
         get_block = _get_get_block()
         block = get_block(number, sync=True)
     if ts := ts or block.timestamp:
@@ -61,7 +61,7 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
 
 @a_sync_read_db_session
 def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
-    if block := known_blocks_for_timestamps().get(timestamp):
+    if block := known_blocks_for_timestamps().pop(timestamp, None):
         logger.debug("found block %s for %s in ydb", block, timestamp)
         return block
     elif entity := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):

@@ -42,7 +42,7 @@ def ensure_token(address: str) -> None:
 def get_bucket(address: str) -> Optional[str]:
     if address == constants.EEE_ADDRESS:
         return
-    if (bucket := known_buckets().get(address)) is None:
+    if (bucket := known_buckets().pop(address, None)) is None:
         get_token = _get_get_token()
         bucket = get_token(address, sync=True).bucket
     if bucket:
@@ -66,7 +66,7 @@ def _set_bucket(address: str, bucket: str) -> None:
 
 @a_sync_read_db_session
 def get_symbol(address: str) -> Optional[str]:
-    if (symbol := known_symbols().get(address)) is None:
+    if (symbol := known_symbols().pop(address, None)) is None:
         get_token = _get_get_token()
         symbol = get_token(address, sync=True).symbol
     if symbol:
@@ -86,7 +86,7 @@ def set_symbol(address: str, symbol: str):
 
 @a_sync_read_db_session
 def get_name(address: str) -> Optional[str]:
-    if (name := known_names().get(address)) is None:
+    if (name := known_names().pop(address, None)) is None:
         get_token = _get_get_token()
         name = get_token(address, sync=True).name
     if name:
@@ -136,7 +136,7 @@ def _set_name(address: str, name: str) -> None:
 
 @a_sync_read_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
-    if (decimals := known_decimals().get(address)) is None:
+    if (decimals := known_decimals().pop(address, None)) is None:
         get_token = _get_get_token()
         decimals = get_token(address, sync=True).decimals
     if decimals:
