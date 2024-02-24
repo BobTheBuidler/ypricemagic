@@ -10,7 +10,7 @@ from cachetools.func import ttl_cache
 from pony.orm import select
 
 from y import constants
-from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, log_result_count
 from y._db.entities import Price, insert
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
@@ -53,6 +53,7 @@ def _set_price(address: str, block: int, price: Decimal) -> None:
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
 
 @ttl_cache(maxsize=1_000, ttl=5*60)
+@log_result_count("prices", ["block"])
 def known_prices_at_block(number: int) -> Dict[Address, Decimal]:
     """cache and return all known prices at block `number` to minimize db reads"""
     return dict(select((p.token.address, p.price) for p in Price if p.block.chain.id == chain.id and p.block.number == number))

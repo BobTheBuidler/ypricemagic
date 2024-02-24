@@ -10,7 +10,7 @@ from cachetools.func import ttl_cache
 from pony.orm import select
 from brownie import chain
 
-from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached, log_result_count
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
 from y._db.utils._ep import _get_get_block
 
@@ -93,16 +93,19 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
 # startup caches
     
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("blocks")
 def known_blocks() -> Set[int]:
     """cache and return all known blocks for this chain to minimize db reads"""
     return set(select(b.number for b in Block if b.chain.id == chain.id))
 
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("block timestamps")
 def known_block_timestamps() -> Dict[int, datetime]:
     """cache and return all known block timestamps for this chain to minimize db reads"""
     return dict(select((b.number, b.timestamp) for b in Block if b.chain.id == chain.id and b.timestamp))
 
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("blocks for timestamps")
 def known_blocks_for_timestamps() -> Dict[datetime, int]:
     """return all known blocks for timestamps for this chain to minimize db reads"""
     return dict(select((x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == chain.id))

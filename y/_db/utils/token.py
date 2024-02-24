@@ -9,7 +9,7 @@ from cachetools.func import ttl_cache
 from pony.orm import commit, select
 
 from y import constants
-from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, log_result_count
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token
@@ -147,26 +147,31 @@ def _get_token_decimals(address: str) -> Optional[int]:
 # startup caches
     
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("tokens")
 def known_tokens() -> Set[str]:
     """cache and return all known Tokens for this chain to minimize db reads"""
     return set(select(t.address for t in Token if t.chain.id == chain.id))
 
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("buckets")
 def known_buckets() -> Dict[str, str]:
     """cache and return all known token buckets for this chain to minimize db reads"""
     return dict(select((t.address, t.bucket) for t in Token if t.chain.id == chain.id and t.bucket))
 
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("token decimals")
 def known_decimals() -> Dict[Address, int]:
     """cache and return all known token decimals for this chain to minimize db reads"""
     return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
 
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("token symbols")
 def known_symbols() -> Dict[Address, str]:
     """cache and return all known token symbols for this chain to minimize db reads"""
     return dict(select((t.address, t.symbol) for t in Token if t.chain.id == chain.id and t.symbol))
 
 @ttl_cache(maxsize=1, ttl=60*60)
+@log_result_count("token names")
 def known_names() -> Dict[Address, str]:
     """cache and return all known token names for this chain to minimize db reads"""
     return dict(select((t.address, t.name) for t in Token if t.chain.id == chain.id and t.name))
