@@ -10,6 +10,7 @@ import eth_retry
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
+from dank_mids import dank_web3
 from dank_mids.semaphores import BlockSemaphore
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
@@ -22,7 +23,6 @@ from y import convert
 from y._db.decorators import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y.decorators import stuck_coro_debugger
-from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
 T = TypeVar('T')
@@ -265,7 +265,7 @@ class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
             if start > end:
                 raise ValueError(f"start {start} is bigger than end {end}, can't do that")
         else:
-            while start > (end := await dank_w3.eth.block_number):
+            while start > (end := await dank_web3.eth.block_number):
                 logger.debug('%s start %s is greater than end %s, sleeping...', self, start, end)
                 await asyncio.sleep(1)
         await self._load_range(start, end)

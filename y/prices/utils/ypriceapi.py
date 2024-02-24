@@ -15,13 +15,13 @@ from aiohttp.client_exceptions import (ClientConnectorSSLError, ClientError,
                                        ContentTypeError)
 from async_lru import alru_cache
 from brownie import chain
+from dank_mids import dank_web3
 from dank_mids.semaphores import BlockSemaphore
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
 from y.datatypes import Address, Block
 from y.networks import Network
-from y.utils.dank_mids import dank_w3
 
 logger = logging.getLogger(__name__)
 
@@ -140,7 +140,7 @@ async def get_price(
         return None
 
     if block is None:
-        block = await dank_w3.eth.block_number
+        block = await dank_web3.eth.block_number
 
     async with YPRICEAPI_SEMAPHORE[block]:
         try:

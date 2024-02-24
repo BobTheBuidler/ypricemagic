@@ -15,6 +15,7 @@ from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
+from dank_mids import dank_web3
 from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
@@ -26,7 +27,6 @@ from y._db import structs
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
-from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
 if TYPE_CHECKING:
@@ -80,7 +80,7 @@ async def get_logs_asap(
         from y.contracts import contract_creation_block_async
         from_block = 0 if address is None else await contract_creation_block_async(address, True)
     if to_block is None:
-        to_block = await dank_w3.eth.block_number
+        to_block = await dank_web3.eth.block_number
 
     ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
     if verbose > 0:
@@ -111,7 +111,7 @@ async def get_logs_asap_generator(
         else:
             from_block = await contract_creation_block_async(address, True)
     if to_block is None:
-        to_block = await dank_w3.eth.block_number
+        to_block = await dank_web3.eth.block_number
     elif run_forever:
         raise TypeError('`to_block` must be None if `run_forever` is True.')
     if from_block > to_block:
@@ -142,10 +142,10 @@ async def get_logs_asap_generator(
         await asyncio.sleep(run_forever_interval)
         
         # Find start and end block for next loop
-        current_block = await dank_w3.eth.block_number
+        current_block = await dank_web3.eth.block_number
         while current_block <= to_block:
             await asyncio.sleep(run_forever_interval)
-            current_block = await dank_w3.eth.block_number
+            current_block = await dank_web3.eth.block_number
         from_block = to_block + 1 if to_block + 1 <= current_block else current_block
         to_block = current_block
 
@@ -211,11 +211,11 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
 async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
     try:
         if address is None:
-            return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+            return await dank_web3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
         elif topics is None:
-            return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+            return await dank_web3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
         else:
-            return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+            return await dank_web3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
     except Exception as e:
         errs = [
             "Service Unavailable for url:",

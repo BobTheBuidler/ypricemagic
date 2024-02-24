@@ -6,6 +6,7 @@ from y import time
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from brownie.network.event import _EventItem
+from dank_mids import dank_web3
 from multicall import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -15,7 +16,6 @@ from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from y.utils.dank_mids import dank_w3
 from y.utils.events import ProcessedEvents
 
 logger = logging.getLogger(__name__)
@@ -252,14 +252,14 @@ class Chainlink(a_sync.ASyncGenericBase):
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
     async def get_feed(self, asset: Address) -> Optional[Feed]:
         asset = convert.to_address(asset)
-        async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
+        async for feed in self._feeds_thru_block(await dank_web3.eth.block_number):
             if asset == feed.asset:
                 return feed
     
     async def has_feed(self, asset: AnyAddressType) -> bool:
         # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
         asset = convert.to_address(asset)
-        async for feed in self._feeds_thru_block(await dank_w3.eth.block_number):
+        async for feed in self._feeds_thru_block(await dank_web3.eth.block_number):
             if asset == feed.asset:
                 return True
         return False
@@ -267,7 +267,7 @@ class Chainlink(a_sync.ASyncGenericBase):
    # @a_sync.future
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
-            block = await dank_w3.eth.block_number
+            block = await dank_web3.eth.block_number
         logger.debug("getting price for %s at %s", asset, block)
         return await self._get_price(asset, block)
 
