@@ -5,6 +5,7 @@ import time
 from typing import Union
 
 import a_sync
+import dank_mids
 import eth_retry
 from async_lru import alru_cache
 from brownie import chain, web3
@@ -20,7 +21,6 @@ from y.exceptions import NoBlockFound, NodeNotSynced
 from y.networks import Network
 from y.utils.cache import memory
 from y.utils.client import get_ethereum_client, get_ethereum_client_async
-from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
@@ -48,10 +48,10 @@ async def get_block_timestamp_async(height: int) -> int:
         return ts
     client = await get_ethereum_client_async()
     if client in ['tg', 'erigon']:
-        header = await dank_w3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
+        header = await dank_mids.web3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
         ts = int(header.timestamp, 16)
     else:
-        block = await dank_w3.eth.get_block(height)
+        block = await dank_mids.eth.get_block(height)
         ts = block.timestamp
     db.set_block_timestamp(height, ts)
     return ts
@@ -135,7 +135,7 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
     
     await check_node_async()
 
-    height = await dank_w3.eth.block_number
+    height = await dank_mids.eth.block_number
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
@@ -178,7 +178,7 @@ async def check_node_async() -> None:
     if GANACHE_FORK:
         return
     current_time = time.time()
-    latest = await dank_w3.eth.get_block('latest')
+    latest = await dank_mids.eth.get_block('latest')
     node_timestamp = latest.timestamp
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")

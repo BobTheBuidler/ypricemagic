@@ -12,6 +12,8 @@ if not network.is_connected():
         raise NetworkNotSpecified('In order to use pricemagic outside of a brownie project directory, you will need to set $BROWNIE_NETWORK_ID environment variable with the id of your preferred brownie network connection.')
     network.connect(os.environ['BROWNIE_NETWORK_ID'])
 
+# for backwards-compatability
+from dank_mids import dank_web3 as dank_w3
 
 from y import time
 from y.classes.common import ERC20
@@ -28,7 +30,6 @@ from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices
 from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
-from y.utils.dank_mids import dank_w3
 from y.utils.logging import enable_debug_logging
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import balanceOf, raw_call

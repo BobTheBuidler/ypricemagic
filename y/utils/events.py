@@ -9,13 +9,13 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
                     TypeVar, Union)
 
 import a_sync
+import dank_mids
 import eth_retry
 from a_sync.primitives.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.network.event import EventDict, _decode_logs, _EventItem
-from dank_mids.semaphores import BlockSemaphore
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -26,7 +26,6 @@ from y._db import structs
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
-from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
 if TYPE_CHECKING:
@@ -80,7 +79,7 @@ async def get_logs_asap(
         from y.contracts import contract_creation_block_async
         from_block = 0 if address is None else await contract_creation_block_async(address, True)
     if to_block is None:
-        to_block = await dank_w3.eth.block_number
+        to_block = await dank_mids.eth.block_number
 
     ranges = list(block_ranges(from_block, to_block, BATCH_SIZE))
     if verbose > 0:
@@ -111,7 +110,7 @@ async def get_logs_asap_generator(
         else:
             from_block = await contract_creation_block_async(address, True)
     if to_block is None:
-        to_block = await dank_w3.eth.block_number
+        to_block = await dank_mids.eth.block_number
     elif run_forever:
         raise TypeError('`to_block` must be None if `run_forever` is True.')
     if from_block > to_block:
@@ -142,10 +141,10 @@ async def get_logs_asap_generator(
         await asyncio.sleep(run_forever_interval)
         
         # Find start and end block for next loop
-        current_block = await dank_w3.eth.block_number
+        current_block = await dank_mids.eth.block_number
         while current_block <= to_block:
             await asyncio.sleep(run_forever_interval)
-            current_block = await dank_w3.eth.block_number
+            current_block = await dank_mids.eth.block_number
         from_block = to_block + 1 if to_block + 1 <= current_block else current_block
         to_block = current_block
 
@@ -196,7 +195,7 @@ def _get_logs(
     return response
 
 get_logs_semaphore = defaultdict(
-    lambda: BlockSemaphore(
+    lambda: dank_mids.BlockSemaphore(
         ENVS.GETLOGS_DOP, 
         # We need to do this in case users use the sync api in a multithread context
         name="y.get_logs" + "" if threading.current_thread() == threading.main_thread() else f".{threading.current_thread()}",
@@ -211,11 +210,11 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
 async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
     try:
         if address is None:
-            return await dank_w3.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
+            return await dank_mids.eth.get_logs({"topics": topics, "fromBlock": start, "toBlock": end})
         elif topics is None:
-            return await dank_w3.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
+            return await dank_mids.eth.get_logs({"address": address, "fromBlock": start, "toBlock": end})
         else:
-            return await dank_w3.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
+            return await dank_mids.eth.get_logs({"address": address, "topics": topics, "fromBlock": start, "toBlock": end})
     except Exception as e:
         errs = [
             "Service Unavailable for url:",
@@ -304,7 +303,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         from_block: Optional[int] = None,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
-        semaphore: Optional[BlockSemaphore] = None,
+        semaphore: Optional[dank_mids.BlockSemaphore] = None,
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
         verbose: bool = False,
@@ -324,7 +323,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         return self._cache
     
     @property
-    def semaphore(self) -> BlockSemaphore:
+    def semaphore(self) -> dank_mids.BlockSemaphore:
         if self._semaphore is None:
             self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
         return self._semaphore

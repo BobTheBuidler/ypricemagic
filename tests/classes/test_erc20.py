@@ -1,3 +1,5 @@
+
+import dank_mids
 import pytest
 from brownie import ZERO_ADDRESS, chain
 from multicall import Call
@@ -9,7 +11,6 @@ from y.constants import WRAPPED_GAS_COIN, wbtc
 from y.contracts import Contract
 from y.exceptions import NoProxyImplementation, call_reverted
 from y.networks import Network
-from y.utils.dank_mids import dank_w3
 
 TOKENS = list(STABLECOINS) + [WRAPPED_GAS_COIN, wbtc.address]
 
@@ -46,7 +47,7 @@ async def test_erc20_async(token):
     if token.address == OLD_SUSD:
         pytest.skip('Not applicable to deprecated sUSD.')
 
-    block = await dank_w3.eth.block_number
+    block = await dank_mids.eth.block_number
     assert isinstance(token.contract, Contract), f'Cannot fetch contract for token {token}'
     assert isinstance(await token.build_name, str), f'Cannot fetch build name for token {token}'
     assert isinstance(await token.symbol, str), f'Cannot fetch symbol for token {token}'

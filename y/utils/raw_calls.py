@@ -4,6 +4,7 @@ from typing import Any, Callable, Optional, Union
 
 import a_sync
 import brownie
+import dank_mids
 from brownie import ZERO_ADDRESS, convert
 from brownie.convert.datatypes import EthAddress
 from eth_utils import encode_hex
@@ -15,7 +16,6 @@ from y.exceptions import (CalldataPreparationError, ContractNotVerified,
                           NonStandardERC20, NoProxyImplementation,
                           call_reverted)
 from y.networks import Network
-from y.utils.dank_mids import dank_w3
 from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
@@ -276,7 +276,7 @@ async def raw_call(
 
     data = {'to': convert.to_address(contract_address),'data': prepare_data(method,inputs)}
 
-    try: response = await dank_w3.eth.call(data,block_identifier=block)
+    try: response = await dank_mids.eth.call(data,block_identifier=block)
     except ValueError as e:
         if return_None_on_failure is False:                 raise
         if call_reverted(e):                                return None

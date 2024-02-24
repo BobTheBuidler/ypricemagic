@@ -3,6 +3,7 @@ import logging
 from typing import List, Optional, Set, Tuple
 
 import a_sync
+import dank_mids
 import eth_retry
 from async_lru import alru_cache
 from brownie import chain
@@ -17,7 +18,6 @@ from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils import gather_methods
-from y.utils.dank_mids import dank_w3
 from y.utils.raw_calls import raw_call
 
 _INIT_METHODS = 'token0()(address)', 'token1()(address)', 'stable()(bool)'
@@ -61,7 +61,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @eth_retry.auto_retry
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
-        if await dank_w3.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
+        if await dank_mids.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
             return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
     
     @a_sync.aka.cached_property
@@ -83,7 +83,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
                     deploy_block=event.block_number, 
                     asynchronous=self.asynchronous,
                 )
-                async for event in factory.events.PoolCreated.events(to_block=await dank_w3.eth.block_number)
+                async for event in factory.events.PoolCreated.events(to_block=await dank_mids.eth.block_number)
             }
         except Exception as e:
             print(e)
@@ -172,4 +172,4 @@ class VelodromeRouterV2(SolidlyRouterBase):
         )
 
 
-_get_code = alru_cache(maxsize=None)(dank_w3.eth.get_code)
+_get_code = alru_cache(maxsize=None)(dank_mids.eth.get_code)

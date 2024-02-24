@@ -4,8 +4,8 @@ from itertools import chain
 from typing import AsyncIterator, List, Optional
 
 import a_sync
+import dank_mids
 from a_sync.primitives.executor import _AsyncExecutorMixin
-from dank_mids.semaphores import BlockSemaphore
 from msgspec import json
 from pony.orm import commit, select
 
@@ -13,7 +13,6 @@ from y._db.common import DiskCache, Filter, _clean_addresses, filter_threads
 from y._db.decorators import a_sync_write_db_session
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils._ep import _get_get_block
-from y.utils.dank_mids import dank_w3
 from y.utils.middleware import BATCH_SIZE
 
 logger = logging.getLogger(__name__)
@@ -170,7 +169,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         *,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
-        semaphore: Optional[BlockSemaphore] = None,
+        semaphore: Optional[dank_mids.BlockSemaphore] = None,
         executor: _AsyncExecutorMixin = filter_threads,
         is_reusable: bool = True,
         verbose: bool = False,
@@ -190,14 +189,14 @@ class TraceFilter(Filter[dict, TraceCache]):
 
     async def _fetch_range(self, from_block: int, to_block: int) -> List[dict]:
         try:
-            return await dank_w3.provider.make_request("TraceFilter", {})
+            return await dank_mids.web3.provider.make_request("TraceFilter", {})
         except NotImplementedError:
             results = {block: traces async for block, traces in a_sync.map(self._trace_block, range(from_block, to_block))}
             return list(chain(*[results[i] for i in range(from_block, to_block)]))
         
     async def _trace_block(self, block: int) -> List[dict]:
         return [
-            trace for trace in await dank_w3.provider.make_request("TraceBlock", block)
+            trace for trace in await dank_mids.web3.provider.make_request("TraceBlock", block)
             if (not self.from_addresses or any("from" in x and x["from"] in self.from_addresses for x in [trace, trace.values()]))
             and (not self.to_addresses or any("to" in x and x["to"] in self.to_addresses for x in [trace, trace.values()]))
         ]
