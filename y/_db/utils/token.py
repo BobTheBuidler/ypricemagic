@@ -34,6 +34,7 @@ def get_token(address: str) -> Token:
             commit()
         return insert(type=Token, chain=chain.id, address=address) or Token.get(chain=chain.id, address=address)
 
+@a_sync.a_sync(default='sync', ram_cache_maxsize=None)
 @lru_cache(maxsize=None)
 def ensure_token(address: str) -> None:
     if address not in known_tokens():

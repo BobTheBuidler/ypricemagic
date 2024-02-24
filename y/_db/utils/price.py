@@ -40,17 +40,18 @@ def set_price(address: str, block: int, price: Decimal) -> None:
     )
 
 @a_sync_write_db_session
-def _set_price(address: str, block: int, price: Decimal) -> None:
+async def _set_price(address: str, block: int, price: Decimal) -> None:
+    await ensure_block(block, sync=False)
+    if address == constants.EEE_ADDRESS:
+        address = constants.WRAPPED_GAS_COIN
+    await ensure_token(address, sync=False)
     with suppress(InvalidOperation): # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
-        ensure_block(block, sync=True)
-        if address == constants.EEE_ADDRESS:
-            address = constants.WRAPPED_GAS_COIN
-        ensure_token(address)
-        insert(
+        await insert(
             type = Price,
             block = (chain.id, block),
             token = (chain.id, address),
             price = Decimal(price),
+            sync = False,
         )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
 
