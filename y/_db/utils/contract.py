@@ -26,11 +26,6 @@ def get_deploy_block(address: str) -> Optional[int]:
         return deploy_block.number
     logger.debug('%s deploy block not cached, fetching from chain', address)
 
-@ttl_cache(maxsize=1, ttl=60*60)
-def known_deploy_blocks() -> Dict[Address, Block]:
-    """return all known contract deploy blocks to minimize db reads"""
-    return dict(select((c.address, c.deploy_block.number) for c in Contract if c.chain.id == chain.id and c.deploy_block.number))
-
 def set_deploy_block(address: str, deploy_block: int) -> None:
     a_sync.create_task(
         coro=_set_deploy_block(address, deploy_block),
@@ -45,3 +40,11 @@ def _set_deploy_block(address: str, deploy_block: int) -> None:
     ensure_block(deploy_block, sync=True)
     get_token(address, sync=True).deploy_block = (chain.id, deploy_block)
     logger.debug('deploy block cached for %s: %s', address, deploy_block)
+
+
+# startup caches
+    
+@ttl_cache(maxsize=1, ttl=60*60)
+def known_deploy_blocks() -> Dict[Address, Block]:
+    """cache and return all known contract deploy blocks for this chain to minimize db reads"""
+    return dict(select((c.address, c.deploy_block.number) for c in Contract if c.chain.id == chain.id and c.deploy_block.number))
