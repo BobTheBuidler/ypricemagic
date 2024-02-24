@@ -3,9 +3,11 @@ import logging
 from datetime import datetime, timezone
 from dateutil import parser
 from functools import lru_cache
-from typing import Optional
+from typing import Dict, Optional
 
 import a_sync
+from cachetools.func import ttl_cache
+from pony.orm import select
 from brownie import chain
 
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached
@@ -57,10 +59,18 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
 
 @a_sync_read_db_session
 def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
-    if entity := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):
+    if block := known_blocks_for_timestamps().get(timestamp):
+        logger.debug("found block %s for %s in ydb", block, timestamp)
+        return block
+    elif entity := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):
         block = entity.block
         logger.debug("found block %s for %s in ydb", block, timestamp)
         return block
+
+@ttl_cache(maxsize=1, ttl=60*60)
+def known_blocks_for_timestamps() -> Dict[datetime, int]:
+    """return all known blocks for timestamps for this chain to minimize db reads"""
+    return dict(select((x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == chain.id))
     
 def set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     a_sync.create_task(

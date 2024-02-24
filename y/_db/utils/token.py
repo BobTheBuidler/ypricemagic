@@ -1,11 +1,12 @@
 
 import logging
 from functools import lru_cache
-from typing import Optional
+from typing import Dict, Optional
 
 import a_sync
 from brownie import chain, convert
-from pony.orm import commit
+from cachetools.func import ttl_cache
+from pony.orm import commit, select
 
 from y import constants
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
@@ -63,8 +64,9 @@ def _set_bucket(address: str, bucket: str) -> None:
 
 @a_sync_read_db_session
 def get_symbol(address: str) -> Optional[str]:
-    get_token = _get_get_token()
-    symbol = get_token(address, sync=True).symbol
+    if (symbol := known_symbols().get(address)) is None:
+        get_token = _get_get_token()
+        symbol = get_token(address, sync=True).symbol
     if symbol:
         logger.debug("found %s symbol %s in ydb", address, symbol)
     return symbol
@@ -82,8 +84,9 @@ def set_symbol(address: str, symbol: str):
 
 @a_sync_read_db_session
 def get_name(address: str) -> Optional[str]:
-    get_token = _get_get_token()
-    name = get_token(address, sync=True).name
+    if (name := known_names().get(address)) is None:
+        get_token = _get_get_token()
+        name = get_token(address, sync=True).name
     if name:
         logger.debug("found %s name %s in ydb", address, name)
     return name
@@ -131,8 +134,21 @@ def _set_name(address: str, name: str) -> None:
 
 @a_sync_read_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
-    get_token = _get_get_token()
-    decimals = get_token(address, sync=True).decimals
-    logger.debug("found %s decimals %s in ydb", address, decimals)
+    if (decimals := known_decimals().get(address)) is None:
+        get_token = _get_get_token()
+        decimals = get_token(address, sync=True).decimals
     if decimals:
+        logger.debug("found %s decimals %s in ydb", address, decimals)
         return decimals
+
+@ttl_cache(maxsize=1, ttl=60*60)
+def known_decimals() -> Dict[Address, int]:
+    return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
+
+@ttl_cache(maxsize=1, ttl=60*60)
+def known_symbols() -> Dict[Address, str]:
+    return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
+
+@ttl_cache(maxsize=1, ttl=60*60)
+def known_names() -> Dict[Address, str]:
+    return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
