@@ -26,8 +26,6 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
     if price := known_prices_at_block(block).get(address):
         logger.debug("found %s block %s price %s in ydb", address, block, price)
         return price
-    ensure_block(block, sync=True)
-    ensure_token(address)
     if (price := Price.get(token = (chain.id, address), block = (chain.id, block))) and (price:=price.price):
         logger.debug("found %s block %s price %s in ydb", address, block, price)
         return price
