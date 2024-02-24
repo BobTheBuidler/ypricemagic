@@ -51,7 +51,7 @@ def get_block_timestamp(number: int) -> Optional[int]:
             # TODO: debug why this happens, but only sometimes
             ts = parser.parse(ts)
         unix = ts.timestamp()
-        logger.debug("got %s.timestamp from cache: %s, %s", block, unix, ts)
+        logger.debug("got Block[%s, %s].timestamp from cache: %s, %s", chain.id, number, unix, ts)
         return unix
     
 def set_block_timestamp(block: int, timestamp: int) -> None:
