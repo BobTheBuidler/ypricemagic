@@ -1,5 +1,4 @@
 
-import asyncio
 import logging
 from typing import List, Optional
 
@@ -15,27 +14,9 @@ from web3.types import LogReceipt
 from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
-from y._db.utils.utils import ensure_block
-from y import ENVIRONMENT_VARIABLES as ENVS
 
 logger = logging.getLogger(__name__)
 
-
-@db_session
-@decorators.retry_locked
-def insert_log(log: LogReceipt) -> None:
-    block = log['blockNumber']
-    ensure_block(block, sync=True)
-    log_topics = log['topics']
-    entities.insert(
-        type=entities.Log,
-        block=(chain.id, block),
-        transaction_hash = log['transactionHash'].hex(),
-        log_index = log['logIndex'],
-        address = log['address'],
-        **{f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))},
-        raw = json.encode(log, enc_hook=enc_hook),
-    )
 
 async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     items = [
@@ -49,8 +30,6 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
             "raw": json.encode(log, enc_hook=enc_hook)
         } for log in logs
     ]
-    # TODO: replace this with bulk insert for big data projects
-    #await asyncio.gather(*[ensure_block(block) for block in {log['blockNumber'] for log in logs}])
     await executor.run(_bulk_insert, [tuple(i.values()) for i in items])
     logger.debug('inserted %s logs to ydb', len(logs))
 
