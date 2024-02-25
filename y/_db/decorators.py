@@ -30,7 +30,8 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 commit()
                 return retval
             except (CommitException, OperationalError, UnexpectedError) as e:
-                logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
+                log = logger.warning if sleep > 1 else logger.debug
+                log("%s.%s got exc %s", callable.__module__, callable.__name__, e)
                 if "database is locked" not in str(e):
                     raise e
                 time.sleep(sleep)
