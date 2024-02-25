@@ -35,8 +35,12 @@ def get_token(address: str) -> Token:
         return insert(type=Token, chain=chain.id, address=address) or Token.get(chain=chain.id, address=address)
 
 @a_sync.a_sync(default='sync', ram_cache_maxsize=None)
-@lru_cache(maxsize=None)
 def ensure_token(address: str) -> None:
+    return _ensure_token(address)
+
+@lru_cache(maxsize=None)
+def _ensure_token(address: str) -> None:
+    """We can't wrap a `_Wrapped` object with `a_sync` so we have this helper fn"""
     if address not in known_tokens():
         get_token = _get_get_token()
         get_token(address, sync=True)
