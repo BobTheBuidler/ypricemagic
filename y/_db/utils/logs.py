@@ -38,13 +38,6 @@ def insert_log(log: LogReceipt) -> None:
     )
 
 async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
-    # TODO: replace this with bulk insert for big data projects
-    await asyncio.gather(*[ensure_block(block) for block in {log['blockNumber'] for log in logs}])
-    return await executor.run(_bulk_insert, logs)
-
-@db_session
-@decorators.retry_locked
-def _bulk_insert(logs: List[LogReceipt]) -> None:
     items = [
         {
             "block_chain": chain.id,
@@ -56,11 +49,10 @@ def _bulk_insert(logs: List[LogReceipt]) -> None:
             "raw": json.encode(log, enc_hook=enc_hook)
         } for log in logs
     ]
-        
-    columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
-    bulk.insert(entities.Log, columns, [tuple(i.values()) for i in items], sync=True)
-    commit()
-    logger.debug('inserted %s logs to ydb', len(items))
+    # TODO: replace this with bulk insert for big data projects
+    await asyncio.gather(*[ensure_block(block) for block in {log['blockNumber'] for log in logs}])
+    await executor.run(_bulk_insert, [tuple(i.values()) for i in items])
+    logger.debug('inserted %s logs to ydb', len(logs))
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
@@ -237,3 +229,11 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
                 return (log for log in generator if getattr(log, topic) == value)
             return (log for log in generator if getattr(log, topic) in value)
         return generator
+
+
+@db_session
+@decorators.retry_locked
+def _bulk_insert(items: List[tuple]) -> None:
+    columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
+    bulk.insert(entities.Log, columns, items, sync=True)
+    commit()
