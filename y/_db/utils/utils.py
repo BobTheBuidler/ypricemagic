@@ -44,8 +44,8 @@ def ensure_block(number: int) -> None:
 def get_block_timestamp(number: int) -> Optional[int]:
     if (ts := known_block_timestamps().pop(number, None)) is None:
         get_block = _get_get_block()
-        block = get_block(number, sync=True)
-    if ts := ts or block.timestamp:
+        ts = get_block(number, sync=True).timestamp
+    if ts:
         if isinstance(ts, str):
             # TODO: debug why this happens, but only sometimes
             ts = parser.parse(ts)

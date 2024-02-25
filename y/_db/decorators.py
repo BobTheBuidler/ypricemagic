@@ -17,7 +17,7 @@ _P = ParamSpec('_P')
 logger = logging.getLogger(__name__)
 
 
-ydb_read_threads = a_sync.PruningThreadPoolExecutor(32)
+ydb_read_threads = a_sync.PruningThreadPoolExecutor(16)
 ydb_write_threads = a_sync.PruningThreadPoolExecutor(16)
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
@@ -41,7 +41,7 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                     raise e
     return retry_locked_wrap
 
-a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_write_threads)(
+a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads)(
     retry_locked(
         db_session(
             retry_locked(
@@ -51,7 +51,7 @@ a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = la
     )
 )
 
-a_sync_write_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads)(
+a_sync_write_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_write_threads)(
     retry_locked(
         db_session(
             retry_locked(
@@ -61,19 +61,7 @@ a_sync_write_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = l
     )
 )
 
-a_sync_read_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads)(
-    retry_locked(
-        lru_cache(maxsize=None)(
-            db_session(
-                retry_locked(
-                    fn
-                )
-            )
-        )
-    )
-)
-
-a_sync_write_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads, ram_cache_maxsize=None)(
+a_sync_write_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_write_threads, ram_cache_maxsize=None)(
     retry_locked(
         lru_cache(maxsize=None)(
             db_session(
