@@ -9,7 +9,7 @@ from a_sync.primitives.executor import _AsyncExecutorMixin
 from msgspec import json
 from pony.orm import commit, select
 
-from y._db.common import DiskCache, Filter, _clean_addresses, filter_threads
+from y._db.common import DiskCache, Filter, _clean_addresses, default_filter_threads
 from y._db.decorators import a_sync_write_db_session
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils._ep import _get_get_block
@@ -170,7 +170,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
         semaphore: Optional[dank_mids.BlockSemaphore] = None,
-        executor: _AsyncExecutorMixin = filter_threads,
+        executor: _AsyncExecutorMixin = default_filter_threads,
         is_reusable: bool = True,
         verbose: bool = False,
     ):

@@ -29,7 +29,7 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-filter_threads = a_sync.PruningThreadPoolExecutor(16)
+default_filter_threads = a_sync.PruningThreadPoolExecutor(4)
 
 def enc_hook(obj: Any) -> bytes:
     if isinstance(obj, AttributeDict):
@@ -107,7 +107,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     @property
     def executor(self) -> _AsyncExecutorMixin:
         if self._executor is None:
-            self._executor = filter_threads
+            self._executor = default_filter_threads
         return self._executor
 
     @abc.abstractproperty
