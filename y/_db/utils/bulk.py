@@ -65,4 +65,4 @@ def insert(
         execute(f'insert into {entity_name} ({",".join(columns)}) values {data} on conflict do nothing', db=db)
     else:
         raise NotImplementedError(db.provider_name)
-    logger.debug('inserted %s %ss to ydb', len(data), entity_name)
+    logger.debug('inserted %s %ss to ydb', len(items), entity_name)
