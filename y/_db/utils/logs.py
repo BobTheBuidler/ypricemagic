@@ -38,11 +38,11 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
     if _check_using_extended_db():
         # TODO: refactor this ugly shit out
         block_cols.append("classtype")
-        [(chain.id, block, "BlockExtended") for block in {log['blockNumber'] for log in logs}]
+        blocks = [(chain.id, block, "BlockExtended") for block in {log['blockNumber'] for log in logs}]
     else:
         blocks = [(chain.id, block) for block in {log['blockNumber'] for log in logs}]
-
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
+    
     log_cols = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
     await executor.run(bulk.insert, entities.Log, log_cols, [_prepare_log(log) for log in logs], sync=True)
 
