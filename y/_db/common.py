@@ -2,7 +2,7 @@
 import abc
 import asyncio
 import logging
-from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
+from typing import (Any, AsyncIterator, Awaitable, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
 import a_sync
@@ -115,7 +115,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         ...
     
     #abc.abstractproperty
-    def bulk_insert(self) -> Callable[[List[T]], None]:
+    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
         ...
         
     def _extend(self, objs) -> None:
@@ -328,7 +328,7 @@ class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
         if prev_chunk_task:
             await prev_chunk_task
         if objs:
-            await self.executor.run(self.bulk_insert, objs)
+            await self.bulk_insert(objs, executor=self.executor)
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         logger.debug("%s chunk %s thru block %s is now in db", self, depth, done_thru)
     

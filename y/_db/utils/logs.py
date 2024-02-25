@@ -1,7 +1,9 @@
 
+import asyncio
 import logging
 from typing import List, Optional
 
+from a_sync.primitives.executor import _AsyncExecutorMixin
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
@@ -11,7 +13,7 @@ from pony.orm.core import Query
 from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
-from y._db.common import DiskCache, enc_hook
+from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
 from y._db.utils.utils import ensure_block
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -35,31 +37,26 @@ def insert_log(log: LogReceipt) -> None:
         raw = json.encode(log, enc_hook=enc_hook),
     )
 
+async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+    # TODO: replace this with bulk insert for big data projects
+    await asyncio.gather(*[ensure_block(block) for block in {log['blockNumber'] for log in logs}])
+    return await executor.run(_bulk_insert, logs)
+
 @db_session
 @decorators.retry_locked
-def bulk_insert(logs: List[LogReceipt]) -> None:
-    items = []
-    blocks = set()
-    for log in logs:
-        block = log['blockNumber']
-        blocks.add(block)
-        log_topics = log['topics']
-        topics = {f"topic{i}": log_topics[i].hex() if i < len(log_topics) else None for i in range(4)}
-        item = {
+def _bulk_insert(logs: List[LogReceipt]) -> None:
+    items = [
+        {
             "block_chain": chain.id,
-            "block_number": block,
+            "block_number": log['blockNumber'],
             "transaction_hash": log['transactionHash'].hex(),
             "log_index": log['logIndex'],
             "address": log['address'],
-            **topics,
-            "raw": json.encode(log, enc_hook=enc_hook),
-        }
-        items.append(item)
-
-    # TODO: replace this with bulk insert for big data projects
-    for block in blocks:
-        ensure_block(block, sync=True)
-    #bulk.insert(entities.Block, ["chain", "number"], ((chain.id, block) for block in blocks))
+            **{f"topic{i}": log_topics[i].hex() if i < len(log_topics := log['topics']) else None for i in range(4)},
+            "raw": json.encode(log, enc_hook=enc_hook)
+        } for log in logs
+    ]
+        
     columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
     bulk.insert(entities.Log, columns, [tuple(i.values()) for i in items], sync=True)
     commit()
