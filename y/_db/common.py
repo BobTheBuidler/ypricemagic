@@ -2,7 +2,7 @@
 import abc
 import asyncio
 import logging
-from typing import (Any, AsyncIterator, Callable, Generic, List, NoReturn,
+from typing import (Any, AsyncIterator, Awaitable, Callable, Generic, List, NoReturn,
                     Optional, Type, TypeVar, Union)
 
 import a_sync
@@ -29,7 +29,7 @@ S = TypeVar('S')
 M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
-filter_threads = a_sync.PruningThreadPoolExecutor(16)
+default_filter_threads = a_sync.PruningThreadPoolExecutor(4)
 
 def enc_hook(obj: Any) -> bytes:
     if isinstance(obj, AttributeDict):
@@ -107,7 +107,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
     @property
     def executor(self) -> _AsyncExecutorMixin:
         if self._executor is None:
-            self._executor = filter_threads
+            self._executor = default_filter_threads
         return self._executor
 
     @abc.abstractproperty
@@ -115,7 +115,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         ...
     
     #abc.abstractproperty
-    def bulk_insert(self) -> Callable[[List[T]], None]:
+    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
         ...
         
     def _extend(self, objs) -> None:
@@ -133,7 +133,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
         if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
             logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
             self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
-            logger.info('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
+            logger.debug('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return None
 
@@ -328,7 +328,7 @@ class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
         if prev_chunk_task:
             await prev_chunk_task
         if objs:
-            await self.executor.run(self.bulk_insert, objs)
+            await self.bulk_insert(objs, executor=self.executor)
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         logger.debug("%s chunk %s thru block %s is now in db", self, depth, done_thru)
     

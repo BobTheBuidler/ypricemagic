@@ -3,7 +3,7 @@ import logging
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Any, Iterable
-from pony.orm import Database, DatabaseError
+from pony.orm import Database, DatabaseError, commit
 
 from y._db import entities
 from y._db.decorators import a_sync_write_db_session, retry_locked
@@ -11,18 +11,21 @@ from y._db.decorators import a_sync_write_db_session, retry_locked
 
 logger = logging.getLogger(__name__)
 
+class SQLError(ValueError):
+    ...
+
 @retry_locked
 def execute(sql: str, *, db: Database = entities.db) -> None:
     try:
         logger.debug("EXECUTING SQL")
         logger.debug(sql)
         db.execute(sql)
+        commit()
     except DatabaseError as e:
         if str(e) == "database is locked":
             raise e
         logger.warning("%s %s when executing SQL`%s`", e.__class__.__name__, e, sql)
-        raise ValueError(e, sql) from e
-            
+        raise SQLError(e, sql) from e
 
 def stringify_column_value(value: Any, provider: str) -> str:
     if value is None:
@@ -54,10 +57,12 @@ def insert(
     *,
     db: Database = entities.db,
 ) -> None:
+    entity_name = entity_type.__name__.lower()
     data = ",".join(build_row(i, db.provider_name) for i in items)
     if db.provider_name == 'sqlite':
-        execute(f'insert or ignore into {entity_type.__name__.lower()} ({",".join(columns)}) values {data}', db=db)
+        execute(f'insert or ignore into {entity_name} ({",".join(columns)}) values {data}', db=db)
     elif db.provider_name == 'postgres':
-        execute(f'insert into {entity_type.__name__.lower()} ({",".join(columns)}) values {data} on conflict do nothing', db=db)
+        execute(f'insert into {entity_name} ({",".join(columns)}) values {data} on conflict do nothing', db=db)
     else:
         raise NotImplementedError(db.provider_name)
+    logger.debug('inserted %s %ss to ydb', len(items), entity_name)

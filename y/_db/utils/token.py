@@ -1,14 +1,16 @@
 
 import logging
+import threading
 from functools import lru_cache
-from typing import Optional
+from typing import Dict, Optional, Set
 
 import a_sync
 from brownie import chain, convert
-from pony.orm import commit
+from cachetools import TTLCache, cached
+from pony.orm import commit, select
 
 from y import constants
-from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session
+from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, log_result_count
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token
@@ -31,17 +33,24 @@ def get_token(address: str) -> Token:
             commit()
         return insert(type=Token, chain=chain.id, address=address) or Token.get(chain=chain.id, address=address)
 
-@lru_cache(maxsize=None)
+@a_sync.a_sync(default='sync', ram_cache_maxsize=None)
 def ensure_token(address: str) -> None:
-    get_token = _get_get_token()
-    get_token(address, sync=True)
+    return _ensure_token(address)
+
+@lru_cache(maxsize=None)
+def _ensure_token(address: str) -> None:
+    """We can't wrap a `_Wrapped` object with `a_sync` so we have this helper fn"""
+    if address not in known_tokens():
+        get_token = _get_get_token()
+        get_token(address, sync=True)
 
 @a_sync_read_db_session
 def get_bucket(address: str) -> Optional[str]:
     if address == constants.EEE_ADDRESS:
         return
-    get_token = _get_get_token()
-    bucket = get_token(address, sync=True).bucket
+    if (bucket := known_buckets().pop(address, None)) is None:
+        get_token = _get_get_token()
+        bucket = get_token(address, sync=True).bucket
     if bucket:
         logger.debug("found %s bucket %s in ydb", address, bucket)
     return bucket
@@ -63,8 +72,9 @@ def _set_bucket(address: str, bucket: str) -> None:
 
 @a_sync_read_db_session
 def get_symbol(address: str) -> Optional[str]:
-    get_token = _get_get_token()
-    symbol = get_token(address, sync=True).symbol
+    if (symbol := known_symbols().pop(address, None)) is None:
+        get_token = _get_get_token()
+        symbol = get_token(address, sync=True).symbol
     if symbol:
         logger.debug("found %s symbol %s in ydb", address, symbol)
     return symbol
@@ -82,8 +92,9 @@ def set_symbol(address: str, symbol: str):
 
 @a_sync_read_db_session
 def get_name(address: str) -> Optional[str]:
-    get_token = _get_get_token()
-    name = get_token(address, sync=True).name
+    if (name := known_names().pop(address, None)) is None:
+        get_token = _get_get_token()
+        name = get_token(address, sync=True).name
     if name:
         logger.debug("found %s name %s in ydb", address, name)
     return name
@@ -131,8 +142,42 @@ def _set_name(address: str, name: str) -> None:
 
 @a_sync_read_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
-    get_token = _get_get_token()
-    decimals = get_token(address, sync=True).decimals
-    logger.debug("found %s decimals %s in ydb", address, decimals)
+    if (decimals := known_decimals().pop(address, None)) is None:
+        get_token = _get_get_token()
+        decimals = get_token(address, sync=True).decimals
     if decimals:
+        logger.debug("found %s decimals %s in ydb", address, decimals)
         return decimals
+
+
+# startup caches
+    
+@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@log_result_count("tokens")
+def known_tokens() -> Set[str]:
+    """cache and return all known Tokens for this chain to minimize db reads"""
+    return set(select(t.address for t in Token if t.chain.id == chain.id))
+
+@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@log_result_count("buckets")
+def known_buckets() -> Dict[str, str]:
+    """cache and return all known token buckets for this chain to minimize db reads"""
+    return dict(select((t.address, t.bucket) for t in Token if t.chain.id == chain.id and t.bucket))
+
+@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@log_result_count("token decimals")
+def known_decimals() -> Dict[Address, int]:
+    """cache and return all known token decimals for this chain to minimize db reads"""
+    return dict(select((t.address, t.decimals) for t in Token if t.chain.id == chain.id and t.decimals))
+
+@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@log_result_count("token symbols")
+def known_symbols() -> Dict[Address, str]:
+    """cache and return all known token symbols for this chain to minimize db reads"""
+    return dict(select((t.address, t.symbol) for t in Token if t.chain.id == chain.id and t.symbol))
+
+@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@log_result_count("token names")
+def known_names() -> Dict[Address, str]:
+    """cache and return all known token names for this chain to minimize db reads"""
+    return dict(select((t.address, t.name) for t in Token if t.chain.id == chain.id and t.name))

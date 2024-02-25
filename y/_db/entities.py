@@ -5,11 +5,12 @@ from decimal import Decimal
 from typing import Any
 from typing import Optional as typing_Optional
 
+import a_sync
 from pony.orm import (Database, InterfaceError, Optional, PrimaryKey, 
                       Required, Set, TransactionIntegrityError, commit,
                       composite_index, db_session)
 
-from y._db.decorators import retry_locked
+from y._db.decorators import retry_locked, ydb_write_threads
 
 db = Database()
 
@@ -130,6 +131,7 @@ class BlockAtTimestamp(db.Entity):
     block = Required(int)
 
 
+@a_sync.a_sync(executor=ydb_write_threads)
 @db_session
 @retry_locked
 def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:

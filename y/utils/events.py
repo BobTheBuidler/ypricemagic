@@ -5,8 +5,8 @@ import threading
 from collections import Counter, defaultdict
 from itertools import zip_longest
 from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
-                    Callable, Dict, Iterable, List, NoReturn, Optional,
-                    TypeVar, Union)
+                    Awaitable, Callable, Dict, Iterable, List, NoReturn, 
+                    Optional, TypeVar, Union)
 
 import a_sync
 import dank_mids
@@ -333,11 +333,10 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
 
     @property
     def insert_to_db(self) -> Callable[[LogReceipt], None]:
-        from y._db.utils.logs import insert_log
-        return insert_log
+        raise NotImplementedError  # TODO: refactor this out of the base class abc
     
     @property
-    def bulk_insert(self) -> Callable[[List[LogReceipt]], None]:
+    def bulk_insert(self) -> Callable[[List[LogReceipt]], Awaitable[None]]:
         from y._db.utils.logs import bulk_insert
         return bulk_insert
     

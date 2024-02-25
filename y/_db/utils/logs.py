@@ -2,6 +2,7 @@
 import logging
 from typing import List, Optional
 
+from a_sync.primitives.executor import _AsyncExecutorMixin
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
@@ -11,59 +12,39 @@ from pony.orm.core import Query
 from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
-from y._db.common import DiskCache, enc_hook
+from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
-from y._db.utils.utils import ensure_block
-from y import ENVIRONMENT_VARIABLES as ENVS
+from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
 
 
-@db_session
-@decorators.retry_locked
-def insert_log(log: LogReceipt) -> None:
-    block = log['blockNumber']
-    ensure_block(block, sync=True)
-    log_topics = log['topics']
-    entities.insert(
-        type=entities.Log,
-        block=(chain.id, block),
-        transaction_hash = log['transactionHash'].hex(),
-        log_index = log['logIndex'],
-        address = log['address'],
-        **{f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))},
-        raw = json.encode(log, enc_hook=enc_hook),
-    )
+def _prepare_log(log: LogReceipt) -> tuple:
+    return  tuple({
+        "block_chain": chain.id,
+        "block_number": log['blockNumber'],
+        "transaction_hash": log['transactionHash'].hex(),
+        "log_index": log['logIndex'],
+        "address": log['address'],
+        **{f"topic{i}": log_topics[i].hex() if i < len(log_topics := log['topics']) else None for i in range(4)},
+        "raw": json.encode(log, enc_hook=enc_hook)
+    }.values())
 
-@db_session
-@decorators.retry_locked
-def bulk_insert(logs: List[LogReceipt]) -> None:
-    items = []
-    blocks = set()
-    for log in logs:
-        block = log['blockNumber']
-        blocks.add(block)
-        log_topics = log['topics']
-        topics = {f"topic{i}": log_topics[i].hex() if i < len(log_topics) else None for i in range(4)}
-        item = {
-            "block_chain": chain.id,
-            "block_number": block,
-            "transaction_hash": log['transactionHash'].hex(),
-            "log_index": log['logIndex'],
-            "address": log['address'],
-            **topics,
-            "raw": json.encode(log, enc_hook=enc_hook),
-        }
-        items.append(item)
+_check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-    # TODO: replace this with bulk insert for big data projects
-    for block in blocks:
-        ensure_block(block, sync=True)
-    #bulk.insert(entities.Block, ["chain", "number"], ((chain.id, block) for block in blocks))
-    columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
-    bulk.insert(entities.Log, columns, [tuple(i.values()) for i in items], sync=True)
-    commit()
-    logger.debug('inserted %s logs to ydb', len(items))
+async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+    block_cols = ["chain", "number"]
+    # handle a conflict with eth-portfolio's extended db
+    if _check_using_extended_db():
+        # TODO: refactor this ugly shit out
+        block_cols.append("classtype")
+        blocks = [(chain.id, block, "BlockExtended") for block in {log['blockNumber'] for log in logs}]
+    else:
+        blocks = [(chain.id, block) for block in {log['blockNumber'] for log in logs}]
+    await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
+
+    log_cols = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
+    await executor.run(bulk.insert, entities.Log, log_cols, [_prepare_log(log) for log in logs], sync=True)
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
