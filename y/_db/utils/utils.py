@@ -8,7 +8,7 @@ from typing import Dict, Optional, Set
 
 import a_sync
 from cachetools import TTLCache, cached
-from pony.orm import select
+from pony.orm import commit, select
 from brownie import chain
 
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached, log_result_count
@@ -26,6 +26,7 @@ def get_chain() -> Chain:
 def ensure_chain() -> None:
     """ensures that the chain object for the connected chain has been inserted to the db"""
     get_chain(sync=True)
+    commit()
 
 @a_sync_read_db_session
 def get_block(number: int) -> Block:
