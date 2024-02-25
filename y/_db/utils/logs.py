@@ -18,20 +18,22 @@ from y._db.utils import bulk
 logger = logging.getLogger(__name__)
 
 
+def _prepare_log(log: LogReceipt) -> tuple:
+    return  tuple({
+        "block_chain": chain.id,
+        "block_number": log['blockNumber'],
+        "transaction_hash": log['transactionHash'].hex(),
+        "log_index": log['logIndex'],
+        "address": log['address'],
+        **{f"topic{i}": log_topics[i].hex() if i < len(log_topics := log['topics']) else None for i in range(4)},
+        "raw": json.encode(log, enc_hook=enc_hook)
+    }.values())
+
 async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
-    items = [
-        {
-            "block_chain": chain.id,
-            "block_number": log['blockNumber'],
-            "transaction_hash": log['transactionHash'].hex(),
-            "log_index": log['logIndex'],
-            "address": log['address'],
-            **{f"topic{i}": log_topics[i].hex() if i < len(log_topics := log['topics']) else None for i in range(4)},
-            "raw": json.encode(log, enc_hook=enc_hook)
-        } for log in logs
-    ]
-    await executor.run(_bulk_insert, [tuple(i.values()) for i in items])
-    logger.debug('inserted %s logs to ydb', len(logs))
+    block_cols = ["chain", "number"]
+    await executor.run(bulk.insert, entities.Block, block_cols, [(chain.id, block) for block in {log['blockNumber'] for log in logs}], sync=True)
+    log_cols = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
+    await executor.run(bulk.insert, entities.Log, log_cols, [_prepare_log(log) for log in logs], sync=True)
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
@@ -208,13 +210,3 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
                 return (log for log in generator if getattr(log, topic) == value)
             return (log for log in generator if getattr(log, topic) in value)
         return generator
-
-
-@db_session
-@decorators.retry_locked
-def _bulk_insert(items: List[tuple]) -> None:
-    columns = ["chain", "number"]
-    bulk.insert(entities.Block, columns, [(chain.id, block) for block in {item[1] for item in items}])
-    columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
-    bulk.insert(entities.Log, columns, items, sync=True)
-    commit()
