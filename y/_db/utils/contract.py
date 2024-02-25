@@ -34,11 +34,14 @@ def set_deploy_block(address: str, deploy_block: int) -> None:
         skip_gc_until_done=True,
     )
 
+async def _set_deploy_block(address: str, deploy_block: int) -> None:
+    await ensure_block(deploy_block)
+    return await __set_deploy_block(address, deploy_block)
+
 @a_sync_write_db_session
-def _set_deploy_block(address: str, deploy_block: int) -> None:
+def __set_deploy_block(address: str, deploy_block: int) -> None:
     from y._db.utils._ep import _get_get_token
     get_token = _get_get_token()
-    ensure_block(deploy_block, sync=True)
     get_token(address, sync=True).deploy_block = (chain.id, deploy_block)
     logger.debug('deploy block cached for %s: %s', address, deploy_block)
 
