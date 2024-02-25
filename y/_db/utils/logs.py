@@ -30,7 +30,7 @@ def _prepare_log(log: LogReceipt) -> tuple:
         "raw": json.encode(log, enc_hook=enc_hook)
     }.values())
 
-_check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__wrapped__.__module__
+_check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
 async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     block_cols = ["chain", "number"]
@@ -42,7 +42,7 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
     else:
         blocks = [(chain.id, block) for block in {log['blockNumber'] for log in logs}]
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
-    
+
     log_cols = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
     await executor.run(bulk.insert, entities.Log, log_cols, [_prepare_log(log) for log in logs], sync=True)
 
