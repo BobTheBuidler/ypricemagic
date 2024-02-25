@@ -50,7 +50,7 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
         } for log in logs
     ]
     # TODO: replace this with bulk insert for big data projects
-    await asyncio.gather(*[ensure_block(block) for block in {log['blockNumber'] for log in logs}])
+    #await asyncio.gather(*[ensure_block(block) for block in {log['blockNumber'] for log in logs}])
     await executor.run(_bulk_insert, [tuple(i.values()) for i in items])
     logger.debug('inserted %s logs to ydb', len(logs))
 
@@ -234,6 +234,8 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
 @db_session
 @decorators.retry_locked
 def _bulk_insert(items: List[tuple]) -> None:
+    columns = ["chain", "number"]
+    bulk.insert(entities.Block, columns, [(chain.id, block) for block in {item[1] for item in items}])
     columns = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
     bulk.insert(entities.Log, columns, items, sync=True)
     commit()
