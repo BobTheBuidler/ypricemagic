@@ -14,9 +14,26 @@ from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook
 from y._db.utils import bulk
 from y._db.utils.utils import ensure_block
-
+from y import ENVIRONMENT_VARIABLES as ENVS
 
 logger = logging.getLogger(__name__)
+
+
+@db_session
+@decorators.retry_locked
+def insert_log(log: LogReceipt) -> None:
+    block = log['blockNumber']
+    ensure_block(block, sync=True)
+    log_topics = log['topics']
+    entities.insert(
+        type=entities.Log,
+        block=(chain.id, block),
+        transaction_hash = log['transactionHash'].hex(),
+        log_index = log['logIndex'],
+        address = log['address'],
+        **{f"topic{i}": log_topics[i].hex() for i in range(min(len(log_topics), 4))},
+        raw = json.encode(log, enc_hook=enc_hook),
+    )
 
 @db_session
 @decorators.retry_locked

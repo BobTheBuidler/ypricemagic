@@ -333,7 +333,8 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
 
     @property
     def insert_to_db(self) -> Callable[[LogReceipt], None]:
-        raise NotImplementedError  # TODO: remove this from abc definition
+        from y._db.utils.logs import insert_log
+        return insert_log
     
     @property
     def bulk_insert(self) -> Callable[[List[LogReceipt]], None]:
