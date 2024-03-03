@@ -89,7 +89,10 @@ class UniswapV3Pool(ContractBase):
         if block < await self.deploy_block(sync=False):
             logger.debug("block %s prior to %s deploy block", block, self)
             return 0
-        liquidity = await self[token].balance_of(self.address, block, sync=False)
+        try:
+            liquidity = await self[token].balance_of(self.address, block, sync=False)
+        except ContractNotVerified:
+            logger.debug("%s is not verified and we cannot fetch balance the usual way. returning 0.", token)
         logger.debug("%s liquidity for %s at %s: %s", self, token, block, liquidity)
         return liquidity
     
@@ -209,7 +212,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             if len(token_out_liquidity[token_out]) > 1 and liquidity == token_out_min_liquidity[token_out]:
                 logger.debug("ignoring liquidity for %s", pool)
                 token_in_tasks.pop(pool)
-            elif token_out == weth and await task < 10 ** 19:  # 10 ETH
+            elif token_out == weth and liquidity < 10 ** 19:  # 10 ETH
                 # NOTE: this is totally arbitrary, works for all known cases but eventually will probably cause issues
                 logger.debug("insufficient liquidity for %s", pool)
                 token_in_tasks.pop(pool)
