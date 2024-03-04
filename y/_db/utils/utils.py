@@ -44,6 +44,7 @@ def ensure_block(number: int) -> None:
 @a_sync_read_db_session
 def get_block_timestamp(number: int) -> Optional[int]:
     if (ts := known_block_timestamps().pop(number, None)) is None:
+        ensure_chain()
         get_block = _get_get_block()
         ts = get_block(number, sync=True).timestamp
     if ts:
