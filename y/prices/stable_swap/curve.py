@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple, TypeVar
 
 import a_sync
 import brownie
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
@@ -201,7 +201,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     @a_sync.aka.cached_property
     async def factory(self) -> Contract:
         return await curve.get_factory(self, sync=False)
-    __factory__: HiddenMethod[Self, Contract]
+    __factory__: HiddenMethodDescriptor[Self, Contract]
     @a_sync.aka.cached_property
     async def coins(self) -> List[ERC20]:
         """
@@ -225,7 +225,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             )
 
         return [ERC20(coin, asynchronous=self.asynchronous) for coin in coins if coin not in {None, ZERO_ADDRESS}]
-    __coins__: HiddenMethod[Self, List[ERC20]]
+    __coins__: HiddenMethodDescriptor[Self, List[ERC20]]
 
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def get_coin_index(self, coin: AnyAddressType) -> int:
@@ -268,8 +268,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             coins_decimals = await asyncio.gather(*[coin.__decimals__ for coin in coins])
         
         return [dec for dec in coins_decimals if dec != 0]
-    
-    __coins_decimals__: HiddenMethod[Self, List[int]]
+    __coins_decimals__: HiddenMethodDescriptor[Self, List[int]]
 
     @a_sync.aka.cached_property
     async def get_underlying_coins(self) -> List[ERC20]:    
@@ -289,8 +288,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             return await self.__coins__
 
         return [ERC20(coin, asynchronous=self.asynchronous) for coin in coins if coin != ZERO_ADDRESS]
-
-    __get_underlying_coins__: HiddenMethod[Self, List[ERC20]]
+    __get_underlying_coins__: HiddenMethodDescriptor[Self, List[ERC20]]
     
     @a_sync.a_sync(ram_cache_maxsize=1000)
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
@@ -409,8 +407,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             return await Contract.coroutine(self.identifiers[0][-1])
         except IndexError: # if we couldn't get the registry via logs
             return await Contract.coroutine(await raw_call(self.address_provider, 'get_registry()', output='address', sync=False))
-    
-    __registry__: HiddenMethod[Self, Contract]
+    __registry__: HiddenMethodDescriptor[Self, Contract]
 
     async def load_all(self) -> None:
         await self._done.wait()
@@ -511,7 +508,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             for coin in await pool.__coins__:
                 mapping[coin].add(pool)
         return {coin: list(pools) for coin, pools in mapping.items()}
-    __coin_to_pools__: HiddenMethod[Self, Dict[str, List[CurvePool]]]
+    __coin_to_pools__: HiddenMethodDescriptor[Self, Dict[str, List[CurvePool]]]
     
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...]) -> int:
         pools: List[CurvePool] = await self.__coin_to_pools__

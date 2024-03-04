@@ -2,7 +2,7 @@ import asyncio
 from typing import Optional
 
 import a_sync
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.exceptions import VirtualMachineError
 from typing_extensions import Self
@@ -55,7 +55,7 @@ class Band(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def oracle(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id])
-    __oracle__: HiddenMethod[Self, Contract]
+    __oracle__: HiddenMethodDescriptor[Self, Contract]
 
     async def get_price(self, asset: Address, block: Optional[Block] = None) -> Optional[float]:
         oracle, asset_symbol = await asyncio.gather(

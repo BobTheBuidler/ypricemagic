@@ -7,7 +7,7 @@ from itertools import cycle
 from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
 
 import a_sync
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
 from eth_abi.packed import encode_abi_packed
@@ -122,8 +122,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def factory(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id]['factory'])
-
-    __factory__: HiddenMethod[Self, Contract]
+    __factory__: HiddenMethodDescriptor[Self, Contract]
     
     @cached_property
     def loaded(self) -> a_sync.Event:
@@ -136,8 +135,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             return await Contract.coroutine(quoter)
         except ContractNotVerified:
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
-    
-    __quoter__: HiddenMethod[Self, Contract]
+    __quoter__: HiddenMethodDescriptor[Self, Contract]
     
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
@@ -183,7 +181,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     async def pools(self) -> List[UniswapV3Pool]:
         factory = await self.__factory__
         return UniV3Pools(factory, asynchronous=self.asynchronous)
-    __pools__: HiddenMethod[Self, "UniV3Pools"]
+    __pools__: HiddenMethodDescriptor[Self, "UniV3Pools"]
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)

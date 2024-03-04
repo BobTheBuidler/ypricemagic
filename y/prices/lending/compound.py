@@ -3,7 +3,7 @@ import logging
 from typing import Optional, Tuple
 
 import a_sync
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain, convert
 from brownie.exceptions import VirtualMachineError
 from multicall import Call
@@ -96,8 +96,7 @@ class CToken(ERC20):
         if not underlying:
             underlying = EEE_ADDRESS
         return ERC20(underlying, asynchronous=self.asynchronous)
-    
-    __underlying__: HiddenMethod[Self, ERC20]
+    __underlying__: HiddenMethodDescriptor[Self, ERC20]
     
     async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         exchange_rate, decimals, underlying = await asyncio.gather(
@@ -184,8 +183,7 @@ class Comptroller(ContractBase):
         markets = tuple(CToken(market, comptroller=self, asynchronous=self.asynchronous) for market in response)
         logger.info("loaded %s markets for %s", len(markets), self)
         return markets
-
-    __markets__ = HiddenMethod[Self, Tuple[CToken]]
+    __markets__ = HiddenMethodDescriptor[Self, Tuple[CToken]]
     
     async def oracle(self, block: Optional[Block] = None) -> Contract:
         contract = await Contract.coroutine(self.address)

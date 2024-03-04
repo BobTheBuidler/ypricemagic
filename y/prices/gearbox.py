@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List, Dict
 
 import a_sync
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from typing_extensions import Self
 
@@ -21,7 +21,7 @@ class DieselPool(ContractBase):
     @a_sync.aka.cached_property
     async def contract(self) -> Contract:
         return await Contract.coroutine(self.address)
-    __contract__: HiddenMethod[Self, Contract]
+    __contract__: HiddenMethodDescriptor[Self, Contract]
     
     @a_sync.aka.cached_property
     async def diesel_token(self) -> ERC20:
@@ -30,13 +30,13 @@ class DieselPool(ContractBase):
             return ERC20(await contract.dieselToken.coroutine(), asynchronous=self.asynchronous)
         except AttributeError: # NOTE: there could be better ways of doing this with hueristics, not sure yet
             return ERC20(self.address, asynchronous=self.asynchronous)
-    __diesel_token__: HiddenMethod[Self, ERC20]
+    __diesel_token__: HiddenMethodDescriptor[Self, ERC20]
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
         contract = await self.__contract__
         return ERC20(await contract.underlyingToken.coroutine(), asynchronous=self.asynchronous)
-    __underlying__: HiddenMethod[Self, ERC20]
+    __underlying__: HiddenMethodDescriptor[Self, ERC20]
     
     async def exchange_rate(self, block: Block) -> Decimal:
         underlying: ERC20

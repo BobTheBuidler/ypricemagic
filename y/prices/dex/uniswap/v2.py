@@ -10,7 +10,7 @@ from typing import Any, AsyncIterator, Awaitable, Callable, Dict, List, Optional
 import a_sync
 import brownie
 import dank_mids
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
 from multicall import Call
@@ -75,12 +75,12 @@ class UniswapV2Pool(ERC20):
                 return await contract.factory.coroutine()
             except AttributeError as exc:
                 raise NotAUniswapV2Pool from exc
-    
-    __factory__: HiddenMethod[Self, Address]
+    __factory__: HiddenMethodDescriptor[Self, Address]
 
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
         return await asyncio.gather(self.__token0__, self.__token1__)
+    __tokens__: HiddenMethodDescriptor[Self, ERC20]
     
     @a_sync.aka.property
     async def token0(self) -> ERC20:
@@ -93,6 +93,7 @@ class UniswapV2Pool(ERC20):
         if self._token0 is None:
             raise NotAUniswapV2Pool(self.address)
         return self._token0
+    __token0__: HiddenMethodDescriptor[Self, ERC20]
 
     @a_sync.aka.property
     async def token1(self) -> ERC20:
@@ -105,6 +106,7 @@ class UniswapV2Pool(ERC20):
         if self._token1 is None:
             raise NotAUniswapV2Pool(self.address)
         return self._token1
+    __token1__: HiddenMethodDescriptor[Self, ERC20]
     
     @a_sync.a_sync(cache_type='memory')
     @stuck_coro_debugger
@@ -210,11 +212,6 @@ class UniswapV2Pool(ERC20):
         except ContractNotVerified:
             self._verified = False
         self._types_assumed = False
-    
-    # These dundermethods are created by a_sync for the async_properties on this class
-    __token0__: HiddenMethod[Self, ERC20]
-    __token1__: HiddenMethod[Self, ERC20]
-    __tokens__: HiddenMethod[Self, ERC20]
 
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
@@ -392,6 +389,7 @@ class UniswapRouterV2(ContractBase):
         tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__, pool.__token1__) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
+    __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
@@ -508,8 +506,5 @@ class UniswapRouterV2(ContractBase):
         liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
-
-    # This dundermethod is created by a_sync for the async_property on this class
-    __pools__: HiddenMethod[Self, List[UniswapV2Pool]]
 
 _get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)

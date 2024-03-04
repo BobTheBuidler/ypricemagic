@@ -6,7 +6,7 @@ from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
 import a_sync
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
@@ -135,15 +135,13 @@ class BalancerV2Pool(ERC20):
         if hasattr(self._id, "__await__"):
             self._id = PoolId(await self._id)
         return self._id
-    
-    __id__: HiddenMethod[Self, PoolId]
+    __id__: HiddenMethodDescriptor[Self, PoolId]
     
     @a_sync.aka.cached_property
     async def vault(self) -> Optional[BalancerV2Vault]:
         vault = await raw_call(self.address, 'getVault()', output='address', sync=False)
         return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
-    
-    __vault__: HiddenMethod[Self, Optional[BalancerV2Vault]]
+    __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
     
     @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Awaitable[UsdPrice]:

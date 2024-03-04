@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Awaitable, List, Optional, Union
 
 import a_sync
-from a_sync.property import HiddenMethod
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from multicall import Call
 from typing_extensions import Self
@@ -88,7 +88,7 @@ class AaveMarketBase(ContractBase):
         return await self.contract.getReserveData.coroutine(reserve)
     @abstractproperty
     async def atokens(self) -> Awaitable[List[ERC20]]:...
-    __atokens__: HiddenMethod[Self, List[ERC20]]
+    __atokens__: HiddenMethodDescriptor[Self, List[ERC20]]
     @abstractmethod
     async def underlying(self, token_address: AddressOrContract) -> ERC20:...
     @abstractproperty
@@ -172,28 +172,28 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
             self.__pools_v3__,
         )
         return v1 + v2 + v3
-    __pools__: HiddenMethod[Self, List[AaveMarket]]
+    __pools__: HiddenMethodDescriptor[Self, List[AaveMarket]]
     
     @a_sync.aka.cached_property
     async def pools_v1(self) -> List[AaveMarketV1]:
         pools = [AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools]
         logger.debug("%s v1 pools %s", self, pools)
         return pools
-    __pools_v1__: HiddenMethod[Self, List[AaveMarketV1]]
+    __pools_v1__: HiddenMethodDescriptor[Self, List[AaveMarketV1]]
     
     @a_sync.aka.cached_property
     async def pools_v2(self) -> List[AaveMarketV2]:
         pools = [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
         logger.debug("%s v2 pools %s", self, pools)
         return pools
-    __pools_v2__: HiddenMethod[Self, List[AaveMarketV2]]
+    __pools_v2__: HiddenMethodDescriptor[Self, List[AaveMarketV2]]
     
     @a_sync.aka.cached_property
     async def pools_v3(self) -> List[AaveMarketV3]:
         pools = [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
         logger.debug("%s v3 pools %s", self, pools)
         return pools
-    __pools_v3__: HiddenMethod[Self, List[AaveMarketV3]]
+    __pools_v3__: HiddenMethodDescriptor[Self, List[AaveMarketV3]]
     
     async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
         pools = await self.__pools__

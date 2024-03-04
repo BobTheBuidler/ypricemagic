@@ -5,14 +5,11 @@ from typing import List, Optional, Set, Tuple
 import a_sync
 import dank_mids
 import eth_retry
-from a_sync.property import HiddenMethod
 from async_lru import alru_cache
 from brownie import chain
 from multicall.call import Call
-from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y.classes.common import ERC20
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block
 from y.decorators import stuck_coro_debugger
@@ -48,7 +45,6 @@ class VelodromePool(UniswapV2Pool):
     ):
         super().__init__(address, token0=token0, token1=token1, deploy_block=deploy_block, asynchronous=asynchronous)
         self.is_stable = stable
-    __tokens__: HiddenMethod[Self, ERC20]
 
 class VelodromeRouterV2(SolidlyRouterBase):
     def __init__(self, *args, **kwargs) -> None:
@@ -119,6 +115,8 @@ class VelodromeRouterV2(SolidlyRouterBase):
         for i in range(len(path) - 1):
             input_token, output_token = path[i], path[i+1]
             # Try for a stable pool first and use that if available
+            stable_pool: Optional[VelodromePool]
+            unstable_pool: Optional[VelodromePool]
             stable_pool, unstable_pool = await asyncio.gather(
                 self.get_pool(input_token, output_token, True, block, sync=False),
                 self.get_pool(input_token, output_token, False, block, sync=False),
