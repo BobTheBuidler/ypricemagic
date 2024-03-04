@@ -95,6 +95,7 @@ class UniswapV3Pool(ContractBase):
             liquidity = await self[token].balance_of(self.address, block, sync=False)
         except ContractNotVerified:
             logger.debug("%s is not verified and we cannot fetch balance the usual way. returning 0.", token)
+            return 0
         logger.debug("%s liquidity for %s at %s: %s", self, token, block, liquidity)
         return liquidity
     
