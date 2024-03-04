@@ -40,7 +40,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         Get contract from Synthetix registry.
         See also https://docs.synthetix.io/addresses/
         """
-        address_resolver = await self.__address_resolver__(sync=False)
+        address_resolver = await self.__address_resolver__
         address = await address_resolver.getAddress.coroutine(encode_single('bytes32', name.encode()), block_identifier=block)
         proxy = await Contract.coroutine(address)
         return await Contract.coroutine(await proxy.target.coroutine(block_identifier=block)) if hasattr(proxy, 'target') else proxy

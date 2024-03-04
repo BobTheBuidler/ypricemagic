@@ -36,7 +36,7 @@ async def get_price(token_address: AddressOrContract, block: Optional[Block] = N
         except:
             break
     coin_values, total_supply = await asyncio.gather(
-        asyncio.gather(*[b.__value_usd__(sync=False) for b in balances]),
+        asyncio.gather(*[b.__value_usd__ for b in balances]),
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )
     tvl = sum(coin_values)

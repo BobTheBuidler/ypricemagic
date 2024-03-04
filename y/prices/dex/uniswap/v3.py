@@ -143,7 +143,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         skip_cache: bool = ENVS.SKIP_CACHE,  # unused
         ) -> Optional[UsdPrice]:
 
-        quoter = await self.__quoter__(sync=False)
+        quoter = await self.__quoter__
         if block and block < await contract_creation_block_async(quoter, True):
             return None
 
@@ -175,7 +175,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def pools(self) -> List[UniswapV3Pool]:
-        factory = await self.__factory__(sync=False)
+        factory = await self.__factory__
         return UniV3Pools(factory, asynchronous=self.asynchronous)
 
     @stuck_coro_debugger
@@ -186,7 +186,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             # LQTY, TODO refactor this somehow
             return 0
         
-        quoter = await self.__quoter__(sync=False)
+        quoter = await self.__quoter__
         if block and block < await contract_creation_block_async(quoter):
             logger.debug("block %s is before %s deploy block", block, quoter)
             return 0
@@ -222,7 +222,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         return liquidity
 
     async def _pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
-        pools = await self.__pools__(sync=False)
+        pools = await self.__pools__
         async for pool in pools.objects(to_block=block):
             if token in pool:
                 yield pool

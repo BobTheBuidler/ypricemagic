@@ -56,7 +56,7 @@ class Band(a_sync.ASyncGenericSingleton):
 
     async def get_price(self, asset: Address, block: Optional[Block] = None) -> Optional[float]:
         oracle, asset_symbol = await asyncio.gather(
-            self.__oracle__(sync=False),
+            self.__oracle__,
             ERC20(asset, asynchronous=True).symbol,
         )
         try:

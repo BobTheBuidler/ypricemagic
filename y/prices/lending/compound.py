@@ -97,8 +97,8 @@ class CToken(ERC20):
     async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         exchange_rate, decimals, underlying = await asyncio.gather(
             self.exchange_rate(block=block, sync=False),
-            self.__decimals__(sync=False),
-            self.__underlying__(sync=False),
+            self.__decimals__,
+            self.__underlying__,
         )
         return exchange_rate * 10 ** (decimals - await underlying.__decimals__(asynchronous=True))
 
@@ -208,7 +208,7 @@ class Compound(a_sync.ASyncGenericSingleton):
     
     async def get_troller(self, token_address: AddressOrContract) -> Optional[Comptroller]:
         trollers = self.trollers.values()
-        all_markets = await asyncio.gather(*[troller.__markets__(sync=False) for troller in trollers])
+        all_markets = await asyncio.gather(*[troller.__markets__ for troller in trollers])
         for troller, markets in zip(trollers, all_markets):
             if token_address in markets:
                 return troller

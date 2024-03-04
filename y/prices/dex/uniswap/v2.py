@@ -78,7 +78,7 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
-        return await asyncio.gather(self.__token0__(sync=False), self.__token1__(sync=False))
+        return await asyncio.gather(self.__token0__, self.__token1__)
     
     @a_sync.aka.property
     async def token0(self) -> ERC20:
@@ -115,7 +115,7 @@ class UniswapV2Pool(ERC20):
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__(sync=False), return_exceptions=True)
+        reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__, return_exceptions=True)
 
         if isinstance(tokens, Exception):
             raise tokens
@@ -147,7 +147,7 @@ class UniswapV2Pool(ERC20):
 
     @stuck_coro_debugger
     async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
-        tokens: List[ERC20] = await self.__tokens__(sync=False)
+        tokens: List[ERC20] = await self.__tokens__
         prices, reserves = await asyncio.gather(
             asyncio.gather(*[token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) for token in tokens]),
             self.reserves(block=block, sync=False),
@@ -157,7 +157,7 @@ class UniswapV2Pool(ERC20):
             return None
 
         vals = [
-            None if price is None else Decimal(await reserve.__readable__(sync=False)) * Decimal(price)
+            None if price is None else Decimal(await reserve.__readable__) * Decimal(price)
             for reserve, price in zip(reserves, prices)
         ]
 
@@ -382,11 +382,11 @@ class UniswapRouterV2(ContractBase):
                 pool = await factory.allPairs.coroutine(i)
                 logger.debug('pool: %s', pool)
                 pool = UniswapV2Pool(address=pool, asynchronous=self.asynchronous)
-                await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
+                await asyncio.gather(pool.__token0__, pool.__token1__)
                 return pool
             pools = await asyncio.gather(*[_load_pool(i) for i in range(to_get)]) + pools
             logger.debug('Done fetching %s missing pools on %s', to_get, self.label)
-        tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__(sync=False), pool.__token1__(sync=False)) for pool in pools))))
+        tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__, pool.__token1__) for pool in pools))))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
 
@@ -394,7 +394,7 @@ class UniswapRouterV2(ContractBase):
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
-        async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__(sync=False)):
+        async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
@@ -509,4 +509,4 @@ class UniswapRouterV2(ContractBase):
     # This dundermethod is created by a_sync for the async_property on this class
     __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]] if sys.version_info < (3, 10) else ASyncFunction[[Self], List[UniswapV2Pool]]
 
-_get_tokens: Callable[[UniswapV2Pool], Tuple[ERC20, ERC20]] = lambda pool: asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False))
+_get_tokens: Callable[[UniswapV2Pool], Tuple[ERC20, ERC20]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)

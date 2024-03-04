@@ -152,7 +152,7 @@ class BalancerV2Pool(ERC20):
         balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if balances:
             return UsdValue(sum(await asyncio.gather(*[
-                balance.__value_usd__(sync=False) for balance in balances.values()
+                balance.__value_usd__ for balance in balances.values()
                 if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
             ])))
 
@@ -162,9 +162,9 @@ class BalancerV2Pool(ERC20):
         if self._messed_up:
             return {}
         try:
-            vault, id = await asyncio.gather(self.__vault__(sync=False), self.__id__(sync=False))
+            vault, id = await asyncio.gather(self.__vault___)
         except ContractLogicError:
-            if await self.__build_name__(sync=False) != "CronV1Pool":
+            if await self.__build_name__ != "CronV1Pool":
                 logger.error("%s is messed up", self)
             return {}
         if vault is None:
@@ -199,8 +199,8 @@ class BalancerV2Pool(ERC20):
             return None
 
         token_value_in_pool, token_balance_readable = await asyncio.gather(*[
-            paired_token_balance.__value_usd__(sync=False),
-            token_balance.__readable__(sync=False),
+            paired_token_balance.__value_usd__
+            token_balance.__readable__,
         ])
         token_value_in_pool /= paired_token_weight * token_weight
         return UsdPrice(token_value_in_pool / token_balance_readable) 

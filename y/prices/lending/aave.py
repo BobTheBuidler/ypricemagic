@@ -77,7 +77,7 @@ class AaveMarketBase(ContractBase):
             raise RuntimeError(f"'self.asynchronous' must be False to use {cls}.__contains__.\nYou may wish to use {cls}.is_atoken instead.")
         return convert.to_address(__o) in self.atokens
     async def contains(self, __o: object) -> bool:
-        contains = convert.to_address(__o) in await self.__atokens__(sync=False)
+        contains = convert.to_address(__o) in await self.__atokens__
         logger.debug('%s contains %s: %s', self, __o, contains)
         return contains
     async def get_reserves(self) -> List[Address]:
@@ -164,9 +164,9 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def pools(self) -> List[AaveMarket]:
         v1, v2, v3 = await asyncio.gather(
-            self.__pools_v1__(sync=False),
-            self.__pools_v2__(sync=False), 
-            self.__pools_v3__(sync=False),
+            self.__pools_v1__
+            self.__pools_v2__, 
+            self.__pools_v3__,
         )
         return v1 + v2 + v3
     
@@ -189,7 +189,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         return pools
     
     async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
-        pools = await self.__pools__(sync=False)
+        pools = await self.__pools__
         for pool in pools:
             if await pool.contains(token_address, sync=False):
                 return pool
@@ -202,7 +202,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.a_sync(cache_type='memory')
     async def is_atoken(self, token_address: AnyAddressType) -> bool:
         logger = get_price_logger(token_address, block=None)
-        is_atoken = any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__(sync=False)]))
+        is_atoken = any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__]))
         logger.debug("is_atoken: %s", is_atoken)
         return is_atoken
     

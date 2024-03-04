@@ -140,7 +140,7 @@ class YearnInspiredVault(ERC20):
                 contract = await Contract.coroutine(self.address)
                 for method in ['convertToAssets', 'getSharesToUnderlying']:
                     if hasattr(contract, method):
-                        share_price = await getattr(contract, method).coroutine(await self.__scale__(sync=False), block_identifier=block)
+                        share_price = await getattr(contract, method).coroutine(await self.__scale__, block_identifier=block)
             except ContractNotVerified:
                 pass
 
@@ -148,8 +148,8 @@ class YearnInspiredVault(ERC20):
             if self._get_share_price and self._get_share_price.function == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / Decimal(10 ** 18)
-            underlying: ERC20 = await self.__underlying__(sync=False)
-            return Decimal(share_price) / await underlying.__scale__(sync=False)
+            underlying: ERC20 = await self.__underlying__
+            return Decimal(share_price) / await underlying.__scale__
             
         elif await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False) == 0:
             return None
@@ -166,7 +166,7 @@ class YearnInspiredVault(ERC20):
     ) -> UsdPrice:
         logger = get_price_logger(self.address, block=None, extra='yearn')
         underlying: ERC20
-        share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__(sync=False))
+        share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__)
         if share_price is None:
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)

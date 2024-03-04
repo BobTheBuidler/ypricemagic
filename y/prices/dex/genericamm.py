@@ -57,7 +57,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
         tokens = await self.get_tokens(lp_token_address, sync=False)
         reserves = await lp_token_contract.getReserves.coroutine(block_identifier=block)
         reserves = [WeiBalance(reserve, token, block=block, skip_cache=skip_cache) for token, reserve in zip(tokens,reserves)]
-        return UsdValue(sum(await asyncio.gather(*[reserve.__value_usd__(sync=False) for reserve in reserves])))
+        return UsdValue(sum(await asyncio.gather(*[reserve.__value_usd__ for reserve in reserves])))
 
 
 generic_amm = GenericAmm(asynchronous=True)

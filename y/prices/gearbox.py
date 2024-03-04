@@ -22,7 +22,7 @@ class DieselPool(ContractBase):
     
     @a_sync.aka.cached_property
     async def diesel_token(self) -> ERC20:
-        contract = await self.__contract__(sync=False)
+        contract = await self.__contract__
         try:
             return ERC20(await contract.dieselToken.coroutine(), asynchronous=self.asynchronous)
         except AttributeError: # NOTE: there could be better ways of doing this with hueristics, not sure yet
@@ -30,16 +30,16 @@ class DieselPool(ContractBase):
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
-        contract = await self.__contract__(sync=False)
+        contract = await self.__contract__
         return ERC20(await contract.underlyingToken.coroutine(), asynchronous=self.asynchronous)
     
     async def exchange_rate(self, block: Block) -> Decimal:
-        pool, underlying = await asyncio.gather(self.__contract__(sync=False), self.__underlying__(sync=False))
-        scale = await underlying.__scale__(sync=False)
+        pool, underlying = await asyncio.gather(self.__contract__, self.__underlying__)
+        scale = await underlying.__scale__
         return Decimal(await pool.fromDiesel.coroutine(scale, block_identifier=block)) / Decimal(scale)
     
     async def get_price(self, block: Block, skip_cache: bool = ENVS.SKIP_CACHE) -> Decimal:
-        underlying, exchange_rate = await asyncio.gather(self.__underlying__(sync=False), self.exchange_rate(block, sync=False))
+        underlying, exchange_rate = await asyncio.gather(self.__underlying__, self.exchange_rate(block, sync=False))
         und_price = await underlying.price(block, skip_cache=skip_cache, sync=False)
         return Decimal(und_price) * exchange_rate
         
@@ -63,7 +63,7 @@ class Gearbox(a_sync.ASyncGenericBase):
     
     async def diesel_tokens(self) -> Dict[ERC20, DieselPool]:
         pools = await self.pools(sync=False)
-        dtokens = await asyncio.gather(*[pool.__diesel_token__(sync=False) for pool in pools])
+        dtokens = await asyncio.gather(*[pool.__diesel_token__ for pool in pools])
         return dict(zip(dtokens, pools))
 
     async def is_diesel_token(self, token: Address) -> bool:

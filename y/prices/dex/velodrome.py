@@ -105,7 +105,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
 
         tokens = set()
         for pool in pools:
-            tokens.update(await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False)))
+            tokens.update(await asyncio.gather(pool.__token0__, pool.__token1__))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     
@@ -129,7 +129,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
                 if stable_reserves and unstable_reserves:
                     stable_reserves = tuple(stable_reserves)
                     unstable_reserves = tuple(unstable_reserves)
-                    if await stable_pool.__tokens__(sync=False) == await unstable_pool.__tokens__(sync=False):
+                    if await stable_pool.__tokens__ == await unstable_pool.__tokens__:
                         stable_reserve = stable_reserves[0]
                         unstable_reserve = unstable_reserves[0]
                     else:  # Order of tokens is flip flopped in the pools
