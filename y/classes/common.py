@@ -1,7 +1,6 @@
 
 import abc
 import asyncio
-import sys
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
@@ -10,7 +9,7 @@ from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
                     Optional, Tuple, Union)
 
 import a_sync
-from a_sync.modified import ASyncFunction
+from a_sync.property import HiddenMethodDescriptor, HiddenMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
@@ -92,7 +91,9 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 
     @a_sync.aka.cached_property
     async def build_name(self) -> str:
+        asdasd = await self.__build_name__
         return await build_name(self.address, sync=False)
+    __build_name__: HiddenMethodDescriptor[Self, str]
 
     async def deploy_block(self, when_no_history_return_0: bool = False) -> int:
         if self._deploy_block is None:
@@ -165,7 +166,7 @@ class ERC20(ContractBase):
     async def total_supply_readable(self, block: Optional[Block] = None) -> float:
         total_supply, scale = await asyncio.gather(
             self.total_supply(block=block, sync=False),
-            self.__scale__(sync=False)
+            self.__scale__
         )
         return total_supply / scale
     
@@ -225,10 +226,10 @@ class ERC20(ContractBase):
             with the contract address and correct method name so we can keep things going smoothly :)''')
 
     # These dundermethods are created by a_sync for the async_properties on this class
-    __symbol__: ASyncFunction[Tuple[Self], str] if sys.version_info < (3, 10) else ASyncFunction[[Self], str]
-    __name__: ASyncFunction[Tuple[Self], str] if sys.version_info < (3, 10) else ASyncFunction[[Self], str]
-    __decimals__: ASyncFunction[Tuple[Self], int] if sys.version_info < (3, 10) else ASyncFunction[[Self], int]
-    __scale__: ASyncFunction[Tuple[Self], int] if sys.version_info < (3, 10) else ASyncFunction[[Self], int]
+    __symbol__: HiddenMethodDescriptor[Self, str]
+    __name__: HiddenMethodDescriptor[Self, str]
+    __decimals__: HiddenMethodDescriptor[Self, int]
+    __scale__: HiddenMethodDescriptor[Self, int]
 
 
 class WeiBalance(a_sync.ASyncGenericBase):
@@ -283,29 +284,28 @@ class WeiBalance(a_sync.ASyncGenericBase):
     async def readable(self) -> Decimal:
         if self.balance == 0:
             return 0
-        scale = await self.token.__scale__(sync=False)
+        scale = await self.token.__scale__
         readable = self.balance / scale
         self._logger.debug("balance: %s  decimals: %s  readable: %s", self.balance, str(scale).count("0"), readable)
         return readable
+    __readable__: HiddenMethodDescriptor[Self, Decimal]
     
     @a_sync.aka.cached_property
-    async def value_usd(self) -> float:
+    async def value_usd(self) -> Decimal:
         if self.balance == 0:
             return 0
         balance, price = await asyncio.gather(
-            self.__readable__(sync=False),
+            self.__readable__,
             self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False),
         )
         value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
+    __value_usd__: HiddenMethodDescriptor[Self, Decimal]
     
     @cached_property
     def _logger(self) -> logging.logging.Logger:
         return logging.get_price_logger(self.token.address, self.block, self.__class__.__name__)
-
-    # This dundermethod is created by a_sync for the async_property on this class
-    __readable__: ASyncFunction[Tuple[Self], Decimal] if sys.version_info < (3, 10) else ASyncFunction[[Self], Decimal]
 
 
 class _Loader(ContractBase):

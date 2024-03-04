@@ -18,6 +18,7 @@ from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils import gather_methods
+from y.utils.cache import a_sync_cache
 from y.utils.raw_calls import raw_call
 
 _INIT_METHODS = 'token0()(address)', 'token1()(address)', 'stable()(bool)'
@@ -52,12 +53,12 @@ class VelodromeRouterV2(SolidlyRouterBase):
         self.default_factory = default_factory[chain.id]
     
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync_cache
     async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory)
     
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync_cache
     @eth_retry.auto_retry
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
@@ -105,7 +106,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
 
         tokens = set()
         for pool in pools:
-            tokens.update(await asyncio.gather(pool.__token0__(sync=False), pool.__token1__(sync=False)))
+            tokens.update(await asyncio.gather(pool.__token0__, pool.__token1__))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     
@@ -115,6 +116,8 @@ class VelodromeRouterV2(SolidlyRouterBase):
         for i in range(len(path) - 1):
             input_token, output_token = path[i], path[i+1]
             # Try for a stable pool first and use that if available
+            stable_pool: Optional[VelodromePool]
+            unstable_pool: Optional[VelodromePool]
             stable_pool, unstable_pool = await asyncio.gather(
                 self.get_pool(input_token, output_token, True, block, sync=False),
                 self.get_pool(input_token, output_token, False, block, sync=False),
@@ -129,7 +132,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
                 if stable_reserves and unstable_reserves:
                     stable_reserves = tuple(stable_reserves)
                     unstable_reserves = tuple(unstable_reserves)
-                    if await stable_pool.__tokens__(sync=False) == await unstable_pool.__tokens__(sync=False):
+                    if await stable_pool.__tokens__ == await unstable_pool.__tokens__:
                         stable_reserve = stable_reserves[0]
                         unstable_reserve = unstable_reserves[0]
                     else:  # Order of tokens is flip flopped in the pools

@@ -212,7 +212,7 @@ class Feed:
         
 
 class FeedsFromEvents(ProcessedEvents[Feed]):
-    __slots__ = '_asynchronous', 
+    __slots__ = 'asynchronous', 
     def __init__(self, addresses, topics, asynchronous: bool = True):
         self.asynchronous = asynchronous
         super().__init__(addresses=addresses, topics=topics)

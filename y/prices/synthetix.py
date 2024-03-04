@@ -3,10 +3,12 @@ import logging
 from typing import List, Optional
 
 import a_sync
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
 from eth_abi import encode_single
 from multicall import Call
+from typing_extensions import Self
 
 from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -33,6 +35,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def address_resolver(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id])
+    __address_resolver__: HiddenMethodDescriptor[Self, Contract]
 
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def get_address(self, name: str, block: Block = None) -> Contract:
@@ -40,7 +43,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         Get contract from Synthetix registry.
         See also https://docs.synthetix.io/addresses/
         """
-        address_resolver = await self.__address_resolver__(sync=False)
+        address_resolver = await self.__address_resolver__
         address = await address_resolver.getAddress.coroutine(encode_single('bytes32', name.encode()), block_identifier=block)
         proxy = await Contract.coroutine(address)
         return await Contract.coroutine(await proxy.target.coroutine(block_identifier=block)) if hasattr(proxy, 'target') else proxy

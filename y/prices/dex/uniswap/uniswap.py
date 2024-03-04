@@ -73,7 +73,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         pool = UniswapV2Pool(token_address, asynchronous=True)
         with suppress(NotAUniswapV2Pool, ContractLogicError):
             if await pool.is_uniswap_pool(sync=False):
-                factory = await pool.__factory__(sync=False)
+                factory = await pool.__factory__
                 if factory not in self.v2_factories and factory != ZERO_ADDRESS:
                     _gh_issue_request(f'UniClone Factory {factory} is unknown to ypricemagic.', logger)
                     self.v2_factories.append(factory)

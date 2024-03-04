@@ -59,16 +59,16 @@ class TokenSet(ERC20):
             return UsdPrice(0)
         contract = await Contract.coroutine(self.address)
         if hasattr(contract, "getUnits"):
-            balances = await self.balances(block=block, skip_cache=skip_cache, sync=False)
-            values = await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in balances])
+            balances: List[WeiBalance] = await self.balances(block=block, skip_cache=skip_cache, sync=False)
+            values = await asyncio.gather(*[balance.__value_usd__ for balance in balances])
             logger.debug("balances: %s  values: %s", balances, values)
             tvl = sum(values)
             price = UsdPrice(tvl / total_supply)
             logger.debug("total supply: %s  tvl: %s  price: %s", total_supply, tvl, price)
             return price
         elif hasattr(contract, "getTotalComponentRealUnits"):
-            balances_per_token = await self.balances(block=block, sync=False)
-            values_per_token = await asyncio.gather(*[balance.__value_usd__(sync=False) for balance in balances_per_token])
+            balances_per_token: List[WeiBalance] = await self.balances(block=block, sync=False)
+            values_per_token = await asyncio.gather(*[balance.__value_usd__ for balance in balances_per_token])
             price = UsdPrice(sum(values_per_token))
             logger.debug("balances per token: %s  values per token: %s  price: %s", balances_per_token, values_per_token, price)
             return price
