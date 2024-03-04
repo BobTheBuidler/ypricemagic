@@ -4,7 +4,7 @@ import functools
 import inspect
 import logging
 import time
-from typing import AsyncIterator, Awaitable, Callable, TypeVar, Union
+from typing import AsyncIterator, Awaitable, Callable, TypeVar, Union, overload
 
 from typing_extensions import ParamSpec
 
