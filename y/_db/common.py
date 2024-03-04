@@ -139,7 +139,7 @@ class _DiskCachedMixin(Generic[T, C], metaclass=abc.ABCMeta):
 
 _E = TypeVar("_E", bound=_AsyncExecutorMixin)
     
-class Filter(a_sync.ASyncIterable[T], _DiskCachedMixin[T, C]):
+class Filter(_DiskCachedMixin[T, C], a_sync.ASyncIterable[T], Generic[T, C]):
     __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_sleep_time', '_task', '_verbose'
     def __init__(
         self, 
