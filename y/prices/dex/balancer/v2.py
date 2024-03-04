@@ -167,7 +167,7 @@ class BalancerV2Pool(ERC20):
         if self._messed_up:
             return {}
         try:
-            vault, id = await asyncio.gather(self.__vault__)
+            vault, id = await asyncio.gather(self.__vault__, self.__id__)
         except ContractLogicError:
             if await self.__build_name__ != "CronV1Pool":
                 logger.error("%s is messed up", self)
