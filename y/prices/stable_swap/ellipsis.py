@@ -2,7 +2,7 @@
 import asyncio
 import logging
 from decimal import Decimal
-from typing import Optional
+from typing import List, Optional
 
 import a_sync
 
@@ -23,6 +23,7 @@ async def is_eps_rewards_pool(token_address: AnyAddressType) -> bool:
 async def get_price(token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
     minter = await raw_call(token_address,'minter()',output='address', block=block, sync=False)
     minter = await Contract.coroutine(minter)
+    balances: List[WeiBalance]
     i, balances = 0, []
     while True:
         try:

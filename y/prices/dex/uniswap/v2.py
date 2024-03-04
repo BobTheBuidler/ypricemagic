@@ -5,12 +5,12 @@ import logging
 import sys
 from contextlib import suppress
 from decimal import Decimal
-from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Awaitable, Callable, Dict, List, Optional, Tuple
 
 import a_sync
 import brownie
 import dank_mids
-from a_sync.modified import ASyncFunction
+from a_sync.property import HiddenMethod
 from brownie import chain
 from brownie.network.event import _EventItem
 from multicall import Call
@@ -75,6 +75,8 @@ class UniswapV2Pool(ERC20):
                 return await contract.factory.coroutine()
             except AttributeError as exc:
                 raise NotAUniswapV2Pool from exc
+    
+    __factory__: HiddenMethod[Self, Address]
 
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
@@ -210,9 +212,9 @@ class UniswapV2Pool(ERC20):
         self._types_assumed = False
     
     # These dundermethods are created by a_sync for the async_properties on this class
-    __token0__: ASyncFunction[Tuple[Self], ERC20] if sys.version_info < (3, 10) else ASyncFunction[[Self], ERC20]
-    __token1__: ASyncFunction[Tuple[Self], ERC20] if sys.version_info < (3, 10) else ASyncFunction[[Self], ERC20]
-    __tokens__: ASyncFunction[Tuple[Self], Tuple[ERC20, ERC20]] if sys.version_info < (3, 10) else ASyncFunction[[Self], Tuple[ERC20, ERC20]]
+    __token0__: HiddenMethod[Self, ERC20]
+    __token1__: HiddenMethod[Self, ERC20]
+    __tokens__: HiddenMethod[Self, ERC20]
 
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
@@ -346,6 +348,7 @@ class UniswapRouterV2(ContractBase):
                 raise e
 
     def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
+        # sourcery skip: assign-if-exp, lift-return-into-if, merge-duplicate-blocks, merge-else-if-into-elif, remove-redundant-if, remove-unnecessary-cast
         '''Chooses swap path to use for quote'''
         # NOTE: can we just delete this now? probably, must test
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
@@ -507,6 +510,6 @@ class UniswapRouterV2(ContractBase):
         return liquidity
 
     # This dundermethod is created by a_sync for the async_property on this class
-    __pools__: ASyncFunction[Tuple[Self], List[UniswapV2Pool]] if sys.version_info < (3, 10) else ASyncFunction[[Self], List[UniswapV2Pool]]
+    __pools__: HiddenMethod[Self, List[UniswapV2Pool]]
 
-_get_tokens: Callable[[UniswapV2Pool], Tuple[ERC20, ERC20]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)
+_get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)

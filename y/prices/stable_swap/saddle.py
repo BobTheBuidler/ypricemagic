@@ -49,6 +49,7 @@ async def get_price(token_address: AddressOrContract, block: Optional[Block] = N
 
 @a_sync.a_sync(default='sync')
 async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
+    tokens: List[ERC20]
     pool, tokens, balances = await asyncio.gather(
         get_pool(token_address, sync=False),
         get_tokens(token_address, block, sync=False),

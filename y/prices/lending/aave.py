@@ -1,12 +1,14 @@
 import asyncio
 import logging
+from abc import abstractmethod, abstractproperty
 from decimal import Decimal
 from typing import Awaitable, List, Optional, Union
 
 import a_sync
-from abc import abstractmethod, abstractproperty
+from a_sync.property import HiddenMethod
 from brownie import chain
 from multicall import Call
+from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -86,6 +88,7 @@ class AaveMarketBase(ContractBase):
         return await self.contract.getReserveData.coroutine(reserve)
     @abstractproperty
     async def atokens(self) -> Awaitable[List[ERC20]]:...
+    __atokens__: HiddenMethod[Self, List[ERC20]]
     @abstractmethod
     async def underlying(self, token_address: AddressOrContract) -> ERC20:...
     @abstractproperty
@@ -97,7 +100,7 @@ class AaveMarketV1(AaveMarketBase):
         reserves = await self.get_reserves(sync=False)
         reserves_data = await asyncio.gather(*[self.get_reserve_data(reserve, sync=False) for reserve in reserves])
         atokens = [ERC20(reserve_data['aTokenAddress'], asynchronous=self.asynchronous) for reserve_data in reserves_data]
-        logger.info('loaded %s v1 atokens for %s', len(atokens), self.__repr__())
+        logger.info('loaded %s v1 atokens for %s', len(atokens), self)
         return atokens
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
@@ -115,11 +118,11 @@ class AaveMarketV2(AaveMarketBase):
         reserves_data = await asyncio.gather(*[self.get_reserve_data(reserve, sync=False) for reserve in reserves])
         try:
             atokens = [ERC20(reserve_data[7], asynchronous=self.asynchronous) for reserve_data in reserves_data]
-            logger.info('loaded %s v2 atokens for %s', len(atokens), self.__repr__())
+            logger.info('loaded %s v2 atokens for %s', len(atokens), self)
             return atokens
         except TypeError as e: # TODO figure out what to do about non verified aave markets
             logger.exception(e)
-            logger.warning('failed to load tokens for %s', self.__repr__())
+            logger.warning('failed to load tokens for %s', self)
             return []
     async def get_reserve_data(self, reserve: AnyAddressType) -> tuple:
         return await Call(self.address, [_V2_RESERVE_DATA_METHOD, str(reserve)])
@@ -138,11 +141,11 @@ class AaveMarketV3(AaveMarketBase):
         reserves_data = await asyncio.gather(*[self.get_reserve_data(reserve, sync=False) for reserve in reserves])
         try:
             atokens = [ERC20(reserve_data[8], asynchronous=self.asynchronous) for reserve_data in reserves_data]
-            logger.info('loaded %s v3 atokens for %s', len(atokens), self.__repr__())
+            logger.info('loaded %s v3 atokens for %s', len(atokens), self)
             return atokens
         except TypeError as e: # TODO figure out what to do about non verified aave markets
             logger.exception(e)
-            logger.warning('failed to load tokens for %s', self.__repr__())
+            logger.warning('failed to load tokens for %s', self)
             return []
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
@@ -164,29 +167,33 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.aka.cached_property
     async def pools(self) -> List[AaveMarket]:
         v1, v2, v3 = await asyncio.gather(
-            self.__pools_v1__
+            self.__pools_v1__,
             self.__pools_v2__, 
             self.__pools_v3__,
         )
         return v1 + v2 + v3
+    __pools__: HiddenMethod[Self, List[AaveMarket]]
     
     @a_sync.aka.cached_property
     async def pools_v1(self) -> List[AaveMarketV1]:
         pools = [AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools]
         logger.debug("%s v1 pools %s", self, pools)
         return pools
+    __pools_v1__: HiddenMethod[Self, List[AaveMarketV1]]
     
     @a_sync.aka.cached_property
     async def pools_v2(self) -> List[AaveMarketV2]:
         pools = [AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools]
         logger.debug("%s v2 pools %s", self, pools)
         return pools
+    __pools_v2__: HiddenMethod[Self, List[AaveMarketV2]]
     
     @a_sync.aka.cached_property
     async def pools_v3(self) -> List[AaveMarketV3]:
         pools = [AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools]
         logger.debug("%s v3 pools %s", self, pools)
         return pools
+    __pools_v3__: HiddenMethod[Self, List[AaveMarketV3]]
     
     async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
         pools = await self.__pools__

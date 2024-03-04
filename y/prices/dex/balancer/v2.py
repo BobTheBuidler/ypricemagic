@@ -6,12 +6,14 @@ from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
                     Tuple)
 
 import a_sync
+from a_sync.property import HiddenMethod
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
 from brownie.network.event import _EventItem
 from hexbytes import HexBytes
 from multicall import Call
+from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -134,10 +136,14 @@ class BalancerV2Pool(ERC20):
             self._id = PoolId(await self._id)
         return self._id
     
+    __id__: HiddenMethod[Self, PoolId]
+    
     @a_sync.aka.cached_property
     async def vault(self) -> Optional[BalancerV2Vault]:
         vault = await raw_call(self.address, 'getVault()', output='address', sync=False)
         return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
+    
+    __vault__: HiddenMethod[Self, Optional[BalancerV2Vault]]
     
     @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Awaitable[UsdPrice]:
@@ -178,12 +184,13 @@ class BalancerV2Pool(ERC20):
             self.get_balances(block=block, skip_cache=skip_cache, sync=False),
             self.weights(block=block, sync=False),
         )
+        token_balance: WeiBalance
         pool_token_info = list(zip(token_balances.keys(),token_balances.values(), weights))
         for pool_token, balance, weight in pool_token_info:
             if pool_token == token_address:
                 token_balance, token_weight = balance, weight
 
-        paired_token_balance = None
+        paired_token_balance: Optional[WeiBalance] = None
         for pool_token, balance, weight in pool_token_info:
             if pool_token in constants.STABLECOINS:
                 paired_token_balance, paired_token_weight = balance, weight
@@ -198,10 +205,7 @@ class BalancerV2Pool(ERC20):
         if paired_token_balance is None:
             return None
 
-        token_value_in_pool, token_balance_readable = await asyncio.gather(*[
-            paired_token_balance.__value_usd__
-            token_balance.__readable__,
-        ])
+        token_value_in_pool, token_balance_readable = await asyncio.gather(*[paired_token_balance.__value_usd__, token_balance.__readable__])
         token_value_in_pool /= paired_token_weight * token_weight
         return UsdPrice(token_value_in_pool / token_balance_readable) 
 

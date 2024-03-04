@@ -5,8 +5,10 @@ from decimal import Decimal
 from typing import Optional, Tuple
 
 import a_sync
+from a_sync.property import HiddenMethod
 from brownie import chain
 from multicall.call import Call
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
@@ -119,7 +121,8 @@ class YearnInspiredVault(ERC20):
 
         if underlying: 
             return ERC20(underlying, asynchronous=self.asynchronous)
-        raise CantFetchParam(f'underlying for {self.__repr__()}')
+        raise CantFetchParam(f'underlying for {self}')
+    __underlying__: HiddenMethod[Self, ERC20]
 
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
@@ -155,7 +158,7 @@ class YearnInspiredVault(ERC20):
             return None
         
         else:
-            raise CantFetchParam(f'share_price for {self.__repr__()}')
+            raise CantFetchParam(f'share_price for {self}')
     
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def price(

@@ -4,7 +4,9 @@ from decimal import Decimal
 from typing import List, Dict
 
 import a_sync
+from a_sync.property import HiddenMethod
 from brownie import chain
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
@@ -19,6 +21,7 @@ class DieselPool(ContractBase):
     @a_sync.aka.cached_property
     async def contract(self) -> Contract:
         return await Contract.coroutine(self.address)
+    __contract__: HiddenMethod[Self, Contract]
     
     @a_sync.aka.cached_property
     async def diesel_token(self) -> ERC20:
@@ -27,13 +30,16 @@ class DieselPool(ContractBase):
             return ERC20(await contract.dieselToken.coroutine(), asynchronous=self.asynchronous)
         except AttributeError: # NOTE: there could be better ways of doing this with hueristics, not sure yet
             return ERC20(self.address, asynchronous=self.asynchronous)
+    __diesel_token__: HiddenMethod[Self, ERC20]
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
         contract = await self.__contract__
         return ERC20(await contract.underlyingToken.coroutine(), asynchronous=self.asynchronous)
+    __underlying__: HiddenMethod[Self, ERC20]
     
     async def exchange_rate(self, block: Block) -> Decimal:
+        underlying: ERC20
         pool, underlying = await asyncio.gather(self.__contract__, self.__underlying__)
         scale = await underlying.__scale__
         return Decimal(await pool.fromDiesel.coroutine(scale, block_identifier=block)) / Decimal(scale)
@@ -62,7 +68,7 @@ class Gearbox(a_sync.ASyncGenericBase):
         return [DieselPool(pool, asynchronous=self.asynchronous) for pool in await registry.getPools.coroutine()]
     
     async def diesel_tokens(self) -> Dict[ERC20, DieselPool]:
-        pools = await self.pools(sync=False)
+        pools: List[DieselPool] = await self.pools(sync=False)
         dtokens = await asyncio.gather(*[pool.__diesel_token__ for pool in pools])
         return dict(zip(dtokens, pools))
 

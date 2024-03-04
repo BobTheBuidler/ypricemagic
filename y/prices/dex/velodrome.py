@@ -5,11 +5,14 @@ from typing import List, Optional, Set, Tuple
 import a_sync
 import dank_mids
 import eth_retry
+from a_sync.property import HiddenMethod
 from async_lru import alru_cache
 from brownie import chain
 from multicall.call import Call
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y.classes.common import ERC20
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block
 from y.decorators import stuck_coro_debugger
@@ -45,6 +48,7 @@ class VelodromePool(UniswapV2Pool):
     ):
         super().__init__(address, token0=token0, token1=token1, deploy_block=deploy_block, asynchronous=asynchronous)
         self.is_stable = stable
+    __tokens__: HiddenMethod[Self, ERC20]
 
 class VelodromeRouterV2(SolidlyRouterBase):
     def __init__(self, *args, **kwargs) -> None:

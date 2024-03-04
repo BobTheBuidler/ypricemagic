@@ -7,9 +7,11 @@ from itertools import cycle
 from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
 
 import a_sync
+from a_sync.property import HiddenMethod
 from brownie import chain
 from brownie.network.event import _EventItem
 from eth_abi.packed import encode_abi_packed
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
@@ -120,6 +122,8 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def factory(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id]['factory'])
+
+    __factory__: HiddenMethod[Self, Contract]
     
     @cached_property
     def loaded(self) -> a_sync.Event:
@@ -132,6 +136,8 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             return await Contract.coroutine(quoter)
         except ContractNotVerified:
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
+    
+    __quoter__: HiddenMethod[Self, Contract]
     
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
@@ -177,6 +183,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
     async def pools(self) -> List[UniswapV3Pool]:
         factory = await self.__factory__
         return UniV3Pools(factory, asynchronous=self.asynchronous)
+    __pools__: HiddenMethod[Self, "UniV3Pools"]
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
@@ -241,8 +248,6 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     def __init__(self, factory: Contract, asynchronous: bool = False):
         self.asynchronous = asynchronous
         super().__init__(addresses=[factory.address], topics=[factory.topics["PoolCreated"]])
-    def __repr__(self) -> str:
-        return object.__repr__(self)
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         token0, token1, fee, tick_spacing, pool = event.values()
         return UniswapV3Pool(pool, token0, token1, fee, tick_spacing, event.block_number, asynchronous=self.asynchronous)

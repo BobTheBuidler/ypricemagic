@@ -3,9 +3,11 @@ import logging
 from typing import Optional, Tuple
 
 import a_sync
+from a_sync.property import HiddenMethod
 from brownie import chain, convert
 from brownie.exceptions import VirtualMachineError
 from multicall import Call
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
@@ -79,7 +81,7 @@ class CToken(ERC20):
                 return UsdPrice(underlying_per_ctoken * underlying_price)
             
         # Or we can just price the underlying token ourselves
-        underlying = await self.__underlying__(asynchronous=True)
+        underlying = await self.__underlying__
         underlying_per_ctoken, underlying_price = await asyncio.gather(
             self.underlying_per_ctoken(block=block, asynchronous=True),
             underlying.price(block=block, skip_cache=skip_cache, asynchronous=True)
@@ -88,11 +90,14 @@ class CToken(ERC20):
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
+        # sourcery skip: use-or-for-fallback
         underlying = await self.has_method('underlying()(address)', return_response=True, sync=False)
         # this will run for gas coin markets like cETH, crETH
         if not underlying:
             underlying = EEE_ADDRESS
         return ERC20(underlying, asynchronous=self.asynchronous)
+    
+    __underlying__: HiddenMethod[Self, ERC20]
     
     async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
         exchange_rate, decimals, underlying = await asyncio.gather(
@@ -174,11 +179,13 @@ class Comptroller(ContractBase):
     async def markets(self) -> Tuple[CToken]:
         response = await self.has_method("getAllMarkets()(address[])", return_response=True, sync=False)
         if not response:
-            logger.warning(f'had trouble loading markets for {self.__repr__()}')
+            logger.warning('had trouble loading markets for %s', self)
             response = set()
         markets = tuple(CToken(market, comptroller=self, asynchronous=self.asynchronous) for market in response)
-        logger.info("loaded %s markets for %s", len(markets), self.__repr__())
+        logger.info("loaded %s markets for %s", len(markets), self)
         return markets
+
+    __markets__ = HiddenMethod[Self, Tuple[CToken]]
     
     async def oracle(self, block: Optional[Block] = None) -> Contract:
         contract = await Contract.coroutine(self.address)
@@ -233,4 +240,4 @@ class Compound(a_sync.ASyncGenericSingleton):
             _gh_issue_request(f'Comptroller {comptroller} is unknown to ypricemagic.', logger)
 
 
-compound = Compound(asynchronous=True)
+compound: Compound = Compound(asynchronous=True)

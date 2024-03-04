@@ -10,7 +10,7 @@ from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
                     Optional, Tuple, Union)
 
 import a_sync
-from a_sync.modified import ASyncFunction
+from a_sync.property import HiddenMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
@@ -289,7 +289,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return readable
     
     @a_sync.aka.cached_property
-    async def value_usd(self) -> float:
+    async def value_usd(self) -> Decimal:
         if self.balance == 0:
             return 0
         balance, price = await asyncio.gather(
@@ -304,8 +304,9 @@ class WeiBalance(a_sync.ASyncGenericBase):
     def _logger(self) -> logging.logging.Logger:
         return logging.get_price_logger(self.token.address, self.block, self.__class__.__name__)
 
-    # This dundermethod is created by a_sync for the async_property on this class
-    __readable__: ASyncFunction[Tuple[Self], Decimal] if sys.version_info < (3, 10) else ASyncFunction[[Self], Decimal]
+    # This dundermethods are created by a_sync for the async propert ieson this class
+    __readable__: HiddenMethod[Self, Decimal]
+    __value_usd__: HiddenMethod[Self, Decimal]
 
 
 class _Loader(ContractBase):

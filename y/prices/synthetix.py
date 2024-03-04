@@ -3,10 +3,12 @@ import logging
 from typing import List, Optional
 
 import a_sync
+from a_sync.property import HiddenMethod
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
 from eth_abi import encode_single
 from multicall import Call
+from typing_extensions import Self
 
 from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -33,6 +35,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
     @a_sync.aka.property
     async def address_resolver(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id])
+    __address_resolver__: HiddenMethod[Self, Contract]
 
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def get_address(self, name: str, block: Block = None) -> Contract:

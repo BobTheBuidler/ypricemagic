@@ -134,7 +134,7 @@ async def test_chainlink_latest(token):
         try:
             assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, 'no current price available'
         except AttributeError as e:
-            raise AttributeError(*e.args, feed)
+            raise AttributeError(*e.args, feed) from e
 
 
 @mainnet_only
@@ -156,7 +156,7 @@ async def test_chainlink_before_registry(token):
         try:
             assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, f'{feed} no price available before registry'
         except AttributeError as e:
-            raise AttributeError(*e.args, feed)
+            raise AttributeError(*e.args, feed) from e
 
 
 @pytest.mark.asyncio_cooperative
