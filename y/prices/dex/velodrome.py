@@ -18,6 +18,7 @@ from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase
 from y.prices.dex.uniswap.v2 import Path, UniswapV2Pool
 from y.utils import gather_methods
+from y.utils.cache import a_sync_cache
 from y.utils.raw_calls import raw_call
 
 _INIT_METHODS = 'token0()(address)', 'token1()(address)', 'stable()(bool)'
@@ -52,12 +53,12 @@ class VelodromeRouterV2(SolidlyRouterBase):
         self.default_factory = default_factory[chain.id]
     
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync_cache
     async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory)
     
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync_cache
     @eth_retry.auto_retry
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
         pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
