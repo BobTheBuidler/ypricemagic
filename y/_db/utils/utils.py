@@ -13,7 +13,6 @@ from brownie import chain
 
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, a_sync_write_db_session_cached, log_result_count
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
-from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
 
@@ -37,12 +36,14 @@ def get_block(number: int) -> Block:
 @a_sync_write_db_session_cached
 def ensure_block(number: int) -> None:
     if number not in known_blocks():
+        from y._db.utils._ep import _get_get_block
         get_block = _get_get_block()
         get_block(number, sync=True)
 
 @a_sync_read_db_session
 def get_block_timestamp(number: int) -> Optional[int]:
     if (ts := known_block_timestamps().pop(number, None)) is None:
+        from y._db.utils._ep import _get_get_block
         get_block = _get_get_block()
         ts = get_block(number, sync=True).timestamp
     if ts:
@@ -79,6 +80,7 @@ def set_block_at_timestamp(timestamp: datetime, block: int) -> None:
 
 @a_sync_write_db_session
 def _set_block_timestamp(block: int, timestamp: int) -> None:
+    from y._db.utils._ep import _get_get_block
     get_block = _get_get_block()
     block = get_block(block, sync=True)
     timestamp = datetime.fromtimestamp(timestamp, tz=timezone.utc)
