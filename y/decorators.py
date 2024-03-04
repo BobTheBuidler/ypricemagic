@@ -1,9 +1,10 @@
 
 import asyncio
 import functools
+import inspect
 import logging
 import time
-from typing import Awaitable, Callable, TypeVar, Union
+from typing import AsyncIterator, Awaitable, Callable, TypeVar, Union
 
 from typing_extensions import ParamSpec
 
@@ -34,23 +35,44 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
         raise NotImplementedError(f"Unable to decorate {func}")
     return continue_on_revert_wrap
 
-def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:
+@overload
+def stuck_coro_debugger(fn: Callable[P, AsyncIterator[T]]) -> Callable[P, AsyncIterator[T]]:...
+@overload
+def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:...
+def stuck_coro_debugger(fn):
     logger = logging.getLogger("y.stuck?")
-    @functools.wraps(fn)
-    async def stuck_coro_wrap(*args: P.args, **kwargs: P.kwargs) -> T:
-        if not logger.isEnabledFor(logging.DEBUG):
-            return await fn(*args, **kwargs)
-        t = asyncio.create_task(coro=_stuck_debug_task(logger, fn, args, kwargs), name="_stuck_debug_task")
-        try:
-            retval = await fn(*args, **kwargs)
-            t.cancel()
-        except Exception as e:
-            t.cancel()
-            raise e
-        return retval
-    return stuck_coro_wrap
+    if inspect.isasyncgenfunction(fn):
+        @functools.wraps(fn)
+        async def stuck_async_gen_wrap(*args: P.args, **kwargs: P.kwargs) -> AsyncIterator[T]:
+            if not logger.isEnabledFor(logging.DEBUG):
+                async for thing in fn(*args, **kwargs):
+                    yield thing
+            t = asyncio.create_task(coro=_stuck_debug_task(logger, fn, args, kwargs), name="_stuck_debug_task")
+            try:
+                async for thing in fn(*args, **kwargs):
+                    yield thing
+                t.cancel()
+                return
+            except Exception as e:
+                t.cancel()
+                raise e
+        return stuck_async_gen_wrap
+    else:
+        @functools.wraps(fn)
+        async def stuck_coro_wrap(*args: P.args, **kwargs: P.kwargs) -> T:
+            if not logger.isEnabledFor(logging.DEBUG):
+                return await fn(*args, **kwargs)
+            t = asyncio.create_task(coro=_stuck_debug_task(logger, fn, args, kwargs), name="_stuck_debug_task")
+            try:
+                retval = await fn(*args, **kwargs)
+                t.cancel()
+            except Exception as e:
+                t.cancel()
+                raise e
+            return retval
+        return stuck_coro_wrap
 
-async def _stuck_debug_task(logger: logging.Logger, fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs):
+async def _stuck_debug_task(logger: logging.Logger, fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> NoReturn:
     start = time.time()
     while True:
         await asyncio.sleep(300)
