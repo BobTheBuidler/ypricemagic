@@ -16,7 +16,6 @@ from y import convert
 from y.classes.common import ERC20, ContractBase
 from y.contracts import Contract
 from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, UsdPrice
-from y.exceptions import ContractNotVerified
 from y.networks import Network
 from y.utils import hasall
 from y.utils.logging import get_price_logger
@@ -215,17 +214,13 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     
     async def is_wrapped_atoken_v2(self, token_address: AnyAddressType) -> bool:
         # NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.
-        try:
-            return hasall(await Contract.coroutine(token_address), _WRAPPED_V2_METHODS)
-        except ContractNotVerified:
-            return False
+        contract = await Contract.coroutine(token_address, require_success=False)
+        return contract.verified and hasall(contract, _WRAPPED_V2_METHODS)
         
     async def is_wrapped_atoken_v3(self, token_address: AnyAddressType) -> bool:
         # NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.
-        try:
-            return hasall(await Contract.coroutine(token_address), _WRAPPED_V3_METHODS)
-        except ContractNotVerified:
-            return False
+        contract = await Contract.coroutine(token_address, require_success=False)
+        return contract.verified and hasall(contract, _WRAPPED_V3_METHODS)
     
     @a_sync.a_sync(cache_type='memory')
     async def underlying(self, token_address: AddressOrContract) -> ERC20:
