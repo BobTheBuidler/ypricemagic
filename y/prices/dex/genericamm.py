@@ -9,18 +9,17 @@ from y import Contract
 from y.classes.common import ERC20, WeiBalance
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.decorators import stuck_coro_debugger
-from y.exceptions import ContractNotVerified, MessedUpBrownieContract
+from y.exceptions import MessedUpBrownieContract
 from y.utils import gather_methods, hasall
-from y.utils.cache import memory
 
 _CHECK_METHODS = 'getReserves','token0','token1'
 _TOKEN_METHODS = 'token0()(address)', 'token1()(address)'
 
-@memory.cache()
-def is_generic_amm(lp_token_address: AnyAddressType) -> bool:
+async def is_generic_amm(lp_token_address: AnyAddressType) -> bool:
     try:
-        return hasall(Contract(lp_token_address), _CHECK_METHODS)
-    except (ContractNotFound, ContractNotVerified):
+        contract = await Contract.coroutine(lp_token_address, require_success=False)
+        return contract.verified and hasall(contract, _CHECK_METHODS)
+    except ContractNotFound:
         return False
     except MessedUpBrownieContract:
         # probably false, can get more specific when there's a need.
@@ -29,9 +28,6 @@ def is_generic_amm(lp_token_address: AnyAddressType) -> bool:
 class GenericAmm(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
-
-    def __contains__(self, lp_token_address: AnyAddressType) -> bool:
-        return is_generic_amm(lp_token_address)
     
     @stuck_coro_debugger
     async def get_price(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:

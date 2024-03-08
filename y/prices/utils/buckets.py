@@ -12,7 +12,7 @@ from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
 from y.prices.dex.balancer import balancer_multiplexer
-from y.prices.dex.genericamm import generic_amm
+from y.prices.dex.genericamm import is_generic_amm
 from y.prices.dex.uniswap import uniswap_multiplexer
 from y.prices.eth_derivs import creth, wsteth
 from y.prices.gearbox import gearbox
@@ -29,15 +29,11 @@ from y.utils.logging import get_price_logger
 logger = logging.getLogger(__name__)
 
 @a_sync.a_sync(default='sync', cache_type='memory')
-async def check_bucket(
-    token: AnyAddressType
-    ) -> str:
-
-    import y._db.utils.token as db
-
+async def check_bucket(token: AnyAddressType) -> str:
     token_address = convert.to_address(token)
     logger = get_price_logger(token_address, block=None, extra='buckets')
     
+    import y._db.utils.token as db
     bucket = await db.get_bucket(token_address)
     if bucket:
         logger.debug('returning bucket %s from ydb', bucket)
@@ -86,7 +82,7 @@ async def check_bucket(
         bucket = 'wrapped atoken v2'
     elif await aave.is_wrapped_atoken_v3(token_address, sync=False):
         bucket = 'wrapped atoken v3'
-    elif token_address in generic_amm:                                      
+    elif await is_generic_amm(token_address):                                      
         bucket = 'generic amm'
     elif await mooniswap.is_mooniswap_pool(token_address, sync=False):      
         bucket = 'mooniswap lp'
