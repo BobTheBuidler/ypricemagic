@@ -242,7 +242,12 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     if require_success:
                         raise
                     try:
-                        self.verified = False if type(e) == ContractNotVerified else None
+                        if type(e) == ContractNotVerified:
+                            self.verified = False
+                            self._name = "Non-Verified Contract"
+                        else:
+                            self.verified = None
+                            self._name = "Broken Contract"
                     except AttributeError:
                         logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
                 # Patch the Contract with coroutines for each method.
