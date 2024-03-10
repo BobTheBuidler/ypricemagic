@@ -20,6 +20,7 @@ from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
 from multicall import Call
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
@@ -371,7 +372,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
     except Exception as e:
-        if call_reverted(e):
+        if isinstance(e, ContractLogicError) or call_reverted(e):
             return False
         raise
 
@@ -393,7 +394,7 @@ async def has_methods(
     try:
         return _func([result is not None for result in await gather_methods(address, methods)])
     except Exception as e:
-        if not call_reverted(e): raise # and not out_of_gas(e): raise
+        if not isinstance(e, ContractLogicError) and not call_reverted(e): raise # and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
