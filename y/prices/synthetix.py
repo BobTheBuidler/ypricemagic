@@ -62,12 +62,17 @@ class Synthetix(a_sync.ASyncGenericSingleton):
     async def is_synth(self, token: AnyAddressType) -> bool:
         """returns `True` if a `token` is a synth, `False` if not"""
         token = convert.to_address(token)
-        if await synthetix.get_currency_key(token, sync=False):
-            return True
-        if await has_method(token, 'target()(address)', sync=False):
-            target = await Call(token, 'target()(address)')
-            return target in await synthetix.synths and await Call(target, 'proxy()(address)') == token
-        return False
+        try:
+            if await synthetix.get_currency_key(token, sync=False):
+                return True
+            if await has_method(token, 'target()(address)', sync=False):
+                target = await Call(token, 'target()(address)')
+                return target in await synthetix.synths and await Call(target, 'proxy()(address)') == token
+            return False
+        except Exception as e:
+            if "invalid jump destination" in str(e):
+                return False
+            raise e
     
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
