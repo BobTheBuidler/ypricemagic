@@ -352,28 +352,6 @@ class UniswapRouterV2(ContractBase):
             ]
             if not call_reverted(e) and all(s not in str(e) for s in strings):
                 raise e
-
-    def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
-        # sourcery skip: assign-if-exp, lift-return-into-if, merge-duplicate-blocks, merge-else-if-into-elif, remove-redundant-if, remove-unnecessary-cast
-        '''Chooses swap path to use for quote'''
-        # NOTE: can we just delete this now? probably, must test
-        token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
-
-        if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
-        elif weth in (token_in, token_out):                                                 path = [token_in, token_out]
-        elif sushi and paired_against == sushi and token_out != sushi:                      path = [token_in,sushi,weth,token_out]
-        elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:         path = self.special_paths[str(token_in)]
-
-        elif chain.id == Network.BinanceSmartChain:
-            from y.constants import cake, wbnb
-            if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
-            elif cake.address in (token_in, token_out):                                     path = [token_in, token_out]
-            else:                                                                           path = [token_in,wbnb.address,token_out]
-        else:
-            if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
-            else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
-
-        return path
     
     @a_sync.aka.cached_property
     @stuck_coro_debugger
@@ -551,4 +529,27 @@ class UniswapRouterV2(ContractBase):
         """returns True if our uniswap helper contract is supported, False if not"""
         return FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
+
+    def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
+        # sourcery skip: assign-if-exp, lift-return-into-if, merge-duplicate-blocks, merge-else-if-into-elif, remove-redundant-if, remove-unnecessary-cast
+        '''Chooses swap path to use for quote'''
+        # NOTE: can we just delete this now? probably, must test
+        token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
+
+        if str(paired_against) in STABLECOINS and str(token_out) in STABLECOINS:            path = [token_in, paired_against]
+        elif weth in (token_in, token_out):                                                 path = [token_in, token_out]
+        elif sushi and paired_against == sushi and token_out != sushi:                      path = [token_in,sushi,weth,token_out]
+        elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:         path = self.special_paths[str(token_in)]
+
+        elif chain.id == Network.BinanceSmartChain:
+            from y.constants import cake, wbnb
+            if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
+            elif cake.address in (token_in, token_out):                                     path = [token_in, token_out]
+            else:                                                                           path = [token_in,wbnb.address,token_out]
+        else:
+            if WRAPPED_GAS_COIN in (token_in, token_out):                                   path = [token_in, token_out]
+            else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
+
+        return path
+    
 _get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)
