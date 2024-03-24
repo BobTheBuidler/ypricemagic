@@ -1,10 +1,10 @@
-
+ 
 import asyncio
 import itertools
 import logging
-import sys
 from contextlib import suppress
 from decimal import Decimal
+from functools import cached_property
 from typing import Any, AsyncIterator, Awaitable, Callable, Dict, List, Optional, Tuple
 
 import a_sync
@@ -40,6 +40,12 @@ logger = logging.getLogger(__name__)
 
 Path = List[AddressOrContract]
 Reserves = Tuple[int,int,int]
+
+factory_helper_address = {
+    Network.Optimism: "0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9",
+}.get(chain.id)
+
+FACTORY_HELPER = Contract(factory_helper_address) if factory_helper_address else None
 
 class UniswapV2Pool(ERC20):
     __slots__ = 'get_reserves', '_token0', '_token1', '_types_assumed'
@@ -253,7 +259,9 @@ class UniswapRouterV2(ContractBase):
             brownie.Contract.from_abi('UniClone Factory [forced]', self.factory, UNIV2_FACTORY_ABI)
 
         self._events = PoolsFromEvents(self.factory, self.label, asynchronous=self.asynchronous)
-        
+    
+    def __str__(self) -> str:
+        return self.__repr__()
     
     def __repr__(self) -> str:
         return f"<UniswapV2Router {self.label} '{self.address}'>"
@@ -305,7 +313,7 @@ class UniswapRouterV2(ContractBase):
             logger.debug('quote: %s', quote)
             if quote is not None:
                 amount_out = Decimal(quote[-1]) / out_scale  
-                fees = Decimal(0.997 ** (len(path) - 1))
+                fees = Decimal(0.997) ** (len(path) - 1)
                 amount_out /= fees
                 paired_with_price = await magic.get_price(paired_with, block, fail_to_None=True, skip_cache=skip_cache, ignore_pools=(*ignore_pools, deepest_pool), sync=False)
 
@@ -315,7 +323,8 @@ class UniswapRouterV2(ContractBase):
         # If we still don't have a workable path, try this smol brain method
         if path is None:
             path = self._smol_brain_path_selector(token_in, token_out, paired_against)
-            logger.debug('smol')
+            # NOTE: does this ever run anymore? can we take it out?
+            logger.warning('using smol brain path selector')
 
         fees = 0.997 ** (len(path) - 1)
         logger.debug('router: %s     path: %s', self.label, path)
@@ -394,8 +403,15 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
+        if self._supports_uniswap_helper:
+            pools = [
+                UniswapV2Pool(pool, asynchronous=self.asynchronous)
+                for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in)
+            ]
+        else:
+            pools = await self.__pools__
         pool_to_token_out = {}
-        async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
+        async for pool, (token0, token1) in a_sync.map(_get_tokens, pools):
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
@@ -415,44 +431,55 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
+        """returns the deepest pool for `token_address` at `block`, excluding pools in `_ignore_pools`"""
         token_address = convert.to_address(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return await self.deepest_stable_pool(token_address, block, sync=False)
-        pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)
-        if not pools:
-            return None
-        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
+        if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+            deepest_pool, deepest_pool_depth = await self.deepest_pool_for(token_address, block, ignore_pools=_ignore_pools)
+            return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
+        else:
+            pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
+            if not pools:
+                return None
+            liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
 
-        deepest_pool = None
-        deepest_pool_balance = 0
-        for pool, depth in zip(pools, liquidity):
-            if depth and depth > deepest_pool_balance:
-                deepest_pool = pool
-                deepest_pool_balance = depth
-        return deepest_pool
+            deepest_pool = None
+            deepest_pool_balance = 0
+            for pool, depth in zip(pools, liquidity):
+                if depth and depth > deepest_pool_balance:
+                    deepest_pool = pool
+                    deepest_pool_balance = depth
+            return deepest_pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
+        """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
         token_address = convert.to_address(token_address)
-        pools: Dict[UniswapV2Pool, Address]
-        pools = {
+        stable_pools: Dict[UniswapV2Pool, Address] = {
             pool: paired_with
             for pool, paired_with in (await self.pools_for_token(token_address, None, _ignore_pools=_ignore_pools, sync=False)).items()
             if paired_with in STABLECOINS
         }
+        
+        if stable_pools:
+            if FACTORY_HELPER and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+                deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, stable_pools, block_identifier=block)
+                return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
 
-        if pools and block is not None:
-            deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
-            pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
+            elif block is not None:
+                deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in stable_pools])
+                stable_pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(stable_pools.items(), deploy_blocks) if deploy_block <= block}
             
-        if not pools:
+        if not stable_pools:
             return None
-        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
+        
+        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in stable_pools])
 
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        for pool, depth in zip(pools, liquidity):
+        for pool, depth in zip(stable_pools, liquidity):
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth
@@ -502,9 +529,26 @@ class UniswapRouterV2(ContractBase):
         if block and block < await contract_creation_block_async(self.factory):
             logger.debug("block %s is before %s deploy block")
             return 0
-        pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
-        liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+        if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+            deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
+        else:
+            pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
+            liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
+
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
+    async def deepest_pool_for(self, token: Address, block: Block = None, *, ignore_pools = []) -> Tuple[Address, int]:
+        # sourcery skip: default-mutable-arg
+        try:
+            return await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
+        except Exception as e:
+            e.args = (*e.args, self.__repr__(), self.label, self.address)
+            raise e
+    
+    @cached_property
+    def _supports_uniswap_helper(self) -> bool:
+        """returns True if our uniswap helper contract is supported, False if not"""
+        return FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
 _get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)
