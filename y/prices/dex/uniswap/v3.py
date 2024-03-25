@@ -12,6 +12,7 @@ from brownie import chain
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_abi.packed import encode_abi_packed
+from multicall.utils import raise_if_exception_in
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
@@ -176,6 +177,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             if amount and not isinstance(amount, (Revert, ContractLogicError))
         ]
         logger.debug("outputs: %s", outputs)
+        raise_if_exception_in(outputs)
         return UsdPrice(max(outputs)) if outputs else None
 
     @a_sync.aka.cached_property
