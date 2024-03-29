@@ -135,7 +135,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     if deploy_block := await db.get_deploy_block(address):
         return deploy_block
     
-    logger.debug(f"contract creation block {address}")
+    logger.debug(f"fetching contract creation block for {address}")
     height = await dank_mids.eth.block_number
 
     if height == 0:
@@ -143,43 +143,44 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
             `chain.height` returns 0 on your node, which means it is not fully synced.
             You can only use this function on a fully synced node.''')
     
-    await check_node_async()
+    async with creation_block_semaphore:
+        await check_node_async()
 
-    lo, hi = 0, height
-    barrier = 0
-    warned = False
-    while hi - lo > 1:
-        mid = lo + (hi - lo) // 2
-        # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
-        try:
-            if await get_code(address, mid):
-                hi = mid
-            else:
+        lo, hi = 0, height
+        barrier = 0
+        warned = False
+        while hi - lo > 1:
+            mid = lo + (hi - lo) // 2
+            # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
+            try:
+                if await get_code(address, mid):
+                    hi = mid
+                else:
+                    lo = mid
+            except ValueError as e:
+                if 'missing trie node' in str(e):
+                    if not warned:
+                        logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
+                elif 'Server error: account aurora does not exist while viewing' in str(e):
+                    if not warned:
+                        logger.warning(str(e))
+                elif 'No state available for block' in str(e):
+                    if not warned:
+                        logger.warning(str(e))
+                else:
+                    raise
+                warned = True
+                barrier = mid
                 lo = mid
-        except ValueError as e:
-            if 'missing trie node' in str(e):
-                if not warned:
-                    logger.warning('missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.')
-            elif 'Server error: account aurora does not exist while viewing' in str(e):
-                if not warned:
-                    logger.warning(str(e))
-            elif 'No state available for block' in str(e):
-                if not warned:
-                    logger.warning(str(e))
-            else:
-                raise
-            warned = True
-            barrier = mid
-            lo = mid
-    if hi == lo + 1 == barrier + 1 and when_no_history_return_0:
-        logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
-        logger.debug(f"contract creation block {address} -> 0")
-        return 0
-    if hi != height:
-        logger.debug(f"contract creation block {address} -> {hi}")
-        db.set_deploy_block(address, hi)
-        return hi
-    raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
+        if hi == lo + 1 == barrier + 1 and when_no_history_return_0:
+            logger.warning(f'could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)')
+            logger.debug(f"contract creation block {address} -> 0")
+            return 0
+        if hi != height:
+            logger.debug(f"contract creation block {address} -> {hi}")
+            db.set_deploy_block(address, hi)
+            return hi
+        raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 
 # this defaultdict prevents congestion in the contracts thread pool
