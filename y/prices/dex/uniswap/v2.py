@@ -439,7 +439,7 @@ class UniswapRouterV2(ContractBase):
         """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
         token_address = convert.to_address(token_address)
         stable_pools: Dict[UniswapV2Pool, Address]
-        if chain.id == Network.Mainnet and token_address == WRAPPED_GAS_COIN:
+        if chain.id == Network.Mainnet and token_address == WRAPPED_GAS_COIN and self.label == "uniswap v2":
             # This will run out of gas if we use the helper so we bypass it with a known liquid pool
             stable_pools = {UniswapV2Pool("0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True): "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
         else:
