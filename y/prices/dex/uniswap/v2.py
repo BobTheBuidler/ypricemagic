@@ -402,7 +402,12 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     async def pools_for_token(self, token_address: Address, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Dict[UniswapV2Pool, Address]:
         pools: Dict[UniswapV2Pool, Address]
-        pools = await self.get_pools_for(token_address, sync=False)
+        
+        if chain.id == Network.Mainnet and token_address == WRAPPED_GAS_COIN and self.label == "uniswap v2":
+            # This will run out of gas if we use the helper so we bypass it with a known liquid pool
+            pools = {UniswapV2Pool("0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True): "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
+        else:
+            pools = await self.get_pools_for(token_address, sync=False)
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
             deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
@@ -438,12 +443,7 @@ class UniswapRouterV2(ContractBase):
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
         token_address = convert.to_address(token_address)
-        stable_pools: Dict[UniswapV2Pool, Address]
-        if chain.id == Network.Mainnet and token_address == WRAPPED_GAS_COIN and self.label == "uniswap v2":
-            # This will run out of gas if we use the helper so we bypass it with a known liquid pool
-            stable_pools = {UniswapV2Pool("0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True): "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
-        else:
-            stable_pools = {
+        stable_pools: Dict[UniswapV2Pool, Address] = {
             pool: paired_with
             for pool, paired_with in (await self.pools_for_token(token_address, None, _ignore_pools=_ignore_pools, sync=False)).items()
             if paired_with in STABLECOINS
