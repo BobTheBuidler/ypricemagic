@@ -42,10 +42,13 @@ Path = List[AddressOrContract]
 Reserves = Tuple[int,int,int]
 
 factory_helper_address = {
-    Network.Optimism: "0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9",
-}.get(chain.id)
+    # put special case addresses here
+}.get(chain.id, "0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9")
 
-FACTORY_HELPER = Contract(factory_helper_address) if factory_helper_address else None
+try:
+    FACTORY_HELPER = Contract(factory_helper_address)
+except ContractNotVerified:
+    FACTORY_HELPER = None
 
 class UniswapV2Pool(ERC20):
     __slots__ = 'get_reserves', '_token0', '_token1', '_types_assumed'
