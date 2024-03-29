@@ -11,6 +11,7 @@ from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
 from eth_abi.packed import encode_abi_packed
+from multicall.utils import raise_if_exception_in
 from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -175,6 +176,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             if amount
         ]
         logger.debug("outputs: %s", outputs)
+        raise_if_exception_in(outputs)
         return UsdPrice(max(outputs)) if outputs else None
 
     @a_sync.aka.cached_property
