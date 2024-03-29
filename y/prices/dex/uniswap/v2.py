@@ -532,10 +532,9 @@ class UniswapRouterV2(ContractBase):
         """returns True if our uniswap helper contract is supported, False if not"""
         return FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
-
     def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
+        """A very old method for finding a swap path, we keep this around as a fallback"""
         # sourcery skip: assign-if-exp, lift-return-into-if, merge-duplicate-blocks, merge-else-if-into-elif, remove-redundant-if, remove-unnecessary-cast
-        '''Chooses swap path to use for quote'''
         # NOTE: can we just delete this now? probably, must test
         token_in, token_out, paired_against = str(token_in), str(token_out), str(paired_against)
 

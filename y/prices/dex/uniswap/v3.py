@@ -10,9 +10,11 @@ import a_sync
 from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
+from dank_mids.exceptions import Revert
 from eth_abi.packed import encode_abi_packed
 from multicall.utils import raise_if_exception_in
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, ContractBase
@@ -152,6 +154,8 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         quoter = await self.__quoter__
         if block and block < await contract_creation_block_async(quoter, True):
             return None
+        
+        amount_in = await ERC20(token, asynchronous=True).scale
 
         paths = [[token, fee, usdc.address] for fee in self.fee_tiers]
         if token != weth:
@@ -159,21 +163,18 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
                 [token, fee, weth.address, self.fee_tiers[0], usdc.address] for fee in self.fee_tiers
             ]
         logger.debug("paths: %s", paths)
-        
-        amount_in = await ERC20(token, asynchronous=True).scale
 
-        # TODO make this properly async after extending for brownie ContractTx
-        results = await fetch_multicall(
-            *[[quoter, 'quoteExactInput', self._encode_path(path), amount_in] for path in paths],
-            block=block,
-            sync=False
+        results = await asyncio.gather(
+            *[quoter.quoteExactInput.coroutine(self._encode_path(path), amount_in, block_identifier=block) for path in paths], 
+            return_exceptions=True,
         )
+
         logger.debug("results: %s", results)
         # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
         outputs = [
             (amount if isinstance(amount, int) else amount[0]) / self._undo_fees(path) / 1e6
             for amount, path in zip(results, paths)
-            if amount
+            if amount and not isinstance(amount, (Revert, ContractLogicError))
         ]
         logger.debug("outputs: %s", outputs)
         raise_if_exception_in(outputs)
