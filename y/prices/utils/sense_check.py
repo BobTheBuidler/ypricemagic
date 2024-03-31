@@ -14,7 +14,7 @@ from y.networks import Network
 from y.prices.lending.aave import aave
 from y.prices.lending.compound import CToken
 from y.prices.stable_swap.curve import CurvePool
-from y.prices.utils.buckets import check_bucket
+from y.prices.utils import check_bucket
 from y.prices.yearn import YearnInspiredVault
 
 logger = logging.getLogger(__name__)
@@ -163,7 +163,7 @@ ACCEPTABLE_HIGH_PRICES = {
     ],
 }.get(chain.id, []) + acceptable_all_chains
 
-async def _sense_check(
+async def sense_check(
     token_address: str, 
     block: Optional[int],
     price: float
