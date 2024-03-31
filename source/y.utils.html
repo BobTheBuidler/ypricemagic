@@ -284,7 +284,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__aiter__">
 <span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__aiter__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Returns an async iterator for the wrapped async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
 </dd>
@@ -311,7 +312,8 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks_per_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semaphore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_reusable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Initializes the ASyncIterable with an async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
@@ -337,7 +339,8 @@ overridden to extend subclasses.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__iter__">
 <span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__iter__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Returns an iterator for the wrapped async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><em>Iterator</em></a>[<em>T</em>]</p>
 </dd>
@@ -394,7 +397,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.wrap">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.wrap" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Class method to wrap an AsyncIterable for backward compatibility.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wrapped</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.12)"><em>AsyncIterable</em></a><em>[</em><em>T</em><em>]</em>) – </p>
 </dd>
@@ -437,7 +441,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.__wrapped__">
 <span class="sig-name descname"><span class="pre">__wrapped__</span></span><a class="headerlink" href="#y.utils.events.Events.__wrapped__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The wrapped async iterable object.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.addresses">
@@ -503,7 +508,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__aiter__">
 <span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__aiter__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Returns an async iterator for the wrapped async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
 </dd>
@@ -530,7 +536,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks_per_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semaphore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_reusable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Initializes the ASyncIterable with an async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
@@ -556,7 +563,8 @@ overridden to extend subclasses.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__iter__">
 <span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__iter__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Returns an iterator for the wrapped async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><em>Iterator</em></a>[<em>T</em>]</p>
 </dd>
@@ -600,7 +608,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.wrap">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.wrap" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Class method to wrap an AsyncIterable for backward compatibility.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wrapped</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.12)"><em>AsyncIterable</em></a><em>[</em><em>T</em><em>]</em>) – </p>
 </dd>
@@ -643,7 +652,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__wrapped__">
 <span class="sig-name descname"><span class="pre">__wrapped__</span></span><a class="headerlink" href="#y.utils.events.LogFilter.__wrapped__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The wrapped async iterable object.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.addresses">
@@ -715,7 +725,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__aiter__">
 <span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__aiter__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Returns an async iterator for the wrapped async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
 </dd>
@@ -742,7 +753,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">addresses</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunks_per_batch</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">semaphore</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">executor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_reusable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Initializes the ASyncIterable with an async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
@@ -768,7 +780,8 @@ overridden to extend subclasses.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__iter__">
 <span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__iter__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Returns an iterator for the wrapped async iterable.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.12)"><em>Iterator</em></a>[<em>T</em>]</p>
 </dd>
@@ -838,7 +851,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.wrap">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.wrap" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Class method to wrap an AsyncIterable for backward compatibility.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>wrapped</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.12)"><em>AsyncIterable</em></a><em>[</em><em>T</em><em>]</em>) – </p>
 </dd>
@@ -881,7 +895,8 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__wrapped__">
 <span class="sig-name descname"><span class="pre">__wrapped__</span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__wrapped__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The wrapped async iterable object.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.addresses">
