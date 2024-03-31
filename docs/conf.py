@@ -50,4 +50,4 @@ autodoc_class_signature = "separated"
 
 automodule_generate_module_stub = True
 
-sys.path.insert(0, os.path.abspath('./eth_portfolio'))
+sys.path.insert(0, os.path.abspath('./y'))
