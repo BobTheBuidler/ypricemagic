@@ -422,21 +422,24 @@ class UniswapRouterV2(ContractBase):
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return await self.deepest_stable_pool(token_address, block, sync=False)
         if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
-            deepest_pool, deepest_pool_depth = await self.deepest_pool_for(token_address, block, ignore_pools=_ignore_pools)
-            return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
-        else:
-            pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
-            if not pools:
-                return None
-            liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
+            try:
+                deepest_pool, deepest_pool_depth = await self.deepest_pool_for(token_address, block, ignore_pools=_ignore_pools)
+                return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
+            except Revert as e:
+                # TODO: debug me!
+                logger.debug(e)
+        pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
+        if not pools:
+            return None
+        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
 
-            deepest_pool = None
-            deepest_pool_balance = 0
-            for pool, depth in zip(pools, liquidity):
-                if depth and depth > deepest_pool_balance:
-                    deepest_pool = pool
-                    deepest_pool_balance = depth
-            return deepest_pool
+        deepest_pool = None
+        deepest_pool_balance = 0
+        for pool, depth in zip(pools, liquidity):
+            if depth and depth > deepest_pool_balance:
+                deepest_pool = pool
+                deepest_pool_balance = depth
+        return deepest_pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
