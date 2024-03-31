@@ -202,6 +202,10 @@ WRAPPED_GAS_COIN = {
     Network.Optimism:           "0x4200000000000000000000000000000000000006",
     Network.Base:               "0x4200000000000000000000000000000000000006",
 }.get(chain.id)
+"""
+The address of the wrapped version of the native token on the active network.
+For example, on Ethereum Mainnet, `WRAPPED_GAS_COIN` == the WETH address. On Fantom, it is equal to the WFTM address. And so on.
+"""
 
 thread_pool_executor = a_sync.PruningThreadPoolExecutor(max_workers = int(os.environ.get("DOP", 32)))
 
