@@ -1,0 +1,21 @@
+y.interfaces.balancer package
+=============================
+
+Submodules
+----------
+
+y.interfaces.balancer.WeightedPool module
+-----------------------------------------
+
+.. automodule:: y.interfaces.balancer.WeightedPool
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.interfaces.balancer
+   :members:
+   :undoc-members:
+   :show-inheritance:

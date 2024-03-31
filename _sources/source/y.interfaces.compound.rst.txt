@@ -1,0 +1,21 @@
+y.interfaces.compound package
+=============================
+
+Submodules
+----------
+
+y.interfaces.compound.unitroller module
+---------------------------------------
+
+.. automodule:: y.interfaces.compound.unitroller
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.interfaces.compound
+   :members:
+   :undoc-members:
+   :show-inheritance:

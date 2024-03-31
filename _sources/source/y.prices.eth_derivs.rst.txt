@@ -1,0 +1,29 @@
+y.prices.eth\_derivs package
+============================
+
+Submodules
+----------
+
+y.prices.eth\_derivs.creth module
+---------------------------------
+
+.. automodule:: y.prices.eth_derivs.creth
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.eth\_derivs.wsteth module
+----------------------------------
+
+.. automodule:: y.prices.eth_derivs.wsteth
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.prices.eth_derivs
+   :members:
+   :undoc-members:
+   :show-inheritance:

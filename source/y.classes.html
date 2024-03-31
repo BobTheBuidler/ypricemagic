@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>y.classes package &mdash; ypricemagic  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ypricemagic
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">y.classes package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-y.classes.common">y.classes.common module</a><ul>
+<li><a class="reference internal" href="#y.classes.common.ContractBase"><code class="docutils literal notranslate"><span class="pre">ContractBase</span></code></a><ul>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.__init__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">ContractBase._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">ContractBase._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">ContractBase._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase._abc_impl"><code class="docutils literal notranslate"><span class="pre">ContractBase._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase._deploy_block"><code class="docutils literal notranslate"><span class="pre">ContractBase._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase._is_cached"><code class="docutils literal notranslate"><span class="pre">ContractBase._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.address"><code class="docutils literal notranslate"><span class="pre">ContractBase.address</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.asynchronous"><code class="docutils literal notranslate"><span class="pre">ContractBase.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.build_name"><code class="docutils literal notranslate"><span class="pre">ContractBase.build_name</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.contract"><code class="docutils literal notranslate"><span class="pre">ContractBase.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.deploy_block"><code class="docutils literal notranslate"><span class="pre">ContractBase.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ContractBase.has_method"><code class="docutils literal notranslate"><span class="pre">ContractBase.has_method</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.classes.common.ERC20"><code class="docutils literal notranslate"><span class="pre">ERC20</span></code></a><ul>
+<li><a class="reference internal" href="#y.classes.common.ERC20.__init__"><code class="docutils literal notranslate"><span class="pre">ERC20.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.__raise_exception"><code class="docutils literal notranslate"><span class="pre">ERC20.__raise_exception()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._name"><code class="docutils literal notranslate"><span class="pre">ERC20._name()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._symbol"><code class="docutils literal notranslate"><span class="pre">ERC20._symbol()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">ERC20._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">ERC20._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">ERC20._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._abc_impl"><code class="docutils literal notranslate"><span class="pre">ERC20._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._decimals"><code class="docutils literal notranslate"><span class="pre">ERC20._decimals</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._deploy_block"><code class="docutils literal notranslate"><span class="pre">ERC20._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._is_cached"><code class="docutils literal notranslate"><span class="pre">ERC20._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20._scale"><code class="docutils literal notranslate"><span class="pre">ERC20._scale</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.address"><code class="docutils literal notranslate"><span class="pre">ERC20.address</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.asynchronous"><code class="docutils literal notranslate"><span class="pre">ERC20.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.balance_of"><code class="docutils literal notranslate"><span class="pre">ERC20.balance_of</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">ERC20.balance_of_readable</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.contract"><code class="docutils literal notranslate"><span class="pre">ERC20.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.decimals"><code class="docutils literal notranslate"><span class="pre">ERC20.decimals</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.deploy_block"><code class="docutils literal notranslate"><span class="pre">ERC20.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.has_method"><code class="docutils literal notranslate"><span class="pre">ERC20.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.name"><code class="docutils literal notranslate"><span class="pre">ERC20.name</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.price"><code class="docutils literal notranslate"><span class="pre">ERC20.price</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.scale"><code class="docutils literal notranslate"><span class="pre">ERC20.scale</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.symbol"><code class="docutils literal notranslate"><span class="pre">ERC20.symbol</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.total_supply"><code class="docutils literal notranslate"><span class="pre">ERC20.total_supply</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.ERC20.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">ERC20.total_supply_readable</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.classes.common.WeiBalance"><code class="docutils literal notranslate"><span class="pre">WeiBalance</span></code></a><ul>
+<li><a class="reference internal" href="#y.classes.common.WeiBalance.__init__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.WeiBalance._abc_impl"><code class="docutils literal notranslate"><span class="pre">WeiBalance._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.WeiBalance._logger"><code class="docutils literal notranslate"><span class="pre">WeiBalance._logger</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.WeiBalance.readable"><code class="docutils literal notranslate"><span class="pre">WeiBalance.readable</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common.WeiBalance.value_usd"><code class="docutils literal notranslate"><span class="pre">WeiBalance.value_usd</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader"><code class="docutils literal notranslate"><span class="pre">_EventsLoader</span></code></a><ul>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._Loader__load"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._Loader__load()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.__init__"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._done_callback"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._done_callback()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._load"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._load()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._Loader__exc"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._Loader__exc</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._Loader__task"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._Loader__task</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.__exc"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.__exc</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.__task"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.__task</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._abc_impl"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._deploy_block"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._events"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._events</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._init_block"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._init_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._is_cached"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._loaded"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._loaded</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader._task"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._task</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.address"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.address</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.asynchronous"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.contract"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.deploy_block"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.has_method"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._EventsLoader.loaded"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.loaded</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.classes.common._Loader"><code class="docutils literal notranslate"><span class="pre">_Loader</span></code></a><ul>
+<li><a class="reference internal" href="#y.classes.common._Loader._Loader__load"><code class="docutils literal notranslate"><span class="pre">_Loader._Loader__load()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.__init__"><code class="docutils literal notranslate"><span class="pre">_Loader.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._done_callback"><code class="docutils literal notranslate"><span class="pre">_Loader._done_callback()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._load"><code class="docutils literal notranslate"><span class="pre">_Loader._load()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">_Loader._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">_Loader._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">_Loader._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._Loader__exc"><code class="docutils literal notranslate"><span class="pre">_Loader._Loader__exc</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._Loader__task"><code class="docutils literal notranslate"><span class="pre">_Loader._Loader__task</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.__exc"><code class="docutils literal notranslate"><span class="pre">_Loader.__exc</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.__task"><code class="docutils literal notranslate"><span class="pre">_Loader.__task</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._abc_impl"><code class="docutils literal notranslate"><span class="pre">_Loader._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._deploy_block"><code class="docutils literal notranslate"><span class="pre">_Loader._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._init_block"><code class="docutils literal notranslate"><span class="pre">_Loader._init_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._is_cached"><code class="docutils literal notranslate"><span class="pre">_Loader._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._loaded"><code class="docutils literal notranslate"><span class="pre">_Loader._loaded</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader._task"><code class="docutils literal notranslate"><span class="pre">_Loader._task</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.address"><code class="docutils literal notranslate"><span class="pre">_Loader.address</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.asynchronous"><code class="docutils literal notranslate"><span class="pre">_Loader.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.contract"><code class="docutils literal notranslate"><span class="pre">_Loader.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.deploy_block"><code class="docutils literal notranslate"><span class="pre">_Loader.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.has_method"><code class="docutils literal notranslate"><span class="pre">_Loader.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.common._Loader.loaded"><code class="docutils literal notranslate"><span class="pre">_Loader.loaded</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.classes.common.hex_to_string"><code class="docutils literal notranslate"><span class="pre">hex_to_string()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-y.classes.singleton">y.classes.singleton module</a><ul>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta</span></code></a><ul>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__call__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__call__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__delete_address_lock"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__delete_address_lock()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__get_address_lock"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__get_address_lock()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__init__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__new__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__new__()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta._abc_caches_clear"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._abc_caches_clear()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta._abc_registry_clear"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._abc_registry_clear()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta._dump_registry"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._dump_registry()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.mro"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.mro()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.register"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.register()</span></code></a></li>
+<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta._is_protocol"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._is_protocol</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-y.classes">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ypricemagic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">y.classes package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/y.classes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="y-classes-package">
+<h1>y.classes package<a class="headerlink" href="#y-classes-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-y.classes.common">
+<span id="y-classes-common-module"></span><h2>y.classes.common module<a class="headerlink" href="#module-y.classes.common" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.common.</span></span><span class="sig-name descname"><span class="pre">ContractBase</span></span><a class="headerlink" href="#y.classes.common.ContractBase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.base.ASyncGenericBase" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncGenericBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ContractBase.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>_deploy_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">{'0x115934131916C8b277DD010Ee02de363c09d037c':</span> <span class="pre">&lt;ContractBase</span> <span class="pre">'0x115934131916C8b277DD010Ee02de363c09d037c',</span> <span class="pre">'0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f':</span> <span class="pre">&lt;ContractBase</span> <span class="pre">'0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f',</span> <span class="pre">'0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac':</span> <span class="pre">&lt;ContractBase</span> <span class="pre">'0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'}}</span></em><a class="headerlink" href="#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">{}}</span></em><a class="headerlink" href="#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common.ContractBase._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.classes.common.ContractBase._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.classes.common.ContractBase._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.classes.common.ContractBase.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.classes.common.ContractBase.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.build_name">
+<span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.classes.common.ContractBase.build_name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.classes.common.ContractBase.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.classes.common.ContractBase.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ContractBase.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.classes.common.ContractBase.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.classes.common.ERC20">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.common.</span></span><span class="sig-name descname"><span class="pre">ERC20</span></span><a class="headerlink" href="#y.classes.common.ERC20" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#y.classes.common.ContractBase" title="y.classes.common.ContractBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContractBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ERC20.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>_deploy_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.__raise_exception">
+<span class="sig-name descname"><span class="pre">__raise_exception</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ERC20.__raise_exception" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._name">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ERC20._name" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._symbol">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_symbol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ERC20._symbol" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">{'0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',</span> <span class="pre">'0x13B02c8dE71680e71F0820c996E4bE43c2F57d15':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x13B02c8dE71680e71F0820c996E4bE43c2F57d15',</span> <span class="pre">'0x1C5db575E2Ff833E46a2E9864C22F4B22E0B37C2':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x1C5db575E2Ff833E46a2E9864C22F4B22E0B37C2',</span> <span class="pre">'0x1CC481cE2BD2EC7Bf67d1Be64d4878b16078F309':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x1CC481cE2BD2EC7Bf67d1Be64d4878b16078F309',</span> <span class="pre">'0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x1a7e4e63778B4f12a199C062f3eFdD288afCBce8',</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599',</span> <span class="pre">'0x3832d2F059E55934220881F831bE501D180671A7':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x3832d2F059E55934220881F831bE501D180671A7',</span> <span class="pre">'0x459086F2376525BdCebA5bDDA135e4E9d3FeF5bf':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x459086F2376525BdCebA5bDDA135e4E9d3FeF5bf',</span> <span class="pre">'0x4e840AADD28DA189B9906674B4Afcb77C128d9ea':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x4e840AADD28DA189B9906674B4Afcb77C128d9ea',</span> <span class="pre">'0x5555f75e3d5278082200Fb451D1b6bA946D8e13b':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x5555f75e3d5278082200Fb451D1b6bA946D8e13b',</span> <span class="pre">'0x5CAF29fD8efbe4ED0cfc43A8a211B276E9889583':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x5CAF29fD8efbe4ED0cfc43A8a211B276E9889583',</span> <span class="pre">'0x68749665FF8D2d112Fa859AA293F07A622782F38':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x68749665FF8D2d112Fa859AA293F07A622782F38',</span> <span class="pre">'0x69681f8fde45345C3870BCD5eaf4A05a60E7D227':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x69681f8fde45345C3870BCD5eaf4A05a60E7D227',</span> <span class="pre">'0x81d66D255D47662b6B16f3C5bbfBb15283B05BC2':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x81d66D255D47662b6B16f3C5bbfBb15283B05BC2',</span> <span class="pre">'0x945Facb997494CC2570096c74b5F66A3507330a1':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x945Facb997494CC2570096c74b5F66A3507330a1',</span> <span class="pre">'0x95dFDC8161832e4fF7816aC4B6367CE201538253':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x95dFDC8161832e4fF7816aC4B6367CE201538253',</span> <span class="pre">'0x9AFb950948c2370975fb91a441F36FDC02737cD4':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x9AFb950948c2370975fb91a441F36FDC02737cD4',</span> <span class="pre">'0x9fcf418B971134625CdF38448B949C8640971671':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0x9fcf418B971134625CdF38448B949C8640971671',</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',</span> <span class="pre">'0xC581b735A1688071A1746c968e0798D642EDE491':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xC581b735A1688071A1746c968e0798D642EDE491',</span> <span class="pre">'0xD46bA6D942050d489DBd938a2C909A5d5039A161':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xD46bA6D942050d489DBd938a2C909A5d5039A161',</span> <span class="pre">'0xD71eCFF9342A5Ced620049e616c5035F1dB98620':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xD71eCFF9342A5Ced620049e616c5035F1dB98620',</span> <span class="pre">'0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',</span> <span class="pre">'0xEa5A82B35244d9e5E48781F00b11B14E627D2951':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xEa5A82B35244d9e5E48781F00b11B14E627D2951',</span> <span class="pre">'0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xF6b1C627e95BFc3c1b4c9B825a032Ff0fBf3e07d',</span> <span class="pre">'0xFAFdF0C4c1CB09d430Bf88c75D88BB46DAe09967':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xFAFdF0C4c1CB09d430Bf88c75D88BB46DAe09967',</span> <span class="pre">'0xa693B19d2931d498c5B318dF961919BB4aee87a5':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xa693B19d2931d498c5B318dF961919BB4aee87a5',</span> <span class="pre">'0xd36932143F6eBDEDD872D5Fb0651f4B72Fd15a84':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xd36932143F6eBDEDD872D5Fb0651f4B72Fd15a84',</span> <span class="pre">'0xdB25f211AB05b1c97D595516F45794528a807ad8':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xdB25f211AB05b1c97D595516F45794528a807ad8',</span> <span class="pre">'0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202',</span> <span class="pre">'0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6':</span> <span class="pre">&lt;ERC20</span> <span class="pre">'0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6'}}</span></em><a class="headerlink" href="#y.classes.common.ERC20._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">{}}</span></em><a class="headerlink" href="#y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common.ERC20._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._decimals">
+<span class="sig-name descname"><span class="pre">_decimals</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ASyncFunction</span> <span class="pre">y.classes.common._decimals&gt;</span></em><a class="headerlink" href="#y.classes.common.ERC20._decimals" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>BlockNumber</em><em> | </em><em>None</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.classes.common.ERC20._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.classes.common.ERC20._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20._scale">
+<span class="sig-name descname"><span class="pre">_scale</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ASyncFunction</span> <span class="pre">y.classes.common._scale&gt;</span></em><a class="headerlink" href="#y.classes.common.ERC20._scale" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>BlockNumber</em><em> | </em><em>None</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.classes.common.ERC20.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.classes.common.ERC20.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.balance_of">
+<span class="sig-name descname"><span class="pre">balance_of</span></span><a class="headerlink" href="#y.classes.common.ERC20.balance_of" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.balance_of_readable">
+<span class="sig-name descname"><span class="pre">balance_of_readable</span></span><a class="headerlink" href="#y.classes.common.ERC20.balance_of_readable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.classes.common.ERC20.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.decimals">
+<span class="sig-name descname"><span class="pre">decimals</span></span><a class="headerlink" href="#y.classes.common.ERC20.decimals" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.classes.common.ERC20.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.classes.common.ERC20.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.name">
+<span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.classes.common.ERC20.name" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.price">
+<span class="sig-name descname"><span class="pre">price</span></span><a class="headerlink" href="#y.classes.common.ERC20.price" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.scale">
+<span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#y.classes.common.ERC20.scale" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.symbol">
+<span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#y.classes.common.ERC20.symbol" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.total_supply">
+<span class="sig-name descname"><span class="pre">total_supply</span></span><a class="headerlink" href="#y.classes.common.ERC20.total_supply" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.ERC20.total_supply_readable">
+<span class="sig-name descname"><span class="pre">total_supply_readable</span></span><a class="headerlink" href="#y.classes.common.ERC20.total_supply_readable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.classes.common.WeiBalance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.common.</span></span><span class="sig-name descname"><span class="pre">WeiBalance</span></span><a class="headerlink" href="#y.classes.common.WeiBalance" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.base.ASyncGenericBase" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncGenericBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common.WeiBalance.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">balance</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_cache=&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignore_pools=()</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous=False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.WeiBalance.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>balance</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>BlockNumber</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.WeiBalance._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common.WeiBalance._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common.WeiBalance._logger">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_logger</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.12)"><span class="pre">Logger</span></a></em><a class="headerlink" href="#y.classes.common.WeiBalance._logger" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.WeiBalance.readable">
+<span class="sig-name descname"><span class="pre">readable</span></span><a class="headerlink" href="#y.classes.common.WeiBalance.readable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common.WeiBalance.value_usd">
+<span class="sig-name descname"><span class="pre">value_usd</span></span><a class="headerlink" href="#y.classes.common.WeiBalance.value_usd" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.common.</span></span><span class="sig-name descname"><span class="pre">_EventsLoader</span></span><a class="headerlink" href="#y.classes.common._EventsLoader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#y.classes.common._Loader" title="y.classes.common._Loader"><code class="xref py py-class docutils literal notranslate"><span class="pre">_Loader</span></code></a></p>
+<p>Used for use cases where you need to load event data thru present time before proceeding, and then continue loading data in the background.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._Loader__load">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_Loader__load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._EventsLoader._Loader__load" title="Link to this definition"></a></dt>
+<dd><p>loads the loader and catches any exceptions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><em>NoReturn</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._EventsLoader.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._done_callback">
+<span class="sig-name descname"><span class="pre">_done_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._EventsLoader._done_callback" title="Link to this definition"></a></dt>
+<dd><p>called on <cite>self._task</cite> when it completes, if applicable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task</strong> (<em>Task</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._load">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._EventsLoader._load" title="Link to this definition"></a></dt>
+<dd><p><cite>self._load</cite> is the coro that will run in the daemon task associated with this _Loader.
+Your implementation MUST set Event <cite>self._loaded</cite> once data has been loaded thru the current block, or it will hang indefinitely.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><em>NoReturn</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._Loader__exc">
+<span class="sig-name descname"><span class="pre">_Loader__exc</span></span><a class="headerlink" href="#y.classes.common._EventsLoader._Loader__exc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._Loader__task">
+<span class="sig-name descname"><span class="pre">_Loader__task</span></span><a class="headerlink" href="#y.classes.common._EventsLoader._Loader__task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.__exc">
+<span class="sig-name descname"><span class="pre">__exc</span></span><a class="headerlink" href="#y.classes.common._EventsLoader.__exc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.__task">
+<span class="sig-name descname"><span class="pre">__task</span></span><a class="headerlink" href="#y.classes.common._EventsLoader.__task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common._EventsLoader._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.classes.common._EventsLoader._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._events">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.utils.html#y.utils.events.Events" title="y.utils.events.Events"><span class="pre">Events</span></a></em><a class="headerlink" href="#y.classes.common._EventsLoader._events" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._init_block">
+<span class="sig-name descname"><span class="pre">_init_block</span></span><a class="headerlink" href="#y.classes.common._EventsLoader._init_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.classes.common._EventsLoader._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._loaded">
+<span class="sig-name descname"><span class="pre">_loaded</span></span><a class="headerlink" href="#y.classes.common._EventsLoader._loaded" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader._task">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_task</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Task</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><span class="pre">NoReturn</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common._EventsLoader._task" title="Link to this definition"></a></dt>
+<dd><p>The task that runs <cite>self._load() for this `_Loader</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.classes.common._EventsLoader.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.classes.common._EventsLoader.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.classes.common._EventsLoader.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.classes.common._EventsLoader.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.classes.common._EventsLoader.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._EventsLoader.loaded">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loaded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common._EventsLoader.loaded" title="Link to this definition"></a></dt>
+<dd><p>Returns <cite>True</cite> once the <cite>_Loader</cite> has loaded all relevant data thru the current block</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.classes.common._Loader">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.common.</span></span><span class="sig-name descname"><span class="pre">_Loader</span></span><a class="headerlink" href="#y.classes.common._Loader" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#y.classes.common.ContractBase" title="y.classes.common.ContractBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContractBase</span></code></a></p>
+<p>Used for use cases where you need to load data thru present time before proceeding, and then continue loading data in the background.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._Loader._Loader__load">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_Loader__load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._Loader._Loader__load" title="Link to this definition"></a></dt>
+<dd><p>loads the loader and catches any exceptions</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><em>NoReturn</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._Loader.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._Loader.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._Loader._done_callback">
+<span class="sig-name descname"><span class="pre">_done_callback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">task</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._Loader._done_callback" title="Link to this definition"></a></dt>
+<dd><p>called on <cite>self._task</cite> when it completes, if applicable</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>task</strong> (<em>Task</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a><em>]</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.common._Loader._load">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_load</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common._Loader._load" title="Link to this definition"></a></dt>
+<dd><p><cite>self._load</cite> is the coro that will run in the daemon task associated with this _Loader.
+Your implementation MUST set Event <cite>self._loaded</cite> once data has been loaded thru the current block, or it will hang indefinitely.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><em>NoReturn</em></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.classes.common._Loader._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.classes.common._Loader._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common._Loader._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._Loader__exc">
+<span class="sig-name descname"><span class="pre">_Loader__exc</span></span><a class="headerlink" href="#y.classes.common._Loader._Loader__exc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._Loader__task">
+<span class="sig-name descname"><span class="pre">_Loader__task</span></span><a class="headerlink" href="#y.classes.common._Loader._Loader__task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader.__exc">
+<span class="sig-name descname"><span class="pre">__exc</span></span><a class="headerlink" href="#y.classes.common._Loader.__exc" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader.__task">
+<span class="sig-name descname"><span class="pre">__task</span></span><a class="headerlink" href="#y.classes.common._Loader.__task" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.classes.common._Loader._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.classes.common._Loader._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._init_block">
+<span class="sig-name descname"><span class="pre">_init_block</span></span><a class="headerlink" href="#y.classes.common._Loader._init_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._Loader._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.classes.common._Loader._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader._loaded">
+<span class="sig-name descname"><span class="pre">_loaded</span></span><a class="headerlink" href="#y.classes.common._Loader._loaded" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._Loader._task">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_task</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Task</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><span class="pre">NoReturn</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common._Loader._task" title="Link to this definition"></a></dt>
+<dd><p>The task that runs <cite>self._load() for this `_Loader</cite></p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.classes.common._Loader.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.classes.common._Loader.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._Loader.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.classes.common._Loader.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.classes.common._Loader.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.common._Loader.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.classes.common._Loader.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.classes.common._Loader.loaded">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">loaded</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common._Loader.loaded" title="Link to this definition"></a></dt>
+<dd><p>Returns <cite>True</cite> once the <cite>_Loader</cite> has loaded all relevant data thru the current block</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="y.classes.common.hex_to_string">
+<span class="sig-prename descclassname"><span class="pre">y.classes.common.</span></span><span class="sig-name descname"><span class="pre">hex_to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">h</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.hex_to_string" title="Link to this definition"></a></dt>
+<dd><p>returns a string from a HexString</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>h</strong> (<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.HexString" title="(in Brownie v1.19.5)"><em>HexString</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-y.classes.singleton">
+<span id="y-classes-singleton-module"></span><h2>y.classes.singleton module<a class="headerlink" href="#module-y.classes.singleton" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.singleton.</span></span><span class="sig-name descname"><span class="pre">ChecksumASyncSingletonMeta</span></span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncMeta</span></code>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__call__">
+<span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__call__" title="Link to this definition"></a></dt>
+<dd><p>Call self as a function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>address</strong> (<em>AnyAddress</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>T</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__delete_address_lock">
+<span class="sig-name descname"><span class="pre">__delete_address_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sync</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__delete_address_lock" title="Link to this definition"></a></dt>
+<dd><p>No need to maintain locks for initialized addresses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<em>AnyAddress</em>) – </p></li>
+<li><p><strong>is_sync</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__get_address_lock">
+<span class="sig-name descname"><span class="pre">__get_address_lock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_sync</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__get_address_lock" title="Link to this definition"></a></dt>
+<dd><p>Makes sure the singleton is actually a singleton.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<em>AnyAddress</em>) – </p></li>
+<li><p><strong>is_sync</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>allocate_lock</em></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__new__">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__new__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new_class_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attrs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__new__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta._abc_caches_clear">
+<span class="sig-name descname"><span class="pre">_abc_caches_clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta._abc_caches_clear" title="Link to this definition"></a></dt>
+<dd><p>Clear the caches (for debugging or testing).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta._abc_registry_clear">
+<span class="sig-name descname"><span class="pre">_abc_registry_clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta._abc_registry_clear" title="Link to this definition"></a></dt>
+<dd><p>Clear the registry (for debugging or testing).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta._dump_registry">
+<span class="sig-name descname"><span class="pre">_dump_registry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta._dump_registry" title="Link to this definition"></a></dt>
+<dd><p>Debug helper to print the ABC registry.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.mro">
+<span class="sig-name descname"><span class="pre">mro</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.mro" title="Link to this definition"></a></dt>
+<dd><p>Return a type’s method resolution order.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.register">
+<span class="sig-name descname"><span class="pre">register</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subclass</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.register" title="Link to this definition"></a></dt>
+<dd><p>Register a virtual subclass of an ABC.</p>
+<p>Returns the subclass, to allow usage as a class decorator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta._is_protocol">
+<span class="sig-name descname"><span class="pre">_is_protocol</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta._is_protocol" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-y.classes">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.classes" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BobTheBuidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

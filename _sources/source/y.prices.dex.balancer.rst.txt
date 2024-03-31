@@ -1,0 +1,37 @@
+y.prices.dex.balancer package
+=============================
+
+Submodules
+----------
+
+y.prices.dex.balancer.balancer module
+-------------------------------------
+
+.. automodule:: y.prices.dex.balancer.balancer
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.dex.balancer.v1 module
+-------------------------------
+
+.. automodule:: y.prices.dex.balancer.v1
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.dex.balancer.v2 module
+-------------------------------
+
+.. automodule:: y.prices.dex.balancer.v2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.prices.dex.balancer
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -1,0 +1,37 @@
+y.prices.lending package
+========================
+
+Submodules
+----------
+
+y.prices.lending.aave module
+----------------------------
+
+.. automodule:: y.prices.lending.aave
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.lending.compound module
+--------------------------------
+
+.. automodule:: y.prices.lending.compound
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.lending.ib module
+--------------------------
+
+.. automodule:: y.prices.lending.ib
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.prices.lending
+   :members:
+   :undoc-members:
+   :show-inheritance:

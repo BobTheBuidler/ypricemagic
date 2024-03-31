@@ -1,0 +1,40 @@
+y.interfaces package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   y.interfaces.balancer
+   y.interfaces.compound
+   y.interfaces.curve
+   y.interfaces.uniswap
+
+Submodules
+----------
+
+y.interfaces.ERC20 module
+-------------------------
+
+.. automodule:: y.interfaces.ERC20
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.interfaces.multicall2 module
+------------------------------
+
+.. automodule:: y.interfaces.multicall2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.interfaces
+   :members:
+   :undoc-members:
+   :show-inheritance:

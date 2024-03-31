@@ -1,0 +1,37 @@
+y.interfaces.uniswap package
+============================
+
+Submodules
+----------
+
+y.interfaces.uniswap.factoryv2 module
+-------------------------------------
+
+.. automodule:: y.interfaces.uniswap.factoryv2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.interfaces.uniswap.quoterv3 module
+------------------------------------
+
+.. automodule:: y.interfaces.uniswap.quoterv3
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.interfaces.uniswap.velov2 module
+----------------------------------
+
+.. automodule:: y.interfaces.uniswap.velov2
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.interfaces.uniswap
+   :members:
+   :undoc-members:
+   :show-inheritance:

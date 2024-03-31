@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>y.prices.lending package &mdash; ypricemagic  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ypricemagic
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">y.prices.lending package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-y.prices.lending.aave">y.prices.lending.aave module</a><ul>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._abc_impl"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._get_reserves_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._get_reserves_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase._is_cached"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.address</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.atokens</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.contains</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.get_reserve_data</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.get_reserves</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.underlying</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._abc_impl"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._get_reserves_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._get_reserves_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1._is_cached"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.address</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.atokens</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.contains</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.get_reserve_data</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.get_reserves</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.underlying</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._abc_impl"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._get_reserves_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._get_reserves_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2._is_cached"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.address</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.atokens</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.contains</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.get_reserve_data</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.get_reserves</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.underlying</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._abc_impl"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._get_reserves_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._get_reserves_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3._is_cached"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.address</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.atokens</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.contains</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.get_reserve_data</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.get_reserves</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.underlying</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry"><code class="docutils literal notranslate"><span class="pre">AaveRegistry</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__init__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry._get_price_wrapped"><code class="docutils literal notranslate"><span class="pre">AaveRegistry._get_price_wrapped()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry._ASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">AaveRegistry._ASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry._ASyncSingletonMeta__lock"><code class="docutils literal notranslate"><span class="pre">AaveRegistry._ASyncSingletonMeta__lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry._abc_impl"><code class="docutils literal notranslate"><span class="pre">AaveRegistry._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.get_price"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.get_price</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v2"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.get_price_wrapped_v2</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v3"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.get_price_wrapped_v3</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.is_atoken"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.is_atoken</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v2"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.is_wrapped_atoken_v2</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v3"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.is_wrapped_atoken_v3</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pool_for_atoken"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pool_for_atoken</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools_v1"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools_v1</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools_v2"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools_v2</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools_v3"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools_v3</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.underlying"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.underlying</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-y.prices.lending.compound">y.prices.lending.compound module</a><ul>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken"><code class="docutils literal notranslate"><span class="pre">CToken</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__init__"><code class="docutils literal notranslate"><span class="pre">CToken.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._name"><code class="docutils literal notranslate"><span class="pre">CToken._name()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._symbol"><code class="docutils literal notranslate"><span class="pre">CToken._symbol()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">CToken._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">CToken._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">CToken._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._abc_impl"><code class="docutils literal notranslate"><span class="pre">CToken._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._decimals"><code class="docutils literal notranslate"><span class="pre">CToken._decimals</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._deploy_block"><code class="docutils literal notranslate"><span class="pre">CToken._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._is_cached"><code class="docutils literal notranslate"><span class="pre">CToken._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken._scale"><code class="docutils literal notranslate"><span class="pre">CToken._scale</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.address"><code class="docutils literal notranslate"><span class="pre">CToken.address</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.asynchronous"><code class="docutils literal notranslate"><span class="pre">CToken.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.balance_of"><code class="docutils literal notranslate"><span class="pre">CToken.balance_of</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">CToken.balance_of_readable</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.contract"><code class="docutils literal notranslate"><span class="pre">CToken.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.deploy_block"><code class="docutils literal notranslate"><span class="pre">CToken.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.exchange_rate"><code class="docutils literal notranslate"><span class="pre">CToken.exchange_rate</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.get_price"><code class="docutils literal notranslate"><span class="pre">CToken.get_price</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.get_underlying_price"><code class="docutils literal notranslate"><span class="pre">CToken.get_underlying_price</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.has_method"><code class="docutils literal notranslate"><span class="pre">CToken.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.price"><code class="docutils literal notranslate"><span class="pre">CToken.price</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.total_supply"><code class="docutils literal notranslate"><span class="pre">CToken.total_supply</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">CToken.total_supply_readable</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.underlying"><code class="docutils literal notranslate"><span class="pre">CToken.underlying</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.CToken.underlying_per_ctoken"><code class="docutils literal notranslate"><span class="pre">CToken.underlying_per_ctoken</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound"><code class="docutils literal notranslate"><span class="pre">Compound</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound.__init__"><code class="docutils literal notranslate"><span class="pre">Compound.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound.__notify_if_unknown_comptroller"><code class="docutils literal notranslate"><span class="pre">Compound.__notify_if_unknown_comptroller()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound._ASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">Compound._ASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound._ASyncSingletonMeta__lock"><code class="docutils literal notranslate"><span class="pre">Compound._ASyncSingletonMeta__lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound._abc_impl"><code class="docutils literal notranslate"><span class="pre">Compound._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound.get_price"><code class="docutils literal notranslate"><span class="pre">Compound.get_price</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound.get_troller"><code class="docutils literal notranslate"><span class="pre">Compound.get_troller</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Compound.is_compound_market"><code class="docutils literal notranslate"><span class="pre">Compound.is_compound_market</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller"><code class="docutils literal notranslate"><span class="pre">Comptroller</span></code></a><ul>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__init__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__init__()</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">Comptroller._ChecksumASyncSingletonMeta__instances</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">Comptroller._ChecksumASyncSingletonMeta__locks</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">Comptroller._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller._abc_impl"><code class="docutils literal notranslate"><span class="pre">Comptroller._abc_impl</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller._deploy_block"><code class="docutils literal notranslate"><span class="pre">Comptroller._deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller._is_cached"><code class="docutils literal notranslate"><span class="pre">Comptroller._is_cached</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.address"><code class="docutils literal notranslate"><span class="pre">Comptroller.address</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.asynchronous"><code class="docutils literal notranslate"><span class="pre">Comptroller.asynchronous</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.contract"><code class="docutils literal notranslate"><span class="pre">Comptroller.contract</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.deploy_block"><code class="docutils literal notranslate"><span class="pre">Comptroller.deploy_block</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.has_method"><code class="docutils literal notranslate"><span class="pre">Comptroller.has_method</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.markets"><code class="docutils literal notranslate"><span class="pre">Comptroller.markets</span></code></a></li>
+<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.oracle"><code class="docutils literal notranslate"><span class="pre">Comptroller.oracle</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-y.prices.lending.ib">y.prices.lending.ib module</a></li>
+<li><a class="reference internal" href="#module-y.prices.lending">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ypricemagic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">y.prices.lending package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/source/y.prices.lending.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="y-prices-lending-package">
+<h1>y.prices.lending package<a class="headerlink" href="#y-prices-lending-package" title="Link to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
+</section>
+<section id="module-y.prices.lending.aave">
+<span id="y-prices-lending-aave-module"></span><h2>y.prices.lending.aave module<a class="headerlink" href="#module-y.prices.lending.aave" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.aave.</span></span><span class="sig-name descname"><span class="pre">AaveMarketBase</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="y.classes.html#y.classes.common.ContractBase" title="y.classes.common.ContractBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContractBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>_deploy_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._get_reserves_method">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_reserves_method</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._get_reserves_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.atokens">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">atokens</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><span class="pre">ERC20</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.atokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.get_reserve_data">
+<span class="sig-name descname"><span class="pre">get_reserve_data</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.get_reserve_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.get_reserves">
+<span class="sig-name descname"><span class="pre">get_reserves</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.get_reserves" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketBase.underlying">
+<span class="sig-name descname"><span class="pre">underlying</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketBase.underlying" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.aave.</span></span><span class="sig-name descname"><span class="pre">AaveMarketV1</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase" title="y.prices.lending.aave.AaveMarketBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AaveMarketBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>_deploy_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._get_reserves_method">
+<span class="sig-name descname"><span class="pre">_get_reserves_method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'getReserves()(address[])'</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._get_reserves_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.atokens">
+<span class="sig-name descname"><span class="pre">atokens</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.atokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.get_reserve_data">
+<span class="sig-name descname"><span class="pre">get_reserve_data</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.get_reserve_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.get_reserves">
+<span class="sig-name descname"><span class="pre">get_reserves</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.get_reserves" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV1.underlying">
+<span class="sig-name descname"><span class="pre">underlying</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV1.underlying" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.aave.</span></span><span class="sig-name descname"><span class="pre">AaveMarketV2</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase" title="y.prices.lending.aave.AaveMarketBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AaveMarketBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>_deploy_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._get_reserves_method">
+<span class="sig-name descname"><span class="pre">_get_reserves_method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'getReservesList()(address[])'</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._get_reserves_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.atokens">
+<span class="sig-name descname"><span class="pre">atokens</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.atokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.get_reserve_data">
+<span class="sig-name descname"><span class="pre">get_reserve_data</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.get_reserve_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.get_reserves">
+<span class="sig-name descname"><span class="pre">get_reserves</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.get_reserves" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV2.underlying">
+<span class="sig-name descname"><span class="pre">underlying</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV2.underlying" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.aave.</span></span><span class="sig-name descname"><span class="pre">AaveMarketV3</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase" title="y.prices.lending.aave.AaveMarketBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">AaveMarketBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+<li><p><strong>_deploy_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._get_reserves_method">
+<span class="sig-name descname"><span class="pre">_get_reserves_method</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'getReservesList()(address[])'</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._get_reserves_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.atokens">
+<span class="sig-name descname"><span class="pre">atokens</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.atokens" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.contains">
+<span class="sig-name descname"><span class="pre">contains</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.contains" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.get_reserve_data">
+<span class="sig-name descname"><span class="pre">get_reserve_data</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.get_reserve_data" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.get_reserves">
+<span class="sig-name descname"><span class="pre">get_reserves</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.get_reserves" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveMarketV3.underlying">
+<span class="sig-name descname"><span class="pre">underlying</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveMarketV3.underlying" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.aave.</span></span><span class="sig-name descname"><span class="pre">AaveRegistry</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.singleton.ASyncGenericSingleton" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncGenericSingleton</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry._get_price_wrapped">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_get_price_wrapped</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_cache=&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=bool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry._get_price_wrapped" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>token_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a>) – </p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>BlockNumber</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry._ASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">&lt;y.prices.lending.aave.AaveRegistry</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry._ASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry._ASyncSingletonMeta__lock">
+<span class="sig-name descname"><span class="pre">_ASyncSingletonMeta__lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry._ASyncSingletonMeta__lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.get_price">
+<span class="sig-name descname"><span class="pre">get_price</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.get_price" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.get_price_wrapped_v2">
+<span class="sig-name descname"><span class="pre">get_price_wrapped_v2</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.get_price_wrapped_v3">
+<span class="sig-name descname"><span class="pre">get_price_wrapped_v3</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.is_atoken">
+<span class="sig-name descname"><span class="pre">is_atoken</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.is_atoken" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v2">
+<span class="sig-name descname"><span class="pre">is_wrapped_atoken_v2</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v3">
+<span class="sig-name descname"><span class="pre">is_wrapped_atoken_v3</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.pool_for_atoken">
+<span class="sig-name descname"><span class="pre">pool_for_atoken</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.pool_for_atoken" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.pools">
+<span class="sig-name descname"><span class="pre">pools</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.pools" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.pools_v1">
+<span class="sig-name descname"><span class="pre">pools_v1</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.pools_v1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.pools_v2">
+<span class="sig-name descname"><span class="pre">pools_v2</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.pools_v2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.pools_v3">
+<span class="sig-name descname"><span class="pre">pools_v3</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.pools_v3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.aave.AaveRegistry.underlying">
+<span class="sig-name descname"><span class="pre">underlying</span></span><a class="headerlink" href="#y.prices.lending.aave.AaveRegistry.underlying" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-y.prices.lending.compound">
+<span id="y-prices-lending-compound-module"></span><h2>y.prices.lending.compound module<a class="headerlink" href="#module-y.prices.lending.compound" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.compound.</span></span><span class="sig-name descname"><span class="pre">CToken</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><code class="xref py py-class docutils literal notranslate"><span class="pre">ERC20</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">comptroller</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.compound.CToken.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
+<li><p><strong>comptroller</strong> (<a class="reference internal" href="#y.prices.lending.compound.Comptroller" title="y.prices.lending.compound.Comptroller"><em>Comptroller</em></a><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._name">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.compound.CToken._name" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._symbol">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_symbol</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.compound.CToken._symbol" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.CToken._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.CToken._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._decimals">
+<span class="sig-name descname"><span class="pre">_decimals</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ASyncFunction</span> <span class="pre">y.classes.common._decimals&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.CToken._decimals" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>BlockNumber</em><em> | </em><em>None</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.lending.compound.CToken._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken._scale">
+<span class="sig-name descname"><span class="pre">_scale</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;ASyncFunction</span> <span class="pre">y.classes.common._scale&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.CToken._scale" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>BlockNumber</em><em> | </em><em>None</em>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.balance_of">
+<span class="sig-name descname"><span class="pre">balance_of</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.balance_of" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.balance_of_readable">
+<span class="sig-name descname"><span class="pre">balance_of_readable</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.balance_of_readable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.prices.lending.compound.CToken.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.exchange_rate">
+<span class="sig-name descname"><span class="pre">exchange_rate</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.exchange_rate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.get_price">
+<span class="sig-name descname"><span class="pre">get_price</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.get_price" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.get_underlying_price">
+<span class="sig-name descname"><span class="pre">get_underlying_price</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.get_underlying_price" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.price">
+<span class="sig-name descname"><span class="pre">price</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.price" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.total_supply">
+<span class="sig-name descname"><span class="pre">total_supply</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.total_supply" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.total_supply_readable">
+<span class="sig-name descname"><span class="pre">total_supply_readable</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.total_supply_readable" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.underlying">
+<span class="sig-name descname"><span class="pre">underlying</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.underlying" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.CToken.underlying_per_ctoken">
+<span class="sig-name descname"><span class="pre">underlying_per_ctoken</span></span><a class="headerlink" href="#y.prices.lending.compound.CToken.underlying_per_ctoken" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.compound.</span></span><span class="sig-name descname"><span class="pre">Compound</span></span><a class="headerlink" href="#y.prices.lending.compound.Compound" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.singleton.ASyncGenericSingleton" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncGenericSingleton</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.compound.Compound.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound.__notify_if_unknown_comptroller">
+<em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">__notify_if_unknown_comptroller</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.compound.Compound.__notify_if_unknown_comptroller" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>token_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a>) – </p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound._ASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">&lt;y.prices.lending.compound.Compound</span> <span class="pre">object&gt;}</span></em><a class="headerlink" href="#y.prices.lending.compound.Compound._ASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound._ASyncSingletonMeta__lock">
+<span class="sig-name descname"><span class="pre">_ASyncSingletonMeta__lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.Compound._ASyncSingletonMeta__lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.Compound._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound.get_price">
+<span class="sig-name descname"><span class="pre">get_price</span></span><a class="headerlink" href="#y.prices.lending.compound.Compound.get_price" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound.get_troller">
+<span class="sig-name descname"><span class="pre">get_troller</span></span><a class="headerlink" href="#y.prices.lending.compound.Compound.get_troller" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Compound.is_compound_market">
+<span class="sig-name descname"><span class="pre">is_compound_market</span></span><a class="headerlink" href="#y.prices.lending.compound.Compound.is_compound_market" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.lending.compound.</span></span><span class="sig-name descname"><span class="pre">Comptroller</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="y.classes.html#y.classes.common.ContractBase" title="y.classes.common.ContractBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContractBase</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.__init__" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>HexBytes</em><em> | </em><em>AnyAddress</em><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.19.5)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.19.5)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>key</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__instances">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__instances</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">{'0x3105D328c66d8d55092358cF595d54608178E9B5':</span> <span class="pre">&lt;Comptroller</span> <span class="pre">unfederalreserve</span> <span class="pre">'0x3105D328c66d8d55092358cF595d54608178E9B5'&gt;,</span> <span class="pre">'0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258':</span> <span class="pre">&lt;Comptroller</span> <span class="pre">cream</span> <span class="pre">'0x3d5BC3c8d13dcB8bF317092d84783c2697AE9258'&gt;,</span> <span class="pre">'0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B':</span> <span class="pre">&lt;Comptroller</span> <span class="pre">comp</span> <span class="pre">'0x3d9819210A31b4961b30EF54bE2aeD79B9c9Cd3B'&gt;,</span> <span class="pre">'0x4dCf7407AE5C07f8681e1659f626E114A7667339':</span> <span class="pre">&lt;Comptroller</span> <span class="pre">inverse</span> <span class="pre">'0x4dCf7407AE5C07f8681e1659f626E114A7667339'&gt;,</span> <span class="pre">'0x95Af143a021DF745bc78e845b54591C53a8B3A51':</span> <span class="pre">&lt;Comptroller</span> <span class="pre">flux</span> <span class="pre">'0x95Af143a021DF745bc78e845b54591C53a8B3A51'&gt;,</span> <span class="pre">'0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB':</span> <span class="pre">&lt;Comptroller</span> <span class="pre">ironbank</span> <span class="pre">'0xAB1c342C7bf5Ec5F02ADEA1c2270670bCa144CbB'&gt;}}</span></em><a class="headerlink" href="#y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__instances" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__locks">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{False:</span> <span class="pre">{}}</span></em><a class="headerlink" href="#y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__locks" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__locks_lock">
+<span class="sig-name descname"><span class="pre">_ChecksumASyncSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.Comptroller._ChecksumASyncSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller._abc_impl">
+<span class="sig-name descname"><span class="pre">_abc_impl</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;_abc._abc_data</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.prices.lending.compound.Comptroller._abc_impl" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller._deploy_block">
+<span class="sig-name descname"><span class="pre">_deploy_block</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller._deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller._is_cached">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_is_cached</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.lending.compound.Comptroller._is_cached" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.address">
+<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.address" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.asynchronous">
+<span class="sig-name descname"><span class="pre">asynchronous</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.asynchronous" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.contract">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">contract</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a></em><a class="headerlink" href="#y.prices.lending.compound.Comptroller.contract" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.deploy_block">
+<span class="sig-name descname"><span class="pre">deploy_block</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.deploy_block" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.has_method">
+<span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.has_method" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.markets">
+<span class="sig-name descname"><span class="pre">markets</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.markets" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.lending.compound.Comptroller.oracle">
+<span class="sig-name descname"><span class="pre">oracle</span></span><a class="headerlink" href="#y.prices.lending.compound.Comptroller.oracle" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-y.prices.lending.ib">
+<span id="y-prices-lending-ib-module"></span><h2>y.prices.lending.ib module<a class="headerlink" href="#module-y.prices.lending.ib" title="Link to this heading"></a></h2>
+</section>
+<section id="module-y.prices.lending">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.prices.lending" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BobTheBuidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

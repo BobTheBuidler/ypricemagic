@@ -1,0 +1,29 @@
+y.classes package
+=================
+
+Submodules
+----------
+
+y.classes.common module
+-----------------------
+
+.. automodule:: y.classes.common
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.classes.singleton module
+--------------------------
+
+.. automodule:: y.classes.singleton
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.classes
+   :members:
+   :undoc-members:
+   :show-inheritance:

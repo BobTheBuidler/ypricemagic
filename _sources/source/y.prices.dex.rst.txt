@@ -1,0 +1,54 @@
+y.prices.dex package
+====================
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   y.prices.dex.balancer
+   y.prices.dex.uniswap
+
+Submodules
+----------
+
+y.prices.dex.genericamm module
+------------------------------
+
+.. automodule:: y.prices.dex.genericamm
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.dex.mooniswap module
+-----------------------------
+
+.. automodule:: y.prices.dex.mooniswap
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.dex.solidly module
+---------------------------
+
+.. automodule:: y.prices.dex.solidly
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.dex.velodrome module
+-----------------------------
+
+.. automodule:: y.prices.dex.velodrome
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.prices.dex
+   :members:
+   :undoc-members:
+   :show-inheritance:

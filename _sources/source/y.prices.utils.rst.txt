@@ -1,0 +1,37 @@
+y.prices.utils package
+======================
+
+Submodules
+----------
+
+y.prices.utils.buckets module
+-----------------------------
+
+.. automodule:: y.prices.utils.buckets
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.utils.sense\_check module
+----------------------------------
+
+.. automodule:: y.prices.utils.sense_check
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+y.prices.utils.ypriceapi module
+-------------------------------
+
+.. automodule:: y.prices.utils.ypriceapi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: y.prices.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
