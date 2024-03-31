@@ -48,6 +48,7 @@ class VelodromePool(UniswapV2Pool):
         self.is_stable = stable
 
 class VelodromeRouterV2(SolidlyRouterBase):
+    _supports_uniswap_helper = False
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.default_factory = default_factory[chain.id]
