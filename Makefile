@@ -1,3 +1,6 @@
+
+.PHONY: docs
+
 test: 
 	pytest -W ignore -s --asyncio-task-timeout 7200
 
@@ -15,3 +18,9 @@ test-chainlink:
 
 test-chainlink-lf:
 	pytest -W ignore -s --asyncio-task-timeout 7200 tests/prices/test_chainlink.py --lf
+
+docs:
+	rm -r ./docs/source -f
+	rm -r ./docs/_templates -f
+	rm -r ./docs/_build -f
+	sphinx-apidoc -o ./docs/source ./eth_portfolio
