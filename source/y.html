@@ -52,11 +52,6 @@
 <li><a class="reference internal" href="#module-y.contracts">y.contracts module</a><ul>
 <li><a class="reference internal" href="#y.contracts.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a><ul>
 <li><a class="reference internal" href="#y.contracts.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._check_and_set"><code class="docutils literal notranslate"><span class="pre">Contract._check_and_set()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._delete_deployment"><code class="docutils literal notranslate"><span class="pre">Contract._delete_deployment()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._deployment_path"><code class="docutils literal notranslate"><span class="pre">Contract._deployment_path()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._deprecated_init"><code class="docutils literal notranslate"><span class="pre">Contract._deprecated_init()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._save_deployment"><code class="docutils literal notranslate"><span class="pre">Contract._save_deployment()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.coroutine"><code class="docutils literal notranslate"><span class="pre">Contract.coroutine()</span></code></a></li>
@@ -73,31 +68,18 @@
 <li><a class="reference internal" href="#y.contracts.Contract.info"><code class="docutils literal notranslate"><span class="pre">Contract.info()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.remove_deployment"><code class="docutils literal notranslate"><span class="pre">Contract.remove_deployment()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.set_alias"><code class="docutils literal notranslate"><span class="pre">Contract.set_alias()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._ChecksumAddressSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">Contract._ChecksumAddressSingletonMeta__instances</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._ChecksumAddressSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">Contract._ChecksumAddressSingletonMeta__locks</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._ChecksumAddressSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">Contract._ChecksumAddressSingletonMeta__locks_lock</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._dir_color"><code class="docutils literal notranslate"><span class="pre">Contract._dir_color</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._initialized"><code class="docutils literal notranslate"><span class="pre">Contract._initialized</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._name"><code class="docutils literal notranslate"><span class="pre">Contract._name</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract._reverted"><code class="docutils literal notranslate"><span class="pre">Contract._reverted</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.abi"><code class="docutils literal notranslate"><span class="pre">Contract.abi</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract.alias"><code class="docutils literal notranslate"><span class="pre">Contract.alias</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#y.contracts.Contract_erc20"><code class="docutils literal notranslate"><span class="pre">Contract_erc20()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.Contract_with_erc20_fallback"><code class="docutils literal notranslate"><span class="pre">Contract_with_erc20_fallback()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts._extract_abi_data"><code class="docutils literal notranslate"><span class="pre">_extract_abi_data()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts._pop"><code class="docutils literal notranslate"><span class="pre">_pop()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts._resolve_proxy"><code class="docutils literal notranslate"><span class="pre">_resolve_proxy()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts._setup_events"><code class="docutils literal notranslate"><span class="pre">_setup_events()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts._squeeze"><code class="docutils literal notranslate"><span class="pre">_squeeze()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.has_methods"><code class="docutils literal notranslate"><span class="pre">has_methods()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.probe"><code class="docutils literal notranslate"><span class="pre">probe()</span></code></a></li>
 <li><a class="reference internal" href="#y.contracts.proxy_implementation"><code class="docutils literal notranslate"><span class="pre">proxy_implementation()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-y.convert">y.convert module</a><ul>
-<li><a class="reference internal" href="#y.convert._int_to_address"><code class="docutils literal notranslate"><span class="pre">_int_to_address()</span></code></a></li>
 <li><a class="reference internal" href="#y.convert.to_address"><code class="docutils literal notranslate"><span class="pre">to_address()</span></code></a></li>
 </ul>
 </li>
@@ -129,17 +111,11 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#module-y.decorators">y.decorators module</a><ul>
-<li><a class="reference internal" href="#y.decorators._stuck_debug_task"><code class="docutils literal notranslate"><span class="pre">_stuck_debug_task()</span></code></a></li>
 <li><a class="reference internal" href="#y.decorators.continue_on_revert"><code class="docutils literal notranslate"><span class="pre">continue_on_revert()</span></code></a></li>
 <li><a class="reference internal" href="#y.decorators.stuck_coro_debugger"><code class="docutils literal notranslate"><span class="pre">stuck_coro_debugger()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.erc20">y.erc20 module</a><ul>
-<li><a class="reference internal" href="#y.erc20._check_if_supported"><code class="docutils literal notranslate"><span class="pre">_check_if_supported()</span></code></a></li>
-<li><a class="reference internal" href="#y.erc20._choose_appropriate_fn"><code class="docutils literal notranslate"><span class="pre">_choose_appropriate_fn()</span></code></a></li>
-<li><a class="reference internal" href="#y.erc20._input_type"><code class="docutils literal notranslate"><span class="pre">_input_type()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-y.erc20">y.erc20 module</a></li>
 <li><a class="reference internal" href="#module-y.exceptions">y.exceptions module</a><ul>
 <li><a class="reference internal" href="#y.exceptions.CallReverted"><code class="docutils literal notranslate"><span class="pre">CallReverted</span></code></a><ul>
 <li><a class="reference internal" href="#y.exceptions.CallReverted.__init__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__init__()</span></code></a></li>
@@ -299,7 +275,6 @@
 <li><a class="reference internal" href="#y.time.UnixTimestamp.real"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.real</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#y.time._parse_timestamp"><code class="docutils literal notranslate"><span class="pre">_parse_timestamp()</span></code></a></li>
 <li><a class="reference internal" href="#y.time.check_node"><code class="docutils literal notranslate"><span class="pre">check_node()</span></code></a></li>
 <li><a class="reference internal" href="#y.time.check_node_async"><code class="docutils literal notranslate"><span class="pre">check_node_async()</span></code></a></li>
 <li><a class="reference internal" href="#y.time.closest_block_after_timestamp"><code class="docutils literal notranslate"><span class="pre">closest_block_after_timestamp()</span></code></a></li>
@@ -308,11 +283,6 @@
 <li><a class="reference internal" href="#module-y">Module contents</a><ul>
 <li><a class="reference internal" href="#y.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a><ul>
 <li><a class="reference internal" href="#y.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._check_and_set"><code class="docutils literal notranslate"><span class="pre">Contract._check_and_set()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._delete_deployment"><code class="docutils literal notranslate"><span class="pre">Contract._delete_deployment()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._deployment_path"><code class="docutils literal notranslate"><span class="pre">Contract._deployment_path()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._deprecated_init"><code class="docutils literal notranslate"><span class="pre">Contract._deprecated_init()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._save_deployment"><code class="docutils literal notranslate"><span class="pre">Contract._save_deployment()</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.coroutine"><code class="docutils literal notranslate"><span class="pre">Contract.coroutine()</span></code></a></li>
@@ -329,14 +299,6 @@
 <li><a class="reference internal" href="#y.Contract.info"><code class="docutils literal notranslate"><span class="pre">Contract.info()</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.remove_deployment"><code class="docutils literal notranslate"><span class="pre">Contract.remove_deployment()</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.set_alias"><code class="docutils literal notranslate"><span class="pre">Contract.set_alias()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._ChecksumAddressSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">Contract._ChecksumAddressSingletonMeta__instances</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._ChecksumAddressSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">Contract._ChecksumAddressSingletonMeta__locks</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._ChecksumAddressSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">Contract._ChecksumAddressSingletonMeta__locks_lock</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._dir_color"><code class="docutils literal notranslate"><span class="pre">Contract._dir_color</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._initialized"><code class="docutils literal notranslate"><span class="pre">Contract._initialized</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._name"><code class="docutils literal notranslate"><span class="pre">Contract._name</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._reverted"><code class="docutils literal notranslate"><span class="pre">Contract._reverted</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract._ttl_cache_popper"><code class="docutils literal notranslate"><span class="pre">Contract._ttl_cache_popper</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.abi"><code class="docutils literal notranslate"><span class="pre">Contract.abi</span></code></a></li>
 <li><a class="reference internal" href="#y.Contract.alias"><code class="docutils literal notranslate"><span class="pre">Contract.alias</span></code></a></li>
 </ul>
@@ -405,12 +367,6 @@
 <li class="toctree-l2"><a class="reference internal" href="y.classes.html#module-y.classes.common">y.classes.common module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase"><code class="docutils literal notranslate"><span class="pre">ContractBase</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase.__init__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">ContractBase._ChecksumASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">ContractBase._ChecksumASyncSingletonMeta__locks</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">ContractBase._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase._abc_impl"><code class="docutils literal notranslate"><span class="pre">ContractBase._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase._deploy_block"><code class="docutils literal notranslate"><span class="pre">ContractBase._deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase._is_cached"><code class="docutils literal notranslate"><span class="pre">ContractBase._is_cached</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase.address"><code class="docutils literal notranslate"><span class="pre">ContractBase.address</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase.asynchronous"><code class="docutils literal notranslate"><span class="pre">ContractBase.asynchronous</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ContractBase.build_name"><code class="docutils literal notranslate"><span class="pre">ContractBase.build_name</span></code></a></li>
@@ -421,17 +377,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20"><code class="docutils literal notranslate"><span class="pre">ERC20</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20.__init__"><code class="docutils literal notranslate"><span class="pre">ERC20.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20.__raise_exception"><code class="docutils literal notranslate"><span class="pre">ERC20.__raise_exception()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._name"><code class="docutils literal notranslate"><span class="pre">ERC20._name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._symbol"><code class="docutils literal notranslate"><span class="pre">ERC20._symbol()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">ERC20._ChecksumASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">ERC20._ChecksumASyncSingletonMeta__locks</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">ERC20._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._abc_impl"><code class="docutils literal notranslate"><span class="pre">ERC20._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._decimals"><code class="docutils literal notranslate"><span class="pre">ERC20._decimals</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._deploy_block"><code class="docutils literal notranslate"><span class="pre">ERC20._deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._is_cached"><code class="docutils literal notranslate"><span class="pre">ERC20._is_cached</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20._scale"><code class="docutils literal notranslate"><span class="pre">ERC20._scale</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20.address"><code class="docutils literal notranslate"><span class="pre">ERC20.address</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20.asynchronous"><code class="docutils literal notranslate"><span class="pre">ERC20.asynchronous</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.ERC20.balance_of"><code class="docutils literal notranslate"><span class="pre">ERC20.balance_of</span></code></a></li>
@@ -450,63 +395,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.common.WeiBalance"><code class="docutils literal notranslate"><span class="pre">WeiBalance</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.WeiBalance.__init__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.WeiBalance._abc_impl"><code class="docutils literal notranslate"><span class="pre">WeiBalance._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.WeiBalance._logger"><code class="docutils literal notranslate"><span class="pre">WeiBalance._logger</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.WeiBalance.readable"><code class="docutils literal notranslate"><span class="pre">WeiBalance.readable</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common.WeiBalance.value_usd"><code class="docutils literal notranslate"><span class="pre">WeiBalance.value_usd</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader"><code class="docutils literal notranslate"><span class="pre">_EventsLoader</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._Loader__load"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._Loader__load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.__init__"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._done_callback"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._done_callback()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._load"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._ChecksumASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._ChecksumASyncSingletonMeta__locks</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._Loader__exc"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._Loader__exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._Loader__task"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._Loader__task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.__exc"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.__exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.__task"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.__task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._abc_impl"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._deploy_block"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._events"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._events</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._init_block"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._init_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._is_cached"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._is_cached</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._loaded"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._loaded</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader._task"><code class="docutils literal notranslate"><span class="pre">_EventsLoader._task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.address"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.address</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.asynchronous"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.asynchronous</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.contract"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.contract</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.deploy_block"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.has_method"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.has_method</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._EventsLoader.loaded"><code class="docutils literal notranslate"><span class="pre">_EventsLoader.loaded</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.common._Loader"><code class="docutils literal notranslate"><span class="pre">_Loader</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._Loader__load"><code class="docutils literal notranslate"><span class="pre">_Loader._Loader__load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.__init__"><code class="docutils literal notranslate"><span class="pre">_Loader.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._done_callback"><code class="docutils literal notranslate"><span class="pre">_Loader._done_callback()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._load"><code class="docutils literal notranslate"><span class="pre">_Loader._load()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">_Loader._ChecksumASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">_Loader._ChecksumASyncSingletonMeta__locks</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">_Loader._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._Loader__exc"><code class="docutils literal notranslate"><span class="pre">_Loader._Loader__exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._Loader__task"><code class="docutils literal notranslate"><span class="pre">_Loader._Loader__task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.__exc"><code class="docutils literal notranslate"><span class="pre">_Loader.__exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.__task"><code class="docutils literal notranslate"><span class="pre">_Loader.__task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._abc_impl"><code class="docutils literal notranslate"><span class="pre">_Loader._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._deploy_block"><code class="docutils literal notranslate"><span class="pre">_Loader._deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._init_block"><code class="docutils literal notranslate"><span class="pre">_Loader._init_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._is_cached"><code class="docutils literal notranslate"><span class="pre">_Loader._is_cached</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._loaded"><code class="docutils literal notranslate"><span class="pre">_Loader._loaded</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader._task"><code class="docutils literal notranslate"><span class="pre">_Loader._task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.address"><code class="docutils literal notranslate"><span class="pre">_Loader.address</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.asynchronous"><code class="docutils literal notranslate"><span class="pre">_Loader.asynchronous</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.contract"><code class="docutils literal notranslate"><span class="pre">_Loader.contract</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.deploy_block"><code class="docutils literal notranslate"><span class="pre">_Loader.deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.has_method"><code class="docutils literal notranslate"><span class="pre">_Loader.has_method</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.common._Loader.loaded"><code class="docutils literal notranslate"><span class="pre">_Loader.loaded</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.common.hex_to_string"><code class="docutils literal notranslate"><span class="pre">hex_to_string()</span></code></a></li>
@@ -515,16 +405,10 @@
 <li class="toctree-l2"><a class="reference internal" href="y.classes.html#module-y.classes.singleton">y.classes.singleton module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.__call__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__call__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.__delete_address_lock"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__delete_address_lock()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.__get_address_lock"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__get_address_lock()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.__init__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.__new__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__new__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta._abc_caches_clear"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._abc_caches_clear()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta._abc_registry_clear"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._abc_registry_clear()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta._dump_registry"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._dump_registry()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.mro"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.mro()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta.register"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.register()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.classes.html#y.classes.singleton.ChecksumASyncSingletonMeta._is_protocol"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta._is_protocol</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -629,9 +513,6 @@
 <li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.band">y.prices.band module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.band.Band"><code class="docutils literal notranslate"><span class="pre">Band</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.band.Band.__init__"><code class="docutils literal notranslate"><span class="pre">Band.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.band.Band._ASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">Band._ASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.band.Band._ASyncSingletonMeta__lock"><code class="docutils literal notranslate"><span class="pre">Band._ASyncSingletonMeta__lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.band.Band._abc_impl"><code class="docutils literal notranslate"><span class="pre">Band._abc_impl</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.band.Band.get_price"><code class="docutils literal notranslate"><span class="pre">Band.get_price</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.band.Band.oracle"><code class="docutils literal notranslate"><span class="pre">Band.oracle</span></code></a></li>
 </ul>
@@ -641,9 +522,6 @@
 <li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.chainlink">y.prices.chainlink module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink"><code class="docutils literal notranslate"><span class="pre">Chainlink</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink.__init__"><code class="docutils literal notranslate"><span class="pre">Chainlink.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink._feeds_thru_block"><code class="docutils literal notranslate"><span class="pre">Chainlink._feeds_thru_block()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink._abc_impl"><code class="docutils literal notranslate"><span class="pre">Chainlink._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink._get_price"><code class="docutils literal notranslate"><span class="pre">Chainlink._get_price</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink.get_feed"><code class="docutils literal notranslate"><span class="pre">Chainlink.get_feed</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink.get_price"><code class="docutils literal notranslate"><span class="pre">Chainlink.get_price</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.Chainlink.has_feed"><code class="docutils literal notranslate"><span class="pre">Chainlink.has_feed</span></code></a></li>
@@ -663,47 +541,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.obj_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__aiter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.__init__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._ensure_task"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._ensure_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._extend"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._extend()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._fetch"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._fetch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._fetch_range"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._fetch_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._fetch_range_wrapped"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._fetch_range_wrapped()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._get_block_for_obj"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._get_block_for_obj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._include_event"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._include_event()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._insert_chunk"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._insert_chunk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._load_cache"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._load_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._load_new_objects"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._load_new_objects()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._load_range"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._load_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._loop"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._loop()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._objects_thru"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._objects_thru()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._process_event"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._process_event()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._remove"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._remove()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._set_lock"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._set_lock()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._wakeup"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._wakeup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__iter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.events"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.events()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.logs"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.logs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.objects"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.objects()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.wrap"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.wrap()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._abc_impl"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._cache"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._chunk_size"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._chunk_size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._chunks_per_batch"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._chunks_per_batch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._db_task"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._db_task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._exc"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._executor"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._executor</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._from_block"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._from_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._interval"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._interval</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._is_protocol"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._is_protocol</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._lock"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._objects"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._pruned"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._pruned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._semaphore"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._semaphore</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._sleep"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._sleep</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._sleep_fut"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._sleep_fut</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._sleep_time"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._sleep_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._task"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents._verbose"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents._verbose</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.addresses"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.addresses</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.asynchronous"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.asynchronous</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.chainlink.FeedsFromEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.bulk_insert</span></code></a></li>
@@ -727,12 +571,6 @@
 <li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.gearbox">y.prices.gearbox module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool"><code class="docutils literal notranslate"><span class="pre">DieselPool</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool.__init__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">DieselPool._ChecksumASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">DieselPool._ChecksumASyncSingletonMeta__locks</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">DieselPool._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool._abc_impl"><code class="docutils literal notranslate"><span class="pre">DieselPool._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool._deploy_block"><code class="docutils literal notranslate"><span class="pre">DieselPool._deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool._is_cached"><code class="docutils literal notranslate"><span class="pre">DieselPool._is_cached</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool.address"><code class="docutils literal notranslate"><span class="pre">DieselPool.address</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool.asynchronous"><code class="docutils literal notranslate"><span class="pre">DieselPool.asynchronous</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.DieselPool.contract"><code class="docutils literal notranslate"><span class="pre">DieselPool.contract</span></code></a></li>
@@ -746,7 +584,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.gearbox.Gearbox"><code class="docutils literal notranslate"><span class="pre">Gearbox</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.Gearbox.__init__"><code class="docutils literal notranslate"><span class="pre">Gearbox.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.Gearbox._abc_impl"><code class="docutils literal notranslate"><span class="pre">Gearbox._abc_impl</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.Gearbox.diesel_tokens"><code class="docutils literal notranslate"><span class="pre">Gearbox.diesel_tokens</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.Gearbox.get_price"><code class="docutils literal notranslate"><span class="pre">Gearbox.get_price</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.gearbox.Gearbox.is_diesel_token"><code class="docutils literal notranslate"><span class="pre">Gearbox.is_diesel_token</span></code></a></li>
@@ -756,14 +593,7 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.magic">y.prices.magic module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.magic.__cache"><code class="docutils literal notranslate"><span class="pre">__cache()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.magic._debug_tsk"><code class="docutils literal notranslate"><span class="pre">_debug_tsk()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.magic._exit_early_for_known_tokens"><code class="docutils literal notranslate"><span class="pre">_exit_early_for_known_tokens()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.magic._fail_appropriately"><code class="docutils literal notranslate"><span class="pre">_fail_appropriately()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.magic._get_price"><code class="docutils literal notranslate"><span class="pre">_get_price()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.magic">y.prices.magic module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.one_to_one">y.prices.one_to_one module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.one_to_one.is_one_to_one_token"><code class="docutils literal notranslate"><span class="pre">is_one_to_one_token()</span></code></a></li>
 </ul>
@@ -774,16 +604,10 @@
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.rkp3r.is_rkp3r"><code class="docutils literal notranslate"><span class="pre">is_rkp3r()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.solidex">y.prices.solidex module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.solidex._get_pool"><code class="docutils literal notranslate"><span class="pre">_get_pool()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.solidex">y.prices.solidex module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.synthetix">y.prices.synthetix module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix"><code class="docutils literal notranslate"><span class="pre">Synthetix</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix.__init__"><code class="docutils literal notranslate"><span class="pre">Synthetix.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix._ASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">Synthetix._ASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix._ASyncSingletonMeta__lock"><code class="docutils literal notranslate"><span class="pre">Synthetix._ASyncSingletonMeta__lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix._abc_impl"><code class="docutils literal notranslate"><span class="pre">Synthetix._abc_impl</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix.address_resolver"><code class="docutils literal notranslate"><span class="pre">Synthetix.address_resolver</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix.get_address"><code class="docutils literal notranslate"><span class="pre">Synthetix.get_address</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.synthetix.Synthetix.get_currency_key"><code class="docutils literal notranslate"><span class="pre">Synthetix.get_currency_key</span></code></a></li>
@@ -797,17 +621,6 @@
 <li class="toctree-l2"><a class="reference internal" href="y.prices.html#module-y.prices.yearn">y.prices.yearn module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault.__init__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._name"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._name()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._symbol"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._symbol()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._ChecksumASyncSingletonMeta__instances"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._ChecksumASyncSingletonMeta__instances</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._ChecksumASyncSingletonMeta__locks"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._ChecksumASyncSingletonMeta__locks</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._ChecksumASyncSingletonMeta__locks_lock"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._ChecksumASyncSingletonMeta__locks_lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._abc_impl"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._decimals"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._decimals</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._deploy_block"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._deploy_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._get_share_price"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._get_share_price</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._is_cached"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._is_cached</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault._scale"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault._scale</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault.address"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.address</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault.asynchronous"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.asynchronous</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.html#y.prices.yearn.YearnInspiredVault.balance_of"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.balance_of</span></code></a></li>
@@ -829,16 +642,12 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="y.utils.html">y.utils package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.cache">y.utils.cache module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.cache._memory"><code class="docutils literal notranslate"><span class="pre">_memory()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.cache">y.utils.cache module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.checks">y.utils.checks module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.checks.hasall"><code class="docutils literal notranslate"><span class="pre">hasall()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.client">y.utils.client module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.client._get_ethereum_client"><code class="docutils literal notranslate"><span class="pre">_get_ethereum_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.client.get_ethereum_client"><code class="docutils literal notranslate"><span class="pre">get_ethereum_client()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.client.get_ethereum_client_async"><code class="docutils literal notranslate"><span class="pre">get_ethereum_client_async()</span></code></a></li>
 </ul>
@@ -847,44 +656,12 @@
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.events">y.utils.events module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events.Events"><code class="docutils literal notranslate"><span class="pre">Events</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.obj_type"><code class="docutils literal notranslate"><span class="pre">Events.obj_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.__aiter__"><code class="docutils literal notranslate"><span class="pre">Events.__aiter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.__init__"><code class="docutils literal notranslate"><span class="pre">Events.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._ensure_task"><code class="docutils literal notranslate"><span class="pre">Events._ensure_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._extend"><code class="docutils literal notranslate"><span class="pre">Events._extend()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._fetch"><code class="docutils literal notranslate"><span class="pre">Events._fetch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._fetch_range"><code class="docutils literal notranslate"><span class="pre">Events._fetch_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._fetch_range_wrapped"><code class="docutils literal notranslate"><span class="pre">Events._fetch_range_wrapped()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._get_block_for_obj"><code class="docutils literal notranslate"><span class="pre">Events._get_block_for_obj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._insert_chunk"><code class="docutils literal notranslate"><span class="pre">Events._insert_chunk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._load_cache"><code class="docutils literal notranslate"><span class="pre">Events._load_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._load_new_objects"><code class="docutils literal notranslate"><span class="pre">Events._load_new_objects()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._load_range"><code class="docutils literal notranslate"><span class="pre">Events._load_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._loop"><code class="docutils literal notranslate"><span class="pre">Events._loop()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._objects_thru"><code class="docutils literal notranslate"><span class="pre">Events._objects_thru()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._remove"><code class="docutils literal notranslate"><span class="pre">Events._remove()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._set_lock"><code class="docutils literal notranslate"><span class="pre">Events._set_lock()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._wakeup"><code class="docutils literal notranslate"><span class="pre">Events._wakeup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.__iter__"><code class="docutils literal notranslate"><span class="pre">Events.__iter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.events"><code class="docutils literal notranslate"><span class="pre">Events.events()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.logs"><code class="docutils literal notranslate"><span class="pre">Events.logs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.wrap"><code class="docutils literal notranslate"><span class="pre">Events.wrap()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._abc_impl"><code class="docutils literal notranslate"><span class="pre">Events._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._cache"><code class="docutils literal notranslate"><span class="pre">Events._cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._chunk_size"><code class="docutils literal notranslate"><span class="pre">Events._chunk_size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._chunks_per_batch"><code class="docutils literal notranslate"><span class="pre">Events._chunks_per_batch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._db_task"><code class="docutils literal notranslate"><span class="pre">Events._db_task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._exc"><code class="docutils literal notranslate"><span class="pre">Events._exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._executor"><code class="docutils literal notranslate"><span class="pre">Events._executor</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._from_block"><code class="docutils literal notranslate"><span class="pre">Events._from_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._interval"><code class="docutils literal notranslate"><span class="pre">Events._interval</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._is_protocol"><code class="docutils literal notranslate"><span class="pre">Events._is_protocol</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._lock"><code class="docutils literal notranslate"><span class="pre">Events._lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._objects"><code class="docutils literal notranslate"><span class="pre">Events._objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._pruned"><code class="docutils literal notranslate"><span class="pre">Events._pruned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._semaphore"><code class="docutils literal notranslate"><span class="pre">Events._semaphore</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._sleep"><code class="docutils literal notranslate"><span class="pre">Events._sleep</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._sleep_fut"><code class="docutils literal notranslate"><span class="pre">Events._sleep_fut</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._sleep_time"><code class="docutils literal notranslate"><span class="pre">Events._sleep_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._task"><code class="docutils literal notranslate"><span class="pre">Events._task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events._verbose"><code class="docutils literal notranslate"><span class="pre">Events._verbose</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.addresses"><code class="docutils literal notranslate"><span class="pre">Events.addresses</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.bulk_insert"><code class="docutils literal notranslate"><span class="pre">Events.bulk_insert</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.Events.cache"><code class="docutils literal notranslate"><span class="pre">Events.cache</span></code></a></li>
@@ -899,43 +676,11 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter"><code class="docutils literal notranslate"><span class="pre">LogFilter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.__aiter__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__aiter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.__init__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._ensure_task"><code class="docutils literal notranslate"><span class="pre">LogFilter._ensure_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._extend"><code class="docutils literal notranslate"><span class="pre">LogFilter._extend()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._fetch"><code class="docutils literal notranslate"><span class="pre">LogFilter._fetch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._fetch_range"><code class="docutils literal notranslate"><span class="pre">LogFilter._fetch_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._fetch_range_wrapped"><code class="docutils literal notranslate"><span class="pre">LogFilter._fetch_range_wrapped()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._get_block_for_obj"><code class="docutils literal notranslate"><span class="pre">LogFilter._get_block_for_obj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._insert_chunk"><code class="docutils literal notranslate"><span class="pre">LogFilter._insert_chunk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._load_cache"><code class="docutils literal notranslate"><span class="pre">LogFilter._load_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._load_new_objects"><code class="docutils literal notranslate"><span class="pre">LogFilter._load_new_objects()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._load_range"><code class="docutils literal notranslate"><span class="pre">LogFilter._load_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._loop"><code class="docutils literal notranslate"><span class="pre">LogFilter._loop()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._objects_thru"><code class="docutils literal notranslate"><span class="pre">LogFilter._objects_thru()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._remove"><code class="docutils literal notranslate"><span class="pre">LogFilter._remove()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._set_lock"><code class="docutils literal notranslate"><span class="pre">LogFilter._set_lock()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._wakeup"><code class="docutils literal notranslate"><span class="pre">LogFilter._wakeup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.__iter__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__iter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.logs"><code class="docutils literal notranslate"><span class="pre">LogFilter.logs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.wrap"><code class="docutils literal notranslate"><span class="pre">LogFilter.wrap()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._abc_impl"><code class="docutils literal notranslate"><span class="pre">LogFilter._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._cache"><code class="docutils literal notranslate"><span class="pre">LogFilter._cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._chunk_size"><code class="docutils literal notranslate"><span class="pre">LogFilter._chunk_size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._chunks_per_batch"><code class="docutils literal notranslate"><span class="pre">LogFilter._chunks_per_batch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._db_task"><code class="docutils literal notranslate"><span class="pre">LogFilter._db_task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._exc"><code class="docutils literal notranslate"><span class="pre">LogFilter._exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._executor"><code class="docutils literal notranslate"><span class="pre">LogFilter._executor</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._from_block"><code class="docutils literal notranslate"><span class="pre">LogFilter._from_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._interval"><code class="docutils literal notranslate"><span class="pre">LogFilter._interval</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._is_protocol"><code class="docutils literal notranslate"><span class="pre">LogFilter._is_protocol</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._lock"><code class="docutils literal notranslate"><span class="pre">LogFilter._lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._objects"><code class="docutils literal notranslate"><span class="pre">LogFilter._objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._pruned"><code class="docutils literal notranslate"><span class="pre">LogFilter._pruned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._semaphore"><code class="docutils literal notranslate"><span class="pre">LogFilter._semaphore</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._sleep"><code class="docutils literal notranslate"><span class="pre">LogFilter._sleep</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._sleep_fut"><code class="docutils literal notranslate"><span class="pre">LogFilter._sleep_fut</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._sleep_time"><code class="docutils literal notranslate"><span class="pre">LogFilter._sleep_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._task"><code class="docutils literal notranslate"><span class="pre">LogFilter._task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter._verbose"><code class="docutils literal notranslate"><span class="pre">LogFilter._verbose</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.addresses"><code class="docutils literal notranslate"><span class="pre">LogFilter.addresses</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.bulk_insert"><code class="docutils literal notranslate"><span class="pre">LogFilter.bulk_insert</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.LogFilter.cache"><code class="docutils literal notranslate"><span class="pre">LogFilter.cache</span></code></a></li>
@@ -951,47 +696,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.obj_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__aiter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._ensure_task"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._ensure_task()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._extend"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._extend()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._fetch"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._fetch()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._fetch_range"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._fetch_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._fetch_range_wrapped"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._fetch_range_wrapped()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._get_block_for_obj"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._get_block_for_obj()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._include_event"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._include_event()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._insert_chunk"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._insert_chunk()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._load_cache"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._load_cache()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._load_new_objects"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._load_new_objects()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._load_range"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._load_range()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._loop"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._loop()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._objects_thru"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._objects_thru()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._process_event"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._process_event()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._remove"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._remove()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._set_lock"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._set_lock()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._wakeup"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._wakeup()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__iter__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.events"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.events()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.logs"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.logs()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.objects"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.objects()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.wrap"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.wrap()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._abc_impl"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._abc_impl</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._cache"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._cache</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._chunk_size"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._chunk_size</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._chunks_per_batch"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._chunks_per_batch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._db_task"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._db_task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._exc"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._exc</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._executor"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._executor</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._from_block"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._from_block</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._interval"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._interval</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._is_protocol"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._is_protocol</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._lock"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._lock</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._objects"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._objects</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._pruned"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._pruned</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._semaphore"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._semaphore</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._sleep"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._sleep</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._sleep_fut"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._sleep_fut</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._sleep_time"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._sleep_time</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._task"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._task</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents._verbose"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents._verbose</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.addresses"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.addresses</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.bulk_insert</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.cache"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.cache</span></code></a></li>
@@ -1005,9 +716,6 @@
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents.topics"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.topics</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events._get_logs_async"><code class="docutils literal notranslate"><span class="pre">_get_logs_async()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events._get_logs_async_no_cache"><code class="docutils literal notranslate"><span class="pre">_get_logs_async_no_cache()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events._get_logs_no_cache"><code class="docutils literal notranslate"><span class="pre">_get_logs_no_cache()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events.checkpoints_to_weight"><code class="docutils literal notranslate"><span class="pre">checkpoints_to_weight()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events.decode_logs"><code class="docutils literal notranslate"><span class="pre">decode_logs()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.events.get_logs_asap_generator"><code class="docutils literal notranslate"><span class="pre">get_logs_asap_generator()</span></code></a></li>
@@ -1016,31 +724,23 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.fakes">y.utils.fakes module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.gather">y.utils.gather module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.gather._gather_methods_brownie"><code class="docutils literal notranslate"><span class="pre">_gather_methods_brownie()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.gather._gather_methods_raw"><code class="docutils literal notranslate"><span class="pre">_gather_methods_raw()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.gather.gather_methods"><code class="docutils literal notranslate"><span class="pre">gather_methods()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.logging">y.utils.logging module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.logging._gh_issue_request"><code class="docutils literal notranslate"><span class="pre">_gh_issue_request()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.logging.enable_debug_logging"><code class="docutils literal notranslate"><span class="pre">enable_debug_logging()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.logging.get_price_logger"><code class="docutils literal notranslate"><span class="pre">get_price_logger()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.middleware">y.utils.middleware module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.middleware._get_batch_size"><code class="docutils literal notranslate"><span class="pre">_get_batch_size()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.middleware.cache_middleware"><code class="docutils literal notranslate"><span class="pre">cache_middleware()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.middleware.ensure_middleware"><code class="docutils literal notranslate"><span class="pre">ensure_middleware()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.middleware.setup_middleware"><code class="docutils literal notranslate"><span class="pre">setup_middleware()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.middleware.should_cache"><code class="docutils literal notranslate"><span class="pre">should_cache()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.multicall">y.utils.multicall module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.multicall._clean_addresses"><code class="docutils literal notranslate"><span class="pre">_clean_addresses()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.multicall">y.utils.multicall module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="y.utils.html#module-y.utils.raw_calls">y.utils.raw_calls module</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.raw_calls._balanceOfReadable"><code class="docutils literal notranslate"><span class="pre">_balanceOfReadable()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.raw_calls.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.raw_calls.prepare_input"><code class="docutils literal notranslate"><span class="pre">prepare_input()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.utils.html#y.utils.raw_calls.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
@@ -1111,71 +811,6 @@ will be performed using this account.</p></li>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.contracts.Contract._check_and_set">
-<span class="sig-name descname"><span class="pre">_check_and_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract._check_and_set" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
-<li><p><strong>obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.contracts.Contract._delete_deployment">
-<span class="sig-name descname"><span class="pre">_delete_deployment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract._delete_deployment" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.contracts.Contract._deployment_path">
-<span class="sig-name descname"><span class="pre">_deployment_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract._deployment_path" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><em>Path</em></a> | None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.contracts.Contract._deprecated_init">
-<span class="sig-name descname"><span class="pre">_deprecated_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract._deprecated_init" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>abi</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.contracts.Contract._save_deployment">
-<span class="sig-name descname"><span class="pre">_save_deployment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract._save_deployment" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1448,41 +1083,6 @@ object in future sessions.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.contracts.Contract._ChecksumAddressSingletonMeta__instances">
-<span class="sig-name descname"><span class="pre">_ChecksumAddressSingletonMeta__instances</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ChecksumAddressDict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'0x0000000022D53366457F9d5E68Ec105046FC4383':</span> <span class="pre">&lt;Vyper_contract</span> <span class="pre">Contract</span> <span class="pre">'0x0000000022D53366457F9d5E68Ec105046FC4383'&gt;,</span> <span class="pre">'0x115934131916C8b277DD010Ee02de363c09d037c':</span> <span class="pre">&lt;UniswapV2Factory</span> <span class="pre">Contract</span> <span class="pre">'0x115934131916C8b277DD010Ee02de363c09d037c'&gt;,</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599':</span> <span class="pre">&lt;WBTC</span> <span class="pre">Contract</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'&gt;,</span> <span class="pre">'0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf':</span> <span class="pre">&lt;FeedRegistry</span> <span class="pre">Contract</span> <span class="pre">'0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf'&gt;,</span> <span class="pre">'0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696':</span> <span class="pre">&lt;Multicall2</span> <span class="pre">Contract</span> <span class="pre">'0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696'&gt;,</span> <span class="pre">'0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f':</span> <span class="pre">&lt;UniswapV2Factory</span> <span class="pre">Contract</span> <span class="pre">'0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'&gt;,</span> <span class="pre">'0x6B175474E89094C44Da98b954EedeAC495271d0F':</span> <span class="pre">&lt;Dai</span> <span class="pre">Contract</span> <span class="pre">'0x6B175474E89094C44Da98b954EedeAC495271d0F'&gt;,</span> <span class="pre">'0x6B3595068778DD592e39A122f4f5a5cF09C90fE2':</span> <span class="pre">&lt;SushiToken</span> <span class="pre">Contract</span> <span class="pre">'0x6B3595068778DD592e39A122f4f5a5cF09C90fE2'&gt;,</span> <span class="pre">'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48':</span> <span class="pre">&lt;FiatTokenV2_1</span> <span class="pre">Contract</span> <span class="pre">'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'&gt;,</span> <span class="pre">'0xBA12222222228d8Ba445958a75a0704d566BF2C8':</span> <span class="pre">&lt;Vault</span> <span class="pre">Contract</span> <span class="pre">'0xBA12222222228d8Ba445958a75a0704d566BF2C8'&gt;,</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2':</span> <span class="pre">&lt;WETH9</span> <span class="pre">Contract</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'&gt;,</span> <span class="pre">'0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac':</span> <span class="pre">&lt;UniswapV2Factory</span> <span class="pre">Contract</span> <span class="pre">'0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'&gt;,</span> <span class="pre">'0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643':</span> <span class="pre">&lt;MooniswapFactory</span> <span class="pre">Contract</span> <span class="pre">'0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643'&gt;,</span> <span class="pre">'0xdAC17F958D2ee523a2206206994597C13D831ec7':</span> <span class="pre">&lt;TetherToken</span> <span class="pre">Contract</span> <span class="pre">'0xdAC17F958D2ee523a2206206994597C13D831ec7'&gt;}</span></em><a class="headerlink" href="#y.contracts.Contract._ChecksumAddressSingletonMeta__instances" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.contracts.Contract._ChecksumAddressSingletonMeta__locks">
-<span class="sig-name descname"><span class="pre">_ChecksumAddressSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.contracts.Contract._ChecksumAddressSingletonMeta__locks" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.contracts.Contract._ChecksumAddressSingletonMeta__locks_lock">
-<span class="sig-name descname"><span class="pre">_ChecksumAddressSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.contracts.Contract._ChecksumAddressSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.contracts.Contract._dir_color">
-<span class="sig-name descname"><span class="pre">_dir_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bright</span> <span class="pre">magenta'</span></em><a class="headerlink" href="#y.contracts.Contract._dir_color" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.contracts.Contract._initialized">
-<span class="sig-name descname"><span class="pre">_initialized</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#y.contracts.Contract._initialized" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="y.contracts.Contract._name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#y.contracts.Contract._name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.contracts.Contract._reverted">
-<span class="sig-name descname"><span class="pre">_reverted</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#y.contracts.Contract._reverted" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
 <dl class="py property">
 <dt class="sig sig-object py" id="y.contracts.Contract.abi">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">abi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a></em><a class="headerlink" href="#y.contracts.Contract.abi" title="Link to this definition"></a></dt>
@@ -1519,58 +1119,6 @@ object in future sessions.</p>
 <dd class="field-even"><p><a class="reference internal" href="#y.contracts.Contract" title="y.contracts.Contract"><em>Contract</em></a></p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.contracts._extract_abi_data">
-<span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">_extract_abi_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts._extract_abi_data" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.contracts._pop">
-<span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">_pop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts._pop" title="Link to this definition"></a></dt>
-<dd><p>Pops an item from a dict if present</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>d</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – </p></li>
-<li><p><strong>k</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.contracts._resolve_proxy">
-<span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">_resolve_proxy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts._resolve_proxy" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.12)"><em>Tuple</em></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.contracts._setup_events">
-<span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">_setup_events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contract</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts._setup_events" title="Link to this definition"></a></dt>
-<dd><p>Helper function used to init contract event containers on a newly created <cite>y.Contract</cite> object.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>contract</strong> (<a class="reference internal" href="#y.contracts.Contract" title="y.contracts.Contract"><em>Contract</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.contracts._squeeze">
-<span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">_squeeze</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">it</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts._squeeze" title="Link to this definition"></a></dt>
-<dd><p>Reduce the contract size in RAM significantly.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -1629,19 +1177,6 @@ Pass <cite>at_least_one=True</cite> to only verify a contract has at least one o
 </section>
 <section id="module-y.convert">
 <span id="y-convert-module"></span><h2>y.convert module<a class="headerlink" href="#module-y.convert" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="y.convert._int_to_address">
-<span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">_int_to_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">int_address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.convert._int_to_address" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>int_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="py function">
 <dt class="sig sig-object py" id="y.convert.to_address">
 <span class="sig-prename descclassname"><span class="pre">y.convert.</span></span><span class="sig-name descname"><span class="pre">to_address</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.convert.to_address" title="Link to this definition"></a></dt>
@@ -1834,24 +1369,6 @@ and with a positive denominator.</p>
 <section id="module-y.decorators">
 <span id="y-decorators-module"></span><h2>y.decorators module<a class="headerlink" href="#module-y.decorators" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="y.decorators._stuck_debug_task">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.decorators.</span></span><span class="sig-name descname"><span class="pre">_stuck_debug_task</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fn</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.decorators._stuck_debug_task" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/logging.html#logging.Logger" title="(in Python v3.12)"><em>Logger</em></a>) – </p></li>
-<li><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><em>T</em><em>]</em>) – </p></li>
-<li><p><strong>args</strong> (<em>~P</em>) – </p></li>
-<li><p><strong>kwargs</strong> (<em>~P</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.NoReturn" title="(in Python v3.12)"><em>NoReturn</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="y.decorators.continue_on_revert">
 <span class="sig-prename descclassname"><span class="pre">y.decorators.</span></span><span class="sig-name descname"><span class="pre">continue_on_revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.decorators.continue_on_revert" title="Link to this definition"></a></dt>
 <dd><p>Decorates a call-making function. If the call reverts, returns <cite>None</cite>. Raises any other exceptions.</p>
@@ -1875,46 +1392,6 @@ and with a positive denominator.</p>
 </section>
 <section id="module-y.erc20">
 <span id="y-erc20-module"></span><h2>y.erc20 module<a class="headerlink" href="#module-y.erc20" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="y.erc20._check_if_supported">
-<span class="sig-prename descclassname"><span class="pre">y.erc20.</span></span><span class="sig-name descname"><span class="pre">_check_if_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.erc20._check_if_supported" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)">bool</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.erc20._choose_appropriate_fn">
-<span class="sig-prename descclassname"><span class="pre">y.erc20.</span></span><span class="sig-name descname"><span class="pre">_choose_appropriate_fn</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">singlecall_fn</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multicall_fn</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.erc20._choose_appropriate_fn" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p></li>
-<li><p><strong>singlecall_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>) – </p></li>
-<li><p><strong>multicall_fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>) – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.erc20._input_type">
-<span class="sig-prename descclassname"><span class="pre">y.erc20.</span></span><span class="sig-name descname"><span class="pre">_input_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.erc20._input_type" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 <section id="module-y.exceptions">
 <span id="y-exceptions-module"></span><h2>y.exceptions module<a class="headerlink" href="#module-y.exceptions" title="Link to this heading"></a></h2>
@@ -2701,19 +2178,6 @@ is raised.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="y.time._parse_timestamp">
-<span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">_parse_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.time._parse_timestamp" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>timestamp</strong> (<a class="reference internal" href="#y.time.UnixTimestamp" title="y.time.UnixTimestamp"><em>UnixTimestamp</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><em>datetime</em></a>) – </p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="#y.time.UnixTimestamp" title="y.time.UnixTimestamp"><em>UnixTimestamp</em></a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="y.time.check_node">
 <span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">check_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.time.check_node" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
@@ -2800,71 +2264,6 @@ will be performed using this account.</p></li>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Contract._check_and_set">
-<span class="sig-name descname"><span class="pre">_check_and_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract._check_and_set" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
-<li><p><strong>obj</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Contract._delete_deployment">
-<span class="sig-name descname"><span class="pre">_delete_deployment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract._delete_deployment" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Contract._deployment_path">
-<span class="sig-name descname"><span class="pre">_deployment_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract._deployment_path" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><em>Path</em></a> | None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Contract._deprecated_init">
-<span class="sig-name descname"><span class="pre">_deprecated_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_uri</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract._deprecated_init" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p></li>
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>abi</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>) – </p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Contract._save_deployment">
-<span class="sig-name descname"><span class="pre">_save_deployment</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract._save_deployment" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3136,46 +2535,6 @@ object in future sessions.</p>
 </dd>
 </dl>
 </dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._ChecksumAddressSingletonMeta__instances">
-<span class="sig-name descname"><span class="pre">_ChecksumAddressSingletonMeta__instances</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ChecksumAddressDict</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#y.Contract" title="y.Contract"><span class="pre">Contract</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'0x0000000022D53366457F9d5E68Ec105046FC4383':</span> <span class="pre">&lt;Vyper_contract</span> <span class="pre">Contract</span> <span class="pre">'0x0000000022D53366457F9d5E68Ec105046FC4383'&gt;,</span> <span class="pre">'0x115934131916C8b277DD010Ee02de363c09d037c':</span> <span class="pre">&lt;UniswapV2Factory</span> <span class="pre">Contract</span> <span class="pre">'0x115934131916C8b277DD010Ee02de363c09d037c'&gt;,</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599':</span> <span class="pre">&lt;WBTC</span> <span class="pre">Contract</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'&gt;,</span> <span class="pre">'0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf':</span> <span class="pre">&lt;FeedRegistry</span> <span class="pre">Contract</span> <span class="pre">'0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf'&gt;,</span> <span class="pre">'0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696':</span> <span class="pre">&lt;Multicall2</span> <span class="pre">Contract</span> <span class="pre">'0x5BA1e12693Dc8F9c48aAD8770482f4739bEeD696'&gt;,</span> <span class="pre">'0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f':</span> <span class="pre">&lt;UniswapV2Factory</span> <span class="pre">Contract</span> <span class="pre">'0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f'&gt;,</span> <span class="pre">'0x6B175474E89094C44Da98b954EedeAC495271d0F':</span> <span class="pre">&lt;Dai</span> <span class="pre">Contract</span> <span class="pre">'0x6B175474E89094C44Da98b954EedeAC495271d0F'&gt;,</span> <span class="pre">'0x6B3595068778DD592e39A122f4f5a5cF09C90fE2':</span> <span class="pre">&lt;SushiToken</span> <span class="pre">Contract</span> <span class="pre">'0x6B3595068778DD592e39A122f4f5a5cF09C90fE2'&gt;,</span> <span class="pre">'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48':</span> <span class="pre">&lt;FiatTokenV2_1</span> <span class="pre">Contract</span> <span class="pre">'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'&gt;,</span> <span class="pre">'0xBA12222222228d8Ba445958a75a0704d566BF2C8':</span> <span class="pre">&lt;Vault</span> <span class="pre">Contract</span> <span class="pre">'0xBA12222222228d8Ba445958a75a0704d566BF2C8'&gt;,</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2':</span> <span class="pre">&lt;WETH9</span> <span class="pre">Contract</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'&gt;,</span> <span class="pre">'0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac':</span> <span class="pre">&lt;UniswapV2Factory</span> <span class="pre">Contract</span> <span class="pre">'0xC0AEe478e3658e2610c5F7A4A2E1777cE9e4f2Ac'&gt;,</span> <span class="pre">'0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643':</span> <span class="pre">&lt;MooniswapFactory</span> <span class="pre">Contract</span> <span class="pre">'0xbAF9A5d4b0052359326A6CDAb54BABAa3a3A9643'&gt;,</span> <span class="pre">'0xdAC17F958D2ee523a2206206994597C13D831ec7':</span> <span class="pre">&lt;TetherToken</span> <span class="pre">Contract</span> <span class="pre">'0xdAC17F958D2ee523a2206206994597C13D831ec7'&gt;}</span></em><a class="headerlink" href="#y.Contract._ChecksumAddressSingletonMeta__instances" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._ChecksumAddressSingletonMeta__locks">
-<span class="sig-name descname"><span class="pre">_ChecksumAddressSingletonMeta__locks</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#y.Contract._ChecksumAddressSingletonMeta__locks" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._ChecksumAddressSingletonMeta__locks_lock">
-<span class="sig-name descname"><span class="pre">_ChecksumAddressSingletonMeta__locks_lock</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;unlocked</span> <span class="pre">_thread.lock</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#y.Contract._ChecksumAddressSingletonMeta__locks_lock" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._dir_color">
-<span class="sig-name descname"><span class="pre">_dir_color</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bright</span> <span class="pre">magenta'</span></em><a class="headerlink" href="#y.Contract._dir_color" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._initialized">
-<span class="sig-name descname"><span class="pre">_initialized</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#y.Contract._initialized" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="y.Contract._name">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#y.Contract._name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._reverted">
-<span class="sig-name descname"><span class="pre">_reverted</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#y.Contract._reverted" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="y.Contract._ttl_cache_popper">
-<span class="sig-name descname"><span class="pre">_ttl_cache_popper</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Literal" title="(in Python v3.12)"><span class="pre">Literal</span></a><span class="p"><span class="pre">[</span></span><span class="s"><span class="pre">'disabled'</span></span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">TimerHandle</span></em><a class="headerlink" href="#y.Contract._ttl_cache_popper" title="Link to this definition"></a></dt>
-<dd></dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.Contract.abi">
