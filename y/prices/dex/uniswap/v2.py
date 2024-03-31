@@ -427,7 +427,7 @@ class UniswapRouterV2(ContractBase):
                 return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
             except Revert as e:
                 # TODO: debug me!
-                logger.debug(e)
+                logger.info('helper reverted: %s', e)
         pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
         if not pools:
             return None
