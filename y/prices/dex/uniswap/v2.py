@@ -13,6 +13,7 @@ import dank_mids
 from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
+from dank_mids.exceptions import Revert
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -519,7 +520,13 @@ class UniswapRouterV2(ContractBase):
             logger.debug("block %s is before %s deploy block")
             return 0
         if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
-            deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
+            try:
+                deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
+                logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+                return liquidity
+            except Revert as e:
+                # TODO: debug me!
+                logger.info('helper reverted on check_liquidity: %s', e)
         else:
             pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
             liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
