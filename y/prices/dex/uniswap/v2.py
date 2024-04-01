@@ -394,18 +394,19 @@ class UniswapRouterV2(ContractBase):
             except Exception as e:
                 if block is None:
                     raise e
-                elif "No data was returned - the call likely reverted" in str(e):
-                    pool_to_token_out = {}
-                    async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
-                        if token_in == token0:
-                            pool_to_token_out[pool] = token1
-                        elif token_in == token1:
-                            pool_to_token_out[pool] = token0
-                    if not pool_to_token_out:
-                        logger.info("no data returned and 0 pools when checking the long way!")
-                    else:
-                        logger.warning("no data returned but we have pools when checking the long way...")
-                    return pool_to_token_out
+                elif "No data was returned - the call likely reverted" not in str(e):
+                    raise e
+                pool_to_token_out = {}
+                async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
+                    if token_in == token0:
+                        pool_to_token_out[pool] = token1
+                    elif token_in == token1:
+                        pool_to_token_out[pool] = token0
+                if not pool_to_token_out:
+                    logger.info("no data returned and 0 pools when checking the long way!")
+                else:
+                    logger.warning("no data returned but we have pools when checking the long way...")
+                return pool_to_token_out
 
         else:
             pools = await self.__pools__
