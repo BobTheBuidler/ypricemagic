@@ -438,6 +438,11 @@ class UniswapRouterV2(ContractBase):
             except Revert as e:
                 # TODO: debug me!
                 logger.info('helper reverted for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
+            except ValueError as e:
+                if "out of gas" not in str(e):
+                    raise e
+                logger.info('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
+
         pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
         if not pools:
             return None
@@ -536,6 +541,11 @@ class UniswapRouterV2(ContractBase):
             except Revert as e:
                 # TODO: debug me!
                 logger.info('helper reverted on check_liquidity for %s at block %s: %s',token, block, e)
+            except ValueError as e:
+                if "out of gas" not in str(e):
+                    raise e
+                logger.info('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
+                
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
@@ -547,7 +557,7 @@ class UniswapRouterV2(ContractBase):
         try:
             return await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
         except Exception as e:
-            e.args = (*e.args, self.__repr__(), self.label, self.address)
+            e.args = (*e.args, self.__repr__(), token, block, ignore_pools)
             raise e
     
     @cached_property
