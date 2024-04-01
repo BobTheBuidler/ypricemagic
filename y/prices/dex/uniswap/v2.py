@@ -384,11 +384,11 @@ class UniswapRouterV2(ContractBase):
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
-    async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
+    async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
         if self._supports_uniswap_helper:
             pools = [
                 UniswapV2Pool(pool, asynchronous=self.asynchronous)
-                for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in)
+                for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
             ]
         else:
             pools = await self.__pools__
@@ -408,7 +408,16 @@ class UniswapRouterV2(ContractBase):
             # This will run out of gas if we use the helper so we bypass it with a known liquid pool
             pools = {UniswapV2Pool("0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True): "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
         else:
-            pools = await self.get_pools_for(token_address, sync=False)
+            try:
+                pools = await self.get_pools_for(token_address, sync=False)
+            except ValueError as e:
+                if 'out of gas' not in str(e):
+                    raise e
+                try:
+                    pools = await self.get_pools_for(token_address, block=block)
+                except Exception as e:
+                    e.args = (*e.args, self, token_address, block)
+                    raise e
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
             deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
@@ -428,7 +437,7 @@ class UniswapRouterV2(ContractBase):
                 return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
             except Revert as e:
                 # TODO: debug me!
-                logger.info('helper reverted: %s', e)
+                logger.info('helper reverted for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
         pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
         if not pools:
             return None
@@ -526,7 +535,7 @@ class UniswapRouterV2(ContractBase):
                 return liquidity
             except Revert as e:
                 # TODO: debug me!
-                logger.info('helper reverted on check_liquidity: %s', e)
+                logger.info('helper reverted on check_liquidity for %s at block %s: %s',token, block, e)
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
