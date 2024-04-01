@@ -386,10 +386,27 @@ class UniswapRouterV2(ContractBase):
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
         if self._supports_uniswap_helper:
-            pools = [
-                UniswapV2Pool(pool, asynchronous=self.asynchronous)
-                for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
-            ]
+            try:
+                pools = [
+                    UniswapV2Pool(pool, asynchronous=self.asynchronous)
+                    for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
+                ]
+            except Exception as e:
+                if block is None:
+                    raise e
+                elif "No data was returned - the call likely reverted" in str(e):
+                    pool_to_token_out = {}
+                    async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
+                        if token_in == token0:
+                            pool_to_token_out[pool] = token1
+                        elif token_in == token1:
+                            pool_to_token_out[pool] = token0
+                    if not pool_to_token_out:
+                        logger.info("no data returned and 0 pools when checking the long way!")
+                    else:
+                        logger.warning("no data returned but we have pools when checking the long way...")
+                    return pool_to_token_out
+
         else:
             pools = await self.__pools__
         pool_to_token_out = {}
@@ -417,7 +434,7 @@ class UniswapRouterV2(ContractBase):
                     pools = await self.get_pools_for(token_address, block=block)
                 except Exception as e:
                     e.args = (*e.args, self, token_address, block)
-                    raise e
+                    logger.exception(e)
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
             deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
