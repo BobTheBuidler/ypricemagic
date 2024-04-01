@@ -435,7 +435,7 @@ class UniswapRouterV2(ContractBase):
                     pools = await self.get_pools_for(token_address, block=block)
                 except Exception as e:
                     e.args = (*e.args, self, token_address, block)
-                    logger.exception(e)
+                    raise e
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
             deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
