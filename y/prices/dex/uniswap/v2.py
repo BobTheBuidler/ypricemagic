@@ -426,11 +426,12 @@ class UniswapRouterV2(ContractBase):
         else:
             try:
                 pools = await self.get_pools_for(token_address, sync=False)
-            except ValueError as e:
+            except Exception as e:
                 if 'out of gas' not in str(e) and not call_reverted(e):
+                    e.args = (*e.args, self, token_address, block)
                     raise e
                 try:
-                    pools = await self.get_pools_for(token_address, block=block)
+                    pools = await self.get_pools_for(token_address, block=block, sync=False)
                 except Exception as e:
                     e.args = (*e.args, self, token_address, block)
                     raise e
