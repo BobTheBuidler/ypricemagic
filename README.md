@@ -35,7 +35,7 @@ get_prices(tokens, block)
 You can also use ypricemagic asynchronously
 ```
 get_price(token, block, sync=False)
-
+```
 You can also import protocol specific modules. For example:
 ```
 from ypricemagic import uniswap
