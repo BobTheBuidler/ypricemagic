@@ -185,6 +185,10 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
 # this defaultdict prevents congestion in the contracts thread pool
 address_semaphores = defaultdict(lambda: a_sync.ThreadsafeSemaphore(1))
 
+class ContractEvents(ContractEvents):
+    def __getattr__(self, name: str) -> Events:
+        return super().__getattr__(name)
+    
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
@@ -201,6 +205,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         - build_name_async
         - get_code
     """
+    events: ContractEvents
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
 
     @eth_retry.auto_retry
