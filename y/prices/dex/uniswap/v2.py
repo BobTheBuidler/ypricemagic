@@ -13,6 +13,7 @@ import dank_mids
 from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
+from dank_mids.exceptions import Revert
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -383,12 +384,30 @@ class UniswapRouterV2(ContractBase):
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
-    async def get_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
+    async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
         if self._supports_uniswap_helper:
-            pools = [
-                UniswapV2Pool(pool, asynchronous=self.asynchronous)
-                for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in)
-            ]
+            try:
+                pools = [
+                    UniswapV2Pool(pool, asynchronous=self.asynchronous)
+                    for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
+                ]
+            except Exception as e:
+                if block is None:
+                    raise e
+                if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
+                    raise e
+                pool_to_token_out = {}
+                async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
+                    if token_in == token0:
+                        pool_to_token_out[pool] = token1
+                    elif token_in == token1:
+                        pool_to_token_out[pool] = token0
+                if not pool_to_token_out:
+                    logger.debug("no data returned and 0 pools when checking the long way!")
+                else:
+                    logger.debug("no data returned but we have pools when checking the long way...")
+                return pool_to_token_out
+
         else:
             pools = await self.__pools__
         pool_to_token_out = {}
@@ -407,7 +426,18 @@ class UniswapRouterV2(ContractBase):
             # This will run out of gas if we use the helper so we bypass it with a known liquid pool
             pools = {UniswapV2Pool("0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True): "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
         else:
-            pools = await self.get_pools_for(token_address, sync=False)
+            try:
+                pools = await self.get_pools_for(token_address, sync=False)
+            except Exception as e:
+                if 'out of gas' not in str(e) and not call_reverted(e):
+                    e.args = (*e.args, self, token_address, block)
+                    raise e
+                try:
+                    # if it fails with no block we will try once with a block before we fetch the long way
+                    pools = await self.get_pools_for(token_address, block=block, sync=False)
+                except Exception as e:
+                    e.args = (*e.args, self, token_address, block)
+                    raise e
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
             deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
@@ -422,21 +452,29 @@ class UniswapRouterV2(ContractBase):
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return await self.deepest_stable_pool(token_address, block, sync=False)
         if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
-            deepest_pool, deepest_pool_depth = await self.deepest_pool_for(token_address, block, ignore_pools=_ignore_pools)
-            return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
-        else:
-            pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
-            if not pools:
-                return None
-            liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
+            try:
+                deepest_pool, deepest_pool_depth = await self.deepest_pool_for(token_address, block, ignore_pools=_ignore_pools)
+                return None if deepest_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
+            except Revert as e:
+                # TODO: debug me!
+                logger.debug('helper reverted for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
+            except ValueError as e:
+                if "out of gas" not in str(e):
+                    raise e
+                logger.debug('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
 
-            deepest_pool = None
-            deepest_pool_balance = 0
-            for pool, depth in zip(pools, liquidity):
-                if depth and depth > deepest_pool_balance:
-                    deepest_pool = pool
-                    deepest_pool_balance = depth
-            return deepest_pool
+        pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
+        if not pools:
+            return None
+        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
+
+        deepest_pool = None
+        deepest_pool_balance = 0
+        for pool, depth in zip(pools, liquidity):
+            if depth and depth > deepest_pool_balance:
+                deepest_pool = pool
+                deepest_pool_balance = depth
+        return deepest_pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
@@ -516,10 +554,20 @@ class UniswapRouterV2(ContractBase):
             logger.debug("block %s is before %s deploy block")
             return 0
         if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
-            deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
-        else:
-            pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
-            liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+            try:
+                deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
+                logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+                return liquidity
+            except Revert as e:
+                # TODO: debug me!
+                logger.debug('helper reverted on check_liquidity for %s at block %s: %s',token, block, e)
+            except ValueError as e:
+                if "out of gas" not in str(e):
+                    raise e
+                logger.debug('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
+                
+        pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
+        liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
@@ -529,7 +577,7 @@ class UniswapRouterV2(ContractBase):
         try:
             return await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
         except Exception as e:
-            e.args = (*e.args, self.__repr__(), self.label, self.address)
+            e.args = (*e.args, self.__repr__(), token, block, ignore_pools)
             raise e
     
     @cached_property
