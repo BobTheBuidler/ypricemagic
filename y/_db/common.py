@@ -191,6 +191,7 @@ class Filter(_DiskCachedMixin[T, C]):
         """Override this as needed for different object types"""
         return obj['blockNumber']
     
+    @a_sync.ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         yielded = 0
