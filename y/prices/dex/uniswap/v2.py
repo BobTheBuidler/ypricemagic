@@ -394,7 +394,7 @@ class UniswapRouterV2(ContractBase):
             except Exception as e:
                 if block is None:
                     raise e
-                if not call_reverted(e) and "out of gas" not in str(e):
+                if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
                     raise e
                 pool_to_token_out = {}
                 async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
