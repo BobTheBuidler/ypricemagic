@@ -140,7 +140,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
 _E = TypeVar("_E", bound=_AsyncExecutorMixin)
     
 class Filter(_DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_sleep_time', '_task', '_verbose'
+    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_sleep_time', '_task', '_verbose', '__dict__'
     def __init__(
         self, 
         from_block: int,
@@ -191,6 +191,7 @@ class Filter(_DiskCachedMixin[T, C]):
         """Override this as needed for different object types"""
         return obj['blockNumber']
     
+    @a_sync.ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         yielded = 0
