@@ -392,7 +392,7 @@ class UniswapRouterV2(ContractBase):
                     for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
                 ]
             except Exception as e:
-                if block is None or call_reverted(e) or "out of gas" in str(e):
+                if block is None or not call_reverted(e) or "out of gas" not in str(e):
                     raise e
                 pool_to_token_out = {}
                 async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
