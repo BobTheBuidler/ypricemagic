@@ -163,14 +163,14 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
         # TODO make this properly async after extending for brownie ContractTx
         results = await fetch_multicall(
-            *[[quoter, 'quoteExactInput', self._encode_path(path), amount_in] for path in paths],
+            *[[quoter, 'quoteExactInput', _encode_path(path), amount_in] for path in paths],
             block=block,
             sync=False
         )
         logger.debug("results: %s", results)
         # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
         outputs = [
-            (amount if isinstance(amount, int) else amount[0]) / self._undo_fees(path) / 1e6
+            (amount if isinstance(amount, int) else amount[0]) / _undo_fees(path) / 1e6
             for amount, path in zip(results, paths)
             if amount
         ]
@@ -199,7 +199,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         
         token_in_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
         token_out_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
-        async for pool in self._pools_for_token(token, block):
+        async for pool in self.pools_for_token(token, block):
             if pool not in ignore_pools:
                 token_in_tasks[pool] = asyncio.create_task(pool.check_liquidity(token, block, sync=False))
                 token_out_tasks[pool] = asyncio.create_task(pool.check_liquidity(pool._get_token_out(token), block, sync=False))
@@ -227,19 +227,19 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
-    async def _pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
+    async def pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
         pools = await self.__pools__
         async for pool in pools.objects(to_block=block):
             if token in pool:
                 yield pool
 
-    def _encode_path(self, path) -> bytes:
-        types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
-        return encode_abi_packed(types, path)
+def _encode_path(path) -> bytes:
+    types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
+    return encode_abi_packed(types, path)
 
-    def _undo_fees(self, path) -> float:
-        fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
-        return math.prod(fees)
+def _undo_fees(path) -> float:
+    fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
+    return math.prod(fees)
 
 
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
