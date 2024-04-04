@@ -109,7 +109,7 @@ class YearnInspiredVault(ERC20):
             underlying = await probe(self.address, underlying_methods)
         except AssertionError:
             # special handler for some strange beefy vaults
-            if not (method := {"BeefyVaultV6Matic": "wmatic()", "BeefyVenusVaultBNB": "wbnb()"}.get(self.build_name)):
+            if not (method := {"BeefyVaultV6Matic": "wmatic()", "BeefyVenusVaultBNB": "wbnb()"}.get(await self.__build_name__)):
                 raise
             underlying = await raw_call(self.address, method, output='address', sync=False)
         
