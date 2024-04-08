@@ -583,7 +583,7 @@ class UniswapRouterV2(ContractBase):
     @cached_property
     def _supports_uniswap_helper(self) -> bool:
         """returns True if our uniswap helper contract is supported, False if not"""
-        return FACTORY_HELPER and self.label and self.label not in {"zipswap"}
+        return chain.id != Network.Mainnet and FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
 
     def _smol_brain_path_selector(self, token_in: AddressOrContract, token_out: AddressOrContract, paired_against: AddressOrContract) -> Path:
