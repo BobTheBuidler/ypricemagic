@@ -119,15 +119,15 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
     def __contains__(self, asset) -> bool:
         return chain.id in addresses
+    
+    @cached_property
+    def loaded(self) -> a_sync.Event:
+        return a_sync.Event(name=self)
 
     @a_sync.aka.property
     async def factory(self) -> Contract:
         return await Contract.coroutine(addresses[chain.id]['factory'])
     __factory__: HiddenMethodDescriptor[Self, Contract]
-    
-    @cached_property
-    def loaded(self) -> a_sync.Event:
-        return a_sync.Event(name=self)
     
     @a_sync.aka.cached_property
     async def quoter(self) -> Contract:
@@ -137,6 +137,19 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         except ContractNotVerified:
             return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
     __quoter__: HiddenMethodDescriptor[Self, Contract]
+
+    @a_sync.aka.cached_property
+    @stuck_coro_debugger
+    async def pools(self) -> List[UniswapV3Pool]:
+        factory = await self.__factory__
+        return UniV3Pools(factory, asynchronous=self.asynchronous)
+    __pools__: HiddenMethodDescriptor[Self, "UniV3Pools"]
+
+    async def pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
+        pools = await self.__pools__
+        async for pool in pools.objects(to_block=block):
+            if token in pool:
+                yield pool
     
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
@@ -176,13 +189,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         ]
         logger.debug("outputs: %s", outputs)
         return UsdPrice(max(outputs)) if outputs else None
-
-    @a_sync.aka.cached_property
-    @stuck_coro_debugger
-    async def pools(self) -> List[UniswapV3Pool]:
-        factory = await self.__factory__
-        return UniV3Pools(factory, asynchronous=self.asynchronous)
-    __pools__: HiddenMethodDescriptor[Self, "UniV3Pools"]
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
@@ -226,12 +232,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         liquidity = max(await asyncio.gather(*token_in_tasks.values())) if token_in_tasks else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
-
-    async def pools_for_token(self, token: Address, block: Block) -> AsyncIterator[UniswapV3Pool]:
-        pools = await self.__pools__
-        async for pool in pools.objects(to_block=block):
-            if token in pool:
-                yield pool
 
 def _encode_path(path) -> bytes:
     types = [type for _, type in zip(path, cycle(['address', 'uint24']))]

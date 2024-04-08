@@ -67,6 +67,11 @@ class BalancerV2Vault(ContractBase):
     async def list_pools(self, block: Optional[Block] = None) -> List["BalancerV2Pool"]:
         return [pool async for pool in self._events.events(to_block=block)]
 
+    async def pools_for_token(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
+        async for pool, info in a_sync.map(lambda pool: pool.tokens(block=block, sync=False), self._events.events(to_block=block)):
+            if token in info:
+                yield pool
+                
     @a_sync_cache
     @stuck_coro_debugger
     async def get_pool_tokens(self, pool_id: HexBytes, block: Optional[Block] = None):
@@ -87,7 +92,7 @@ class BalancerV2Vault(ContractBase):
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional["BalancerV2Pool"], int]:
         logger = get_price_logger(token_address, block, 'balancer.v2')
         deepest_pool, deepest_balance = None, 0
-        async for pool in self._yield_pools_for(token_address, block=block):
+        async for pool in self.pools_for_token(token_address, block=block):
             info: Dict[ERC20, WeiBalance]
             if info := await pool.get_balances(block=block, sync=False):
                 pool_balance = info[token_address].balance
@@ -95,11 +100,6 @@ class BalancerV2Vault(ContractBase):
                     deepest_pool = pool
         logger.debug("deepest pool %s balance %s", deepest_pool, deepest_balance)
         return deepest_pool, deepest_balance
-
-    async def _yield_pools_for(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
-        async for pool, info in a_sync.map(lambda pool: pool.tokens(block=block, sync=False), self._events.events(to_block=block)):
-            if token in info:
-                yield pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     __slots__ = "asynchronous", 
