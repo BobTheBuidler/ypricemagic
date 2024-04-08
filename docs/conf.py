@@ -48,7 +48,7 @@ autodoc_default_options = {
     'inherited-members': True,
     'member-order': 'groupwise',
     # hide private methods that aren't relevant to us here
-    #'exclude-members': '_abc_impl,_fget,_fset,_fdel,_ASyncSingletonMeta__instances,_ASyncSingletonMeta__lock'
+    'exclude-members': '_abc_impl,__a_sync_default_mode__,__a_sync_instance_will_be_async__,__a_sync_should_await__,__a_sync_should_await_from_kwargs__,__a_sync_flag_name__,__a_sync_flag_value__,__a_sync_instance_should_await__,__a_sync_modifiers__'
 }
 autodoc_typehints = "description"
 # Don't show class signature with the class' name.
