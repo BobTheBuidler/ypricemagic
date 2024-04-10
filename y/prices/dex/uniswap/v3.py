@@ -10,7 +10,10 @@ import a_sync
 from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
-from eth_abi.packed import encode_abi_packed
+try:
+    from eth_abi.packed import encode_packed
+except ImportError:
+    from eth_abi.packed import encode_abi_packed as encode_packed
 from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -235,7 +238,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
 def _encode_path(path) -> bytes:
     types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
-    return encode_abi_packed(types, path)
+    return encode_packed(types, path)
 
 def _undo_fees(path) -> float:
     fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
