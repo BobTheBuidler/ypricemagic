@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.classes package" href="y.classes.html" />
+    <link rel="prev" title="y" href="modules.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,631 +44,94 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
-<li><a class="reference internal" href="#module-y.constants">y.constants module</a><ul>
-<li><a class="reference internal" href="#y.constants.WRAPPED_GAS_COIN"><code class="docutils literal notranslate"><span class="pre">WRAPPED_GAS_COIN</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">y package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.contracts">y.contracts module</a><ul>
-<li><a class="reference internal" href="#y.contracts.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a><ul>
-<li><a class="reference internal" href="#y.contracts.Contract.__eq__"><code class="docutils literal notranslate"><span class="pre">Contract.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__get_method_object__"><code class="docutils literal notranslate"><span class="pre">Contract.__get_method_object__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__getattribute__"><code class="docutils literal notranslate"><span class="pre">Contract.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__init_from_abi__"><code class="docutils literal notranslate"><span class="pre">Contract.__init_from_abi__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__repr__"><code class="docutils literal notranslate"><span class="pre">Contract.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__setattr__"><code class="docutils literal notranslate"><span class="pre">Contract.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__str__"><code class="docutils literal notranslate"><span class="pre">Contract.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.coroutine"><code class="docutils literal notranslate"><span class="pre">Contract.coroutine()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.decode_input"><code class="docutils literal notranslate"><span class="pre">Contract.decode_input()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.from_abi"><code class="docutils literal notranslate"><span class="pre">Contract.from_abi()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.from_ethpm"><code class="docutils literal notranslate"><span class="pre">Contract.from_ethpm()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.from_explorer"><code class="docutils literal notranslate"><span class="pre">Contract.from_explorer()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.get_code"><code class="docutils literal notranslate"><span class="pre">Contract.get_code()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.get_method"><code class="docutils literal notranslate"><span class="pre">Contract.get_method()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.get_method_object"><code class="docutils literal notranslate"><span class="pre">Contract.get_method_object()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.get_solc_version"><code class="docutils literal notranslate"><span class="pre">Contract.get_solc_version()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.has_method"><code class="docutils literal notranslate"><span class="pre">Contract.has_method()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.has_methods"><code class="docutils literal notranslate"><span class="pre">Contract.has_methods()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.info"><code class="docutils literal notranslate"><span class="pre">Contract.info()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.remove_deployment"><code class="docutils literal notranslate"><span class="pre">Contract.remove_deployment()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.set_alias"><code class="docutils literal notranslate"><span class="pre">Contract.set_alias()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.__method_names__"><code class="docutils literal notranslate"><span class="pre">Contract.__method_names__</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.abi"><code class="docutils literal notranslate"><span class="pre">Contract.abi</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.alias"><code class="docutils literal notranslate"><span class="pre">Contract.alias</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract.events"><code class="docutils literal notranslate"><span class="pre">Contract.events</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.constants">y.constants module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.WRAPPED_GAS_COIN"><code class="docutils literal notranslate"><span class="pre">WRAPPED_GAS_COIN</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents"><code class="docutils literal notranslate"><span class="pre">ContractEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.__getattr__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__getattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.__getitem__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.__hasattr__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__hasattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.__init__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.get_sequence"><code class="docutils literal notranslate"><span class="pre">ContractEvents.get_sequence()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.listen"><code class="docutils literal notranslate"><span class="pre">ContractEvents.listen()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.ContractEvents.subscribe"><code class="docutils literal notranslate"><span class="pre">ContractEvents.subscribe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.contracts">y.contracts module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.ContractEvents"><code class="docutils literal notranslate"><span class="pre">ContractEvents</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.Contract_erc20"><code class="docutils literal notranslate"><span class="pre">Contract_erc20()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.Contract_with_erc20_fallback"><code class="docutils literal notranslate"><span class="pre">Contract_with_erc20_fallback()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.has_methods"><code class="docutils literal notranslate"><span class="pre">has_methods()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.probe"><code class="docutils literal notranslate"><span class="pre">probe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.contracts.proxy_implementation"><code class="docutils literal notranslate"><span class="pre">proxy_implementation()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#y.contracts.Contract_erc20"><code class="docutils literal notranslate"><span class="pre">Contract_erc20()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.Contract_with_erc20_fallback"><code class="docutils literal notranslate"><span class="pre">Contract_with_erc20_fallback()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.has_methods"><code class="docutils literal notranslate"><span class="pre">has_methods()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.probe"><code class="docutils literal notranslate"><span class="pre">probe()</span></code></a></li>
-<li><a class="reference internal" href="#y.contracts.proxy_implementation"><code class="docutils literal notranslate"><span class="pre">proxy_implementation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.convert">y.convert module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.convert.to_address"><code class="docutils literal notranslate"><span class="pre">to_address()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.convert">y.convert module</a><ul>
-<li><a class="reference internal" href="#y.convert.to_address"><code class="docutils literal notranslate"><span class="pre">to_address()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.datatypes">y.datatypes module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.datatypes.UsdPrice"><code class="docutils literal notranslate"><span class="pre">UsdPrice</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.datatypes.UsdValue"><code class="docutils literal notranslate"><span class="pre">UsdValue</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.datatypes">y.datatypes module</a><ul>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice"><code class="docutils literal notranslate"><span class="pre">UsdPrice</span></code></a><ul>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__abs__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__abs__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__add__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__add__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__bool__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__bool__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__ceil__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__ceil__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__divmod__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__divmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__eq__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__float__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__float__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__floor__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__floor__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__floordiv__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__floordiv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__format__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__format__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__ge__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__ge__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__getattribute__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__getformat__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__getformat__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__getnewargs__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__getnewargs__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__gt__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__gt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__init__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__int__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__int__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__le__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__le__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__lt__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__lt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__mod__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__mod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__mul__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__mul__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__ne__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__ne__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__neg__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__neg__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__new__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__pos__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__pos__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__pow__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__pow__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__radd__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__radd__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rdivmod__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rdivmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__repr__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rfloordiv__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rfloordiv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rmod__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rmul__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rmul__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__round__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__round__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rpow__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rpow__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rsub__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rsub__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__rtruediv__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__rtruediv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__setformat__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__setformat__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__str__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__sub__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__sub__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__truediv__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__truediv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.__trunc__"><code class="docutils literal notranslate"><span class="pre">UsdPrice.__trunc__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.as_integer_ratio"><code class="docutils literal notranslate"><span class="pre">UsdPrice.as_integer_ratio()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.conjugate"><code class="docutils literal notranslate"><span class="pre">UsdPrice.conjugate()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.fromhex"><code class="docutils literal notranslate"><span class="pre">UsdPrice.fromhex()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.hex"><code class="docutils literal notranslate"><span class="pre">UsdPrice.hex()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.is_integer"><code class="docutils literal notranslate"><span class="pre">UsdPrice.is_integer()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.imag"><code class="docutils literal notranslate"><span class="pre">UsdPrice.imag</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdPrice.real"><code class="docutils literal notranslate"><span class="pre">UsdPrice.real</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.decorators">y.decorators module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.decorators.continue_on_revert"><code class="docutils literal notranslate"><span class="pre">continue_on_revert()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.decorators.stuck_coro_debugger"><code class="docutils literal notranslate"><span class="pre">stuck_coro_debugger()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue"><code class="docutils literal notranslate"><span class="pre">UsdValue</span></code></a><ul>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__abs__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__abs__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__add__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__add__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__bool__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__bool__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__ceil__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__ceil__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__divmod__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__divmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__eq__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__float__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__float__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__floor__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__floor__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__floordiv__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__floordiv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__format__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__format__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__ge__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__ge__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__getattribute__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__getformat__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__getformat__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__getnewargs__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__getnewargs__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__gt__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__gt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__init__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__int__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__int__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__le__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__le__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__lt__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__lt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__mod__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__mod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__mul__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__mul__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__ne__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__ne__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__neg__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__neg__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__new__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__pos__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__pos__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__pow__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__pow__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__radd__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__radd__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rdivmod__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rdivmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__repr__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rfloordiv__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rfloordiv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rmod__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rmul__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rmul__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__round__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__round__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rpow__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rpow__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rsub__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rsub__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__rtruediv__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__rtruediv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__setformat__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__setformat__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__str__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__sub__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__sub__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__truediv__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__truediv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.__trunc__"><code class="docutils literal notranslate"><span class="pre">UsdValue.__trunc__()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.as_integer_ratio"><code class="docutils literal notranslate"><span class="pre">UsdValue.as_integer_ratio()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.conjugate"><code class="docutils literal notranslate"><span class="pre">UsdValue.conjugate()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.fromhex"><code class="docutils literal notranslate"><span class="pre">UsdValue.fromhex()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.hex"><code class="docutils literal notranslate"><span class="pre">UsdValue.hex()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.is_integer"><code class="docutils literal notranslate"><span class="pre">UsdValue.is_integer()</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.imag"><code class="docutils literal notranslate"><span class="pre">UsdValue.imag</span></code></a></li>
-<li><a class="reference internal" href="#y.datatypes.UsdValue.real"><code class="docutils literal notranslate"><span class="pre">UsdValue.real</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.exceptions">y.exceptions module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.CallReverted"><code class="docutils literal notranslate"><span class="pre">CallReverted</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.CalldataPreparationError"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.CantFetchParam"><code class="docutils literal notranslate"><span class="pre">CantFetchParam</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.CantFindSwapPath"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.ContractNotVerified"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.NoBlockFound"><code class="docutils literal notranslate"><span class="pre">NoBlockFound</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.NoProxyImplementation"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.NodeNotSynced"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.NonStandardERC20"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.PriceError"><code class="docutils literal notranslate"><span class="pre">PriceError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.TokenNotFound"><code class="docutils literal notranslate"><span class="pre">TokenNotFound</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.UnsupportedNetwork"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.yPriceMagicError"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.call_reverted"><code class="docutils literal notranslate"><span class="pre">call_reverted()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.continue_if_call_reverted"><code class="docutils literal notranslate"><span class="pre">continue_if_call_reverted()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.contract_not_verified"><code class="docutils literal notranslate"><span class="pre">contract_not_verified()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.out_of_gas"><code class="docutils literal notranslate"><span class="pre">out_of_gas()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.networks">y.networks module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.networks.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.decorators">y.decorators module</a><ul>
-<li><a class="reference internal" href="#y.decorators.continue_on_revert"><code class="docutils literal notranslate"><span class="pre">continue_on_revert()</span></code></a></li>
-<li><a class="reference internal" href="#y.decorators.stuck_coro_debugger"><code class="docutils literal notranslate"><span class="pre">stuck_coro_debugger()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y.time">y.time module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.time.UnixTimestamp"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.time.check_node"><code class="docutils literal notranslate"><span class="pre">check_node()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.time.check_node_async"><code class="docutils literal notranslate"><span class="pre">check_node_async()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.time.closest_block_after_timestamp"><code class="docutils literal notranslate"><span class="pre">closest_block_after_timestamp()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.erc20">y.erc20 module</a></li>
-<li><a class="reference internal" href="#module-y.exceptions">y.exceptions module</a><ul>
-<li><a class="reference internal" href="#y.exceptions.CallReverted"><code class="docutils literal notranslate"><span class="pre">CallReverted</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__delattr__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__getattribute__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__init__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__new__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__reduce__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__repr__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__setattr__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__setstate__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__str__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.with_traceback"><code class="docutils literal notranslate"><span class="pre">CallReverted.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__cause__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__context__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.__traceback__"><code class="docutils literal notranslate"><span class="pre">CallReverted.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CallReverted.args"><code class="docutils literal notranslate"><span class="pre">CallReverted.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__delattr__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__getattribute__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__init__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__new__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__reduce__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__repr__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__setattr__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__setstate__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__str__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.with_traceback"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__cause__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__context__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.__traceback__"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CalldataPreparationError.args"><code class="docutils literal notranslate"><span class="pre">CalldataPreparationError.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam"><code class="docutils literal notranslate"><span class="pre">CantFetchParam</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__delattr__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__getattribute__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__init__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__new__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__reduce__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__repr__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__setattr__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__setstate__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__str__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.with_traceback"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__cause__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__context__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.__traceback__"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFetchParam.args"><code class="docutils literal notranslate"><span class="pre">CantFetchParam.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__delattr__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__getattribute__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__init__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__new__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__reduce__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__repr__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__setattr__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__setstate__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__str__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.with_traceback"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__cause__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__context__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.__traceback__"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.CantFindSwapPath.args"><code class="docutils literal notranslate"><span class="pre">CantFindSwapPath.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__delattr__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__getattribute__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__init__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__new__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__reduce__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__repr__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__setattr__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__setstate__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__str__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.with_traceback"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__cause__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__context__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.__traceback__"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.ContractNotVerified.args"><code class="docutils literal notranslate"><span class="pre">ContractNotVerified.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__delattr__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__getattribute__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__init__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__new__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__reduce__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__repr__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__setattr__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__setstate__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__str__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.with_traceback"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__cause__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__context__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.__traceback__"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.MessedUpBrownieContract.args"><code class="docutils literal notranslate"><span class="pre">MessedUpBrownieContract.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound"><code class="docutils literal notranslate"><span class="pre">NoBlockFound</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__delattr__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__getattribute__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__init__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__new__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__reduce__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__repr__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__setattr__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__setstate__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__str__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.with_traceback"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__cause__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__context__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.__traceback__"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoBlockFound.args"><code class="docutils literal notranslate"><span class="pre">NoBlockFound.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__delattr__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__getattribute__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__init__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__new__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__reduce__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__repr__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__setattr__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__setstate__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__str__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.with_traceback"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__cause__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__context__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.__traceback__"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NoProxyImplementation.args"><code class="docutils literal notranslate"><span class="pre">NoProxyImplementation.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__delattr__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__getattribute__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__init__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__new__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__reduce__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__repr__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__setattr__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__setstate__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__str__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.with_traceback"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__cause__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__context__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.__traceback__"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NodeNotSynced.args"><code class="docutils literal notranslate"><span class="pre">NodeNotSynced.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__delattr__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__getattribute__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__init__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__new__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__reduce__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__repr__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__setattr__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__setstate__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__str__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.with_traceback"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__cause__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__context__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.__traceback__"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NonStandardERC20.args"><code class="docutils literal notranslate"><span class="pre">NonStandardERC20.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__delattr__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__getattribute__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__init__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__new__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__reduce__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__setattr__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__setstate__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__str__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.with_traceback"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__cause__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__context__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.__traceback__"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotABalancerV2Pool.args"><code class="docutils literal notranslate"><span class="pre">NotABalancerV2Pool.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__delattr__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__getattribute__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__init__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__new__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__reduce__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__setattr__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__setstate__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__str__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.with_traceback"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__cause__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__context__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.__traceback__"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.NotAUniswapV2Pool.args"><code class="docutils literal notranslate"><span class="pre">NotAUniswapV2Pool.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.PriceError"><code class="docutils literal notranslate"><span class="pre">PriceError</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__delattr__"><code class="docutils literal notranslate"><span class="pre">PriceError.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__getattribute__"><code class="docutils literal notranslate"><span class="pre">PriceError.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__init__"><code class="docutils literal notranslate"><span class="pre">PriceError.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__new__"><code class="docutils literal notranslate"><span class="pre">PriceError.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__reduce__"><code class="docutils literal notranslate"><span class="pre">PriceError.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__repr__"><code class="docutils literal notranslate"><span class="pre">PriceError.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__setattr__"><code class="docutils literal notranslate"><span class="pre">PriceError.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__setstate__"><code class="docutils literal notranslate"><span class="pre">PriceError.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__str__"><code class="docutils literal notranslate"><span class="pre">PriceError.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.with_traceback"><code class="docutils literal notranslate"><span class="pre">PriceError.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__cause__"><code class="docutils literal notranslate"><span class="pre">PriceError.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__context__"><code class="docutils literal notranslate"><span class="pre">PriceError.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">PriceError.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.__traceback__"><code class="docutils literal notranslate"><span class="pre">PriceError.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.PriceError.args"><code class="docutils literal notranslate"><span class="pre">PriceError.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound"><code class="docutils literal notranslate"><span class="pre">TokenNotFound</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__delattr__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__getattribute__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__init__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__new__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__reduce__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__repr__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__setattr__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__setstate__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__str__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.with_traceback"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__cause__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__context__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.__traceback__"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.TokenNotFound.args"><code class="docutils literal notranslate"><span class="pre">TokenNotFound.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__delattr__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__getattribute__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__init__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__new__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__reduce__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__repr__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__setattr__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__setstate__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__str__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.with_traceback"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__cause__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__context__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.__traceback__"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.UnsupportedNetwork.args"><code class="docutils literal notranslate"><span class="pre">UnsupportedNetwork.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a><ul>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__delattr__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__getattribute__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__init__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__new__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__reduce__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__reduce__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__repr__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__setattr__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__setstate__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__setstate__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__str__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.with_traceback"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.with_traceback()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__cause__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__cause__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__context__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__suppress_context__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__suppress_context__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.__traceback__"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.__traceback__</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.yPriceMagicError.args"><code class="docutils literal notranslate"><span class="pre">yPriceMagicError.args</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.exceptions.call_reverted"><code class="docutils literal notranslate"><span class="pre">call_reverted()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.continue_if_call_reverted"><code class="docutils literal notranslate"><span class="pre">continue_if_call_reverted()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.contract_not_verified"><code class="docutils literal notranslate"><span class="pre">contract_not_verified()</span></code></a></li>
-<li><a class="reference internal" href="#y.exceptions.out_of_gas"><code class="docutils literal notranslate"><span class="pre">out_of_gas()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.networks">y.networks module</a><ul>
-<li><a class="reference internal" href="#y.networks.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
-<li><a class="reference internal" href="#y.networks.Network.label"><code class="docutils literal notranslate"><span class="pre">Network.label()</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.name"><code class="docutils literal notranslate"><span class="pre">Network.name()</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.printable"><code class="docutils literal notranslate"><span class="pre">Network.printable()</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Arbitrum"><code class="docutils literal notranslate"><span class="pre">Network.Arbitrum</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Aurora"><code class="docutils literal notranslate"><span class="pre">Network.Aurora</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Avalanche"><code class="docutils literal notranslate"><span class="pre">Network.Avalanche</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Base"><code class="docutils literal notranslate"><span class="pre">Network.Base</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.BinanceSmartChain"><code class="docutils literal notranslate"><span class="pre">Network.BinanceSmartChain</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Cronos"><code class="docutils literal notranslate"><span class="pre">Network.Cronos</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Fantom"><code class="docutils literal notranslate"><span class="pre">Network.Fantom</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Gnosis"><code class="docutils literal notranslate"><span class="pre">Network.Gnosis</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Harmony"><code class="docutils literal notranslate"><span class="pre">Network.Harmony</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Heco"><code class="docutils literal notranslate"><span class="pre">Network.Heco</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Mainnet"><code class="docutils literal notranslate"><span class="pre">Network.Mainnet</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Moonriver"><code class="docutils literal notranslate"><span class="pre">Network.Moonriver</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.OKEx"><code class="docutils literal notranslate"><span class="pre">Network.OKEx</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Optimism"><code class="docutils literal notranslate"><span class="pre">Network.Optimism</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.Polygon"><code class="docutils literal notranslate"><span class="pre">Network.Polygon</span></code></a></li>
-<li><a class="reference internal" href="#y.networks.Network.xDai"><code class="docutils literal notranslate"><span class="pre">Network.xDai</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.time">y.time module</a><ul>
-<li><a class="reference internal" href="#y.time.UnixTimestamp"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp</span></code></a><ul>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__abs__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__abs__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__add__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__add__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__and__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__and__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__bool__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__bool__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__ceil__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__ceil__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__divmod__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__divmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__eq__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__float__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__float__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__floor__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__floor__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__floordiv__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__floordiv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__format__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__format__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__ge__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__ge__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__getattribute__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__getnewargs__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__getnewargs__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__gt__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__gt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__index__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__index__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__int__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__int__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__invert__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__invert__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__le__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__le__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__lshift__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__lshift__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__lt__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__lt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__mod__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__mod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__mul__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__mul__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__ne__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__ne__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__neg__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__neg__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__new__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__or__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__or__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__pos__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__pos__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__pow__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__pow__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__radd__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__radd__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rand__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rand__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rdivmod__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rdivmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__repr__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rfloordiv__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rfloordiv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rlshift__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rlshift__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rmod__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rmod__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rmul__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rmul__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__ror__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__ror__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__round__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__round__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rpow__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rpow__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rrshift__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rrshift__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rshift__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rshift__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rsub__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rsub__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rtruediv__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rtruediv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__rxor__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__rxor__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__sizeof__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__sizeof__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__sub__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__sub__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__truediv__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__truediv__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__trunc__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__trunc__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.__xor__"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.__xor__()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.as_integer_ratio"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.as_integer_ratio()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.bit_count"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.bit_count()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.bit_length"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.bit_length()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.conjugate"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.conjugate()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.from_bytes"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.from_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.to_bytes"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.to_bytes()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.denominator"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.denominator</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.imag"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.imag</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.numerator"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.numerator</span></code></a></li>
-<li><a class="reference internal" href="#y.time.UnixTimestamp.real"><code class="docutils literal notranslate"><span class="pre">UnixTimestamp.real</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.time.check_node"><code class="docutils literal notranslate"><span class="pre">check_node()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.check_node_async"><code class="docutils literal notranslate"><span class="pre">check_node_async()</span></code></a></li>
-<li><a class="reference internal" href="#y.time.closest_block_after_timestamp"><code class="docutils literal notranslate"><span class="pre">closest_block_after_timestamp()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y">Module contents</a><ul>
-<li><a class="reference internal" href="#y.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a><ul>
-<li><a class="reference internal" href="#y.Contract.__eq__"><code class="docutils literal notranslate"><span class="pre">Contract.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__get_method_object__"><code class="docutils literal notranslate"><span class="pre">Contract.__get_method_object__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__getattribute__"><code class="docutils literal notranslate"><span class="pre">Contract.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__init_from_abi__"><code class="docutils literal notranslate"><span class="pre">Contract.__init_from_abi__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__repr__"><code class="docutils literal notranslate"><span class="pre">Contract.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__setattr__"><code class="docutils literal notranslate"><span class="pre">Contract.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__str__"><code class="docutils literal notranslate"><span class="pre">Contract.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.coroutine"><code class="docutils literal notranslate"><span class="pre">Contract.coroutine()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.decode_input"><code class="docutils literal notranslate"><span class="pre">Contract.decode_input()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.from_abi"><code class="docutils literal notranslate"><span class="pre">Contract.from_abi()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.from_ethpm"><code class="docutils literal notranslate"><span class="pre">Contract.from_ethpm()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.from_explorer"><code class="docutils literal notranslate"><span class="pre">Contract.from_explorer()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.get_code"><code class="docutils literal notranslate"><span class="pre">Contract.get_code()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.get_method"><code class="docutils literal notranslate"><span class="pre">Contract.get_method()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.get_method_object"><code class="docutils literal notranslate"><span class="pre">Contract.get_method_object()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.get_solc_version"><code class="docutils literal notranslate"><span class="pre">Contract.get_solc_version()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.has_method"><code class="docutils literal notranslate"><span class="pre">Contract.has_method()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.has_methods"><code class="docutils literal notranslate"><span class="pre">Contract.has_methods()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.info"><code class="docutils literal notranslate"><span class="pre">Contract.info()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.remove_deployment"><code class="docutils literal notranslate"><span class="pre">Contract.remove_deployment()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.set_alias"><code class="docutils literal notranslate"><span class="pre">Contract.set_alias()</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.__method_names__"><code class="docutils literal notranslate"><span class="pre">Contract.__method_names__</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.abi"><code class="docutils literal notranslate"><span class="pre">Contract.abi</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.alias"><code class="docutils literal notranslate"><span class="pre">Contract.alias</span></code></a></li>
-<li><a class="reference internal" href="#y.Contract.events"><code class="docutils literal notranslate"><span class="pre">Contract.events</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a><ul>
-<li><a class="reference internal" href="#y.Network.label"><code class="docutils literal notranslate"><span class="pre">Network.label()</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.name"><code class="docutils literal notranslate"><span class="pre">Network.name()</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.printable"><code class="docutils literal notranslate"><span class="pre">Network.printable()</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Arbitrum"><code class="docutils literal notranslate"><span class="pre">Network.Arbitrum</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Aurora"><code class="docutils literal notranslate"><span class="pre">Network.Aurora</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Avalanche"><code class="docutils literal notranslate"><span class="pre">Network.Avalanche</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Base"><code class="docutils literal notranslate"><span class="pre">Network.Base</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.BinanceSmartChain"><code class="docutils literal notranslate"><span class="pre">Network.BinanceSmartChain</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Cronos"><code class="docutils literal notranslate"><span class="pre">Network.Cronos</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Fantom"><code class="docutils literal notranslate"><span class="pre">Network.Fantom</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Gnosis"><code class="docutils literal notranslate"><span class="pre">Network.Gnosis</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Harmony"><code class="docutils literal notranslate"><span class="pre">Network.Harmony</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Heco"><code class="docutils literal notranslate"><span class="pre">Network.Heco</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Mainnet"><code class="docutils literal notranslate"><span class="pre">Network.Mainnet</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Moonriver"><code class="docutils literal notranslate"><span class="pre">Network.Moonriver</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.OKEx"><code class="docutils literal notranslate"><span class="pre">Network.OKEx</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Optimism"><code class="docutils literal notranslate"><span class="pre">Network.Optimism</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.Polygon"><code class="docutils literal notranslate"><span class="pre">Network.Polygon</span></code></a></li>
-<li><a class="reference internal" href="#y.Network.xDai"><code class="docutils literal notranslate"><span class="pre">Network.xDai</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.has_methods"><code class="docutils literal notranslate"><span class="pre">has_methods()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-y">Module contents</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.Network"><code class="docutils literal notranslate"><span class="pre">Network</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.has_methods"><code class="docutils literal notranslate"><span class="pre">has_methods()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -681,6 +146,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
       <li class="breadcrumb-item active">y package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.rst.txt" rel="nofollow"> View page source</a>
@@ -1208,7 +674,7 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dl class="py class">
 <dt class="sig sig-object py" id="y.contracts.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="headerlink" href="#y.contracts.Contract" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a></p>
 <p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
 1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
 2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
@@ -1255,7 +721,7 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractCall" title="(in dank_mids)"><em>DankContractCall</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractTx" title="(in dank_mids)"><em>DankContractTx</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankOverloadedMethod" title="(in dank_mids)"><em>DankOverloadedMethod</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1269,7 +735,7 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractCall" title="(in dank_mids)"><em>DankContractCall</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractTx" title="(in dank_mids)"><em>DankContractTx</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankOverloadedMethod" title="(in dank_mids)"><em>DankOverloadedMethod</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1455,7 +921,7 @@ will be performed using this account.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1477,7 +943,7 @@ performed using this account.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1637,6 +1103,16 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.events">
 <span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#y.contracts.ContractEvents" title="y.contracts.ContractEvents"><span class="pre">ContractEvents</span></a></em><a class="headerlink" href="#y.contracts.Contract.events" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.contracts.Contract.signatures">
+<span class="sig-name descname"><span class="pre">signatures</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Method</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Signature</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.contracts.Contract.signatures" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.contracts.Contract.topics">
+<span class="sig-name descname"><span class="pre">topics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.contracts.Contract.topics" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -4744,7 +4220,7 @@ is raised.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="y.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="headerlink" href="#y.Contract" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></p>
+<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a></p>
 <p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
 1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
 2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
@@ -4791,7 +4267,7 @@ is raised.</p>
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractCall" title="(in dank_mids)"><em>DankContractCall</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractTx" title="(in dank_mids)"><em>DankContractTx</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankOverloadedMethod" title="(in dank_mids)"><em>DankOverloadedMethod</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4805,7 +4281,7 @@ is raised.</p>
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractCall" title="(in dank_mids)"><em>DankContractCall</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractTx" title="(in dank_mids)"><em>DankContractTx</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankOverloadedMethod" title="(in dank_mids)"><em>DankOverloadedMethod</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4991,7 +4467,7 @@ will be performed using this account.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -5013,7 +4489,7 @@ performed using this account.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -5175,6 +4651,16 @@ object in future sessions.</p>
 <span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#y.contracts.ContractEvents" title="y.contracts.ContractEvents"><span class="pre">ContractEvents</span></a></em><a class="headerlink" href="#y.Contract.events" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.Contract.signatures">
+<span class="sig-name descname"><span class="pre">signatures</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Method</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Signature</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.Contract.signatures" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.Contract.topics">
+<span class="sig-name descname"><span class="pre">topics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.Contract.topics" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
@@ -5328,7 +4814,10 @@ Pass <cite>at_least_one=True</cite> to only verify a contract has at least one o
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="modules.html" class="btn btn-neutral float-left" title="y" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.classes.html" class="btn btn-neutral float-right" title="y.classes package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.prices.dex package" href="y.prices.dex.html" />
+    <link rel="prev" title="y.interfaces.uniswap package" href="y.interfaces.uniswap.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,173 +44,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.prices package</a><ul>
-<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.prices.band">y.prices.band module</a><ul>
-<li><a class="reference internal" href="#y.prices.band.Band"><code class="docutils literal notranslate"><span class="pre">Band</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.band.Band.__contains__"><code class="docutils literal notranslate"><span class="pre">Band.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.band.Band.__init__"><code class="docutils literal notranslate"><span class="pre">Band.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.band.Band.__oracle__"><code class="docutils literal notranslate"><span class="pre">Band.__oracle__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.band.Band.get_price"><code class="docutils literal notranslate"><span class="pre">Band.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.band.Band.oracle"><code class="docutils literal notranslate"><span class="pre">Band.oracle</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.prices.chainlink">y.prices.chainlink module</a><ul>
-<li><a class="reference internal" href="#y.prices.chainlink.Chainlink"><code class="docutils literal notranslate"><span class="pre">Chainlink</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.chainlink.Chainlink.__init__"><code class="docutils literal notranslate"><span class="pre">Chainlink.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Chainlink.get_feed"><code class="docutils literal notranslate"><span class="pre">Chainlink.get_feed</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Chainlink.get_price"><code class="docutils literal notranslate"><span class="pre">Chainlink.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Chainlink.has_feed"><code class="docutils literal notranslate"><span class="pre">Chainlink.has_feed</span></code></a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed"><code class="docutils literal notranslate"><span class="pre">Feed</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.__init__"><code class="docutils literal notranslate"><span class="pre">Feed.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.__repr__"><code class="docutils literal notranslate"><span class="pre">Feed.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.decimals"><code class="docutils literal notranslate"><span class="pre">Feed.decimals()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.get_price"><code class="docutils literal notranslate"><span class="pre">Feed.get_price()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.address"><code class="docutils literal notranslate"><span class="pre">Feed.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.asset"><code class="docutils literal notranslate"><span class="pre">Feed.asset</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.contract"><code class="docutils literal notranslate"><span class="pre">Feed.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.latest_round_data"><code class="docutils literal notranslate"><span class="pre">Feed.latest_round_data</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.scale"><code class="docutils literal notranslate"><span class="pre">Feed.scale</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.Feed.start_block"><code class="docutils literal notranslate"><span class="pre">Feed.start_block</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__del__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__init__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.events"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.logs"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.objects"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.wrap"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.addresses"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.asynchronous"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.cache"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.executor"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.from_block"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.to_block"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.chainlink.FeedsFromEvents.topics"><code class="docutils literal notranslate"><span class="pre">FeedsFromEvents.topics</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.convex">y.prices.convex module</a><ul>
-<li><a class="reference internal" href="#y.prices.convex.is_convex_lp"><code class="docutils literal notranslate"><span class="pre">is_convex_lp()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.gearbox">y.prices.gearbox module</a><ul>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool"><code class="docutils literal notranslate"><span class="pre">DieselPool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__eq__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__init__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__repr__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__str__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__build_name__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__contract__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__contract__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__diesel_token__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__diesel_token__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.__underlying__"><code class="docutils literal notranslate"><span class="pre">DieselPool.__underlying__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.address"><code class="docutils literal notranslate"><span class="pre">DieselPool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.asynchronous"><code class="docutils literal notranslate"><span class="pre">DieselPool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.contract"><code class="docutils literal notranslate"><span class="pre">DieselPool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.deploy_block"><code class="docutils literal notranslate"><span class="pre">DieselPool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.diesel_token"><code class="docutils literal notranslate"><span class="pre">DieselPool.diesel_token</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.exchange_rate"><code class="docutils literal notranslate"><span class="pre">DieselPool.exchange_rate</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.get_price"><code class="docutils literal notranslate"><span class="pre">DieselPool.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.has_method"><code class="docutils literal notranslate"><span class="pre">DieselPool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.DieselPool.underlying"><code class="docutils literal notranslate"><span class="pre">DieselPool.underlying</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox"><code class="docutils literal notranslate"><span class="pre">Gearbox</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.__init__"><code class="docutils literal notranslate"><span class="pre">Gearbox.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.__registry__"><code class="docutils literal notranslate"><span class="pre">Gearbox.__registry__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.diesel_tokens"><code class="docutils literal notranslate"><span class="pre">Gearbox.diesel_tokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.get_price"><code class="docutils literal notranslate"><span class="pre">Gearbox.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.is_diesel_token"><code class="docutils literal notranslate"><span class="pre">Gearbox.is_diesel_token</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.pools"><code class="docutils literal notranslate"><span class="pre">Gearbox.pools</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.gearbox.Gearbox.registry"><code class="docutils literal notranslate"><span class="pre">Gearbox.registry</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.magic">y.prices.magic module</a></li>
-<li><a class="reference internal" href="#module-y.prices.one_to_one">y.prices.one_to_one module</a><ul>
-<li><a class="reference internal" href="#y.prices.one_to_one.is_one_to_one_token"><code class="docutils literal notranslate"><span class="pre">is_one_to_one_token()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.popsicle">y.prices.popsicle module</a></li>
-<li><a class="reference internal" href="#module-y.prices.rkp3r">y.prices.rkp3r module</a><ul>
-<li><a class="reference internal" href="#y.prices.rkp3r.get_discount"><code class="docutils literal notranslate"><span class="pre">get_discount()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.rkp3r.is_rkp3r"><code class="docutils literal notranslate"><span class="pre">is_rkp3r()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.solidex">y.prices.solidex module</a></li>
-<li><a class="reference internal" href="#module-y.prices.synthetix">y.prices.synthetix module</a><ul>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix"><code class="docutils literal notranslate"><span class="pre">Synthetix</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.__init__"><code class="docutils literal notranslate"><span class="pre">Synthetix.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.__address_resolver__"><code class="docutils literal notranslate"><span class="pre">Synthetix.__address_resolver__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.__synths__"><code class="docutils literal notranslate"><span class="pre">Synthetix.__synths__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.address_resolver"><code class="docutils literal notranslate"><span class="pre">Synthetix.address_resolver</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.get_address"><code class="docutils literal notranslate"><span class="pre">Synthetix.get_address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.get_currency_key"><code class="docutils literal notranslate"><span class="pre">Synthetix.get_currency_key</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.get_price"><code class="docutils literal notranslate"><span class="pre">Synthetix.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.is_synth"><code class="docutils literal notranslate"><span class="pre">Synthetix.is_synth</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.synthetix.Synthetix.synths"><code class="docutils literal notranslate"><span class="pre">Synthetix.synths</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.yearn">y.prices.yearn module</a><ul>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__eq__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__init__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__repr__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__str__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__build_name__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__decimals__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__name__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__scale__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__symbol__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.__underlying__"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.__underlying__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.address"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.asynchronous"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.balance_of"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.contract"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.deploy_block"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.has_method"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.price"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.share_price"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.share_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.total_supply"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.total_supply_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.yearn.YearnInspiredVault.underlying"><code class="docutils literal notranslate"><span class="pre">YearnInspiredVault.underlying</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -223,6 +87,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
       <li class="breadcrumb-item active">y.prices package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.prices.rst.txt" rel="nofollow"> View page source</a>
@@ -1322,7 +1188,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.chainlink.FeedsFromEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.chainlink.FeedsFromEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.chainlink.FeedsFromEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1804,7 +1670,10 @@ See also <a class="reference external" href="https://docs.synthetix.io/addresses
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.interfaces.uniswap.html" class="btn btn-neutral float-left" title="y.interfaces.uniswap package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.prices.dex.html" class="btn btn-neutral float-right" title="y.prices.dex package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

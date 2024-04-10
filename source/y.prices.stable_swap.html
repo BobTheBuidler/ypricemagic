@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.prices.tokenized_fund package" href="y.prices.tokenized_fund.html" />
+    <link rel="prev" title="y.prices.lending package" href="y.prices.lending.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,240 +44,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.prices.stable_swap package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap.belt">y.prices.stable_swap.belt module</a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.belt.is_belt_lp"><code class="docutils literal notranslate"><span class="pre">is_belt_lp()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap.curve">y.prices.stable_swap.curve module</a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider"><code class="docutils literal notranslate"><span class="pre">AddressProvider</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.__await__"><code class="docutils literal notranslate"><span class="pre">AddressProvider.__await__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.__eq__"><code class="docutils literal notranslate"><span class="pre">AddressProvider.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.__init__"><code class="docutils literal notranslate"><span class="pre">AddressProvider.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.__repr__"><code class="docutils literal notranslate"><span class="pre">AddressProvider.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.__str__"><code class="docutils literal notranslate"><span class="pre">AddressProvider.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.__build_name__"><code class="docutils literal notranslate"><span class="pre">AddressProvider.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.address"><code class="docutils literal notranslate"><span class="pre">AddressProvider.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.asynchronous"><code class="docutils literal notranslate"><span class="pre">AddressProvider.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.contract"><code class="docutils literal notranslate"><span class="pre">AddressProvider.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.deploy_block"><code class="docutils literal notranslate"><span class="pre">AddressProvider.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.get_registry"><code class="docutils literal notranslate"><span class="pre">AddressProvider.get_registry</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.has_method"><code class="docutils literal notranslate"><span class="pre">AddressProvider.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.identifiers"><code class="docutils literal notranslate"><span class="pre">AddressProvider.identifiers</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProvider.loaded"><code class="docutils literal notranslate"><span class="pre">AddressProvider.loaded</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__del__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__init__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.events"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.logs"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.objects"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.wrap"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.addresses"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.cache"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.executor"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.from_block"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.provider"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.provider</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.to_block"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.topics"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents"><code class="docutils literal notranslate"><span class="pre">CurveEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">CurveEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__del__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__init__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.events"><code class="docutils literal notranslate"><span class="pre">CurveEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.logs"><code class="docutils literal notranslate"><span class="pre">CurveEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.objects"><code class="docutils literal notranslate"><span class="pre">CurveEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.wrap"><code class="docutils literal notranslate"><span class="pre">CurveEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">CurveEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.addresses"><code class="docutils literal notranslate"><span class="pre">CurveEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">CurveEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.cache"><code class="docutils literal notranslate"><span class="pre">CurveEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.executor"><code class="docutils literal notranslate"><span class="pre">CurveEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.from_block"><code class="docutils literal notranslate"><span class="pre">CurveEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">CurveEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">CurveEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">CurveEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">CurveEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.to_block"><code class="docutils literal notranslate"><span class="pre">CurveEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.topics"><code class="docutils literal notranslate"><span class="pre">CurveEvents.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool"><code class="docutils literal notranslate"><span class="pre">CurvePool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__eq__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__init__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__repr__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__str__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__build_name__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__coins__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__coins__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__coins_decimals__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__coins_decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__decimals__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__factory__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__factory__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__get_underlying_coins__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__get_underlying_coins__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__name__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__num_coins__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__num_coins__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__scale__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.__symbol__"><code class="docutils literal notranslate"><span class="pre">CurvePool.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.address"><code class="docutils literal notranslate"><span class="pre">CurvePool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.asynchronous"><code class="docutils literal notranslate"><span class="pre">CurvePool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.balance_of"><code class="docutils literal notranslate"><span class="pre">CurvePool.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">CurvePool.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.check_liquidity"><code class="docutils literal notranslate"><span class="pre">CurvePool.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.coins"><code class="docutils literal notranslate"><span class="pre">CurvePool.coins</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.coins_decimals"><code class="docutils literal notranslate"><span class="pre">CurvePool.coins_decimals</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.contract"><code class="docutils literal notranslate"><span class="pre">CurvePool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.deploy_block"><code class="docutils literal notranslate"><span class="pre">CurvePool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.factory"><code class="docutils literal notranslate"><span class="pre">CurvePool.factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.get_balances"><code class="docutils literal notranslate"><span class="pre">CurvePool.get_balances</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.get_coin_index"><code class="docutils literal notranslate"><span class="pre">CurvePool.get_coin_index</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.get_dy"><code class="docutils literal notranslate"><span class="pre">CurvePool.get_dy</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.get_tvl"><code class="docutils literal notranslate"><span class="pre">CurvePool.get_tvl</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.get_underlying_coins"><code class="docutils literal notranslate"><span class="pre">CurvePool.get_underlying_coins</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.has_method"><code class="docutils literal notranslate"><span class="pre">CurvePool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.num_coins"><code class="docutils literal notranslate"><span class="pre">CurvePool.num_coins</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.price"><code class="docutils literal notranslate"><span class="pre">CurvePool.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.total_supply"><code class="docutils literal notranslate"><span class="pre">CurvePool.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurvePool.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">CurvePool.total_supply_readable</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry"><code class="docutils literal notranslate"><span class="pre">CurveRegistry</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.__init__"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.__repr__"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.__coin_to_pools__"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.__coin_to_pools__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.__registry__"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.__registry__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.check_liquidity"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.coin_to_pools"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.coin_to_pools</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.get_factory"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.get_factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.get_pool"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.get_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.get_price"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.get_price_for_underlying"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.get_price_for_underlying</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.identifiers"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.identifiers</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.load_all"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.load_all</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.CurveRegistry.registry"><code class="docutils literal notranslate"><span class="pre">CurveRegistry.registry</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory"><code class="docutils literal notranslate"><span class="pre">Factory</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.__await__"><code class="docutils literal notranslate"><span class="pre">Factory.__await__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.__eq__"><code class="docutils literal notranslate"><span class="pre">Factory.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.__init__"><code class="docutils literal notranslate"><span class="pre">Factory.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.__repr__"><code class="docutils literal notranslate"><span class="pre">Factory.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.__str__"><code class="docutils literal notranslate"><span class="pre">Factory.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.__build_name__"><code class="docutils literal notranslate"><span class="pre">Factory.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.address"><code class="docutils literal notranslate"><span class="pre">Factory.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.asynchronous"><code class="docutils literal notranslate"><span class="pre">Factory.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.contract"><code class="docutils literal notranslate"><span class="pre">Factory.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.deploy_block"><code class="docutils literal notranslate"><span class="pre">Factory.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.get_pool"><code class="docutils literal notranslate"><span class="pre">Factory.get_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.has_method"><code class="docutils literal notranslate"><span class="pre">Factory.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.loaded"><code class="docutils literal notranslate"><span class="pre">Factory.loaded</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.pool_count"><code class="docutils literal notranslate"><span class="pre">Factory.pool_count</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Factory.read_pools"><code class="docutils literal notranslate"><span class="pre">Factory.read_pools</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids"><code class="docutils literal notranslate"><span class="pre">Ids</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.CryptoPool_Factory"><code class="docutils literal notranslate"><span class="pre">Ids.CryptoPool_Factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.CryptoSwap_Registry"><code class="docutils literal notranslate"><span class="pre">Ids.CryptoSwap_Registry</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.Cryptopool_Factory"><code class="docutils literal notranslate"><span class="pre">Ids.Cryptopool_Factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.CurveStableswapFactoryNG"><code class="docutils literal notranslate"><span class="pre">Ids.CurveStableswapFactoryNG</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.Curve_Tricrypto_Factory"><code class="docutils literal notranslate"><span class="pre">Ids.Curve_Tricrypto_Factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.Exchanges"><code class="docutils literal notranslate"><span class="pre">Ids.Exchanges</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.Fee_Distributor"><code class="docutils literal notranslate"><span class="pre">Ids.Fee_Distributor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.Main_Registry"><code class="docutils literal notranslate"><span class="pre">Ids.Main_Registry</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.Metapool_Factory"><code class="docutils literal notranslate"><span class="pre">Ids.Metapool_Factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.PoolInfo_Getters"><code class="docutils literal notranslate"><span class="pre">Ids.PoolInfo_Getters</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.crvUSD_Plain_Pools"><code class="docutils literal notranslate"><span class="pre">Ids.crvUSD_Plain_Pools</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.crvUSD_Plain_Pools_deprecated_1"><code class="docutils literal notranslate"><span class="pre">Ids.crvUSD_Plain_Pools_deprecated_1</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Ids.crvUSD_Plain_Pools_deprecated_2"><code class="docutils literal notranslate"><span class="pre">Ids.crvUSD_Plain_Pools_deprecated_2</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry"><code class="docutils literal notranslate"><span class="pre">Registry</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.__await__"><code class="docutils literal notranslate"><span class="pre">Registry.__await__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.__eq__"><code class="docutils literal notranslate"><span class="pre">Registry.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.__init__"><code class="docutils literal notranslate"><span class="pre">Registry.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.__repr__"><code class="docutils literal notranslate"><span class="pre">Registry.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.__str__"><code class="docutils literal notranslate"><span class="pre">Registry.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.__build_name__"><code class="docutils literal notranslate"><span class="pre">Registry.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.address"><code class="docutils literal notranslate"><span class="pre">Registry.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.asynchronous"><code class="docutils literal notranslate"><span class="pre">Registry.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.contract"><code class="docutils literal notranslate"><span class="pre">Registry.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.deploy_block"><code class="docutils literal notranslate"><span class="pre">Registry.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.has_method"><code class="docutils literal notranslate"><span class="pre">Registry.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.Registry.loaded"><code class="docutils literal notranslate"><span class="pre">Registry.loaded</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents"><code class="docutils literal notranslate"><span class="pre">RegistryEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__del__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__init__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.events"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.logs"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.objects"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.wrap"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.addresses"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.cache"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.executor"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.from_block"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.registry"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.registry</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.to_block"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.topics"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.topics</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap.ellipsis">y.prices.stable_swap.ellipsis module</a></li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap.froyo">y.prices.stable_swap.froyo module</a><ul>
-<li><a class="reference internal" href="#y.prices.stable_swap.froyo.is_froyo"><code class="docutils literal notranslate"><span class="pre">is_froyo()</span></code></a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap.mstablefeederpool">y.prices.stable_swap.mstablefeederpool module</a></li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap.saddle">y.prices.stable_swap.saddle module</a></li>
-<li><a class="reference internal" href="#module-y.prices.stable_swap">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -290,6 +87,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
+          <li class="breadcrumb-item"><a href="y.prices.html">y.prices package</a></li>
       <li class="breadcrumb-item active">y.prices.stable_swap package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.prices.stable_swap.rst.txt" rel="nofollow"> View page source</a>
@@ -640,7 +440,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -855,7 +655,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1671,7 +1471,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1720,7 +1520,10 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.prices.lending.html" class="btn btn-neutral float-left" title="y.prices.lending package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.prices.tokenized_fund.html" class="btn btn-neutral float-right" title="y.prices.tokenized_fund package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

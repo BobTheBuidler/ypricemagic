@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.prices.dex.uniswap package" href="y.prices.dex.uniswap.html" />
+    <link rel="prev" title="y.prices.dex package" href="y.prices.dex.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,198 +44,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.prices.dex.balancer package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.prices.dex.balancer.balancer">y.prices.dex.balancer.balancer module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.__repr__"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.__v1__"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.__v1__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.__v2__"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.__v2__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.__versions__"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.__versions__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.get_pool_price"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.get_pool_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.get_price"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.is_balancer_pool"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.is_balancer_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.v1"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.v1</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.v2"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.v2</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.balancer.BalancerMultiplexer.versions"><code class="docutils literal notranslate"><span class="pre">BalancerMultiplexer.versions</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.prices.dex.balancer.v1">y.prices.dex.balancer.v1 module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1"><code class="docutils literal notranslate"><span class="pre">BalancerV1</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerV1.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.__repr__"><code class="docutils literal notranslate"><span class="pre">BalancerV1.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.__str__"><code class="docutils literal notranslate"><span class="pre">BalancerV1.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.check_liquidity"><code class="docutils literal notranslate"><span class="pre">BalancerV1.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.check_liquidity_against"><code class="docutils literal notranslate"><span class="pre">BalancerV1.check_liquidity_against</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.get_pool_price"><code class="docutils literal notranslate"><span class="pre">BalancerV1.get_pool_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.get_some_output"><code class="docutils literal notranslate"><span class="pre">BalancerV1.get_some_output</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.get_token_price"><code class="docutils literal notranslate"><span class="pre">BalancerV1.get_token_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1.is_pool"><code class="docutils literal notranslate"><span class="pre">BalancerV1.is_pool</span></code></a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__eq__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__str__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__build_name__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__decimals__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__name__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__scale__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.__symbol__"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.address"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.asynchronous"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.balance_of"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.check_liquidity"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.contract"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.deploy_block"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.get_balance"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.get_balance</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.get_balances"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.get_balances</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.get_pool_price"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.get_pool_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.get_tvl"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.get_tvl</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.has_method"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.price"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.tokens"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.tokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.total_supply"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v1.BalancerV1Pool.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">BalancerV1Pool.total_supply_readable</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.dex.balancer.v2">y.prices.dex.balancer.v2 module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents"><code class="docutils literal notranslate"><span class="pre">BalancerEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__del__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.events"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.logs"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.objects"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.wrap"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.addresses"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.asynchronous"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.cache"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.executor"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.from_block"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.to_block"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerEvents.topics"><code class="docutils literal notranslate"><span class="pre">BalancerEvents.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2"><code class="docutils literal notranslate"><span class="pre">BalancerV2</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerV2.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2.__str__"><code class="docutils literal notranslate"><span class="pre">BalancerV2.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2.deepest_pool_for"><code class="docutils literal notranslate"><span class="pre">BalancerV2.deepest_pool_for</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2.get_pool_price"><code class="docutils literal notranslate"><span class="pre">BalancerV2.get_pool_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2.get_token_price"><code class="docutils literal notranslate"><span class="pre">BalancerV2.get_token_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2.is_pool"><code class="docutils literal notranslate"><span class="pre">BalancerV2.is_pool</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__eq__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__str__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__build_name__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__decimals__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__id__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__id__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__name__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__scale__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__symbol__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.__vault__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.__vault__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.address"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.asynchronous"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.balance_of"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.contract"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.deploy_block"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.get_balances"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.get_balances</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.get_pool_price"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.get_pool_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.get_token_price"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.get_token_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.get_tvl"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.get_tvl</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.has_method"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.id"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.id</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.price"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.tokens"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.tokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.total_supply"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.total_supply_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.vault"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.vault</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Pool.weights"><code class="docutils literal notranslate"><span class="pre">BalancerV2Pool.weights</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.__eq__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.__init__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.__repr__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.__str__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.pools_for_token"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.pools_for_token()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.__build_name__"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.address"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.asynchronous"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.contract"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.deepest_pool_for"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.deepest_pool_for</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.deploy_block"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.get_pool_info"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.get_pool_info</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.get_pool_tokens"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.get_pool_tokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.has_method"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.BalancerV2Vault.list_pools"><code class="docutils literal notranslate"><span class="pre">BalancerV2Vault.list_pools</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__eq__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__init__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__str__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__build_name__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__decimals__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__id__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__id__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__name__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__scale__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__symbol__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.__vault__"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.__vault__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.address"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.asynchronous"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.balance_of"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.contract"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.deploy_block"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.get_balances"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.get_balances</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.get_pool_price"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.get_pool_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.get_token_price"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.get_token_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.get_tvl"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.get_tvl</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.has_method"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.price"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.tokens"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.tokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.total_supply"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.total_supply_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.weights"><code class="docutils literal notranslate"><span class="pre">ImmutableTokensBalancerV2Pool.weights</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.dex.balancer">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -248,6 +87,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
+          <li class="breadcrumb-item"><a href="y.prices.html">y.prices package</a></li>
+          <li class="breadcrumb-item"><a href="y.prices.dex.html">y.prices.dex package</a></li>
       <li class="breadcrumb-item active">y.prices.dex.balancer package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.prices.dex.balancer.rst.txt" rel="nofollow"> View page source</a>
@@ -786,7 +629,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.balancer.v2.BalancerEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1334,7 +1177,10 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.prices.dex.html" class="btn btn-neutral float-left" title="y.prices.dex package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.prices.dex.uniswap.html" class="btn btn-neutral float-right" title="y.prices.dex.uniswap package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

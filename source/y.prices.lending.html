@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.prices.stable_swap package" href="y.prices.stable_swap.html" />
+    <link rel="prev" title="y.prices.eth_derivs package" href="y.prices.eth_derivs.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,176 +44,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.prices.lending package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.prices.lending.aave">y.prices.lending.aave module</a><ul>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__contains__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__eq__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__repr__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__str__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__atokens__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__atokens__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.__build_name__"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.atokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.contains</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.get_reserve_data</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.get_reserves</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketBase.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketBase.underlying</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__contains__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__eq__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__repr__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__str__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__atokens__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__atokens__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.__build_name__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.atokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.contains</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.get_reserve_data</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.get_reserves</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV1.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketV1.underlying</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__contains__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__eq__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__repr__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__str__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__atokens__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__atokens__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.__build_name__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.atokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.contains</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.get_reserve_data</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.get_reserves</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV2.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketV2.underlying</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__contains__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__eq__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__init__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__repr__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__str__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__atokens__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__atokens__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.__build_name__"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.address"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.asynchronous"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.atokens"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.atokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.contains"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.contains</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.contract"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.deploy_block"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.get_reserve_data"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.get_reserve_data</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.get_reserves"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.get_reserves</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.has_method"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveMarketV3.underlying"><code class="docutils literal notranslate"><span class="pre">AaveMarketV3.underlying</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry"><code class="docutils literal notranslate"><span class="pre">AaveRegistry</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__contains__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__init__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__pools__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__pools__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__pools_v1__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__pools_v1__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__pools_v2__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__pools_v2__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.__pools_v3__"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.__pools_v3__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.get_price"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v2"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.get_price_wrapped_v2</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.get_price_wrapped_v3"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.get_price_wrapped_v3</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.is_atoken"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.is_atoken</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v2"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.is_wrapped_atoken_v2</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.is_wrapped_atoken_v3"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.is_wrapped_atoken_v3</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pool_for_atoken"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pool_for_atoken</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools_v1"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools_v1</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools_v2"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools_v2</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.pools_v3"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.pools_v3</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.aave.AaveRegistry.underlying"><code class="docutils literal notranslate"><span class="pre">AaveRegistry.underlying</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.prices.lending.compound">y.prices.lending.compound module</a><ul>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken"><code class="docutils literal notranslate"><span class="pre">CToken</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__eq__"><code class="docutils literal notranslate"><span class="pre">CToken.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__init__"><code class="docutils literal notranslate"><span class="pre">CToken.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__repr__"><code class="docutils literal notranslate"><span class="pre">CToken.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__str__"><code class="docutils literal notranslate"><span class="pre">CToken.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__build_name__"><code class="docutils literal notranslate"><span class="pre">CToken.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__decimals__"><code class="docutils literal notranslate"><span class="pre">CToken.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__name__"><code class="docutils literal notranslate"><span class="pre">CToken.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__scale__"><code class="docutils literal notranslate"><span class="pre">CToken.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__symbol__"><code class="docutils literal notranslate"><span class="pre">CToken.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.__underlying__"><code class="docutils literal notranslate"><span class="pre">CToken.__underlying__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.address"><code class="docutils literal notranslate"><span class="pre">CToken.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.asynchronous"><code class="docutils literal notranslate"><span class="pre">CToken.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.balance_of"><code class="docutils literal notranslate"><span class="pre">CToken.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">CToken.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.contract"><code class="docutils literal notranslate"><span class="pre">CToken.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.deploy_block"><code class="docutils literal notranslate"><span class="pre">CToken.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.exchange_rate"><code class="docutils literal notranslate"><span class="pre">CToken.exchange_rate</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.get_price"><code class="docutils literal notranslate"><span class="pre">CToken.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.get_underlying_price"><code class="docutils literal notranslate"><span class="pre">CToken.get_underlying_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.has_method"><code class="docutils literal notranslate"><span class="pre">CToken.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.price"><code class="docutils literal notranslate"><span class="pre">CToken.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.total_supply"><code class="docutils literal notranslate"><span class="pre">CToken.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">CToken.total_supply_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.underlying"><code class="docutils literal notranslate"><span class="pre">CToken.underlying</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.CToken.underlying_per_ctoken"><code class="docutils literal notranslate"><span class="pre">CToken.underlying_per_ctoken</span></code></a></li>
 </ul>
-</li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Compound"><code class="docutils literal notranslate"><span class="pre">Compound</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.compound.Compound.__contains__"><code class="docutils literal notranslate"><span class="pre">Compound.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Compound.__init__"><code class="docutils literal notranslate"><span class="pre">Compound.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Compound.get_price"><code class="docutils literal notranslate"><span class="pre">Compound.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Compound.get_troller"><code class="docutils literal notranslate"><span class="pre">Compound.get_troller</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Compound.is_compound_market"><code class="docutils literal notranslate"><span class="pre">Compound.is_compound_market</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller"><code class="docutils literal notranslate"><span class="pre">Comptroller</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__contains__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__eq__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__init__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__repr__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__str__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__build_name__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.__markets__"><code class="docutils literal notranslate"><span class="pre">Comptroller.__markets__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.address"><code class="docutils literal notranslate"><span class="pre">Comptroller.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.asynchronous"><code class="docutils literal notranslate"><span class="pre">Comptroller.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.contract"><code class="docutils literal notranslate"><span class="pre">Comptroller.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.deploy_block"><code class="docutils literal notranslate"><span class="pre">Comptroller.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.has_method"><code class="docutils literal notranslate"><span class="pre">Comptroller.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.markets"><code class="docutils literal notranslate"><span class="pre">Comptroller.markets</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.lending.compound.Comptroller.oracle"><code class="docutils literal notranslate"><span class="pre">Comptroller.oracle</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.lending.ib">y.prices.lending.ib module</a></li>
-<li><a class="reference internal" href="#module-y.prices.lending">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -226,6 +87,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
+          <li class="breadcrumb-item"><a href="y.prices.html">y.prices package</a></li>
       <li class="breadcrumb-item active">y.prices.lending package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.prices.lending.rst.txt" rel="nofollow"> View page source</a>
@@ -1226,7 +1090,10 @@
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.prices.eth_derivs.html" class="btn btn-neutral float-left" title="y.prices.eth_derivs package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.prices.stable_swap.html" class="btn btn-neutral float-right" title="y.prices.stable_swap package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

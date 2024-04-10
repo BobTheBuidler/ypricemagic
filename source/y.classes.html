@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.interfaces package" href="y.interfaces.html" />
+    <link rel="prev" title="y package" href="y.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,110 +44,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.classes package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.classes.common">y.classes.common module</a><ul>
-<li><a class="reference internal" href="#y.classes.common.ContractBase"><code class="docutils literal notranslate"><span class="pre">ContractBase</span></code></a><ul>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.__eq__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.__init__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.__repr__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.__str__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.__build_name__"><code class="docutils literal notranslate"><span class="pre">ContractBase.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.address"><code class="docutils literal notranslate"><span class="pre">ContractBase.address</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.asynchronous"><code class="docutils literal notranslate"><span class="pre">ContractBase.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.build_name"><code class="docutils literal notranslate"><span class="pre">ContractBase.build_name</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.contract"><code class="docutils literal notranslate"><span class="pre">ContractBase.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.deploy_block"><code class="docutils literal notranslate"><span class="pre">ContractBase.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ContractBase.has_method"><code class="docutils literal notranslate"><span class="pre">ContractBase.has_method</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#y.classes.common.ERC20"><code class="docutils literal notranslate"><span class="pre">ERC20</span></code></a><ul>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__eq__"><code class="docutils literal notranslate"><span class="pre">ERC20.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__init__"><code class="docutils literal notranslate"><span class="pre">ERC20.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__repr__"><code class="docutils literal notranslate"><span class="pre">ERC20.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__str__"><code class="docutils literal notranslate"><span class="pre">ERC20.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__build_name__"><code class="docutils literal notranslate"><span class="pre">ERC20.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__decimals__"><code class="docutils literal notranslate"><span class="pre">ERC20.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__name__"><code class="docutils literal notranslate"><span class="pre">ERC20.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__scale__"><code class="docutils literal notranslate"><span class="pre">ERC20.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.__symbol__"><code class="docutils literal notranslate"><span class="pre">ERC20.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.address"><code class="docutils literal notranslate"><span class="pre">ERC20.address</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.asynchronous"><code class="docutils literal notranslate"><span class="pre">ERC20.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.balance_of"><code class="docutils literal notranslate"><span class="pre">ERC20.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">ERC20.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.contract"><code class="docutils literal notranslate"><span class="pre">ERC20.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.decimals"><code class="docutils literal notranslate"><span class="pre">ERC20.decimals</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.deploy_block"><code class="docutils literal notranslate"><span class="pre">ERC20.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.has_method"><code class="docutils literal notranslate"><span class="pre">ERC20.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.name"><code class="docutils literal notranslate"><span class="pre">ERC20.name</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.price"><code class="docutils literal notranslate"><span class="pre">ERC20.price</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.scale"><code class="docutils literal notranslate"><span class="pre">ERC20.scale</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.symbol"><code class="docutils literal notranslate"><span class="pre">ERC20.symbol</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.total_supply"><code class="docutils literal notranslate"><span class="pre">ERC20.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.ERC20.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">ERC20.total_supply_readable</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance"><code class="docutils literal notranslate"><span class="pre">WeiBalance</span></code></a><ul>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__eq__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__ge__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__ge__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__init__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__lt__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__lt__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__repr__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__str__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__readable__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__readable__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.__value_usd__"><code class="docutils literal notranslate"><span class="pre">WeiBalance.__value_usd__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.readable"><code class="docutils literal notranslate"><span class="pre">WeiBalance.readable</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.common.WeiBalance.value_usd"><code class="docutils literal notranslate"><span class="pre">WeiBalance.value_usd</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.classes.common.hex_to_string"><code class="docutils literal notranslate"><span class="pre">hex_to_string()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.classes.singleton">y.classes.singleton module</a><ul>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta</span></code></a><ul>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__base__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__base__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__call__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__call__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__delattr__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__delattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__dir__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__dir__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__getattribute__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__getattribute__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__init__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__instancecheck__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__instancecheck__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__new__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__new__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__or__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__or__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__prepare__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__prepare__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__repr__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__ror__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__ror__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__setattr__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__setattr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__sizeof__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__sizeof__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__subclasscheck__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__subclasscheck__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__subclasses__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__subclasses__()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.mro"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.mro()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.register"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.register()</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__bases__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__basicsize__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__basicsize__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__dictoffset__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__dictoffset__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__flags__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__flags__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__itemsize__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__itemsize__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__mro__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__mro__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__name__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__parameters__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__qualname__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__qualname__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__text_signature__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__text_signature__</span></code></a></li>
-<li><a class="reference internal" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__weakrefoffset__"><code class="docutils literal notranslate"><span class="pre">ChecksumASyncSingletonMeta.__weakrefoffset__</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.classes">Module contents</a></li>
 </ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -160,6 +87,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
       <li class="breadcrumb-item active">y.classes package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.classes.rst.txt" rel="nofollow"> View page source</a>
@@ -755,7 +684,10 @@ overridden to extend subclasses.</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.html" class="btn btn-neutral float-left" title="y package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.interfaces.html" class="btn btn-neutral float-right" title="y.interfaces package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 

@@ -20,7 +20,8 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="y.prices.utils package" href="y.prices.utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,143 +43,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.utils package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.utils.cache">y.utils.cache module</a></li>
-<li><a class="reference internal" href="#module-y.utils.checks">y.utils.checks module</a><ul>
-<li><a class="reference internal" href="#y.utils.checks.hasall"><code class="docutils literal notranslate"><span class="pre">hasall()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">y.utils package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.utils.client">y.utils.client module</a><ul>
-<li><a class="reference internal" href="#y.utils.client.get_ethereum_client"><code class="docutils literal notranslate"><span class="pre">get_ethereum_client()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.client.get_ethereum_client_async"><code class="docutils literal notranslate"><span class="pre">get_ethereum_client_async()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.utils.dank_mids">y.utils.dank_mids module</a></li>
-<li><a class="reference internal" href="#module-y.utils.events">y.utils.events module</a><ul>
-<li><a class="reference internal" href="#y.utils.events.Events"><code class="docutils literal notranslate"><span class="pre">Events</span></code></a><ul>
-<li><a class="reference internal" href="#y.utils.events.Events.obj_type"><code class="docutils literal notranslate"><span class="pre">Events.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__aiter__"><code class="docutils literal notranslate"><span class="pre">Events.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">Events.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__del__"><code class="docutils literal notranslate"><span class="pre">Events.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__init__"><code class="docutils literal notranslate"><span class="pre">Events.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">Events.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__iter__"><code class="docutils literal notranslate"><span class="pre">Events.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__repr__"><code class="docutils literal notranslate"><span class="pre">Events.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">Events.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.events"><code class="docutils literal notranslate"><span class="pre">Events.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.logs"><code class="docutils literal notranslate"><span class="pre">Events.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.wrap"><code class="docutils literal notranslate"><span class="pre">Events.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">Events.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__parameters__"><code class="docutils literal notranslate"><span class="pre">Events.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.__wrapped__"><code class="docutils literal notranslate"><span class="pre">Events.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.addresses"><code class="docutils literal notranslate"><span class="pre">Events.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.bulk_insert"><code class="docutils literal notranslate"><span class="pre">Events.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.cache"><code class="docutils literal notranslate"><span class="pre">Events.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.executor"><code class="docutils literal notranslate"><span class="pre">Events.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.from_block"><code class="docutils literal notranslate"><span class="pre">Events.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.insert_to_db"><code class="docutils literal notranslate"><span class="pre">Events.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.is_asleep"><code class="docutils literal notranslate"><span class="pre">Events.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.is_reusable"><code class="docutils literal notranslate"><span class="pre">Events.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.semaphore"><code class="docutils literal notranslate"><span class="pre">Events.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.to_block"><code class="docutils literal notranslate"><span class="pre">Events.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.Events.topics"><code class="docutils literal notranslate"><span class="pre">Events.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter"><code class="docutils literal notranslate"><span class="pre">LogFilter</span></code></a><ul>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__aiter__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__del__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__init__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__iter__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__repr__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.logs"><code class="docutils literal notranslate"><span class="pre">LogFilter.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.wrap"><code class="docutils literal notranslate"><span class="pre">LogFilter.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__parameters__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.__wrapped__"><code class="docutils literal notranslate"><span class="pre">LogFilter.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.addresses"><code class="docutils literal notranslate"><span class="pre">LogFilter.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.bulk_insert"><code class="docutils literal notranslate"><span class="pre">LogFilter.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.cache"><code class="docutils literal notranslate"><span class="pre">LogFilter.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.executor"><code class="docutils literal notranslate"><span class="pre">LogFilter.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.from_block"><code class="docutils literal notranslate"><span class="pre">LogFilter.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.insert_to_db"><code class="docutils literal notranslate"><span class="pre">LogFilter.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.is_asleep"><code class="docutils literal notranslate"><span class="pre">LogFilter.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.is_reusable"><code class="docutils literal notranslate"><span class="pre">LogFilter.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.semaphore"><code class="docutils literal notranslate"><span class="pre">LogFilter.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.to_block"><code class="docutils literal notranslate"><span class="pre">LogFilter.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.LogFilter.topics"><code class="docutils literal notranslate"><span class="pre">LogFilter.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__del__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__init__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.events"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.logs"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.objects"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.wrap"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.addresses"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.cache"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.executor"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.from_block"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.to_block"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.ProcessedEvents.topics"><code class="docutils literal notranslate"><span class="pre">ProcessedEvents.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.utils.events.checkpoints_to_weight"><code class="docutils literal notranslate"><span class="pre">checkpoints_to_weight()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.decode_logs"><code class="docutils literal notranslate"><span class="pre">decode_logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.get_logs_asap_generator"><code class="docutils literal notranslate"><span class="pre">get_logs_asap_generator()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.events.logs_to_balance_checkpoints"><code class="docutils literal notranslate"><span class="pre">logs_to_balance_checkpoints()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.utils.fakes">y.utils.fakes module</a></li>
-<li><a class="reference internal" href="#module-y.utils.gather">y.utils.gather module</a><ul>
-<li><a class="reference internal" href="#y.utils.gather.gather_methods"><code class="docutils literal notranslate"><span class="pre">gather_methods()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.utils.logging">y.utils.logging module</a><ul>
-<li><a class="reference internal" href="#y.utils.logging.enable_debug_logging"><code class="docutils literal notranslate"><span class="pre">enable_debug_logging()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.logging.get_price_logger"><code class="docutils literal notranslate"><span class="pre">get_price_logger()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.utils.middleware">y.utils.middleware module</a><ul>
-<li><a class="reference internal" href="#y.utils.middleware.cache_middleware"><code class="docutils literal notranslate"><span class="pre">cache_middleware()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.middleware.ensure_middleware"><code class="docutils literal notranslate"><span class="pre">ensure_middleware()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.middleware.setup_middleware"><code class="docutils literal notranslate"><span class="pre">setup_middleware()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.middleware.should_cache"><code class="docutils literal notranslate"><span class="pre">should_cache()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.utils.multicall">y.utils.multicall module</a></li>
-<li><a class="reference internal" href="#module-y.utils.raw_calls">y.utils.raw_calls module</a><ul>
-<li><a class="reference internal" href="#y.utils.raw_calls.prepare_data"><code class="docutils literal notranslate"><span class="pre">prepare_data()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.raw_calls.prepare_input"><code class="docutils literal notranslate"><span class="pre">prepare_input()</span></code></a></li>
-<li><a class="reference internal" href="#y.utils.raw_calls.logger"><code class="docutils literal notranslate"><span class="pre">logger</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.utils">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -193,6 +86,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
       <li class="breadcrumb-item active">y.utils package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.utils.rst.txt" rel="nofollow"> View page source</a>
@@ -307,7 +202,7 @@
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>semaphore</strong> (<em>BlockSemaphore</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>executor</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><em>_AsyncExecutorMixin</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
@@ -454,7 +349,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.Events.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.utils.events.Events.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.Events.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -511,7 +406,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>semaphore</strong> (<em>BlockSemaphore</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>executor</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><em>_AsyncExecutorMixin</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
@@ -645,7 +540,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.utils.events.LogFilter.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.LogFilter.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -708,7 +603,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – </p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>) – </p></li>
-<li><p><strong>semaphore</strong> (<em>BlockSemaphore</em><em> | </em><em>None</em>) – </p></li>
+<li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>executor</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><em>_AsyncExecutorMixin</em></a><em> | </em><em>None</em>) – </p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – </p></li>
@@ -868,7 +763,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1102,7 +997,9 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.prices.utils.html" class="btn btn-neutral float-left" title="y.prices.utils package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

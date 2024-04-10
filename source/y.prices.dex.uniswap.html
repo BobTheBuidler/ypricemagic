@@ -20,7 +20,9 @@
         <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="y.prices.eth_derivs package" href="y.prices.eth_derivs.html" />
+    <link rel="prev" title="y.prices.dex.balancer package" href="y.prices.dex.balancer.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,207 +44,35 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">y.prices.dex.uniswap package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-y.prices.dex.uniswap.uniswap">y.prices.dex.uniswap.uniswap module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.uniswap.UniswapMultiplexer"><code class="docutils literal notranslate"><span class="pre">UniswapMultiplexer</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.__init__"><code class="docutils literal notranslate"><span class="pre">UniswapMultiplexer.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.check_liquidity"><code class="docutils literal notranslate"><span class="pre">UniswapMultiplexer.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.get_price"><code class="docutils literal notranslate"><span class="pre">UniswapMultiplexer.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.is_uniswap_pool"><code class="docutils literal notranslate"><span class="pre">UniswapMultiplexer.is_uniswap_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.routers_by_depth"><code class="docutils literal notranslate"><span class="pre">UniswapMultiplexer.routers_by_depth</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">y</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="y.html">y package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="y.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="y.classes.html">y.classes package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a></li>
+<li class="toctree-l4 current"><a class="reference internal" href="y.prices.html">y.prices package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html">y.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.decorators">y.decorators module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-y.prices.dex.uniswap.v1">y.prices.dex.uniswap.v1 module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v1.UniswapV1"><code class="docutils literal notranslate"><span class="pre">UniswapV1</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v1.UniswapV1.__init__"><code class="docutils literal notranslate"><span class="pre">UniswapV1.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v1.UniswapV1.check_liquidity"><code class="docutils literal notranslate"><span class="pre">UniswapV1.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v1.UniswapV1.factory"><code class="docutils literal notranslate"><span class="pre">UniswapV1.factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v1.UniswapV1.get_exchange"><code class="docutils literal notranslate"><span class="pre">UniswapV1.get_exchange</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v1.UniswapV1.get_price"><code class="docutils literal notranslate"><span class="pre">UniswapV1.get_price</span></code></a></li>
 </ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.dex.uniswap.v2">y.prices.dex.uniswap.v2 module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.obj_type"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__aiter__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__del__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__init__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__repr__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.events"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.logs"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.objects"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.pools"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.pools()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.wrap"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.PairCreated"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.PairCreated</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__parameters__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__wrapped__"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.addresses"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.asynchronous"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.bulk_insert"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.cache"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.executor"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.from_block"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.label"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.label</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.to_block"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.topics"><code class="docutils literal notranslate"><span class="pre">PoolsFromEvents.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__eq__"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__init__"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__repr__"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__str__"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__build_name__"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.__pools__"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.__pools__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.address"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.asynchronous"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.check_liquidity"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.contract"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.deepest_pool"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.deepest_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.deepest_pool_for"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.deepest_pool_for</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.deepest_stable_pool"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.deepest_stable_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.deploy_block"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.get_path_to_stables"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.get_path_to_stables</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.get_pools_for"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.get_pools_for</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.get_price"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.get_quote"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.get_quote</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.has_method"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.pools"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.pools</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapRouterV2.pools_for_token"><code class="docutils literal notranslate"><span class="pre">UniswapRouterV2.pools_for_token</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__eq__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__init__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__str__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__build_name__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__decimals__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__decimals__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__factory__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__factory__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__name__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__scale__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__scale__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__symbol__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__symbol__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__token0__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__token0__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__token1__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__token1__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.__tokens__"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.__tokens__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.address"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.asynchronous"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.balance_of"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.balance_of</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.balance_of_readable"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.balance_of_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.check_liquidity"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.contract"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.deploy_block"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.factory"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.get_price"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.get_reserves"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.get_reserves</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.has_method"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.is_uniswap_pool"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.is_uniswap_pool</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.price"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.reserves"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.reserves</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.token0"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.token0</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.token1"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.token1</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.tokens"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.tokens</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.total_supply"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.total_supply</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.total_supply_readable"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.total_supply_readable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2.UniswapV2Pool.tvl"><code class="docutils literal notranslate"><span class="pre">UniswapV2Pool.tvl</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.dex.uniswap.v2_forks">y.prices.dex.uniswap.v2_forks module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v2_forks.special_paths"><code class="docutils literal notranslate"><span class="pre">special_paths()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.dex.uniswap.v3">y.prices.dex.uniswap.v3 module</a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools"><code class="docutils literal notranslate"><span class="pre">UniV3Pools</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.obj_type"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.obj_type</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__aiter__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__aiter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__class_getitem__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__class_getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__del__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__del__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__init__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__init_subclass__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__init_subclass__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__iter__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__iter__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__repr__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__subclasshook__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__subclasshook__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.events"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.events()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.logs"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.logs()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.objects"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.objects()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.wrap"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.wrap()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__orig_bases__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__orig_bases__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__parameters__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__parameters__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.__wrapped__"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.__wrapped__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.addresses"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.addresses</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.asynchronous"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.bulk_insert"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.bulk_insert</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.cache"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.cache</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.executor"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.executor</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.from_block"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.from_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.insert_to_db"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.insert_to_db</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.is_asleep"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.is_asleep</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.is_reusable"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.is_reusable</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.semaphore"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.semaphore</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.to_block"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.to_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools.topics"><code class="docutils literal notranslate"><span class="pre">UniV3Pools.topics</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3"><code class="docutils literal notranslate"><span class="pre">UniswapV3</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.__contains__"><code class="docutils literal notranslate"><span class="pre">UniswapV3.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.__init__"><code class="docutils literal notranslate"><span class="pre">UniswapV3.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.pools_for_token"><code class="docutils literal notranslate"><span class="pre">UniswapV3.pools_for_token()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.__factory__"><code class="docutils literal notranslate"><span class="pre">UniswapV3.__factory__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.__pools__"><code class="docutils literal notranslate"><span class="pre">UniswapV3.__pools__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.__quoter__"><code class="docutils literal notranslate"><span class="pre">UniswapV3.__quoter__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.check_liquidity"><code class="docutils literal notranslate"><span class="pre">UniswapV3.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.factory"><code class="docutils literal notranslate"><span class="pre">UniswapV3.factory</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.get_price"><code class="docutils literal notranslate"><span class="pre">UniswapV3.get_price</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.loaded"><code class="docutils literal notranslate"><span class="pre">UniswapV3.loaded</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.pools"><code class="docutils literal notranslate"><span class="pre">UniswapV3.pools</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3.quoter"><code class="docutils literal notranslate"><span class="pre">UniswapV3.quoter</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool</span></code></a><ul>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__contains__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__contains__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__eq__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__eq__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__getitem__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__getitem__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__init__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__init__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__repr__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__repr__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__str__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__str__()</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__build_name__"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.__build_name__</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.address"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.address</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.asynchronous"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.asynchronous</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.check_liquidity"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.check_liquidity</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.contract"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.contract</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.deploy_block"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.deploy_block</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.fee"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.fee</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.has_method"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.has_method</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.tick_spacing"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.tick_spacing</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.token0"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.token0</span></code></a></li>
-<li><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.token1"><code class="docutils literal notranslate"><span class="pre">UniswapV3Pool.token1</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-y.prices.dex.uniswap">Module contents</a></li>
-</ul>
-</li>
-</ul>
-</div>
+
         </div>
       </div>
     </nav>
@@ -257,6 +87,10 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">y</a></li>
+          <li class="breadcrumb-item"><a href="y.html">y package</a></li>
+          <li class="breadcrumb-item"><a href="y.prices.html">y.prices package</a></li>
+          <li class="breadcrumb-item"><a href="y.prices.dex.html">y.prices.dex package</a></li>
       <li class="breadcrumb-item active">y.prices.dex.uniswap package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/source/y.prices.dex.uniswap.rst.txt" rel="nofollow"> View page source</a>
@@ -598,7 +432,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1191,7 +1025,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -1449,7 +1283,10 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="y.prices.dex.balancer.html" class="btn btn-neutral float-left" title="y.prices.dex.balancer package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="y.prices.eth_derivs.html" class="btn btn-neutral float-right" title="y.prices.eth_derivs package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
 
   <hr/>
 
