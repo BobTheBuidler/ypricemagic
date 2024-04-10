@@ -5,7 +5,7 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>y package &mdash; ypricemagic  documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
 
   
@@ -745,8 +745,7 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract.__init__" title="Link to this definition"></a></dt>
 <dd><p>Recreate a <cite>Contract</cite> object from the local database.</p>
 <p>The init method is used to access deployments that have already previously
-been stored locally. For new deployments use <cite>from_abi</cite>, <cite>from_ethpm</cite> or
-<cite>from_etherscan</cite>.</p>
+been stored locally. For new deployments use <cite>from_abi</cite> or <cite>from_etherscan</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -907,21 +906,9 @@ will be performed using this account.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.from_ethpm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ethpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract.from_ethpm" title="Link to this definition"></a></dt>
-<dd><p>Create a new <cite>Contract</cite> object from an ethPM manifest.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the contract.</p></li>
-<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – erc1319 registry URI where the manifest is located</p></li>
-<li><p><strong>address</strong> (<em>str optional</em>) – Address where the contract is deployed. Only required if the
-manifest contains more than one deployment with the given name
-on the active chain.</p></li>
-<li><p><strong>owner</strong> (<em>Account</em><em>, </em><em>optional</em>) – Contract owner. If set, transactions without a <cite>from</cite> field
-will be performed using this account.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1142,7 +1129,7 @@ object in future sessions.</p>
 <dd class="field-odd"><p><strong>event_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – </p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.12)"><em>Type</em></a>[<em>ContractEvent</em>]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.12)"><em>Type</em></a>[<em>BaseContractEvent</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1179,7 +1166,7 @@ object in future sessions.</p>
 <dd class="field-odd"><p>Iterable of <code class="xref py py-class docutils literal notranslate"><span class="pre">ContractEvent</span></code></p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><em>Iterable</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.12)"><em>Type</em></a>[<em>ContractEvent</em>]]</p>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.12)"><em>Iterable</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Type" title="(in Python v3.12)"><em>Type</em></a>[<em>BaseContractEvent</em>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -4291,8 +4278,7 @@ is raised.</p>
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract.__init__" title="Link to this definition"></a></dt>
 <dd><p>Recreate a <cite>Contract</cite> object from the local database.</p>
 <p>The init method is used to access deployments that have already previously
-been stored locally. For new deployments use <cite>from_abi</cite>, <cite>from_ethpm</cite> or
-<cite>from_etherscan</cite>.</p>
+been stored locally. For new deployments use <cite>from_abi</cite> or <cite>from_etherscan</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -4453,21 +4439,9 @@ will be performed using this account.</p></li>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Contract.from_ethpm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ethpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Contract.from_ethpm" title="Link to this definition"></a></dt>
-<dd><p>Create a new <cite>Contract</cite> object from an ethPM manifest.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the contract.</p></li>
-<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – erc1319 registry URI where the manifest is located</p></li>
-<li><p><strong>address</strong> (<em>str optional</em>) – Address where the contract is deployed. Only required if the
-manifest contains more than one deployment with the given name
-on the active chain.</p></li>
-<li><p><strong>owner</strong> (<em>Account</em><em>, </em><em>optional</em>) – Contract owner. If set, transactions without a <cite>from</cite> field
-will be performed using this account.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
 </dd>
 </dl>
 </dd></dl>
