@@ -6,7 +6,10 @@ import a_sync
 from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
-from eth_abi import encode_single
+try:
+    from eth_abi import encode
+except ImportError:
+    from eth_abi import encode_single as encode
 from multicall import Call
 from typing_extensions import Self
 
@@ -44,7 +47,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         See also https://docs.synthetix.io/addresses/
         """
         address_resolver = await self.__address_resolver__
-        address = await address_resolver.getAddress.coroutine(encode_single('bytes32', name.encode()), block_identifier=block)
+        address = await address_resolver.getAddress.coroutine(encode(['bytes32'], name.encode()), block_identifier=block)
         proxy = await Contract.coroutine(address)
         return await Contract.coroutine(await proxy.target.coroutine(block_identifier=block)) if hasattr(proxy, 'target') else proxy
 
