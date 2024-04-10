@@ -44,6 +44,7 @@ html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 autodoc_default_options = {
+    'undoc-members': True,
     'special-members': True,
     'inherited-members': True,
     'member-order': 'groupwise',
