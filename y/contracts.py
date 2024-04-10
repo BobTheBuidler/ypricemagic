@@ -5,7 +5,7 @@ import logging
 import threading
 from collections import defaultdict
 from contextlib import suppress
-from typing import Any, Callable, Dict, List, Literal, Optional, Tuple, Union
+from typing import Any, Callable, Dict, List, Literal, NewType, Optional, Set, Tuple, Union
 
 import a_sync
 import dank_mids
@@ -220,6 +220,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         address = str(address)
         if address.lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
             raise ContractNotFound(f"{address} is not a contract.")
+        if require_success and address in _unverified:
+            raise ContractNotVerified(address)
 
         with _contract_lock:
             # autofetch-sources: false
@@ -245,6 +247,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
                     self.__init_from_abi__(build, owner=owner, persist=True)
                 except (ContractNotFound, ContractNotVerified) as e:
+                    if isinstance(e, ContractNotVerified):
+                        _unverified.add(address)
                     if require_success:
                         raise
                     try:
@@ -545,3 +549,7 @@ def _pop(d: dict, k: Any) -> None:
     """Pops an item from a dict if present"""
     with suppress(KeyError):
         d.pop(k)
+
+_Address = NewType("_Address", str)
+_unverified: Set[_Address] = set()
+"""A collection of unverified addresses that is used to prevent repetitive etherscan api calls"""
