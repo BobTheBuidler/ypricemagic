@@ -32,6 +32,7 @@ intersphinx_mapping = {
     'brownie': ('https://eth-brownie.readthedocs.io/en/stable/', None),
     'checksum_dict': ('https://bobthebuidler.github.io/checksum_dict', None),
     'dank_mids': ('https://bobthebuidler.github.io/dank_mids', None),
+    'eth_typing': ('https://eth-typing.readthedocs.io/en/stable/', None),
     'hexbytes': ('https://hexbytes.readthedocs.io/en/stable/', None),
     'pony': ('https://docs.ponyorm.org/', None),
     'python': ('https://docs.python.org/3', None),
