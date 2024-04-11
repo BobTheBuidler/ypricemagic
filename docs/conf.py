@@ -21,7 +21,6 @@ extensions = [
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'a_sync_sphinx_ext.func',
-    'a_sync_sphinx_ext.genfunc',
 ]
 
 templates_path = ['_templates']
