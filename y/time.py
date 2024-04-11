@@ -87,7 +87,7 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
 
 
 @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
-async def get_block_at_timestamp(timestamp: datetime) -> int:
+async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
     import y._db.utils.utils as db
     if block_at_timestamp := await db.get_block_at_timestamp(timestamp):
         return block_at_timestamp
