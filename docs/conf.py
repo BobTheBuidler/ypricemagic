@@ -80,6 +80,9 @@ autodoc_default_options = {
         '__a_sync_flag_value__',
         '__a_sync_instance_should_await__',
         '__a_sync_modifiers__',
+        '__class_getitem__',
+        '__init_subclass__',
+        '__subclass_hook__',
     ]),
 }
 autodoc_typehints = "description"
