@@ -96,7 +96,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
                 self.get_address('ExchangeRates', block=block, sync=False),
                 self.get_currency_key(token, sync=False)
             )
-            return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block) / 10 ** 18)
+            return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block, decimals=18))
         except Exception as e:
             if call_reverted(e):
                 return None

@@ -348,12 +348,7 @@ class UniswapRouterV2(ContractBase):
         # TODO figure out how to best handle uni forks with slight modifications.
         # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
         except Exception as e:
-            strings = [
-                "INSUFFICIENT_INPUT_AMOUNT",
-                "INSUFFICIENT_LIQUIDITY",
-                "INSUFFICIENT_OUT_LIQUIDITY",
-                "Sequence has incorrect length",
-            ]
+            strings = ["INSUFFICIENT_INPUT_AMOUNT", "INSUFFICIENT_LIQUIDITY", "INSUFFICIENT_OUT_LIQUIDITY", "Sequence has incorrect length"]
             if not call_reverted(e) and all(s not in str(e) for s in strings):
                 raise e
     
@@ -528,7 +523,10 @@ class UniswapRouterV2(ContractBase):
         path = [token_address]
         deepest_pool = await self.deepest_pool(token_address, block, _ignore_pools, sync=False)
         if deepest_pool:
-            paired_with = (await self.get_pools_for(token_address, sync=False))[deepest_pool]
+            try:
+                paired_with = (await self.get_pools_for(token_address, sync=False))[deepest_pool]
+            except:
+                paired_with = (await self.get_pools_for(token_address, block=block, sync=False))[deepest_pool]
             from y.prices.utils.buckets import check_bucket
             if await check_bucket(paired_with, sync=False) and _loop_count == 0:
                 # let's just use the other token to get the price
