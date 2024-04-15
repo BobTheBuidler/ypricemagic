@@ -613,5 +613,5 @@ class UniswapRouterV2(ContractBase):
     
 _get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)
 # debug helpers
-_attempted = 0
-_issues = 0
+_attempted = set()
+_issues = set()
