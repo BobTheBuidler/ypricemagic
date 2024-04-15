@@ -561,7 +561,7 @@ class UniswapRouterV2(ContractBase):
         if block and block < await contract_creation_block_async(self.factory):
             logger.debug("block %s is before %s deploy block")
             return 0
-        if self._supports_uniswap_helper and token not in _liquidity_out_of_gas and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+        if self._supports_uniswap_helper and token not in _liquidity_issues and token not in _liquidity_out_of_gas and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
             try:
                 deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
                 logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
@@ -569,6 +569,7 @@ class UniswapRouterV2(ContractBase):
             except Revert as e:
                 # TODO: debug me!
                 logger.info('helper reverted on check_liquidity for %s at block %s: %s',token, block, e)
+                _liquidity_issues.add(token)
             except ValueError as e:
                 if "out of gas" not in str(e):
                     raise e
@@ -623,4 +624,5 @@ _attempted = set()
 _issues = set()
 _no_data_no_pools = set()
 _no_data_yes_pools = set()
+_liquidity_issues = set()
 _liquidity_out_of_gas = set()
