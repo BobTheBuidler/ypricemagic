@@ -385,6 +385,7 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
+        logger.info('no data: %s tokens no pools %s tokens have pools', len(_no_data_no_pools), len(_no_data_yes_pools))
         if self._supports_uniswap_helper and token_in not in _issues:
             try:
                 _attempted.add(token_in)
@@ -415,7 +416,6 @@ class UniswapRouterV2(ContractBase):
                     else:
                         _no_data_no_pools.add(token_in)
                         logger.info("no data returned and 0 pools when checking the long way for %s!", token_in)
-                    logger.info('no data: %s tokens no pools %s tokens have pools', len(_no_data_no_pools), len(_no_data_yes_pools))
                 return pool_to_token_out
 
         else:
