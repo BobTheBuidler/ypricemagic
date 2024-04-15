@@ -395,6 +395,7 @@ class UniswapRouterV2(ContractBase):
             except Exception as e:
                 if block is None:
                     raise e
+                NO_DATA = "No data was returned - the call likely reverted" in str(e)
                 if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
                     raise e
                 _issues.add(token_in)
@@ -405,10 +406,16 @@ class UniswapRouterV2(ContractBase):
                         pool_to_token_out[pool] = token1
                     elif token_in == token1:
                         pool_to_token_out[pool] = token0
-                if not pool_to_token_out:
-                    logger.info("no data returned and 0 pools when checking the long way for %s!", token_in)
-                else:
-                    logger.info("no data returned but we have %s %s pools when checking the long way...", len(pool_to_token_out), token_in)
+                if NO_DATA:
+                    if pool_to_token_out:
+                        if token_in in _no_data_no_pools:
+                            _no_data_no_pools.remove(token_in)
+                        _no_data_yes_pools.add(token_in)
+                        logger.info("no data returned but we have %s %s pools when checking the long way...", len(pool_to_token_out), token_in)
+                    else:
+                        _no_data_no_pools.add(token_in)
+                        logger.info("no data returned and 0 pools when checking the long way for %s!", token_in)
+                    logger.info('no data: %s tokens no pools %s tokens have pools', len(_no_data_no_pools), len(_no_data_yes_pools))
                 return pool_to_token_out
 
         else:
@@ -615,3 +622,5 @@ _get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda 
 # debug helpers
 _attempted = set()
 _issues = set()
+_no_data_no_pools = set()
+_no_data_yes_pools = set()
