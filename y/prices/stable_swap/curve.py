@@ -429,6 +429,8 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     @a_sync.a_sync(cache_type='memory')
     async def get_price(self, token: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[float]:
         pool = await self.get_pool(token, sync=False)
+        if pool is None:
+            return None
         tvl = await pool.get_tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is None:
             return None
