@@ -56,9 +56,12 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
         decoded = tuple(decoded)
         for i, log in enumerate(logs):
             # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
-            setattr(decoded[i], "block_number", log.block_number)
-            setattr(decoded[i], "transaction_hash", log.transaction_hash)
-            setattr(decoded[i], "log_index", log.log_index)
+            try:
+                setattr(decoded[i], "block_number", log.block_number)
+                setattr(decoded[i], "transaction_hash", log.transaction_hash)
+                setattr(decoded[i], "log_index", log.log_index)
+            except IndexError:
+                raise IndexError(str(e), decoded)
     else:
         for i, log in enumerate(logs):
             setattr(decoded[i], "block_number", log["blockNumber"])
