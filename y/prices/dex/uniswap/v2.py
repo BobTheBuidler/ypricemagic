@@ -561,7 +561,7 @@ class UniswapRouterV2(ContractBase):
         if block and block < await contract_creation_block_async(self.factory):
             logger.debug("block %s is before %s deploy block")
             return 0
-        if self._supports_uniswap_helper and token not in _liquidity_out_of_gas(block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+        if self._supports_uniswap_helper and token not in _liquidity_out_of_gas and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
             try:
                 deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
                 logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
