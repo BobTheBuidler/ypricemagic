@@ -280,7 +280,7 @@ class UniswapRouterV2(ContractBase):
         paired_against: Address = WRAPPED_GAS_COIN,
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
-        ) -> Optional[UsdPrice]:
+        ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always uses intermediate WETH pair if `[token_in,weth,token_out]` swap path available.
@@ -405,7 +405,7 @@ class UniswapRouterV2(ContractBase):
                 if not pool_to_token_out:
                     logger.info("no data returned and 0 pools when checking the long way for %s!", token_in)
                 else:
-                    logger.info("no data returned but we have %s %s pools when checking the long way...", len(pool_to_token_out), token_in))
+                    logger.info("no data returned but we have %s %s pools when checking the long way...", len(pool_to_token_out), token_in)
                 return pool_to_token_out
 
         else:
