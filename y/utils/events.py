@@ -61,7 +61,7 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
                 setattr(decoded[i], "transaction_hash", log.transaction_hash)
                 setattr(decoded[i], "log_index", log.log_index)
             except IndexError:
-                raise IndexError(str(e), decoded)
+                raise IndexError(str(e), logs, decoded)
     else:
         for i, log in enumerate(logs):
             setattr(decoded[i], "block_number", log["blockNumber"])
