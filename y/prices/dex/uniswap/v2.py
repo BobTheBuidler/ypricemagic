@@ -561,7 +561,7 @@ class UniswapRouterV2(ContractBase):
         if block and block < await contract_creation_block_async(self.factory):
             logger.debug("block %s is before %s deploy block")
             return 0
-        if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+        if self._supports_uniswap_helper and token not in _liquidity_out_of_gas(block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
             try:
                 deepest_pool, liquidity = await self.deepest_pool_for(token, block, ignore_pools=ignore_pools)
                 logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
@@ -573,6 +573,7 @@ class UniswapRouterV2(ContractBase):
                 if "out of gas" not in str(e):
                     raise e
                 logger.info('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
+                _liquidity_out_of_gas.add(token)
                 
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
         liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
@@ -622,3 +623,4 @@ _attempted = set()
 _issues = set()
 _no_data_no_pools = set()
 _no_data_yes_pools = set()
+_liquidity_out_of_gas = set()
