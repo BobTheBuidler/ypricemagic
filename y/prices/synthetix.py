@@ -1,15 +1,11 @@
 import asyncio
 import logging
-from typing import List, Optional
+from typing import Callable, List, Optional
 
 import a_sync
 from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
-try:
-    from eth_abi import encode
-except ImportError:
-    from eth_abi import encode_single as encode
 from multicall import Call
 from typing_extensions import Self
 
@@ -19,6 +15,13 @@ from y.contracts import Contract, has_method
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork, call_reverted
 from y.networks import Network
+
+try:
+    from eth_abi import encode
+    encode_bytes: Callable[[str], bytes] = lambda s: encode(["bytes32"], [s.encode()])
+except ImportError:
+    from eth_abi import encode_single
+    encode_bytes: Callable[[str], bytes] = lambda s: encode_single("bytes32", s.encode())
 
 logger = logging.getLogger(__name__)
 
@@ -47,7 +50,8 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         See also https://docs.synthetix.io/addresses/
         """
         address_resolver = await self.__address_resolver__
-        address = await address_resolver.getAddress.coroutine(encode(['bytes32'], name.encode()), block_identifier=block)
+        key = encode_bytes(name)
+        address = await address_resolver.getAddress.coroutine(key, block_identifier=block)
         proxy = await Contract.coroutine(address)
         return await Contract.coroutine(await proxy.target.coroutine(block_identifier=block)) if hasattr(proxy, 'target') else proxy
 
