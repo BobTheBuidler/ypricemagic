@@ -403,9 +403,9 @@ class UniswapRouterV2(ContractBase):
                     elif token_in == token1:
                         pool_to_token_out[pool] = token0
                 if not pool_to_token_out:
-                    logger.debug("no data returned and 0 pools when checking the long way!")
+                    logger.debug("no data returned and 0 pools when checking the long way for %s!", token_in)
                 else:
-                    logger.debug("no data returned but we have pools when checking the long way...")
+                    logger.debug("no data returned but we have %s %s pools when checking the long way...", len(pool_to_token_out), token_in))
                 return pool_to_token_out
 
         else:
