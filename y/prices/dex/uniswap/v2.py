@@ -385,7 +385,7 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
     async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
-        if self._supports_uniswap_helper:
+        if self._supports_uniswap_helper and token_in not in _issues:
             try:
                 _attempted.add(token_in)
                 pools = [
