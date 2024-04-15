@@ -387,6 +387,7 @@ class UniswapRouterV2(ContractBase):
     async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
         if self._supports_uniswap_helper:
             try:
+                _attempted.add(token_in)
                 pools = [
                     UniswapV2Pool(pool, asynchronous=self.asynchronous)
                     for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
@@ -396,6 +397,8 @@ class UniswapRouterV2(ContractBase):
                     raise e
                 if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
                     raise e
+                _issues.add(token_in)
+                logger.info("got pools for %s tokens and failed for %s tokens", len(_attempted) - len(_issues),len(_issues))
                 pool_to_token_out = {}
                 async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
                     if token_in == token0:
@@ -609,3 +612,6 @@ class UniswapRouterV2(ContractBase):
         return path
     
 _get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)
+# debug helpers
+_attempted = 0
+_issues = 0
