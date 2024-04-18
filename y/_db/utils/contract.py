@@ -27,16 +27,11 @@ def get_deploy_block(address: str) -> Optional[int]:
         return deploy_block.number
     logger.debug('%s deploy block not cached, fetching from chain', address)
 
-def set_deploy_block(address: str, deploy_block: int) -> None:
-    a_sync.create_task(
-        coro=_set_deploy_block(address, deploy_block),
-        name=f"set_deploy_block {address}: {deploy_block}",
-        skip_gc_until_done=True,
-    )
-
 async def _set_deploy_block(address: str, deploy_block: int) -> None:
     await ensure_block(deploy_block)
     return await __set_deploy_block(address, deploy_block)
+
+set_deploy_block = a_sync.ProcessingQueue(_set_deploy_block, num_workers=10, return_data=False)
 
 @a_sync_write_db_session
 def __set_deploy_block(address: str, deploy_block: int) -> None:

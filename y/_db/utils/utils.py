@@ -53,13 +53,6 @@ def get_block_timestamp(number: int) -> Optional[int]:
         unix = ts.timestamp()
         logger.debug("got Block[%s, %s].timestamp from cache: %s, %s", chain.id, number, unix, ts)
         return unix
-    
-def set_block_timestamp(block: int, timestamp: int) -> None:
-    a_sync.create_task(
-        coro=_set_block_timestamp(block, timestamp),
-        name=f"set_block_timestamp {block}: {timestamp}",
-        skip_gc_until_done=True,
-    )
 
 @a_sync_read_db_session
 def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
@@ -70,13 +63,6 @@ def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
         block = entity.block
         logger.debug("found block %s for %s in ydb", block, timestamp)
         return block
-    
-def set_block_at_timestamp(timestamp: datetime, block: int) -> None:
-    a_sync.create_task(
-        coro=_set_block_at_timestamp(timestamp, block),
-        name=f"set_block_at_timestamp {timestamp}: {block}",
-        skip_gc_until_done=True,
-    )
 
 @a_sync_write_db_session
 def _set_block_timestamp(block: int, timestamp: int) -> None:
@@ -87,11 +73,14 @@ def _set_block_timestamp(block: int, timestamp: int) -> None:
     block.timestamp = timestamp
     logger.debug("cached %s.timestamp %s", block, timestamp)
 
+set_block_timestamp = a_sync.ProcessingQueue(_set_block_timestamp, num_workers=10, return_data=False)
+
 @a_sync_write_db_session
 def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     insert(BlockAtTimestamp, chainid=chain.id, timestamp=timestamp, block=block)
     logger.debug("inserted block %s for %s", block, timestamp)
 
+set_block_at_timestamp = a_sync.ProcessingQueue(_set_block_at_timestamp, num_workers=10, return_data=False)
 
 # startup caches
     

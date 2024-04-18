@@ -31,13 +31,6 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
         logger.debug("found %s block %s price %s in ydb", address, block, price)
         return price
 
-def set_price(address: str, block: int, price: Decimal) -> None:
-    a_sync.create_task(
-        coro=_set_price(address, block, price), 
-        name=f"set_price {price} for {address} at {block}", 
-        skip_gc_until_done=True,
-    )
-
 @retry_locked
 async def _set_price(address: str, block: int, price: Decimal) -> None:
     await ensure_block(block, sync=False)
@@ -53,6 +46,8 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
             sync = False,
         )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
+
+set_price = a_sync.ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
 @cached(TTLCache(maxsize=1_000, ttl=5*60), lock=threading.Lock())
 @log_result_count("prices", ["block"])
