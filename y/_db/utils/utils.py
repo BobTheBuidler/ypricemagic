@@ -105,7 +105,12 @@ def known_blocks() -> Set[int]:
 @log_result_count("block timestamps")
 def known_block_timestamps() -> Dict[int, datetime]:
     """cache and return all known block timestamps for this chain to minimize db reads"""
-    return dict(select((b.number, b.timestamp) for b in Block if b.chain.id == chain.id and b.timestamp))
+    query = select((b.number, b.timestamp) for b in Block if b.chain.id == chain.id and b.timestamp)
+    page_size = 100_000
+    items = {}
+    for i in range((query.count() // page_size) + 1):
+        items.update(dict(query.page(i+1, page_size)))
+    return items
 
 @cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
 @log_result_count("blocks for timestamps")
