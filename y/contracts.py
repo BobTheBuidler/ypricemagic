@@ -482,7 +482,7 @@ def _extract_abi_data(address):
 
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
-        raise ContractNotVerified(f"Contract source code not verified: {address}")
+        raise ContractNotVerified(f"Contract source code not verified: {address}") from None
     name = data["ContractName"]
     abi = json.loads(data["ABI"])
     implementation = data.get("Implementation")
