@@ -92,7 +92,7 @@ class UniswapV2Pool(ERC20):
         return await asyncio.gather(self.__token0__, self.__token1__)
     __tokens__: HiddenMethodDescriptor[Self, ERC20]
     
-    @a_sync.aka.property
+    @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
         if self._token0 is None:
             try:
@@ -105,7 +105,7 @@ class UniswapV2Pool(ERC20):
         return self._token0
     __token0__: HiddenMethodDescriptor[Self, ERC20]
 
-    @a_sync.aka.property
+    @a_sync.aka.cached_property
     async def token1(self) -> ERC20:
         if self._token1 is None:
             try:
@@ -397,7 +397,8 @@ class UniswapRouterV2(ContractBase):
                 if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
                     raise e
                 pool_to_token_out = {}
-                async for pool, (token0, token1) in a_sync.map(_get_tokens, await self.__pools__):
+                pools = await self.__pools__
+                async for pool, (token0, token1) in a_sync.map(_get_tokens, concurrency=min(10_000, len(pools))):
                     if token_in == token0:
                         pool_to_token_out[pool] = token1
                     elif token_in == token1:
@@ -411,7 +412,7 @@ class UniswapRouterV2(ContractBase):
         else:
             pools = await self.__pools__
         pool_to_token_out = {}
-        async for pool, (token0, token1) in a_sync.map(_get_tokens, pools):
+        async for pool, (token0, token1) in a_sync.map(_get_tokens, pools, concurrency=min(10_000, len(pools))):
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
