@@ -53,13 +53,6 @@ def get_bucket(address: str) -> Optional[str]:
         logger.debug("found %s bucket %s in ydb", address, bucket)
     return bucket
 
-def set_bucket(address: str, bucket: str) -> None:
-    a_sync.create_task(
-        coro=_set_bucket(address, bucket),
-        name=f"set_bucket {address}: {bucket}",
-        skip_gc_until_done=True,
-    )
-
 @a_sync_write_db_session
 def _set_bucket(address: str, bucket: str) -> None:
     if address == constants.EEE_ADDRESS:
@@ -67,6 +60,8 @@ def _set_bucket(address: str, bucket: str) -> None:
     get_token = _get_get_token()
     get_token(address, sync=True).bucket = bucket
     logger.debug("updated %s bucket in ydb: %s", address, bucket)
+
+set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=10, return_data=False)
 
 @a_sync_read_db_session
 def get_symbol(address: str) -> Optional[str]:
