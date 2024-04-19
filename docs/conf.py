@@ -18,6 +18,7 @@ author = 'BobTheBuidler'
 
 extensions = [
     'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
     'sphinx.ext.napoleon',
     'sphinx.ext.intersphinx',
     'a_sync.sphinx.ext',
