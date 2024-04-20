@@ -7,7 +7,7 @@ from typing import Dict, Optional, Set
 import a_sync
 from brownie import chain, convert
 from cachetools import TTLCache, cached
-from pony.orm import commit, select
+from pony.orm import commit, db_session, select
 
 from y import constants
 from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, log_result_count
@@ -36,6 +36,7 @@ def ensure_token(address: str) -> None:
     return _ensure_token(address)
 
 @lru_cache(maxsize=None)
+@db_session
 def _ensure_token(address: str) -> None:
     """We can't wrap a `_Wrapped` object with `a_sync` so we have this helper fn"""
     if address not in known_tokens():
@@ -146,6 +147,7 @@ def _get_token_decimals(address: str) -> Optional[int]:
 # startup caches
     
 @cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@db_session
 @log_result_count("tokens")
 def known_tokens() -> Set[str]:
     """cache and return all known Tokens for this chain to minimize db reads"""
