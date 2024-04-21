@@ -1,0 +1,45 @@
+
+# This code handles auto versioning
+[build-system]
+requires = ["setuptools>=45", "setuptools_scm[toml]>=6.2"]
+
+[project]
+dynamic = ["version"] 
+readme = "README.md"
+
+[tool.poetry]
+name = "ypricemagic"
+version = "0.0.1"
+description = "Use this tool to extract historical on-chain price data for any token at any block using an archive node."
+authors = ["BobTheBuidler <bobthebuidlerdefi@gmail.com>"]
+license = "MIT"
+homepage = "https://github.com/BobTheBuidler/ypricemagic"
+repository = "https://github.com/BobTheBuidler/ypricemagic"
+documentation = "https://bobthebuidler.github.io/ypricemagic"
+
+[tool.setuptools_scm]
+root = "."
+local_scheme = "no-local-version"
+version_scheme = "python-simplified-semver"
+
+[tool.setuptools.package-data]
+y = ["py.typed"]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.13"
+bobs_lazy_logging = "==0.0.4"
+cachetools = ">=4.1.1,<4.3"
+checksum_dict = ">=1.1.1"
+dank_mids = ">=4.20.88"
+eth-brownie = ">=1.19.3,<1.21"
+eth_retry = ">=0.1.19,<0.2"
+ez-a-sync = ">=0.19.4,<0.20"
+inflection = ">=0.1,<0.6"
+joblib = ">=1.0.1"
+multicall = ">=0.8.2"
+pony = "*"
+vyper = { version = "0.3.7", python = ">=3.8,<3.11" }
+
+[tool.poetry.dev-dependencies]
+pytest = ">=6.2.5"
+pytest-asyncio-cooperative = "*"
