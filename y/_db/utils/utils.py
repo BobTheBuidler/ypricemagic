@@ -1,13 +1,11 @@
 
 import logging
-import threading
 from datetime import datetime, timezone
 from dateutil import parser
 from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
-from cachetools import TTLCache, cached
 from pony.orm import commit, select
 from brownie import chain
 
@@ -83,25 +81,26 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
 set_block_at_timestamp = a_sync.ProcessingQueue(_set_block_at_timestamp, num_workers=10, return_data=False)
 
 # startup caches
-    
-@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+
+@lru_cache(maxsize=1)
 @log_result_count("blocks")
 def known_blocks() -> Set[int]:
     """cache and return all known blocks for this chain to minimize db reads"""
     return set(select(b.number for b in Block if b.chain.id == chain.id))
 
-@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@lru_cache(maxsize=1)
 @log_result_count("block timestamps")
 def known_block_timestamps() -> Dict[int, datetime]:
     """cache and return all known block timestamps for this chain to minimize db reads"""
     query = select((b.number, b.timestamp) for b in Block if b.chain.id == chain.id and b.timestamp)
     page_size = 100_000
-    items = {}
+    timestamps = {}
     for i in range((query.count() // page_size) + 1):
-        items.update(dict(query.page(i+1, page_size)))
-    return items
+        for block, timestamp in query.page(i+1, page_size):
+            timestamps[block] = timestamp
+    return timestamps
 
-@cached(TTLCache(maxsize=1, ttl=60*60), lock=threading.Lock())
+@lru_cache(maxsize=1)
 @log_result_count("blocks for timestamps")
 def known_blocks_for_timestamps() -> Dict[datetime, int]:
     """return all known blocks for timestamps for this chain to minimize db reads"""
