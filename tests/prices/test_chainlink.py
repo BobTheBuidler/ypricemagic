@@ -132,7 +132,7 @@ async def test_chainlink_latest(token):
         if latest_timestamp and latest_timestamp + 24 * 60 * 60 < time.time():
             pytest.skip("feed is stale")
         try:
-            assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, 'no current price available'
+            assert await feed.contract.aggregator == ZERO_ADDRESS, 'no current price available'
         except AttributeError as e:
             raise AttributeError(*e.args, feed) from e
 
@@ -154,7 +154,7 @@ async def test_chainlink_before_registry(token):
         if latest_timestamp and latest_timestamp + 24 * 60 * 60 < time.time():
             pytest.skip("feed is stale")
         try:
-            assert await feed.contract.aggregator.coroutine() == ZERO_ADDRESS, f'{feed} no price available before registry'
+            assert await feed.contract.aggregator == ZERO_ADDRESS, f'{feed} no price available before registry'
         except AttributeError as e:
             raise AttributeError(*e.args, feed) from e
 

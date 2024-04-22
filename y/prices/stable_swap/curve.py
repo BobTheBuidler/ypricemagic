@@ -121,7 +121,7 @@ class AddressProvider(_CurveEventsLoader):
         self._events = AddressProviderEvents(self)
     async def get_registry(self) -> EthAddress:
         contract = await Contract.coroutine(self.address)
-        return await contract.get_registry.coroutine()
+        return await contract.get_registry
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
         logger.debug("loading pools from metapool factories")
