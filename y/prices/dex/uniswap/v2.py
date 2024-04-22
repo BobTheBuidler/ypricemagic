@@ -489,7 +489,7 @@ class UniswapRouterV2(ContractBase):
         #    return None
         deepest_pool = None
         deepest_pool_balance = 0
-        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, pools, block=block):
+        async for pool, depth in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
                 deepest_pool_balance = depth
