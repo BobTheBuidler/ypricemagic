@@ -166,7 +166,7 @@ class UniswapV2Pool(ERC20):
         reserves: Tuple[WeiBalance, WeiBalance]
         tokens = await self.__tokens__
         prices, reserves = await asyncio.gather(
-            a_sync.map(ERC20.price, tokens, block=block, return_None_on_failure=True, skip_cache=skip_cache),
+            ERC20.price.map(tokens, block=block, return_None_on_failure=True, skip_cache=skip_cache),
             self.reserves(block=block, sync=False),
         )
 
@@ -461,7 +461,7 @@ class UniswapRouterV2(ContractBase):
             for pool in pools:
                 yield pool
         else:
-            async for pool, deploy_block in a_sync.map(ERC20.deploy_block, pools, when_no_history_return_0=True):
+            async for pool, deploy_block in a_sync.map(ERC20.deploy_block, pools, when_no_history_return_0=True).map():
                 if deploy_block <= block:
                     yield pool
 
@@ -516,7 +516,7 @@ class UniswapRouterV2(ContractBase):
                 stable_pools = {
                     pool: stable_pools[pool] 
                     async for pool, deploy_block 
-                    in a_sync.map(ERC20.deploy_block, stable_pools, when_no_history_return_0=True) 
+                    in a_sync.map(ERC20.deploy_block, stable_pools, when_no_history_return_0=True).map()
                     if deploy_block <= block
                 }
             
@@ -525,7 +525,7 @@ class UniswapRouterV2(ContractBase):
         
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block):
+        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block).map():
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth

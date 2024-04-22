@@ -394,4 +394,8 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
 async def _lowest_deploy_block(addresses: Iterable[EthAddress], when_no_history_return_0: bool) -> Block:
     from y.contracts import contract_creation_block_async
-    return await a_sync.map(contract_creation_block_async, addresses, when_no_history_return_0=when_no_history_return_0).min(pop=True, sync=False)
+    return await a_sync.map(
+        contract_creation_block_async, 
+        addresses, 
+        when_no_history_return_0=when_no_history_return_0,
+    ).min(sync=False)

@@ -191,7 +191,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         try:
             return await dank_mids.web3.provider.make_request("TraceFilter", {})
         except NotImplementedError:
-            results = {block: traces async for block, traces in a_sync.map(self._trace_block, range(from_block, to_block))}
+            results = {block: traces async for block, traces in a_sync.map(self._trace_block, range(from_block, to_block)).map()}
             return list(chain(*[results[i] for i in range(from_block, to_block)]))
         
     async def _trace_block(self, block: int) -> List[dict]:

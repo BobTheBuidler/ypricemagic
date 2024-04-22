@@ -437,7 +437,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         pools = [pool for pool in pools if pool not in ignore_pools]
 
         if block is not None:
-            pools = [pool async for pool, deploy_block in a_sync.map(contract_creation_block_async, pools) if deploy_block <= block]
+            pools = [pool async for pool, deploy_block in a_sync.map(contract_creation_block_async, pools).map() if deploy_block <= block]
 
         # Choose a pool to use for pricing `token_in`.
         if len(pools) == 1:
