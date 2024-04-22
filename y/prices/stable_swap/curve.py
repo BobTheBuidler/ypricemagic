@@ -134,8 +134,7 @@ class AddressProvider(_CurveEventsLoader):
             for factory in self.identifiers[i]
         ]
 
-        metapool_factory_pools = await asyncio.gather(*[factory.read_pools(sync=False) for factory in metapool_factories])
-        for factory, pool_list in zip(metapool_factories, metapool_factory_pools):
+        async for factory, pool_list in a_sync.map(Factory.read_pools, metapool_factories, sync=False):
             for pool in pool_list:
                 # for metpool factories pool is the same as lp token
                 curve.token_to_pool[pool] = pool
@@ -144,10 +143,8 @@ class AddressProvider(_CurveEventsLoader):
         # if there are factories that haven't yet been added to the on-chain address provider,
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
         logger.debug("loading pools from cryptopool factories")
-        await asyncio.gather(*[
-            Factory(factory, asynchronous=self.asynchronous) 
-            for factory in self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]
-        ])
+        identifiers = self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]
+        await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
             logger.info('loaded %s pools from %s registries and %s factories', len(curve.token_to_pool), len(curve.registries), len(curve.factories))
@@ -176,7 +173,8 @@ class Factory(_Loader):
             else:
                 # This happens sometimes, not sure why as the contract is verified.
                 brownie.Contract.from_explorer(self.address)
-        return await asyncio.gather(*[self.get_pool(i) for i in range(await self.pool_count())])
+        pool_count = await self.pool_count()
+        return list((await a_sync.map(self.get_pool, range(pool_count))).values())
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
         await asyncio.gather(*[self._load_pool(pool) for pool in pool_list if pool not in curve.factories[self.address]])
@@ -291,37 +289,27 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     __get_underlying_coins__: HiddenMethodDescriptor[Self, List[ERC20]]
     
     @a_sync.a_sync(ram_cache_maxsize=1000)
-    async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
+    async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> List[WeiBalance]:
         """
         Get {token: balance} of liquidity in the pool.
         """
-
-        # TODO figure out why these can't be gathered.
-        # Sometimes `self.coins` is a list not a coroutine?
-        #coins, decimals = await gather([
-        #    self.__coins__,
-        #    self.__coins_decimals__,
-        #])
-
         coins = await self.__coins__
-        decimals = await self.__coins_decimals__
-
         try:
             factory = await self.__factory__
             source = factory or await curve.__registry__
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
-        # fallback for historical queries where registry was not yet deployed
         except ValueError:
-            balances = await asyncio.gather(*[self._get_balance(i, block) for i, _ in enumerate(coins)])
+            # fallback for historical queries where registry was not yet deployed
+            balances = list((await a_sync.map(self._get_balance, range(len(coins)), block=block)).values())
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')
 
-        return {
-            coin: Decimal(balance / 10 ** dec)
-            for coin, balance, dec in zip(coins, balances, decimals)
+        return [
+            WeiBalance(balance, coin, block, skip_cache=skip_cache) 
+            for coin, balance in zip(coins, balances) 
             if coin != ZERO_ADDRESS
-        }
+        ]
     
     async def _get_balance(self, i: int, block: Optional[Block] = None) -> Optional[int]:
         try:
@@ -341,17 +329,13 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         Get total value in Curve pool.
         """
         try:
-            balances = await self.get_balances(block=block, sync=False)
+            balances = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         except ValueError as e:
             if str(e).startswith("could not fetch balances "):
                 return None
             raise e
         
-        prices = await asyncio.gather(*[coin.price(block=block, skip_cache=skip_cache, sync=False) for coin in balances])
-
-        return UsdValue(
-            sum(balance * Decimal(price) for balance, price in zip(balances.values(), prices))
-        )
+        return UsdValue(sum(await asyncio.gather(*[balance.__value_usd__ for balance in balances])))
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> Optional[int]:
@@ -463,8 +447,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         pools = [pool for pool in pools if pool not in ignore_pools]
 
         if block is not None:
-            deploy_blocks = await asyncio.gather(*[contract_creation_block_async(pool.address, True) for pool in pools])
-            pools = [pool for pool, deploy_block in zip(pools, deploy_blocks) if deploy_block <= block]
+            pools = [pool async for pool, deploy_block in a_sync.map(contract_creation_block_async, pools) if deploy_block <= block]
 
         # Choose a pool to use for pricing `token_in`.
         if len(pools) == 1:
@@ -553,11 +536,8 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             self.identifiers[Ids.Main_Registry] = [registry]
         while True:
             # Check if any registries were updated, then ensure all old and new are loaded
-            await asyncio.gather(*[
-                Registry(self.identifiers[i][-1], self, asynchronous=self.asynchronous)
-                for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry]
-                if self.identifiers[i]
-            ])
+            registries = [self.identifiers[i][-1] for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry] if self.identifiers[i]]
+            await a_sync.map(Registry, registries, curve=self, asynchronous=self.asynchronous)
             # load metapool and curve v5 factories
             await self.address_provider._load_factories()
             await asyncio.sleep(600)
