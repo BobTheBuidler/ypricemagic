@@ -134,7 +134,7 @@ class AddressProvider(_CurveEventsLoader):
             for factory in self.identifiers[i]
         ]
 
-        async for factory, pool_list in a_sync.map(Factory.read_pools, metapool_factories, sync=False):
+        async for factory, pool_list in a_sync.map(Factory.read_pools, metapool_factories):
             for pool in pool_list:
                 # for metpool factories pool is the same as lp token
                 curve.token_to_pool[pool] = pool
@@ -174,7 +174,7 @@ class Factory(_Loader):
                 # This happens sometimes, not sure why as the contract is verified.
                 brownie.Contract.from_explorer(self.address)
         pool_count = await self.pool_count()
-        return list((await a_sync.map(self.get_pool, range(pool_count))).values())
+        return await a_sync.map(self.get_pool, range(pool_count)).values()
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
         await asyncio.gather(*[self._load_pool(pool) for pool in pool_list if pool not in curve.factories[self.address]])
@@ -300,7 +300,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
         except ValueError:
             # fallback for historical queries where registry was not yet deployed
-            balances = list((await a_sync.map(self._get_balance, range(len(coins)), block=block)).values())
+            balances = await a_sync.map(self._get_balance, range(len(coins)), block=block).values()
 
         if not any(balances):
             raise ValueError(f'could not fetch balances {self.__str__()} at {block}')

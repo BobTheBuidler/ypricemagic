@@ -88,17 +88,14 @@ async def get_prices(
     if block is None:
         block = await dank_mids.eth.block_number
 
-    prices = await a_sync.map(
+    return await a_sync.map(
         get_price,
         token_addresses,
         block=block, 
         fail_to_None=fail_to_None, 
         skip_cache=skip_cache, 
         silent=silent, 
-        sync=False,
-    )
-
-    return list(prices.values())
+    ).values()
 
 def __cache(get_price: GetPrice) -> GetPrice:
     @functools.wraps(get_price)
