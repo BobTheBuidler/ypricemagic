@@ -36,9 +36,7 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None, *, ski
 async def get_tvl(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
     balances: Tuple[WeiBalance, WeiBalance]
     balances = await get_balances(token, block, skip_cache=skip_cache, _async_balance_objects=True, sync=False)
-    if balances is None:
-        return None
-    return UsdValue(sum(await asyncio.gather(*[bal.value_usd for bal in balances])))
+    return UsdValue(await WeiBalance.value_usd.sum(balances)) if balances else None
 
 @a_sync.a_sync(default='sync')
 async def get_balances(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE, _async_balance_objects: bool = False) -> Optional[Tuple[WeiBalance,WeiBalance]]:

@@ -1,9 +1,9 @@
 # async: done
 
-import asyncio
 import logging
 from typing import Optional
 
+import a_sync
 from brownie import chain
 
 from y.classes.common import ERC20
@@ -208,7 +208,7 @@ async def _exit_sense_check(token_address: str) -> bool:
     elif bucket == 'curve lp':
         underlyings = await CurvePool(token_address, asynchronous=True).coins
         if questionable_underlyings := [und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
-            return all(await asyncio.gather(*[_exit_sense_check(underlying) for underlying in questionable_underlyings]))
+            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(pop=True)
         return True
     
     elif bucket == 'atoken':

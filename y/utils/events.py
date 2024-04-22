@@ -106,7 +106,7 @@ async def get_logs_asap_generator(
         if address is None:
             from_block = 0
         elif isinstance(address, Iterable) and not isinstance(address, str):
-            from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, True) for addr in address]))
+            from_block = await a_sync.map(contract_creation_block_async, address, when_no_history_return_0=True).min(pop=True)
         else:
             from_block = await contract_creation_block_async(address, True)
     if to_block is None:
@@ -347,7 +347,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             if self.addresses is None:
                 self.from_block = 0
             elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
-                self.from_block = min(await asyncio.gather(*[contract_creation_block_async(addr, when_no_history_return_0=True) for addr in self.addresses]))
+                self.from_block = await a_sync.map(contract_creation_block_async, self.addresses, when_no_history_return_0=True).min(pop=True)
             else:
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block

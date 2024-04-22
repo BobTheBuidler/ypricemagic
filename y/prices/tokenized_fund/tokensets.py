@@ -39,17 +39,18 @@ class TokenSet(ERC20):
         return [ERC20(component, asynchronous=self.asynchronous) for component in components]
     
     async def balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> List[WeiBalance]:
-        contract = await Contract.coroutine(self.address)
+        contract, components = await asyncio.gather(
+            Contract.coroutine(self.address),
+            self.components(block=block, sync=False),
+        )
         if hasattr(contract, 'getUnits'):
             balances = await contract.getUnits.coroutine(block_identifier = block)
             logger.debug("getUnits: %s", balances)
         elif hasattr(contract, 'getTotalComponentRealUnits'):
-            balances = await asyncio.gather(*[
-                self.get_total_component_real_units.coroutine((component.address, ), block_id=block)
-                for component in await self.components(block, sync=False)
-            ])
+            _components = ((component.address, ) for component in components)
+            balances = await a_sync.map(self.get_total_component_real_units.coroutine, _components, block_id=block).values()
             logger.debug("getTotalComponentRealUnits: %s", balances)
-        balances = [WeiBalance(balance, component, block=block, skip_cache=skip_cache) for component, balance in zip(await self.components(block=block, sync=False), balances)]
+        balances = [WeiBalance(balance, component, block=block, skip_cache=skip_cache) for component, balance in zip(components, balances)]
         return balances
     
     async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
@@ -60,7 +61,7 @@ class TokenSet(ERC20):
         contract = await Contract.coroutine(self.address)
         if hasattr(contract, "getUnits"):
             balances: List[WeiBalance] = await self.balances(block=block, skip_cache=skip_cache, sync=False)
-            values = await asyncio.gather(*[balance.__value_usd__ for balance in balances])
+            values = await WeiBalance.value_usd.map(balances).values()
             logger.debug("balances: %s  values: %s", balances, values)
             tvl = sum(values)
             price = UsdPrice(tvl / total_supply)
@@ -68,8 +69,7 @@ class TokenSet(ERC20):
             return price
         elif hasattr(contract, "getTotalComponentRealUnits"):
             balances_per_token: List[WeiBalance] = await self.balances(block=block, sync=False)
-            values_per_token = await asyncio.gather(*[balance.__value_usd__ for balance in balances_per_token])
-            price = UsdPrice(sum(values_per_token))
+            values_per_token = UsdPrice(await WeiBalance.value_usd.sum(balances_per_token))
             logger.debug("balances per token: %s  values per token: %s  price: %s", balances_per_token, values_per_token, price)
             return price
         raise NotImplementedError
