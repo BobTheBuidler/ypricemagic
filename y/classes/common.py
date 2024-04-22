@@ -256,12 +256,21 @@ class WeiBalance(a_sync.ASyncGenericBase):
     
     def __repr__(self) -> str:
         return f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
+    
+    def __hash__(self) -> int:
+        return hash((self.balance, self.token, self.block, self._skip_cache, self._ignore_pools))
 
     def __eq__(self, __o: object) -> bool:
         if isinstance(__o, int):
             return __o == self.balance
         elif isinstance(__o, WeiBalance):
-            return self.balance == __o.balance and self.token == __o.token
+            return (
+                self.balance == __o.balance and 
+                self.token == __o.token and 
+                self.block == __o.block and 
+                self._skip_cache == __o._skip_cache and
+                self._ignore_pools == __o._ignore_pools
+            )
         return False
     
     def __lt__(self, __o: object) -> bool:
