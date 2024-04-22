@@ -67,6 +67,7 @@ class BalancerV2Vault(ContractBase):
         async for pool in self._events.events(to_block=block):
             yield pool
 
+    @stuck_coro_debugger
     async def pools_for_token(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
         async for pool, info in BalancerV2Pool.tokens.map(block=block).map(self.pools(block=block), pop=True):
             if token in info:
@@ -126,10 +127,10 @@ class BalancerV2Pool(ERC20):
         self._id = id
         self._messed_up = self.address in MESSED_UP_POOLS
 
-    @a_sync.aka.property
+    @a_sync.aka.cached_property
     async def id(self) -> PoolId:
         if self._id is None:
-            self._id = a_sync.create_task(Call(self.address, ['getPoolId()(bytes32)']), name=f"pool.id for {self}")
+            self._id = await Call(self.address, ['getPoolId()(bytes32)'])
         if hasattr(self._id, "__await__"):
             self._id = PoolId(await self._id)
         return self._id
@@ -153,7 +154,7 @@ class BalancerV2Pool(ERC20):
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Awaitable[UsdValue]]:
         balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if balances:
-            return await UsdValue(WeiBalance.value_usd.sum((balance for balance in balances.values() if balance.token.address != self.address)))
+            return UsdValue(await WeiBalance.value_usd.sum(balance for balance in balances.values() if balance.token.address != self.address))
 
     @a_sync_cache
     @stuck_coro_debugger
@@ -169,7 +170,10 @@ class BalancerV2Pool(ERC20):
         if vault is None:
             return {}
         tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
-        return {ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block, skip_cache=skip_cache) for token, balance in zip(tokens, balances)}
+        return {
+            ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block, skip_cache=skip_cache)
+            for token, balance in zip(tokens, balances)
+        }
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
@@ -177,7 +181,7 @@ class BalancerV2Pool(ERC20):
             self.get_balances(block=block, skip_cache=skip_cache, sync=False),
             self.weights(block=block, sync=False),
         )
-        pool_token_info = list(zip(token_balances.keys(),token_balances.values(), weights))
+        pool_token_info = list(zip(token_balances.keys(), token_balances.values(), weights))
         for pool_token, balance, weight in pool_token_info:
             if pool_token == token_address:
                 token_balance, token_weight = balance, weight
