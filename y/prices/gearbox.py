@@ -28,7 +28,7 @@ class DieselPool(ContractBase):
     async def diesel_token(self) -> ERC20:
         contract = await self.__contract__
         try:
-            return ERC20(await contract.dieselToken.coroutine(), asynchronous=self.asynchronous)
+            return ERC20(await contract.dieselToken, asynchronous=self.asynchronous)
         except AttributeError: # NOTE: there could be better ways of doing this with hueristics, not sure yet
             return ERC20(self.address, asynchronous=self.asynchronous)
     __diesel_token__: HiddenMethodDescriptor[Self, ERC20]
@@ -36,7 +36,7 @@ class DieselPool(ContractBase):
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
         contract = await self.__contract__
-        return ERC20(await contract.underlyingToken.coroutine(), asynchronous=self.asynchronous)
+        return ERC20(await contract.underlyingToken, asynchronous=self.asynchronous)
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
     
     async def exchange_rate(self, block: Block) -> Decimal:
@@ -66,7 +66,7 @@ class Gearbox(a_sync.ASyncGenericBase):
     @a_sync_cache
     async def pools(self) -> List[DieselPool]:
         registry = await self.registry
-        return [DieselPool(pool, asynchronous=self.asynchronous) for pool in await registry.getPools.coroutine()]
+        return [DieselPool(pool, asynchronous=self.asynchronous) for pool in await registry.getPools]
     
     async def diesel_tokens(self) -> Dict[ERC20, DieselPool]:
         pools: List[DieselPool] = await self.pools(sync=False)

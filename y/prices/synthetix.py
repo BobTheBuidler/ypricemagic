@@ -61,7 +61,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         Get target addresses of all synths.
         """
         proxy_erc20 = await self.get_address('ProxyERC20', sync=False)
-        synth_count = await proxy_erc20.availableSynthCount.coroutine()
+        synth_count = await proxy_erc20.availableSynthCount
         synths = await asyncio.gather(*[proxy_erc20.availableSynths.coroutine(i) for i in range(synth_count)])
         logger.info('loaded %s synths', len(synths))
         return synths

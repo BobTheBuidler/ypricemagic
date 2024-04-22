@@ -217,7 +217,7 @@ async def _exit_sense_check(token_address: str) -> bool:
         underlying = await CToken(token_address, asynchronous=True).underlying
     elif bucket == 'solidex':
         contract = await Contract.coroutine(token_address)
-        underlying = await contract.pool.coroutine()
+        underlying = await contract.pool
     elif bucket == 'yearn or yearn-like':
         underlying = await YearnInspiredVault(token_address, asynchronous=True).underlying
     else:

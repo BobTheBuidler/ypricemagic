@@ -37,4 +37,4 @@ async def get_price(token: AnyAddressType, block: Optional[int] = None, skip_cac
 @alru_cache(maxsize=None)
 async def _get_pool(token) -> EthAddress:
     contract = await Contract.coroutine(token)
-    return await contract.pool.coroutine()
+    return await contract.pool

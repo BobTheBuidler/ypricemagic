@@ -82,7 +82,7 @@ class UniswapV2Pool(ERC20):
                 raise
             contract = await Contract.coroutine(self.address)
             try: 
-                return await contract.factory.coroutine()
+                return await contract.factory
             except AttributeError as exc:
                 raise NotAUniswapV2Pool from exc
     __factory__: HiddenMethodDescriptor[Self, Address]
