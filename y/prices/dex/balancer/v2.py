@@ -123,6 +123,8 @@ MESSED_UP_POOLS = {
 }.get(chain.id, [])
 
 class BalancerV2Pool(ERC20):
+    __unweighted: bool = False
+    __weights: List[int] = None
     __slots__ = "_id", "_messed_up"
     def __init__(self, address: AnyAddressType, *args, id: Optional[HexBytes] = None, **kwargs):
         super().__init__(address, *args, **kwargs)
@@ -179,10 +181,12 @@ class BalancerV2Pool(ERC20):
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
-        token_balances, weights = await asyncio.gather(
-            self.get_balances(block=block, skip_cache=skip_cache, sync=False),
-            self.weights(block=block, sync=False),
-        )
+        get_balances = self.get_balances(block=block, skip_cache=skip_cache, sync=False)
+        if self.__unweighted:
+            token_balances = await get_balances
+            weights = self.__weights
+        else:
+            token_balances, weights = await asyncio.gather(token_balances, self.weights(block=block, sync=False))
         pool_token_info = list(zip(token_balances.keys(),token_balances.values(), weights))
         for pool_token, balance, weight in pool_token_info:
             if pool_token == token_address:
@@ -227,8 +231,10 @@ class BalancerV2Pool(ERC20):
         contract = await Contract.coroutine(self.address)
         try:
             return await contract.getNormalizedWeights.coroutine(block_identifier = block)
-        except (AttributeError,ValueError):
-            return len(await self.tokens(block=block, sync=False))
+        except AttributeError:
+            # Contract has no method `getNormalizedWeights`
+            self.__unweighted = True
+            self.__weights = 10 ** 18 // len(await self.tokens(block=block, sync=False))
 
 class ImmutableTokensBalancerV2Pool(BalancerV2Pool):
     async def tokens(self, _: Optional[Block] = None) -> List[ERC20]:
