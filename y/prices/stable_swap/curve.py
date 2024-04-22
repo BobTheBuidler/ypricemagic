@@ -142,9 +142,9 @@ class AddressProvider(_CurveEventsLoader):
 
         # if there are factories that haven't yet been added to the on-chain address provider,
         # please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually
-        logger.debug("loading pools from cryptopool factories")
-        identifiers = self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]
-        await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
+        if identifiers := self.identifiers[Ids.CryptoPool_Factory] + self.identifiers[Ids.Cryptopool_Factory]:
+            logger.debug("loading pools from cryptopool factories")
+            await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
             logger.info('loaded %s pools from %s registries and %s factories', len(curve.token_to_pool), len(curve.registries), len(curve.factories))
@@ -430,7 +430,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
         try:
-            pools: List[CurvePool] = (await self.__coin_to_pools__)[token_in]
+            pools = (await self.__coin_to_pools__)[token_in]
         except KeyError:
             return None
         
@@ -444,9 +444,8 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             pool = pools[0]
         else:
             # Use the pool with deepest liquidity.
-            balances = await asyncio.gather(*[pool.check_liquidity(token_in, block=block, sync=False) for pool in pools], return_exceptions=True)
             deepest_pool, deepest_bal = None, 0
-            for pool, depth in zip(pools, balances):
+            async for pool, depth in CurvePool.check_liquidity.map(pools, block=block).map():
                 if depth > deepest_bal:
                     deepest_pool = pool
                     deepest_bal = depth
@@ -455,7 +454,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if pool is None:
             return None
 
-        if len(coins := await pool.__coins__) != 2:
+        if len(await pool.__coins__) != 2:
             # TODO: handle this sitch if necessary
             return
 
@@ -486,10 +485,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     __coin_to_pools__: HiddenMethodDescriptor[Self, Dict[str, List[CurvePool]]]
     
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...]) -> int:
-        pools: List[CurvePool] = await self.__coin_to_pools__
-        if token not in pools:
-            return 0
-        if pools := [pool for pool in pools[token] if pool not in ignore_pools]:
+        if pools := [pool for pool in (await self.__coin_to_pools__).get(token, []) if pool not in ignore_pools]:
             return await CurvePool.check_liquidity.max(pools, token=token, block=block)
         return 0
     
