@@ -2,8 +2,7 @@
 import asyncio
 import logging
 from collections import defaultdict
-from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
-                    Tuple)
+from typing import AsyncIterator, Dict, List, NewType, Optional, Tuple
 
 import a_sync
 from a_sync.property import HiddenMethodDescriptor
@@ -143,7 +142,7 @@ class BalancerV2Pool(ERC20):
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
     
     @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Awaitable[UsdPrice]:
+    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         tvl, total_supply = await asyncio.gather(
             self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
             self.total_supply_readable(block=block, sync=False),
@@ -151,7 +150,7 @@ class BalancerV2Pool(ERC20):
         return UsdPrice(tvl / total_supply)
         
     @stuck_coro_debugger
-    async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Awaitable[UsdValue]]:
+    async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
         balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if balances:
             return UsdValue(await WeiBalance.value_usd.sum(balance for balance in balances.values() if balance.token.address != self.address))
@@ -182,9 +181,9 @@ class BalancerV2Pool(ERC20):
             self.weights(block=block, sync=False),
         )
         pool_token_info = list(zip(token_balances.keys(), token_balances.values(), weights))
-        for pool_token, balance, weight in pool_token_info:
+        for pool_token, token_balance, token_weight in pool_token_info:
             if pool_token == token_address:
-                token_balance, token_weight = balance, weight
+                break
 
         paired_token_balance: Optional[WeiBalance] = None
         for pool_token, balance, weight in pool_token_info:
@@ -224,7 +223,7 @@ class BalancerV2Pool(ERC20):
     async def weights(self, block: Optional[Block] = None) -> List[int]:
         contract = await Contract.coroutine(self.address)
         try:
-            return await contract.getNormalizedWeights.coroutine(block_identifier = block)
+            return await contract.getNormalizedWeights.coroutine(block_identifier=block)
         except (AttributeError,ValueError):
             return len(await self.tokens(block=block, sync=False))
 
