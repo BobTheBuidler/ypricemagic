@@ -410,7 +410,7 @@ class UniswapRouterV2(ContractBase):
                     raise e
                 pool_to_token_out = {}
                 pools = await self.__pools__
-                async for pool, (token0, token1) in a_sync.map(_get_tokens, concurrency=min(10_000, len(pools))):
+                async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
                     if token_in == token0:
                         pool_to_token_out[pool] = token1
                     elif token_in == token1:
@@ -424,7 +424,7 @@ class UniswapRouterV2(ContractBase):
         else:
             pools = await self.__pools__
         pool_to_token_out = {}
-        async for pool, (token0, token1) in a_sync.map(_get_tokens, pools, concurrency=min(10_000, len(pools))):
+        async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
             if token_in == token0:
                 pool_to_token_out[pool] = token1
             elif token_in == token1:
@@ -627,5 +627,3 @@ class UniswapRouterV2(ContractBase):
             else:                                                                           path = [token_in, WRAPPED_GAS_COIN, token_out]
 
         return path
-    
-_get_tokens: Callable[[UniswapV2Pool], Awaitable[Tuple[ERC20, ERC20]]] = lambda pool: asyncio.gather(pool.__token0__, pool.__token1__)
