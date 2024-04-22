@@ -281,7 +281,7 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
         deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in zip(self.vaults, deepest_pools) if deepest_pool is not None}
         if not deepest_pools:
             return None
-        deepest_pool_balance = max(deepest_pools.values())
+        deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())
         for pool_address, pool_balance in deepest_pools.values():
             if pool_balance == deepest_pool_balance and pool_address:
                 return BalancerV2Pool(pool_address, asynchronous=self.asynchronous)
