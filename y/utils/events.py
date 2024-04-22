@@ -106,7 +106,7 @@ async def get_logs_asap_generator(
         if address is None:
             from_block = 0
         elif isinstance(address, Iterable) and not isinstance(address, str):
-            from_block = await a_sync.map(contract_creation_block_async, address, when_no_history_return_0=True).min(pop=True)
+            from_block = await _lowest_deploy_block(address, when_no_history_return_0=True)
         else:
             from_block = await contract_creation_block_async(address, True)
     if to_block is None:
@@ -347,7 +347,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             if self.addresses is None:
                 self.from_block = 0
             elif isinstance(self.addresses, Iterable) and not isinstance(self.addresses, str):
-                self.from_block = await a_sync.map(contract_creation_block_async, self.addresses, when_no_history_return_0=True).min(pop=True)
+                self.from_block = await _lowest_deploy_block(self.addresses, when_no_history_return_0=True)
             else:
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
@@ -391,3 +391,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         for event in decode_logs(logs):
             if self._include_event(event):
                 self._objects.append(self._process_event(event))
+
+async def _lowest_deploy_block(addresses: Iterable[EthAddress], when_no_history_return_0: bool) -> Block:
+    from y.contracts import contract_creation_block_async
+    return await a_sync.map(contract_creation_block_async, addresses, when_no_history_return_0=when_no_history_return_0).min(pop=True, sync=False)

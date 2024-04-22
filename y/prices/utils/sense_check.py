@@ -208,7 +208,7 @@ async def _exit_sense_check(token_address: str) -> bool:
     elif bucket == 'curve lp':
         underlyings = await CurvePool(token_address, asynchronous=True).coins
         if questionable_underlyings := [und for und in underlyings if und not in ACCEPTABLE_HIGH_PRICES]:
-            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(pop=True)
+            return await a_sync.map(_exit_sense_check, questionable_underlyings).all(pop=True, sync=False)
         return True
     
     elif bucket == 'atoken':
