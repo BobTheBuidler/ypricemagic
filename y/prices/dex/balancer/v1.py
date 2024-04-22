@@ -51,7 +51,7 @@ class BalancerV1Pool(ERC20):
             if await token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) is not None
         }
         
-        prices = await asyncio.gather(*[token.price(block=block, return_None_on_failure = True, sync=False) for token in good_balances])
+        prices = await ERC20.price.map(good_balances, block=block, return_None_on_failure=True, skip_cache=skip_cache).values()
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(balance * Decimal(price) for balance, price in zip(good_balances.values(),prices))
@@ -171,4 +171,4 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         pools = []
         pools = [pool for pool in pools if pool not in ignore_pools]
-        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
+        return BalancerV1Pool.check_liquidity.max(pools, token, block) if pools else 0

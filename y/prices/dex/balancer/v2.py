@@ -153,10 +153,7 @@ class BalancerV2Pool(ERC20):
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Awaitable[UsdValue]]:
         balances: Dict[ERC20, WeiBalance] = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if balances:
-            return UsdValue(sum(await asyncio.gather(*[
-                balance.__value_usd__ for balance in balances.values()
-                if balance.token.address != self.address  # NOTE: to prevent an infinite loop for tokens that include themselves in the pool (e.g. bb-a-USDC)
-            ])))
+            return await UsdValue(WeiBalance.value_usd.sum((balance for balance in balances.values() if balance.token.address != self.address)))
 
     @a_sync_cache
     @stuck_coro_debugger
@@ -274,8 +271,8 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
     
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
-        deepest_pools = await asyncio.gather(*[vault.deepest_pool_for(token_address, block=block, sync=False) for vault in self.vaults])
-        deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in zip(self.vaults, deepest_pools) if deepest_pool is not None}
+        deepest_pools = await BalancerV2Vault.deepest_pool_for.map(self.vaults, block=block, sync=False)
+        deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in deepest_pools.items() if deepest_pool is not None}
         if not deepest_pools:
             return None
         deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())
