@@ -69,7 +69,7 @@ class TokenSet(ERC20):
             return price
         elif hasattr(contract, "getTotalComponentRealUnits"):
             balances_per_token: List[WeiBalance] = await self.balances(block=block, sync=False)
-            values_per_token = UsdPrice(await WeiBalance.value_usd.sum(balances_per_token))
-            logger.debug("balances per token: %s  values per token: %s  price: %s", balances_per_token, values_per_token, price)
+            price = UsdPrice(await WeiBalance.value_usd.sum(balances_per_token, sync=False))
+            logger.debug("balances per token: %s  price: %s", balances_per_token, price)
             return price
         raise NotImplementedError
