@@ -82,10 +82,7 @@ class BalancerV2Vault(ContractBase):
     @stuck_coro_debugger
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         contract = await contracts.Contract.coroutine(self.address)
-        return await asyncio.gather(*[
-            contract.getPoolTokens.coroutine(poolId, block_identifier=block)
-            for poolId in poolids
-        ])
+        return await contract.getPoolTokens.map(poolids, block_identifier=block)
     
     @a_sync_cache
     @stuck_coro_debugger
@@ -203,7 +200,7 @@ class BalancerV2Pool(ERC20):
         if paired_token_balance is None:
             return None
 
-        token_value_in_pool, token_balance_readable = await asyncio.gather(*[paired_token_balance.__value_usd__, token_balance.__readable__])
+        token_value_in_pool, token_balance_readable = await asyncio.gather(paired_token_balance.__value_usd__, token_balance.__readable__)
         token_value_in_pool /= paired_token_weight * token_weight
         return UsdPrice(token_value_in_pool / token_balance_readable) 
 

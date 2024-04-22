@@ -2,6 +2,7 @@
 import asyncio
 from typing import List
 
+import a_sync
 import pytest
 from brownie import chain
 
@@ -93,6 +94,5 @@ chainlink_identifiers_not_tokens = [
 ]
 
 async def relevant_tokens(tokens, block):
-    tokens = [token for token in tokens if token not in chainlink_identifiers_not_tokens]
-    creation_blocks = await asyncio.gather(*[contract_creation_block_async(convert.to_address(token)) for token in tokens])
-    return [token for token, deploy_block in zip(tokens, creation_blocks) if deploy_block and deploy_block <= block]
+    tokens = (convert.to_address(token) for token in tokens if token not in chainlink_identifiers_not_tokens)
+    return [token async for token, deploy_block in a_sync.map(contract_creation_block_async, tokens) if deploy_block and deploy_block <= block]
