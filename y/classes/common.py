@@ -299,14 +299,18 @@ class WeiBalance(a_sync.ASyncGenericBase):
         return readable
     __readable__: HiddenMethodDescriptor[Self, Decimal]
     
-    @a_sync.aka.cached_property
+    @a_sync.aka.property
+    async def price(self) -> Decimal:
+        price = await self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False)
+        self._logger.debug("balance: %s  price: %s", self, price)
+        return price
+    __price__: HiddenMethodDescriptor[Self, Decimal]
+    
+    @a_sync.aka.property
     async def value_usd(self) -> Decimal:
         if self.balance == 0:
             return 0
-        balance, price = await asyncio.gather(
-            self.__readable__,
-            self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False),
-        )
+        balance, price = await asyncio.gather(self.__readable__, self.__price__)
         value = balance * Decimal(price)
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
