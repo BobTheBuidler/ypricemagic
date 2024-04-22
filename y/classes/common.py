@@ -164,10 +164,7 @@ class ERC20(ContractBase):
         return await totalSupply(self.address, block=block, sync=False)
 
     async def total_supply_readable(self, block: Optional[Block] = None) -> float:
-        total_supply, scale = await asyncio.gather(
-            self.total_supply(block=block, sync=False),
-            self.__scale__
-        )
+        total_supply, scale = await asyncio.gather(self.total_supply(block=block, sync=False), self.__scale__)
         return total_supply / scale
     
     async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
@@ -301,7 +298,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     
     @a_sync.aka.property
     async def price(self) -> Decimal:
-        price = await self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False)
+        price = Decimal(await self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False))
         self._logger.debug("balance: %s  price: %s", self, price)
         return price
     __price__: HiddenMethodDescriptor[Self, Decimal]
@@ -311,7 +308,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         if self.balance == 0:
             return 0
         balance, price = await asyncio.gather(self.__readable__, self.__price__)
-        value = balance * Decimal(price)
+        value = balance * price
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
     __value_usd__: HiddenMethodDescriptor[Self, Decimal]
