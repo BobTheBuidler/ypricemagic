@@ -531,10 +531,10 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
             self.identifiers[Ids.Main_Registry] = [registry]
         while True:
             # Check if any registries were updated, then ensure all old and new are loaded
-            registries = [self.identifiers[i][-1] for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry] if self.identifiers[i]]
-            await a_sync.map(Registry, registries, curve=self, asynchronous=self.asynchronous)
-            # load metapool and curve v5 factories
-            await self.address_provider._load_factories()
+            if registries := [self.identifiers[i][-1] for i in [Ids.Main_Registry, Ids.CryptoSwap_Registry] if self.identifiers[i]]:
+                await a_sync.map(Registry, registries, curve=self, asynchronous=self.asynchronous)
+                # load metapool and curve v5 factories
+                await self.address_provider._load_factories()
             await asyncio.sleep(600)
    
 try: 
