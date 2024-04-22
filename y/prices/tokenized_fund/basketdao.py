@@ -24,9 +24,6 @@ async def get_price(address: EthAddress, block: Optional[Block] = None) -> UsdPr
         Call(address, 'getAssetsAndBalances()(address[],uint[])',block_id=block),
         ERC20(address, asynchronous=True).total_supply_readable(block=block),
     )
-    tvl = await WeiBalance.value_usd.sum([
-        WeiBalance(balance, token, block)
-        for token, balance
-        in zip(balances[0],balances[1])
-    ], sync=False)
+    balances = (WeiBalance(balance, token, block) for token, balance in zip(balances[0], balances[1]))
+    tvl = await WeiBalance.value_usd.sum(balances, sync=False)
     return UsdPrice(tvl / Decimal(total_supply))

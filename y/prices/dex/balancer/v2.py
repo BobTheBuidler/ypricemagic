@@ -62,13 +62,13 @@ class BalancerV2Vault(ContractBase):
             # we need the contract cached so we can decode logs correctly
             self.contract
     
-    @a_sync_cache
     @stuck_coro_debugger
-    async def list_pools(self, block: Optional[Block] = None) -> List["BalancerV2Pool"]:
-        return [pool async for pool in self._events.events(to_block=block)]
+    async def pools(self, block: Optional[Block] = None) -> AsyncIterable["BalancerV2Pool"]:
+        async for pool in self._events.events(to_block=block):
+            yield pool
 
     async def pools_for_token(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
-        async for pool, info in a_sync.map(lambda pool: pool.tokens(block=block, sync=False), self._events.events(to_block=block)):
+        async for pool, info in BalancerV2Pool.tokens.map(block=block).map(self.pools(block=block), pop=True):
             if token in info:
                 yield pool
                 
@@ -271,8 +271,11 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
     
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
-        deepest_pools = await BalancerV2Vault.deepest_pool_for.map(self.vaults, block=block, sync=False)
-        deepest_pools = {vault.address: deepest_pool for vault, deepest_pool in deepest_pools.items() if deepest_pool is not None}
+        deepest_pools = {
+            vault: deepest_pool
+            async for vault, deepest_pool in BalancerV2Vault.deepest_pool_for.map(self.vaults, block=block)
+            if deepest_pool is not None
+        }
         if not deepest_pools:
             return None
         deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())

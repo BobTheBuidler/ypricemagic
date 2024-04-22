@@ -232,6 +232,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     @a_sync.aka.cached_property
     async def num_coins(self) -> int:
         return len(await self.__coins__)
+    __num_coins__: HiddenMethodDescriptor[Self, int]
     
     async def get_dy(
         self, 
@@ -333,27 +334,17 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             if str(e).startswith("could not fetch balances "):
                 return None
             raise e
-        
-        return UsdValue(sum(await a_sync.map(WeiBalance.value_usd, balances).values()))
+        return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
-    async def check_liquidity(self, token: Address, block: Block) -> Optional[int]:
+    async def check_liquidity(self, token: Address, block: Block) -> int:
         deploy_block = await contract_creation_block_async(self.address)
         if block < deploy_block:
             return 0
         i = await self.get_coin_index(token, sync=False)
-        return await self._get_balance(i, block)
-    
-    #@cached_property
-    #def oracle(self) -> Optional[Address]:
-    #    '''
-    #    If `pool` has method `price_oracle`, returns price_oracle address.
-    #    Else, returns `None`.
-    #    '''
-    #    response = raw_call(self.address, 'price_oracle()', output='address', return_None_on_failure=True)
-    #    if response == ZERO_ADDRESS:
-    #        return None
-    #    return response
+        if balance := await self._get_balance(i, block):
+            return balance
+        return 0
 
 
 
@@ -499,9 +490,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if token not in pools:
             return 0
         if pools := [pool for pool in pools[token] if pool not in ignore_pools]:
-            liqs = [liq for liq in await CurvePool.check_liquidity.map(pools, token=token, block=block).values() if liq]
-            if liqs:
-                return max(liqs)
+            return await CurvePool.check_liquidity.max(pools, token=token, block=block)
         return 0
     
     @cached_property

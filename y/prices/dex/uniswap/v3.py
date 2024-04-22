@@ -206,11 +206,15 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             logger.debug("block %s is before %s deploy block", block, quoter)
             return 0
         
-        token_in_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
+        #token_in_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
+
+        token_in_tasks = UniswapV3Pool.check_liquidity.map(token=token, block=block)
+        # TODO: refactor this out
         token_out_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
+
         async for pool in self.pools_for_token(token, block):
             if pool not in ignore_pools:
-                token_in_tasks[pool] = asyncio.create_task(pool.check_liquidity(token, block, sync=False))
+                token_in_tasks[pool]  # the mapping will start the task
                 token_out_tasks[pool] = asyncio.create_task(pool.check_liquidity(pool._get_token_out(token), block, sync=False))
         
         # Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`
@@ -232,7 +236,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
                 logger.debug("insufficient liquidity for %s", pool)
                 token_in_tasks.pop(pool)
 
-        liquidity = max(await asyncio.gather(*token_in_tasks.values())) if token_in_tasks else 0
+        liquidity = await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
