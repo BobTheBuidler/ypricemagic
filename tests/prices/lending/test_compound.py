@@ -4,7 +4,7 @@ import pytest
 from tests.fixtures import blocks_for_contract
 from y.prices.lending.compound import CToken, compound
 
-CTOKENS = [ctoken.address for troller in compound.trollers.values() for ctoken in troller.__markets__]
+CTOKENS = [ctoken.address for troller in compound.trollers.values() for ctoken in troller.__markets__(sync=True)]
 
 @pytest.mark.parametrize('token', CTOKENS)
 def test_compound_pricing_sync(token):
