@@ -62,7 +62,7 @@ async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None, 
         magic.get_prices(tokens, block, skip_cache=skip_cache, silent=True, sync=False),
     )
     balances = [balance / scale for balance, scale in zip(balances, tokens_scale)]
-    return UsdValue(sum(balance * price for balance, price in zip (balances, prices)))
+    return UsdValue(sum(balance * price for balance, price in zip(balances, prices)))
 
 @a_sync.a_sync(default='sync')
 async def get_tokens(token_address: AnyAddressType, block: Optional[Block] = None) -> List[ERC20]:

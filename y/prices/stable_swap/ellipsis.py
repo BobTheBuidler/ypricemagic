@@ -37,7 +37,7 @@ async def get_price(token_address: AddressOrContract, block: Optional[Block] = N
         except:
             break
     tvl, total_supply = await asyncio.gather(
-        WeiBalance.value_usd.sum(balances),
+        WeiBalance.value_usd.sum(balances, sync=False),
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )
     return UsdPrice(tvl / Decimal(total_supply))

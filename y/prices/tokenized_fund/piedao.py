@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from decimal import Decimal
 from typing import List, Optional
 
 import a_sync
@@ -45,12 +46,11 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
 async def get_tvl(pie_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
     tokens: List[ERC20]
     pool, tokens = await asyncio.gather(get_bpool(pie_address, block), get_tokens(pie_address, block))
-    token_balances, token_scales, prices = await asyncio.gather(
-        asyncio.gather(*[Call(token.address, ['balanceOf(address)(uint)', pool], block_id=block) for token in tokens]),
-        ERC20.scale.map(tokens).values(),
-        magic.get_prices(tokens, block, skip_cache=skip_cache, sync=False),
-    )
-    token_balances = [bal / scale for bal, scale in zip(token_balances, token_scales)]
-    return UsdValue(
-        sum(bal * price for bal, price in zip(token_balances, prices))
-    )
+    return await a_sync.map(get_value, tokens, bpool=pool, block=block, skip_cache=skip_cache).sum(pop=True, sync=False)
+
+async def get_balance(bpool: Address, token: ERC20, block: Optional[Block] = None) -> Decimal:
+    balance, scale = await asyncio.gather(Call(token.address, ['balanceOf(address)(uint)', bpool], block_id=block), token.__scale__)
+    return Decimal(balance) / scale
+
+async def get_value(bpool: Address, token: ERC20, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
+    balance, price = await asyncio.gather(get_balance(bpool, token, block), token.price(block, skip_cache=skip_cache))

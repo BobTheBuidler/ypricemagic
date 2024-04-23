@@ -171,4 +171,4 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         pools = []
         pools = [pool for pool in pools if pool not in ignore_pools]
-        return BalancerV1Pool.check_liquidity.max(pools, token, block, sync=False) if pools else 0
+        return await BalancerV1Pool.check_liquidity.max(pools, token=token, block=block, sync=False) if pools else 0
