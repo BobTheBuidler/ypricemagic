@@ -50,8 +50,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         See also https://docs.synthetix.io/addresses/
         """
         address_resolver = await self.__address_resolver__
-        key = encode_bytes(name)
-        address = await address_resolver.getAddress.coroutine(key, block_identifier=block)
+        address = await address_resolver.getAddress.coroutine(encode_bytes(name), block_identifier=block)
         proxy = await Contract.coroutine(address)
         return await Contract.coroutine(await proxy.target.coroutine(block_identifier=block)) if hasattr(proxy, 'target') else proxy
 
@@ -61,8 +60,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         Get target addresses of all synths.
         """
         proxy_erc20 = await self.get_address('ProxyERC20', sync=False)
-        synth_count = await proxy_erc20.availableSynthCount
-        synths = await asyncio.gather(*[proxy_erc20.availableSynths.coroutine(i) for i in range(synth_count)])
+        synths = await proxy_erc20.availableSynths.map(range(await proxy_erc20.availableSynthCount))
         logger.info('loaded %s synths', len(synths))
         return synths
         
