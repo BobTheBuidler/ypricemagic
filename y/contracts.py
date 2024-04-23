@@ -295,9 +295,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         except RuntimeError:
             self._ttl_cache_popper = cache_ttl
         return self
-    
+
     @classmethod
-    @stuck_coro_debugger
     async def coroutine(
         cls, 
         address: AnyAddressType, 
@@ -305,14 +304,25 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
         
+        address = str(address)
         # We do this so we don't clog the threadpool with multiple jobs for the same contract.
-        async with address_semaphores[address]:
-            try:
-                contract = cls._ChecksumAddressSingletonMeta__instances[address]
-            except KeyError:
-                if str(address).lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
-                    raise ContractNotFound(f"{address} is not a contract.") from None
-                contract = await contract_threads.run(cls, address, require_success=require_success)
+        try:
+            contract = cls._ChecksumAddressSingletonMeta__instances[address]
+        except KeyError:
+            if address.lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
+                raise ContractNotFound(f"{address} is not a contract.") from None
+            contract = await _contract_queue(address, require_success=require_success, cache_ttl=cache_ttl)
+        return contract
+    
+    @classmethod
+    @stuck_coro_debugger
+    async def _coroutine(
+        cls, 
+        address: AnyAddressType, 
+        require_success: bool = True, 
+        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
+    ) -> Self:
+        contract = await contract_threads.run(cls, address, require_success=require_success)
 
         if not contract.verified or contract._ttl_cache_popper == "disabled":
             pass
@@ -330,7 +340,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             contract._ttl_cache_popper.cancel()
             contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
         return contract
-    
+
     def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
         _ContractBase.__init__(self, None, build, {})  # type: ignore
         _DeployedContractBase.__init__(self, build['address'], owner, None)
@@ -358,6 +368,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def get_code(self, block: Optional[Block] = None) -> HexBytes:
         return await get_code(self.address, block=block)
 
+from a_sync.primitives.queue import SmartProcessingQueue
+_contract_queue = SmartProcessingQueue(Contract._coroutine, num_workers=32)
 
 @memory.cache()
 #yLazyLogger(logger)
