@@ -237,9 +237,9 @@ class ERC20(ContractBase):
 class WeiBalance(a_sync.ASyncGenericBase):
     # defaults are stored as class vars to keep instance dicts smaller
     block: Optional[Block] = None
-    skip_cache: bool = ENVS.SKIP_CACHE
-    ignore_pools: Tuple[Pool, ...] = ()
     asynchronous: bool = False
+    _skip_cache: bool = ENVS.SKIP_CACHE
+    _ignore_pools: Tuple[Pool, ...] = ()
     def __init__(
         self, 
         balance: int,
