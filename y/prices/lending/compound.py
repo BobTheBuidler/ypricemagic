@@ -212,11 +212,10 @@ class Compound(a_sync.ASyncGenericSingleton):
         return self.is_compound_market(token_address)
     
     async def get_troller(self, token_address: AddressOrContract) -> Optional[Comptroller]:
-        trollers = self.trollers.values()
-        all_markets = await asyncio.gather(*[troller.__markets__ for troller in trollers])
-        for troller, markets in zip(trollers, all_markets):
-            if token_address in markets:
-                return troller
+        if self.trollers:
+            async for troller, markets in Comptroller.markets.map(self.trollers.values()):
+                if token_address in markets:
+                    return troller
             
     async def is_compound_market(self, token_address: AddressOrContract) -> bool:
         if await self.get_troller(token_address, sync=False):

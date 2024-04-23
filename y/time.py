@@ -179,6 +179,9 @@ async def check_node_async() -> None:
         return
     current_time = time.time()
     latest = await dank_mids.eth.get_block('latest')
-    node_timestamp = latest.timestamp
+    try:
+        node_timestamp = latest.timestamp
+    except AttributeError as e:
+        raise AttributeError(str(e), latest) from None
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes")

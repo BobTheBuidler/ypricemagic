@@ -50,10 +50,12 @@ class GenericAmm(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     async def get_tvl(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
         lp_token_contract = await Contract.coroutine(lp_token_address)
-        tokens = await self.get_tokens(lp_token_address, sync=False)
-        reserves = await lp_token_contract.getReserves.coroutine(block_identifier=block)
-        reserves = [WeiBalance(reserve, token, block=block, skip_cache=skip_cache) for token, reserve in zip(tokens,reserves)]
-        return UsdValue(sum(await asyncio.gather(*[reserve.__value_usd__ for reserve in reserves])))
+        tokens, reserves = await asyncio.gather(
+            self.get_tokens(lp_token_address, sync=False),
+            lp_token_contract.getReserves.coroutine(block_identifier=block),
+        )
+        reserves = (WeiBalance(reserve, token, block=block, skip_cache=skip_cache) for token, reserve in zip(tokens,reserves))
+        return UsdValue(await WeiBalance.value_usd.sum(reserves, sync=False))
 
 
 generic_amm = GenericAmm(asynchronous=True)
