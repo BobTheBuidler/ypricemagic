@@ -262,8 +262,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
 
         # pool not in registry
         if not any(coins_decimals):
-            coins = await self.__coins__
-            coins_decimals = await asyncio.gather(*[coin.__decimals__ for coin in coins])
+            coins_decimals = await a_sync.map(ERC20.decimals, await self.__coins__).values()
         
         return [dec for dec in coins_decimals if dec != 0]
     __coins_decimals__: HiddenMethodDescriptor[Self, List[int]]
@@ -335,7 +334,7 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
                 return None
             raise e
         
-        return UsdValue(sum(await asyncio.gather(*[balance.__value_usd__ for balance in balances])))
+        return UsdValue(sum(await a_sync.map(WeiBalance.value_usd, balances).values()))
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> Optional[int]:
@@ -500,11 +499,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if token not in pools:
             return 0
         if pools := [pool for pool in pools[token] if pool not in ignore_pools]:
-            liqs = [
-                liq for liq
-                in await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])
-                if liq
-            ]
+            liqs = [liq for liq in await CurvePool.check_liquidity.map(pools, token=token, block=block).values() if liq]
             if liqs:
                 return max(liqs)
         return 0

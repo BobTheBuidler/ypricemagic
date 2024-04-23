@@ -57,8 +57,8 @@ async def get_tvl(token_address: AnyAddressType, block: Optional[Block] = None, 
             pool, 'getTokenBalance(uint8)(uint)', inputs=[*range(len(tokens))], sync=False
         ),
     )
-    tokens_scale, prices = await asyncio.gather(
-        asyncio.gather(*[token.__scale__ for token in tokens]),
+    tokens_scale, prices = await a_sync.gather(
+        ERC20.scale.map(tokens).values(),
         magic.get_prices(tokens, block, skip_cache=skip_cache, silent=True, sync=False),
     )
     balances = [balance / scale for balance, scale in zip(balances, tokens_scale)]

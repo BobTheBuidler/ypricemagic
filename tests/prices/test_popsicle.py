@@ -50,5 +50,5 @@ def test_non_popsicle():
 async def test_popsicle_get_price(token):
     assert await popsicle.is_popsicle_lp(token, sync=False), 'Popsicle LP not recognized.'
     blocks = blocks_for_contract(token, 25)
-    async for block, price in a_sync.map(popsicle.get_price, blocks, token=token, sync=False):
+    async for block, price in a_sync.map(popsicle.get_price, blocks, token=token):
         assert price, f'Failed to fetch price for {token} at block {block}.'

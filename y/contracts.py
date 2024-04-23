@@ -419,7 +419,7 @@ async def has_methods(
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
-        return False if _func == all else any(await asyncio.gather(*[has_method(address, method, sync=False) for method in methods]))
+        return False if _func == all else a_sync.map(has_method, methods, address=address).any(pop=True, sync=False)
 
 
 #yLazyLogger(logger)

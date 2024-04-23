@@ -374,12 +374,12 @@ class UniswapRouterV2(ContractBase):
                 pool = await factory.allPairs.coroutine(i)
                 logger.debug('pool: %s', pool)
                 pool = UniswapV2Pool(address=pool, asynchronous=self.asynchronous)
-                await asyncio.gather(pool.__token0__, pool.__token1__)
+                await pool.__tokens__
                 return pool
             async for i, pool in a_sync.map(_load_pool, range(to_get)):
                 pools.insert(i, pool)
             logger.debug('Done fetching %s missing pools on %s', to_get, self.label)
-        tokens = set(await asyncio.gather(*(pool.__tokens__ for pool in pools)))
+        tokens = set(await UniswapV2Pool.token0.map(pools).values() + await UniswapV2Pool.token1.map(pools).values())
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
@@ -566,7 +566,7 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
                 
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
-        liquidity = max(await asyncio.gather(*[pool.check_liquidity(token, block) for pool in pools])) if pools else 0
+        liquidity = UniswapV2Pool.check_liquidity.map(pools).max(pop=True) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
