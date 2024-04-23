@@ -116,7 +116,7 @@
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_pool</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EthAddress</span><span class="p">:</span>
     <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-    <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">coroutine</span><span class="p">()</span>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">pool</span>
 </pre></div>
 
            </div>

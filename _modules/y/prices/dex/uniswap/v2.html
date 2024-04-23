@@ -162,7 +162,7 @@
                 <span class="k">raise</span>
             <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="k">try</span><span class="p">:</span> 
-                <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">coroutine</span><span class="p">()</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">factory</span>
             <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span> <span class="kn">from</span> <span class="nn">exc</span></div>
 
