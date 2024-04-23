@@ -75,8 +75,8 @@ class NotAUniswapV2Pool(Exception):
     # TODO: Refactor this goofy thing out
     def __init__(self, non_pool: "UniswapV2Pool"):
         from y.prices.dex.uniswap.v2 import UniswapV2Pool
-        UniswapV2Pool._ChecksumASyncSingletonMeta_instances[True].pop(non_pool.address)
-        UniswapV2Pool._ChecksumASyncSingletonMeta_instances[False].pop(non_pool.address)
+        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[True].pop(non_pool.address)
+        UniswapV2Pool._ChecksumASyncSingletonMeta__instances[False].pop(non_pool.address)
         super().__init__(non_pool.address)
 
 class NotABalancerV2Pool(Exception):
