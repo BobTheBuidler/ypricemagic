@@ -164,7 +164,7 @@ class UniswapV2Pool(ERC20):
         tokens: List[ERC20] = await self.__tokens__
         prices: Dict[ERC20, UsdPrice]
         prices, reserves = await asyncio.gather(
-            a_sync.map(ERC20.price, tokens, block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False),
+            a_sync.map(ERC20.price, tokens, block=block, return_None_on_failure=True, skip_cache=skip_cache),
             self.reserves(block=block, sync=False),
         )
 
@@ -443,7 +443,7 @@ class UniswapRouterV2(ContractBase):
                     raise e
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
-            deploy_blocks = await a_sync.map(UniswapV2Pool.deploy_block, pools, when_no_history_return_0=True, sync=False)
+            deploy_blocks = await a_sync.map(UniswapV2Pool.deploy_block, pools, when_no_history_return_0=True)
             pools = {pool: other_token for (pool, other_token), deploy_block in zip(pools.items(), deploy_blocks.values()) if deploy_block <= block}
         return pools
 
@@ -471,7 +471,7 @@ class UniswapRouterV2(ContractBase):
             return None
         deepest_pool = None
         deepest_pool_balance = 0
-        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, pools, block=block, sync=False):
+        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, pools, block=block):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
                 deepest_pool_balance = depth
@@ -494,7 +494,7 @@ class UniswapRouterV2(ContractBase):
                 return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
 
             elif block is not None:
-                deploy_blocks = await a_sync.map(UniswapV2Pool.deploy_block, stable_pools, when_no_history_return_0=True, sync=False)
+                deploy_blocks = await a_sync.map(UniswapV2Pool.deploy_block, stable_pools, when_no_history_return_0=True)
                 stable_pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(stable_pools.items(), deploy_blocks.values()) if deploy_block <= block}
             
         if not stable_pools:
@@ -502,7 +502,7 @@ class UniswapRouterV2(ContractBase):
         
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block, sync=False):
+        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block):
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth

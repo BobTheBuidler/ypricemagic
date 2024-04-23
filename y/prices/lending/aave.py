@@ -96,8 +96,7 @@ class AaveMarketBase(ContractBase):
 class AaveMarketV1(AaveMarketBase):
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
-        reserves = await self.get_reserves(sync=False)
-        reserves_data = await a_sync.map(self.get_reserve_data, reserves, sync=False)
+        reserves_data = await a_sync.map(self.get_reserve_data, await self.get_reserves(sync=False))
         atokens = [ERC20(reserve_data['aTokenAddress'], asynchronous=self.asynchronous) for reserve_data in reserves_data.values()]
         logger.info('loaded %s v1 atokens for %s', len(atokens), self)
         return atokens
@@ -113,8 +112,7 @@ _V2_RESERVE_DATA_METHOD = 'getReserveData(address)((uint256,uint128,uint128,uint
 class AaveMarketV2(AaveMarketBase):
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
-        reserves = await self.get_reserves(sync=False)
-        reserves_data = await a_sync.map(self.get_reserve_data, reserves, sync=False)
+        reserves_data = await a_sync.map(self.get_reserve_data, await self.get_reserves(sync=False))
         try:
             atokens = [ERC20(reserve_data[7], asynchronous=self.asynchronous) for reserve_data in reserves_data.values()]
             logger.info('loaded %s v2 atokens for %s', len(atokens), self)
@@ -136,8 +134,7 @@ class AaveMarketV2(AaveMarketBase):
 class AaveMarketV3(AaveMarketBase):
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
-        reserves = await self.get_reserves(sync=False)
-        reserves_data = await a_sync.map(self.get_reserve_data, reserves, sync=False)
+        reserves_data = await a_sync.map(self.get_reserve_data, await self.get_reserves(sync=False))
         try:
             atokens = [ERC20(reserve_data[8], asynchronous=self.asynchronous) for reserve_data in reserves_data.values()]
             logger.info('loaded %s v3 atokens for %s', len(atokens), self)
