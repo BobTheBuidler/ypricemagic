@@ -174,7 +174,7 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__token0__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1__</span><span class="p">)</span></div>
 
-    <span class="n">__tokens__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
+    <span class="n">__tokens__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]]</span>
     
 <div class="viewcode-block" id="UniswapV2Pool.token0">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.token0">[docs]</a>
