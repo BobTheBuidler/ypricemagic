@@ -70,8 +70,7 @@ class Gearbox(a_sync.ASyncGenericBase):
     
     async def diesel_tokens(self) -> Dict[ERC20, DieselPool]:
         pools: List[DieselPool] = await self.pools(sync=False)
-        dtokens = await asyncio.gather(*[pool.__diesel_token__ for pool in pools])
-        return dict(zip(dtokens, pools))
+        return dict(zip(await DieselPool.diesel_token.map(pools).values(), pools))
 
     async def is_diesel_token(self, token: Address) -> bool:
         return token in await self.diesel_tokens(sync=False)
