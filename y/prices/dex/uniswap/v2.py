@@ -207,7 +207,7 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
-            return await a_sync.all(self.reserves(block=block, sync=False), self.total_supply(block, sync=False))
+            return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
         except NotAUniswapV2Pool:
             return False
         
