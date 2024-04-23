@@ -90,7 +90,7 @@ class UniswapV2Pool(ERC20):
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
         return await asyncio.gather(self.__token0__, self.__token1__)
-    __tokens__: HiddenMethodDescriptor[Self, ERC20]
+    __tokens__: HiddenMethodDescriptor[Self, Tuple[ERC20, ERC20]]
     
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
