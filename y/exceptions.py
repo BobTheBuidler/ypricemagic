@@ -1,8 +1,11 @@
 import logging
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
+
+if TYPE_CHECKING:
+    from y.prices.dex.uniswap.v2 import UniswapV2Pool
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +71,13 @@ def contract_not_verified(e: Exception) -> bool:
 # Pool detection
 
 class NotAUniswapV2Pool(Exception):
-    pass
+    # NOTE: we use this exc to get the non-pool out of the pool singleton so it doesn't grow forever
+    # TODO: Refactor this goofy thing out
+    def __init__(self, non_pool: "UniswapV2Pool"):
+        from y.prices.dex.uniswap.v2 import UniswapV2Pool
+        UniswapV2Pool._ChecksumASyncSingletonMeta_instances[True].pop(non_pool.address)
+        UniswapV2Pool._ChecksumASyncSingletonMeta_instances[False].pop(non_pool.address)
+        super().__init__(non_pool.address)
 
 class NotABalancerV2Pool(Exception):
     pass
