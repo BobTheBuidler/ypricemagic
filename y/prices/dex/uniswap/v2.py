@@ -73,7 +73,7 @@ class UniswapV2Pool(ERC20):
         try: return await raw_call(self.address, 'factory()', output='address', sync=False)
         except ValueError as e:
             if call_reverted(e):
-                raise NotAUniswapV2Pool from e
+                raise NotAUniswapV2Pool(self) from e
             # `is not a valid ETH address` means we got some kind of response from the chain.
             # but couldn't convert to address. If it happens to be a goofy but
             # verified uni fork, maybe we can get factory this way
@@ -84,7 +84,7 @@ class UniswapV2Pool(ERC20):
             try: 
                 return await contract.factory
             except AttributeError as exc:
-                raise NotAUniswapV2Pool from exc
+                raise NotAUniswapV2Pool(self) from exc
     __factory__: HiddenMethodDescriptor[Self, Address]
 
     @a_sync.aka.property
@@ -101,7 +101,7 @@ class UniswapV2Pool(ERC20):
             except ValueError as e:
                 continue_if_call_reverted(e)
         if self._token0 is None:
-            raise NotAUniswapV2Pool(self.address)
+            raise NotAUniswapV2Pool(self)
         return self._token0
     __token0__: HiddenMethodDescriptor[Self, ERC20]
 
@@ -114,7 +114,7 @@ class UniswapV2Pool(ERC20):
             except ValueError as e:
                 continue_if_call_reverted(e)
         if self._token1 is None:
-            raise NotAUniswapV2Pool(self.address)
+            raise NotAUniswapV2Pool(self)
         return self._token1
     __token1__: HiddenMethodDescriptor[Self, ERC20]
     
@@ -127,6 +127,14 @@ class UniswapV2Pool(ERC20):
             return UsdPrice(tvl / Decimal(await self.total_supply_readable(block=block, sync=False)))
         return None
     
+    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
+    async def get_token_out(self, token_in: Address) -> ERC20:
+        if token_in == (token0 := await self.__token0__):
+            return token1
+        elif token_in == (token1 := await self.__token1__):
+            return token0
+        raise ValueError(f"{token_in} is not one of [{token0}, {token1}]") from None
+    
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__, return_exceptions=True)
@@ -138,7 +146,7 @@ class UniswapV2Pool(ERC20):
             try:
                 await self._check_return_types()
             except AttributeError as e:
-                raise NotAUniswapV2Pool(self.address) from e
+                raise NotAUniswapV2Pool(self) from e
             return await self.reserves(block=block, sync=False)
         
         if reserves is None and self._verified:
@@ -209,14 +217,6 @@ class UniswapV2Pool(ERC20):
             return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
         except NotAUniswapV2Pool:
             return False
-        
-    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
-    async def get_other_side_token(self, token_in: Address) -> ERC20:
-        if token_in == (token0 := await self.__token0__):
-            return token1
-        elif token_in == (token1 := await self.__token1__):
-            return token0
-        raise ValueError(f"{token_in} is not one of [{token0}, {token1}]") from None
     
     async def _check_return_types(self) -> None:
         if not self._types_assumed:
