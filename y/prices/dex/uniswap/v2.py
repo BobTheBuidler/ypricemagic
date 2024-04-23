@@ -210,6 +210,14 @@ class UniswapV2Pool(ERC20):
         except NotAUniswapV2Pool:
             return False
         
+    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60*60)
+    async def get_other_side_token(self, token_in: Address) -> ERC20:
+        if token_in == (token0 := await self.__token0__):
+            return token1
+        elif token_in == (token1 := await self.__token1__):
+            return token0
+        raise ValueError(f"{token_in} is not one of [{token0}, {token1}]") from None
+    
     async def _check_return_types(self) -> None:
         if not self._types_assumed:
             return
