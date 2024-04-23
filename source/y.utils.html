@@ -176,6 +176,17 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="y.utils.events.Events.__await__">
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__await__" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously iterates through all contents of <code class="docutils literal notranslate"><span class="pre">Self</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">list</span></code> containing the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.12)"><em>Generator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a>[<em>T</em>]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__del__">
 <span class="sig-name descname"><span class="pre">__del__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__del__" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
@@ -279,6 +290,11 @@ overrides the normal algorithm (and the outcome is cached).</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.utils.events.Events.__async_property__">
+<span class="sig-name descname"><span class="pre">__async_property__</span></span><a class="headerlink" href="#y.utils.events.Events.__async_property__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.__orig_bases__">
 <span class="sig-name descname"><span class="pre">__orig_bases__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(y._db.common.Filter[web3.types.LogReceipt,</span> <span class="pre">'LogCache'],)</span></em><a class="headerlink" href="#y.utils.events.Events.__orig_bases__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -290,7 +306,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.__wrapped__">
-<span class="sig-name descname"><span class="pre">__wrapped__</span></span><a class="headerlink" href="#y.utils.events.Events.__wrapped__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.12)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.Events.__wrapped__" title="Link to this definition"></a></dt>
 <dd><p>The wrapped async iterable object.</p>
 </dd></dl>
 
@@ -335,6 +351,12 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="y.utils.events.Events.materialized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materialized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.Events.materialized" title="Link to this definition"></a></dt>
+<dd><p>Iterates through all contents of <code class="docutils literal notranslate"><span class="pre">Self</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">list</span></code> containing the results.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.Events.semaphore">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.Events.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -362,6 +384,17 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.utils.events.LogFilter.__await__">
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__await__" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously iterates through all contents of <code class="docutils literal notranslate"><span class="pre">Self</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">list</span></code> containing the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.12)"><em>Generator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a>[<em>T</em>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -457,6 +490,11 @@ overrides the normal algorithm (and the outcome is cached).</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.utils.events.LogFilter.__async_property__">
+<span class="sig-name descname"><span class="pre">__async_property__</span></span><a class="headerlink" href="#y.utils.events.LogFilter.__async_property__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__orig_bases__">
 <span class="sig-name descname"><span class="pre">__orig_bases__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(y._db.common.Filter[web3.types.LogReceipt,</span> <span class="pre">'LogCache'],)</span></em><a class="headerlink" href="#y.utils.events.LogFilter.__orig_bases__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -468,7 +506,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__wrapped__">
-<span class="sig-name descname"><span class="pre">__wrapped__</span></span><a class="headerlink" href="#y.utils.events.LogFilter.__wrapped__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.12)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.LogFilter.__wrapped__" title="Link to this definition"></a></dt>
 <dd><p>The wrapped async iterable object.</p>
 </dd></dl>
 
@@ -513,6 +551,12 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dd></dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="y.utils.events.LogFilter.materialized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materialized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.LogFilter.materialized" title="Link to this definition"></a></dt>
+<dd><p>Iterates through all contents of <code class="docutils literal notranslate"><span class="pre">Self</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">list</span></code> containing the results.</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.semaphore">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.LogFilter.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -546,6 +590,17 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__await__">
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__await__" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously iterates through all contents of <code class="docutils literal notranslate"><span class="pre">Self</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">list</span></code> containing the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.12)"><em>Generator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><em>List</em></a>[<em>T</em>]]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -667,6 +722,11 @@ overrides the normal algorithm (and the outcome is cached).</p>
 </dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__async_property__">
+<span class="sig-name descname"><span class="pre">__async_property__</span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__async_property__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__orig_bases__">
 <span class="sig-name descname"><span class="pre">__orig_bases__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(&lt;class</span> <span class="pre">'y.utils.events.Events'&gt;,</span> <span class="pre">a_sync.iter.ASyncIterable[~T])</span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.__orig_bases__" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -678,7 +738,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__wrapped__">
-<span class="sig-name descname"><span class="pre">__wrapped__</span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__wrapped__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.12)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.__wrapped__" title="Link to this definition"></a></dt>
 <dd><p>The wrapped async iterable object.</p>
 </dd></dl>
 
@@ -721,6 +781,12 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.is_reusable">
 <span class="sig-name descname"><span class="pre">is_reusable</span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.is_reusable" title="Link to this definition"></a></dt>
 <dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.materialized">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materialized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.materialized" title="Link to this definition"></a></dt>
+<dd><p>Iterates through all contents of <code class="docutils literal notranslate"><span class="pre">Self</span></code> and returns a <code class="docutils literal notranslate"><span class="pre">list</span></code> containing the results.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.semaphore">
