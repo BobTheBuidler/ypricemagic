@@ -225,7 +225,6 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             token_out_liquidity[pool._get_token_out(token)].append(liquidity)
         
         token_out_min_liquidity = {token_out: min(liquidities) for token_out, liquidities in token_out_liquidity.items()}
-        del token_out_liquidity
 
         token_in_tasks = UniswapV3Pool.check_liquidity.map(token=token, block=block)
         async for pool, liquidity in token_out_tasks:
