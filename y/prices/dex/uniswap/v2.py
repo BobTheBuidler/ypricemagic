@@ -566,7 +566,7 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
                 
         pools: Dict[UniswapV2Pool, Address] = await self.pools_for_token(token, block=block, _ignore_pools=ignore_pools, sync=False)
-        liquidity = UniswapV2Pool.check_liquidity.map(pools).max(pop=True) if pools else 0
+        liquidity = UniswapV2Pool.check_liquidity.map(pools).max(pop=True, sync=False) if pools else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
