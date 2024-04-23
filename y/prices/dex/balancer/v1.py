@@ -62,8 +62,7 @@ class BalancerV1Pool(ERC20):
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
         tokens = await self.tokens(block=block, sync=False)
-        balances = await asyncio.gather(*[self.get_balance(token, block or 'latest', sync=False) for token in tokens])
-        return dict(zip(tokens, balances))
+        return await a_sync.map(self.get_balance, tokens, block=block or 'latest', sync=False)
 
     @stuck_coro_debugger
     async def get_balance(self, token: AnyAddressType, block: Block) -> Decimal:

@@ -97,8 +97,8 @@ class AaveMarketV1(AaveMarketBase):
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
         reserves = await self.get_reserves(sync=False)
-        reserves_data = await asyncio.gather(*[self.get_reserve_data(reserve, sync=False) for reserve in reserves])
-        atokens = [ERC20(reserve_data['aTokenAddress'], asynchronous=self.asynchronous) for reserve_data in reserves_data]
+        reserves_data = await a_sync.map(self.get_reserve_data, reserves, sync=False)
+        atokens = [ERC20(reserve_data['aTokenAddress'], asynchronous=self.asynchronous) for reserve_data in reserves_data.values()]
         logger.info('loaded %s v1 atokens for %s', len(atokens), self)
         return atokens
     @a_sync.a_sync(ram_cache_maxsize=256)
@@ -114,9 +114,9 @@ class AaveMarketV2(AaveMarketBase):
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
         reserves = await self.get_reserves(sync=False)
-        reserves_data = await asyncio.gather(*[self.get_reserve_data(reserve, sync=False) for reserve in reserves])
+        reserves_data = await a_sync.map(self.get_reserve_data, reserves, sync=False)
         try:
-            atokens = [ERC20(reserve_data[7], asynchronous=self.asynchronous) for reserve_data in reserves_data]
+            atokens = [ERC20(reserve_data[7], asynchronous=self.asynchronous) for reserve_data in reserves_data.values()]
             logger.info('loaded %s v2 atokens for %s', len(atokens), self)
             return atokens
         except TypeError as e: # TODO figure out what to do about non verified aave markets
@@ -137,9 +137,9 @@ class AaveMarketV3(AaveMarketBase):
     @a_sync.aka.cached_property
     async def atokens(self) -> List[ERC20]:
         reserves = await self.get_reserves(sync=False)
-        reserves_data = await asyncio.gather(*[self.get_reserve_data(reserve, sync=False) for reserve in reserves])
+        reserves_data = await a_sync.map(self.get_reserve_data, reserves, sync=False)
         try:
-            atokens = [ERC20(reserve_data[8], asynchronous=self.asynchronous) for reserve_data in reserves_data]
+            atokens = [ERC20(reserve_data[8], asynchronous=self.asynchronous) for reserve_data in reserves_data.values()]
             logger.info('loaded %s v3 atokens for %s', len(atokens), self)
             return atokens
         except TypeError as e: # TODO figure out what to do about non verified aave markets

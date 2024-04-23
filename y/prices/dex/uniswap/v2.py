@@ -162,8 +162,9 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
         tokens: List[ERC20] = await self.__tokens__
+        prices: Dict[ERC20, UsdPrice]
         prices, reserves = await asyncio.gather(
-            asyncio.gather(*[token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) for token in tokens]),
+            a_sync.map(ERC20.price, tokens, block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False),
             self.reserves(block=block, sync=False),
         )
 
@@ -172,7 +173,7 @@ class UniswapV2Pool(ERC20):
 
         vals = [
             None if price is None else Decimal(await reserve.__readable__) * Decimal(price)
-            for reserve, price in zip(reserves, prices)
+            for reserve, price in zip(reserves, prices.values())
         ]
 
         if vals[0] is not None and not vals[1]:
@@ -206,7 +207,7 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
         try:
-            return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
+            return await a_sync.all(self.reserves(block=block, sync=False), self.total_supply(block, sync=False))
         except NotAUniswapV2Pool:
             return False
         
@@ -375,9 +376,10 @@ class UniswapRouterV2(ContractBase):
                 pool = UniswapV2Pool(address=pool, asynchronous=self.asynchronous)
                 await asyncio.gather(pool.__token0__, pool.__token1__)
                 return pool
-            pools = await asyncio.gather(*[_load_pool(i) for i in range(to_get)]) + pools
+            async for i, pool in a_sync.map(_load_pool, range(to_get)):
+                pools.insert(i, pool)
             logger.debug('Done fetching %s missing pools on %s', to_get, self.label)
-        tokens = set(await asyncio.gather(*itertools.chain(*((pool.__token0__, pool.__token1__) for pool in pools))))
+        tokens = set(await asyncio.gather(*(pool.__tokens__ for pool in pools)))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
@@ -441,8 +443,8 @@ class UniswapRouterV2(ContractBase):
                     raise e
         pools = {k: v for k, v in pools.items() if k not in _ignore_pools}
         if pools and block is not None:
-            deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in pools])
-            pools = {k: v for (k, v), deploy_block in zip(pools.items(), deploy_blocks) if deploy_block <= block}
+            deploy_blocks = await a_sync.map(UniswapV2Pool.deploy_block, pools, when_no_history_return_0=True, sync=False)
+            pools = {pool: other_token for (pool, other_token), deploy_block in zip(pools.items(), deploy_blocks.values()) if deploy_block <= block}
         return pools
 
     @stuck_coro_debugger
@@ -467,11 +469,9 @@ class UniswapRouterV2(ContractBase):
         pools: List[UniswapV2Pool] = list((await self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools, sync=False)).keys())
         if not pools:
             return None
-        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in pools])
-
         deepest_pool = None
         deepest_pool_balance = 0
-        for pool, depth in zip(pools, liquidity):
+        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, pools, block=block, sync=False):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
                 deepest_pool_balance = depth
@@ -494,17 +494,15 @@ class UniswapRouterV2(ContractBase):
                 return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
 
             elif block is not None:
-                deploy_blocks = await asyncio.gather(*[pool.deploy_block(when_no_history_return_0=True, sync=False) for pool in stable_pools])
-                stable_pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(stable_pools.items(), deploy_blocks) if deploy_block <= block}
+                deploy_blocks = await a_sync.map(UniswapV2Pool.deploy_block, stable_pools, when_no_history_return_0=True, sync=False)
+                stable_pools = {pool: paired_with for (pool, paired_with), deploy_block in zip(stable_pools.items(), deploy_blocks.values()) if deploy_block <= block}
             
         if not stable_pools:
             return None
         
-        liquidity = await asyncio.gather(*[pool.check_liquidity(token_address, block, sync=False) for pool in stable_pools])
-
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        for pool, depth in zip(stable_pools, liquidity):
+        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block, sync=False):
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth

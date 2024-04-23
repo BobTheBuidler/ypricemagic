@@ -94,14 +94,17 @@ async def multicall_decimals(
     return_None_on_failure: bool = True
     ) -> List[int]:
 
+    addresses = [str(address) for address in addresses]
     try: 
-        return await asyncio.gather(*[Call(str(address), ['decimals()(uint256)'], block_id=block) for address in addresses])
+        decimals = await a_sync.map(Call, addresses, function=['decimals()(uint256)'], block_id=block)
+        return list(decimals.values)
     except (CannotHandleRequest, InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:
         continue_if_call_reverted(e)
 
-    return await asyncio.gather(*[_decimals(address,block=block,return_None_on_failure=return_None_on_failure) for address in addresses])
+    decimals = await a_sync.map(_decimals, addresses, block=block, return_None_on_failure=return_None_on_failure)
+    return list(decimals.values())
 
 @a_sync.a_sync(default='sync')
 @stuck_coro_debugger
