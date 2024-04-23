@@ -128,11 +128,12 @@ class AddressProvider(_CurveEventsLoader):
         # TODO: remove this once curve adds to address provider
         if chain.id == Network.Mainnet:
             self.identifiers[Ids.CurveStableswapFactoryNG] = ['0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf']
-        metapool_factories = [
+
+        metapool_factories = (
             Factory(factory, asynchronous=self.asynchronous)
             for i in [Ids.Metapool_Factory, Ids.crvUSD_Plain_Pools, Ids.Curve_Tricrypto_Factory, Ids.CurveStableswapFactoryNG]
             for factory in self.identifiers[i]
-        ]
+        )
 
         async for factory, pool_list in a_sync.map(Factory.read_pools, metapool_factories):
             for pool in pool_list:
@@ -338,11 +339,10 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
-        deploy_block = await contract_creation_block_async(self.address)
-        if block < deploy_block:
+        if block < await contract_creation_block_async(self.address):
             return 0
-        i = await self.get_coin_index(token, sync=False)
-        if balance := await self._get_balance(i, block):
+        index = await self.get_coin_index(token, sync=False)
+        if balance := await self._get_balance(index, block):
             return balance
         return 0
 
