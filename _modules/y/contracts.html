@@ -391,11 +391,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">cache_ttl</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
-    
+
 <div class="viewcode-block" id="Contract.coroutine">
 <a class="viewcode-back" href="../../source/y.html#y.contracts.Contract.coroutine">[docs]</a>
     <span class="nd">@classmethod</span>
-    <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">coroutine</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> 
         <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
@@ -403,14 +402,26 @@
         <span class="n">cache_ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_CACHE_TTL</span><span class="p">,</span>  <span class="c1"># units: seconds</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
         
+        <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="c1"># We do this so we don&#39;t clog the threadpool with multiple jobs for the same contract.</span>
-        <span class="k">async</span> <span class="k">with</span> <span class="n">address_semaphores</span><span class="p">[</span><span class="n">address</span><span class="p">]:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">contract</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;</span><span class="p">,</span> <span class="n">ZERO_ADDRESS</span><span class="p">]:</span>
-                    <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not a contract.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
-                <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_threads</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">contract</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;</span><span class="p">,</span> <span class="n">ZERO_ADDRESS</span><span class="p">]:</span>
+                <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not a contract.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_contract_queue</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span><span class="p">,</span> <span class="n">cache_ttl</span><span class="o">=</span><span class="n">cache_ttl</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">contract</span></div>
+
+    
+    <span class="nd">@classmethod</span>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_coroutine</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> 
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
+        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="n">cache_ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_CACHE_TTL</span><span class="p">,</span>  <span class="c1"># units: seconds</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+        <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_threads</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">contract</span><span class="o">.</span><span class="n">verified</span> <span class="ow">or</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
             <span class="k">pass</span>
@@ -427,9 +438,8 @@
         <span class="k">elif</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">cache_ttl</span> <span class="o">&gt;</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">when</span><span class="p">():</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="n">cache_ttl</span><span class="p">,</span> <span class="n">_pop</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="p">,</span> <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">contract</span></div>
+        <span class="k">return</span> <span class="n">contract</span>
 
-    
     <span class="k">def</span> <span class="nf">__init_from_abi__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">_ContractBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="p">{})</span>  <span class="c1"># type: ignore</span>
         <span class="n">_DeployedContractBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">],</span> <span class="n">owner</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -470,6 +480,8 @@
 </div>
 
 
+<span class="kn">from</span> <span class="nn">a_sync.primitives.queue</span> <span class="kn">import</span> <span class="n">SmartProcessingQueue</span>
+<span class="n">_contract_queue</span> <span class="o">=</span> <span class="n">SmartProcessingQueue</span><span class="p">(</span><span class="n">Contract</span><span class="o">.</span><span class="n">_coroutine</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="c1">#yLazyLogger(logger)</span>
