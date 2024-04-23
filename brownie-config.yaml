@@ -1,0 +1,3 @@
+autofetch_sources: false
+networks: 
+  default: mainnet
