@@ -73,10 +73,10 @@
   <h1>Source code for y.prices.utils.sense_check</h1><div class="highlight"><pre>
 <span></span><span class="c1"># async: done</span>
 
-<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
+<span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
@@ -284,7 +284,7 @@
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s1">&#39;curve lp&#39;</span><span class="p">:</span>
         <span class="n">underlyings</span> <span class="o">=</span> <span class="k">await</span> <span class="n">CurvePool</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">coins</span>
         <span class="k">if</span> <span class="n">questionable_underlyings</span> <span class="o">:=</span> <span class="p">[</span><span class="n">und</span> <span class="k">for</span> <span class="n">und</span> <span class="ow">in</span> <span class="n">underlyings</span> <span class="k">if</span> <span class="n">und</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ACCEPTABLE_HIGH_PRICES</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">_exit_sense_check</span><span class="p">(</span><span class="n">underlying</span><span class="p">)</span> <span class="k">for</span> <span class="n">underlying</span> <span class="ow">in</span> <span class="n">questionable_underlyings</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_exit_sense_check</span><span class="p">,</span> <span class="n">questionable_underlyings</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="kc">True</span>
     
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s1">&#39;atoken&#39;</span><span class="p">:</span>

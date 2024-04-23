@@ -175,14 +175,20 @@
     <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
 
+    <span class="n">addresses</span> <span class="o">=</span> <span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">]</span>
     <span class="k">try</span><span class="p">:</span> 
-        <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">Call</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="p">[</span><span class="s1">&#39;decimals()(uint256)&#39;</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">])</span>
+        <span class="n">calls</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Call</span><span class="p">,</span> <span class="n">addresses</span><span class="p">,</span> <span class="n">function</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;decimals()(uint256)&#39;</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">decimals</span> <span class="k">async</span> <span class="k">for</span> <span class="n">address</span><span class="p">,</span> <span class="n">decimals</span> <span class="ow">in</span> <span class="n">calls</span><span class="p">]</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">CannotHandleRequest</span><span class="p">,</span> <span class="n">InsufficientDataBytes</span><span class="p">):</span>
         <span class="k">pass</span> <span class="c1"># TODO investigate these</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">continue_if_call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">_decimals</span><span class="p">(</span><span class="n">address</span><span class="p">,</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span><span class="n">return_None_on_failure</span><span class="o">=</span><span class="n">return_None_on_failure</span><span class="p">)</span> <span class="k">for</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">])</span></div>
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="n">decimals</span> 
+        <span class="k">async</span> <span class="k">for</span> <span class="n">decimals</span> 
+        <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">_decimals</span><span class="p">,</span> <span class="n">addresses</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="n">return_None_on_failure</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+    <span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="multicall_totalSupply">

@@ -331,11 +331,10 @@
 <div class="viewcode-block" id="Compound.get_troller">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.get_troller">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_troller</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Comptroller</span><span class="p">]:</span>
-        <span class="n">trollers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trollers</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
-        <span class="n">all_markets</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">troller</span><span class="o">.</span><span class="n">__markets__</span> <span class="k">for</span> <span class="n">troller</span> <span class="ow">in</span> <span class="n">trollers</span><span class="p">])</span>
-        <span class="k">for</span> <span class="n">troller</span><span class="p">,</span> <span class="n">markets</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">trollers</span><span class="p">,</span> <span class="n">all_markets</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">token_address</span> <span class="ow">in</span> <span class="n">markets</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">troller</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trollers</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">troller</span><span class="p">,</span> <span class="n">markets</span> <span class="ow">in</span> <span class="n">Comptroller</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trollers</span><span class="o">.</span><span class="n">values</span><span class="p">()):</span>
+                <span class="k">if</span> <span class="n">token_address</span> <span class="ow">in</span> <span class="n">markets</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">troller</span></div>
 
             
 <div class="viewcode-block" id="Compound.is_compound_market">

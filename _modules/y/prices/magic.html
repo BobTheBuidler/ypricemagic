@@ -163,31 +163,14 @@
 <span class="sd">    - if `fail_to_None == False`, ypricemagic will raise a yPriceMagicError</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
-
-    <span class="n">prices</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">[</span>
-            <span class="n">get_price</span><span class="p">(</span>
-                <span class="n">token_address</span><span class="o">=</span><span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">),</span> 
-                <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> 
-                <span class="n">fail_to_None</span><span class="o">=</span><span class="n">fail_to_None</span><span class="p">,</span> 
-                <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> 
-                <span class="n">silent</span><span class="o">=</span><span class="n">silent</span><span class="p">,</span> 
-                <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">token_addresses</span>
-        <span class="p">],</span>
-        <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span>
-    <span class="p">)</span>
-
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">fail_to_None</span><span class="p">:</span>
-        <span class="n">raise_if_exception_in</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prices</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">PriceError</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">p</span>
-    <span class="k">return</span> <span class="n">prices</span></div>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+        <span class="n">get_price</span><span class="p">,</span>
+        <span class="n">token_addresses</span><span class="p">,</span>
+        <span class="n">block</span><span class="o">=</span><span class="n">block</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span> 
+        <span class="n">fail_to_None</span><span class="o">=</span><span class="n">fail_to_None</span><span class="p">,</span> 
+        <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> 
+        <span class="n">silent</span><span class="o">=</span><span class="n">silent</span><span class="p">,</span> 
+    <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span></div>
 
 
 <span class="k">def</span> <span class="nf">__cache</span><span class="p">(</span><span class="n">get_price</span><span class="p">:</span> <span class="n">GetPrice</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GetPrice</span><span class="p">:</span>
