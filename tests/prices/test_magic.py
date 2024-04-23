@@ -2,6 +2,7 @@
 import asyncio
 from typing import List
 
+import a_sync
 import pytest
 from brownie import chain
 
@@ -54,7 +55,7 @@ async def test_get_prices(block):
     Just add the failing identifier to 'chainlink_identifiers_not_tokens' below.
     """
     tokens = await relevant_tokens(ALL_TOKENS, block)
-    checked_separately = await asyncio.gather(*[get_price(token, block) for token in tokens])
+    checked_separately = await a_sync.map(get_price, tokens, block=block).values()
     checked_together = await magic.get_prices(tokens, block, fail_to_None=True, skip_cache=True, sync=False)
     for i in range(len(checked_together)):
         assert checked_together[i] == checked_separately[i], f'magic.get_prices price discrepancy for {tokens[i]}'
@@ -93,6 +94,5 @@ chainlink_identifiers_not_tokens = [
 ]
 
 async def relevant_tokens(tokens, block):
-    tokens = [token for token in tokens if token not in chainlink_identifiers_not_tokens]
-    creation_blocks = await asyncio.gather(*[contract_creation_block_async(convert.to_address(token)) for token in tokens])
-    return [token for token, deploy_block in zip(tokens, creation_blocks) if deploy_block and deploy_block <= block]
+    tokens = (convert.to_address(token) for token in tokens if token not in chainlink_identifiers_not_tokens)
+    return [token async for token, deploy_block in a_sync.map(contract_creation_block_async, tokens) if deploy_block and deploy_block <= block]
