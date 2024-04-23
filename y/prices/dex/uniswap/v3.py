@@ -211,11 +211,12 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             return 0
         
         token_out_tasks = UniswapV3Pool.check_liquidity_token_out.map(token_in=token, block=block)
-
         async for pool in self.pools_for_token(token, block):
             if pool not in ignore_pools:
                 # the mapping will start the tasks internally
                 token_out_tasks[pool]
+        if not token_out_tasks:
+            return 0
         
         # Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`
         # We need some spaghetticode here to account for these erroneous liquidity values
