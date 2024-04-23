@@ -52,7 +52,11 @@ except ContractNotVerified:
     FACTORY_HELPER = None
 
 class UniswapV2Pool(ERC20):
-    __slots__ = 'get_reserves', '_token0', '_token1', '_types_assumed'
+    # defaults are stored as class vars to keep instance dicts smaller
+    __token0 = None
+    __token1 = None
+    __types_assumed = True
+    __slots__ = 'get_reserves',
     def __init__(
         self, 
         address: AnyAddressType, 
@@ -63,10 +67,12 @@ class UniswapV2Pool(ERC20):
     ):
         super().__init__(address, asynchronous=asynchronous)
         self.get_reserves = Call(self.address, 'getReserves()((uint112,uint112,uint32))')
-        self._deploy_block = deploy_block
-        self._token0 = token0
-        self._token1 = token1
-        self._types_assumed = True
+        if deploy_block:
+            self._deploy_block = deploy_block
+        if token0:
+            self.__token0 = token0
+        if token1:
+            self.__token1 = token1
         
     @a_sync.aka.cached_property
     async def factory(self) -> Address:
@@ -94,28 +100,30 @@ class UniswapV2Pool(ERC20):
     
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
-        if self._token0 is None:
-            try:
-                if token0 := await Call(self.address, ['token0()(address)']):
-                    self._token0 = ERC20(token0, asynchronous=self.asynchronous)
-            except ValueError as e:
-                continue_if_call_reverted(e)
-        if self._token0 is None:
-            raise NotAUniswapV2Pool(self)
-        return self._token0
+        # we can keep the instance smaller by popping this since its already cached
+        if token0 := self.__token0:
+            del self.__token0
+            return token0
+        try:
+            if token0 := await Call(self.address, ['token0()(address)']):
+                return ERC20(token0, asynchronous=self.asynchronous)
+        except ValueError as e:
+            continue_if_call_reverted(e)
+        raise NotAUniswapV2Pool(self)
     __token0__: HiddenMethodDescriptor[Self, ERC20]
 
     @a_sync.aka.cached_property
     async def token1(self) -> ERC20:
-        if self._token1 is None:
-            try:
-                if token1 := await Call(self.address, ['token1()(address)']):
-                    self._token1 = ERC20(token1, asynchronous=self.asynchronous)
-            except ValueError as e:
-                continue_if_call_reverted(e)
-        if self._token1 is None:
-            raise NotAUniswapV2Pool(self)
-        return self._token1
+        # we can keep the instance smaller by popping this since its already cached
+        if token1 := self.__token1:
+            del self.__token1
+            return token1
+        try:
+            if token1 := await Call(self.address, ['token1()(address)']):
+                return ERC20(token1, asynchronous=self.asynchronous)
+        except ValueError as e:
+            continue_if_call_reverted(e)
+        raise NotAUniswapV2Pool(self)
     __token1__: HiddenMethodDescriptor[Self, ERC20]
     
     @a_sync.a_sync(cache_type='memory')
@@ -142,7 +150,7 @@ class UniswapV2Pool(ERC20):
         if isinstance(tokens, Exception):
             raise tokens
 
-        if reserves is None and self._types_assumed:
+        if reserves is None and self.__types_assumed:
             try:
                 await self._check_return_types()
             except AttributeError as e:
@@ -219,7 +227,7 @@ class UniswapV2Pool(ERC20):
             return False
     
     async def _check_return_types(self) -> None:
-        if not self._types_assumed:
+        if not self.__types_assumed:
             return
         try:
             contract = await Contract.coroutine(self.address)
@@ -229,7 +237,7 @@ class UniswapV2Pool(ERC20):
             self.get_reserves = Call(self.address, f'getReserves()(({reserves_types}))')
         except ContractNotVerified:
             self._verified = False
-        self._types_assumed = False
+        self.__types_assumed = False
 
 
 class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):

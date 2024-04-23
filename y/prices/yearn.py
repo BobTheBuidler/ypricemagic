@@ -91,13 +91,11 @@ async def get_price(
     return await YearnInspiredVault(token).price(block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False)
 
 class YearnInspiredVault(ERC20):
-    __slots__ = "_get_share_price", 
+    # defaults are stored as class vars to keep instance dicts smaller
+    _get_share_price = None
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
-    def __init__(self, address: AnyAddressType, asynchronous: bool = False):
-        super().__init__(address, asynchronous=asynchronous)
-        self._get_share_price = None
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
@@ -143,7 +141,16 @@ class YearnInspiredVault(ERC20):
                 contract = await Contract.coroutine(self.address)
                 for method in ['convertToAssets', 'getSharesToUnderlying']:
                     if hasattr(contract, method):
-                        share_price = await getattr(contract, method).coroutine(await self.__scale__, block_identifier=block)
+                        contract_call = getattr(contract, method)
+                        scale = await self.__scale__
+                        class base:
+                            # a hacky way we can cache this weird case and save calls
+                            @staticmethod
+                            async def coroutine(block_id: Optional[Block]) -> int:
+                                return await contract_call.coroutine(scale, block_identifier=block_id)
+                        share_price = await base.coroutine(block_id=block)
+                        self._get_share_price = base
+
             except ContractNotVerified:
                 pass
 
