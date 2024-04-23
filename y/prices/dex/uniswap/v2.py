@@ -91,7 +91,7 @@ class UniswapV2Pool(ERC20):
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
         return await asyncio.gather(self.__token0__, self.__token1__)
-    __tokens__: HiddenMethodDescriptor[Self, ERC20]
+    __tokens__: HiddenMethodDescriptor[Self, Tuple[ERC20, ERC20]]
     
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
@@ -162,8 +162,9 @@ class UniswapV2Pool(ERC20):
 
     @stuck_coro_debugger
     async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
-        tokens: List[ERC20] = await self.__tokens__
-        prices: Dict[ERC20, UsdPrice]
+        prices: Dict[ERC20, Optional[UsdPrice]]
+        reserves: Tuple[WeiBalance, WeiBalance]
+        tokens = await self.__tokens__
         prices, reserves = await asyncio.gather(
             a_sync.map(ERC20.price, tokens, block=block, return_None_on_failure=True, skip_cache=skip_cache),
             self.reserves(block=block, sync=False),
