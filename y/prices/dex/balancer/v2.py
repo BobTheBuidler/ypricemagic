@@ -2,8 +2,7 @@
 import asyncio
 import logging
 from collections import defaultdict
-from typing import (AsyncIterator, Awaitable, Dict, List, NewType, Optional,
-                    Tuple)
+from typing import AsyncIterator, Dict, List, NewType, Optional, Tuple
 
 import a_sync
 from a_sync.property import HiddenMethodDescriptor
