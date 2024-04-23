@@ -85,13 +85,10 @@ async def get_prices(
     - if `fail_to_None == False`, ypricemagic will raise a yPriceMagicError
     '''
 
-    if block is None:
-        block = await dank_mids.eth.block_number
-
     return await a_sync.map(
         get_price,
         token_addresses,
-        block=block, 
+        block=block or await dank_mids.eth.block_number, 
         fail_to_None=fail_to_None, 
         skip_cache=skip_cache, 
         silent=silent, 

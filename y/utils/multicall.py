@@ -96,15 +96,18 @@ async def multicall_decimals(
 
     addresses = [str(address) for address in addresses]
     try: 
-        decimals = await a_sync.map(Call, addresses, function=['decimals()(uint256)'], block_id=block)
-        return list(decimals.values)
+        calls = a_sync.map(Call, addresses, function=['decimals()(uint256)'], block_id=block)
+        return [decimals async for address, decimals in calls]
     except (CannotHandleRequest, InsufficientDataBytes):
         pass # TODO investigate these
     except Exception as e:
         continue_if_call_reverted(e)
 
-    decimals = await a_sync.map(_decimals, addresses, block=block, return_None_on_failure=return_None_on_failure)
-    return list(decimals.values())
+    return [
+        decimals 
+        async for address, decimals 
+        in a_sync.map(_decimals, addresses, block=block, return_None_on_failure=return_None_on_failure)
+    ]
 
 @a_sync.a_sync(default='sync')
 @stuck_coro_debugger
