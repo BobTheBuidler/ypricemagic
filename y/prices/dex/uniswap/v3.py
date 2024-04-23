@@ -210,7 +210,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             logger.debug("block %s is before %s deploy block", block, quoter)
             return 0
         
-        token_out_tasks = UniswapV3Pool.check_liquidity_token_out.map(token=token, block=block)
+        token_out_tasks = UniswapV3Pool.check_liquidity_token_out.map(token_in=token, block=block)
 
         async for pool in self.pools_for_token(token, block):
             if pool not in ignore_pools:
