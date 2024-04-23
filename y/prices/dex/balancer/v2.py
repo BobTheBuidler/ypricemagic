@@ -63,7 +63,7 @@ class BalancerV2Vault(ContractBase):
             self.contract
     
     @stuck_coro_debugger
-    async def pools(self, block: Optional[Block] = None) -> AsyncIterable["BalancerV2Pool"]:
+    async def pools(self, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
         async for pool in self._events.events(to_block=block):
             yield pool
 
