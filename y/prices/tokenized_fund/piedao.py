@@ -53,5 +53,5 @@ async def get_balance(bpool: Address, token: ERC20, block: Optional[Block] = Non
     return Decimal(balance) / scale
 
 async def get_value(bpool: Address, token: ERC20, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
-    balance, price = await asyncio.gather(get_balance(bpool, token, block), token.price(block, skip_cache=skip_cache))
+    balance, price = await asyncio.gather(get_balance(bpool, token, block), token.price(block, skip_cache=skip_cache, sync=False))
     return UsdValue(balance * Decimal(price))
