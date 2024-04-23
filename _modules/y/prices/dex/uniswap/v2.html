@@ -315,6 +315,17 @@
             <span class="k">return</span> <span class="kc">False</span></div>
 
         
+<div class="viewcode-block" id="UniswapV2Pool.get_other_side_token">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.get_other_side_token">[docs]</a>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_other_side_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_in</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">token_in</span> <span class="o">==</span> <span class="p">(</span><span class="n">token0</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">token1</span>
+        <span class="k">elif</span> <span class="n">token_in</span> <span class="o">==</span> <span class="p">(</span><span class="n">token1</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">token0</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">token_in</span><span class="si">}</span><span class="s2"> is not one of [</span><span class="si">{</span><span class="n">token0</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">token1</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
+
+    
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_check_return_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_types_assumed</span><span class="p">:</span>
             <span class="k">return</span>
