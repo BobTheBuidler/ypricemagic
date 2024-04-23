@@ -153,7 +153,7 @@
         <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;factory()&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="c1"># `is not a valid ETH address` means we got some kind of response from the chain.</span>
             <span class="c1"># but couldn&#39;t convert to address. If it happens to be a goofy but</span>
             <span class="c1"># verified uni fork, maybe we can get factory this way</span>
@@ -164,7 +164,7 @@
             <span class="k">try</span><span class="p">:</span> 
                 <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">factory</span>
             <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span> <span class="kn">from</span> <span class="nn">exc</span></div>
+                <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">exc</span></div>
 
     <span class="n">__factory__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Address</span><span class="p">]</span>
 
@@ -187,7 +187,7 @@
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">continue_if_call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token0</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token0</span></div>
 
     <span class="n">__token0__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
@@ -203,7 +203,7 @@
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="n">continue_if_call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token1</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_token1</span></div>
 
     <span class="n">__token1__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
@@ -220,6 +220,17 @@
         <span class="k">return</span> <span class="kc">None</span></div>
 
     
+<div class="viewcode-block" id="UniswapV2Pool.get_token_out">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.get_token_out">[docs]</a>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_token_out</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_in</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">token_in</span> <span class="o">==</span> <span class="p">(</span><span class="n">token0</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">token1</span>
+        <span class="k">elif</span> <span class="n">token_in</span> <span class="o">==</span> <span class="p">(</span><span class="n">token1</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1__</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">token0</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">token_in</span><span class="si">}</span><span class="s2"> is not one of [</span><span class="si">{</span><span class="n">token0</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">token1</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
+
+    
 <div class="viewcode-block" id="UniswapV2Pool.reserves">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.reserves">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
@@ -233,7 +244,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_return_types</span><span class="p">()</span>
             <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">NotAUniswapV2Pool</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">reserves</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verified</span><span class="p">:</span>
@@ -313,17 +324,6 @@
             <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_supply</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)))</span>
         <span class="k">except</span> <span class="n">NotAUniswapV2Pool</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span></div>
-
-        
-<div class="viewcode-block" id="UniswapV2Pool.get_other_side_token">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.get_other_side_token">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_other_side_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_in</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">token_in</span> <span class="o">==</span> <span class="p">(</span><span class="n">token0</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0__</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">token1</span>
-        <span class="k">elif</span> <span class="n">token_in</span> <span class="o">==</span> <span class="p">(</span><span class="n">token1</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1__</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">token0</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">token_in</span><span class="si">}</span><span class="s2"> is not one of [</span><span class="si">{</span><span class="n">token0</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">token1</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
 
     
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_check_return_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

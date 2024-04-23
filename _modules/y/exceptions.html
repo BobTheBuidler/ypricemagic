@@ -72,10 +72,13 @@
              
   <h1>Source code for y.exceptions</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">Contract</span> <span class="k">as</span> <span class="n">BrownieContract</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">CompilerError</span>
+
+<span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">UniswapV2Pool</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -182,7 +185,16 @@
 <div class="viewcode-block" id="NotAUniswapV2Pool">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NotAUniswapV2Pool">[docs]</a>
 <span class="k">class</span> <span class="nc">NotAUniswapV2Pool</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+    <span class="c1"># NOTE: we use this exc to get the non-pool out of the pool singleton so it doesn&#39;t grow forever</span>
+    <span class="c1"># TODO: Refactor this goofy thing out</span>
+<div class="viewcode-block" id="NotAUniswapV2Pool.__init__">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.NotAUniswapV2Pool.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">non_pool</span><span class="p">:</span> <span class="s2">&quot;UniswapV2Pool&quot;</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">UniswapV2Pool</span>
+        <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">_ChecksumASyncSingletonMeta_instances</span><span class="p">[</span><span class="kc">True</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">non_pool</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">_ChecksumASyncSingletonMeta_instances</span><span class="p">[</span><span class="kc">False</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">non_pool</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">non_pool</span><span class="o">.</span><span class="n">address</span><span class="p">)</span></div>
+</div>
 
 
 <div class="viewcode-block" id="NotABalancerV2Pool">
