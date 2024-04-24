@@ -143,13 +143,14 @@ class YearnInspiredVault(ERC20):
                     if hasattr(contract, method):
                         contract_call = getattr(contract, method)
                         scale = await self.__scale__
-                        class base:
+                        class call:
+                            function = method
                             # a hacky way we can cache this weird case and save calls
                             @staticmethod
                             async def coroutine(block_id: Optional[Block]) -> int:
                                 return await contract_call.coroutine(scale, block_identifier=block_id)
-                        share_price = await base.coroutine(block_id=block)
-                        self._get_share_price = base
+                        share_price = await call.coroutine(block_id=block)
+                        self._get_share_price = call
 
             except ContractNotVerified:
                 pass
@@ -158,7 +159,7 @@ class YearnInspiredVault(ERC20):
             if self._get_share_price and self._get_share_price.function == 'getPricePerFullShare()(uint)':
                 # v1 vaults use getPricePerFullShare scaled to 18 decimals
                 return share_price / Decimal(10 ** 18)
-            underlying: ERC20 = await self.__underlying__
+            underlying = await self.__underlying__
             return Decimal(share_price) / await underlying.__scale__
             
         elif await raw_call(self.address, 'totalSupply()', output='int', block=block, return_None_on_failure=True, sync=False) == 0:
