@@ -205,6 +205,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         - build_name_async
         - get_code
     """
+    # the default state for Contract objects
+    verified = True
+
     events: ContractEvents
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
 
@@ -228,9 +231,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             # Try to fetch the contract from the local sqlite db.
             try:
                 super().__init__(address, owner=owner)
-                try:
-                    self.verified = True
-                except AttributeError:
+                if not isinstance(self.verified, bool) and self.verified is not None:
                     logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
             except AssertionError as e:
                 raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e

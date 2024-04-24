@@ -42,7 +42,10 @@ def hex_to_string(h: HexString) -> str:
     return bytes.fromhex(h).decode("utf-8")
 
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
-    __slots__ = "address", "asynchronous", "_deploy_block"
+    # defaults are stored as class vars to keep instance dicts smaller
+    asynchronous: bool = False
+    _deploy_block: Optional[int] = None
+    __slots__ = "address",
     def __init__(
         self, 
         address: AnyAddressType, 
@@ -50,8 +53,10 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         _deploy_block: Optional[int] = None,
     ) -> None:
         self.address = convert.to_address(address)
-        self.asynchronous = asynchronous
-        self._deploy_block = _deploy_block
+        if asynchronous:
+            self.asynchronous = asynchronous
+        if _deploy_block:
+            self._deploy_block = _deploy_block
         super().__init__()
     
     def __str__(self) -> str:
@@ -230,6 +235,11 @@ class ERC20(ContractBase):
 
 
 class WeiBalance(a_sync.ASyncGenericBase):
+    # defaults are stored as class vars to keep instance dicts smaller
+    block: Optional[Block] = None
+    asynchronous: bool = False
+    _skip_cache: bool = ENVS.SKIP_CACHE
+    _ignore_pools: Tuple[Pool, ...] = ()
     def __init__(
         self, 
         balance: int,
@@ -240,13 +250,17 @@ class WeiBalance(a_sync.ASyncGenericBase):
         asynchronous: bool = False,
         ) -> None:
 
-        self.asynchronous = asynchronous
+        if asynchronous != self.asynchronous:
+            self.asynchronous = asynchronous
         self.balance = Decimal(balance)
         self.token = ERC20(str(token), asynchronous=self.asynchronous)
-        self.block = block
+        if block != self.block:
+            self.block = block
         super().__init__()
-        self._skip_cache = skip_cache
-        self._ignore_pools = ignore_pools
+        if skip_cache != self._skip_cache:
+            self._skip_cache = skip_cache
+        if ignore_pools != self._ignore_pools:
+            self._ignore_pools = ignore_pools
 
     def __str__(self) -> str:
         return str(self.balance)

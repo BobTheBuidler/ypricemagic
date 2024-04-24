@@ -120,15 +120,24 @@ MESSED_UP_POOLS = {
 }.get(chain.id, [])
 
 class BalancerV2Pool(ERC20):
+    # defaults are stored as class vars to keep instance dicts smaller
+    _messed_up = False
     # internal variables to save calls in some instances
     # they do not necessarily reflect real life at all times
     __nonweighted: bool = False
     __weights: List[int] = None
-    __slots__ = "_id", "_messed_up"
-    def __init__(self, address: AnyAddressType, *args, id: Optional[HexBytes] = None, **kwargs):
-        super().__init__(address, *args, **kwargs)
+    __slots__ = "_id", 
+    def __init__(
+        self, 
+        address: AnyAddressType, 
+        id: Optional[HexBytes] = None, 
+        asynchronous: bool = False, 
+        _deploy_block: Optional[Block] = None,
+    ):
+        super().__init__(address, asynchronous=asynchronous, _deploy_block=_deploy_block)
         self._id = id
-        self._messed_up = self.address in MESSED_UP_POOLS
+        if self.address in MESSED_UP_POOLS:
+            self._messed_up = True
 
     @a_sync.aka.cached_property
     async def id(self) -> PoolId:

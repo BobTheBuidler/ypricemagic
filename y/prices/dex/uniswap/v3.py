@@ -71,7 +71,7 @@ class UniswapV3Pool(ContractBase):
         tick_spacing: int, 
         fee: int, 
         deploy_block: int,
-        asynchronous: bool = True
+        asynchronous: bool = False
     ) -> None:
         super().__init__(address, asynchronous=asynchronous)
         self.token0 = ERC20(token0, asynchronous=asynchronous)

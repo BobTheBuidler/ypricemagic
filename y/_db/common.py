@@ -140,7 +140,17 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
 _E = TypeVar("_E", bound=_AsyncExecutorMixin)
     
 class Filter(_DiskCachedMixin[T, C]):
-    __slots__ = 'from_block', 'to_block', '_chunk_size', '_chunks_per_batch', '_db_task', '_exc', '_interval', '_lock', '_semaphore', '_sleep_fut', '_sleep_time', '_task', '_verbose', '__dict__'
+    # defaults are stored as class vars to keep instance dicts smaller
+    _chunk_size = BATCH_SIZE
+    _chunks_per_batch = None
+    _exc = None
+    _db_task = None
+    _sleep_fut = None
+    _sleep_time = 60
+    _task = None
+    _semaphore = None
+    _verbose = False
+    __slots__ = 'from_block', 'to_block', '_interval', '_lock', '__dict__'
     def __init__(
         self, 
         from_block: int,
@@ -154,16 +164,17 @@ class Filter(_DiskCachedMixin[T, C]):
         verbose: bool = False,
     ):
         self.from_block = from_block
-        self._chunk_size = chunk_size
-        self._chunks_per_batch = chunks_per_batch
-        self._exc = None
+        if chunk_size != self._chunk_size:
+            self._chunk_size = chunk_size
+        if chunks_per_batch != self._chunks_per_batch:
+            self._chunks_per_batch = chunks_per_batch
         self._lock = a_sync.CounterLock()
-        self._db_task = None
-        self._semaphore = semaphore
-        self._sleep_fut = None
-        self._sleep_time = sleep_time
-        self._task = None
-        self._verbose = verbose
+        if semaphore != self._semaphore:
+            self._semaphore = semaphore
+        if sleep_time != self._sleep_time:
+            self._sleep_time = sleep_time
+        if verbose != self._verbose:
+            self._verbose = verbose
         super().__init__(executor=executor, is_reusable=is_reusable)
 
     def __aiter__(self) -> AsyncIterator[T]:
