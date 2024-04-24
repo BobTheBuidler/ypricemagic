@@ -14,7 +14,7 @@ from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from y.utils.cache import a_sync_cache
+from y.utils.cache import a_sync_ttl_cache
 
 registry = "0xA50d4E7D8946a7c90652339CDBd262c375d54D99"
 
@@ -63,7 +63,7 @@ class Gearbox(a_sync.ASyncGenericBase):
     async def registry(self) -> Contract:
         return await Contract.coroutine(registry)
     
-    @a_sync_cache
+    @a_sync_ttl_cache
     async def pools(self) -> List[DieselPool]:
         registry = await self.registry
         return [DieselPool(pool, asynchronous=self.asynchronous) for pool in await registry.getPools]

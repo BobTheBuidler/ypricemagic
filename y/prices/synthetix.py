@@ -15,6 +15,7 @@ from y.contracts import Contract, has_method
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork, call_reverted
 from y.networks import Network
+from y.utils import a_sync_ttl_cache
 
 try:
     from eth_abi import encode
@@ -79,7 +80,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
                 return False
             raise e
     
-    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+    @a_sync_ttl_cache
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
         target = await Call(token, ['target()(address)']) if await has_method(token, 'target()(address)', sync=False) else token
         return await Call(target, ['currencyKey()(bytes32)']) if await has_method(token, 'currencyKey()(bytes32)', sync=False) else None

@@ -15,9 +15,9 @@ from y.prices import magic
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
-    return await has_methods(address, ('getPrice()((uint,uint))','mAsset()(address)'), sync=False)
+    return await has_methods(address, ('getPrice()((uint,uint))', 'mAsset()(address)'), sync=False)
 
 @a_sync.a_sync(default='sync')
 async def get_price(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:

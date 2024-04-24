@@ -48,7 +48,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
                 return UsdPrice(await v.get_pool_price(token_address, block, skip_cache=skip_cache, sync=False))
             
     @stuck_coro_debugger
-    @a_sync.a_sync(cache_type='memory')
+    @a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         if await self.is_balancer_pool(token_address, sync=False):
             return await self.get_pool_price(token_address, block=block, skip_cache=skip_cache, sync=False)

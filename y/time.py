@@ -1,3 +1,4 @@
+
 import asyncio
 import datetime
 import logging
@@ -19,7 +20,7 @@ except ImportError:
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.exceptions import NoBlockFound, NodeNotSynced
 from y.networks import Network
-from y.utils.cache import memory
+from y.utils.cache import a_sync_ttl_cache, memory
 from y.utils.client import get_ethereum_client, get_ethereum_client_async
 from y.utils.logging import yLazyLogger
 
@@ -40,7 +41,7 @@ def get_block_timestamp(height: int) -> int:
     db.set_block_timestamp(height, ts, sync=True)
     return ts
 
-@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync_ttl_cache
 @eth_retry.auto_retry
 async def get_block_timestamp_async(height: int) -> int:
     import y._db.utils.utils as db
@@ -86,7 +87,7 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     return block
 
 
-@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync_ttl_cache
 async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
     import y._db.utils.utils as db
     if block_at_timestamp := await db.get_block_at_timestamp(timestamp):
@@ -124,7 +125,7 @@ def closest_block_after_timestamp(timestamp: Timestamp, wait_for_block_if_needed
     logger.debug('closest %s block after timestamp %s -> %s', Network.name(), timestamp, block)
     return block
 
-@a_sync.a_sync(cache_type='memory', ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync_ttl_cache
 async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_block_if_needed: bool = False) -> int:
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:

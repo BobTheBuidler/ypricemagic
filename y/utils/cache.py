@@ -13,4 +13,4 @@ def _memory():
 
 memory = _memory()
 
-a_sync_cache: ASyncDecorator = a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
+a_sync_ttl_cache: ASyncDecorator = a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)

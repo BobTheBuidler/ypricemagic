@@ -22,7 +22,7 @@ from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.decorators import stuck_coro_debugger
 from y.networks import Network
-from y.utils.cache import a_sync_cache
+from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
@@ -61,7 +61,7 @@ class BalancerV2Vault(ContractBase):
             # we need the contract cached so we can decode logs correctly
             self.contract
     
-    @a_sync_cache
+    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def pools(self, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
         async for pool in self._events.events(to_block=block):
@@ -73,19 +73,19 @@ class BalancerV2Vault(ContractBase):
             if token in info:
                 yield pool
                 
-    @a_sync_cache
+    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_pool_tokens(self, pool_id: HexBytes, block: Optional[Block] = None):
         contract = await contracts.Contract.coroutine(self.address)
         return await contract.getPoolTokens.coroutine(pool_id, block_identifier = block)
     
-    @a_sync_cache
+    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_pool_info(self, poolids: Tuple[HexBytes,...], block: Optional[Block] = None) -> List[Tuple]:
         contract = await contracts.Contract.coroutine(self.address)
         return await contract.getPoolTokens.map(poolids, block_identifier=block)
     
-    @a_sync_cache
+    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional["BalancerV2Pool"], int]:
         logger = get_price_logger(token_address, block, 'balancer.v2')
@@ -167,7 +167,7 @@ class BalancerV2Pool(ERC20):
         if balances := await self.get_balances(block=block, skip_cache=skip_cache, sync=False):
             return UsdValue(await WeiBalance.value_usd.sum((balance for balance in balances.values() if balance.token.address != self.address), sync=False))
 
-    @a_sync_cache
+    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Dict[ERC20, WeiBalance]:
         if self._messed_up:
@@ -219,7 +219,7 @@ class BalancerV2Pool(ERC20):
         return UsdPrice(token_value_in_pool / token_balance_readable) 
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
-    @a_sync_cache
+    @a_sync_ttl_cache
     async def tokens(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Tuple[ERC20]:
         tokens = tuple((await self.get_balances(block=block, skip_cache=skip_cache, sync=False)).keys())
         tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
@@ -232,7 +232,7 @@ class BalancerV2Pool(ERC20):
                     "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
         return tokens
 
-    @a_sync_cache
+    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def weights(self, block: Optional[Block] = None) -> List[int]:
         contract = await Contract.coroutine(self.address)
@@ -273,6 +273,7 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
     def __str__(self) -> str:
         return "BalancerV2()"
 
+    @a_sync.a_sync(ram_cache_ttl=5*60)
     @stuck_coro_debugger
     async def is_pool(self, token_address: AnyAddressType) -> bool:
         methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')

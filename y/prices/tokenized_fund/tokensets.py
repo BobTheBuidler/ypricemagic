@@ -15,7 +15,7 @@ from y.datatypes import AnyAddressType, Block, UsdPrice
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 async def is_token_set(token: AnyAddressType) -> bool:
     return any(await asyncio.gather(
         has_methods(token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False),

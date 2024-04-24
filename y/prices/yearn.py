@@ -51,7 +51,7 @@ force_false = {
     ],
 }.get(chain.id, [])
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=30*60)
 async def is_yearn_vault(token: AnyAddressType) -> bool:
     # wibbtc returns True here even though it doesn't meet the criteria.
     # TODO figure out a better fix. For now I need a fix asap so this works.

@@ -16,7 +16,7 @@ from y.utils import gather_methods
 
 logger = logging.getLogger(__name__)
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', ram_cache_ttl=5*60)
 async def is_ib_token(token: AnyAddressType) -> bool:
     return await has_methods(token, ('debtShareToVal(uint)(uint)','debtValToShare(uint)(uint)','token()(address)','totalToken()(uint)','totalSupply()(uint)'), sync=False)
 
