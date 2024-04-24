@@ -144,8 +144,8 @@ class YearnInspiredVault(ERC20):
                         contract_call = getattr(contract, method)
                         scale = await self.__scale__
                         class call:
-                            function = method
                             # a hacky way we can cache this weird case and save calls
+                            function = method
                             @staticmethod
                             async def coroutine(block_id: Optional[Block]) -> int:
                                 return await contract_call.coroutine(scale, block_identifier=block_id)
