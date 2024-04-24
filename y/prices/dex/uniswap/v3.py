@@ -102,6 +102,10 @@ class UniswapV3Pool(ContractBase):
         logger.debug("%s liquidity for %s at %s: %s", self, token, block, liquidity)
         return liquidity
     
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
+    async def _check_liquidity_token_out(self, token_in: AnyAddressType, block: Block) -> Optional[int]:
+        return await self.check_liquidity(self._get_token_out(token_in), block=block, sync=False)
+    
     @lru_cache
     def _get_token_out(self, token_in: ERC20) -> ERC20:
         if token_in == self.token0:
@@ -206,33 +210,36 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             logger.debug("block %s is before %s deploy block", block, quoter)
             return 0
         
-        token_in_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
-        token_out_tasks: Dict[UniswapV3Pool, asyncio.Task] = {}
+        token_out_tasks = UniswapV3Pool._check_liquidity_token_out.map(token_in=token, block=block)
         async for pool in self.pools_for_token(token, block):
             if pool not in ignore_pools:
-                token_in_tasks[pool] = asyncio.create_task(pool.check_liquidity(token, block, sync=False))
-                token_out_tasks[pool] = asyncio.create_task(pool.check_liquidity(pool._get_token_out(token), block, sync=False))
+                # the mapping will start the tasks internally
+                token_out_tasks[pool]
+        if not token_out_tasks:
+            return 0
         
         # Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`
         # We need some spaghetticode here to account for these erroneous liquidity values
         # TODO: Refactor this
-        token_out_liquidity: DefaultDict[ERC20, List[asyncio.Task]] = defaultdict(list)
-        for pool, task in token_out_tasks.items():
-            token_out_liquidity[pool._get_token_out(token)].append(task)
+        token_out_liquidity: DefaultDict[ERC20, List[int]] = defaultdict(list)
+        async for pool, liquidity in token_out_tasks:
+            token_out_liquidity[pool._get_token_out(token)].append(liquidity)
         
-        token_out_min_liquidity = {token_out: min(await asyncio.gather(*tasks)) for token_out, tasks in token_out_liquidity.items()}
-        for pool, task in token_out_tasks.items():
+        token_out_min_liquidity = {token_out: min(liquidities) for token_out, liquidities in token_out_liquidity.items()}
+
+        token_in_tasks = UniswapV3Pool.check_liquidity.map(token=token, block=block)
+        async for pool, liquidity in token_out_tasks:
+            token_out_tasks.pop(pool)
             token_out = pool._get_token_out(token)
-            liquidity = await task
             if len(token_out_liquidity[token_out]) > 1 and liquidity == token_out_min_liquidity[token_out]:
                 logger.debug("ignoring liquidity for %s", pool)
-                token_in_tasks.pop(pool)
             elif token_out == weth and liquidity < 10 ** 19:  # 10 ETH
                 # NOTE: this is totally arbitrary, works for all known cases but eventually will probably cause issues
                 logger.debug("insufficient liquidity for %s", pool)
-                token_in_tasks.pop(pool)
+            else:
+                token_in_tasks[pool]
 
-        liquidity = max(await asyncio.gather(*token_in_tasks.values())) if token_in_tasks else 0
+        liquidity = await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
