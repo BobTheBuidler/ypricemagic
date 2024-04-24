@@ -454,7 +454,7 @@ class UniswapRouterV2(ContractBase):
         for pool in _ignore_pools:
             pools.pop(pool, None)
         if not pools:
-            return None
+            return
         elif block is None:
             for pool in pools:
                 yield pool
