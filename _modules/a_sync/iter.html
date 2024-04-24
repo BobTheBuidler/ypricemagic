@@ -130,7 +130,7 @@
         <span class="k">yield from</span> <span class="n">ASyncIterator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__aiter__</span><span class="p">())</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;__wrapped__&quot;</span><span class="p">,</span> 
 
-<span class="n">AsyncGenFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="kc">None</span><span class="p">]]</span>
+<span class="n">AsyncGenFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]]]</span>
 
 <span class="k">class</span> <span class="nc">ASyncIterator</span><span class="p">(</span><span class="n">_AwaitableAsyncIterableMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
