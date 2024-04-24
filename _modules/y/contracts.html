@@ -295,6 +295,9 @@
 <span class="sd">        - build_name_async</span>
 <span class="sd">        - get_code</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># the default state for Contract objects</span>
+    <span class="n">verified</span> <span class="o">=</span> <span class="kc">True</span>
+
     <span class="n">events</span><span class="p">:</span> <span class="n">ContractEvents</span>
     <span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="p">:</span> <span class="n">ChecksumAddressDict</span><span class="p">[</span><span class="s2">&quot;Contract&quot;</span><span class="p">]</span>
 
@@ -320,9 +323,7 @@
             <span class="c1"># Try to fetch the contract from the local sqlite db.</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">verified</span> <span class="o">=</span> <span class="kc">True</span>
-                <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">verified</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verified</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">CompilerError</span><span class="p">(</span><span class="s2">&quot;y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>

@@ -213,7 +213,17 @@
 <span class="n">_E</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_E&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">_AsyncExecutorMixin</span><span class="p">)</span>
     
 <span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="n">_DiskCachedMixin</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">]):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;from_block&#39;</span><span class="p">,</span> <span class="s1">&#39;to_block&#39;</span><span class="p">,</span> <span class="s1">&#39;_chunk_size&#39;</span><span class="p">,</span> <span class="s1">&#39;_chunks_per_batch&#39;</span><span class="p">,</span> <span class="s1">&#39;_db_task&#39;</span><span class="p">,</span> <span class="s1">&#39;_exc&#39;</span><span class="p">,</span> <span class="s1">&#39;_interval&#39;</span><span class="p">,</span> <span class="s1">&#39;_lock&#39;</span><span class="p">,</span> <span class="s1">&#39;_semaphore&#39;</span><span class="p">,</span> <span class="s1">&#39;_sleep_fut&#39;</span><span class="p">,</span> <span class="s1">&#39;_sleep_time&#39;</span><span class="p">,</span> <span class="s1">&#39;_task&#39;</span><span class="p">,</span> <span class="s1">&#39;_verbose&#39;</span><span class="p">,</span> <span class="s1">&#39;__dict__&#39;</span>
+    <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
+    <span class="n">_chunk_size</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span>
+    <span class="n">_chunks_per_batch</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_db_task</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_sleep_fut</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_sleep_time</span> <span class="o">=</span> <span class="mi">60</span>
+    <span class="n">_task</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_semaphore</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_verbose</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;from_block&#39;</span><span class="p">,</span> <span class="s1">&#39;to_block&#39;</span><span class="p">,</span> <span class="s1">&#39;_interval&#39;</span><span class="p">,</span> <span class="s1">&#39;_lock&#39;</span><span class="p">,</span> <span class="s1">&#39;__dict__&#39;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -227,16 +237,17 @@
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="n">from_block</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_chunks_per_batch</span> <span class="o">=</span> <span class="n">chunks_per_batch</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_size</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>
+        <span class="k">if</span> <span class="n">chunks_per_batch</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunks_per_batch</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_chunks_per_batch</span> <span class="o">=</span> <span class="n">chunks_per_batch</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">CounterLock</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_db_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span> <span class="o">=</span> <span class="n">semaphore</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_time</span> <span class="o">=</span> <span class="n">sleep_time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="k">if</span> <span class="n">semaphore</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span> <span class="o">=</span> <span class="n">semaphore</span>
+        <span class="k">if</span> <span class="n">sleep_time</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_time</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_time</span> <span class="o">=</span> <span class="n">sleep_time</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">executor</span><span class="o">=</span><span class="n">executor</span><span class="p">,</span> <span class="n">is_reusable</span><span class="o">=</span><span class="n">is_reusable</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>

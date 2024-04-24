@@ -120,7 +120,10 @@
 <div class="viewcode-block" id="ContractBase">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.classes.common.ContractBase">[docs]</a>
 <span class="k">class</span> <span class="nc">ContractBase</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">,</span> <span class="s2">&quot;_deploy_block&quot;</span>
+    <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
+    <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span>
 <div class="viewcode-block" id="ContractBase.__init__">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.classes.common.ContractBase.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -130,8 +133,10 @@
         <span class="n">_deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_block</span> <span class="o">=</span> <span class="n">_deploy_block</span>
+        <span class="k">if</span> <span class="n">asynchronous</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
+        <span class="k">if</span> <span class="n">_deploy_block</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_block</span> <span class="o">=</span> <span class="n">_deploy_block</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
     
@@ -365,6 +370,11 @@
 <div class="viewcode-block" id="WeiBalance">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.classes.common.WeiBalance">[docs]</a>
 <span class="k">class</span> <span class="nc">WeiBalance</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
+    <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
+    <span class="n">_ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
 <div class="viewcode-block" id="WeiBalance.__init__">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.classes.common.WeiBalance.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -377,13 +387,17 @@
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
+        <span class="k">if</span> <span class="n">asynchronous</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">),</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
+        <span class="k">if</span> <span class="n">block</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_skip_cache</span> <span class="o">=</span> <span class="n">skip_cache</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_pools</span> <span class="o">=</span> <span class="n">ignore_pools</span></div>
+        <span class="k">if</span> <span class="n">skip_cache</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_skip_cache</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_skip_cache</span> <span class="o">=</span> <span class="n">skip_cache</span>
+        <span class="k">if</span> <span class="n">ignore_pools</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_pools</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ignore_pools</span> <span class="o">=</span> <span class="n">ignore_pools</span></div>
 
 
 <div class="viewcode-block" id="WeiBalance.__str__">
