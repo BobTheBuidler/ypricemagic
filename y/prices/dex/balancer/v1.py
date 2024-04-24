@@ -4,9 +4,11 @@ from decimal import Decimal
 from typing import Dict, List, Optional, Tuple
 
 import a_sync
+from a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import VirtualMachineError
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
@@ -33,6 +35,7 @@ class BalancerV1Pool(ERC20):
     async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
         return [ERC20(token, asynchronous=self.asynchronous) for token in await contract.getFinalTokens]
+    __tokens__: HiddenMethodDescriptor[Self, List[ERC20]]
     
     @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
@@ -51,7 +54,7 @@ class BalancerV1Pool(ERC20):
             if await token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) is not None
         }
         
-        prices = await asyncio.gather(*[token.price(block=block, return_None_on_failure = True, sync=False) for token in good_balances])
+        prices = await ERC20.price.map(good_balances, block=block, return_None_on_failure=True, skip_cache=skip_cache).values()
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(balance * Decimal(price) for balance, price in zip(good_balances.values(),prices))
@@ -61,9 +64,7 @@ class BalancerV1Pool(ERC20):
     
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
-        tokens = await self.tokens(block=block, sync=False)
-        balances = await asyncio.gather(*[self.get_balance(token, block or 'latest', sync=False) for token in tokens])
-        return dict(zip(tokens, balances))
+        return await a_sync.map(self.get_balance, self.__tokens__, block=block or 'latest')
 
     @stuck_coro_debugger
     async def get_balance(self, token: AnyAddressType, block: Block) -> Decimal:
@@ -172,4 +173,4 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
         pools = []
         pools = [pool for pool in pools if pool not in ignore_pools]
-        return max(await asyncio.gather(*[pool.check_liquidity(token, block, sync=False) for pool in pools])) if pools else 0
+        return await BalancerV1Pool.check_liquidity.max(pools, token=token, block=block, sync=False) if pools else 0
