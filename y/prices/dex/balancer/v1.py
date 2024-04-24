@@ -29,16 +29,16 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
     return (total_outout / out_scale) * float(out_price) / scale
 
 class BalancerV1Pool(ERC20):
-    async def tokens(self, block: Optional[Block] = None) -> List[ERC20]:
+    @a_sync.aka.cached_property
+    async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
-        tokens = await contract.getCurrentTokens.coroutine(block_identifier=block)
-        return [ERC20(token, asynchronous=self.asynchronous) for token in tokens]
+        return [ERC20(token, asynchronous=self.asynchronous) for token in await contract.getFinalTokens]
     
     @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         supply = await self.total_supply_readable(block=block, sync=False)
-        if supply == 0:
-            return 0
+        if not supply:
+            return None
         return UsdPrice(await self.get_tvl(block=block, skip_cache=skip_cache, sync=False) / Decimal(supply))
 
     @stuck_coro_debugger
@@ -93,13 +93,13 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
     def __repr__(self) -> str:
         return "<BalancerV1>"
     
+    @a_sync.a_sync(ram_cache_ttl=5*60)
     @stuck_coro_debugger
     async def is_pool(self, token_address: AnyAddressType) -> bool:
-        return await has_methods(token_address ,("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"), sync=False)
+        return await has_methods(token_address, ("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"), sync=False)
 
     @stuck_coro_debugger
-    async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        assert await self.is_pool(token_address, sync=False)
+    async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         return await BalancerV1Pool(token_address, asynchronous=True).get_pool_price(block=block, skip_cache=skip_cache)
     
     @stuck_coro_debugger
@@ -107,7 +107,7 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
         if block is not None and block < await contract_creation_block_async(self.exchange_proxy, True):
             return None
         scale = 1.0
-        out, totalOutput = await self.get_some_output(token_address, block=block, sync=False)
+        out, totalOutput = await self.get_some_output(token_address, block=block, scale=scale, sync=False)
         if out:
             return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
         # Can we get an output if we try smaller size?
@@ -153,16 +153,16 @@ class BalancerV1(a_sync.ASyncGenericSingleton):
         ) -> Tuple[EthAddress,int]:
 
         try:
-            out, totalOutput = await self.check_liquidity_against(token_in, weth, block=block, sync=False)
+            out, totalOutput = await self.check_liquidity_against(token_in, weth, block=block, scale=scale, sync=False)
         except (ValueError, VirtualMachineError):
             try:
-                out, totalOutput = await self.check_liquidity_against(token_in, dai, block=block, sync=False)
+                out, totalOutput = await self.check_liquidity_against(token_in, dai, block=block, scale=scale, sync=False)
             except (ValueError, VirtualMachineError):
                 try:
-                    out, totalOutput = await self.check_liquidity_against(token_in, usdc, block=block, sync=False)
+                    out, totalOutput = await self.check_liquidity_against(token_in, usdc, block=block, scale=scale, sync=False)
                 except (ValueError, VirtualMachineError):
                     try:
-                        out, totalOutput = await self.check_liquidity_against(token_in, wbtc, block=block, sync=False)
+                        out, totalOutput = await self.check_liquidity_against(token_in, wbtc, block=block, scale=scale, sync=False)
                     except (ValueError, VirtualMachineError):
                         out = None
                         totalOutput = None
