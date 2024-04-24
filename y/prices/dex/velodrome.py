@@ -98,12 +98,11 @@ class VelodromeRouterV2(SolidlyRouterBase):
         
         if len(pools) < all_pools_len:
             logger.debug("Oh no! Looks like your node can't look back that far. Checking for the missing %s pools...", all_pools_len - len(pools))
-            pools_your_node_couldnt_get = {
-                i: asyncio.create_task(coro=self._init_pool_from_poolid(i), name=f"load {self} poolId {i}") 
-                for i in range(all_pools_len - len(pools))
-            }
+            pools_your_node_couldnt_get = a_sync.map(self._init_pool_from_poolid, range(all_pools_len - len(pools)), name=f"load {self} poolId")
+            # we want the map populated with tasks for this logger
+            await pools_your_node_couldnt_get._init_loader
             logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools.update([pool async for id, pool in a_sync.as_completed(pools_your_node_couldnt_get, aiter=True)])
+            pools.update(await pools_your_node_couldnt_get.values())
 
         tokens = set()
         for pool in pools:
