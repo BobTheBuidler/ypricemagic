@@ -481,8 +481,7 @@
 </div>
 
 
-<span class="kn">from</span> <span class="nn">a_sync.primitives.queue</span> <span class="kn">import</span> <span class="n">SmartProcessingQueue</span>
-<span class="n">_contract_queue</span> <span class="o">=</span> <span class="n">SmartProcessingQueue</span><span class="p">(</span><span class="n">Contract</span><span class="o">.</span><span class="n">_coroutine</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="n">_contract_queue</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">SmartProcessingQueue</span><span class="p">(</span><span class="n">Contract</span><span class="o">.</span><span class="n">_coroutine</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="c1">#yLazyLogger(logger)</span>
@@ -516,7 +515,7 @@
 <div class="viewcode-block" id="has_methods">
 <a class="viewcode-back" href="../../source/y.html#y.contracts.has_methods">[docs]</a>
 <span class="nd">@stuck_coro_debugger</span>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">15</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">has_methods</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
     <span class="n">methods</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>y.prices.dex.velodrome &mdash; ypricemagic  documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../../../../_static/css/theme.css?v=19f00094" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../../../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../../../../_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="../../../../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../index.html" class="icon icon-home">
+            ypricemagic
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../source/modules.html">y</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">ypricemagic</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">y.prices.dex.velodrome</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for y.prices.dex.velodrome</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">import</span> <span class="nn">a_sync</span>
+<span class="kn">import</span> <span class="nn">dank_mids</span>
+<span class="kn">import</span> <span class="nn">eth_retry</span>
+<span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
+<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">multicall.call</span> <span class="kn">import</span> <span class="n">Call</span>
+
+<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
+<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">y.decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span> <span class="nn">y.interfaces.uniswap.velov2</span> <span class="kn">import</span> <span class="n">VELO_V2_FACTORY_ABI</span>
+<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span> <span class="nn">y.prices.dex.solidly</span> <span class="kn">import</span> <span class="n">SolidlyRouterBase</span>
+<span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">Path</span><span class="p">,</span> <span class="n">UniswapV2Pool</span>
+<span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">gather_methods</span>
+<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
+<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
+
+<span class="n">_INIT_METHODS</span> <span class="o">=</span> <span class="s1">&#39;token0()(address)&#39;</span><span class="p">,</span> <span class="s1">&#39;token1()(address)&#39;</span><span class="p">,</span> <span class="s1">&#39;stable()(bool)&#39;</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="NoReservesError">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.NoReservesError">[docs]</a>
+<span class="k">class</span> <span class="nc">NoReservesError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<span class="n">default_factory</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span> <span class="s2">&quot;0xF1046053aa5682b4F9a81b5481394DA16BE5FF5a&quot;</span><span class="p">,</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Base</span><span class="p">:</span> <span class="s2">&quot;0x420DD381b31aEf6683db6B902084cB0FFECe40Da&quot;</span><span class="p">,</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="VelodromePool">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromePool">[docs]</a>
+<span class="k">class</span> <span class="nc">VelodromePool</span><span class="p">(</span><span class="n">UniswapV2Pool</span><span class="p">):</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;is_stable&quot;</span><span class="p">,</span> 
+<div class="viewcode-block" id="VelodromePool.__init__">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromePool.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
+        <span class="n">token0</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">token1</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">stable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">token0</span><span class="o">=</span><span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="o">=</span><span class="n">token1</span><span class="p">,</span> <span class="n">deploy_block</span><span class="o">=</span><span class="n">deploy_block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_stable</span> <span class="o">=</span> <span class="n">stable</span></div>
+</div>
+
+
+<div class="viewcode-block" id="VelodromeRouterV2">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2">[docs]</a>
+<span class="k">class</span> <span class="nc">VelodromeRouterV2</span><span class="p">(</span><span class="n">SolidlyRouterBase</span><span class="p">):</span>
+    <span class="n">_supports_uniswap_helper</span> <span class="o">=</span> <span class="kc">False</span>
+<div class="viewcode-block" id="VelodromeRouterV2.__init__">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span> <span class="o">=</span> <span class="n">default_factory</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span></div>
+
+    
+<div class="viewcode-block" id="VelodromeRouterV2.pool_for">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.pool_for">[docs]</a>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="nd">@a_sync_ttl_cache</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">poolFor</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="VelodromeRouterV2.get_pool">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.get_pool">[docs]</a>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="nd">@a_sync_ttl_cache</span>
+    <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UniswapV2Pool</span><span class="p">]:</span>
+        <span class="n">pool_address</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_for</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pool_address</span><span class="p">),</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;0x&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">UniswapV2Pool</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
+
+    
+<div class="viewcode-block" id="VelodromeRouterV2.pools">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.pools">[docs]</a>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">UniswapV2Pool</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Fetching pools for </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">. If this is your first time using ypricemagic, this can take a while. Please wait patiently...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">())</span>
+        <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;PoolCreated&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">factory</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
+            <span class="c1"># the etherscan proxy detection is borked here, need this to decode properly</span>
+            <span class="n">factory</span> <span class="o">=</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;PoolFactory&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="n">VELO_V2_FACTORY_ABI</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pools</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">VelodromePool</span><span class="p">(</span>
+                    <span class="n">address</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;pool&#39;</span><span class="p">],</span>
+                    <span class="n">token0</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;token0&#39;</span><span class="p">],</span> 
+                    <span class="n">token1</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;token1&#39;</span><span class="p">],</span> 
+                    <span class="n">stable</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;stable&#39;</span><span class="p">],</span> 
+                    <span class="n">deploy_block</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span> 
+                    <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">factory</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">PoolCreated</span><span class="o">.</span><span class="n">events</span><span class="p">(</span><span class="n">to_block</span><span class="o">=</span><span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">e</span>
+        
+        <span class="n">all_pools_len</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;allPoolsLength()&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">all_pools_len</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;wtf&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">),</span> <span class="n">all_pools_len</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">all_pools_len</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Oh no! Looks like your node can&#39;t look back that far. Checking for the missing </span><span class="si">%s</span><span class="s2"> pools...&quot;</span><span class="p">,</span> <span class="n">all_pools_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">))</span>
+            <span class="n">pools_your_node_couldnt_get</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_pool_from_poolid</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">all_pools_len</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;load </span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> poolId&quot;</span><span class="p">)</span>
+            <span class="c1"># we want the map populated with tasks for this logger</span>
+            <span class="k">await</span> <span class="n">pools_your_node_couldnt_get</span><span class="o">.</span><span class="n">_init_loader</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;pools: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">pools_your_node_couldnt_get</span><span class="p">)</span>
+            <span class="n">pools</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="k">await</span> <span class="n">pools_your_node_couldnt_get</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools</span><span class="p">:</span>
+            <span class="n">tokens</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">__token0__</span><span class="p">,</span> <span class="n">pool</span><span class="o">.</span><span class="n">__token1__</span><span class="p">))</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loaded </span><span class="si">%s</span><span class="s1"> pools supporting </span><span class="si">%s</span><span class="s1"> tokens on </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pools</span></div>
+
+    
+<div class="viewcode-block" id="VelodromeRouterV2.get_routes_from_path">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.get_routes_from_path">[docs]</a>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_routes_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Address</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
+        <span class="n">routes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># Try for a stable pool first and use that if available</span>
+            <span class="n">stable_pool</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]</span>
+            <span class="n">unstable_pool</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]</span>
+            <span class="n">stable_pool</span><span class="p">,</span> <span class="n">unstable_pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">stable_pool</span> <span class="ow">and</span> <span class="n">unstable_pool</span><span class="p">:</span>
+                <span class="c1"># We have to find out which of these pools is deepest</span>
+                <span class="n">stable_reserves</span><span class="p">,</span> <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                    <span class="n">stable_pool</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                    <span class="n">unstable_pool</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">stable_reserves</span> <span class="ow">and</span> <span class="n">unstable_reserves</span><span class="p">:</span>
+                    <span class="n">stable_reserves</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stable_reserves</span><span class="p">)</span>
+                    <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">unstable_reserves</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__tokens__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__tokens__</span><span class="p">:</span>
+                        <span class="n">stable_reserve</span> <span class="o">=</span> <span class="n">stable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">unstable_reserve</span> <span class="o">=</span> <span class="n">unstable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Order of tokens is flip flopped in the pools</span>
+                        <span class="n">stable_reserve</span> <span class="o">=</span> <span class="n">stable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                        <span class="n">unstable_reserve</span> <span class="o">=</span> <span class="n">unstable_reserves</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">if</span> <span class="n">stable_reserve</span> <span class="o">&gt;=</span> <span class="n">unstable_reserve</span><span class="p">:</span>
+                        <span class="n">is_stable</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">elif</span> <span class="n">stable_reserve</span> <span class="o">&lt;</span> <span class="n">unstable_reserve</span><span class="p">:</span>
+                        <span class="n">is_stable</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">is_stable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">stable_reserves</span><span class="p">:</span>
+                    <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">])</span>
+                <span class="k">elif</span> <span class="n">unstable_reserves</span><span class="p">:</span>
+                    <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">NoReservesError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No route available for path </span><span class="si">{</span><span class="n">path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">stable_pool</span><span class="p">:</span>
+                <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">])</span>
+            <span class="k">elif</span> <span class="n">unstable_pool</span><span class="p">:</span>
+                <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not sure why this function is even running if no pool is found&quot;</span><span class="p">)</span>
+            
+        <span class="k">return</span> <span class="n">routes</span></div>
+
+
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_init_pool_from_poolid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poolid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VelodromePool</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;initing poolid </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">poolid</span><span class="p">)</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;allPools(uint256)(address)&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># TODO: debug why this happens sometimes</span>
+            <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">allPools</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
+        <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="p">,</span> <span class="n">stable</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">_INIT_METHODS</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">VelodromePool</span><span class="p">(</span>
+            <span class="n">address</span><span class="o">=</span><span class="n">pool</span><span class="p">,</span>
+            <span class="n">token0</span><span class="o">=</span><span class="n">token0</span><span class="p">,</span>
+            <span class="n">token1</span><span class="o">=</span><span class="n">token1</span><span class="p">,</span> 
+            <span class="n">stable</span><span class="o">=</span><span class="n">stable</span><span class="p">,</span> 
+            <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+
+
+<span class="n">_get_code</span> <span class="o">=</span> <span class="n">alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)(</span><span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, BobTheBuidler.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

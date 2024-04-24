@@ -71,7 +71,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.time</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span>
+<span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">time</span>
@@ -92,7 +93,7 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">NoBlockFound</span><span class="p">,</span> <span class="n">NodeNotSynced</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
-<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">memory</span>
+<span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span><span class="p">,</span> <span class="n">memory</span>
 <span class="kn">from</span> <span class="nn">y.utils.client</span> <span class="kn">import</span> <span class="n">get_ethereum_client</span><span class="p">,</span> <span class="n">get_ethereum_client_async</span>
 <span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">yLazyLogger</span>
 
@@ -115,7 +116,7 @@
 
 <div class="viewcode-block" id="get_block_timestamp_async">
 <a class="viewcode-back" href="../../source/y.html#y.time.get_block_timestamp_async">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
+<span class="nd">@a_sync_ttl_cache</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_block_timestamp_async</span><span class="p">(</span><span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">y._db.utils.utils</span> <span class="k">as</span> <span class="nn">db</span>
@@ -164,7 +165,7 @@
 
 <div class="viewcode-block" id="get_block_at_timestamp">
 <a class="viewcode-back" href="../../source/y.html#y.time.get_block_at_timestamp">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
+<span class="nd">@a_sync_ttl_cache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">y._db.utils.utils</span> <span class="k">as</span> <span class="nn">db</span>
     <span class="k">if</span> <span class="n">block_at_timestamp</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">):</span>
@@ -211,7 +212,7 @@
 
 <div class="viewcode-block" id="closest_block_after_timestamp_async">
 <a class="viewcode-back" href="../../source/y.html#y.time.closest_block_after_timestamp_async">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
+<span class="nd">@a_sync_ttl_cache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">closest_block_after_timestamp_async</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="n">timestamp</span> <span class="o">=</span> <span class="n">_parse_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span>
