@@ -61,7 +61,6 @@ class BalancerV2Vault(ContractBase):
             # we need the contract cached so we can decode logs correctly
             self.contract
     
-    @a_sync_ttl_cache
     @stuck_coro_debugger
     async def pools(self, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
         async for pool in self._events.events(to_block=block):
