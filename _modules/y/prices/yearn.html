@@ -230,8 +230,8 @@
                         <span class="n">contract_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
                         <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span>
                         <span class="k">class</span> <span class="nc">call</span><span class="p">:</span>
-                            <span class="n">function</span> <span class="o">=</span> <span class="n">method</span>
                             <span class="c1"># a hacky way we can cache this weird case and save calls</span>
+                            <span class="n">function</span> <span class="o">=</span> <span class="n">method</span>
                             <span class="nd">@staticmethod</span>
                             <span class="k">async</span> <span class="k">def</span> <span class="nf">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
                                 <span class="k">return</span> <span class="k">await</span> <span class="n">contract_call</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block_id</span><span class="p">)</span>
