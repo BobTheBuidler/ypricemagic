@@ -18,7 +18,7 @@ _RESERVES_METHODS = 'token0()(address)', 'token1()(address)', 'usersAmounts()((u
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 async def is_popsicle_lp(token_address: AnyAddressType) -> bool:
     # NOTE: contract to check for reference (mainnet): 0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf
     return await has_methods(token_address, ('token0()(address)','token1()(address)','usersAmounts()((uint,uint))'), sync=False)

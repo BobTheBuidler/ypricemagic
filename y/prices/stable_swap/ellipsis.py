@@ -15,7 +15,7 @@ from y.utils.raw_calls import raw_call
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 async def is_eps_rewards_pool(token_address: AnyAddressType) -> bool:
     return await has_methods(token_address, ('lpStaker()(address)','rewardTokens(uint)(address)','rewardPerToken(address)(uint)','minter()(address)'), sync=False)
 

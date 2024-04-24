@@ -217,6 +217,7 @@ class Compound(a_sync.ASyncGenericSingleton):
                 if token_address in markets:
                     return troller
             
+    @a_sync.a_sync(ram_cache_ttl=5*60)
     async def is_compound_market(self, token_address: AddressOrContract) -> bool:
         if await self.get_troller(token_address, sync=False):
             return True

@@ -29,7 +29,7 @@ else:
     router = None
     gas_coin = None
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', ram_cache_ttl=5*60)
 async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     return False if router is None else await router.isPool.coroutine(address)

@@ -369,8 +369,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def get_code(self, block: Optional[Block] = None) -> HexBytes:
         return await get_code(self.address, block=block)
 
-from a_sync.primitives.queue import SmartProcessingQueue
-_contract_queue = SmartProcessingQueue(Contract._coroutine, num_workers=32)
+_contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=32)
 
 @memory.cache()
 #yLazyLogger(logger)
@@ -399,7 +398,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
         raise
 
 @stuck_coro_debugger
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=15*60)
 async def has_methods(
     address: AnyAddressType, 
     methods: Tuple[str],

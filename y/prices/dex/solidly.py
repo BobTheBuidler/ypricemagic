@@ -6,7 +6,7 @@ from y.datatypes import Address, Block
 from y.decorators import continue_on_revert, stuck_coro_debugger
 from y.exceptions import call_reverted
 from y.prices.dex.uniswap.v2 import Path, UniswapRouterV2, UniswapV2Pool
-from y.utils.cache import a_sync_cache
+from y.utils.cache import a_sync_ttl_cache
 
 
 class SolidlyRouterBase(UniswapRouterV2):
@@ -39,12 +39,12 @@ class SolidlyPool(UniswapV2Pool):
 class SolidlyRouter(SolidlyRouterBase):
 
     @stuck_coro_debugger
-    @a_sync_cache
+    @a_sync_ttl_cache
     async def pair_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
         return await self.contract.pairFor.coroutine(input_token, output_token, stable)
     
     @stuck_coro_debugger
-    @a_sync_cache
+    @a_sync_ttl_cache
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[SolidlyPool]:
         pool_address = await self.pair_for(input_token, output_token, stable, sync=False)
         if await self.contract.isPair.coroutine(pool_address, block_identifier=block):

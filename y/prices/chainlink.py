@@ -16,6 +16,7 @@ from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
+from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 
 logger = logging.getLogger(__name__)
@@ -249,7 +250,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         async for feed in self._feeds_from_events.objects(to_block=block):
             yield feed
 
-    @a_sync.a_sync(cache_type='memory', ram_cache_ttl=600)
+    @a_sync_ttl_cache
     async def get_feed(self, asset: Address) -> Optional[Feed]:
         asset = convert.to_address(asset)
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):

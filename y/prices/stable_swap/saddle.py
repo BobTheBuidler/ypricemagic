@@ -20,7 +20,7 @@ from y.utils.multicall import \
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     pool = await get_pool(token_address, sync=False)
     if pool:
