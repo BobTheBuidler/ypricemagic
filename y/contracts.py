@@ -382,7 +382,7 @@ def is_contract(address: AnyAddressType) -> bool:
     address = convert.to_address(address)
     return web3.eth.get_code(address) not in ['0x',b'']
 
-@a_sync.a_sync(default='sync', cache_type='memory')
+@a_sync.a_sync(default='sync', ram_cache_ttl=ENVS.CACHE_TTL)
 async def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
     '''
     Checks to see if a contract has a `method` view method with no inputs.
@@ -398,7 +398,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
         raise
 
 @stuck_coro_debugger
-@a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=15*60)
+@a_sync.a_sync(default='sync', ram_cache_ttl=ENVS.CACHE_TTL)
 async def has_methods(
     address: AnyAddressType, 
     methods: Tuple[str],
@@ -419,7 +419,7 @@ async def has_methods(
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
-        return False if _func == all else any(await asyncio.gather(*[has_method(address, method, sync=False) for method in methods]))
+        return False if _func == all else await a_sync.map(has_method, methods, address=address).any(sync=False)
 
 
 #yLazyLogger(logger)
