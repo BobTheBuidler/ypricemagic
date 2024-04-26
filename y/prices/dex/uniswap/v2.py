@@ -8,6 +8,7 @@ from functools import cached_property
 from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
 
 import a_sync
+import a_sync.exceptions
 import brownie
 import dank_mids
 from a_sync.property import HiddenMethodDescriptor
@@ -482,11 +483,9 @@ class UniswapRouterV2(ContractBase):
                     raise e
                 logger.debug('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
 
-        pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
-        #if not pools:
-        #    return None
         deepest_pool = None
         deepest_pool_balance = 0
+        pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
         async for pool, depth in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
@@ -586,7 +585,10 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
                 
         pools = self.pools_for_token(token, block=block, _ignore_pools=ignore_pools)
-        liquidity = await UniswapV2Pool.check_liquidity.max(pools, token=token, block=block, sync=False) if pools else 0
+        try:
+            liquidity = await UniswapV2Pool.check_liquidity.max(pools, token=token, block=block, sync=False)
+        except a_sync.exceptions.EmptySequenceError:
+            return 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
