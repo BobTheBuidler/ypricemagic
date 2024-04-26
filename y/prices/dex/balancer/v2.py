@@ -290,7 +290,7 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
     
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
-        deepest_pools = await BalancerV2Vault.deepest_pool_for.map(self.vaults, token=token_address, block=block)
+        deepest_pools = await BalancerV2Vault.deepest_pool_for.map(self.vaults, token_address=token_address, block=block)
         if deepest_pools := {vault.address: deepest_pool for vault, deepest_pool in zip(self.vaults, deepest_pools) if deepest_pool is not None}:
             deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())
             for pool_address, pool_balance in deepest_pools.values():
