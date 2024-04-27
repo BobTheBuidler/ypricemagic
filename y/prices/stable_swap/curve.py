@@ -447,7 +447,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         else:
             # Use the pool with deepest liquidity.
             deepest_pool, deepest_bal = None, 0
-            async for pool, depth in CurvePool.check_liquidity.map(pools, token=token, block=block).map():
+            async for pool, depth in CurvePool.check_liquidity.map(pools, token=token_in, block=block).map():
                 if depth > deepest_bal:
                     deepest_pool = pool
                     deepest_bal = depth
