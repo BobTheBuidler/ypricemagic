@@ -58,7 +58,8 @@ async def get_price(
     except (ContractNotFound, NonStandardERC20, PriceError) as e:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         if not fail_to_None:
-            raise yPriceMagicError(e, token_address, block, symbol) from e
+            raise_from = None if isinstance(e, PriceError) else e
+            raise yPriceMagicError(e, token_address, block, symbol) from raise_from
 
 GetPrice = Callable[..., Awaitable[Optional[UsdPrice]]]
 

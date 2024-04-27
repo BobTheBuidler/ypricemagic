@@ -8,6 +8,7 @@ from functools import cached_property
 from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
 
 import a_sync
+import a_sync.exceptions
 import brownie
 import dank_mids
 from a_sync.property import HiddenMethodDescriptor
@@ -138,10 +139,12 @@ class UniswapV2Pool(ERC20):
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_token_out(self, token_in: Address) -> ERC20:
         if token_in == (token0 := await self.__token0__):
-            return token1
+            # these return instantly since theyre already cached
+            return await self.__token1__
         elif token_in == (token1 := await self.__token1__):
-            return token0
-        raise ValueError(f"{token_in} is not one of [{token0}, {token1}]") from None
+            # these return instantly since theyre already cached
+            return await self.__token0__
+        raise TokenNotFound(token_in, [token0, token1]) from None
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
@@ -482,11 +485,9 @@ class UniswapRouterV2(ContractBase):
                     raise e
                 logger.debug('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
 
-        pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
-        #if not pools:
-        #    return None
         deepest_pool = None
         deepest_pool_balance = 0
+        pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
         async for pool, depth in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
@@ -501,7 +502,7 @@ class UniswapRouterV2(ContractBase):
         stable_pools = {
             pool: paired_with
             async for pool, paired_with
-            in UniswapV2Pool.get_token_out.map(pools, token=token_address)
+            in UniswapV2Pool.get_token_out.map(pools, token_in=token_address)
             if paired_with in STABLECOINS
         }
         
@@ -518,12 +519,12 @@ class UniswapRouterV2(ContractBase):
                     if deploy_block <= block
                 }
             
-        #if not stable_pools:
-        #    return None
+        if not stable_pools:
+            return None
         
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block).map():
+        async for pool, depth in UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).map():
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth
@@ -586,7 +587,10 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
                 
         pools = self.pools_for_token(token, block=block, _ignore_pools=ignore_pools)
-        liquidity = await UniswapV2Pool.check_liquidity.max(pools, token=token, block=block, sync=False) if pools else 0
+        try:
+            liquidity = await UniswapV2Pool.check_liquidity.max(pools, token=token, block=block, sync=False)
+        except a_sync.exceptions.EmptySequenceError:
+            return 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 
