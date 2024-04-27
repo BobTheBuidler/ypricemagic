@@ -519,12 +519,12 @@ class UniswapRouterV2(ContractBase):
                     if deploy_block <= block
                 }
             
-        #if not stable_pools:
-        #    return None
+        if not stable_pools:
+            return None
         
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        async for pool, depth in a_sync.map(UniswapV2Pool.check_liquidity, stable_pools, block=block).map():
+        async for pool, depth in UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).map():
             if depth > deepest_stable_pool_balance:
                 deepest_stable_pool = pool
                 deepest_stable_pool_balance = depth
