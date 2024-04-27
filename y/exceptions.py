@@ -87,7 +87,7 @@ class NotABalancerV2Pool(Exception):
 class CantFindSwapPath(Exception):
     pass
 
-class TokenNotFound(Exception):
+class TokenNotFound(ValueError):
     def __init__(self, token, container):
         super().__init__(f"{token} is not in {container}")
 

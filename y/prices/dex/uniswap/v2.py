@@ -139,10 +139,12 @@ class UniswapV2Pool(ERC20):
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_token_out(self, token_in: Address) -> ERC20:
         if token_in == (token0 := await self.__token0__):
-            return token1
+            # these return instantly since theyre already cached
+            return await self.__token1__
         elif token_in == (token1 := await self.__token1__):
-            return token0
-        raise ValueError(f"{token_in} is not one of [{token0}, {token1}]") from None
+            # these return instantly since theyre already cached
+            return await self.__token0__
+        raise TokenNotFound(token_in, [token0, token1]) from None
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
