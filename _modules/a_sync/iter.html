@@ -76,6 +76,7 @@
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_cached_property</span>
 
@@ -84,6 +85,13 @@
 
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">):</span>
+    <span class="n">SortKey</span> <span class="o">=</span> <span class="n">SyncFn</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+    <span class="n">ViewFn</span> <span class="o">=</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">SortKey</span> <span class="o">=</span> <span class="n">SyncFn</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
+    <span class="n">ViewFn</span> <span class="o">=</span> <span class="n">AnyFn</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
 
 <span class="k">class</span> <span class="nc">_AwaitableAsyncIterableMixin</span><span class="p">(</span><span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -100,6 +108,10 @@
     <span class="k">def</span> <span class="nf">materialized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Iterates through all contents of ``Self`` and returns a ``list`` containing the results.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_helpers</span><span class="o">.</span><span class="n">_await</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_materialized</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">SortKey</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncSorter[T]&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ASyncSorter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">filter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">function</span><span class="p">:</span> <span class="n">ViewFn</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncFilter[T]&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">ASyncFilter</span><span class="p">(</span><span class="n">function</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
     <span class="nd">@async_cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_materialized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Asynchronously iterates through all contents of ``Self`` and returns a ``list`` containing the results.&quot;&quot;&quot;</span>
@@ -204,6 +216,109 @@
             <span class="n">gen_func</span> <span class="o">=</span> <span class="n">ASyncGeneratorFunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span><span class="p">,</span> <span class="n">instance</span><span class="p">)</span>
             <span class="n">instance</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">gen_func</span>
             <span class="k">return</span> <span class="n">gen_func</span>
+        
+
+<span class="k">class</span> <span class="nc">_ASyncView</span><span class="p">(</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="n">__aiterator__</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">__iterator__</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">function</span><span class="p">:</span> <span class="n">ViewFn</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> 
+        <span class="n">iterable</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="o">=</span> <span class="n">function</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span> <span class="o">=</span> <span class="n">iterable</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">AsyncIterable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span> <span class="o">=</span> <span class="n">iterable</span><span class="o">.</span><span class="fm">__aiter__</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span> <span class="o">=</span> <span class="n">iterable</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`iterable` must be AsyncIterable or Iterabe, you passed </span><span class="si">{</span><span class="n">iterable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nd">@final</span>  
+<span class="k">class</span> <span class="nc">ASyncFilter</span><span class="p">(</span><span class="n">_ASyncView</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ASyncFilter for iterator=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span><span class="si">}</span><span class="s2"> function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">:</span>
+                <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                    <span class="k">return</span> <span class="n">obj</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check</span><span class="p">(</span><span class="n">obj</span><span class="p">):</span>
+                        <span class="k">return</span> <span class="n">obj</span>
+            <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+                <span class="k">pass</span>
+        <span class="k">raise</span> <span class="ne">StopAsyncIteration</span> <span class="kn">from</span> <span class="kc">None</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_check</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="n">checked</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;checked </span><span class="si">{</span><span class="n">checked</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isawaitable</span><span class="p">(</span><span class="n">checked</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="n">checked</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">checked</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_key_if_no_key</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">obj</span>
+
+<span class="nd">@final</span>
+<span class="k">class</span> <span class="nc">ASyncSorter</span><span class="p">(</span><span class="n">_ASyncView</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
+    <span class="nb">reversed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">_consumed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">iterable</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">SortKey</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">key</span> <span class="ow">or</span> <span class="n">_key_if_no_key</span><span class="p">,</span> <span class="n">iterable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__internal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__sort</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span><span class="o">.</span><span class="fm">__aiter__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">reversed</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_consumed</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has already been consumed&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">rep</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;ASyncSorter&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">reversed</span><span class="p">:</span>
+            <span class="n">rep</span> <span class="o">+=</span> <span class="s2">&quot; reversed&quot;</span>
+        <span class="n">rep</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; for iterator=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_function</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">_key_if_no_key</span><span class="p">:</span>
+            <span class="n">rep</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; key=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">rep</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot; at </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+        <span class="k">return</span> <span class="n">rep</span>
+    <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__internal</span><span class="o">.</span><span class="fm">__anext__</span><span class="p">()</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method is internal so the original iterator can only ever be consumed once.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">iscoroutinefunction</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">):</span>
+            <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">sort_tasks</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">:</span>
+                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="n">sort_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span><span class="p">:</span>
+                    <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="n">sort_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
+                <span class="k">for</span> <span class="n">sort_value</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">sort_tasks</span><span class="p">),</span> <span class="n">items</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">):</span>
+                    <span class="k">yield</span> <span class="n">obj</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">:</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">async</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">]</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">items</span> <span class="o">=</span> <span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span><span class="p">]</span>                
+            <span class="n">items</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="n">obj</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_consumed</span> <span class="o">=</span> <span class="kc">True</span>
 </pre></div>
 
            </div>
