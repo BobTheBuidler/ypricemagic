@@ -500,7 +500,7 @@ class UniswapRouterV2(ContractBase):
         stable_pools = {
             pool: paired_with
             async for pool, paired_with
-            in UniswapV2Pool.get_token_out.map(pools, token=token_address)
+            in UniswapV2Pool.get_token_out.map(pools, token_in=token_address)
             if paired_with in STABLECOINS
         }
         

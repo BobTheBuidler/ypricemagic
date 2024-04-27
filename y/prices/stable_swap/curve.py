@@ -439,13 +439,15 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         if block is not None:
             pools = [pool async for pool, deploy_block in a_sync.map(contract_creation_block_async, pools).map() if deploy_block <= block]
 
+        if not pools:
+            return None
         # Choose a pool to use for pricing `token_in`.
-        if len(pools) == 1:
+        elif len(pools) == 1:
             pool = pools[0]
         else:
             # Use the pool with deepest liquidity.
             deepest_pool, deepest_bal = None, 0
-            async for pool, depth in CurvePool.check_liquidity.map(pools, block=block).map():
+            async for pool, depth in CurvePool.check_liquidity.map(pools, token=token, block=block).map():
                 if depth > deepest_bal:
                     deepest_pool = pool
                     deepest_bal = depth
@@ -486,7 +488,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...]) -> int:
         if pools := [pool for pool in (await self.__coin_to_pools__).get(token, []) if pool not in ignore_pools]:
-            return await CurvePool.check_liquidity.max(pools, token=token, block=block)
+            return await CurvePool.check_liquidity.max(pools, token=token, block=block, sync=False)
         return 0
     
     @cached_property
