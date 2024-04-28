@@ -37,6 +37,7 @@ intersphinx_mapping = {
     'hexbytes': ('https://hexbytes.readthedocs.io/en/stable/', None),
     'pony': ('https://docs.ponyorm.org/', None),
     'python': ('https://docs.python.org/3', None),
+    'typing_extensions': ('https://typing-extensions.readthedocs.io/en/latest/', None),
     'web3': ('https://web3py.readthedocs.io/en/stable/', None),
 }
 
