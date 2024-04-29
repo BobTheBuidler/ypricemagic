@@ -21,7 +21,7 @@ from web3.middleware.filter import block_ranges
 from y import convert
 from y._db.decorators import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
-from y.decorators import stuck_coro_debugger
+from y._decorators import stuck_coro_debugger
 from y.utils.middleware import BATCH_SIZE
 
 T = TypeVar('T')

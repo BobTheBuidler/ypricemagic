@@ -17,10 +17,10 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, contracts
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
-from y.decorators import stuck_coro_debugger
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents

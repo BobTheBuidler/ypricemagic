@@ -11,12 +11,12 @@ from brownie.exceptions import VirtualMachineError
 from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async, has_methods
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
-from y.decorators import stuck_coro_debugger
 from y.networks import Network
 from y.prices import magic
 

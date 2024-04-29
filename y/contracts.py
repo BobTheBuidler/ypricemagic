@@ -24,8 +24,8 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
+from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
-from y.decorators import stuck_coro_debugger
 from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
                           contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
@@ -194,7 +194,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
     1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
     2. To each contract method, a `coroutine` property has been defined which allows you to make asynchronous calls using the following syntax:
-    ```Contract(0xAddress).methodName.coroutine(*args, block_identifier = 123)```
+    ```python
+    Contract(0xAddress).methodName.coroutine(*args, block_identifier=12345678)
+    ```
     3. A few attributes were removed in order to minimize the size of a Contract object in memory: 
         - ast, bytecode, coverageMap, deployedBytecode, deployedSourceMap, natspec, opcodes, pcMap
     4. There are a few new util methods but they're not officially supported yet and may change without warning:

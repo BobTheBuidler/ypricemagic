@@ -10,9 +10,9 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
-from y.decorators import stuck_coro_debugger
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
