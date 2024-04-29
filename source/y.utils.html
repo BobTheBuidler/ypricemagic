@@ -207,7 +207,7 @@
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>)</p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>executor</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><em>_AsyncExecutorMixin</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>executor</strong> (<em>_AsyncExecutorMixin</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 </ul>
@@ -356,7 +356,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.Events.executor">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><span class="pre">_AsyncExecutorMixin</span></a></em><a class="headerlink" href="#y.utils.events.Events.executor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_AsyncExecutorMixin</span></em><a class="headerlink" href="#y.utils.events.Events.executor" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -449,7 +449,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>)</p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>executor</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><em>_AsyncExecutorMixin</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>executor</strong> (<em>_AsyncExecutorMixin</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 </ul>
@@ -585,7 +585,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.executor">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><span class="pre">_AsyncExecutorMixin</span></a></em><a class="headerlink" href="#y.utils.events.LogFilter.executor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_AsyncExecutorMixin</span></em><a class="headerlink" href="#y.utils.events.LogFilter.executor" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -684,7 +684,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>)</p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 <li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>executor</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><em>_AsyncExecutorMixin</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>executor</strong> (<em>_AsyncExecutorMixin</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>)</p></li>
 </ul>
@@ -846,7 +846,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.executor">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.primitives.html#a_sync.primitives.executor._AsyncExecutorMixin" title="(in ez-a-sync)"><span class="pre">_AsyncExecutorMixin</span></a></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.executor" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">_AsyncExecutorMixin</span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.executor" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
