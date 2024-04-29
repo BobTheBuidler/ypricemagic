@@ -6,9 +6,9 @@ from brownie.exceptions import ContractNotFound
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Contract
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, WeiBalance
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
-from y.decorators import stuck_coro_debugger
 from y.exceptions import MessedUpBrownieContract
 from y.utils import gather_methods, hasall
 

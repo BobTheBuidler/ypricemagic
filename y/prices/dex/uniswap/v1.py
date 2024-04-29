@@ -7,11 +7,11 @@ import a_sync
 from brownie import ZERO_ADDRESS, chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, Pool, UsdPrice
-from y.decorators import stuck_coro_debugger
 from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
 from y.utils.raw_calls import _decimals

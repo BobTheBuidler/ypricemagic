@@ -6,8 +6,8 @@ import a_sync
 from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y._decorators import stuck_coro_debugger
 from y.datatypes import AnyAddressType, Block, UsdPrice
-from y.decorators import stuck_coro_debugger
 from y.networks import Network
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2

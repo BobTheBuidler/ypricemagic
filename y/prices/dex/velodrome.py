@@ -9,9 +9,9 @@ from async_lru import alru_cache
 from brownie import chain
 from multicall.call import Call
 
+from y._decorators import stuck_coro_debugger
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block
-from y.decorators import stuck_coro_debugger
 from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouterBase

@@ -21,12 +21,12 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y._decorators import continue_on_revert, stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
-from y.decorators import continue_on_revert, stuck_coro_debugger
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           NonStandardERC20, NotAUniswapV2Pool, TokenNotFound,
                           call_reverted, continue_if_call_reverted)
