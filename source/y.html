@@ -83,11 +83,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#y.datatypes.UsdValue"><code class="docutils literal notranslate"><span class="pre">UsdValue</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#module-y.decorators">y.decorators module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#y.decorators.continue_on_revert"><code class="docutils literal notranslate"><span class="pre">continue_on_revert()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.decorators.stuck_coro_debugger"><code class="docutils literal notranslate"><span class="pre">stuck_coro_debugger()</span></code></a></li>
-</ul>
-</li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.erc20">y.erc20 module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#y.erc20.decimals"><code class="docutils literal notranslate"><span class="pre">decimals</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#y.erc20.totalSupply"><code class="docutils literal notranslate"><span class="pre">totalSupply</span></code></a></li>
@@ -753,7 +748,9 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
 1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
 2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
-<code class="docutils literal notranslate"><span class="pre">`Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier</span> <span class="pre">=</span> <span class="pre">123)`</span></code>
+<code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier=12345678)</span>
+<span class="pre">`</span></code>
 3. A few attributes were removed in order to minimize the size of a Contract object in memory:</p>
 <blockquote>
 <div><ul class="simple">
@@ -2119,30 +2116,6 @@ and with a positive denominator.</p>
 </dd></dl>
 
 </dd></dl>
-
-</section>
-<section id="module-y.decorators">
-<span id="y-decorators-module"></span><h2>y.decorators module<a class="headerlink" href="#module-y.decorators" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="y.decorators.continue_on_revert">
-<span class="sig-prename descclassname"><span class="pre">y.decorators.</span></span><span class="sig-name descname"><span class="pre">continue_on_revert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/decorators.html#continue_on_revert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.decorators.continue_on_revert" title="Link to this definition"></a></dt>
-<dd><p>Decorates a call-making function. If the call reverts, returns <cite>None</cite>. Raises any other exceptions.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>func</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><em>T</em><em>]</em>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>[[~P], <em>T</em>]</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.decorators.stuck_coro_debugger">
-<span class="sig-prename descclassname"><span class="pre">y.decorators.</span></span><span class="sig-name descname"><span class="pre">stuck_coro_debugger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><span class="pre">AsyncIterator</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.12)"><span class="pre">AsyncIterator</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/y/decorators.html#stuck_coro_debugger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.decorators.stuck_coro_debugger" title="Link to this definition"></a></dt>
-<dt class="sig sig-object py">
-<span class="sig-prename descclassname"><span class="pre">y.decorators.</span></span><span class="sig-name descname"><span class="pre">stuck_coro_debugger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><span class="pre">Callable</span></a><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">P</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><span class="pre">Awaitable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span></dt>
-<dd></dd></dl>
 
 </section>
 <section id="module-y.erc20">
@@ -3953,7 +3926,9 @@ is raised.</p>
 <p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
 1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
 2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
-<code class="docutils literal notranslate"><span class="pre">`Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier</span> <span class="pre">=</span> <span class="pre">123)`</span></code>
+<code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier=12345678)</span>
+<span class="pre">`</span></code>
 3. A few attributes were removed in order to minimize the size of a Contract object in memory:</p>
 <blockquote>
 <div><ul class="simple">

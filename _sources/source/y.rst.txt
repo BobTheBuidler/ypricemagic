@@ -55,14 +55,6 @@ y.datatypes module
    :undoc-members:
    :show-inheritance:
 
-y.decorators module
--------------------
-
-.. automodule:: y.decorators
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 y.erc20 module
 --------------
 
