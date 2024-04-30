@@ -90,15 +90,16 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         Get a price of a synth in dollars.
         """
         token = convert.to_address(token)
+        rates, key = await asyncio.gather(
+            self.get_address('ExchangeRates', block=block, sync=False),
+            self.get_currency_key(token, sync=False)
+        )
+        if await rates.rateIsStale.coroutine(key, block_identifier=block):
+            return None
         try:
-            rates, key = await asyncio.gather(
-                self.get_address('ExchangeRates', block=block, sync=False),
-                self.get_currency_key(token, sync=False)
-            )
-            return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block) / 10 ** 18)
+            return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block, decimals=18))
         except Exception as e:
-            if call_reverted(e):
-                return None
-            raise
+            if not call_reverted(e):
+                raise e
 
 synthetix = Synthetix(asynchronous=True) if chain.id in addresses else set()
