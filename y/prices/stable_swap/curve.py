@@ -330,12 +330,15 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         Get total value in Curve pool.
         """
         try:
-            balances = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
+            price = await WeiBalance.value_usd.sum(
+                self.get_balances(block=block, skip_cache=skip_cache, sync=False), 
+                sync=False,
+            )
+            return UsdValue(price)
         except ValueError as e:
             if str(e).startswith("could not fetch balances "):
                 return None
             raise e
-        return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:

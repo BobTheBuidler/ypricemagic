@@ -166,7 +166,8 @@ class BalancerV2Pool(ERC20):
     @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
         if balances := await self.get_balances(block=block, skip_cache=skip_cache, sync=False):
-            balances = tuple(balances)  # overwrite big obj with little obj
+            # overwrite ref to big obj with ref to little obj
+            balances = iter(tuple(balances.values()))
             return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
 
     @a_sync_ttl_cache
