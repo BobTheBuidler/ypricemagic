@@ -155,7 +155,7 @@ async def _decimals(
 async def _totalSupply(
     contract_address: AddressOrContract, 
     block: Optional[Block] = None,
-    return_None_on_failure: bool = False # TODO: implement this kwarg
+    return_None_on_failure: bool = False,
     ) -> Optional[int]:
     
     total_supply = None
