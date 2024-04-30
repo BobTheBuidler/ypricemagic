@@ -1,8 +1,8 @@
 import asyncio
 import functools
 import logging
-from typing import (Awaitable, Callable, Dict, Iterable, List, NoReturn, Optional,
-                    Tuple)
+from typing import (Awaitable, Callable, Dict, Iterable, List, Literal, NoReturn, 
+                    Optional, Tuple, overload)
 
 import a_sync
 import dank_mids
@@ -28,6 +28,28 @@ from y.utils.logging import get_price_logger
 
 cache_logger = logging.getLogger(f"{__name__}.cache")
 
+@overload
+async def get_price(
+    token_address: AnyAddressType,
+    block: Optional[Block] = None,
+    *,
+    fail_to_None: Literal[False],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: Tuple[Pool, ...] = (),
+    silent: bool = False,
+) -> UsdPrice:...
+
+@overload
+async def get_price(
+    token_address: AnyAddressType,
+    block: Optional[Block] = None,
+    *,
+    fail_to_None: Literal[True],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: Tuple[Pool, ...] = (),
+    silent: bool = False,
+) -> Optional[UsdPrice]:...
+
 @a_sync.a_sync(default='sync')
 async def get_price(
     token_address: AnyAddressType,
@@ -37,7 +59,7 @@ async def get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
-    ) -> Optional[UsdPrice]:
+) -> Optional[UsdPrice]:
     '''
     Don't pass an int like `123` into `token_address` please, that's just silly.
     - ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
@@ -64,14 +86,35 @@ GetPrice = Callable[..., Awaitable[Optional[UsdPrice]]]
 
 
 
+@overload
+async def get_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Optional[Block] = None,
+    *,
+    fail_to_None: Literal[False],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> List[UsdPrice]:...
+    
+@overload
+async def get_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Optional[Block] = None,
+    *,
+    fail_to_None: Literal[True],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> List[Optional[UsdPrice]]:...
+
 @a_sync.a_sync(default='sync')
 async def get_prices(
     token_addresses: Iterable[AnyAddressType],
     block: Optional[Block] = None,
+    *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-    ) -> List[Optional[float]]:
+) -> List[Optional[UsdPrice]]:
     '''
     A more optimized way to fetch prices for multiple assets at the same block.
 
@@ -85,14 +128,52 @@ async def get_prices(
     - if `fail_to_None == False`, ypricemagic will raise a yPriceMagicError
     '''
 
-    return await a_sync.map(
+    return await map_prices(
+        token_addresses, 
+        block or await dank_mids.eth.block_number, 
+        fail_to_None=fail_to_None, 
+        skip_cache=skip_cache, 
+        silent=silent,
+    ).values()
+
+
+
+@overload
+def map_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Block,
+    *,
+    fail_to_None: Literal[False],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]:...
+
+@overload
+def map_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Block,
+    *,
+    fail_to_None: Literal[True],
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:...
+
+def map_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Block,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:
+    return a_sync.map(
         get_price,
         token_addresses,
-        block=block or await dank_mids.eth.block_number, 
+        block=block, 
         fail_to_None=fail_to_None, 
         skip_cache=skip_cache, 
         silent=silent, 
-    ).values()
+    )
 
 def __cache(get_price: GetPrice) -> GetPrice:
     @functools.wraps(get_price)
