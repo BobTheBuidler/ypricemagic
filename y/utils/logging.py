@@ -1,5 +1,6 @@
 import logging
-from typing import List, TypeVar, Union
+import weakref
+from typing import List, Tuple, TypeVar, Union
 
 from brownie import chain
 from cachetools.func import ttl_cache
@@ -16,9 +17,15 @@ yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 
 logger = logging.getLogger(__name__)
 
-@ttl_cache(ttl=10*60)
-def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '') -> logging.Logger:
+class PriceLogger(logging.Logger):
+    address: str
+    block: int
+
+def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '') -> PriceLogger:
     address = str(token_address)
+    key = (address, block, extra)
+    if logger := _all_price_loggers.get(key, None):
+        return logger
     name = f"y.prices.{Network.label()}.{address}.{block}"
     if extra: 
         name += f".{extra}"
@@ -27,7 +34,10 @@ def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '
     logger.block = block
     if logger.level != logger.parent.level:
         logger.setLevel(logger.parent.level)
+    _all_price_loggers[key] = logger
     return logger
+
+_all_price_loggers: weakref.WeakValueDictionary[Tuple[AnyAddressType, Block], logging.Logger] = weakref.WeakValueDictionary()
 
 def enable_debug_logging(logger: str = 'y') -> None:
     logger = logging.getLogger(logger)
