@@ -1,9 +1,10 @@
+import asyncio
 import logging
 import weakref
-from typing import List, Tuple, TypeVar, Union
+from typing import List, NoReturn, Tuple, TypeVar, Union
 
+import a_sync
 from brownie import chain
-from cachetools.func import ttl_cache
 from lazy_logging import LazyLoggerFactory
 from typing_extensions import ParamSpec
 
@@ -21,7 +22,7 @@ class PriceLogger(logging.Logger):
     address: str
     block: int
 
-def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '') -> PriceLogger:
+def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str, extra: str = '') -> PriceLogger:
     address = str(token_address)
     key = (address, block, extra)
     if logger := _all_price_loggers.get(key, None):
@@ -34,8 +35,21 @@ def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '
     logger.block = block
     if logger.level != logger.parent.level:
         logger.setLevel(logger.parent.level)
+    if logger.isEnabledFor(logging.DEBUG):
+        # will kill itself when this logger is garbage collected
+        logger.debugger_task = a_sync.create_task(
+            coro=_debug_tsk(symbol, logger), 
+            name=f"_debug_tsk({symbol}, {logger})", 
+            log_destroy_pending=False,
+        )
     _all_price_loggers[key] = logger
     return logger
+
+async def _debug_tsk(symbol: str, logger: logging.Logger) -> NoReturn:
+    """Prints a log every 1 minute until the creating coro returns"""
+    while True:
+        await asyncio.sleep(60)
+        logger.debug("price still fetching for %s", symbol)
 
 _all_price_loggers: "weakref.WeakValueDictionary[Tuple[AnyAddressType, Block, str], PriceLogger]" = weakref.WeakValueDictionary()
 
