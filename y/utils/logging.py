@@ -37,7 +37,7 @@ def get_price_logger(token_address: AnyAddressType, block: Block, extra: str = '
     _all_price_loggers[key] = logger
     return logger
 
-_all_price_loggers: weakref.WeakValueDictionary[Tuple[AnyAddressType, Block], logging.Logger] = weakref.WeakValueDictionary()
+_all_price_loggers: "weakref.WeakValueDictionary[Tuple[AnyAddressType, Block, str], PriceLogger]" = weakref.WeakValueDictionary()
 
 def enable_debug_logging(logger: str = 'y') -> None:
     logger = logging.getLogger(logger)
