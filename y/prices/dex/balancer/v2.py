@@ -89,12 +89,12 @@ class BalancerV2Vault(ContractBase):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> "BalancerV2Pool":
+        balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
+        balances_aiterator: a_sync.ASyncIterator[Tuple[BalancerV2Pool, Optional[WeiBalance]]]
+
         logger = get_price_logger(token_address, block, 'balancer.v2')
 
-        balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
         balance_tasks = BalancerV2Pool.get_balance.map(token_address=token_address, block=block)
-
-        balances_aiterator: a_sync.ASyncIterator[Tuple[BalancerV2Pool, Optional[WeiBalance]]]
         balances_aiterator = balance_tasks.map(self.pools_for_token(token_address, block=block), pop=True)        
         async for pool, balance in balances_aiterator.filter(_lookup_balance_from_tuple).sort(key=_lookup_balance_from_tuple, reverse=True):
             break
@@ -306,10 +306,13 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, token_address=token_address, block=block)
         if deepest_pools := {vault.address: deepest_pool async for vault, deepest_pool in deepest_pools if deepest_pool is not None}:
-            deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())
-            for pool_address, pool_balance in deepest_pools.values():
-                if pool_balance == deepest_pool_balance and pool_address:
-                    return BalancerV2Pool(pool_address, asynchronous=self.asynchronous)
+            async for pool in BalancerV2Pool.get_balance.map(deepest_pools.values(), token_address=token_address, block=block).keys(pop=True).aiterbyvalues(reverse=True):
+                return pool
+        
+        # TODO: afilter
+        # deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, token_address=token_address, block=block).values(pop=True).afilter()
+        # async for pool in BalancerV2Pool.get_balance.map(deepest_pools, token_address=token_address, block=block).keys(pop=True).aiterbyvalues(reverse=True):
+        #     return pool
 
 balancer = BalancerV2(asynchronous=True)
 
