@@ -51,7 +51,6 @@ BALANCER_V2_VAULTS = {
 
 T = TypeVar("T")
 PoolId = NewType('PoolId', bytes)
-PoolBalances = Dict[ERC20, WeiBalance]
 
 logger = logging.getLogger(__name__)
 
@@ -166,16 +165,15 @@ class BalancerV2Pool(ERC20):
         
     @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
-        balances_map: PoolBalances
         if balances_map := await self.get_balances(block=block, skip_cache=skip_cache, sync=False):
             # NOTE: some pools include themselves in their own token list, and we should ignore those
             balances_map.pop(self.address, None)
-            balances = (balances_map.pop(token) for token in tuple(balances))
+            balances = (balances_map.pop(token) for token in tuple(balances_map))
             return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
-    async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> PoolBalances:
+    async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Dict[ERC20, WeiBalance]:
         if self._messed_up:
             return {}
         try:
