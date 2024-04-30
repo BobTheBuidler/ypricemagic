@@ -3,7 +3,7 @@ import logging
 from typing import Callable, List, Optional
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
 from multicall import Call

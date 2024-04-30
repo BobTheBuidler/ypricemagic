@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List, Dict
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from typing_extensions import Self
 

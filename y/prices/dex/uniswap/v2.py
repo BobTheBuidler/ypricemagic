@@ -11,7 +11,7 @@ import a_sync
 import a_sync.exceptions
 import brownie
 import dank_mids
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert

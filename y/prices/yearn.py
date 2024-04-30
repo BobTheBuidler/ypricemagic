@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Optional, Tuple
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from multicall.call import Call
 from typing_extensions import Self
