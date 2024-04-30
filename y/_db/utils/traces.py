@@ -5,7 +5,7 @@ from typing import AsyncIterator, List, Optional
 
 import a_sync
 import dank_mids
-from a_sync.primitives.executor import _AsyncExecutorMixin
+from a_sync.executor import _AsyncExecutorMixin
 from msgspec import json
 from pony.orm import commit, select
 
