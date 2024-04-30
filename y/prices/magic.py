@@ -331,12 +331,11 @@ async def _get_price_from_dexes(token: AnyAddressType, block: Block, ignore_pool
     logger.debug('no %s liquidity found on primary markets', token)
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
-    if not price:
-        new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
-        logger.debug("balancer -> %s", price)
-        if new_price:
-            logger.debug("replacing price %s with new price %s", price, new_price)
-            price = new_price
+    new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
+    logger.debug("balancer -> %s", price)
+    if new_price:
+        logger.debug("replacing price %s with new price %s", price, new_price)
+        price = new_price
     return price
          
 def _fail_appropriately(
