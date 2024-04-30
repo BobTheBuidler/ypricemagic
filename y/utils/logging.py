@@ -1,7 +1,7 @@
 import asyncio
 import logging
 import weakref
-from typing import List, NoReturn, Tuple, TypeVar, Union
+from typing import List, NoReturn, Optional, Tuple, TypeVar, Union
 
 import a_sync
 from brownie import chain
@@ -22,7 +22,7 @@ class PriceLogger(logging.Logger):
     address: str
     block: int
 
-def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str, extra: str = '') -> PriceLogger:
+def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str = None, extra: str = '') -> PriceLogger:
     address = str(token_address)
     key = (address, block, extra)
     if logger := _all_price_loggers.get(key, None):
@@ -45,11 +45,15 @@ def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str, e
     _all_price_loggers[key] = logger
     return logger
 
-async def _debug_tsk(symbol: str, logger: logging.Logger) -> NoReturn:
+async def _debug_tsk(symbol: Optional[str], logger: logging.Logger) -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns"""
+    if symbol:
+        args = "price still fetching for %s", symbol
+    else:
+        args = "still fetching...",
     while True:
         await asyncio.sleep(60)
-        logger.debug("price still fetching for %s", symbol)
+        logger.debug(*args)
 
 _all_price_loggers: "weakref.WeakValueDictionary[Tuple[AnyAddressType, Block, str], PriceLogger]" = weakref.WeakValueDictionary()
 
