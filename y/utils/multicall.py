@@ -103,11 +103,7 @@ async def multicall_decimals(
     except Exception as e:
         continue_if_call_reverted(e)
 
-    return [
-        decimals 
-        async for decimals 
-        in a_sync.map(_decimals, addresses, block=block, return_None_on_failure=return_None_on_failure).values()
-    ]
+    return await a_sync.map(_decimals, addresses, block=block, return_None_on_failure=return_None_on_failure).values(pop=True)
 
 @a_sync.a_sync(default='sync')
 @stuck_coro_debugger
