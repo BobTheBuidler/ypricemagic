@@ -98,7 +98,7 @@ async def get_logs_asap_generator(
     run_forever: bool = False,
     run_forever_interval: int = 60,
     verbose: int = 0
-) -> AsyncGenerator[List[LogReceipt], None]:
+) -> AsyncGenerator[List[LogReceipt], None]:  # sourcery skip: low-code-quality
     # NOTE: If you don't need the logs in order, you will get your logs faster if you set `chronological` to False.
 
     if from_block is None:
@@ -307,7 +307,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         executor: Optional[_AsyncExecutorMixin] = None,
         is_reusable: bool = True,
         verbose: bool = False,
-    ):
+    ) -> None:  # sourcery skip: default-mutable-arg
         self.addresses = _clean_addresses(addresses)
         self.topics = topics
         super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
@@ -328,7 +328,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
         return self._semaphore
 
-    def logs(self, to_block: Optional[int]) -> AsyncIterator[LogReceipt]:
+    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[LogReceipt]:
         return self._objects_thru(block=to_block)
 
     @property
@@ -370,7 +370,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
 class Events(LogFilter):
     obj_type = _EventItem
     __slots__ = []
-    def events(self, to_block: int) -> AsyncIterator[_EventItem]:
+    def events(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
         return self._objects_thru(block=to_block)
     def _extend(self, objs) -> None:
         return self._objects.extend(decode_logs(objs))
@@ -385,7 +385,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     @abc.abstractmethod
     def _process_event(self, event: _EventItem) -> T:
         ...
-    def objects(self, to_block: int) -> AsyncIterator[_EventItem]:
+    def objects(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
         return self._objects_thru(block=to_block)
     def _extend(self, logs: List[LogReceipt]) -> None:
         for event in decode_logs(logs):
