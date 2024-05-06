@@ -122,9 +122,7 @@ class UniswapV2Pool(ERC20):
     async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         tvl = await self.tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is not None:
-            # TODO: move decimal conversion into total_supply_readable
             return UsdPrice(tvl / Decimal(await self.total_supply_readable(block=block, sync=False)))
-        return None
     
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_token_out(self, token_in: Address) -> ERC20:
