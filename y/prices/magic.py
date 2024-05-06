@@ -1,7 +1,7 @@
 import asyncio
 import functools
 import logging
-from typing import (Awaitable, Callable, Iterable, List, NoReturn, Optional,
+from typing import (Awaitable, Callable, Dict, Iterable, List, NoReturn, Optional,
                     Tuple)
 
 import a_sync
@@ -128,6 +128,10 @@ async def _get_price(
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
 
+    if token == ZERO_ADDRESS:
+        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        return None
+    
     try:
         # We do this to cache the symbol for later, otherwise some repr woudl break
         symbol = await ERC20(token, asynchronous=True).symbol
@@ -136,69 +140,65 @@ async def _get_price(
 
     logger = get_price_logger(token, block, 'magic')
     logger.debug('fetching price for %s', symbol)
-    logger._debugger = asyncio.create_task(coro=_debug_tsk(symbol, logger), name=f"_debug_tsk({symbol}, {logger})")
+    logger._debugger = a_sync.create_task(
+        coro=_debug_tsk(symbol, logger), 
+        name=f"_debug_tsk({symbol}, {logger})", 
+        log_destroy_pending=False,
+    )
 
-    # Helps to detect stuck code
     try:
-        if token == ZERO_ADDRESS:
-            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
-            logger._debugger.cancel()
-            return None
-
         if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
             price = await utils.ypriceapi.get_price(token, block)
             logger.debug("ypriceapi -> %s", price)
             if price is not None:
-                logger.debug("%s price: %s", symbol, price)
-                logger._debugger.cancel()
                 return price
 
         price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
         if price is not None:
-            await utils.sense_check(token, block, price)
-            logger.debug("%s price: %s", symbol, price)
-            logger._debugger.cancel()
             return price
         
         # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
-        if price is None:
-            dexes = [uniswap_multiplexer]
-            if curve:
-                dexes.append(curve)
-            liquidity = await asyncio.gather(*[dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes])
-            depth_to_dex = dict(zip(liquidity, dexes))
-            dexes_by_depth = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth}
-            logger.debug('dexes by depth: %s', dexes_by_depth)
-            for dex in dexes_by_depth.values():
-                method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
-                logger.debug("trying %s", dex)
-                price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
-                logger.debug("%s -> %s", dex, price)
-                if price:
-                    break
+        dexes = [uniswap_multiplexer]
+        if curve:
+            dexes.append(curve)
+        
+        # TODO: make a DexABC, include balancer and future dexes
+        # TODO:  this would be so cool if a_sync.map could proxy abstractmethods correctly
+        # dexes_by_depth = dict(
+        #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
+        # )
+
+        liquidity = await asyncio.gather(*[dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes])
+        depth_to_dex: Dict[int, object] = dict(zip(liquidity, dexes))
+        dexes_by_depth: Dict[int, object] = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth}
+        logger.debug('dexes by depth: %s', dexes_by_depth)
+        for dex in dexes_by_depth.values():
+            method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
+            logger.debug("trying %s", dex)
+            price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
+            logger.debug("%s -> %s", dex, price)
+            if price:
+                return price
 
         logger.debug('no %s liquidity found on primary markets', token)
 
         # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
-        if price is None or price == 0:
+        if not price:
             new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
             logger.debug("balancer -> %s", price)
             if new_price:
                 logger.debug("replacing price %s with new price %s", price, new_price)
                 price = new_price
-
-        if price is None:
-            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        return price
+    finally:
+        # Don't need this anymore
+        del logger._debugger
         if price:
             await utils.sense_check(token, block, price)
-
+        else:
+            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
         logger.debug("%s price: %s", symbol, price)
-        # Don't need this anymore
-        logger._debugger.cancel()
         return price
-    except Exception as e:
-        logger._debugger.cancel()
-        raise e
 
 
 @stuck_coro_debugger
