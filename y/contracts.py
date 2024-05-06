@@ -23,11 +23,9 @@ from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y import constants, convert
+from y import convert, exceptions
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
-from y.exceptions import (ContractNotVerified, NodeNotSynced, call_reverted,
-                          contract_not_verified)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 from y.time import check_node, check_node_async
@@ -62,7 +60,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
     address = convert.to_address(address)
     try:
         return Contract(address)
-    except ContractNotVerified:
+    except exceptions.ContractNotVerified:
         return Contract_erc20(address)
 
 
@@ -78,9 +76,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     height = chain.height
 
     if height == 0:
-        raise NodeNotSynced('''
-            `chain.height` returns 0 on your node, which means it is not fully synced.
-            You can only use this function on a fully synced node.''')
+        raise exceptions.NodeNotSynced(_NOT_SYNCED)
     
     check_node()
 
@@ -139,9 +135,7 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     height = await dank_mids.eth.block_number
 
     if height == 0:
-        raise NodeNotSynced('''
-            `chain.height` returns 0 on your node, which means it is not fully synced.
-            You can only use this function on a fully synced node.''')
+        raise exceptions.NodeNotSynced(_NOT_SYNCED)
     
     await check_node_async()
 
@@ -226,7 +220,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if address.lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
             raise ContractNotFound(f"{address} is not a contract.")
         if require_success and address in _unverified:
-            raise ContractNotVerified(address)
+            raise exceptions.ContractNotVerified(address)
 
         with _contract_lock:
             # autofetch-sources: false
@@ -249,13 +243,16 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     name, abi = _resolve_proxy(address)
                     build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
                     self.__init_from_abi__(build, owner=owner, persist=True)
-                except (ContractNotFound, ContractNotVerified) as e:
-                    if isinstance(e, ContractNotVerified):
+                except exceptions.InvalidExplorerKey:
+                    # re-raise with a cleaner traceback
+                    raise exceptions.InvalidExplorerKey from None
+                except (ContractNotFound, exceptions.ContractNotVerified) as e:
+                    if isinstance(e, exceptions.ContractNotVerified):
                         _unverified.add(address)
                     if require_success:
                         raise
                     try:
-                        if type(e) == ContractNotVerified:
+                        if isinstance(e, exceptions.ContractNotVerified):
                             self.verified = False
                             self._build = {"contractName": "Non-Verified Contract"}
                         else:
@@ -395,7 +392,7 @@ async def has_method(address: Address, method: str, return_response: bool = Fals
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
     except Exception as e:
-        if isinstance(e, ContractLogicError) or call_reverted(e):
+        if isinstance(e, ContractLogicError) or exceptions.call_reverted(e):
             return False
         raise
 
@@ -417,7 +414,7 @@ async def has_methods(
     try:
         return _func([result is not None for result in await gather_methods(address, methods)])
     except Exception as e:
-        if not isinstance(e, ContractLogicError) and not call_reverted(e): raise # and not out_of_gas(e): raise
+        if not isinstance(e, ContractLogicError) and not exceptions.call_reverted(e): raise # and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
@@ -456,7 +453,7 @@ async def build_name(address: AnyAddressType, return_None_on_failure: bool = Fal
     try:
         contract = await Contract.coroutine(address)
         return contract.__dict__['_build']['contractName']
-    except ContractNotVerified:
+    except exceptions.ContractNotVerified:
         if not return_None_on_failure:
             raise
         return None
@@ -474,29 +471,34 @@ def _squeeze(it):
 @eth_retry.auto_retry
 def _extract_abi_data(address):
     try:
-        data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
+        try:
+            data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
+        except ValueError as e:
+            if "Invalid API Key" not in str(e):
+                raise
+            raise exceptions.InvalidExplorerKey from None
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
                 raise ValueError('Rate limited by Blockscout. Please try again.') from e
             if web3.eth.get_code(address):
-                raise ContractNotVerified(address) from e
+                raise exceptions.ContractNotVerified(address) from e
             else:
                 raise ContractNotFound(address) from e
         raise
     except ValueError as e:
-        if contract_not_verified(e):
-            raise ContractNotVerified(f'{address} on {Network.printable()}') from e
+        if exceptions.contract_not_verified(e):
+            raise exceptions.ContractNotVerified(f'{address} on {Network.printable()}') from e
         elif "Unknown contract address:" in str(e):
             if not is_contract(address):
                 raise ContractNotFound(str(e)) from e
-            raise ContractNotVerified(str(e)) from e
+            raise exceptions.ContractNotVerified(str(e)) from e
         else:
             raise
 
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
-        raise ContractNotVerified(f"Contract source code not verified: {address}") from None
+        raise exceptions.ContractNotVerified(f"Contract source code not verified: {address}") from None
     name = data["ContractName"]
     abi = json.loads(data["ABI"])
     implementation = data.get("Implementation")
@@ -567,3 +569,7 @@ def _pop(d: dict, k: Any) -> None:
 _Address = NewType("_Address", str)
 _unverified: Set[_Address] = set()
 """A collection of unverified addresses that is used to prevent repetitive etherscan api calls"""
+
+
+_NOT_SYNCED = "`chain.height` returns 0 on your node, which means it is not fully synced."
+_NOT_SYNCED += "\nYou can only use this function on a fully synced node."

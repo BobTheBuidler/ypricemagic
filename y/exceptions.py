@@ -124,3 +124,10 @@ def out_of_gas(e: Exception) -> bool:
 
 class NodeNotSynced(Exception):
     pass
+
+# Explorer Exceptions
+
+class InvalidExplorerKey:
+    _msg = "The block explorer for this network says your API key is invalid."
+    def __init__(self):
+        super().__init__(self._msg)
