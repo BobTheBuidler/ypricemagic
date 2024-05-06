@@ -1,10 +1,9 @@
 
 import threading
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, Generic, Optional, Tuple, TypeVar
+from typing import DefaultDict, Generic, TypeVar
 
 import a_sync
-from a_sync import _kwargs
 from checksum_dict import ChecksumAddressDict
 from checksum_dict.base import AnyAddressOrContract
 
