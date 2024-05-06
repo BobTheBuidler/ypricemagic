@@ -26,7 +26,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
     
     @a_sync.aka.property
     async def versions(self) -> List[Union[BalancerV1, BalancerV2]]:
-        return [v async for v in await a_sync.as_completed([self.__v1__, self.__v2__], aiter=True) if v]
+        return [v async for v in a_sync.as_completed([self.__v1__, self.__v2__], aiter=True) if v]
     __versions__: HiddenMethodDescriptor[Self, List[Union[BalancerV1, BalancerV2]]]
 
     @a_sync.aka.cached_property
@@ -64,14 +64,14 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
             (chain.id == Network.Mainnet and (not block or block > 12272146 + 100000))
             or (chain.id == Network.Fantom and (not block or block > 16896080))
             ): 
-            v2: BalancerV2 = await self.v2
+            v2 = await self.__v2__
             price = await v2.get_token_price(token_address, block, skip_cache=skip_cache, sync=False)
             if price:
                 logger.debug("balancer v2 -> $%s", price)
                 return price
 
         if not price and chain.id == Network.Mainnet:   
-            v1: BalancerV1 = await self.v1   
+            v1 = await self.__v1__
             price = await v1.get_token_price(token_address, block, skip_cache=skip_cache, sync=False)
             if price:
                 logger.debug("balancer v1 -> $%s", price)
