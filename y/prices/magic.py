@@ -243,7 +243,8 @@ async def _get_price(
     else:
         _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
     logger.debug("%s price: %s", symbol, price)
-    return price
+    if price:  # checks for the erroneous 0 value we see once in a while
+        return price
 
 @stuck_coro_debugger
 async def _exit_early_for_known_tokens(
