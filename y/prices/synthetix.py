@@ -78,7 +78,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         except Exception as e:
             if "invalid jump destination" in str(e):
                 return False
-            raise e
+            raise
     
     @a_sync_ttl_cache
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
@@ -100,6 +100,6 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block, decimals=18))
         except Exception as e:
             if not call_reverted(e):
-                raise e
+                raise
 
 synthetix = Synthetix(asynchronous=True) if chain.id in addresses else set()
