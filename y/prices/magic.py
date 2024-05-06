@@ -226,66 +226,23 @@ async def _get_price(
 
     logger = get_price_logger(token, block, 'magic')
     logger.debug('fetching price for %s', symbol)
-    logger._debugger = a_sync.create_task(
+    # will kill itself when this coroutine returns
+    debugger_task = a_sync.create_task(
         coro=_debug_tsk(symbol, logger), 
         name=f"_debug_tsk({symbol}, {logger})", 
         log_destroy_pending=False,
     )
-
-    try:
-        if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
-            price = await utils.ypriceapi.get_price(token, block)
-            logger.debug("ypriceapi -> %s", price)
-            if price is not None:
-                return price
-
+    price = await _get_price_from_api(token, block, logger)
+    if price is None:
         price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
-        if price is not None:
-            return price
-        
-        # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
-        dexes = [uniswap_multiplexer]
-        if curve:
-            dexes.append(curve)
-        
-        # TODO: make a DexABC, include balancer and future dexes
-        # TODO:  this would be so cool if a_sync.map could proxy abstractmethods correctly
-        # dexes_by_depth = dict(
-        #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
-        # )
-
-        liquidity = await asyncio.gather(*[dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes])
-        depth_to_dex: Dict[int, object] = dict(zip(liquidity, dexes))
-        dexes_by_depth: Dict[int, object] = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth}
-        logger.debug('dexes by depth: %s', dexes_by_depth)
-        for dex in dexes_by_depth.values():
-            method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
-            logger.debug("trying %s", dex)
-            price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
-            logger.debug("%s -> %s", dex, price)
-            if price:
-                return price
-
-        logger.debug('no %s liquidity found on primary markets', token)
-
-        # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
-        if not price:
-            new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
-            logger.debug("balancer -> %s", price)
-            if new_price:
-                logger.debug("replacing price %s with new price %s", price, new_price)
-                price = new_price
-        return price
-    finally:
-        # Don't need this anymore
-        del logger._debugger
-        if price:
-            await utils.sense_check(token, block, price)
-        else:
-            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
-        logger.debug("%s price: %s", symbol, price)
-        return price
-
+    if price is None:
+        price = _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
+    if price:
+        await utils.sense_check(token, block, price)
+    else:
+        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+    logger.debug("%s price: %s", symbol, price)
+    return price
 
 @stuck_coro_debugger
 async def _exit_early_for_known_tokens(
@@ -347,6 +304,45 @@ async def _exit_early_for_known_tokens(
     logger.debug("%s -> %s", bucket, price)
     return price
 
+async def _get_price_from_api(token: AnyAddressType, block: Block, logger: asyncio.Logger):
+    if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
+        price = await utils.ypriceapi.get_price(token, block)
+        logger.debug("ypriceapi -> %s", price)
+        return price
+
+async def _get_price_from_dexes(token: AnyAddressType, block: Block, ignore_pools, skip_cache: bool, logger: logging.Logger):
+    # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
+    dexes = [uniswap_multiplexer]
+    if curve:
+        dexes.append(curve)
+        
+    # TODO: make a DexABC, include balancer and future dexes
+    # TODO:  this would be so cool if a_sync.map could proxy abstractmethods correctly
+    # dexes_by_depth = dict(
+    #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
+    # )
+    liquidity = await asyncio.gather(*[dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes])
+    depth_to_dex: Dict[int, object] = dict(zip(liquidity, dexes))
+    dexes_by_depth: Dict[int, object] = {depth: depth_to_dex[depth] for depth in sorted(depth_to_dex, reverse=True) if depth}
+    logger.debug('dexes by depth: %s', dexes_by_depth)
+    for dex in dexes_by_depth.values():
+        method = 'get_price_for_underlying' if hasattr(dex, 'get_price_for_underlying') else 'get_price'
+        logger.debug("trying %s", dex)
+        price = await getattr(dex, method)(token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
+        logger.debug("%s -> %s", dex, price)
+        if price:
+            return price
+
+    logger.debug('no %s liquidity found on primary markets', token)
+
+    # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
+    if not price:
+        new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
+        logger.debug("balancer -> %s", price)
+        if new_price:
+            logger.debug("replacing price %s with new price %s", price, new_price)
+            price = new_price
+    return price
          
 def _fail_appropriately(
     logger: logging.Logger,
