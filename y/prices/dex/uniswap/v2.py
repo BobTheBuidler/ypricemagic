@@ -54,8 +54,6 @@ except ContractNotVerified:
 
 class UniswapV2Pool(ERC20):
     # defaults are stored as class vars to keep instance dicts smaller
-    __token0 = None
-    __token1 = None
     __types_assumed = True
     __slots__ = 'get_reserves',
     def __init__(
@@ -71,9 +69,9 @@ class UniswapV2Pool(ERC20):
         if deploy_block:
             self._deploy_block = deploy_block
         if token0:
-            self.__token0 = token0
+            self.token0 = token0
         if token1:
-            self.__token1 = token1
+            self.token1 = token1
         
     @a_sync.aka.cached_property
     async def factory(self) -> Address:
@@ -101,10 +99,6 @@ class UniswapV2Pool(ERC20):
     
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
-        # we can keep the instance smaller by popping this since its already cached
-        if token0 := self.__token0:
-            del self.__token0
-            return token0
         try:
             if token0 := await Call(self.address, ['token0()(address)']):
                 return ERC20(token0, asynchronous=self.asynchronous)
@@ -115,10 +109,6 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.aka.cached_property
     async def token1(self) -> ERC20:
-        # we can keep the instance smaller by popping this since its already cached
-        if token1 := self.__token1:
-            del self.__token1
-            return token1
         try:
             if token1 := await Call(self.address, ['token1()(address)']):
                 return ERC20(token1, asynchronous=self.asynchronous)
@@ -148,10 +138,9 @@ class UniswapV2Pool(ERC20):
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        reserves, tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__tokens__, return_exceptions=True)
-
-        if isinstance(tokens, Exception):
-            raise tokens
+        # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
+        #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
+        reserves, *tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__token0__, self.__token1__)
 
         if reserves is None and self.__types_assumed:
             try:
@@ -182,7 +171,14 @@ class UniswapV2Pool(ERC20):
     async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
         # start these tasks now
         price_tasks: a_sync.TaskMapping[ERC20, UsdPrice]
-        price_tasks = ERC20.price.map(self.__tokens__, block=block, return_None_on_failure=True, skip_cache=skip_cache)
+        price_tasks = ERC20.price.map(
+            # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
+            #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
+            [await self.__token0__, await self.__token1__], 
+            block=block, 
+            return_None_on_failure=True, 
+            skip_cache=skip_cache,
+        )
 
         reserves: Tuple[WeiBalance, WeiBalance]
         if (reserves := await self.reserves(block=block, sync=False)) is None:
