@@ -19,9 +19,13 @@ yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 logger = logging.getLogger(__name__)
 
 class PriceLogger(logging.Logger):
+    enabled: bool
     address: str
     block: int
-    debugger_task: Optional["asyncio.Task[None]"]
+    key: Tuple[AnyAddressType, Block, Optional[str], str]
+    debug_task: Optional["asyncio.Task[None]"]
+    def close(self) -> None:
+        ...
 
 def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str = None, extra: str = '', start_task: bool = False) -> PriceLogger:
     address = str(token_address)
@@ -34,18 +38,30 @@ def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str
     logger = logging.getLogger(name)
     logger.address = address
     logger.block = block
+    logger.key = key
     if logger.level != logger.parent.level:
         logger.setLevel(logger.parent.level)
-    if start_task and logger.isEnabledFor(logging.DEBUG):
+    logger.enabled = logger.isEnabledFor(logging.DEBUG)
+    if start_task and logger.enabled:
         # will kill itself when this logger is garbage collected
         logger.debugger_task = a_sync.create_task(
             coro=_debug_tsk(symbol, weakref.ref(logger)), 
             name=f"_debug_tsk({symbol}, {logger})", 
             log_destroy_pending=False,
         )
+    if logger.enabled:
+        logger.close = MethodType(_close_logger, logger)
     _all_price_loggers[key] = logger
     return logger
 
+def _close_logger(logger: PriceLogger) -> None:
+    if logger.enabled and logger.debug_task:
+        logger.debug_task.cancel()
+        logger.debug_task = None
+    _all_price_loggers.pop(logger.key, None)
+    return
+
+from types import MethodType
 async def _debug_tsk(symbol: Optional[str], logger_ref: "weakref.ref[logging.Logger]") -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns"""
     if symbol:

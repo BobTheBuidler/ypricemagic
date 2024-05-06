@@ -240,9 +240,7 @@ async def _get_price(
         if price:  # checks for the erroneous 0 value we see once in a while
             return price
     finally:
-        if logger.debugger_task:
-            logger.debugger_task.cancel()
-            logger.debugger_task = None
+        logger.close()
 
 @stuck_coro_debugger
 async def _exit_early_for_known_tokens(
