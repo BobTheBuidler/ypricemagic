@@ -544,7 +544,7 @@ class UniswapRouterV2(ContractBase):
         return path
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60, semaphore=100)  # lets try a semaphore here
     async def check_liquidity(self, token: Address, block: Block, ignore_pools = []) -> int:
         logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if block and block < await contract_creation_block_async(self.factory):
