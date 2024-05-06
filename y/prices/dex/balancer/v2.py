@@ -175,15 +175,17 @@ class BalancerV2Pool(BalancerPool):
 
     @a_sync.aka.cached_property
     async def pool_type(self) -> Union[PoolSpecialization, int]:
-        if vault := await self.__vault__:
-            pool_address, specialization = await vault.contract.getPool.coroutine(await self.__id__)
-            with suppress(ValueError):
-                return PoolSpecialization(specialization)
+        vault = await self.__vault__
+        if vault is None:
+            raise ValueError("%s has no vault", self) from None
+        _, specialization = await vault.contract.getPool.coroutine(await self.__id__)
+        try:
+            return PoolSpecialization(specialization)
+        except ValueError:
             if specialization not in __warned:
                 logger.warning("ypricemagic does not recognize this pool type, please add %s to %s.PoolSpecialization enum", specialization, __name__)
                 __warned.add(specialization)
             return specialization
-        raise ValueError("%s has no vault", self) from None
     __pool_type__: HiddenMethodDescriptor[Self, Optional[PoolSpecialization]]
         
     @stuck_coro_debugger
