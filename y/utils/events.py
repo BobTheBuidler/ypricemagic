@@ -17,7 +17,7 @@ from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import EventLookupError
-from brownie.network.event import EventDict, _decode_logs, _EventItem
+from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -43,8 +43,14 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
+    from y.contracts import Contract
+    for log in logs:
+        address = log['address']
+        if address not in _deployment_topics:
+            _add_deployment_topics(address, Contract(address).abi)
+            
     try:
-        decoded = _decode_logs((l.to_dict() for l in logs) if logs and isinstance(logs[0], structs.Log) else logs)
+        decoded = _decode_logs(logs)
     except Exception:
         decoded = []
         for log in logs:
