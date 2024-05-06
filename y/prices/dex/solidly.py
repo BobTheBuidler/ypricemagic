@@ -69,7 +69,10 @@ class SolidlyRouter(SolidlyRouterBase):
                 )
                 stable_reserves = tuple(stable_reserves)
                 unstable_reserves = tuple(unstable_reserves)
-                if await stable_pool.__tokens__ == await unstable_pool.__tokens__:
+                
+                # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
+                #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
+                if await stable_pool.__token0__ == await unstable_pool.__token0__ and await stable_pool.__token1__ == await unstable_pool.__token1__:
                     stable_reserve = stable_reserves[0]
                     unstable_reserve = unstable_reserves[0]
                 else:  # Order of tokens is flip flopped in the pools
