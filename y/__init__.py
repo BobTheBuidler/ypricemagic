@@ -2,7 +2,10 @@ import os
 from contextlib import suppress
 
 from brownie import network
+from brownie.network.contract import _explorer_tokens
 
+_explorer_tokens["base"] = "BASESCAN_TOKEN"
+_explorer_tokens["optimistic"] = "OPTIMISMSCAN_TOKEN"
 
 class NetworkNotSpecified(Exception):
     pass
