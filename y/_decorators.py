@@ -6,7 +6,10 @@ import logging
 import time
 from typing import AsyncIterator, Awaitable, Callable, NoReturn, TypeVar, Union, overload
 
-from typing_extensions import ParamSpec
+from a_sync import ASyncGenericBase
+from a_sync.a_sync.method import ASyncBoundMethod
+from a_sync.iter import ASyncGeneratorFunction
+from typing_extensions import Concatenate, ParamSpec
 
 P = ParamSpec('P')
 T = TypeVar('T')
@@ -35,6 +38,14 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
         raise NotImplementedError(f"Unable to decorate {func}")
     return continue_on_revert_wrap
 
+B = TypeVar("B", bound=ASyncGenericBase)
+
+@overload
+def stuck_coro_debugger(fn: Callable[Concatenate[B, P], AsyncIterator[T]]) -> ASyncGeneratorFunction[P, T]:...
+@overload
+def stuck_coro_debugger(fn: Callable[Concatenate[B, P], Awaitable[T]]) -> ASyncBoundMethod[B, P, T]:...
+@overload
+def stuck_coro_debugger(fn: Callable[Concatenate[B, P], T]) -> ASyncBoundMethod[B, P, T]:...
 @overload
 def stuck_coro_debugger(fn: Callable[P, AsyncIterator[T]]) -> Callable[P, AsyncIterator[T]]:...
 @overload
@@ -55,7 +66,7 @@ def stuck_coro_debugger(fn):
                 return
             except Exception as e:
                 t.cancel()
-                raise e
+                raise
         return stuck_async_gen_wrap
     else:
         @functools.wraps(fn)
@@ -68,7 +79,7 @@ def stuck_coro_debugger(fn):
                 t.cancel()
             except Exception as e:
                 t.cancel()
-                raise e
+                raise
             return retval
         return stuck_coro_wrap
 
