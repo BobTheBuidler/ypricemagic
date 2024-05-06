@@ -151,8 +151,12 @@ class BalancerV2Pool(BalancerPool):
     
     @a_sync.aka.cached_property
     async def vault(self) -> Optional[BalancerV2Vault]:
-        vault = await Call(self.address, ['getVault()(address)'])
-        return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
+        try:
+            vault = await Call(self.address, ['getVault()(address)'])
+            return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
+        except ContractLogicError:
+            return None
+        
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
         
     @stuck_coro_debugger
