@@ -44,7 +44,7 @@ def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str
     logger.enabled = logger.isEnabledFor(logging.DEBUG)
     if start_task and logger.enabled:
         # will kill itself when this logger is garbage collected
-        logger.debugger_task = a_sync.create_task(
+        logger.debug_task = a_sync.create_task(
             coro=_debug_tsk(symbol, weakref.ref(logger)), 
             name=f"_debug_tsk({symbol}, {logger})", 
             log_destroy_pending=False,
