@@ -484,25 +484,25 @@ class UniswapRouterV2(ContractBase):
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
         
         deepest_pool: UniswapV2Pool
-        async for deepest_pool, depth in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block).items(pop=True).aiterbyvalues(reverse=True):
+        async for deepest_pool in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block).keys(pop=True).aiterbyvalues(reverse=True):
             return deepest_pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
-        pools = self.pools_for_token(convert.to_address(token_address), None, _ignore_pools=_ignore_pools)
-        token_out_tasks: a_sync.TaskMapping[UniswapV2Pool, ERC20] = UniswapV2Pool.get_token_out.map(token_in=token_address)
-        
+        token_out_tasks: a_sync.TaskMapping[UniswapV2Pool, ERC20]
+        deepest_stable_pool: UniswapV2Pool
+
+        pools = self.pools_for_token(convert.to_address(token_address), block=block, _ignore_pools=_ignore_pools)
+        token_out_tasks = UniswapV2Pool.get_token_out.map(token_in=token_address)
         if stable_pools := [pool async for pool, paired_with in token_out_tasks.map(pools) if paired_with in STABLECOINS]:
-            if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
+            del token_out_tasks
+            
+            if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER, when_no_history_return_0=True)):
                 deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, stable_pools, block_identifier=block)
                 return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
-            elif block is not None:
-                deploy_blocks: a_sync.TaskMapping[ERC20, Block] = ERC20.deploy_block.map(stable_pools, when_no_history_return_0=True)
-                stable_pools = (pool async for pool, deploy_block in deploy_blocks.map() if deploy_block <= block)
         
-            deepest_stable_pool: UniswapV2Pool
             async for deepest_stable_pool, depth in UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).items(pop=True).aiterbyvalues(reverse=True):
                 return deepest_stable_pool
 
