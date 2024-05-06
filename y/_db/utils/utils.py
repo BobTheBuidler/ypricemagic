@@ -45,8 +45,8 @@ def get_block_timestamp(number: int) -> Optional[int]:
         get_block = _get_get_block()
         ts = get_block(number, sync=True).timestamp
     if ts:
+        # some db providers return a string here, we must parse it
         if isinstance(ts, str):
-            # TODO: debug why this happens, but only sometimes
             ts = parser.parse(ts)
         unix = ts.timestamp()
         logger.debug("got Block[%s, %s].timestamp from cache: %s, %s", chain.id, number, unix, ts)
