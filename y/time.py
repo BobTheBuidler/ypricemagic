@@ -34,12 +34,14 @@ def get_block_timestamp(height: int) -> int:
     if ts := db.get_block_timestamp(height, sync=True):
         return ts
     client = get_ethereum_client()
-    if client not in ['tg', 'erigon']:
-        return chain[height].timestamp
-    header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
-    ts = int(header.timestamp, 16)
-    db.set_block_timestamp(height, ts, sync=True)
-    return ts
+    if client in ['tg', 'erigon'] and chain.id not in [Network.Polygon]:
+        # NOTE: polygon erigon does not support this method
+        header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
+        ts = int(header.timestamp, 16)
+        db.set_block_timestamp(height, ts, sync=True)
+        return ts
+    return chain[height].timestamp
+    
 
 @a_sync_ttl_cache
 @eth_retry.auto_retry
@@ -48,7 +50,8 @@ async def get_block_timestamp_async(height: int) -> int:
     if ts := await db.get_block_timestamp(height, sync=False):
         return ts
     client = await get_ethereum_client_async()
-    if client in ['tg', 'erigon']:
+    if client in ['tg', 'erigon'] and chain.id not in [Network.Polygon]:
+        # NOTE: polygon erigon does not support this method
         header = await dank_mids.web3.manager.coro_request(f"{client}_getHeaderByNumber", [height])
         ts = int(header.timestamp, 16)
     else:
