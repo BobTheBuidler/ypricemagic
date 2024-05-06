@@ -185,7 +185,7 @@ class UniswapV2Pool(ERC20):
             await price_tasks.close()
             return None
 
-        prices = await price_tasks.values()
+        prices = await price_tasks.values(pop=True)
         if vals := [
             Decimal(await reserve.__readable__) * Decimal(price)
             for reserve, price in zip(reserves, prices)
@@ -387,7 +387,9 @@ class UniswapRouterV2(ContractBase):
                 pool = UniswapV2Pool(address=pool_address, asynchronous=self.asynchronous)
                 pools.insert(i, pool)
             logger.debug('Done fetching %s missing pools on %s', to_get, self.label)
-        tokens = set(await UniswapV2Pool.token0.map(pools).values() + await UniswapV2Pool.token1.map(pools).values())
+        token0s = UniswapV2Pool.token0.map(pools).values(pop=True)
+        token1s = UniswapV2Pool.token1.map(pools).values(pop=True)
+        tokens = set(await token0s + await token1s)
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
