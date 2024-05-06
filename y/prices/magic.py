@@ -237,7 +237,7 @@ async def _get_price(
     if price is None:
         price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
     if price is None:
-        price = _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
+        price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
     if price:
         await utils.sense_check(token, block, price)
     else:
