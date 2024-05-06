@@ -1,5 +1,6 @@
 import abc
 import asyncio
+import inspect
 import logging
 import threading
 from collections import Counter, defaultdict
@@ -372,14 +373,14 @@ class Events(LogFilter):
     __slots__ = []
     def events(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
         return self._objects_thru(block=to_block)
-    def _extend(self, objs) -> None:
+    async def _extend(self, objs) -> None:
         return self._objects.extend(decode_logs(objs))
     def _get_block_for_obj(self, obj: _EventItem) -> int:
         return obj.block_number
 
 class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     __slots__ = []
-    def _include_event(self, event: _EventItem) -> bool:
+    def _include_event(self, event: _EventItem) -> Union[bool, Awaitable[bool]]:
         """Override this to exclude specific events from processing and collection."""
         return True
     @abc.abstractmethod
@@ -387,10 +388,21 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         ...
     def objects(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
         return self._objects_thru(block=to_block)
-    def _extend(self, logs: List[LogReceipt]) -> None:
-        for event in decode_logs(logs):
-            if self._include_event(event):
+    async def _extend(self, logs: List[LogReceipt]) -> None:
+        # .items() keeps the input order but yields them as they're ready
+        decoded = decode_logs(logs)
+        should_include = await asyncio.gather(*[self.__include_event(event) for event in decoded])
+        for event, include in zip(decoded, should_include):
+            if include:
                 self._objects.append(self._process_event(event))
+    async def __include_event(self, event: _EventItem) -> bool:
+        # sourcery skip: assign-if-exp
+        include = self._include_event(event)
+        if isinstance(include, bool):
+            return include
+        if inspect.isawaitable(include):
+            return bool(await include)
+        return bool(include)
 
 async def _lowest_deploy_block(addresses: Iterable[EthAddress], when_no_history_return_0: bool) -> Block:
     from y.contracts import contract_creation_block_async

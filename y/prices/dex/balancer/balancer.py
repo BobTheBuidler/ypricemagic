@@ -3,7 +3,9 @@ import logging
 from typing import List, Optional, Union
 
 import a_sync
+from a_sync.a_sync.property import HiddenMethodDescriptor
 from brownie import chain
+from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
@@ -24,21 +26,24 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
     
     @a_sync.aka.property
     async def versions(self) -> List[Union[BalancerV1, BalancerV2]]:
-        return [v for v in await asyncio.gather(self.v1, self.v2) if v]
+        return [v async for v in await a_sync.as_completed([self.__v1__, self.__v2__], aiter=True) if v]
+    __versions__: HiddenMethodDescriptor[Self, List[Union[BalancerV1, BalancerV2]]]
 
     @a_sync.aka.cached_property
     async def v1(self) -> Optional[BalancerV1]:
         try: return BalancerV1(asynchronous=self.asynchronous)
         except ImportError: return None
+    __v1__: HiddenMethodDescriptor[Self, Optional[BalancerV1]]
     
     @a_sync.aka.cached_property
     async def v2(self) -> Optional[BalancerV2]:
         try: return BalancerV2(asynchronous=self.asynchronous)
         except ImportError: return None
+    __v2__: HiddenMethodDescriptor[Self, Optional[BalancerV2]]
 
     @stuck_coro_debugger
     async def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
-        return any(await asyncio.gather(*[v.is_pool(token_address, sync=False) for v in await self.versions]))
+        return any(await asyncio.gather(*[v.is_pool(token_address, sync=False) for v in await self.__versions__]))
     
     @stuck_coro_debugger
     async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
