@@ -77,21 +77,17 @@ class VelodromeRouterV2(SolidlyRouterBase):
             # the etherscan proxy detection is borked here, need this to decode properly
             factory = Contract.from_abi("PoolFactory", self.factory, VELO_V2_FACTORY_ABI)
 
-        try:
-            pools = {
-                VelodromePool(
-                    address=event['pool'],
-                    token0=event['token0'], 
-                    token1=event['token1'], 
-                    stable=event['stable'], 
-                    deploy_block=event.block_number, 
-                    asynchronous=self.asynchronous,
-                )
-                async for event in factory.events.PoolCreated.events(to_block=await dank_mids.eth.block_number)
-            }
-        except Exception as e:
-            print(e)
-            raise e
+        pools = {
+            VelodromePool(
+                address=event['pool'],
+                token0=event['token0'], 
+                token1=event['token1'], 
+                stable=event['stable'], 
+                deploy_block=event.block_number, 
+                asynchronous=self.asynchronous,
+            )
+            async for event in factory.events.PoolCreated.events(to_block=await dank_mids.eth.block_number)
+        }
         
         all_pools_len = await raw_call(self.factory, 'allPoolsLength()', output='int', sync=False)
 
