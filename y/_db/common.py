@@ -150,7 +150,7 @@ class Filter(_DiskCachedMixin[T, C]):
     _task = None
     _semaphore = None
     _verbose = False
-    __slots__ = 'from_block', 'to_block', '_interval', '_lock', '__dict__'
+    __slots__ = 'from_block', 'to_block', '_interval', '_lock', '__dict__', '__weakref__'
     def __init__(
         self, 
         from_block: int,
