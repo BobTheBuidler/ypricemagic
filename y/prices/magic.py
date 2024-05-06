@@ -224,7 +224,7 @@ async def _get_price(
     except NonStandardERC20:
         symbol = None
 
-    logger = get_price_logger(token, block, 'magic', start_task=True)
+    logger = get_price_logger(token, block, symbol, 'magic', start_task=True)
     logger.debug('fetching price for %s', symbol)
     price = await _get_price_from_api(token, block, logger)
     if price is None:
