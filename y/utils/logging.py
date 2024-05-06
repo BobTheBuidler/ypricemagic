@@ -22,7 +22,7 @@ class PriceLogger(logging.Logger):
     address: str
     block: int
 
-def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str = None, extra: str = '') -> PriceLogger:
+def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str = None, extra: str = '', start_task: bool = False) -> PriceLogger:
     address = str(token_address)
     key = (address, block, extra)
     if logger := _all_price_loggers.get(key, None):
@@ -35,7 +35,7 @@ def get_price_logger(token_address: AnyAddressType, block: Block, symbol: str = 
     logger.block = block
     if logger.level != logger.parent.level:
         logger.setLevel(logger.parent.level)
-    if logger.isEnabledFor(logging.DEBUG):
+    if start_task and logger.isEnabledFor(logging.DEBUG):
         # will kill itself when this logger is garbage collected
         logger.debugger_task = a_sync.create_task(
             coro=_debug_tsk(symbol, logger), 
