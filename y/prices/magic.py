@@ -2,12 +2,13 @@ import asyncio
 import functools
 import logging
 from typing import (Awaitable, Callable, Dict, Iterable, List, Literal, NoReturn, 
-                    Optional, Tuple, overload)
+                    Optional, Tuple, TypeVar, overload)
 
 import a_sync
 import dank_mids
 from brownie import ZERO_ADDRESS
 from brownie.exceptions import ContractNotFound
+from typing_extensions import ParamSpec
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, convert
@@ -26,18 +27,11 @@ from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import *
 from y.utils.logging import get_price_logger
 
+_P = ParamSpec("_P")
+_T = TypeVar("_T")
+
 cache_logger = logging.getLogger(f"{__name__}.cache")
 
-@overload
-async def get_price(
-    token_address: AnyAddressType,
-    block: Optional[Block] = None,
-    *,
-    fail_to_None: Literal[False],
-    skip_cache: bool = ENVS.SKIP_CACHE,
-    ignore_pools: Tuple[Pool, ...] = (),
-    silent: bool = False,
-) -> UsdPrice:...
 
 @overload
 async def get_price(
@@ -49,6 +43,17 @@ async def get_price(
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
 ) -> Optional[UsdPrice]:...
+
+@overload
+async def get_price(
+    token_address: AnyAddressType,
+    block: Optional[Block] = None,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    ignore_pools: Tuple[Pool, ...] = (),
+    silent: bool = False,
+) -> UsdPrice:...
 
 @a_sync.a_sync(default='sync')
 async def get_price(
@@ -82,20 +87,8 @@ async def get_price(
             raise_from = None if isinstance(e, PriceError) else e
             raise yPriceMagicError(e, token_address, block, symbol) from raise_from
 
-GetPrice = Callable[..., Awaitable[Optional[UsdPrice]]]
 
 
-
-@overload
-async def get_prices(
-    token_addresses: Iterable[AnyAddressType],
-    block: Optional[Block] = None,
-    *,
-    fail_to_None: Literal[False],
-    skip_cache: bool = ENVS.SKIP_CACHE,
-    silent: bool = False,
-) -> List[UsdPrice]:...
-    
 @overload
 async def get_prices(
     token_addresses: Iterable[AnyAddressType],
@@ -105,6 +98,16 @@ async def get_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
 ) -> List[Optional[UsdPrice]]:...
+
+@overload
+async def get_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Optional[Block] = None,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> List[UsdPrice]:...
 
 @a_sync.a_sync(default='sync')
 async def get_prices(
@@ -134,19 +137,9 @@ async def get_prices(
         fail_to_None=fail_to_None, 
         skip_cache=skip_cache, 
         silent=silent,
-    ).values()
+    ).values(pop=True)
 
 
-
-@overload
-def map_prices(
-    token_addresses: Iterable[AnyAddressType],
-    block: Block,
-    *,
-    fail_to_None: Literal[False],
-    skip_cache: bool = ENVS.SKIP_CACHE,
-    silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]:...
 
 @overload
 def map_prices(
@@ -157,6 +150,16 @@ def map_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
 ) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:...
+
+@overload
+def map_prices(
+    token_addresses: Iterable[AnyAddressType],
+    block: Block,
+    *,
+    fail_to_None: bool = False,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+    silent: bool = False,
+) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]:...
 
 def map_prices(
     token_addresses: Iterable[AnyAddressType],
@@ -175,7 +178,9 @@ def map_prices(
         silent=silent, 
     )
 
-def __cache(get_price: GetPrice) -> GetPrice:
+
+
+def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
     @functools.wraps(get_price)
     async def cache_wrap(
         token: AnyAddressType, 
