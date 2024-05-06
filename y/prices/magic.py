@@ -226,18 +226,23 @@ async def _get_price(
 
     logger = get_price_logger(token, block, symbol=symbol, extra='magic', start_task=True)
     logger.debug('fetching price for %s', symbol)
-    price = await _get_price_from_api(token, block, logger)
-    if price is None:
-        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
-    if price is None:
-        price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
-    if price:
-        await utils.sense_check(token, block, price)
-    else:
-        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
-    logger.debug("%s price: %s", symbol, price)
-    if price:  # checks for the erroneous 0 value we see once in a while
-        return price
+    try:
+        price = await _get_price_from_api(token, block, logger)
+        if price is None:
+            price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
+        if price is None:
+            price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
+        if price:
+            await utils.sense_check(token, block, price)
+        else:
+            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        logger.debug("%s price: %s", symbol, price)
+        if price:  # checks for the erroneous 0 value we see once in a while
+            return price
+    finally:
+        if logger.debugger_task:
+            logger.debugger_task.cancel()
+            logger.debugger_task = None
 
 @stuck_coro_debugger
 async def _exit_early_for_known_tokens(

@@ -21,10 +21,11 @@ logger = logging.getLogger(__name__)
 class PriceLogger(logging.Logger):
     address: str
     block: int
+    debugger_task: Optional["asyncio.Task[None]"]
 
 def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str = None, extra: str = '', start_task: bool = False) -> PriceLogger:
     address = str(token_address)
-    key = (address, block, extra)
+    key = (address, block, symbol, extra)
     if logger := _all_price_loggers.get(key, None):
         return logger
     name = f"y.prices.{Network.label()}.{address}.{block}"
