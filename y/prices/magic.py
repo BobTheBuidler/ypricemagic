@@ -226,12 +226,13 @@ async def _get_price(
 
     logger = get_price_logger(token, block, 'magic')
     logger.debug('fetching price for %s', symbol)
-    # will kill itself when this coroutine returns
-    debugger_task = a_sync.create_task(
-        coro=_debug_tsk(symbol, logger), 
-        name=f"_debug_tsk({symbol}, {logger})", 
-        log_destroy_pending=False,
-    )
+    if logger.isEnabledFor(logging.DEBUG):
+        # will kill itself when this coroutine returns
+        debugger_task = a_sync.create_task(
+            coro=_debug_tsk(symbol, logger), 
+            name=f"_debug_tsk({symbol}, {logger})", 
+            log_destroy_pending=False,
+        )
     price = await _get_price_from_api(token, block, logger)
     if price is None:
         price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
@@ -304,7 +305,7 @@ async def _exit_early_for_known_tokens(
     logger.debug("%s -> %s", bucket, price)
     return price
 
-async def _get_price_from_api(token: AnyAddressType, block: Block, logger: asyncio.Logger):
+async def _get_price_from_api(token: AnyAddressType, block: Block, logger: logging.Logger):
     if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
         price = await utils.ypriceapi.get_price(token, block)
         logger.debug("ypriceapi -> %s", price)
