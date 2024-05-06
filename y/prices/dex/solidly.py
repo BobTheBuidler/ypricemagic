@@ -21,8 +21,6 @@ class SolidlyRouterBase(UniswapRouterV2):
         routes = await self.get_routes_from_path(path, block)
         try:
             return await self.contract.getAmountsOut.coroutine(amount_in, routes, block_identifier=block)
-        # TODO figure out how to best handle uni forks with slight modifications.
-        # Sometimes the below "else" code will not work with modified methods. Brownie works for now.
         except Exception as e:
             strings = [
                 "INSUFFICIENT_INPUT_AMOUNT",
@@ -30,8 +28,8 @@ class SolidlyRouterBase(UniswapRouterV2):
                 "INSUFFICIENT_OUT_LIQUIDITY",
                 "Sequence has incorrect length",
             ]
-            if not call_reverted(e) and not any(s in str(e) for s in strings):
-                raise e
+            if not call_reverted(e) and all(s not in str(e) for s in strings):
+                raise
 
 class SolidlyPool(UniswapV2Pool):
     pass
