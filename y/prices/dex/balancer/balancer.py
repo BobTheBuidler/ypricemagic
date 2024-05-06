@@ -87,6 +87,6 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         for v in await self.__versions__:
             if await v.is_pool(token_address, sync=False):
                 return v
-        raise exceptions.TokenError()
+        raise exceptions.TokenError(token_address, "Balancer pool")
 
 balancer_multiplexer = BalancerMultiplexer(asynchronous=True)
