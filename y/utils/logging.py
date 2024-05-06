@@ -54,6 +54,7 @@ def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str
     return logger
 
 def _close_logger(logger: PriceLogger) -> None:
+    logger.debug("closing %s", logger)
     if logger.enabled and logger.debug_task:
         logger.debug_task.cancel()
         logger.debug_task = None
