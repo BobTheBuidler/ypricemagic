@@ -26,8 +26,7 @@ async def is_pie(token: AnyAddressType) -> bool:
 async def get_price(pie: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
     tvl, total_supply = await asyncio.gather(
         get_tvl(pie, block, skip_cache=skip_cache),
-        # TODO: debug why we need sync kwarg here
-        ERC20(pie, asynchronous=True).total_supply_readable(block, sync=False),
+        ERC20(pie, asynchronous=True).total_supply_readable(block),
     )
     return UsdPrice(tvl / total_supply)
 
