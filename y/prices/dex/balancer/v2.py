@@ -177,6 +177,9 @@ class BalancerV2Pool(BalancerPool):
                 # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi? 
                 return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
         except ContractLogicError:
+            if chain.id == Network.Mainnet and self.address == "0x0018C32D85D8AebEA2eFbE0b0F4a4Eb9e4F1C8C9":
+                # NOTE: this `CronPoolV1` token IS a balancer pool but doesn't match the expected pool abi? 
+                return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
             return None
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
 
