@@ -24,7 +24,7 @@ from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import TokenNotFound
 from y.networks import Network
-from y.prices.dex.balancer._abc import BalancerABC, BalancerPoolABC
+from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
@@ -126,7 +126,7 @@ MESSED_UP_POOLS = {
     ],
 }.get(chain.id, [])
 
-class BalancerV2Pool(BalancerPoolABC):
+class BalancerV2Pool(BalancerPool):
     # defaults are stored as class vars to keep instance dicts smaller
     _messed_up = False
     # internal variables to save calls in some instances
