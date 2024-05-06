@@ -226,13 +226,6 @@ async def _get_price(
 
     logger = get_price_logger(token, block, 'magic')
     logger.debug('fetching price for %s', symbol)
-    if logger.isEnabledFor(logging.DEBUG):
-        # will kill itself when this coroutine returns
-        debugger_task = a_sync.create_task(
-            coro=_debug_tsk(symbol, logger), 
-            name=f"_debug_tsk({symbol}, {logger})", 
-            log_destroy_pending=False,
-        )
     price = await _get_price_from_api(token, block, logger)
     if price is None:
         price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
@@ -366,9 +359,3 @@ def _fail_appropriately(
 
     if not fail_to_None:
         raise PriceError(logger, symbol)
-
-async def _debug_tsk(symbol: str, logger: logging.Logger) -> NoReturn:
-    """Prints a log every 1 minute until the creating coro returns"""
-    while True:
-        await asyncio.sleep(60)
-        logger.debug("price still fetching for %s", symbol)
