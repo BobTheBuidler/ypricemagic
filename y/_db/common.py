@@ -213,7 +213,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
-                raise self._exc
+                raise self._exc.with_traceback()
             if to_yield := self._objects[yielded-self._pruned:]:
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
