@@ -127,7 +127,7 @@ class NodeNotSynced(Exception):
 
 # Explorer Exceptions
 
-class InvalidExplorerKey:
+class InvalidExplorerKey(Exception):
     _msg = "The block explorer for this network says your API key is invalid."
     def __init__(self):
         super().__init__(self._msg)
