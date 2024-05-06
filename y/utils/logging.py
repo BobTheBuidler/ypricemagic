@@ -49,8 +49,7 @@ def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str
             name=f"_debug_tsk({symbol}, {logger})", 
             log_destroy_pending=False,
         )
-    if logger.enabled:
-        logger.close = MethodType(_close_logger, logger)
+    logger.close = MethodType(_close_logger, logger)
     _all_price_loggers[key] = logger
     return logger
 
