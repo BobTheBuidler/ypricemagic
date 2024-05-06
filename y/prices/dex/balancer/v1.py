@@ -19,6 +19,7 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
 from y.networks import Network
 from y.prices import magic
+from y.prices.dex.balancer._abc import BalancerABC, BalancerPoolABC
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
@@ -30,19 +31,12 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
     out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, skip_cache=skip_cache, sync=False))
     return (total_outout / out_scale) * float(out_price) / scale
 
-class BalancerV1Pool(ERC20):
+class BalancerV1Pool(BalancerPoolABC):
     @a_sync.aka.cached_property
     async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
         return [ERC20(token, asynchronous=self.asynchronous) for token in await contract.getFinalTokens]
     __tokens__: HiddenMethodDescriptor[Self, List[ERC20]]
-    
-    @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        supply = await self.total_supply_readable(block=block, sync=False)
-        if not supply:
-            return None
-        return UsdPrice(await self.get_tvl(block=block, skip_cache=skip_cache, sync=False) / Decimal(supply))
 
     @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
@@ -83,25 +77,15 @@ class BalancerV1Pool(ERC20):
         return await contract.getBalance.coroutine(token, block_identifier=block)
     
 
-class BalancerV1(a_sync.ASyncGenericSingleton):
+class BalancerV1(BalancerABC[BalancerV1Pool]):
+
+    _pool_type = BalancerV1Pool
+
+    _check_methods = ("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)")
+
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
         self.exchange_proxy = Contract(EXCHANGE_PROXY) if EXCHANGE_PROXY else None
-    
-    def __str__(self) -> str:
-        return "BalancerV1()"
-    
-    def __repr__(self) -> str:
-        return "<BalancerV1>"
-    
-    @a_sync.a_sync(ram_cache_ttl=5*60)
-    @stuck_coro_debugger
-    async def is_pool(self, token_address: AnyAddressType) -> bool:
-        return await has_methods(token_address, ("getCurrentTokens()(address[])", "getTotalDenormalizedWeight()(uint)", "totalSupply()(uint)"), sync=False)
-
-    @stuck_coro_debugger
-    async def get_pool_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
-        return await BalancerV1Pool(token_address, asynchronous=True).get_pool_price(block=block, skip_cache=skip_cache)
     
     @stuck_coro_debugger
     async def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
