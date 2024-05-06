@@ -111,19 +111,29 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 
 class ERC20(ContractBase):
     def __repr__(self) -> str:
-        cls = self.__class__.__name__
+        cls = type(self).__name__
         with suppress(AttributeError):
             if ERC20.symbol.has_cache_value(self):
                 symbol = ERC20.symbol.get_cache_value(self)
                 return f"<{cls} {symbol} '{self.address}'>"
             elif not asyncio.get_event_loop().is_running() and not self.asynchronous:
-                return f"<{cls} {self.symbol} '{self.address}'>"
-        return super().__repr__()
+                try:
+                    return f"<{cls} {self.__symbol__(sync=True)} '{self.address}'>"
+                except NonStandardERC20:
+                    return f"<{cls} SYMBOL_INVALID '{self.address}'>"
+        return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
     
     @a_sync.aka.cached_property
     async def symbol(self) -> str:
         if self.address == EEE_ADDRESS:
-            return "ETH"
+            return {
+                Network.Mainnet: "ETH",
+                Network.Fantom: "FTM",
+                Network.Polygon: "MATIC",
+                Network.Arbitrum: "ETH",
+                Network.Optimism: "ETH",
+                Network.Base: "ETH",
+            }.get(chain.id, "ETH")
         import y._db.utils.token as db
         if symbol := await db.get_symbol(self.address):
             return symbol
