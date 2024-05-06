@@ -177,12 +177,15 @@ FEEDS = {
 ONE_DAY = 24 * 60 * 60
 
 class Feed:
-    __slots__ = 'address', 'asset', 'latest_round_data', 'start_block'
+    __slots__ = 'address', 'asset', 'latest_answer', 'latest_timestamp', 'start_block', '_stale_thru_block'
     def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0, asynchronous: bool = False):
         self.address = convert.to_address(address)
         self.asset = ERC20(asset, asynchronous=asynchronous)
         self.start_block = start_block
-        self.latest_round_data = a_sync.future(Call(self.address, 'latestRoundData()(uint80,int256,uint256,uint256,uint80)').coroutine)
+        # we could make less calls by using latestRoundData but then we have to repeatedly decode a bunch of useless data
+        self.latest_answer = Call(self.address, 'latestAnswer()(int256)').coroutine
+        self.latest_timestamp = Call(self.address, 'latestTimestamp()(uint256)').coroutine
+        self._stale_thru_block = None
     
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} address={self.address} asset={self.asset}>"
@@ -201,12 +204,19 @@ class Feed:
         return await (10 ** a_sync.ASyncFuture(self.decimals()))
 
     #@a_sync.future
-    async def get_price(self, block: Optional[int]) -> Optional[UsdPrice]:
-        _, latest_answer, _, updated_at, _ = await self.latest_round_data(block_id=block)
-        if updated_at + ONE_DAY < await time.get_block_timestamp_async(block):
-            # if 24h have passed since last feed update, we can't trust it
+    async def get_price(self, block: int) -> Optional[UsdPrice]:
+        if self._stale_thru_block and self._stale_thru_block > block:
             logger.debug('%s is stale, must fetch price from elsewhere', self)
             return None
+        updated_at = await self.latest_timestamp(block_id=block)
+        if updated_at + ONE_DAY < await time.get_block_timestamp_async(block):
+            # if 24h have passed since last feed update, we can't trust it
+            # NOTE: is there a way to tell on chain if a feed is retired? I haven't yet seen one go stale and come back
+            logger.debug('%s is stale, must fetch price from elsewhere', self)
+            if self._stale_thru_block is None or block > self._stale_thru_block:
+                self._stale_thru_block = block
+            return None
+        latest_answer = await self.latest_answer(block_id=block)
         logger.debug('latest_answer: %s', latest_answer)
         # NOTE: just playing with smth here
         scale = a_sync.ASyncFuture(self.scale())
