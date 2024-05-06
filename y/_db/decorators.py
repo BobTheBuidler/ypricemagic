@@ -6,7 +6,7 @@ from typing import Callable, Iterable, TypeVar
 from typing_extensions import ParamSpec
 
 import a_sync
-from a_sync.modified import ASyncFunction
+from a_sync.function import ASyncFunction
 from brownie import chain
 from pony.orm import (CommitException, OperationalError, TransactionError,
                       UnexpectedError, commit, db_session)
