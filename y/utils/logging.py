@@ -38,14 +38,14 @@ def get_price_logger(token_address: AnyAddressType, block: Block, *, symbol: str
     if start_task and logger.isEnabledFor(logging.DEBUG):
         # will kill itself when this logger is garbage collected
         logger.debugger_task = a_sync.create_task(
-            coro=_debug_tsk(symbol, logger), 
+            coro=_debug_tsk(symbol, weakref.ref(logger)), 
             name=f"_debug_tsk({symbol}, {logger})", 
             log_destroy_pending=False,
         )
     _all_price_loggers[key] = logger
     return logger
 
-async def _debug_tsk(symbol: Optional[str], logger: logging.Logger) -> NoReturn:
+async def _debug_tsk(symbol: Optional[str], logger_ref: "weakref.ref[logging.Logger]") -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns"""
     if symbol:
         args = "price still fetching for %s", symbol
@@ -53,6 +53,9 @@ async def _debug_tsk(symbol: Optional[str], logger: logging.Logger) -> NoReturn:
         args = "still fetching...",
     while True:
         await asyncio.sleep(60)
+        logger = logger_ref()
+        if logger is None:
+            return
         logger.debug(*args)
 
 _all_price_loggers: "weakref.WeakValueDictionary[Tuple[AnyAddressType, Block, str], PriceLogger]" = weakref.WeakValueDictionary()
