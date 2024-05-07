@@ -98,8 +98,6 @@
         <span class="n">routes</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_routes_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getAmountsOut</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">amount_in</span><span class="p">,</span> <span class="n">routes</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-        <span class="c1"># TODO figure out how to best handle uni forks with slight modifications.</span>
-        <span class="c1"># Sometimes the below &quot;else&quot; code will not work with modified methods. Brownie works for now.</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;INSUFFICIENT_INPUT_AMOUNT&quot;</span><span class="p">,</span>
@@ -107,8 +105,8 @@
                 <span class="s2">&quot;INSUFFICIENT_OUT_LIQUIDITY&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;Sequence has incorrect length&quot;</span><span class="p">,</span>
             <span class="p">]</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">s</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">e</span></div>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">all</span><span class="p">(</span><span class="n">s</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">strings</span><span class="p">):</span>
+                <span class="k">raise</span></div>
 </div>
 
 
@@ -161,7 +159,10 @@
                 <span class="p">)</span>
                 <span class="n">stable_reserves</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stable_reserves</span><span class="p">)</span>
                 <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">unstable_reserves</span><span class="p">)</span>
-                <span class="k">if</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__tokens__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__tokens__</span><span class="p">:</span>
+                
+                <span class="c1"># NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they&#39;re already cached and return instantly</span>
+                <span class="c1">#       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.</span>
+                <span class="k">if</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__token0__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__token0__</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__token1__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__token1__</span><span class="p">:</span>
                     <span class="n">stable_reserve</span> <span class="o">=</span> <span class="n">stable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="n">unstable_reserve</span> <span class="o">=</span> <span class="n">unstable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># Order of tokens is flip flopped in the pools</span>

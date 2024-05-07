@@ -116,7 +116,7 @@
     <span class="k">return</span> <span class="n">logger</span></div>
 
 
-<span class="n">_all_price_loggers</span><span class="p">:</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">],</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">]</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
+<span class="n">_all_price_loggers</span><span class="p">:</span> <span class="s2">&quot;weakref.WeakValueDictionary[Tuple[AnyAddressType, Block, str], PriceLogger]&quot;</span> <span class="o">=</span> <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
 
 <div class="viewcode-block" id="enable_debug_logging">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.enable_debug_logging">[docs]</a>

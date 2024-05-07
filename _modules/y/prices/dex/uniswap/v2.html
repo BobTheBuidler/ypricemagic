@@ -129,8 +129,6 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool">[docs]</a>
 <span class="k">class</span> <span class="nc">UniswapV2Pool</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
     <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
-    <span class="n">__token0</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">__token1</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">__types_assumed</span> <span class="o">=</span> <span class="kc">True</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;get_reserves&#39;</span><span class="p">,</span>
 <div class="viewcode-block" id="UniswapV2Pool.__init__">
@@ -148,9 +146,9 @@
         <span class="k">if</span> <span class="n">deploy_block</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_block</span> <span class="o">=</span> <span class="n">deploy_block</span>
         <span class="k">if</span> <span class="n">token0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__token0</span> <span class="o">=</span> <span class="n">token0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token0</span> <span class="o">=</span> <span class="n">token0</span>
         <span class="k">if</span> <span class="n">token1</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__token1</span> <span class="o">=</span> <span class="n">token1</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token1</span> <span class="o">=</span> <span class="n">token1</span></div>
 
         
 <div class="viewcode-block" id="UniswapV2Pool.factory">
@@ -187,10 +185,6 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.token0">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">token0</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
-        <span class="c1"># we can keep the instance smaller by popping this since its already cached</span>
-        <span class="k">if</span> <span class="n">token0</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0</span>
-            <span class="k">return</span> <span class="n">token0</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">token0</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;token0()(address)&#39;</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token0</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
@@ -204,10 +198,6 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.token1">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">token1</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
-        <span class="c1"># we can keep the instance smaller by popping this since its already cached</span>
-        <span class="k">if</span> <span class="n">token1</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1</span><span class="p">:</span>
-            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1</span>
-            <span class="k">return</span> <span class="n">token1</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">token1</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;token1()(address)&#39;</span><span class="p">]):</span>
                 <span class="k">return</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token1</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
@@ -246,10 +236,9 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool.reserves">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">reserves</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]]:</span>
-        <span class="n">reserves</span><span class="p">,</span> <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reserves</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tokens__</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">tokens</span>
+        <span class="c1"># NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they&#39;re already cached and return instantly</span>
+        <span class="c1">#       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.</span>
+        <span class="n">reserves</span><span class="p">,</span> <span class="o">*</span><span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_reserves</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1__</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">reserves</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">__types_assumed</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -283,7 +272,14 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Decimal</span><span class="p">]:</span>
         <span class="c1"># start these tasks now</span>
         <span class="n">price_tasks</span><span class="p">:</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">TaskMapping</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">UsdPrice</span><span class="p">]</span>
-        <span class="n">price_tasks</span> <span class="o">=</span> <span class="n">ERC20</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__tokens__</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span>
+        <span class="n">price_tasks</span> <span class="o">=</span> <span class="n">ERC20</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+            <span class="c1"># NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they&#39;re already cached and return instantly</span>
+            <span class="c1">#       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.</span>
+            <span class="p">[</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token0__</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__token1__</span><span class="p">],</span> 
+            <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> 
+            <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+            <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="n">reserves</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">reserves</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

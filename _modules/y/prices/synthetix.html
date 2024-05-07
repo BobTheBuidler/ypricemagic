@@ -185,16 +185,17 @@
 <span class="sd">        Get a price of a synth in dollars.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">token</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="n">rates</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_address</span><span class="p">(</span><span class="s1">&#39;ExchangeRates&#39;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_currency_key</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">rates</span><span class="o">.</span><span class="n">rateIsStale</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">rates</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_address</span><span class="p">(</span><span class="s1">&#39;ExchangeRates&#39;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_currency_key</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="p">)</span>
-            <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="k">await</span> <span class="n">rates</span><span class="o">.</span><span class="n">rateForCurrency</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">18</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="k">await</span> <span class="n">rates</span><span class="o">.</span><span class="n">rateForCurrency</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">18</span><span class="p">))</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-                <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">raise</span></div>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">e</span></div>
 </div>
 
 
