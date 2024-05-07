@@ -259,10 +259,9 @@ class Chainlink(a_sync.ASyncGenericBase):
     async def _feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
         for feed in self._feeds:
             yield feed
-        if self._feeds_from_events is None:
-            return
-        async for feed in self._feeds_from_events.objects(to_block=block):
-            yield feed
+        if self._feeds_from_events:
+            async for feed in self._feeds_from_events.objects(to_block=block):
+                yield feed
 
     @a_sync_ttl_cache
     async def get_feed(self, asset: Address) -> Optional[Feed]:
