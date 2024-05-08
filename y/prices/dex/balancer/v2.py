@@ -141,7 +141,12 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         # NOTE: this isn't really optimized as it still runs semi-synchronously but its better than what was had previously
         return self.threads.run(contracts.is_contract, event['poolAddress'])
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
-        pool = BalancerV2Pool(event['poolAddress'], asynchronous=self.asynchronous, _deploy_block=event.block_number)
+        pool = BalancerV2Pool(
+            address = event['poolAddress'], 
+            id = event['poolId'], 
+            _deploy_block = event.block_number,
+            asynchronous = self.asynchronous, 
+        )
         # lets get this cached into memory now
         task = asyncio.create_task(pool.tokens(sync=False))
         self.__tasks.append(task)
