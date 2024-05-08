@@ -2,6 +2,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from contextlib import suppress
 from enum import IntEnum
 from typing import (Any, AsyncIterator, Awaitable, Callable, Dict, List, NewType, 
                     Optional, Tuple, TypeVar, Union)
@@ -23,7 +24,7 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
-from y.exceptions import TokenNotFound
+from y.exceptions import ContractNotVerified, TokenNotFound
 from y.networks import Network
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 from y.utils.cache import a_sync_ttl_cache
@@ -206,10 +207,11 @@ class BalancerV2Pool(BalancerPool):
             return PoolSpecialization(specialization)
         except ValueError:
             if self.address not in _warned:
-                logger.warning(
-                    "ypricemagic does not recognize this pool type, please add `%s = %s` to %s.PoolSpecialization (pool=%s)", 
-                    await self.__build_name__, specialization, __name__, self.address
-                )
+                with suppress(ContractNotVerified):
+                    logger.warning(
+                        "ypricemagic does not recognize this pool type, please add `%s = %s` to %s.PoolSpecialization (pool=%s)", 
+                        await self.__build_name__, specialization, __name__, self.address
+                    )
                 _warned.add(self.address)
             return specialization
     __pool_type__: HiddenMethodDescriptor[Self, Optional[PoolSpecialization]]
