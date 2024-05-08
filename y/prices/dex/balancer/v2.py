@@ -143,7 +143,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
         pool = BalancerV2Pool(
             address = event['poolAddress'], 
-            id = event['poolId'], 
+            id = HexBytes(event['poolId']), 
             _deploy_block = event.block_number,
             asynchronous = self.asynchronous, 
         )
