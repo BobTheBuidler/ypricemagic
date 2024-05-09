@@ -55,6 +55,8 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x821A278dFff762c76410264303F25bF42e195C0C", # pETH
         "0xa2E3356610840701BDf5611a53974510Ae27E2e1", # wbETH
         "0x1BED97CBC3c24A4fb5C069C6E311a967386131f7", # yETH
+        "0x3A65cbaebBFecbeA5D0CB523ab56fDbda7fF9aAA", # ZUNFRXETH
+        "0x6951bDC4734b9f7F3E1B74afeBC670c736A0EDB6", # pxsteth
         # btc and btc-like
         "0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D", # renbtc
         "0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6", # sbtc
@@ -81,6 +83,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x4922a015c4407F87432B179bb209e125432E4a2A", # xaut
         # other
         "0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", # yfi
+        "0x41252E8691e964f7DE35156B68493bAb6797a275", # dYFI
         "0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44", # kp3r
         "0xD5525D397898e5502075Ea5E830d8914f6F0affe", # meme
         "0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2", # mkr
@@ -160,6 +163,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452", # wsteth
         # btc and btc-like
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b", # tbtc
+        "0xcb327b99ff831bf8223cced12b1338ff3aa322ff", # bsdETH
     ],
 }.get(chain.id, []) + acceptable_all_chains
 
