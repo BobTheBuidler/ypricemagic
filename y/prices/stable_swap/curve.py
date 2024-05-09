@@ -531,7 +531,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 logger.error("exception while loading %s: %s", self, e)
                 logger.exception(e)
                 self.__task = None
-                raise
+                raise e
         task.add_done_callback(done_callback)
         return task
 
