@@ -2,7 +2,7 @@
 import logging
 from typing import List, Optional
 
-from a_sync.primitives.executor import _AsyncExecutorMixin
+from a_sync.executor import _AsyncExecutorMixin
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem

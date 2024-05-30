@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import AsyncIterator, Dict, List, NewType, Optional, Tuple
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
@@ -189,6 +189,7 @@ class BalancerV2Pool(ERC20):
     async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         get_balances_coro = self.get_balances(block=block, skip_cache=skip_cache, sync=False)
         if self.__nonweighted:
+            # this await will return immediately once cached
             token_balances = await get_balances_coro
             weights = self.__weights
         else:

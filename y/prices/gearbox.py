@@ -4,7 +4,7 @@ from decimal import Decimal
 from typing import List, Dict
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from typing_extensions import Self
 
@@ -70,7 +70,7 @@ class Gearbox(a_sync.ASyncGenericBase):
     
     async def diesel_tokens(self) -> Dict[ERC20, DieselPool]:
         pools: List[DieselPool] = await self.pools(sync=False)
-        return dict(zip(await DieselPool.diesel_token.map(pools).values(), pools))
+        return dict(zip(await DieselPool.diesel_token.map(pools).values(pop=True), pools))
 
     async def is_diesel_token(self, token: Address) -> bool:
         return token in await self.diesel_tokens(sync=False)

@@ -11,7 +11,7 @@ from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
 import a_sync
 import dank_mids
 import eth_retry
-from a_sync.primitives.executor import _AsyncExecutorMixin
+from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress

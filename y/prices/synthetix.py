@@ -3,7 +3,7 @@ import logging
 from typing import Callable, List, Optional
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress, HexString
 from multicall import Call
@@ -78,7 +78,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         except Exception as e:
             if "invalid jump destination" in str(e):
                 return False
-            raise e
+            raise
     
     @a_sync_ttl_cache
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
@@ -100,6 +100,6 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             return UsdPrice(await rates.rateForCurrency.coroutine(key, block_identifier=block, decimals=18))
         except Exception as e:
             if not call_reverted(e):
-                raise e
+                raise
 
 synthetix = Synthetix(asynchronous=True) if chain.id in addresses else set()

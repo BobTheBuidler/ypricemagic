@@ -23,7 +23,7 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
         commit()
     except DatabaseError as e:
         if str(e) == "database is locked":
-            raise e
+            raise
         logger.warning("%s %s when executing SQL`%s`", e.__class__.__name__, e, sql)
         raise SQLError(e, sql) from e
 

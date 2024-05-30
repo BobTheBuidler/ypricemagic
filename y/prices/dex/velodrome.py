@@ -101,7 +101,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             # we want the map populated with tasks for this logger
             await pools_your_node_couldnt_get._init_loader
             logger.debug('pools: %s', pools_your_node_couldnt_get)
-            pools.update(await pools_your_node_couldnt_get.values())
+            pools.update(await pools_your_node_couldnt_get.values(pop=True))
 
         tokens = set()
         for pool in pools:

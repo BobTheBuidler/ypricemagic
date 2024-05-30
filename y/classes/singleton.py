@@ -1,17 +1,16 @@
 
 import threading
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, Generic, Optional, Tuple, TypeVar
+from typing import DefaultDict, Generic, TypeVar
 
-import a_sync
-from a_sync import _kwargs
+from a_sync.a_sync._meta import ASyncMeta
 from checksum_dict import ChecksumAddressDict
 from checksum_dict.base import AnyAddressOrContract
 
 T = TypeVar("T", bound=object)
 
 
-class ChecksumASyncSingletonMeta(a_sync._meta.ASyncMeta, Generic[T]):
+class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
     def __init__(cls, name, bases, namespace):
         super().__init__(name, bases, namespace)
         cls.__instances: DefaultDict[bool, ChecksumAddressDict[T]] = defaultdict(ChecksumAddressDict)
