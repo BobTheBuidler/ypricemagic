@@ -71,14 +71,12 @@ def setup_getcode_cache_middleware() -> None:
             session.mount("https://", adapter)
             web3.provider = HTTPProvider(web3.provider.endpoint_uri, {"timeout": 600}, session)
         except AttributeError as e:
-            if "'IPCProvider' object has no attribute 'endpoint_uri'" in str(e):
-                pass 
-            else:
+            if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
                 raise
 
     web3.middleware_onion.add(getcode_cache_middleware)
     
-    if chain.id == Network.Optimism:
+    if chain.id in [Network.Optimism, Network.Avalanche, Network.BinanceSmartChain]:
         try:
             web3.middleware_onion.inject(geth_poa_middleware, layer=0)
         except ValueError as e:
