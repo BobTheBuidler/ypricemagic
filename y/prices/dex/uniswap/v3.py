@@ -4,16 +4,12 @@ import math
 from collections import defaultdict
 from functools import cached_property, lru_cache
 from itertools import cycle
-from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
+from typing import AsyncIterator, DefaultDict, List, Optional, Tuple
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
-try:
-    from eth_abi.packed import encode_packed
-except ImportError:
-    from eth_abi.packed import encode_abi_packed as encode_packed
 from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -22,11 +18,15 @@ from y.classes.common import ERC20, ContractBase
 from y.constants import usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
-from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork
+from y.exceptions import ContractNotVerified, TokenNotFound, UnsupportedNetwork, call_reverted
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
 from y.networks import Network
 from y.utils.events import ProcessedEvents
-from y.utils.multicall import fetch_multicall
+
+try:
+    from eth_abi.packed import encode_packed
+except ImportError:
+    from eth_abi.packed import encode_abi_packed as encode_packed
 
 # https://github.com/Uniswap/uniswap-v3-periphery/blob/main/deploys.md
 UNISWAP_V3_FACTORY = '0x1F98431c8aD98523631AE4a59f267346ea31F984'
@@ -88,7 +88,7 @@ class UniswapV3Pool(ContractBase):
             raise TokenNotFound(token, self)
         return ERC20(token, asynchronous=self.asynchronous)
 
-    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60, semaphore=10000)  # lets try a semaphore here
     async def check_liquidity(self, token: AnyAddressType, block: Block) -> Optional[int]:
         logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if block < await self.deploy_block(sync=False):
@@ -180,19 +180,22 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         logger.debug("paths: %s", paths)
         
         amount_in = await ERC20(token, asynchronous=True).scale
-
-        # TODO make this properly async after extending for brownie ContractTx
-        results = await fetch_multicall(
-            *[[quoter, 'quoteExactInput', _encode_path(path), amount_in] for path in paths],
-            block=block,
-            sync=False
+        results = await asyncio.gather(
+            *(quoter.quoteExactInput.coroutine(_encode_path(path), amount_in, block_identifier=block) for path in paths), 
+            return_exceptions=True,
         )
+
+        for result in results:
+            if isinstance(result, Exception) and not call_reverted(result):
+                raise result.with_traceback(result.__traceback__)
+            
         logger.debug("results: %s", results)
-        # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
+        
         outputs = [
+            # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
             (amount if isinstance(amount, int) else amount[0]) / _undo_fees(path) / 1e6
             for amount, path in zip(results, paths)
-            if amount
+            if amount and not call_reverted(amount)
         ]
         logger.debug("outputs: %s", outputs)
         return UsdPrice(max(outputs)) if outputs else None
@@ -209,27 +212,37 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         if block and block < await contract_creation_block_async(quoter):
             logger.debug("block %s is before %s deploy block", block, quoter)
             return 0
-        
+
+        if token == weth.address:
+            # NOTE: we need to filter these or else we will be fetching every pool
+            #       for now, we only focus on weth/usdc pools
+            filter_fn = lambda pool: pool._get_token_out(token) == usdc.address and pool not in ignore_pools
+        else:
+            filter_fn = lambda pool: pool not in ignore_pools
+
         token_out_tasks = UniswapV3Pool._check_liquidity_token_out.map(token_in=token, block=block)
-        async for pool in self.pools_for_token(token, block):
-            if pool not in ignore_pools:
-                # the mapping will start the tasks internally
-                token_out_tasks[pool]
+        pools_for_token: a_sync.ASyncIterator[UniswapV3Pool] = self.pools_for_token(token, block)
+        async for pool in pools_for_token.filter(filter_fn):
+            # the mapping will start the tasks internally
+            logger.debug("starting token_out_task for %s", pool)
+            token_out_tasks[pool]
         if not token_out_tasks:
             return 0
+        logger.debug("%s token_out_tasks for %s at %s: %s", self, token, block, token_out_tasks)
         
         # Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`
         # We need some spaghetticode here to account for these erroneous liquidity values
         # TODO: Refactor this
         token_out_liquidity: DefaultDict[ERC20, List[int]] = defaultdict(list)
-        async for pool, liquidity in token_out_tasks:
+        async for pool, liquidity in token_out_tasks.map(pop=False):
+            logger.debug("%s liquidity for %s at %s: %s", pool, token, block, liquidity)
             token_out_liquidity[pool._get_token_out(token)].append(liquidity)
+        logger.debug("%s token_out_liquidity: %s", token, token_out_liquidity)
         
         token_out_min_liquidity = {token_out: min(liquidities) for token_out, liquidities in token_out_liquidity.items()}
 
         token_in_tasks = UniswapV3Pool.check_liquidity.map(token=token, block=block)
-        async for pool, liquidity in token_out_tasks:
-            token_out_tasks.pop(pool)
+        async for pool, liquidity in token_out_tasks.map(pop=True):
             token_out = pool._get_token_out(token)
             if len(token_out_liquidity[token_out]) > 1 and liquidity == token_out_min_liquidity[token_out]:
                 logger.debug("ignoring liquidity for %s", pool)
