@@ -8,7 +8,7 @@ from typing import (Any, AsyncIterator, Awaitable, Callable, Generic, List, NoRe
 import a_sync
 import dank_mids
 import eth_retry
-from a_sync.primitives.executor import _AsyncExecutorMixin
+from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
 from hexbytes import HexBytes
@@ -150,7 +150,7 @@ class Filter(_DiskCachedMixin[T, C]):
     _task = None
     _semaphore = None
     _verbose = False
-    __slots__ = 'from_block', 'to_block', '_interval', '_lock', '__dict__'
+    __slots__ = 'from_block', 'to_block', '_interval', '_lock', '__dict__', '__weakref__'
     def __init__(
         self, 
         from_block: int,

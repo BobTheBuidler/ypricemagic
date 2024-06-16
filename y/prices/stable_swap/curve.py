@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple, TypeVar
 
 import a_sync
 import brownie
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError

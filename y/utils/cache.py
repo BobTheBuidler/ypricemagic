@@ -1,6 +1,6 @@
 import a_sync
 import eth_retry
-from a_sync.modified import ASyncDecorator
+from a_sync.a_sync.function import ASyncDecorator
 from brownie import chain
 from joblib import Memory
 

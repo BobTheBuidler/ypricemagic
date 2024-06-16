@@ -3,7 +3,7 @@ import logging
 from typing import Optional, Tuple
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain, convert
 from brownie.exceptions import VirtualMachineError
 from multicall import Call
