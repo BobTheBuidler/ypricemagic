@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import AsyncIterator, Dict, List, NewType, Optional, Tuple
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor
+from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS, chain
 from brownie.convert.datatypes import EthAddress
 from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod

@@ -9,7 +9,7 @@ from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
                     Optional, Tuple, Union)
 
 import a_sync
-from a_sync.property import HiddenMethodDescriptor, HiddenMethod
+from a_sync.a_sync import HiddenMethodDescriptor, HiddenMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
