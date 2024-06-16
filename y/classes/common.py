@@ -6,10 +6,11 @@ from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
 from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
-                    Optional, Tuple, Union)
+                    Optional, Tuple, Union, final)
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor, HiddenMethod
+from a_sync.a_sync.method import ASyncBoundMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
@@ -18,6 +19,7 @@ from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y._decorators import stuck_coro_debugger
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
 from y.contracts import (Contract, build_name, contract_creation_block_async,
@@ -95,15 +97,17 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
             return None
 
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def build_name(self) -> str:
-        asdasd = await self.__build_name__
         return await build_name(self.address, sync=False)
     __build_name__: HiddenMethodDescriptor[Self, str]
 
+    @stuck_coro_debugger
     async def deploy_block(self, when_no_history_return_0: bool = False) -> int:
         if self._deploy_block is None:
             self._deploy_block = await contract_creation_block_async(self.address, when_no_history_return_0=when_no_history_return_0)
         return self._deploy_block
+    deploy_block: ASyncBoundMethod[Self, Any, int]
     
     async def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return await has_method(self.address, method, return_response=return_response, sync=False)
@@ -124,6 +128,7 @@ class ERC20(ContractBase):
         return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def symbol(self) -> str:
         if self.address == EEE_ADDRESS:
             return {
@@ -142,6 +147,7 @@ class ERC20(ContractBase):
         return symbol
     
     @a_sync.aka.property
+    @stuck_coro_debugger
     async def name(self) -> str:
         if self.address == EEE_ADDRESS:
             return "Ethereum"
@@ -154,6 +160,7 @@ class ERC20(ContractBase):
         return name
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def decimals(self) -> int:
         if self.address == EEE_ADDRESS:
             return 18
@@ -168,6 +175,7 @@ class ERC20(ContractBase):
         return await decimals(self.address, block=block, sync=False)
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def scale(self) -> int:
         return 10 ** await self.__decimals__(asynchronous=True)
     
@@ -235,7 +243,7 @@ class ERC20(ContractBase):
             Unable to fetch `{fn_name}` for {self.address} on {Network.printable()}
             If the contract is verified, please check to see if it has a strangely named
             `{fn_name}` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
-            with the contract address and correct method name so we can keep things going smoothly :)''')
+            with the contract address and correct method name so we can keep things going smoothly :)''') from None
 
     # These dundermethods are created by a_sync for the async_properties on this class
     __symbol__: HiddenMethodDescriptor[Self, str]
@@ -244,6 +252,7 @@ class ERC20(ContractBase):
     __scale__: HiddenMethodDescriptor[Self, int]
 
 
+@final
 class WeiBalance(a_sync.ASyncGenericBase):
     # defaults are stored as class vars to keep instance dicts smaller
     block: Optional[Block] = None
@@ -255,6 +264,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
+        *,
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
         asynchronous: bool = False,
@@ -281,6 +291,9 @@ class WeiBalance(a_sync.ASyncGenericBase):
     def __hash__(self) -> int:
         return hash((self.balance, self.token, self.block, self._skip_cache, self._ignore_pools))
 
+    def __bool__(self) -> bool:
+        return bool(self.balance)
+
     def __eq__(self, __o: object) -> bool:
         if isinstance(__o, int):
             return __o == self.balance
@@ -299,16 +312,70 @@ class WeiBalance(a_sync.ASyncGenericBase):
             return __o < self.balance
         elif isinstance(__o, WeiBalance):
             if self.token != __o.token:
-                raise TypeError(f"'<' only supported between {self.__class__.__name__} instances when denominated in the same token.")
+                raise ValueError(f"'<' only supported between {self.__class__.__name__} instances when denominated in the same token.") from None
             return self.balance < __o.balance
-        raise TypeError(f"'<' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'")
+        raise TypeError(f"'<' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
 
     def __ge__(self, __o: object) -> bool:
         if __o < self:
             return True
         elif type(__o) is type(self):
             return self == __o
-        raise TypeError(f"'>=' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'")
+        raise TypeError(f"'>=' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+    
+    def __radd__(self, __o: Union["WeiBalance", Literal[0]]) -> "WeiBalance":
+        if __o == 0:
+            return self
+        try:
+            if self.token != __o.token:
+                raise ValueError(f"addition not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+            if self.block != __o.block:
+                raise ValueError("addition not supported between balances at different block heights") from None
+            if self._skip_cache != __o._skip_cache:
+                raise ValueError("addition not supported between balances with different `_skip_cache` values") from None
+            if self._ignore_pools != __o._ignore_pools:
+                raise ValueError("addition not supported between balances with different `_ignore_pools` values") from None
+            return WeiBalance(self.balance - __o.balance, self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+        except AttributeError:
+            raise TypeError(f"right addition not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
+    
+    def __add__(self, __o: "WeiBalance") -> "WeiBalance":
+        try:
+            if self.token != __o.token:
+                raise ValueError(f"addition not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+            if self.block != __o.block:
+                raise ValueError("addition not supported between balances at different block heights") from None
+            if self._skip_cache != __o._skip_cache:
+                raise ValueError("addition not supported between balances with different `_skip_cache` values") from None
+            if self._ignore_pools != __o._ignore_pools:
+                raise ValueError("addition not supported between balances with different `_ignore_pools` values") from None
+            return WeiBalance(self.balance - __o.balance, self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+        except AttributeError:
+            raise TypeError(f"addition not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
+    
+    def __sub__(self, __o: "WeiBalance") -> "WeiBalance":
+        try:
+            if self.token != __o.token:
+                raise ValueError(f"subtraction not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+            if self.block != __o.block:
+                raise ValueError("subtraction not supported between balances at different block heights") from None
+            if self._skip_cache != __o._skip_cache:
+                raise ValueError("subtraction not supported between balances with different `_skip_cache` values") from None
+            if self._ignore_pools != __o._ignore_pools:
+                raise ValueError("subtraction not supported between balances with different `_ignore_pools` values") from None
+            return WeiBalance(self.balance - __o.balance, self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+        except AttributeError:
+            raise TypeError(f"subtraction not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
+    
+    def __mul__(self, __o: Union[int, float, Decimal]) -> "WeiBalance":
+        if not isinstance(__o, (int, float, Decimal)):
+            raise TypeError(f"multiplication not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
+        return WeiBalance(self.balance * Decimal(__o), self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+    
+    def __truediv__(self, __o: Union[int, float, Decimal]) -> "WeiBalance":
+        if not isinstance(__o, (int, float, Decimal)):
+            raise TypeError(f"division not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
+        return WeiBalance(self.balance / Decimal(__o), self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
     
     @a_sync.aka.property
     async def readable(self) -> Decimal:

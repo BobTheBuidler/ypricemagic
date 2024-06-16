@@ -3,6 +3,9 @@ from typing import TYPE_CHECKING, Optional
 
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
+from web3.exceptions import ContractLogicError
+
+from y.datatypes import AnyAddressType
 
 if TYPE_CHECKING:
     from y.prices.dex.uniswap.v2 import UniswapV2Pool
@@ -36,10 +39,24 @@ class CantFetchParam(Exception):
 class NoBlockFound(Exception):
     pass
 
+class TokenError(ValueError):
+    """Raised when a token contract is not the correct contract type for the desired operation."""
+    def __init__(self, token: AnyAddressType, desired_type: str):
+        super().__init__(f"{token} is not a {desired_type}")
+
+# Explorer Exceptions
+
+class ExplorerError(Exception):  # don't want these caught by general exc clauses
+    ...
+
+class InvalidAPIKeyError(ExplorerError):
+    _msg = "The block explorer for this network says your API key is invalid."
+    def __init__(self, msg: str = ''):
+        super().__init__(msg or self._msg)
 
 # Contracts
 
-class ContractNotVerified(Exception):
+class ContractNotVerified(ExplorerError):
     pass
 
 class NoProxyImplementation(Exception):
@@ -101,6 +118,8 @@ class CallReverted(Exception):
 
 
 def call_reverted(e: Exception) -> bool:
+    if isinstance(e, ContractLogicError):
+        return True
     triggers = [
         'execution reverted',
         'No data was returned - the call likely reverted',
@@ -124,10 +143,3 @@ def out_of_gas(e: Exception) -> bool:
 
 class NodeNotSynced(Exception):
     pass
-
-# Explorer Exceptions
-
-class InvalidExplorerKey(Exception):
-    _msg = "The block explorer for this network says your API key is invalid."
-    def __init__(self):
-        super().__init__(self._msg)

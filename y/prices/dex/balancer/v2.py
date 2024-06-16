@@ -2,7 +2,10 @@
 import asyncio
 import logging
 from collections import defaultdict
-from typing import AsyncIterator, Dict, List, NewType, Optional, Tuple
+from contextlib import suppress
+from enum import IntEnum
+from typing import (Any, AsyncIterator, Awaitable, Callable, Dict, List, NewType, 
+                    Optional, Tuple, TypeVar, Union)
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
@@ -21,13 +24,13 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
+from y.exceptions import ContractNotVerified, TokenNotFound
 from y.networks import Network
+from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
-from y.utils.raw_calls import raw_call
 
-# TODO: Cache pool tokens for pools that can't change
 
 BALANCER_V2_VAULTS = {
     Network.Mainnet: [
@@ -47,16 +50,41 @@ BALANCER_V2_VAULTS = {
     ],
 }.get(chain.id, [])
 
+MESSED_UP_POOLS = {
+    Network.Mainnet: [
+        # NOTE: this was the first ever balancer "pool" and isn't actually a pool
+        "0xF3799CBAe9c028c1A590F4463dFF039b8F4986BE",
+    ],
+}.get(chain.id, [])
+
+T = TypeVar("T")
 
 PoolId = NewType('PoolId', bytes)
+PoolBalances = Dict[ERC20, WeiBalance]
 
 logger = logging.getLogger(__name__)
+
+class PoolSpecialization(IntEnum):
+    ComposableStablePool = 0
+    WeightedPool = 1
+    WeightedPool2Tokens = 2
+    # This is a weird one
+    CronV1Pool = -1
+
+    @staticmethod
+    def with_immutable_tokens() -> List["PoolSpecialization"]:
+        return [
+            PoolSpecialization.ComposableStablePool,
+            PoolSpecialization.WeightedPool,
+            PoolSpecialization.WeightedPool2Tokens,
+            PoolSpecialization.CronV1Pool,
+        ]
 
 
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         super().__init__(address, asynchronous=asynchronous)
-        self._events = BalancerEvents(addresses=address, topics=['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e'])
+        self._events = BalancerEvents(self, addresses=address, topics=['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e'])
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
@@ -68,8 +96,9 @@ class BalancerV2Vault(ContractBase):
 
     @stuck_coro_debugger
     async def pools_for_token(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
-        async for pool, info in BalancerV2Pool.tokens.map(block=block).map(self.pools(block=block), pop=True):
-            if token in info:
+        async for pool, tokens in BalancerV2Pool.tokens.map(block=block).map(self.pools(block=block), pop=True):
+            if token in tokens:
+                logger.debug("%s contains %s", pool, token)
                 yield pool
                 
     @a_sync_ttl_cache
@@ -86,104 +115,158 @@ class BalancerV2Vault(ContractBase):
     
     @a_sync_ttl_cache
     @stuck_coro_debugger
-    async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional["BalancerV2Pool"], int]:
+    async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> "BalancerV2Pool":
+        balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
+
         logger = get_price_logger(token_address, block, extra='balancer.v2')
-        deepest_pool, deepest_balance = None, 0
-        async for pool in self.pools_for_token(token_address, block=block):
-            info: Dict[ERC20, WeiBalance]
-            if info := await pool.get_balances(block=block, sync=False):
-                pool_balance = info[token_address].balance
-                if pool_balance > deepest_balance:
-                    deepest_pool = pool
-        logger.debug("deepest pool %s balance %s", deepest_pool, deepest_balance)
-        return deepest_pool, deepest_balance
+
+        balance_tasks = BalancerV2Pool.get_balance.map(token_address=token_address, block=block)
+        balances_aiterator = balance_tasks.map(self.pools_for_token(token_address, block=block), pop=True)        
+        async for pool, balance in balances_aiterator.filter(_lookup_balance_from_tuple).sort(key=_lookup_balance_from_tuple, reverse=True):
+            logger.debug("deepest pool %s balance %s", pool, balance)
+            return pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
+    threads = a_sync.PruningThreadPoolExecutor(6)
     __slots__ = "asynchronous", 
-    def __init__(self, *args, asynchronous: bool = False, **kwargs):
+    def __init__(self, vault: BalancerV2Vault, *args, asynchronous: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
+        self.vault = vault
         self.asynchronous = asynchronous
-    def _include_event(self, event: _EventItem) -> bool:
+        self.__tasks = []
+    def _include_event(self, event: _EventItem) -> Awaitable[bool]:
+        if event['poolAddress'] in MESSED_UP_POOLS:
+            return False
         # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
         #       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.
-        return contracts.is_contract(event['poolAddress'])
+        # NOTE: this isn't really optimized as it still runs semi-synchronously but its better than what was had previously
+        return self.threads.run(contracts.is_contract, event['poolAddress'])
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
-        return BalancerV2Pool(event['poolAddress'], asynchronous=self.asynchronous, _deploy_block=event.block_number)
+        try:
+            specialization = PoolSpecialization(event['specialization'])
+        except ValueError:
+            specialization = None
+        pool = BalancerV2Pool(
+            address = event['poolAddress'], 
+            id = HexBytes(event['poolId']), 
+            specialization=specialization,
+            vault=self.vault,
+            _deploy_block = event.block_number,
+            asynchronous = self.asynchronous, 
+        )
+        # lets get this cached into memory now
+        task = asyncio.create_task(pool.tokens(sync=False))
+        self.__tasks.append(task)
+        task.add_done_callback(self._task_done_callback)
+        return pool
     def _get_block_for_obj(self, pool: "BalancerV2Pool") -> int:
         return pool._deploy_block
+    def _task_done_callback(self, t: asyncio.Task):
+        self.__tasks.remove(t)
+        if not t.cancelled():
+            # get the exc so it doesn't log, it will come up later
+            t.exception()
 
 
-MESSED_UP_POOLS = {
-    Network.Mainnet: [
-        "0xF3799CBAe9c028c1A590F4463dFF039b8F4986BE",
-    ],
-}.get(chain.id, [])
-
-class BalancerV2Pool(ERC20):
-    # defaults are stored as class vars to keep instance dicts smaller
-    _messed_up = False
+class BalancerV2Pool(BalancerPool):
+    """A pool from Balancer Protocol v2"""
     # internal variables to save calls in some instances
     # they do not necessarily reflect real life at all times
+    # defaults are stored as class vars to keep instance dicts smaller
     __nonweighted: bool = False
+    __tokens: Tuple[ERC20, ...] = None
     __weights: List[int] = None
-    __slots__ = "_id", 
     def __init__(
         self, 
-        address: AnyAddressType, 
-        id: Optional[HexBytes] = None, 
+        address: AnyAddressType,
+        *,
+        id: Optional[HexBytes] = None,
+        specialization: Optional[PoolSpecialization] = None,
+        vault: Optional[BalancerV2Vault] = None,
         asynchronous: bool = False, 
         _deploy_block: Optional[Block] = None,
     ):
         super().__init__(address, asynchronous=asynchronous, _deploy_block=_deploy_block)
-        self._id = id
-        if self.address in MESSED_UP_POOLS:
-            self._messed_up = True
+        if id is not None:
+            self.id = id
+        if specialization is not None:
+            self.pool_type = specialization
+        if vault is not None:
+            self.vault = vault
 
     @a_sync.aka.cached_property
     async def id(self) -> PoolId:
-        if self._id is None:
-            self._id = await Call(self.address, ['getPoolId()(bytes32)'])
-        return self._id
+        return await Call(self.address, ['getPoolId()(bytes32)'])
     __id__: HiddenMethodDescriptor[Self, PoolId]
     
     @a_sync.aka.cached_property
-    async def vault(self) -> Optional[BalancerV2Vault]:
-        vault = await raw_call(self.address, 'getVault()', output='address', sync=False)
-        return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
-    __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
-    
     @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        tvl, total_supply = await asyncio.gather(
-            self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
-            self.total_supply_readable(block=block, sync=False),
-        )
-        return UsdPrice(tvl / total_supply)
+    async def vault(self) -> Optional[BalancerV2Vault]:
+        with suppress(ContractLogicError):
+            vault = await Call(self.address, ['getVault()(address)'])
+            if vault == ZERO_ADDRESS:
+                return None
+            elif vault:
+                return BalancerV2Vault(vault, asynchronous=True)
+        # in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both
+        if chain.id == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+            # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi? 
+            return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
+    __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
+
+    @a_sync.aka.cached_property
+    @stuck_coro_debugger
+    async def pool_type(self) -> Union[PoolSpecialization, int]:
+        vault = await self.__vault__
+        if vault is None:
+            raise ValueError(f"{self} has no vault") from None
+        elif poolid := await self.__id__:
+            _, specialization = await vault.contract.getPool.coroutine(poolid)
+        elif chain.id == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+            # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi? 
+            return PoolSpecialization.CronV1Pool
+        else:
+            raise ValueError(f"{self} has no poolid") from None
+        try:
+            return PoolSpecialization(specialization)
+        except ValueError:
+            if self.address not in _warned:
+                with suppress(ContractNotVerified):
+                    logger.warning(
+                        "ypricemagic does not recognize this pool type, please add `%s = %s` to %s.PoolSpecialization (pool=%s)", 
+                        await self.__build_name__, specialization, __name__, self.address
+                    )
+                _warned.add(self.address)
+            return specialization
+    __pool_type__: HiddenMethodDescriptor[Self, Optional[PoolSpecialization]]
         
     @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
-        balances: Dict[ERC20, WeiBalance]
         if balances := await self.get_balances(block=block, skip_cache=skip_cache, sync=False):
-            return UsdValue(await WeiBalance.value_usd.sum((balance for balance in balances.values() if balance.token.address != self.address), sync=False))
+            # overwrite ref to big obj with ref to little obj
+            balances = iter(tuple(balances.values()))
+            return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Dict[ERC20, WeiBalance]:
-        if self._messed_up:
-            return {}
-        try:
-            vault, id = await asyncio.gather(self.__vault__, self.__id__)
-        except ContractLogicError:
-            if await self.__build_name__ != "CronV1Pool":
-                logger.error("%s is messed up", self)
-            return {}
+        vault = await self.__vault__
         if vault is None:
             return {}
-        tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
+        tokens, balances, lastChangedBlock = await vault.get_pool_tokens(await self.__id__, block=block, sync=False)
         return {
             ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block, skip_cache=skip_cache)
             for token, balance in zip(tokens, balances)
+            # NOTE: some pools include themselves in their own token list, and we should ignore those
+            if token != self.address
         }
+    
+    async def get_balance(self, token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[WeiBalance]:
+        if info := await self.get_balances(block=block, sync=False):
+            try:
+                return info[token_address]
+            except KeyError:
+                raise TokenNotFound(token_address, self) from None
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
@@ -220,16 +303,13 @@ class BalancerV2Pool(ERC20):
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
     @a_sync_ttl_cache
-    async def tokens(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Tuple[ERC20]:
+    @stuck_coro_debugger
+    async def tokens(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Tuple[ERC20, ...]:
+        if self.__tokens:
+            return self.__tokens
         tokens = tuple((await self.get_balances(block=block, skip_cache=skip_cache, sync=False)).keys())
-        tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
-        tokens_history[tokens] += 1
-        if len(tokens_history) == 1 and tokens_history[tokens] > 100:
-            contract = await contracts.Contract.coroutine(self.address, require_success=False)
-            if contract.verified:
-                methods = [k for k, v in contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
-                logger.debug(
-                    "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
+        if await self.__pool_type__ in PoolSpecialization.with_immutable_tokens():
+            self.__tokens = tokens
         return tokens
 
     @a_sync_ttl_cache
@@ -243,59 +323,43 @@ class BalancerV2Pool(ERC20):
             self.__nonweighted = True
             num_tokens = len(await self.tokens(block=block, sync=False))
             self.__weights = [10 ** 18 // num_tokens] * num_tokens
-
-class ImmutableTokensBalancerV2Pool(BalancerV2Pool):
-    async def tokens(self, _: Optional[Block] = None) -> List[ERC20]:
-        return await self.__tokens
-    @a_sync.aka.cached_property
-    async def __tokens(self) -> List[ERC20]:
-        return await super().tokens()
-
-_tasks_to_help_me_find_pool_types_that_cant_change_tokens = defaultdict(lambda: defaultdict(int))
-
-#yLazyLogger(logger)
-@a_sync.a_sync(cache_type='memory')
-async def _is_standard_pool(pool: EthAddress) -> bool:
-    '''
-    Returns `False` if `build_name(pool) in ['ConvergentCurvePool','MetaStablePool']`, else `True`
-    '''
-    
-    # With `return_None_on_failure=True`, if `build_name(pool)` fails,
-    # we can't know for sure that its a standard pool, but... it probably is.
-    return await contracts.build_name(pool, return_None_on_failure=True, sync=False) not in ['ConvergentCurvePool','MetaStablePool']
+            return self.__weights
 
 
-class BalancerV2(a_sync.ASyncGenericSingleton):
+class BalancerV2(BalancerABC[BalancerV2Pool]):
+
+    _pool_type = BalancerV2Pool
+
+    _check_methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
+
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
         self.vaults = [BalancerV2Vault(vault, asynchronous=self.asynchronous) for vault in BALANCER_V2_VAULTS]
-    
-    def __str__(self) -> str:
-        return "BalancerV2()"
-
-    @a_sync.a_sync(ram_cache_ttl=5*60)
-    @stuck_coro_debugger
-    async def is_pool(self, token_address: AnyAddressType) -> bool:
-        methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
-        return await contracts.has_methods(token_address, methods, sync=False)
-    
-    @stuck_coro_debugger
-    async def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        return await BalancerV2Pool(pool_address, asynchronous=True).get_pool_price(block=block, skip_cache=skip_cache)
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        deepest_pool: Optional[BalancerV2Pool]
         if deepest_pool := await self.deepest_pool_for(token_address, block=block, sync=False):
             return await deepest_pool.get_token_price(token_address, block, skip_cache=skip_cache, sync=False)
     
+    # NOTE: we need a tiny semaphore here because balancer is super arduous and every unpricable token must pass thru this section
+    @a_sync.Semaphore(10)
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
-        deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, token_address=token_address, block=block)
+        kwargs = {"token_address": token_address, "block": block}
+        deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, **kwargs)
         if deepest_pools := {vault.address: deepest_pool async for vault, deepest_pool in deepest_pools if deepest_pool is not None}:
-            deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())
-            for pool_address, pool_balance in deepest_pools.values():
-                if pool_balance == deepest_pool_balance and pool_address:
-                    return BalancerV2Pool(pool_address, asynchronous=self.asynchronous)
+            logger.debug("%s deepest pools for %s at %s: %s", self, token_address, block, deepest_pools)
+            async for pool in BalancerV2Pool.get_balance.map(deepest_pools.values(), **kwargs).keys(pop=True).aiterbyvalues(reverse=True):
+                return pool
+        
+        # TODO: afilter
+        # deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, **kwargs).values(pop=True).afilter()
+        # async for pool in BalancerV2Pool.get_balance.map(deepest_pools, **kwargs).keys(pop=True).aiterbyvalues(reverse=True):
+        #     return pool
 
 balancer = BalancerV2(asynchronous=True)
+
+_lookup_balance_from_tuple: Callable[[Tuple[Any, T]], T] = lambda pool_and_balance: pool_and_balance[1]
+"Takes a tuple[K, V] and returns V."
+
+_warned = set()
