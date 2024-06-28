@@ -2,6 +2,7 @@
 import asyncio
 import logging
 from collections import defaultdict
+from contextlib import suppress
 from enum import IntEnum
 from typing import (Any, AsyncIterator, Awaitable, Callable, Dict, List, NewType, 
                     Optional, Tuple, TypeVar)
@@ -62,7 +63,6 @@ class PoolSpecialization(IntEnum):
     WeightedPool2Tokens = 2
 
     @staticmethod
-    @property
     def with_immutable_tokens() -> List["PoolSpecialization"]:
         return [
             PoolSpecialization.WeightedPool,
@@ -177,10 +177,9 @@ class BalancerV2Pool(BalancerPool):
     async def pool_type(self) -> Optional[PoolSpecialization]:
         if vault := await self.__vault__:
             pool_address, specialization = await vault.contract.getPool.coroutine(await self.__id__)
-            try:
+            with suppress(ValueError):
                 return PoolSpecialization(specialization)
-            except ValueError:
-                raise ValueError(f"ypricemagic does not recognize this pool type, please add {specialization} to {__name__}.PoolSpecialization enum") from None
+        raise ValueError(f"ypricemagic does not recognize this pool type, please add {specialization} to {__name__}.PoolSpecialization enum") from None
     __pool_type__: HiddenMethodDescriptor[Self, Optional[PoolSpecialization]]
         
     @stuck_coro_debugger
@@ -255,7 +254,7 @@ class BalancerV2Pool(BalancerPool):
     @a_sync_ttl_cache
     async def tokens(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Tuple[ERC20, ...]:
         pool_type = await self.__pool_type__
-        if pool_type in PoolSpecialization.with_immutable_tokens and self.__tokens:
+        if pool_type in PoolSpecialization.with_immutable_tokens() and self.__tokens:
             return self.__tokens
         tokens = tuple((await self.get_balances(block=block, skip_cache=skip_cache, sync=False)).keys())
         tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
@@ -266,7 +265,7 @@ class BalancerV2Pool(BalancerPool):
                 methods = [k for k, v in contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
                 logger.debug(
                     "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
-        if pool_type in PoolSpecialization.with_immutable_tokens:
+        if pool_type in PoolSpecialization.with_immutable_tokens():
             self.__tokens = tokens
         return tokens
 
