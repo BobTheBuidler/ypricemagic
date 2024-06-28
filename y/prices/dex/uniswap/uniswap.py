@@ -120,6 +120,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
         return [depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance]
     
+    @a_sync.Semaphore(100)  # some arbitrary number to keep the loop unclogged
     @stuck_coro_debugger
     async def check_liquidity(
         self, 
