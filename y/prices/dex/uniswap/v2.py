@@ -458,7 +458,7 @@ class UniswapRouterV2(ContractBase):
             for pool in pools:
                 yield pool
         else:
-            async for pool, deploy_block in a_sync.map(ERC20.deploy_block, pools, when_no_history_return_0=True).map():
+            async for pool, deploy_block in ERC20.deploy_block.map(when_no_history_return_0=True).map(pools):
                 if deploy_block <= block:
                     yield pool
 
