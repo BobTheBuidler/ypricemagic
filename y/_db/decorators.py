@@ -33,13 +33,13 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                 log = logger.warning if sleep > 1 else logger.debug
                 log("%s.%s got exc %s", callable.__module__, callable.__name__, e)
                 if "database is locked" not in str(e):
-                    raise e
+                    raise
                 time.sleep(sleep)
                 sleep *= 1.5
             except TransactionError as e:
                 logger.debug("%s.%s got exc %s", callable.__module__, callable.__name__, e)
                 if "An attempt to mix objects belonging to different transactions" not in str(e):
-                    raise e
+                    raise
     return retry_locked_wrap
 
 a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = lambda fn: a_sync.a_sync(default='async', executor=ydb_read_threads)(

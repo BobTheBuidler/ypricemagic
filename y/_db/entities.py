@@ -150,4 +150,4 @@ def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
             logger.debug("%s: %s %s", msg, type.__name__, kwargs)
         else:
             logger.debug("%s %s when inserting %s", e.__class__.__name__, str(e), e, type.__name__)
-            raise e
+            raise
