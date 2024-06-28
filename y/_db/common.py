@@ -118,7 +118,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
     def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
         ...
         
-    def _extend(self, objs) -> None:
+    async def _extend(self, objs) -> None:
         """Override this to pre-process objects before storing."""
         return self._objects.extend(objs)
     def _remove(self, obj: T) -> None:
@@ -132,7 +132,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         logger.debug('checking to see if %s is cached in local db', self)
         if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
             logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
-            self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
+            await self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
             logger.debug('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return None
@@ -305,7 +305,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     break
                 end, objs = done.pop(i)
                 self._insert_chunk(objs, from_block, end)
-                self._extend(objs)
+                await self._extend(objs)
                 next_chunk_loaded = True
                 chunks_yielded += 1
             if next_chunk_loaded:

@@ -371,10 +371,11 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 _contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=32)
 
 @memory.cache()
+# TODO: async this and put it into ydb for quicker startups
 #yLazyLogger(logger)
 def is_contract(address: AnyAddressType) -> bool:
     '''
-    Checks to see if the input address is a contract. Returns `True` if:
+    Checks to see if the input address is a contract. Returns `False` if:
     - The address is not and has never been a contract
     - The address used to be a contract but has self-destructed
     '''
