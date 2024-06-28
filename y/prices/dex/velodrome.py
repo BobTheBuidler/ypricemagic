@@ -168,7 +168,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
     async def _init_pool_from_poolid(self, poolid: int) -> VelodromePool:
         logger.debug("initing poolid %s", poolid)
         pool = await Call(self.factory, ['allPools(uint256)(address)']).coroutine(poolid)
-        if pool is None: # TODO: debug why this happens sometimes
+        if pool is None:  # TODO: debug why this happens sometimes and why this if clause works to get back on track
             factory = await Contract.coroutine(self.factory)
             pool = await factory.allPools.coroutine(poolid)
         token0, token1, stable = await gather_methods(pool, _INIT_METHODS)
