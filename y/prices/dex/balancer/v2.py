@@ -24,6 +24,7 @@ from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import TokenNotFound
 from y.networks import Network
+from y.prices.dex.balancer._abc import BalancerABC, BalancerPoolABC
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
@@ -125,14 +126,13 @@ MESSED_UP_POOLS = {
     ],
 }.get(chain.id, [])
 
-class BalancerV2Pool(ERC20):
+class BalancerV2Pool(BalancerPoolABC):
     # defaults are stored as class vars to keep instance dicts smaller
     _messed_up = False
     # internal variables to save calls in some instances
     # they do not necessarily reflect real life at all times
     __nonweighted: bool = False
     __weights: List[int] = None
-    __slots__ = "_id", 
     def __init__(
         self, 
         address: AnyAddressType, 
@@ -141,15 +141,14 @@ class BalancerV2Pool(ERC20):
         _deploy_block: Optional[Block] = None,
     ):
         super().__init__(address, asynchronous=asynchronous, _deploy_block=_deploy_block)
-        self._id = id
+        if id is not None:
+            self.id = id
         if self.address in MESSED_UP_POOLS:
             self._messed_up = True
 
     @a_sync.aka.cached_property
     async def id(self) -> PoolId:
-        if self._id is None:
-            self._id = await Call(self.address, ['getPoolId()(bytes32)'])
-        return self._id
+        return await Call(self.address, ['getPoolId()(bytes32)'])
     __id__: HiddenMethodDescriptor[Self, PoolId]
     
     @a_sync.aka.cached_property
@@ -157,14 +156,6 @@ class BalancerV2Pool(ERC20):
         vault = await raw_call(self.address, 'getVault()', output='address', sync=False)
         return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
-    
-    @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        tvl, total_supply = await asyncio.gather(
-            self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
-            self.total_supply_readable(block=block, sync=False),
-        )
-        return UsdPrice(tvl / total_supply)
         
     @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
@@ -281,23 +272,15 @@ async def _is_standard_pool(pool: EthAddress) -> bool:
     return await contracts.build_name(pool, return_None_on_failure=True, sync=False) not in ['ConvergentCurvePool','MetaStablePool']
 
 
-class BalancerV2(a_sync.ASyncGenericSingleton):
+class BalancerV2(BalancerABC[BalancerV2Pool]):
+
+    _pool_type = BalancerV2Pool
+
+    _check_methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
+
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
         self.vaults = [BalancerV2Vault(vault, asynchronous=self.asynchronous) for vault in BALANCER_V2_VAULTS]
-    
-    def __str__(self) -> str:
-        return "BalancerV2()"
-
-    @a_sync.a_sync(ram_cache_ttl=5*60)
-    @stuck_coro_debugger
-    async def is_pool(self, token_address: AnyAddressType) -> bool:
-        methods = ('getPoolId()(bytes32)','getPausedState()((bool,uint,uint))','getSwapFeePercentage()(uint)')
-        return await contracts.has_methods(token_address, methods, sync=False)
-    
-    @stuck_coro_debugger
-    async def get_pool_price(self, pool_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        return await BalancerV2Pool(pool_address, asynchronous=True).get_pool_price(block=block, skip_cache=skip_cache)
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:

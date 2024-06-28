@@ -50,6 +50,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         versions: List[Union[BalancerV1, BalancerV2]] = await self.versions
         for v in versions:
             if await v.is_pool(token_address, sync=False):
+                logger.debug("pool %s is from %s", token_address, v)
                 return UsdPrice(await v.get_pool_price(token_address, block, skip_cache=skip_cache, sync=False))
             
     @stuck_coro_debugger
