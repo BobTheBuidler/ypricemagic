@@ -311,6 +311,7 @@ class BalancerV2Pool(BalancerPool):
             self.__nonweighted = True
             num_tokens = len(await self.tokens(block=block, sync=False))
             self.__weights = [10 ** 18 // num_tokens] * num_tokens
+            return self.__weights
 
 
 class BalancerV2(BalancerABC[BalancerV2Pool]):
