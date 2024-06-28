@@ -53,8 +53,8 @@ except ContractNotVerified:
     FACTORY_HELPER = None
 
 try:
-    from web3.exceptions import CustomContractError
-    _err_type = CustomContractError
+    from web3.exceptions import ContractCustomError
+    _err_type = ContractCustomError
 except ImportError:
     _err_type = ContractLogicError
 
