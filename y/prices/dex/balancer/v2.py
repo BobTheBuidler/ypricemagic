@@ -5,7 +5,7 @@ from collections import defaultdict
 from contextlib import suppress
 from enum import IntEnum
 from typing import (Any, AsyncIterator, Awaitable, Callable, Dict, List, NewType, 
-                    Optional, Tuple, TypeVar)
+                    Optional, Tuple, TypeVar, Union)
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
@@ -174,12 +174,16 @@ class BalancerV2Pool(BalancerPool):
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
 
     @a_sync.aka.cached_property
-    async def pool_type(self) -> Optional[PoolSpecialization]:
+    async def pool_type(self) -> Union[PoolSpecialization, int]:
         if vault := await self.__vault__:
             pool_address, specialization = await vault.contract.getPool.coroutine(await self.__id__)
             with suppress(ValueError):
                 return PoolSpecialization(specialization)
-        raise ValueError(f"ypricemagic does not recognize this pool type, please add {specialization} to {__name__}.PoolSpecialization enum") from None
+            if specialization not in __warned:
+                logger.warning("ypricemagic does not recognize this pool type, please add %s to %s.PoolSpecialization enum", specialization, __name__)
+                __warned.add(specialization)
+            return specialization
+        raise ValueError("%s has no vault", self) from None
     __pool_type__: HiddenMethodDescriptor[Self, Optional[PoolSpecialization]]
         
     @stuck_coro_debugger
@@ -329,3 +333,5 @@ balancer = BalancerV2(asynchronous=True)
 
 _lookup_balance_from_tuple: Callable[[Tuple[Any, T]], T] = lambda pool_and_balance: pool_and_balance[1]
 "Takes a tuple[K, V] and returns V."
+
+__warned = set()
