@@ -213,7 +213,8 @@ class Filter(_DiskCachedMixin[T, C]):
                     self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
-                raise self._exc
+                # create a new duplicate exc instead of building a massive traceback on the original
+                raise type(self._exc)(*self._exc.args).with_traceback(self._tb)
             if to_yield := self._objects[yielded-self._pruned:]:
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
@@ -243,10 +244,14 @@ class Filter(_DiskCachedMixin[T, C]):
         try:
             await self._fetch()
         except Exception as e:
+            import traceback
             logger.exception(e)
             self._exc = e
+            self._tb = e.__traceback__
+            # no need to hold vars in memory
+            traceback.clear_frames(self._tb)
             self._lock.set(BIG_VALUE)
-            raise e
+            raise
     
     async def _fetch(self) -> NoReturn:
         """Override this if you want"""

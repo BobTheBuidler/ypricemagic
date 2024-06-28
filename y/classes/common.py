@@ -371,7 +371,8 @@ class _Loader(ContractBase):
     def _task(self) -> "asyncio.Task[NoReturn]":
         """The task that runs `self._load() for this `_Loader`"""
         if self.__exc:
-            raise self.__exc
+            # create a new duplicate exc instead of building a massive traceback on the original
+            raise type(self.__exc)(*self.__exc.args).with_traceback(self.__tb)
         if self.__task is None:
             logger.debug("creating loader task for %s", self)
             self.__task = asyncio.create_task(coro=self.__load(), name=f"{self}.__load()")
@@ -382,16 +383,18 @@ class _Loader(ContractBase):
         if e := task.exception():
             logger.error("exception while loading %s: %s", self, e)
             logger.exception(e)
-            self.__exc = e
             self.__task = None
-            raise e
     async def __load(self) -> NoReturn:
         """loads the loader and catches any exceptions"""
         try:
             await self._load()
         except Exception as e:
+            import traceback
             self.__exc = e
-            raise e
+            self.__tb = e.__traceback__
+            # no need to hold vars in memory
+            traceback.clear_frames(self.__tb)
+            raise
 
 
 class _EventsLoader(_Loader):

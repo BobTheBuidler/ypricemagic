@@ -153,7 +153,7 @@ async def get_price(
                         return UsdPrice(price) if (price := await read_response(response, token, block)) else None
                 except ClientConnectorSSLError as e:
                     if "[[SSL: TLSV1_ALERT_INTERNAL_ERROR] tlsv1 alert internal error (_ssl.c:1129)]" not in str(e) or tries >= 50:
-                        raise e
+                        raise
                     tries += 1
         except asyncio.TimeoutError:
             logger.warning(f'ypriceAPI timed out for {token} at {block}.{FALLBACK_STR}')
