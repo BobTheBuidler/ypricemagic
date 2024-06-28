@@ -168,7 +168,7 @@ class BalancerV2Pool(BalancerPool):
     async def vault(self) -> Optional[BalancerV2Vault]:
         try:
             vault = await Call(self.address, ['getVault()(address)'])
-            return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
+            return None if vault in [None, ZERO_ADDRESS] else BalancerV2Vault(vault, asynchronous=True)
         except ContractLogicError:
             return None
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
