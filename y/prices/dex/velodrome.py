@@ -5,12 +5,13 @@ from typing import List, Optional, Set, Tuple
 import a_sync
 import dank_mids
 import eth_retry
-from async_lru import alru_cache
+from a_sync.a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from multicall.call import Call
+from typing_extensions import Self
 
 from y._decorators import stuck_coro_debugger
-from y.contracts import Contract
+from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block
 from y.interfaces.uniswap.velov2 import VELO_V2_FACTORY_ABI
 from y.networks import Network
@@ -54,20 +55,22 @@ class VelodromeRouterV2(SolidlyRouterBase):
     
     @stuck_coro_debugger
     @a_sync_ttl_cache
-    async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Address:
-        return await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory)
+    async def pool_for(self, input_token: Address, output_token: Address, stable: bool) -> Optional[Address]:
+        pool_address = str(await self.contract.poolFor.coroutine(input_token, output_token, stable, self.default_factory))
+        if await is_contract(pool_address):
+            return pool_address
     
     @stuck_coro_debugger
     @a_sync_ttl_cache
     @eth_retry.auto_retry
     async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
-        pool_address = await self.pool_for(input_token, output_token, stable, sync=False)
-        if await dank_mids.eth.get_code(str(pool_address), block_identifier=block) not in ['0x',b'']:
-            return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
+        if pool_address := await self.pool_for(input_token, output_token, stable, sync=False):
+            if await contract_creation_block_async(pool_address) <= block:
+                return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
     
     @a_sync.aka.cached_property
     @stuck_coro_debugger
-    async def pools(self) -> Set[UniswapV2Pool]:
+    async def pools(self) -> Set[VelodromePool]:
         logger.info('Fetching pools for %s on %s. If this is your first time using ypricemagic, this can take a while. Please wait patiently...', self.label, Network.printable())
         factory = await Contract.coroutine(self.factory)
         if 'PoolCreated' not in factory.topics:
@@ -108,6 +111,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
             tokens.update(await asyncio.gather(pool.__token0__, pool.__token1__))
         logger.info('Loaded %s pools supporting %s tokens on %s', len(pools), len(tokens), self.label)
         return pools
+    __pools__: HiddenMethodDescriptor[Self, Set[VelodromePool]]
     
     @stuck_coro_debugger
     async def get_routes_from_path(self, path: Path, block: Block) -> List[Tuple[Address, Address, bool]]:
@@ -166,7 +170,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         pool = await Call(self.factory, ['allPools(uint256)(address)']).coroutine(poolid)
         if pool is None: # TODO: debug why this happens sometimes
             factory = await Contract.coroutine(self.factory)
-            pool = await factory.allPools(poolid)
+            pool = await factory.allPools.coroutine(poolid)
         token0, token1, stable = await gather_methods(pool, _INIT_METHODS)
         return VelodromePool(
             address=pool,
@@ -177,4 +181,11 @@ class VelodromeRouterV2(SolidlyRouterBase):
         )
 
 
-_get_code = alru_cache(maxsize=None)(dank_mids.eth.get_code)
+async def is_contract(pool_address: Address) -> bool:
+    if pool_address in __pools:
+        return True
+    if result := await dank_mids.eth.get_code(pool_address) not in ['0x',b'']:
+        __pools.append(pool_address)
+    return result
+
+__pools = []
