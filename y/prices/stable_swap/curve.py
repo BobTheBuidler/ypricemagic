@@ -15,6 +15,7 @@ from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -311,7 +312,8 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             factory = await self.__factory__
             source = factory or await curve.__registry__
             balances = await source.get_balances.coroutine(self.address, block_identifier=block)
-        except ValueError:
+        except (ContractLogicError, ValueError):
+            # ContractLogicError in web3>=6.0, ValueError in <6.0
             # fallback for historical queries where registry was not yet deployed
             balances = await a_sync.map(self._get_balance, range(len(coins)), block=block).values(pop=True)
 
