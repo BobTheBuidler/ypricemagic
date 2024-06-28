@@ -65,6 +65,7 @@ PoolBalances = Dict[ERC20, WeiBalance]
 logger = logging.getLogger(__name__)
 
 class PoolSpecialization(IntEnum):
+    ComposableStablePool = 0
     WeightedPool = 1
     WeightedPool2Tokens = 2
     # This is a weird one
@@ -73,6 +74,7 @@ class PoolSpecialization(IntEnum):
     @staticmethod
     def with_immutable_tokens() -> List["PoolSpecialization"]:
         return [
+            PoolSpecialization.ComposableStablePool,
             PoolSpecialization.WeightedPool,
             PoolSpecialization.WeightedPool2Tokens,
             PoolSpecialization.CronV1Pool,
