@@ -137,7 +137,7 @@ STABLECOINS = {
         "0x14016E85a25aeb13065688cAFB43044C2ef86784": "tusd",
     },
     Network.Polygon: {
-        "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359": "usdc"
+        "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359": "usdc",
         "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174": "usdc.e",
         "0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063": "dai",
         "0xc2132D05D31c914a87C6611C10748AEb04B58e8F": "usdt",
