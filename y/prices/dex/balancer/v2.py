@@ -99,9 +99,8 @@ class BalancerV2Vault(ContractBase):
         balance_tasks = BalancerV2Pool.get_balance.map(token_address=token_address, block=block)
         balances_aiterator = balance_tasks.map(self.pools_for_token(token_address, block=block), pop=True)        
         async for pool, balance in balances_aiterator.filter(_lookup_balance_from_tuple).sort(key=_lookup_balance_from_tuple, reverse=True):
-            break
-        logger.debug("deepest pool %s balance %s", pool, balance)
-        return pool
+            logger.debug("deepest pool %s balance %s", pool, balance)
+            return pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     threads = a_sync.PruningThreadPoolExecutor(16)
