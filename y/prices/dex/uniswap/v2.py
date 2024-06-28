@@ -567,7 +567,7 @@ class UniswapRouterV2(ContractBase):
         try:
             liquidity = await UniswapV2Pool.check_liquidity.max(pools, token=token, block=block, sync=False)
         except a_sync.exceptions.EmptySequenceError:
-            return 0
+            liquidity = 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
 

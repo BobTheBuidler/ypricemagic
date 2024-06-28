@@ -338,7 +338,7 @@ class Filter(_DiskCachedMixin[T, C]):
             # garbage collected so there is no need to log the "destroy pending task" message.
             self._task._log_destroy_pending = False
         if self._task.done() and (e := self._task.exception()):
-            raise e
+            raise e.with_traceback(e.__traceback__)
         
     @stuck_coro_debugger
     async def __insert_chunk(self, objs: List[T], from_block: int, done_thru: int, prev_chunk_task: Optional[asyncio.Task], depth: int) -> None:
