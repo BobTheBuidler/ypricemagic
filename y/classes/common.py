@@ -10,6 +10,7 @@ from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor, HiddenMethod
+from a_sync.a_sync.method import ASyncBoundMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
@@ -104,6 +105,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         if self._deploy_block is None:
             self._deploy_block = await contract_creation_block_async(self.address, when_no_history_return_0=when_no_history_return_0)
         return self._deploy_block
+    deploy_block: ASyncBoundMethod[Self, Any, int]
     
     async def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return await has_method(self.address, method, return_response=return_response, sync=False)
