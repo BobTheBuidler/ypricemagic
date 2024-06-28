@@ -27,6 +27,7 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
                           ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20, NotABalancerV2Pool,
                           NotAUniswapV2Pool, PriceError, UnsupportedNetwork)
+from y import exceptions
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices, map_prices
@@ -40,43 +41,44 @@ __all__ = [
     ### you can reach the below functions, classes, and variables using ###
     ###  `y.__name__` or `from y import __name__`.  ###
 
+    # prices
+    'get_price',
+    'get_prices',
+    'map_prices',
+    'check_bucket',
+
+    # erc20
+    'ERC20',
+
     # contract stuff
     'Contract',
+    'contract_creation_block',
+    'contract_creation_block_async',
     'has_method',
     'has_methods',
 
     # network stuff
     'Network',
 
-    # magic
-    'magic',
-
-    # prices
-    'get_price',
-    'get_prices',
-    'map_prices',
-
     # constants
     'EEE_ADDRESS',
+    'WRAPPED_GAS_COIN',
     'weth',
     'dai',
     'usdc',
     'wbtc',
 
-    # multicall
-    'fetch_multicall',
+    # magic
+    'magic',
 
     # raw calls
-    'decimals',
-    'symbol',
-    'balanceOf',
-    'balanceOfReadable',
-    'totalSupply',
-    'totalSupplyReadable',
     'raw_call',
 
     # time
     'time',
+    'get_block_at_timestamp', 
+    'get_block_timestamp', 
+    'get_block_timestamp_async',
 ]
 
 with suppress(ModuleNotFoundError):
