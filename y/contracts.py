@@ -486,7 +486,7 @@ def _extract_abi_data(address):
                 raise ContractNotFound(address) from e
         raise
     except ValueError as e:
-        if "Invalid API Key" in str(e):
+        if str(e).startswith("Failed to retrieve data from API") and "invalid api key" in str(e).lower():
             raise exceptions.InvalidAPIKeyError from e
         if exceptions.contract_not_verified(e):
             raise exceptions.ContractNotVerified(f'{address} on {Network.printable()}') from e
