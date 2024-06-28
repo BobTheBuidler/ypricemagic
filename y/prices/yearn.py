@@ -16,7 +16,8 @@ from y.classes.common import ERC20
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
-                          MessedUpBrownieContract)
+                          MessedUpBrownieContract, PriceError, 
+                          yPriceMagicError)
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
@@ -181,6 +182,11 @@ class YearnInspiredVault(ERC20):
         if share_price is None:
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)
-        price = UsdPrice(share_price * Decimal(await underlying.price(block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)))
+        try:
+            price = UsdPrice(share_price * Decimal(await underlying.price(block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)))
+        except yPriceMagicError as e:
+            if not isinstance(e.exception, PriceError):
+                raise
+            price = None
         logger.debug("%s price at block %s: %s", self, block, price)
         return price
