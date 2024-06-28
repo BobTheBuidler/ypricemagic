@@ -1,6 +1,7 @@
 
 import abc
 import asyncio
+from decimal import Decimal
 from typing import Generic, Optional, Tuple, Type, TypeVar
 
 import a_sync
@@ -25,7 +26,7 @@ class LiquidityPool(Wrapper):
             self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
             self.total_supply_readable(block=block, sync=False),
         )
-        return UsdPrice(tvl / total_supply)
+        return UsdPrice(Decimal(tvl) / Decimal(total_supply))
         
     @abc.abstractmethod
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
