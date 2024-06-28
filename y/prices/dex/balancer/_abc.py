@@ -12,7 +12,12 @@ from y.classes.common import ERC20
 from y.datatypes import AddressOrContract, AnyAddressType, Block, UsdPrice, UsdValue
 
 
-class LiquidityPoolABC(ERC20):
+class Wrapper(ERC20):
+    """An ERC20 token that holds balances of (an) other ERC20 token(s)"""
+    # TODO: implement
+
+class LiquidityPool(Wrapper):
+    """A :class:`~Wrapper` that pools multiple ERC20s together for swapping"""
     # TODO: implement this elsewhere
     @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
@@ -27,10 +32,10 @@ class LiquidityPoolABC(ERC20):
         ...
 
 
-class BalancerPoolABC(LiquidityPoolABC):
+class BalancerPool(LiquidityPool):
     ...
 
-_B = TypeVar("_B", bound=BalancerPoolABC)
+_B = TypeVar("_B", bound=BalancerPool)
 
 class BalancerABC(a_sync.ASyncGenericBase, Generic[_B]):
     def __repr__(self) -> str:

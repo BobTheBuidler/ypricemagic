@@ -14,12 +14,12 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.constants import dai, usdc, wbtc, weth
-from y.contracts import Contract, contract_creation_block_async, has_methods
+from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
 from y.networks import Network
 from y.prices import magic
-from y.prices.dex.balancer._abc import BalancerABC, BalancerPoolABC
+from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
@@ -31,7 +31,7 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
     out_scale, out_price = await asyncio.gather(ERC20(token_out, asynchronous=True).scale, magic.get_price(token_out, block, skip_cache=skip_cache, sync=False))
     return (total_outout / out_scale) * float(out_price) / scale
 
-class BalancerV1Pool(BalancerPoolABC):
+class BalancerV1Pool(BalancerPool):
     @a_sync.aka.cached_property
     async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
