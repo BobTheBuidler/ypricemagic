@@ -234,10 +234,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             except IndexError as e:
                 if str(e) == "pop from an empty deque":
                     raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
-                raise e
+                raise
             except ValueError as e:
                 if not str(e).startswith("Unknown contract address: "):
-                    raise e
+                    raise
                 logger.debug(f"{e}")
                 try:                  
                     name, abi = _resolve_proxy(address)

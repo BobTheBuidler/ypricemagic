@@ -359,7 +359,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
                 return await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
             except ValueError as e:
                 if "parse error" not in str(e) or tries >= 50:
-                    raise e
+                    raise
                 tries += 1
 
     async def _fetch(self) -> NoReturn:
