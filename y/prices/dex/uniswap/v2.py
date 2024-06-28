@@ -577,11 +577,11 @@ class UniswapRouterV2(ContractBase):
         # sourcery skip: default-mutable-arg
         try:
             deepest = await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
+            logger.debug("got deepest pool for %s at %s: %s from helper", token, block, deepest)
+            return deepest
         except Exception as e:
             e.args = (*e.args, self.__repr__(), token, block, ignore_pools)
             raise
-        logger.debug("got deepest pool for %s at %s: %s from helper", token, block, deepest)
-        return deepest
     
     @cached_property
     def _supports_uniswap_helper(self) -> bool:
