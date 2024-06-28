@@ -44,7 +44,7 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     Decode logs to events and enrich them with additional info.
     """
     try:
-        decoded = _decode_logs(logs)
+        decoded = _decode_logs((l.to_dict() for l in logs) if logs and isinstance(logs[0], structs.Log) else logs)
     except Exception:
         decoded = []
         for log in logs:
