@@ -84,7 +84,7 @@ class PoolSpecialization(IntEnum):
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
         super().__init__(address, asynchronous=asynchronous)
-        self._events = BalancerEvents(addresses=address, topics=['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e'])
+        self._events = BalancerEvents(self, addresses=address, topics=['0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e'])
         if not self._is_cached:
             # we need the contract cached so we can decode logs correctly
             self.contract
@@ -127,10 +127,11 @@ class BalancerV2Vault(ContractBase):
             return pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
-    threads = a_sync.PruningThreadPoolExecutor(10)
+    threads = a_sync.PruningThreadPoolExecutor(6)
     __slots__ = "asynchronous", 
-    def __init__(self, *args, asynchronous: bool = False, **kwargs):
+    def __init__(self, vault: BalancerV2Vault, *args, asynchronous: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
+        self.vault = vault
         self.asynchronous = asynchronous
         self.__tasks = []
     def _include_event(self, event: _EventItem) -> Awaitable[bool]:
@@ -141,19 +142,30 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         # NOTE: this isn't really optimized as it still runs semi-synchronously but its better than what was had previously
         return self.threads.run(contracts.is_contract, event['poolAddress'])
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
+        try:
+            specialization = PoolSpecialization(event['specialization'])
+        except ValueError:
+            specialization = None
         pool = BalancerV2Pool(
             address = event['poolAddress'], 
             id = HexBytes(event['poolId']), 
+            specialization=specialization,
+            vault=self.vault,
             _deploy_block = event.block_number,
             asynchronous = self.asynchronous, 
         )
         # lets get this cached into memory now
         task = asyncio.create_task(pool.tokens(sync=False))
         self.__tasks.append(task)
-        task.add_done_callback(self.__tasks.remove)
+        task.add_done_callback(self._task_done_callback)
         return pool
     def _get_block_for_obj(self, pool: "BalancerV2Pool") -> int:
         return pool._deploy_block
+    def _task_done_callback(self, t: asyncio.Task):
+        self.__tasks.remove(t)
+        if not t.cancelled():
+            # get the exc so it doesn't log, it will come up later
+            t.exception()
 
 
 class BalancerV2Pool(BalancerPool):
@@ -166,14 +178,21 @@ class BalancerV2Pool(BalancerPool):
     __weights: List[int] = None
     def __init__(
         self, 
-        address: AnyAddressType, 
-        id: Optional[HexBytes] = None, 
+        address: AnyAddressType,
+        *,
+        id: Optional[HexBytes] = None,
+        specialization: Optional[PoolSpecialization] = None,
+        vault: Optional[BalancerV2Vault] = None,
         asynchronous: bool = False, 
         _deploy_block: Optional[Block] = None,
     ):
         super().__init__(address, asynchronous=asynchronous, _deploy_block=_deploy_block)
         if id is not None:
             self.id = id
+        if specialization is not None:
+            self.pool_type = specialization
+        if vault is not None:
+            self.vault = vault
 
     @a_sync.aka.cached_property
     async def id(self) -> PoolId:
@@ -183,20 +202,16 @@ class BalancerV2Pool(BalancerPool):
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def vault(self) -> Optional[BalancerV2Vault]:
-        try:
+        with suppress(ContractLogicError):
             vault = await Call(self.address, ['getVault()(address)'])
             if vault == ZERO_ADDRESS:
                 return None
             elif vault:
                 return BalancerV2Vault(vault, asynchronous=True)
-            elif await self.__build_name__ == "CronV1Pool":
-                # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi? 
-                return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
-        except ContractLogicError:
-            if chain.id == Network.Mainnet and self.address == "0x0018C32D85D8AebEA2eFbE0b0F4a4Eb9e4F1C8C9":
-                # NOTE: this `CronPoolV1` token IS a balancer pool but doesn't match the expected pool abi? 
-                return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
-            return None
+        # in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both
+        if chain.id == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+            # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi? 
+            return BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True)
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
 
     @a_sync.aka.cached_property
@@ -205,12 +220,13 @@ class BalancerV2Pool(BalancerPool):
         vault = await self.__vault__
         if vault is None:
             raise ValueError(f"{self} has no vault") from None
-        try:
-            _, specialization = await vault.contract.getPool.coroutine(await self.__id__)
-        except TypeError:
-            if await self.__build_name__ == "CronV1Pool":
-                return PoolSpecialization(-1)
-            raise
+        elif poolid := await self.__id__:
+            _, specialization = await vault.contract.getPool.coroutine(poolid)
+        elif chain.id == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+            # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi? 
+            return PoolSpecialization.CronV1Pool
+        else:
+            raise ValueError(f"{self} has no poolid") from None
         try:
             return PoolSpecialization(specialization)
         except ValueError:
@@ -234,15 +250,10 @@ class BalancerV2Pool(BalancerPool):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Dict[ERC20, WeiBalance]:
-        try:
-            vault, id = await asyncio.gather(self.__vault__, self.__id__)
-        except ContractLogicError:
-            if await self.__build_name__ != "CronV1Pool":
-                logger.error("%s is messed up", self)
-            return {}
+        vault = await self.__vault__
         if vault is None:
             return {}
-        tokens, balances, lastChangedBlock = await vault.get_pool_tokens(id, block=block, sync=False)
+        tokens, balances, lastChangedBlock = await vault.get_pool_tokens(await self.__id__, block=block, sync=False)
         return {
             ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block, skip_cache=skip_cache)
             for token, balance in zip(tokens, balances)
