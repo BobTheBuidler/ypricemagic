@@ -52,9 +52,16 @@ try:
 except ContractNotVerified:
     FACTORY_HELPER = None
 
+try:
+    from web3.exceptions import CustomContractError
+    _err_type = CustomContractError
+except ImportError:
+    _err_type = ContractLogicError
+
 class UniswapV2Pool(ERC20):
     # defaults are stored as class vars to keep instance dicts smaller
     __types_assumed = True
+    "True if we're assuming types based on normal univ2 abi, False if we checked via block explorer."
     __slots__ = 'get_reserves',
     def __init__(
         self, 
@@ -136,9 +143,10 @@ class UniswapV2Pool(ERC20):
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
-        #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
-        reserves, *tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__token0__, self.__token1__)
+        try:
+            reserves = await self.get_reserves.coroutine(block_id=block)
+        except _err_type:
+            reserves = None
 
         if reserves is None and self.__types_assumed:
             try:
@@ -158,12 +166,15 @@ class UniswapV2Pool(ERC20):
                 if not call_reverted(e):
                     raise
                     
-        if reserves is None or isinstance(reserves, ContractLogicError):
-            reserves = 0, 0
-        elif isinstance(reserves, Exception):
-            raise reserves
+        if reserves is None:
+            return None
 
-        return tuple(WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
+        # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
+        #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
+        return (
+            WeiBalance(reserves[0], await self.__token0__, block=block),
+            WeiBalance(reserves[1], await self.__token1__, block=block),
+        )
 
     @stuck_coro_debugger
     async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
