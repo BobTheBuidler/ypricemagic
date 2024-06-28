@@ -272,6 +272,19 @@
 <span class="k">class</span> <span class="nc">NodeNotSynced</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
+
+<span class="c1"># Explorer Exceptions</span>
+
+<div class="viewcode-block" id="InvalidExplorerKey">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidExplorerKey">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidExplorerKey</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="n">_msg</span> <span class="o">=</span> <span class="s2">&quot;The block explorer for this network says your API key is invalid.&quot;</span>
+<div class="viewcode-block" id="InvalidExplorerKey.__init__">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidExplorerKey.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="p">)</span></div>
+</div>
+
 </pre></div>
 
            </div>
