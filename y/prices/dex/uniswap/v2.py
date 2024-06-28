@@ -482,7 +482,8 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
 
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
-        
+        logger.debug("checking %s liquidity at block %s for pools %s", token_address, block, pools)
+
         deepest_pool: UniswapV2Pool
         async for deepest_pool in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block).keys(pop=True).aiterbyvalues(reverse=True):
             return deepest_pool
@@ -498,7 +499,7 @@ class UniswapRouterV2(ContractBase):
         token_out_tasks = UniswapV2Pool.get_token_out.map(token_in=token_address)
         if stable_pools := [pool async for pool, paired_with in token_out_tasks.map(pools) if paired_with in STABLECOINS]:
             del token_out_tasks
-            
+
             if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER, when_no_history_return_0=True)):
                 deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, stable_pools, block_identifier=block)
                 return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
@@ -571,6 +572,7 @@ class UniswapRouterV2(ContractBase):
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
+    @stuck_coro_debugger
     async def deepest_pool_for(self, token: Address, block: Block = None, *, ignore_pools = []) -> Tuple[Address, int]:
         # sourcery skip: default-mutable-arg
         try:
