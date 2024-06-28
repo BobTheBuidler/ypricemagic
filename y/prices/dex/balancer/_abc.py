@@ -18,7 +18,7 @@ class Wrapper(ERC20):
 
 class LiquidityPool(Wrapper):
     """A :class:`~Wrapper` that pools multiple ERC20s together for swapping"""
-    # TODO: implement this elsewhere
+    # TODO: implement this elsewhere outside of just balancer
     @stuck_coro_debugger
     async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
         tvl, total_supply = await asyncio.gather(
@@ -33,7 +33,7 @@ class LiquidityPool(Wrapper):
 
 
 class BalancerPool(LiquidityPool):
-    ...
+    """A :class:`~LiquidityPool` specific to the Balancer protocol."""
 
 _B = TypeVar("_B", bound=BalancerPool)
 
