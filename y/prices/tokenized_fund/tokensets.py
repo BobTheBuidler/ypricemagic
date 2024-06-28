@@ -48,7 +48,7 @@ class TokenSet(ERC20):
             logger.debug("getUnits: %s", balances)
         elif hasattr(contract, 'getTotalComponentRealUnits'):
             _components = ((component.address, ) for component in components)
-            balances = await a_sync.map(self.get_total_component_real_units.coroutine, _components, block_id=block).values()
+            balances = await a_sync.map(self.get_total_component_real_units.coroutine, _components, block_id=block).values(pop=True)
             logger.debug("getTotalComponentRealUnits: %s", balances)
         balances = [WeiBalance(balance, component, block=block, skip_cache=skip_cache) for component, balance in zip(components, balances)]
         return balances
@@ -61,7 +61,7 @@ class TokenSet(ERC20):
         contract = await Contract.coroutine(self.address)
         if hasattr(contract, "getUnits"):
             balances: List[WeiBalance] = await self.balances(block=block, skip_cache=skip_cache, sync=False)
-            values = await WeiBalance.value_usd.map(balances).values()
+            values = await WeiBalance.value_usd.map(balances).values(pop=True)
             logger.debug("balances: %s  values: %s", balances, values)
             tvl = sum(values)
             price = UsdPrice(tvl / total_supply)
