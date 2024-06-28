@@ -38,6 +38,14 @@ logger = logging.getLogger(__name__)
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
 ADDRESS_PROVIDER = '0x0000000022D53366457F9d5E68Ec105046FC4383'
+"Curve's address provider contract on all chains."
+
+DED_POOLS = {
+    Network.Mainnet: {
+        "0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511": "0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d",
+    },
+}.get(chain.id, {})
+"The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually."
 
 class Ids(IntEnum):
     Main_Registry = 0
@@ -105,7 +113,11 @@ class RegistryEvents(CurveEvents):
         logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
         return event
     async def _add_pool(self, pool: Address) -> EthAddress:
-        lp_token = await self.registry.contract.get_lp_token.coroutine(pool)
+        if pool in DED_POOLS:
+            # The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually.
+            lp_token = DED_POOLS[pool]
+        else:
+            lp_token = await self.registry.contract.get_lp_token.coroutine(pool)
         curve.token_to_pool[lp_token] = pool
     async def _set_lock(self, block: int) -> None:
         await asyncio.gather(*self._tasks)
