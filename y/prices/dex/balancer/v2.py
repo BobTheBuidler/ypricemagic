@@ -2,7 +2,8 @@
 import asyncio
 import logging
 from collections import defaultdict
-from typing import AsyncIterator, Dict, List, NewType, Optional, Tuple
+from typing import (Any, AsyncIterator, Callable, Dict, List, NewType, Optional, 
+                    Tuple, TypeVar)
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
@@ -21,6 +22,7 @@ from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
+from y.exceptions import TokenNotFound
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
@@ -47,7 +49,7 @@ BALANCER_V2_VAULTS = {
     ],
 }.get(chain.id, [])
 
-
+T = TypeVar("T")
 PoolId = NewType('PoolId', bytes)
 
 logger = logging.getLogger(__name__)
@@ -86,17 +88,18 @@ class BalancerV2Vault(ContractBase):
     
     @a_sync_ttl_cache
     @stuck_coro_debugger
-    async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional["BalancerV2Pool"], int]:
+    async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> "BalancerV2Pool":
         logger = get_price_logger(token_address, block, extra='balancer.v2')
-        deepest_pool, deepest_balance = None, 0
-        async for pool in self.pools_for_token(token_address, block=block):
-            info: Dict[ERC20, WeiBalance]
-            if info := await pool.get_balances(block=block, sync=False):
-                pool_balance = info[token_address].balance
-                if pool_balance > deepest_balance:
-                    deepest_pool = pool
-        logger.debug("deepest pool %s balance %s", deepest_pool, deepest_balance)
-        return deepest_pool, deepest_balance
+
+        balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
+        balance_tasks = BalancerV2Pool.get_balance.map(token_address=token_address, block=block)
+
+        balances_aiterator: a_sync.ASyncIterator[Tuple[BalancerV2Pool, Optional[WeiBalance]]]
+        balances_aiterator = balance_tasks.map(self.pools_for_token(token_address, block=block), pop=True)        
+        async for pool, balance in balances_aiterator.filter(_lookup_balance_from_tuple).sort(key=_lookup_balance_from_tuple, reverse=True):
+            break
+        logger.debug("deepest pool %s balance %s", pool, balance)
+        return pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     __slots__ = "asynchronous", 
@@ -162,9 +165,10 @@ class BalancerV2Pool(ERC20):
         
     @stuck_coro_debugger
     async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
-        balances: Dict[ERC20, WeiBalance]
         if balances := await self.get_balances(block=block, skip_cache=skip_cache, sync=False):
-            return UsdValue(await WeiBalance.value_usd.sum((balance for balance in balances.values() if balance.token.address != self.address), sync=False))
+            # overwrite ref to big obj with ref to little obj
+            balances = iter(tuple(balances.values()))
+            return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
@@ -183,7 +187,16 @@ class BalancerV2Pool(ERC20):
         return {
             ERC20(token, asynchronous=self.asynchronous): WeiBalance(balance, token, block=block, skip_cache=skip_cache)
             for token, balance in zip(tokens, balances)
+            # NOTE: some pools include themselves in their own token list, and we should ignore those
+            if token != self.address
         }
+    
+    async def get_balance(self, token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[WeiBalance]:
+        if info := await self.get_balances(block=block, sync=False):
+            try:
+                return info[token_address]
+            except KeyError:
+                raise TokenNotFound(token_address, self) from None
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
@@ -299,3 +312,6 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
                     return BalancerV2Pool(pool_address, asynchronous=self.asynchronous)
 
 balancer = BalancerV2(asynchronous=True)
+
+_lookup_balance_from_tuple: Callable[[Tuple[Any, T]], T] = lambda pool_and_balance: pool_and_balance[1]
+"Takes a tuple[K, V] and returns V."
