@@ -207,7 +207,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(cache_type='memory')
     async def is_atoken(self, token_address: AnyAddressType) -> bool:
-        logger = get_price_logger(token_address, block=None)
+        logger = get_price_logger(token_address, block=None, extra='aave')
         is_atoken = any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__]))
         logger.debug("is_atoken: %s", is_atoken)
         return is_atoken
