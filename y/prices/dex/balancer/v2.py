@@ -127,7 +127,7 @@ class BalancerV2Vault(ContractBase):
             return pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
-    threads = a_sync.PruningThreadPoolExecutor(16)
+    threads = a_sync.PruningThreadPoolExecutor(10)
     __slots__ = "asynchronous", 
     def __init__(self, *args, asynchronous: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
@@ -157,6 +157,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
 
 
 class BalancerV2Pool(BalancerPool):
+    """A pool from Balancer Protocol v2"""
     # internal variables to save calls in some instances
     # they do not necessarily reflect real life at all times
     # defaults are stored as class vars to keep instance dicts smaller
