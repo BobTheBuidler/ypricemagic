@@ -93,8 +93,9 @@ class BalancerV2Vault(ContractBase):
 
     @stuck_coro_debugger
     async def pools_for_token(self, token: Address, block: Optional[Block] = None) -> AsyncIterator["BalancerV2Pool"]:
-        async for pool, info in BalancerV2Pool.tokens.map(block=block).map(self.pools(block=block), pop=True):
-            if token in info:
+        async for pool, tokens in BalancerV2Pool.tokens.map(block=block).map(self.pools(block=block), pop=True):
+            if token in tokens:
+                logger.debug("%s contains %s", pool, token)
                 yield pool
                 
     @a_sync_ttl_cache
@@ -113,7 +114,6 @@ class BalancerV2Vault(ContractBase):
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> "BalancerV2Pool":
         balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
-        balances_aiterator: a_sync.ASyncIterator[Tuple[BalancerV2Pool, Optional[WeiBalance]]]
 
         logger = get_price_logger(token_address, block, extra='balancer.v2')
 
@@ -129,6 +129,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     def __init__(self, *args, asynchronous: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
         self.asynchronous = asynchronous
+        self.__tasks = []
     def _include_event(self, event: _EventItem) -> Awaitable[bool]:
         if event['poolAddress'] in MESSED_UP_POOLS:
             return False
@@ -137,7 +138,12 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         # NOTE: this isn't really optimized as it still runs semi-synchronously but its better than what was had previously
         return self.threads.run(contracts.is_contract, event['poolAddress'])
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
-        return BalancerV2Pool(event['poolAddress'], asynchronous=self.asynchronous, _deploy_block=event.block_number)
+        pool = BalancerV2Pool(event['poolAddress'], asynchronous=self.asynchronous, _deploy_block=event.block_number)
+        # lets get this cached into memory now
+        task = asyncio.create_task(pool.tokens(sync=False))
+        self.__tasks.append(task)
+        task.add_done_callback(self.__tasks.remove)
+        return pool
     def _get_block_for_obj(self, pool: "BalancerV2Pool") -> int:
         return pool._deploy_block
 
@@ -166,6 +172,7 @@ class BalancerV2Pool(BalancerPool):
     __id__: HiddenMethodDescriptor[Self, PoolId]
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def vault(self) -> Optional[BalancerV2Vault]:
         try:
             vault = await Call(self.address, ['getVault()(address)'])
@@ -184,6 +191,7 @@ class BalancerV2Pool(BalancerPool):
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
 
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def pool_type(self) -> Union[PoolSpecialization, int]:
         vault = await self.__vault__
         if vault is None:
@@ -204,7 +212,6 @@ class BalancerV2Pool(BalancerPool):
                 )
                 _warned.add(self.address)
             return specialization
-        
     __pool_type__: HiddenMethodDescriptor[Self, Optional[PoolSpecialization]]
         
     @stuck_coro_debugger
@@ -275,20 +282,12 @@ class BalancerV2Pool(BalancerPool):
 
     # NOTE: We can't cache this as a cached property because some balancer pool tokens can change. Womp
     @a_sync_ttl_cache
+    @stuck_coro_debugger
     async def tokens(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Tuple[ERC20, ...]:
-        pool_type = await self.__pool_type__
-        if pool_type in PoolSpecialization.with_immutable_tokens() and self.__tokens:
+        if self.__tokens:
             return self.__tokens
         tokens = tuple((await self.get_balances(block=block, skip_cache=skip_cache, sync=False)).keys())
-        tokens_history = _tasks_to_help_me_find_pool_types_that_cant_change_tokens[self]
-        tokens_history[tokens] += 1
-        if len(tokens_history) == 1 and tokens_history[tokens] > 100:
-            contract = await contracts.Contract.coroutine(self.address, require_success=False)
-            if contract.verified:
-                methods = [k for k, v in contract.__dict__.items() if isinstance(v, (ContractCall, ContractTx, OverloadedMethod))]
-                logger.debug(
-                    "%s has 100 blocks with unchanging list of tokens, contract methods are %s", self, methods)
-        if pool_type in PoolSpecialization.with_immutable_tokens():
+        if await self.__pool_type__ in PoolSpecialization.with_immutable_tokens():
             self.__tokens = tokens
         return tokens
 
@@ -303,19 +302,6 @@ class BalancerV2Pool(BalancerPool):
             self.__nonweighted = True
             num_tokens = len(await self.tokens(block=block, sync=False))
             self.__weights = [10 ** 18 // num_tokens] * num_tokens
-
-_tasks_to_help_me_find_pool_types_that_cant_change_tokens = defaultdict(lambda: defaultdict(int))
-
-#yLazyLogger(logger)
-@a_sync.a_sync(cache_type='memory')
-async def _is_standard_pool(pool: EthAddress) -> bool:
-    '''
-    Returns `False` if `build_name(pool) in ['ConvergentCurvePool','MetaStablePool']`, else `True`
-    '''
-    
-    # With `return_None_on_failure=True`, if `build_name(pool)` fails,
-    # we can't know for sure that its a standard pool, but... it probably is.
-    return await contracts.build_name(pool, return_None_on_failure=True, sync=False) not in ['ConvergentCurvePool','MetaStablePool']
 
 
 class BalancerV2(BalancerABC[BalancerV2Pool]):
