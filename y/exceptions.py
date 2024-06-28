@@ -37,9 +37,19 @@ class NoBlockFound(Exception):
     pass
 
 
+# Explorer Exceptions
+
+class ExplorerError(Exception):  # don't want these caught by general exc clauses
+    ...
+
+class InvalidAPIKeyError(ExplorerError):
+    _msg = "The block explorer for this network says your API key is invalid."
+    def __init__(self):
+        super().__init__(self._msg)
+
 # Contracts
 
-class ContractNotVerified(Exception):
+class ContractNotVerified(ExplorerError):
     pass
 
 class NoProxyImplementation(Exception):
@@ -124,10 +134,3 @@ def out_of_gas(e: Exception) -> bool:
 
 class NodeNotSynced(Exception):
     pass
-
-# Explorer Exceptions
-
-class InvalidExplorerKey(Exception):
-    _msg = "The block explorer for this network says your API key is invalid."
-    def __init__(self):
-        super().__init__(self._msg)

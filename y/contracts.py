@@ -230,10 +230,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 if not isinstance(self.verified, bool) and self.verified is not None:
                     logger.warning(f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.')
             except AssertionError as e:
-                raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
+                raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from None
             except IndexError as e:
                 if str(e) == "pop from an empty deque":
-                    raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from e
+                    raise CompilerError("y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.") from None
                 raise
             except ValueError as e:
                 if not str(e).startswith("Unknown contract address: "):
@@ -243,9 +243,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     name, abi = _resolve_proxy(address)
                     build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
                     self.__init_from_abi__(build, owner=owner, persist=True)
-                except exceptions.InvalidExplorerKey:
+                except exceptions.InvalidAPIKeyError:
                     # re-raise with a cleaner traceback
-                    raise exceptions.InvalidExplorerKey from None
+                    raise exceptions.InvalidAPIKeyError from None
                 except (ContractNotFound, exceptions.ContractNotVerified) as e:
                     if isinstance(e, exceptions.ContractNotVerified):
                         _unverified.add(address)
@@ -305,14 +305,17 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     ) -> Self:
         
         address = str(address)
-        # We do this so we don't clog the threadpool with multiple jobs for the same contract.
+        if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
+            return contract
+        # dict lookups faster than string comparisons, keep this behind the singleton check
+        if address.lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
+            raise ContractNotFound(f"{address} is not a contract.") from None
         try:
-            contract = cls._ChecksumAddressSingletonMeta__instances[address]
-        except KeyError:
-            if address.lower() in ["0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", ZERO_ADDRESS]:
-                raise ContractNotFound(f"{address} is not a contract.") from None
-            contract = await _contract_queue(address, require_success=require_success, cache_ttl=cache_ttl)
-        return contract
+            # We do this so we don't clog the threadpool with multiple jobs for the same contract.
+            return await _contract_queue(address, require_success=require_success, cache_ttl=cache_ttl)
+        except (ContractNotFound, exceptions.ExplorerError, CompilerError) as e:
+            # re-raise with nicer traceback
+            raise type(e)(*e.args) from None
     
     @classmethod
     @stuck_coro_debugger
@@ -472,12 +475,7 @@ def _squeeze(it):
 @eth_retry.auto_retry
 def _extract_abi_data(address):
     try:
-        try:
-            data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
-        except ValueError as e:
-            if "Invalid API Key" not in str(e):
-                raise
-            raise exceptions.InvalidExplorerKey from None
+        data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
@@ -488,12 +486,13 @@ def _extract_abi_data(address):
                 raise ContractNotFound(address) from e
         raise
     except ValueError as e:
+        if "Invalid API Key" in str(e):
+            raise exceptions.InvalidAPIKeyError from e
         if exceptions.contract_not_verified(e):
             raise exceptions.ContractNotVerified(f'{address} on {Network.printable()}') from e
         elif "Unknown contract address:" in str(e):
-            if not is_contract(address):
-                raise ContractNotFound(str(e)) from e
-            raise exceptions.ContractNotVerified(str(e)) from e
+            exc_type = exceptions.ContractNotVerified if is_contract(address) else ContractNotFound
+            raise exc_type(str(e)) from e
         else:
             raise
 
