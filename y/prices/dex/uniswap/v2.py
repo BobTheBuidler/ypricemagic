@@ -402,21 +402,20 @@ class UniswapRouterV2(ContractBase):
                     for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
                 ]
             except Exception as e:
-                if block is None:
+                if not (call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e)):
                     raise
-                if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
-                    raise
-                pool_to_token_out = {}
                 pools = await self.__pools__
 
         else:
             pools = await self.__pools__
+
         pool_to_token_out = {}
-        async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
-            if token_in == token0:
-                pool_to_token_out[pool] = token1
-            elif token_in == token1:
-                pool_to_token_out[pool] = token0
+        for pool in pools:
+            # these will return immediately since the pools are already loaded by this point
+            if token_in == await pool.__token0__:
+                pool_to_token_out[pool] = await pool.__token1__
+            elif token_in == await pool.__token1__:
+                pool_to_token_out[pool] = await pool.__token0__
         return pool_to_token_out
 
     @stuck_coro_debugger
