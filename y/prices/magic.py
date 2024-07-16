@@ -224,27 +224,23 @@ async def _get_price(
     except NonStandardERC20:
         symbol = None
 
-    logger = get_price_logger(token, block, 'magic')
+    logger = get_price_logger(token, block, symbol=symbol, extra='magic', start_task=True)
     logger.debug('fetching price for %s', symbol)
-    if logger.isEnabledFor(logging.DEBUG):
-        # will kill itself when this coroutine returns
-        debugger_task = a_sync.create_task(
-            coro=_debug_tsk(symbol, logger), 
-            name=f"_debug_tsk({symbol}, {logger})", 
-            log_destroy_pending=False,
-        )
-    price = await _get_price_from_api(token, block, logger)
-    if price is None:
-        price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
-    if price is None:
-        price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
-    if price:
-        await utils.sense_check(token, block, price)
-    else:
-        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
-    logger.debug("%s price: %s", symbol, price)
-    if price:  # checks for the erroneous 0 value we see once in a while
-        return price
+    try:
+        price = await _get_price_from_api(token, block, logger)
+        if price is None:
+            price = await _exit_early_for_known_tokens(token, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, logger=logger)
+        if price is None:
+            price = await _get_price_from_dexes(token, block, ignore_pools, skip_cache, logger)
+        if price:
+            await utils.sense_check(token, block, price)
+        else:
+            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        logger.debug("%s price: %s", symbol, price)
+        if price:  # checks for the erroneous 0 value we see once in a while
+            return price
+    finally:
+        logger.close()
 
 @stuck_coro_debugger
 async def _exit_early_for_known_tokens(
@@ -337,17 +333,12 @@ async def _get_price_from_dexes(token: AnyAddressType, block: Block, ignore_pool
         logger.debug("%s -> %s", dex, price)
         if price:
             return price
-
     logger.debug('no %s liquidity found on primary markets', token)
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
-    if not price:
-        new_price = await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False)
+    if price := await balancer_multiplexer.get_price(token, block=block, skip_cache=skip_cache, sync=False):
         logger.debug("balancer -> %s", price)
-        if new_price:
-            logger.debug("replacing price %s with new price %s", price, new_price)
-            price = new_price
-    return price
+        return price
          
 def _fail_appropriately(
     logger: logging.Logger,
@@ -369,9 +360,3 @@ def _fail_appropriately(
 
     if not fail_to_None:
         raise PriceError(logger, symbol)
-
-async def _debug_tsk(symbol: str, logger: logging.Logger) -> NoReturn:
-    """Prints a log every 1 minute until the creating coro returns"""
-    while True:
-        await asyncio.sleep(60)
-        logger.debug("price still fetching for %s", symbol)
