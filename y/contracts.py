@@ -374,10 +374,11 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 _contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=32)
 
 @memory.cache()
+# TODO: async this and put it into ydb for quicker startups
 #yLazyLogger(logger)
 def is_contract(address: AnyAddressType) -> bool:
     '''
-    Checks to see if the input address is a contract. Returns `True` if:
+    Checks to see if the input address is a contract. Returns `False` if:
     - The address is not and has never been a contract
     - The address used to be a contract but has self-destructed
     '''
@@ -485,7 +486,7 @@ def _extract_abi_data(address):
                 raise ContractNotFound(address) from e
         raise
     except ValueError as e:
-        if "Invalid API Key" in str(e):
+        if str(e).startswith("Failed to retrieve data from API") or "invalid api key" in str(e).lower():
             raise exceptions.InvalidAPIKeyError from e
         if exceptions.contract_not_verified(e):
             raise exceptions.ContractNotVerified(f'{address} on {Network.printable()}') from e
