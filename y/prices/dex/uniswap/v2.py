@@ -158,7 +158,7 @@ class UniswapV2Pool(ERC20):
                 logger.warning(f'abi for getReserves for {contract} is {types}')
             except Exception as e:
                 if not call_reverted(e):
-                    raise e
+                    raise
                     
         if reserves is None or isinstance(reserves, ContractLogicError):
             reserves = 0, 0
@@ -370,7 +370,7 @@ class UniswapRouterV2(ContractBase):
                 "Sequence has incorrect length",
             ]
             if not call_reverted(e) and all(s not in str(e) for s in strings):
-                raise e
+                raise
     
     @a_sync.aka.cached_property
     @stuck_coro_debugger
@@ -405,9 +405,9 @@ class UniswapRouterV2(ContractBase):
                 ]
             except Exception as e:
                 if block is None:
-                    raise e
+                    raise
                 if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
-                    raise e
+                    raise
                 pool_to_token_out = {}
                 pools = await self.__pools__
                 async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
@@ -442,16 +442,16 @@ class UniswapRouterV2(ContractBase):
             try:
                 pools = await self.get_pools_for(token_address, sync=False)
             except Exception as e:
-                raise e
+                raise
                 if 'out of gas' not in str(e) and not call_reverted(e):
                     e.args = (*e.args, self, token_address, block)
-                    raise e
+                    raise
                 try:
                     # if it fails with no block we will try once with a block before we fetch the long way
                     pools = await self.get_pools_for(token_address, block=block, sync=False)
                 except Exception as e:
                     e.args = (*e.args, self, token_address, block)
-                    raise e
+                    raise
         for pool in _ignore_pools:
             pools.pop(pool, None)
         if not pools:
@@ -480,7 +480,7 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper reverted for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
             except ValueError as e:
                 if "out of gas" not in str(e):
-                    raise e
+                    raise
                 logger.debug('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
 
         deepest_pool = None
@@ -581,7 +581,7 @@ class UniswapRouterV2(ContractBase):
                 logger.debug('helper reverted on check_liquidity for %s at block %s: %s',token, block, e)
             except ValueError as e:
                 if "out of gas" not in str(e):
-                    raise e
+                    raise
                 logger.debug('helper out of gas on check_liquidity for %s at block %s: %s',token, block, e)
                 
         pools = self.pools_for_token(token, block=block, _ignore_pools=ignore_pools)
@@ -599,7 +599,7 @@ class UniswapRouterV2(ContractBase):
             return await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
         except Exception as e:
             e.args = (*e.args, self.__repr__(), token, block, ignore_pools)
-            raise e
+            raise
     
     @cached_property
     def _supports_uniswap_helper(self) -> bool:
