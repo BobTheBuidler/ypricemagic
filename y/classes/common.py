@@ -406,7 +406,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     
     @cached_property
     def _logger(self) -> logging.logging.Logger:
-        return logging.get_price_logger(self.token.address, self.block, self.__class__.__name__)
+        return logging.get_price_logger(self.token.address, self.block, extra=self.__class__.__name__)
 
 
 class _Loader(ContractBase):

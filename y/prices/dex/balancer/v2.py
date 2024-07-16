@@ -87,7 +87,7 @@ class BalancerV2Vault(ContractBase):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Tuple[Optional["BalancerV2Pool"], int]:
-        logger = get_price_logger(token_address, block, 'balancer.v2')
+        logger = get_price_logger(token_address, block, extra='balancer.v2')
         deepest_pool, deepest_balance = None, 0
         async for pool in self.pools_for_token(token_address, block=block):
             info: Dict[ERC20, WeiBalance]

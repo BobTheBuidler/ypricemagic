@@ -22,7 +22,7 @@ from y.prices.dex.uniswap.v2 import (NotAUniswapV2Pool, UniswapRouterV2,
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
 from y.prices.dex.velodrome import VelodromeRouterV2
-from y.utils.logging import _gh_issue_request
+from y.utils.logging import _gh_issue_request, get_price_logger
 
 logger = logging.getLogger(__name__)
 
@@ -94,9 +94,13 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         """
         router: Uniswap
         token_in = convert.to_address(token_in)
-        for router in await self.routers_by_depth(token_in, block=block, ignore_pools=ignore_pools, sync=False):
+        logger = get_price_logger(token_in, block, extra=type(self).__name__)
+        routers_by_depth = await self.routers_by_depth(token_in, block=block, ignore_pools=ignore_pools, sync=False)
+        logger.debug("uniswap routers by depth: %s", routers_by_depth)
+        for router in routers_by_depth:
             # tries each known router from most to least liquid
             # returns the first price we get back, almost always from the deepest router
+            logger.debug("fetching from %s", router)
             price = await router.get_price(token_in, block=block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False)
             logger.debug("%s -> %s", router, price)
             if price:
