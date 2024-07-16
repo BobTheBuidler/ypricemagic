@@ -486,7 +486,8 @@ class UniswapRouterV2(ContractBase):
         deepest_pool = None
         deepest_pool_balance = 0
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
-        async for pool, depth in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block):
+        liquidity_tasks: a_sync.TaskMapping[UniswapV2Pool, int] = UniswapV2Pool.check_liquidity.map(token=token_address, block=block)
+        async for pool, depth in liquidity_tasks.map(pools):
             if depth and depth > deepest_pool_balance:
                 deepest_pool = pool
                 deepest_pool_balance = depth
@@ -497,36 +498,38 @@ class UniswapRouterV2(ContractBase):
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
         pools = self.pools_for_token(convert.to_address(token_address), None, _ignore_pools=_ignore_pools)
-        stable_pools = {
-            pool: paired_with
-            async for pool, paired_with
-            in UniswapV2Pool.get_token_out.map(pools, token_in=token_address)
-            if paired_with in STABLECOINS
-        }
+        token_out_tasks: a_sync.TaskMapping[UniswapV2Pool, ERC20] = UniswapV2Pool.get_token_out.map(token_in=token_address)
+        stable_pools = [pool async for pool, paired_with in token_out_tasks.map(pools) if paired_with in STABLECOINS]
         
         if stable_pools:
             if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
-                deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, tuple(stable_pools), block_identifier=block)
+                deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, stable_pools, block_identifier=block)
                 return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
 
             elif block is not None:
-                stable_pools = {
-                    pool: stable_pools[pool] 
-                    async for pool, deploy_block 
-                    in a_sync.map(ERC20.deploy_block, stable_pools, when_no_history_return_0=True).map()
-                    if deploy_block <= block
-                }
-            
-        if not stable_pools:
-            return None
-        
+                deploy_blocks: a_sync.TaskMapping[ERC20, Block] = ERC20.deploy_block.map(stable_pools, when_no_history_return_0=True)
+                stable_pools = (pool async for pool, deploy_block in deploy_blocks.map() if deploy_block <= block)
+        # TODO:
+        #try:
+        #    pools_by_depth = UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).map().sort(lambda tup: tup[1], reverse=True)
+        #    async for pool, depth in pools_by_depth:
+        #        # NOTE: we can free this memory early
+        #        del pools_by_depth
+        #        return pool
+        #except a_sync.exceptions.EmptySequenceError:
+        #    return None
+
         deepest_stable_pool = None
         deepest_stable_pool_balance = 0
-        async for pool, depth in UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).map():
-            if depth > deepest_stable_pool_balance:
-                deepest_stable_pool = pool
-                deepest_stable_pool_balance = depth
-        return deepest_stable_pool
+        liquidity_tasks: a_sync.TaskMapping[UniswapV2Pool, int] = UniswapV2Pool.check_liquidity.map(token=token_address, block=block)
+        try:
+            async for pool, depth in liquidity_tasks.map(stable_pools):
+                if depth > deepest_stable_pool_balance:
+                    deepest_stable_pool = pool
+                    deepest_stable_pool_balance = depth
+            return deepest_stable_pool
+        except a_sync.exceptions.EmptySequenceError:
+            return None
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
