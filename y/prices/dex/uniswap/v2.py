@@ -408,16 +408,6 @@ class UniswapRouterV2(ContractBase):
                     raise
                 pool_to_token_out = {}
                 pools = await self.__pools__
-                async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
-                    if token_in == token0:
-                        pool_to_token_out[pool] = token1
-                    elif token_in == token1:
-                        pool_to_token_out[pool] = token0
-                if not pool_to_token_out:
-                    logger.debug("no data returned and 0 pools when checking the long way!")
-                else:
-                    logger.debug("no data returned but we have pools when checking the long way...")
-                return pool_to_token_out
 
         else:
             pools = await self.__pools__
