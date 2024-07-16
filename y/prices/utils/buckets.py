@@ -7,7 +7,7 @@ import a_sync
 from y import convert
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
-from y.prices import convex, one_to_one, popsicle, rkp3r, solidex, yearn
+from y.prices import convex, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
 from y.prices.band import band
 from y.prices.chainlink import chainlink
 from y.prices.dex import mooniswap
@@ -122,6 +122,7 @@ calls_only = {
     'balancer pool': balancer_multiplexer.is_balancer_pool,
     'ib token': ib.is_ib_token,
     'gelato': gelato.is_gelato_pool,
+    'pendle lp': pendle.is_pendle_lp,
     'piedao lp': piedao.is_pie,
     'token set': tokensets.is_token_set,
     'ellipsis lp': ellipsis.is_eps_rewards_pool,
