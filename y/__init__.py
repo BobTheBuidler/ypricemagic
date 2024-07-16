@@ -30,7 +30,7 @@ from y.exceptions import (CalldataPreparationError, CallReverted,
 from y import exceptions
 from y.networks import Network
 from y.prices import magic
-from y.prices.magic import get_price, get_prices
+from y.prices.magic import get_price, get_prices, map_prices
 from y.prices.utils import check_bucket
 from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.logging import enable_debug_logging
