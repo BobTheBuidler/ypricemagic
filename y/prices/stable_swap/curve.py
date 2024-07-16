@@ -344,12 +344,15 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
         Get total value in Curve pool.
         """
         try:
-            balances = await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
+            price = await WeiBalance.value_usd.sum(
+                self.get_balances(block=block, skip_cache=skip_cache, sync=False), 
+                sync=False,
+            )
+            return UsdValue(price)
         except ValueError as e:
             if str(e).startswith("could not fetch balances "):
                 return None
-            raise e
-        return UsdValue(await WeiBalance.value_usd.sum(balances, sync=False))
+            raise
     
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
@@ -448,10 +451,19 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         except KeyError:
             return None
         
-        pools = [pool for pool in pools if pool not in ignore_pools]
+        for pool in ignore_pools:
+            try:
+                pools.remove(pool)
+            except ValueError:
+                continue
 
-        if block is not None:
-            pools = [pool async for pool, deploy_block in a_sync.map(contract_creation_block_async, pools).map() if deploy_block <= block]
+        if pools and block is not None:
+            pools = [
+                pool 
+                async for pool, deploy_block 
+                in CurvePool.deploy_block.map(pools, when_no_history_return_0=True) 
+                if deploy_block <= block
+            ]
 
         if not pools:
             return None
