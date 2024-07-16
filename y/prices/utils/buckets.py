@@ -23,7 +23,7 @@ from y.prices.stable_swap import (belt, ellipsis, froyo, mstablefeederpool,
                                   saddle)
 from y.prices.stable_swap.curve import curve
 from y.prices.synthetix import synthetix
-from y.prices.tokenized_fund import basketdao, gelato, piedao, tokensets
+from y.prices.tokenized_fund import basketdao, gelato, piedao, reserve, tokensets
 from y.utils.logging import get_price_logger
 
 logger = logging.getLogger(__name__)
@@ -129,6 +129,7 @@ calls_only = {
     'saddle': saddle.is_saddle_lp,
     'basketdao': basketdao.is_basketdao_index,
     'popsicle': popsicle.is_popsicle_lp,
+    'reserve': reserve.is_rtoken,
 }
 
 async def _chainlink_and_band(token_address) -> bool:

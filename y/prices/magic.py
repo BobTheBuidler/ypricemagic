@@ -287,20 +287,22 @@ async def _exit_early_for_known_tokens(
     elif bucket == 'piedao lp':             price = await piedao.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     elif bucket == 'popsicle':              price = await popsicle.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     
+    elif bucket == 'reserve':               price = await reserve.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     elif bucket == 'rkp3r':                 price = await rkp3r.get_price(token_address, block, skip_cache=skip_cache, sync=False)
     elif bucket == 'saddle':                price = await saddle.get_price(token_address, block, skip_cache=skip_cache, sync=False)
-    elif bucket == 'solidex':               price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
 
+    elif bucket == 'solidex':               price = await solidex.get_price(token_address, block, skip_cache=skip_cache, sync=False)
     elif bucket == 'stable usd':            price = 1
     elif bucket == 'synthetix':             price = await synthetix.get_price(token_address, block, sync=False)
-    elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
 
+    elif bucket == 'token set':             price = await tokensets.get_price(token_address, block=block, skip_cache=skip_cache, sync=False)
     elif bucket == 'uni or uni-like lp':    price = await UniswapV2Pool(token_address).get_price(block=block, skip_cache=skip_cache, sync=False)
     elif bucket == 'wrapped gas coin':      price = await get_price(constants.WRAPPED_GAS_COIN, block, skip_cache=skip_cache, sync=False)
-    elif bucket == 'wrapped atoken v2':     price = await aave.get_price_wrapped_v2(token_address, block, skip_cache=skip_cache, sync=False)
 
+    elif bucket == 'wrapped atoken v2':     price = await aave.get_price_wrapped_v2(token_address, block, skip_cache=skip_cache, sync=False)
     elif bucket == 'wrapped atoken v3':     price = await aave.get_price_wrapped_v3(token_address, block, skip_cache=skip_cache, sync=False)
     elif bucket == 'wsteth':                price = await wsteth.wsteth.get_price(block, skip_cache=skip_cache, sync=False)
+    
     elif bucket == 'yearn or yearn-like':   price = await yearn.get_price(token_address, block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False)
 
     logger.debug("%s -> %s", bucket, price)
