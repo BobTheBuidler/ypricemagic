@@ -10,6 +10,7 @@ from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor, HiddenMethod
+from a_sync.a_sync.method import ASyncBoundMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
@@ -18,6 +19,7 @@ from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y._decorators import stuck_coro_debugger
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
 from y.contracts import (Contract, build_name, contract_creation_block_async,
@@ -95,15 +97,17 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
             return None
 
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def build_name(self) -> str:
-        asdasd = await self.__build_name__
         return await build_name(self.address, sync=False)
     __build_name__: HiddenMethodDescriptor[Self, str]
 
+    @stuck_coro_debugger
     async def deploy_block(self, when_no_history_return_0: bool = False) -> int:
         if self._deploy_block is None:
             self._deploy_block = await contract_creation_block_async(self.address, when_no_history_return_0=when_no_history_return_0)
         return self._deploy_block
+    deploy_block: ASyncBoundMethod[Self, Any, int]
     
     async def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
         return await has_method(self.address, method, return_response=return_response, sync=False)
@@ -124,6 +128,7 @@ class ERC20(ContractBase):
         return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def symbol(self) -> str:
         if self.address == EEE_ADDRESS:
             return {
@@ -142,6 +147,7 @@ class ERC20(ContractBase):
         return symbol
     
     @a_sync.aka.property
+    @stuck_coro_debugger
     async def name(self) -> str:
         if self.address == EEE_ADDRESS:
             return "Ethereum"
@@ -154,6 +160,7 @@ class ERC20(ContractBase):
         return name
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def decimals(self) -> int:
         if self.address == EEE_ADDRESS:
             return 18
@@ -168,6 +175,7 @@ class ERC20(ContractBase):
         return await decimals(self.address, block=block, sync=False)
     
     @a_sync.aka.cached_property
+    @stuck_coro_debugger
     async def scale(self) -> int:
         return 10 ** await self.__decimals__(asynchronous=True)
     
