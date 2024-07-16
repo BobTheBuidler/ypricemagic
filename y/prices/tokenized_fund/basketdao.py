@@ -6,6 +6,7 @@ from typing import Optional
 import a_sync
 from brownie.convert.datatypes import EthAddress
 from multicall import Call
+from web3.exceptions import ContractLogicError
 
 from y.classes.common import ERC20, WeiBalance
 from y.datatypes import Block, UsdPrice
@@ -15,7 +16,7 @@ from y.datatypes import Block, UsdPrice
 async def is_basketdao_index(address: EthAddress) -> bool:
     try:
         return await Call(address, 'getAssetsAndBalances()(address[],uint[])')
-    except ValueError:
+    except (ContractLogicError, ValueError):
         return False
 
 @a_sync.a_sync(default='sync')
