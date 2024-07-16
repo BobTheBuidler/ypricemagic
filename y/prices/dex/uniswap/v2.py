@@ -1,11 +1,10 @@
  
 import asyncio
-import itertools
 import logging
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
-from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import a_sync
 import a_sync.exceptions
@@ -17,7 +16,6 @@ from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from multicall import Call
 from typing_extensions import Self
-from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -52,11 +50,6 @@ try:
 except ContractNotVerified:
     FACTORY_HELPER = None
 
-try:
-    from web3.exceptions import ContractCustomError
-    _err_type = ContractCustomError
-except ImportError:
-    _err_type = ContractLogicError
 
 class UniswapV2Pool(ERC20):
     # defaults are stored as class vars to keep instance dicts smaller
@@ -145,7 +138,9 @@ class UniswapV2Pool(ERC20):
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         try:
             reserves = await self.get_reserves.coroutine(block_id=block)
-        except _err_type:
+        except Exception as e:
+            if not call_reverted(e):
+                raise
             reserves = None
 
         if reserves is None and self.__types_assumed:

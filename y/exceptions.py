@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING, Optional
 
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
+from web3.exceptions import ContractLogicError
 
 if TYPE_CHECKING:
     from y.prices.dex.uniswap.v2 import UniswapV2Pool
@@ -111,6 +112,8 @@ class CallReverted(Exception):
 
 
 def call_reverted(e: Exception) -> bool:
+    if isinstance(e, ContractLogicError):
+        return True
     triggers = [
         'execution reverted',
         'No data was returned - the call likely reverted',
