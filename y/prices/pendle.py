@@ -10,15 +10,20 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method
 from y.datatypes import Address, Block
+from y.exceptions import ContractNotVerified
 
 
-PENDLE_ORACLE = Contract("0x9a9Fa8338dd5E5B2188006f1Cd2Ef26d921650C2")
+try:
+    PENDLE_ORACLE = Contract("0x9a9Fa8338dd5E5B2188006f1Cd2Ef26d921650C2")
+except ContractNotVerified:
+    PENDLE_ORACLE = None
+    
 TWAP_DURATION = 1
 
 
 @a_sync("sync")
 async def is_pendle_lp(token: Address) -> bool:
-    return await has_method(token, 'readTokens()(address,address,address)', sync=False)
+    return PENDLE_ORACLE and await has_method(token, 'readTokens()(address,address,address)', sync=False)
 
 @alru_cache(maxsize=None)
 async def get_tokens(lp_token: Address) -> Tuple[str, str, str]:
