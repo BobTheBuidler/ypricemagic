@@ -3,10 +3,11 @@ import asyncio
 import logging
 import threading
 from collections import Counter, defaultdict
+from importlib.metadata import version
 from itertools import zip_longest
-from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator,
-                    Awaitable, Callable, Dict, Iterable, List, NoReturn, 
-                    Optional, TypeVar, Union)
+from typing import (TYPE_CHECKING, Any, AsyncGenerator, Awaitable, 
+                    Callable, Dict, Iterable, List, NoReturn, Optional, 
+                    TypeVar, Union)
 
 import a_sync
 import dank_mids
@@ -15,7 +16,8 @@ from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
-from brownie.network.event import EventDict, _decode_logs, _EventItem
+from brownie.exceptions import EventLookupError
+from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -36,13 +38,24 @@ T = TypeVar('T')
 
 logger = logging.getLogger(__name__)
 
+# not really sure why this breaks things
+ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
 def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
+    from y.contracts import Contract
+    for log in logs:
+        address = log['address']
+        if address not in _deployment_topics:
+            _add_deployment_topics(address, Contract(address).abi)
+    
+    # for some reason < this version can decode them just fine but >= cannot
+    special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], structs.Log)
+            
     try:
-        decoded = _decode_logs(logs)
+        decoded = _decode_logs([log.to_dict() for log in logs] if special_treatment else logs)
     except Exception:
         decoded = []
         for log in logs:
@@ -52,18 +65,21 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
             except Exception as e:
                 raise e.__class__(log, *e.args) from e
 
-    if logs and isinstance(logs[0], structs.Log):
-        for i, log in enumerate(logs):
-            # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
-            setattr(decoded[i], "block_number", log.block_number)
-            setattr(decoded[i], "transaction_hash", log.transaction_hash)
-            setattr(decoded[i], "log_index", log.log_index)
-    else:
-        for i, log in enumerate(logs):
-            setattr(decoded[i], "block_number", log["blockNumber"])
-            setattr(decoded[i], "transaction_hash", log["transactionHash"])
-            setattr(decoded[i], "log_index", log["logIndex"])
-    return decoded
+    try:
+        if logs and isinstance(logs[0], structs.Log):
+            for i, log in enumerate(logs):
+                # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
+                setattr(decoded[i], "block_number", log.block_number)
+                setattr(decoded[i], "transaction_hash", log.transaction_hash)
+                setattr(decoded[i], "log_index", log.log_index)
+        else:
+            for i, log in enumerate(logs):
+                setattr(decoded[i], "block_number", log["blockNumber"])
+                setattr(decoded[i], "transaction_hash", log["transactionHash"])
+                setattr(decoded[i], "log_index", log["logIndex"])
+        return decoded
+    except EventLookupError as e:
+        raise type(e)(*e.args, len(logs), decoded) from None
 
 
 @a_sync.a_sync(default='sync')
