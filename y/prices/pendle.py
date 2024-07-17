@@ -10,6 +10,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method
 from y.datatypes import Address, Block
+from y.exceptions import ContractNotVerified
 
 
 try:
