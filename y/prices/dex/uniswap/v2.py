@@ -1,11 +1,10 @@
  
 import asyncio
-import itertools
 import logging
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
-from typing import Any, AsyncIterator, Callable, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import a_sync
 import a_sync.exceptions
@@ -17,7 +16,6 @@ from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from multicall import Call
 from typing_extensions import Self
-from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -52,9 +50,11 @@ try:
 except ContractNotVerified:
     FACTORY_HELPER = None
 
+
 class UniswapV2Pool(ERC20):
     # defaults are stored as class vars to keep instance dicts smaller
     __types_assumed = True
+    "True if we're assuming types based on normal univ2 abi, False if we checked via block explorer."
     __slots__ = 'get_reserves',
     def __init__(
         self, 
@@ -122,9 +122,7 @@ class UniswapV2Pool(ERC20):
     async def get_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         tvl = await self.tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is not None:
-            # TODO: move decimal conversion into total_supply_readable
             return UsdPrice(tvl / Decimal(await self.total_supply_readable(block=block, sync=False)))
-        return None
     
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_token_out(self, token_in: Address) -> ERC20:
@@ -138,9 +136,12 @@ class UniswapV2Pool(ERC20):
     
     @stuck_coro_debugger
     async def reserves(self, *, block: Optional[Block] = None) -> Optional[Tuple[WeiBalance, WeiBalance]]:
-        # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
-        #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
-        reserves, *tokens = await asyncio.gather(self.get_reserves.coroutine(block_id=block), self.__token0__, self.__token1__)
+        try:
+            reserves = await self.get_reserves.coroutine(block_id=block)
+        except Exception as e:
+            if not call_reverted(e):
+                raise
+            reserves = None
 
         if reserves is None and self.__types_assumed:
             try:
@@ -160,12 +161,15 @@ class UniswapV2Pool(ERC20):
                 if not call_reverted(e):
                     raise
                     
-        if reserves is None or isinstance(reserves, ContractLogicError):
-            reserves = 0, 0
-        elif isinstance(reserves, Exception):
-            raise reserves
+        if reserves is None:
+            return None
 
-        return tuple(WeiBalance(reserves[i], tokens[i], block=block) for i in range(2))
+        # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
+        #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
+        return (
+            WeiBalance(reserves[0], await self.__token0__, block=block),
+            WeiBalance(reserves[1], await self.__token1__, block=block),
+        )
 
     @stuck_coro_debugger
     async def tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[Decimal]:
@@ -404,31 +408,20 @@ class UniswapRouterV2(ContractBase):
                     for pool in await FACTORY_HELPER.getPairsFor.coroutine(self.factory, token_in, block_identifier=block)
                 ]
             except Exception as e:
-                if block is None:
+                if not (call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e)):
                     raise
-                if not call_reverted(e) and "out of gas" not in str(e) and "timeout" not in str(e):
-                    raise
-                pool_to_token_out = {}
                 pools = await self.__pools__
-                async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
-                    if token_in == token0:
-                        pool_to_token_out[pool] = token1
-                    elif token_in == token1:
-                        pool_to_token_out[pool] = token0
-                if not pool_to_token_out:
-                    logger.debug("no data returned and 0 pools when checking the long way!")
-                else:
-                    logger.debug("no data returned but we have pools when checking the long way...")
-                return pool_to_token_out
 
         else:
             pools = await self.__pools__
+
         pool_to_token_out = {}
-        async for pool, (token0, token1) in UniswapV2Pool.tokens.map(pools, concurrency=min(50_000, len(pools))):
-            if token_in == token0:
-                pool_to_token_out[pool] = token1
-            elif token_in == token1:
-                pool_to_token_out[pool] = token0
+        for pool in pools:
+            # these will return immediately since the pools are already loaded by this point
+            if token_in == await pool.__token0__:
+                pool_to_token_out[pool] = await pool.__token1__
+            elif token_in == await pool.__token1__:
+                pool_to_token_out[pool] = await pool.__token0__
         return pool_to_token_out
 
     @stuck_coro_debugger
@@ -460,7 +453,7 @@ class UniswapRouterV2(ContractBase):
             for pool in pools:
                 yield pool
         else:
-            async for pool, deploy_block in a_sync.map(ERC20.deploy_block, pools, when_no_history_return_0=True).map():
+            async for pool, deploy_block in ERC20.deploy_block.map(when_no_history_return_0=True).map(pools):
                 if deploy_block <= block:
                     yield pool
 
@@ -483,50 +476,31 @@ class UniswapRouterV2(ContractBase):
                     raise
                 logger.debug('helper out of gas for %s at block %s ignore_pools %s: %s', token_address, block, _ignore_pools, e)
 
-        deepest_pool = None
-        deepest_pool_balance = 0
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
-        async for pool, depth in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block):
-            if depth and depth > deepest_pool_balance:
-                deepest_pool = pool
-                deepest_pool_balance = depth
-        return deepest_pool
+        logger.debug("checking %s liquidity at block %s for pools %s", token_address, block, pools)
+
+        deepest_pool: UniswapV2Pool
+        async for deepest_pool in UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block).keys(pop=True).aiterbyvalues(reverse=True):
+            return deepest_pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
     async def deepest_stable_pool(self, token_address: AnyAddressType, block: Optional[Block] = None, _ignore_pools: Tuple[UniswapV2Pool,...] = ()) -> Optional[UniswapV2Pool]:
         """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
-        pools = self.pools_for_token(convert.to_address(token_address), None, _ignore_pools=_ignore_pools)
-        stable_pools = {
-            pool: paired_with
-            async for pool, paired_with
-            in UniswapV2Pool.get_token_out.map(pools, token_in=token_address)
-            if paired_with in STABLECOINS
-        }
-        
-        if stable_pools:
-            if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER)):
-                deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, tuple(stable_pools), block_identifier=block)
-                return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
+        token_out_tasks: a_sync.TaskMapping[UniswapV2Pool, ERC20]
+        deepest_stable_pool: UniswapV2Pool
 
-            elif block is not None:
-                stable_pools = {
-                    pool: stable_pools[pool] 
-                    async for pool, deploy_block 
-                    in a_sync.map(ERC20.deploy_block, stable_pools, when_no_history_return_0=True).map()
-                    if deploy_block <= block
-                }
-            
-        if not stable_pools:
-            return None
+        pools = self.pools_for_token(convert.to_address(token_address), block=block, _ignore_pools=_ignore_pools)
+        token_out_tasks = UniswapV2Pool.get_token_out.map(token_in=token_address)
+        if stable_pools := [pool async for pool, paired_with in token_out_tasks.map(pools) if paired_with in STABLECOINS]:
+            del token_out_tasks
+
+            if self._supports_uniswap_helper and (block is None or block >= await contract_creation_block_async(FACTORY_HELPER, when_no_history_return_0=True)):
+                deepest_stable_pool, deepest_stable_pool_balance = await FACTORY_HELPER.deepestPoolForFrom.coroutine(token_address, stable_pools, block_identifier=block)
+                return None if deepest_stable_pool == brownie.ZERO_ADDRESS else UniswapV2Pool(deepest_stable_pool, asynchronous=self.asynchronous)
         
-        deepest_stable_pool = None
-        deepest_stable_pool_balance = 0
-        async for pool, depth in UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).map():
-            if depth > deepest_stable_pool_balance:
-                deepest_stable_pool = pool
-                deepest_stable_pool_balance = depth
-        return deepest_stable_pool
+            async for deepest_stable_pool, depth in UniswapV2Pool.check_liquidity.map(stable_pools, token=token_address, block=block).items(pop=True).aiterbyvalues(reverse=True):
+                return deepest_stable_pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
@@ -593,10 +567,13 @@ class UniswapRouterV2(ContractBase):
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60)
+    @stuck_coro_debugger
     async def deepest_pool_for(self, token: Address, block: Block = None, *, ignore_pools = []) -> Tuple[Address, int]:
         # sourcery skip: default-mutable-arg
         try:
-            return await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
+            deepest = await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
+            logger.debug("got deepest pool for %s at %s: %s from helper", token, block, deepest)
+            return deepest
         except Exception as e:
             e.args = (*e.args, self.__repr__(), token, block, ignore_pools)
             raise
