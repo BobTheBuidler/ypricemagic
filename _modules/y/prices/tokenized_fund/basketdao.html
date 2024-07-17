@@ -79,6 +79,7 @@
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
@@ -90,7 +91,7 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_basketdao_index</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">EthAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;getAssetsAndBalances()(address[],uint[])&#39;</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+    <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
 

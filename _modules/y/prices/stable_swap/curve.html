@@ -88,6 +88,7 @@
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">EventLookupError</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
@@ -111,6 +112,14 @@
 
 <span class="c1"># curve registry documentation https://curve.readthedocs.io/registry-address-provider.html</span>
 <span class="n">ADDRESS_PROVIDER</span> <span class="o">=</span> <span class="s1">&#39;0x0000000022D53366457F9d5E68Ec105046FC4383&#39;</span>
+<span class="s2">&quot;Curve&#39;s address provider contract on all chains.&quot;</span>
+
+<span class="n">DED_POOLS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511&quot;</span><span class="p">:</span> <span class="s2">&quot;0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">{})</span>
+<span class="s2">&quot;The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually.&quot;</span>
 
 <div class="viewcode-block" id="Ids">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Ids">[docs]</a>
@@ -195,7 +204,11 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">event</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_add_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EthAddress</span><span class="p">:</span>
-        <span class="n">lp_token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">get_lp_token</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">DED_POOLS</span><span class="p">:</span>
+            <span class="c1"># The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually.</span>
+            <span class="n">lp_token</span> <span class="o">=</span> <span class="n">DED_POOLS</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lp_token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">get_lp_token</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">lp_token</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">)</span>
@@ -442,7 +455,8 @@
             <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
             <span class="n">source</span> <span class="o">=</span> <span class="n">factory</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">__registry__</span>
             <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">source</span><span class="o">.</span><span class="n">get_balances</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+            <span class="c1"># ContractLogicError in web3&gt;=6.0, ValueError in &lt;6.0</span>
             <span class="c1"># fallback for historical queries where registry was not yet deployed</span>
             <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_balance</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coins</span><span class="p">)),</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -476,12 +490,15 @@
 <span class="sd">        Get total value in Curve pool.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> 
+                <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;could not fetch balances &quot;</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">raise</span> <span class="n">e</span>
-        <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">balances</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
+            <span class="k">raise</span></div>
 
     
 <div class="viewcode-block" id="CurvePool.check_liquidity">
@@ -607,10 +624,19 @@
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         
-        <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span><span class="n">pool</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools</span> <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_pools</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">ignore_pools</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">pools</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">continue</span>
 
-        <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span><span class="n">pool</span> <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">deploy_block</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">contract_creation_block_async</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">()</span> <span class="k">if</span> <span class="n">deploy_block</span> <span class="o">&lt;=</span> <span class="n">block</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">pools</span> <span class="ow">and</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">pool</span> 
+                <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">deploy_block</span> 
+                <span class="ow">in</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">deploy_block</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+                <span class="k">if</span> <span class="n">deploy_block</span> <span class="o">&lt;=</span> <span class="n">block</span>
+            <span class="p">]</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">pools</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>

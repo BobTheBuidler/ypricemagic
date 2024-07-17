@@ -80,7 +80,7 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">STABLECOINS</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span>
-<span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">convex</span><span class="p">,</span> <span class="n">one_to_one</span><span class="p">,</span> <span class="n">popsicle</span><span class="p">,</span> <span class="n">rkp3r</span><span class="p">,</span> <span class="n">solidex</span><span class="p">,</span> <span class="n">yearn</span>
+<span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">convex</span><span class="p">,</span> <span class="n">one_to_one</span><span class="p">,</span> <span class="n">pendle</span><span class="p">,</span> <span class="n">popsicle</span><span class="p">,</span> <span class="n">rkp3r</span><span class="p">,</span> <span class="n">solidex</span><span class="p">,</span> <span class="n">yearn</span>
 <span class="kn">from</span> <span class="nn">y.prices.band</span> <span class="kn">import</span> <span class="n">band</span>
 <span class="kn">from</span> <span class="nn">y.prices.chainlink</span> <span class="kn">import</span> <span class="n">chainlink</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex</span> <span class="kn">import</span> <span class="n">mooniswap</span>
@@ -96,13 +96,13 @@
                                   <span class="n">saddle</span><span class="p">)</span>
 <span class="kn">from</span> <span class="nn">y.prices.stable_swap.curve</span> <span class="kn">import</span> <span class="n">curve</span>
 <span class="kn">from</span> <span class="nn">y.prices.synthetix</span> <span class="kn">import</span> <span class="n">synthetix</span>
-<span class="kn">from</span> <span class="nn">y.prices.tokenized_fund</span> <span class="kn">import</span> <span class="n">basketdao</span><span class="p">,</span> <span class="n">gelato</span><span class="p">,</span> <span class="n">piedao</span><span class="p">,</span> <span class="n">tokensets</span>
+<span class="kn">from</span> <span class="nn">y.prices.tokenized_fund</span> <span class="kn">import</span> <span class="n">basketdao</span><span class="p">,</span> <span class="n">gelato</span><span class="p">,</span> <span class="n">piedao</span><span class="p">,</span> <span class="n">reserve</span><span class="p">,</span> <span class="n">tokensets</span>
 <span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">get_price_logger</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <div class="viewcode-block" id="check_bucket">
-<a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.check_bucket">[docs]</a>
+<a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.buckets.check_bucket">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">check_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
     <span class="n">token_address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
@@ -198,6 +198,7 @@
     <span class="s1">&#39;balancer pool&#39;</span><span class="p">:</span> <span class="n">balancer_multiplexer</span><span class="o">.</span><span class="n">is_balancer_pool</span><span class="p">,</span>
     <span class="s1">&#39;ib token&#39;</span><span class="p">:</span> <span class="n">ib</span><span class="o">.</span><span class="n">is_ib_token</span><span class="p">,</span>
     <span class="s1">&#39;gelato&#39;</span><span class="p">:</span> <span class="n">gelato</span><span class="o">.</span><span class="n">is_gelato_pool</span><span class="p">,</span>
+    <span class="s1">&#39;pendle lp&#39;</span><span class="p">:</span> <span class="n">pendle</span><span class="o">.</span><span class="n">is_pendle_lp</span><span class="p">,</span>
     <span class="s1">&#39;piedao lp&#39;</span><span class="p">:</span> <span class="n">piedao</span><span class="o">.</span><span class="n">is_pie</span><span class="p">,</span>
     <span class="s1">&#39;token set&#39;</span><span class="p">:</span> <span class="n">tokensets</span><span class="o">.</span><span class="n">is_token_set</span><span class="p">,</span>
     <span class="s1">&#39;ellipsis lp&#39;</span><span class="p">:</span> <span class="n">ellipsis</span><span class="o">.</span><span class="n">is_eps_rewards_pool</span><span class="p">,</span>
@@ -205,6 +206,7 @@
     <span class="s1">&#39;saddle&#39;</span><span class="p">:</span> <span class="n">saddle</span><span class="o">.</span><span class="n">is_saddle_lp</span><span class="p">,</span>
     <span class="s1">&#39;basketdao&#39;</span><span class="p">:</span> <span class="n">basketdao</span><span class="o">.</span><span class="n">is_basketdao_index</span><span class="p">,</span>
     <span class="s1">&#39;popsicle&#39;</span><span class="p">:</span> <span class="n">popsicle</span><span class="o">.</span><span class="n">is_popsicle_lp</span><span class="p">,</span>
+    <span class="s1">&#39;reserve&#39;</span><span class="p">:</span> <span class="n">reserve</span><span class="o">.</span><span class="n">is_rtoken</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_chainlink_and_band</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>

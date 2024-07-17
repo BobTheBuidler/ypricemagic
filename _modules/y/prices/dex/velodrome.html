@@ -78,12 +78,13 @@
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">import</span> <span class="nn">eth_retry</span>
-<span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
+<span class="kn">from</span> <span class="nn">a_sync.a_sync.property</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">multicall.call</span> <span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
 
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
-<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
+<span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
 <span class="kn">from</span> <span class="nn">y.interfaces.uniswap.velov2</span> <span class="kn">import</span> <span class="n">VELO_V2_FACTORY_ABI</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
@@ -143,8 +144,10 @@
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.pool_for">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">poolFor</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span><span class="p">)</span></div>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">]:</span>
+        <span class="n">pool_address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">poolFor</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span><span class="p">))</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="n">is_contract</span><span class="p">(</span><span class="n">pool_address</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">pool_address</span></div>
 
     
 <div class="viewcode-block" id="VelodromeRouterV2.get_pool">
@@ -153,37 +156,33 @@
     <span class="nd">@a_sync_ttl_cache</span>
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UniswapV2Pool</span><span class="p">]:</span>
-        <span class="n">pool_address</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_for</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">pool_address</span><span class="p">),</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;0x&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="n">UniswapV2Pool</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">pool_address</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_for</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">block</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">UniswapV2Pool</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="VelodromeRouterV2.pools">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.pools">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">UniswapV2Pool</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Set</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Fetching pools for </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1">. If this is your first time using ypricemagic, this can take a while. Please wait patiently...&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">,</span> <span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">())</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;PoolCreated&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">factory</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
             <span class="c1"># the etherscan proxy detection is borked here, need this to decode properly</span>
             <span class="n">factory</span> <span class="o">=</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;PoolFactory&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="n">VELO_V2_FACTORY_ABI</span><span class="p">)</span>
 
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">pools</span> <span class="o">=</span> <span class="p">{</span>
-                <span class="n">VelodromePool</span><span class="p">(</span>
-                    <span class="n">address</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;pool&#39;</span><span class="p">],</span>
-                    <span class="n">token0</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;token0&#39;</span><span class="p">],</span> 
-                    <span class="n">token1</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;token1&#39;</span><span class="p">],</span> 
-                    <span class="n">stable</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;stable&#39;</span><span class="p">],</span> 
-                    <span class="n">deploy_block</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span> 
-                    <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
-                <span class="p">)</span>
-                <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">factory</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">PoolCreated</span><span class="o">.</span><span class="n">events</span><span class="p">(</span><span class="n">to_block</span><span class="o">=</span><span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
-            <span class="p">}</span>
-        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="n">e</span>
+        <span class="n">pools</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">VelodromePool</span><span class="p">(</span>
+                <span class="n">address</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;pool&#39;</span><span class="p">],</span>
+                <span class="n">token0</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;token0&#39;</span><span class="p">],</span> 
+                <span class="n">token1</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;token1&#39;</span><span class="p">],</span> 
+                <span class="n">stable</span><span class="o">=</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;stable&#39;</span><span class="p">],</span> 
+                <span class="n">deploy_block</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span> 
+                <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">factory</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">PoolCreated</span><span class="o">.</span><span class="n">events</span><span class="p">(</span><span class="n">to_block</span><span class="o">=</span><span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
+        <span class="p">}</span>
         
         <span class="n">all_pools_len</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;allPoolsLength()&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -204,6 +203,7 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loaded </span><span class="si">%s</span><span class="s1"> pools supporting </span><span class="si">%s</span><span class="s1"> tokens on </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pools</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
 
+    <span class="n">__pools__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Set</span><span class="p">[</span><span class="n">VelodromePool</span><span class="p">]]</span>
     
 <div class="viewcode-block" id="VelodromeRouterV2.get_routes_from_path">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.get_routes_from_path">[docs]</a>
@@ -263,9 +263,9 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_init_pool_from_poolid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poolid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VelodromePool</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;initing poolid </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">poolid</span><span class="p">)</span>
         <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;allPools(uint256)(address)&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># TODO: debug why this happens sometimes</span>
+        <span class="k">if</span> <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># TODO: debug why this happens sometimes and why this if clause works to get back on track</span>
             <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
-            <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">allPools</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">allPools</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
         <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="p">,</span> <span class="n">stable</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">_INIT_METHODS</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">VelodromePool</span><span class="p">(</span>
             <span class="n">address</span><span class="o">=</span><span class="n">pool</span><span class="p">,</span>
@@ -277,7 +277,17 @@
 
 
 
-<span class="n">_get_code</span> <span class="o">=</span> <span class="n">alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)(</span><span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">)</span>
+<div class="viewcode-block" id="is_contract">
+<a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.is_contract">[docs]</a>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">is_contract</span><span class="p">(</span><span class="n">pool_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">pool_address</span> <span class="ow">in</span> <span class="n">__pools</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">if</span> <span class="n">result</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;0x&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">]:</span>
+        <span class="n">__pools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span></div>
+
+
+<span class="n">__pools</span> <span class="o">=</span> <span class="p">[]</span>
 </pre></div>
 
            </div>

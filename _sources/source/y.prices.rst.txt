@@ -65,6 +65,14 @@ y.prices.one\_to\_one module
    :undoc-members:
    :show-inheritance:
 
+y.prices.pendle module
+----------------------
+
+.. automodule:: y.prices.pendle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 y.prices.popsicle module
 ------------------------
 

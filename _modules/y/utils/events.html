@@ -76,10 +76,11 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
+<span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">version</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span>
-                    <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> 
-                    <span class="n">Optional</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> 
+                    <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> 
+                    <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
@@ -88,7 +89,8 @@
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">web3</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
-<span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">EventDict</span><span class="p">,</span> <span class="n">_decode_logs</span><span class="p">,</span> <span class="n">_EventItem</span>
+<span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">EventLookupError</span>
+<span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span><span class="p">,</span> <span class="n">_add_deployment_topics</span><span class="p">,</span> <span class="n">_decode_logs</span><span class="p">,</span> <span class="n">_deployment_topics</span><span class="p">,</span> <span class="n">EventDict</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span>
 <span class="kn">from</span> <span class="nn">toolz</span> <span class="kn">import</span> <span class="n">groupby</span>
 <span class="kn">from</span> <span class="nn">web3.middleware.filter</span> <span class="kn">import</span> <span class="n">block_ranges</span>
@@ -109,6 +111,8 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="c1"># not really sure why this breaks things</span>
+<span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;eth-event&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
 
 <div class="viewcode-block" id="decode_logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.decode_logs">[docs]</a>
@@ -116,8 +120,17 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decode logs to events and enrich them with additional info.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
+    <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_deployment_topics</span><span class="p">:</span>
+            <span class="n">_add_deployment_topics</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
+    
+    <span class="c1"># for some reason &lt; this version can decode them just fine but &gt;= cannot</span>
+    <span class="n">special_treatment</span> <span class="o">=</span> <span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="ow">and</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">)</span>
+            
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">]</span> <span class="k">if</span> <span class="n">special_treatment</span> <span class="k">else</span> <span class="n">logs</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">decoded</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
@@ -127,18 +140,21 @@
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
-    <span class="k">if</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
-            <span class="c1"># When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">transaction_hash</span><span class="p">)</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">log_index</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;blockNumber&quot;</span><span class="p">])</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;transactionHash&quot;</span><span class="p">])</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;logIndex&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">decoded</span></div>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
+                <span class="c1"># When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">transaction_hash</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">log_index</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;blockNumber&quot;</span><span class="p">])</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;transactionHash&quot;</span><span class="p">])</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;logIndex&quot;</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">decoded</span>
+    <span class="k">except</span> <span class="n">EventLookupError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)(</span><span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">logs</span><span class="p">),</span> <span class="n">decoded</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
 
 
 
@@ -458,7 +474,7 @@
                 <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs_async_no_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">,</span> <span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span><span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;parse error&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tries</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">e</span>
+                    <span class="k">raise</span>
                 <span class="n">tries</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>

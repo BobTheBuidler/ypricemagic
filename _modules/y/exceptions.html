@@ -76,6 +76,7 @@
 
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">Contract</span> <span class="k">as</span> <span class="n">BrownieContract</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">CompilerError</span>
+<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="k">if</span> <span class="n">TYPE_CHECKING</span><span class="p">:</span>
     <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">UniswapV2Pool</span>
@@ -134,11 +135,30 @@
 
 
 
+<span class="c1"># Explorer Exceptions</span>
+
+<div class="viewcode-block" id="ExplorerError">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.ExplorerError">[docs]</a>
+<span class="k">class</span> <span class="nc">ExplorerError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>  <span class="c1"># don&#39;t want these caught by general exc clauses</span>
+    <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="InvalidAPIKeyError">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidAPIKeyError">[docs]</a>
+<span class="k">class</span> <span class="nc">InvalidAPIKeyError</span><span class="p">(</span><span class="n">ExplorerError</span><span class="p">):</span>
+    <span class="n">_msg</span> <span class="o">=</span> <span class="s2">&quot;The block explorer for this network says your API key is invalid.&quot;</span>
+<div class="viewcode-block" id="InvalidAPIKeyError.__init__">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidAPIKeyError.__init__">[docs]</a>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="p">)</span></div>
+</div>
+
+
 <span class="c1"># Contracts</span>
 
 <div class="viewcode-block" id="ContractNotVerified">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.ContractNotVerified">[docs]</a>
-<span class="k">class</span> <span class="nc">ContractNotVerified</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">ContractNotVerified</span><span class="p">(</span><span class="n">ExplorerError</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
@@ -239,6 +259,8 @@
 <div class="viewcode-block" id="call_reverted">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.call_reverted">[docs]</a>
 <span class="k">def</span> <span class="nf">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">):</span>
+        <span class="k">return</span> <span class="kc">True</span>
     <span class="n">triggers</span> <span class="o">=</span> <span class="p">[</span>
         <span class="s1">&#39;execution reverted&#39;</span><span class="p">,</span>
         <span class="s1">&#39;No data was returned - the call likely reverted&#39;</span><span class="p">,</span>
@@ -271,19 +293,6 @@
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NodeNotSynced">[docs]</a>
 <span class="k">class</span> <span class="nc">NodeNotSynced</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
-
-
-<span class="c1"># Explorer Exceptions</span>
-
-<div class="viewcode-block" id="InvalidExplorerKey">
-<a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidExplorerKey">[docs]</a>
-<span class="k">class</span> <span class="nc">InvalidExplorerKey</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="n">_msg</span> <span class="o">=</span> <span class="s2">&quot;The block explorer for this network says your API key is invalid.&quot;</span>
-<div class="viewcode-block" id="InvalidExplorerKey.__init__">
-<a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidExplorerKey.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_msg</span><span class="p">)</span></div>
-</div>
 
 </pre></div>
 
