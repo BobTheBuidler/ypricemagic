@@ -11,11 +11,13 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice
+from y.utils.cache import optional_async_diskcache
 
 logger = logging.getLogger(__name__)
 
 
 @a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
+@optional_async_diskcache
 async def is_token_set(token: AnyAddressType) -> bool:
     return any(await asyncio.gather(
         has_methods(token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False),

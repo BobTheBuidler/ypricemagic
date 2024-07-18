@@ -12,12 +12,14 @@ from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (CantFetchParam, ContractNotVerified,
                           MessedUpBrownieContract, PriceError, 
                           yPriceMagicError)
+from y.utils.cache import optional_async_diskcache
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
@@ -53,6 +55,8 @@ force_false = {
 }.get(chain.id, [])
 
 @a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=30*60)
+@stuck_coro_debugger
+@optional_async_diskcache
 async def is_yearn_vault(token: AnyAddressType) -> bool:
     # wibbtc returns True here even though it doesn't meet the criteria.
     # TODO figure out a better fix. For now I need a fix asap so this works.

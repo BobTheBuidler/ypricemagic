@@ -23,8 +23,7 @@ logger = logging.getLogger(__name__)
 @a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     pool = await get_pool(token_address, sync=False)
-    if pool:
-        return await has_methods(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'), sync=False)
+    return pool is not None and await has_methods(pool, ('getVirtualPrice()(uint)', 'getA()(uint)','getAPrecise()(uint)'), sync=False)
 
 @a_sync.a_sync(default='sync', ram_cache_ttl=ENVS.CACHE_TTL)
 async def get_pool(token_address: AnyAddressType) -> Address:
