@@ -5,6 +5,8 @@ from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
 from web3.exceptions import ContractLogicError
 
+from y.datatypes import AnyAddressType
+
 if TYPE_CHECKING:
     from y.prices.dex.uniswap.v2 import UniswapV2Pool
 
@@ -37,6 +39,10 @@ class CantFetchParam(Exception):
 class NoBlockFound(Exception):
     pass
 
+class TokenError(ValueError):
+    """Raised when a token contract is not the correct contract type for the desired operation."""
+    def __init__(self, token: AnyAddressType, desired_type: str):
+        super().__init__(f"{token} is not a {desired_type}")
 
 # Explorer Exceptions
 
