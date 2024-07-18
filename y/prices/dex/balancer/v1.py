@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from contextlib import suppress
 from decimal import Decimal
 from typing import Dict, List, Optional, Tuple
 
@@ -9,6 +10,7 @@ from brownie import chain
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import VirtualMachineError
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
@@ -24,6 +26,9 @@ from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
 }.get(chain.id)
+
+SCALES_TO_TRY = [1.0, 0.5, 0.1]
+TOKENOUTS_TO_TRY = [weth, dai, usdc, wbtc]
 
 logger = logging.getLogger(__name__)
 
@@ -91,21 +96,10 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
     async def get_token_price(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
         if block is not None and block < await contract_creation_block_async(self.exchange_proxy, True):
             return None
-        scale = 1.0
-        out, totalOutput = await self.get_some_output(token_address, block=block, scale=scale, sync=False)
-        if out:
-            return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
-        # Can we get an output if we try smaller size?
-        scale = 0.5
-        out, totalOutput = await self.get_some_output(token_address, block=block, scale=scale, sync=False) 
-        if out:
-            return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
-        # How about now? 
-        scale = 0.1
-        out, totalOutput = await self.get_some_output(token_address, block=block, scale=scale, sync=False)
-        if out:
-            return await _calc_out_value(out, totalOutput, scale, block=block, skip_cache=skip_cache)
-        return None
+        for scale in SCALES_TO_TRY:
+            # Can we get an output if we try smaller size? try consecutively smaller
+            if output := await self.get_some_output(token_address, block=block, scale=scale, sync=False):
+                return await _calc_out_value(*output, scale, block=block, skip_cache=skip_cache)
     
     @stuck_coro_debugger
     async def check_liquidity_against(
@@ -114,20 +108,19 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
         token_out: AddressOrContract,
         scale: int = 1,
         block: Optional[Block] = None
-        ) -> Tuple[EthAddress, int]:
+        ) -> Optional[int]:
 
         amount_in = await ERC20(token_in, asynchronous=True).scale * scale
-        view_split_exact_in = await self.exchange_proxy.viewSplitExactIn.coroutine(
-            token_in,
-            token_out,
-            amount_in,
-            32, # NOTE: 32 is max
-            block_identifier = block,
-        )
-
-        output = view_split_exact_in['totalOutput']
-
-        return token_out, output
+        with suppress(ValueError, VirtualMachineError, ContractLogicError):
+            # across various dep versions we get these various excs
+            view_split_exact_in = await self.exchange_proxy.viewSplitExactIn.coroutine(
+                token_in,
+                token_out,
+                amount_in,
+                32, # NOTE: 32 is max
+                block_identifier = block,
+            )
+            return view_split_exact_in['totalOutput']
     
     @stuck_coro_debugger
     async def get_some_output(
@@ -135,23 +128,10 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
         token_in: AddressOrContract,
         scale: int = 1,
         block: Optional[Block] = None
-        ) -> Tuple[EthAddress,int]:
-
-        try:
-            out, totalOutput = await self.check_liquidity_against(token_in, weth, block=block, scale=scale, sync=False)
-        except (ValueError, VirtualMachineError):
-            try:
-                out, totalOutput = await self.check_liquidity_against(token_in, dai, block=block, scale=scale, sync=False)
-            except (ValueError, VirtualMachineError):
-                try:
-                    out, totalOutput = await self.check_liquidity_against(token_in, usdc, block=block, scale=scale, sync=False)
-                except (ValueError, VirtualMachineError):
-                    try:
-                        out, totalOutput = await self.check_liquidity_against(token_in, wbtc, block=block, scale=scale, sync=False)
-                    except (ValueError, VirtualMachineError):
-                        out = None
-                        totalOutput = None
-        return out, totalOutput
+        ) -> Optional[Tuple[EthAddress,int]]:
+        for token_out in TOKENOUTS_TO_TRY:
+            if output := await self.check_liquidity_against(token_in, token_out, block=block, scale=scale, sync=False):
+                return token_out, output
 
     @stuck_coro_debugger
     async def check_liquidity(self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()) -> int:
