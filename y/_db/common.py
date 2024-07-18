@@ -214,7 +214,10 @@ class Filter(_DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc:
                 # create a new duplicate exc instead of building a massive traceback on the original
-                raise type(self._exc)(*self._exc.args).with_traceback(self._tb)
+                try:
+                    raise type(self._exc)(*self._exc.args).with_traceback(self._tb)
+                except TypeError:
+                    raise self._exc.with_traceback(self._tb) from None
             if to_yield := self._objects[yielded-self._pruned:]:
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
