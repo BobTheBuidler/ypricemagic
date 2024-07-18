@@ -28,7 +28,6 @@ from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
 from y.utils.cache import a_sync_ttl_cache
 from y.utils.events import ProcessedEvents
 from y.utils.logging import get_price_logger
-from y.utils.raw_calls import raw_call
 
 # TODO: Cache pool tokens for pools that can't change
 
@@ -152,7 +151,7 @@ class BalancerV2Pool(BalancerPool):
     
     @a_sync.aka.cached_property
     async def vault(self) -> Optional[BalancerV2Vault]:
-        vault = await raw_call(self.address, 'getVault()', output='address', sync=False)
+        vault = await Call(self.address, ['getVault()(address)'])
         return None if vault == ZERO_ADDRESS else BalancerV2Vault(vault, asynchronous=True)
     __vault__: HiddenMethodDescriptor[Self, Optional[BalancerV2Vault]]
         
@@ -286,6 +285,8 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         if deepest_pool := await self.deepest_pool_for(token_address, block=block, sync=False):
             return await deepest_pool.get_token_price(token_address, block, skip_cache=skip_cache, sync=False)
     
+    # NOTE: we need a tiny semaphore here because balancer is super arduous and every unpricable token must pass thru this section
+    @a_sync.Semaphore(10)
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
         kwargs = {"token_address": token_address, "block": block}
