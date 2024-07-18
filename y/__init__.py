@@ -39,8 +39,11 @@ from y.prices.magic import get_price, get_prices, map_prices
 from y.prices.utils import check_bucket
 from y.time import get_block_at_timestamp, get_block_timestamp, get_block_timestamp_async
 from y.utils.logging import enable_debug_logging
+from y.utils.middleware import setup_getcode_cache_middleware
 from y.utils.multicall import fetch_multicall
 from y.utils.raw_calls import balanceOf, raw_call
+
+setup_getcode_cache_middleware()
 
 __all__ = [
     ### you can reach the below functions, classes, and variables using ###
