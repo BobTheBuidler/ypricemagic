@@ -2,8 +2,8 @@
 import asyncio
 import logging
 from collections import defaultdict
-from typing import (Any, AsyncIterator, Callable, Dict, List, NewType, Optional, 
-                    Tuple, TypeVar)
+from typing import (Any, AsyncIterator, Awaitable, Callable, Dict, List, NewType, 
+                    Optional, Tuple, TypeVar)
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
@@ -51,6 +51,7 @@ BALANCER_V2_VAULTS = {
 
 T = TypeVar("T")
 PoolId = NewType('PoolId', bytes)
+PoolBalances = Dict[ERC20, WeiBalance]
 
 logger = logging.getLogger(__name__)
 
@@ -89,12 +90,12 @@ class BalancerV2Vault(ContractBase):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> "BalancerV2Pool":
+        balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
+        balances_aiterator: a_sync.ASyncIterator[Tuple[BalancerV2Pool, Optional[WeiBalance]]]
+
         logger = get_price_logger(token_address, block, extra='balancer.v2')
 
-        balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
         balance_tasks = BalancerV2Pool.get_balance.map(token_address=token_address, block=block)
-
-        balances_aiterator: a_sync.ASyncIterator[Tuple[BalancerV2Pool, Optional[WeiBalance]]]
         balances_aiterator = balance_tasks.map(self.pools_for_token(token_address, block=block), pop=True)        
         async for pool, balance in balances_aiterator.filter(_lookup_balance_from_tuple).sort(key=_lookup_balance_from_tuple, reverse=True):
             break
@@ -102,14 +103,16 @@ class BalancerV2Vault(ContractBase):
         return pool
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
+    threads = a_sync.PruningThreadPoolExecutor(16)
     __slots__ = "asynchronous", 
     def __init__(self, *args, asynchronous: bool = False, **kwargs):
         super().__init__(*args, **kwargs)
         self.asynchronous = asynchronous
-    def _include_event(self, event: _EventItem) -> bool:
+    def _include_event(self, event: _EventItem) -> Awaitable[bool]:
         # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
         #       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.
-        return contracts.is_contract(event['poolAddress'])
+        # NOTE: this isn't really optimized as it still runs semi-synchronously but its better than what was had previously
+        return self.threads.run(contracts.is_contract, event['poolAddress'])
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
         return BalancerV2Pool(event['poolAddress'], asynchronous=self.asynchronous, _deploy_block=event.block_number)
     def _get_block_for_obj(self, pool: "BalancerV2Pool") -> int:
@@ -172,7 +175,7 @@ class BalancerV2Pool(ERC20):
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
-    async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Dict[ERC20, WeiBalance]:
+    async def get_balances(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> PoolBalances:
         if self._messed_up:
             return {}
         try:
@@ -298,18 +301,21 @@ class BalancerV2(a_sync.ASyncGenericSingleton):
 
     @stuck_coro_debugger
     async def get_token_price(self, token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        deepest_pool: Optional[BalancerV2Pool]
         if deepest_pool := await self.deepest_pool_for(token_address, block=block, sync=False):
             return await deepest_pool.get_token_price(token_address, block, skip_cache=skip_cache, sync=False)
     
     @stuck_coro_debugger
     async def deepest_pool_for(self, token_address: Address, block: Optional[Block] = None) -> Optional[BalancerV2Pool]:
-        deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, token_address=token_address, block=block)
+        kwargs = {"token_address": token_address, "block": block}
+        deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, **kwargs)
         if deepest_pools := {vault.address: deepest_pool async for vault, deepest_pool in deepest_pools if deepest_pool is not None}:
-            deepest_pool_balance = max(dp[1] for dp in deepest_pools.values())
-            for pool_address, pool_balance in deepest_pools.values():
-                if pool_balance == deepest_pool_balance and pool_address:
-                    return BalancerV2Pool(pool_address, asynchronous=self.asynchronous)
+            async for pool in BalancerV2Pool.get_balance.map(deepest_pools.values(), **kwargs).keys(pop=True).aiterbyvalues(reverse=True):
+                return pool
+        
+        # TODO: afilter
+        # deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, **kwargs).values(pop=True).afilter()
+        # async for pool in BalancerV2Pool.get_balance.map(deepest_pools, **kwargs).keys(pop=True).aiterbyvalues(reverse=True):
+        #     return pool
 
 balancer = BalancerV2(asynchronous=True)
 
