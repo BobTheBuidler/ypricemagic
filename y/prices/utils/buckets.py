@@ -53,6 +53,8 @@ async def check_bucket(token: AnyAddressType) -> str:
     for fut in asyncio.as_completed(futs):
         try:
             bucket, is_member = await fut
+        except TypeError:
+            raise
         except Exception as e:
             logger.warning("%s when checking %s. This will probably not impact your run.", e, fut)
             logger.warning(e, exc_info=True)
@@ -138,4 +140,15 @@ async def _chainlink_and_band(token_address) -> bool:
     return chainlink and await chainlink.has_feed(token_address, sync=False) and token_address in band
 
 async def _check_bucket_helper(bucket: str, check: Callable[[Address], Awaitable[bool]], address: Address) -> Tuple[str, bool]:
-    return bucket, await check(address, sync=False)
+    result = await check(address, sync=False)
+    
+    # TODO: debug why we have to re-await sometimes when @optional_async_diskcache is used
+    if not isinstance(result, bool):
+        if not asyncio.iscoroutine(result):
+            raise TypeError(f'{bucket} result must be boolean. You passed {result}')
+        result = await result
+    if not isinstance(result, bool):
+        #if not asyncio.iscoroutine(result):
+        raise TypeError(f'{bucket} result must be boolean. You passed {result}')
+        #result = await result
+    return bucket, result

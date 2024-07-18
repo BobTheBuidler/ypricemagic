@@ -15,9 +15,10 @@ from y.networks import Network
 from y.prices.dex.balancer._abc import BalancerABC
 from y.prices.dex.balancer.v1 import BalancerV1
 from y.prices.dex.balancer.v2 import BalancerV2
+from y.utils.cache import optional_async_diskcache
+
 
 logger = logging.getLogger(__name__)
-
 
 class BalancerMultiplexer(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = False) -> None:
@@ -45,6 +46,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
     __v2__: HiddenMethodDescriptor[Self, Optional[BalancerV2]]
 
     @stuck_coro_debugger
+    @optional_async_diskcache
     async def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
         try:
             await self.get_version(token_address)

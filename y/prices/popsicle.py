@@ -12,6 +12,7 @@ from y.contracts import has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import call_reverted
 from y.utils import gather_methods
+from y.utils.cache import optional_async_diskcache
 
 _RESERVES_METHODS = 'token0()(address)', 'token1()(address)', 'usersAmounts()((uint,uint))'
 
@@ -19,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 @a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
+@optional_async_diskcache
 async def is_popsicle_lp(token_address: AnyAddressType) -> bool:
     # NOTE: contract to check for reference (mainnet): 0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf
     return await has_methods(token_address, ('token0()(address)','token1()(address)','usersAmounts()((uint,uint))'), sync=False)

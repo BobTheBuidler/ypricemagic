@@ -15,7 +15,7 @@ from y.datatypes import Block, UsdPrice
 @a_sync.a_sync(default='sync')
 async def is_basketdao_index(address: EthAddress) -> bool:
     try:
-        return await Call(address, 'getAssetsAndBalances()(address[],uint[])')
+        return bool(await Call(address, 'getAssetsAndBalances()(address[],uint[])'))
     except (ContractLogicError, ValueError):
         return False
 

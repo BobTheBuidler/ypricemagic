@@ -22,6 +22,7 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
+from y.utils.cache import optional_async_diskcache
 
 EXCHANGE_PROXY = {
     Network.Mainnet: '0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21',
@@ -38,6 +39,8 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
 
 class BalancerV1Pool(BalancerPool):
     @a_sync.aka.cached_property
+    @optional_async_diskcache
+    @stuck_coro_debugger
     async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
         return [ERC20(token, asynchronous=self.asynchronous) for token in await contract.getFinalTokens]
