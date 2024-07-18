@@ -4,6 +4,9 @@ from typing import Any, Iterable, Optional, Tuple
 
 from multicall import Call
 
+from y._decorators import stuck_coro_debugger
+
+
 async def gather_methods(
     address: str, 
     methods: Iterable[str], 
@@ -15,6 +18,7 @@ async def gather_methods(
     gather_fn = _gather_methods_raw if "(" in methods[0] else _gather_methods_brownie
     return await gather_fn(address, methods, block=block, return_exceptions=return_exceptions)
 
+@stuck_coro_debugger
 async def _gather_methods_brownie(
     address: str, 
     methods: Iterable[str], 
@@ -27,6 +31,7 @@ async def _gather_methods_brownie(
     contract = await Contract.coroutine(address)
     return await asyncio.gather(*[getattr(contract, method).coroutine(block_identifier=block) for method in methods], return_exceptions=return_exceptions)
 
+@stuck_coro_debugger
 async def _gather_methods_raw(
     address: str, 
     methods: Iterable[str], 
