@@ -16,6 +16,8 @@ from y.datatypes import Address, Block
 
 logger = logging.getLogger(__name__)
 
+_get_get_token()
+
 @a_sync_read_db_session
 def get_deploy_block(address: str) -> Optional[int]:
     if deploy_block := known_deploy_blocks().pop(address, None):

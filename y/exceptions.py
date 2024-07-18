@@ -51,8 +51,8 @@ class ExplorerError(Exception):  # don't want these caught by general exc clause
 
 class InvalidAPIKeyError(ExplorerError):
     _msg = "The block explorer for this network says your API key is invalid."
-    def __init__(self):
-        super().__init__(self._msg)
+    def __init__(self, msg: str = ''):
+        super().__init__(msg or self._msg)
 
 # Contracts
 

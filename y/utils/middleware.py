@@ -50,7 +50,7 @@ def should_cache(method: str, params: Any) -> bool:
     return False
 
 
-def cache_middleware(make_request: Callable, web3: Web3) -> Callable:
+def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
     @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
@@ -60,7 +60,7 @@ def cache_middleware(make_request: Callable, web3: Web3) -> Callable:
     return middleware
 
 
-def setup_middleware() -> None:
+def setup_getcode_cache_middleware() -> None:
     # patch web3 provider with more connections and higher timeout
     if web3.provider:
         try:
@@ -76,14 +76,11 @@ def setup_middleware() -> None:
             else:
                 raise
 
-    # patch and inject local filter middleware
-    filter.MAX_BLOCK_REQUEST = BATCH_SIZE
-    web3.middleware_onion.add(filter.local_filter_middleware)
-    web3.middleware_onion.add(cache_middleware)
+    web3.middleware_onion.add(getcode_cache_middleware)
     
     if chain.id == Network.Optimism:
-        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-
-def ensure_middleware() -> None:
-    setup_middleware()
-    
+        try:
+            web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+        except ValueError as e:
+            if str(e) != "You can't add the same un-named instance twice":
+                raise
