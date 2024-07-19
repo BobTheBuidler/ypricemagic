@@ -55,16 +55,16 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#y-environment-variables-module">y.ENVIRONMENT_VARIABLES module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#y-constants-module">y.constants module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#y-erc20-module">y.erc20 module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y.erc20">y.erc20 module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -104,6 +104,19 @@
 </section>
 <section id="module-y.utils.cache">
 <span id="y-utils-cache-module"></span><h2>y.utils.cache module<a class="headerlink" href="#module-y.utils.cache" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="y.utils.cache.optional_async_diskcache">
+<span class="sig-prename descclassname"><span class="pre">y.utils.cache.</span></span><span class="sig-name descname"><span class="pre">optional_async_diskcache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/cache.html#optional_async_diskcache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.cache.optional_async_diskcache" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><em>Awaitable</em></a><em>[</em><em>T</em><em>]</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><em>T</em><em>]</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>[[~P], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.12)"><em>Awaitable</em></a>[<em>T</em>]] | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.12)"><em>Callable</em></a>[[~P], <em>T</em>]</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-y.utils.checks">
 <span id="y-utils-checks-module"></span><h2>y.utils.checks module<a class="headerlink" href="#module-y.utils.checks" title="Link to this heading"></a></h2>
@@ -1303,8 +1316,8 @@ a true value, e.g.</p>
 <section id="module-y.utils.middleware">
 <span id="y-utils-middleware-module"></span><h2>y.utils.middleware module<a class="headerlink" href="#module-y.utils.middleware" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="y.utils.middleware.cache_middleware">
-<span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">cache_middleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">make_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">web3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#cache_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.cache_middleware" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="y.utils.middleware.getcode_cache_middleware">
+<span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">getcode_cache_middleware</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">make_request</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">web3</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#getcode_cache_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.getcode_cache_middleware" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1319,18 +1332,8 @@ a true value, e.g.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="y.utils.middleware.ensure_middleware">
-<span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">ensure_middleware</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#ensure_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.ensure_middleware" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.utils.middleware.setup_middleware">
-<span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">setup_middleware</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#setup_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.setup_middleware" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="y.utils.middleware.setup_getcode_cache_middleware">
+<span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">setup_getcode_cache_middleware</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#setup_getcode_cache_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.setup_getcode_cache_middleware" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>

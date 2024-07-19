@@ -90,7 +90,7 @@
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_basketdao_index</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">EthAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;getAssetsAndBalances()(address[],uint[])&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;getAssetsAndBalances()(address[],uint[])&#39;</span><span class="p">))</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 

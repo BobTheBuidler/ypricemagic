@@ -75,7 +75,10 @@
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> 
+                    <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
@@ -94,13 +97,13 @@
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span><span class="p">,</span> <span class="n">WeiBalance</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span><span class="p">,</span> <span class="n">UsdValue</span>
+<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotVerified</span><span class="p">,</span> <span class="n">TokenNotFound</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
+<span class="kn">from</span> <span class="nn">y.prices.dex.balancer._abc</span> <span class="kn">import</span> <span class="n">BalancerABC</span><span class="p">,</span> <span class="n">BalancerPool</span>
 <span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
 <span class="kn">from</span> <span class="nn">y.utils.events</span> <span class="kn">import</span> <span class="n">ProcessedEvents</span>
 <span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">get_price_logger</span>
-<span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
 
-<span class="c1"># TODO: Cache pool tokens for pools that can&#39;t change</span>
 
 <span class="n">BALANCER_V2_VAULTS</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">[</span>
@@ -120,10 +123,41 @@
     <span class="p">],</span>
 <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[])</span>
 
+<span class="n">MESSED_UP_POOLS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">[</span>
+        <span class="c1"># NOTE: this was the first ever balancer &quot;pool&quot; and isn&#39;t actually a pool</span>
+        <span class="s2">&quot;0xF3799CBAe9c028c1A590F4463dFF039b8F4986BE&quot;</span><span class="p">,</span>
+    <span class="p">],</span>
+<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[])</span>
+
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
 <span class="n">PoolId</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s1">&#39;PoolId&#39;</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span>
+<span class="n">PoolBalances</span> <span class="o">=</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<div class="viewcode-block" id="PoolSpecialization">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.PoolSpecialization">[docs]</a>
+<span class="k">class</span> <span class="nc">PoolSpecialization</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="n">ComposableStablePool</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">WeightedPool</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">WeightedPool2Tokens</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="c1"># This is a weird one</span>
+    <span class="n">CronV1Pool</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+<div class="viewcode-block" id="PoolSpecialization.with_immutable_tokens">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.PoolSpecialization.with_immutable_tokens">[docs]</a>
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">with_immutable_tokens</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;PoolSpecialization&quot;</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">ComposableStablePool</span><span class="p">,</span>
+            <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">WeightedPool</span><span class="p">,</span>
+            <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">WeightedPool2Tokens</span><span class="p">,</span>
+            <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">CronV1Pool</span><span class="p">,</span>
+        <span class="p">]</span></div>
+</div>
+
 
 
 <div class="viewcode-block" id="BalancerV2Vault">
@@ -133,7 +167,7 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Vault.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="n">BalancerEvents</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e&#39;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="n">BalancerEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addresses</span><span class="o">=</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;0x3c13bc30b8e878c53fd2a36b679409c073afd75950be43d8858768e956fbc20e&#39;</span><span class="p">])</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_cached</span><span class="p">:</span>
             <span class="c1"># we need the contract cached so we can decode logs correctly</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">contract</span></div>
@@ -151,8 +185,9 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Vault.pools_for_token">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">pools_for_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="s2">&quot;BalancerV2Pool&quot;</span><span class="p">]:</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">info</span> <span class="ow">in</span> <span class="n">BalancerV2Pool</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pools</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">),</span> <span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">info</span><span class="p">:</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">BalancerV2Pool</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pools</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">),</span> <span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> contains </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
                 <span class="k">yield</span> <span class="n">pool</span></div>
 
                 
@@ -178,109 +213,161 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Vault.deepest_pool_for">[docs]</a>
     <span class="nd">@a_sync_ttl_cache</span>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">deepest_pool_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;BalancerV2Pool&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">deepest_pool_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BalancerV2Pool&quot;</span><span class="p">:</span>
+        <span class="n">balance_tasks</span><span class="p">:</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">TaskMapping</span><span class="p">[</span><span class="n">BalancerV2Pool</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]]</span>
+
         <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s1">&#39;balancer.v2&#39;</span><span class="p">)</span>
-        <span class="n">deepest_pool</span><span class="p">,</span> <span class="n">deepest_balance</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pools_for_token</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">):</span>
-            <span class="n">info</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">info</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                <span class="n">pool_balance</span> <span class="o">=</span> <span class="n">info</span><span class="p">[</span><span class="n">token_address</span><span class="p">]</span><span class="o">.</span><span class="n">balance</span>
-                <span class="k">if</span> <span class="n">pool_balance</span> <span class="o">&gt;</span> <span class="n">deepest_balance</span><span class="p">:</span>
-                    <span class="n">deepest_pool</span> <span class="o">=</span> <span class="n">pool</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;deepest pool </span><span class="si">%s</span><span class="s2"> balance </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">deepest_pool</span><span class="p">,</span> <span class="n">deepest_balance</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">deepest_pool</span><span class="p">,</span> <span class="n">deepest_balance</span></div>
+
+        <span class="n">balance_tasks</span> <span class="o">=</span> <span class="n">BalancerV2Pool</span><span class="o">.</span><span class="n">get_balance</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">token_address</span><span class="o">=</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="n">balances_aiterator</span> <span class="o">=</span> <span class="n">balance_tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pools_for_token</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">),</span> <span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>        
+        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="n">balances_aiterator</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_lookup_balance_from_tuple</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">_lookup_balance_from_tuple</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;deepest pool </span><span class="si">%s</span><span class="s2"> balance </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">balance</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">pool</span></div>
 </div>
 
 
 <div class="viewcode-block" id="BalancerEvents">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">BalancerEvents</span><span class="p">(</span><span class="n">ProcessedEvents</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">HexBytes</span><span class="p">,</span> <span class="n">EthAddress</span><span class="p">,</span> <span class="n">Block</span><span class="p">]]):</span>
+    <span class="n">threads</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">PruningThreadPoolExecutor</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;asynchronous&quot;</span><span class="p">,</span> 
 <div class="viewcode-block" id="BalancerEvents.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerEvents.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vault</span><span class="p">:</span> <span class="n">BalancerV2Vault</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vault</span> <span class="o">=</span> <span class="n">vault</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tasks</span> <span class="o">=</span> <span class="p">[]</span></div>
 
-    <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;poolAddress&#39;</span><span class="p">]</span> <span class="ow">in</span> <span class="n">MESSED_UP_POOLS</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
         <span class="c1"># NOTE: For some reason the Balancer fork on Fantom lists &quot;0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d&quot;</span>
         <span class="c1">#       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.</span>
-        <span class="k">return</span> <span class="n">contracts</span><span class="o">.</span><span class="n">is_contract</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;poolAddress&#39;</span><span class="p">])</span>
+        <span class="c1"># NOTE: this isn&#39;t really optimized as it still runs semi-synchronously but its better than what was had previously</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">threads</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">contracts</span><span class="o">.</span><span class="n">is_contract</span><span class="p">,</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;poolAddress&#39;</span><span class="p">])</span>
     <span class="k">def</span> <span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;BalancerV2Pool&quot;</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">BalancerV2Pool</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;poolAddress&#39;</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span> <span class="n">_deploy_block</span><span class="o">=</span><span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">specialization</span> <span class="o">=</span> <span class="n">PoolSpecialization</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;specialization&#39;</span><span class="p">])</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">specialization</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">pool</span> <span class="o">=</span> <span class="n">BalancerV2Pool</span><span class="p">(</span>
+            <span class="n">address</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;poolAddress&#39;</span><span class="p">],</span> 
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;poolId&#39;</span><span class="p">]),</span> 
+            <span class="n">specialization</span><span class="o">=</span><span class="n">specialization</span><span class="p">,</span>
+            <span class="n">vault</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">vault</span><span class="p">,</span>
+            <span class="n">_deploy_block</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span>
+            <span class="n">asynchronous</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span> 
+        <span class="p">)</span>
+        <span class="c1"># lets get this cached into memory now</span>
+        <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">pool</span><span class="o">.</span><span class="n">tokens</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">task</span><span class="p">)</span>
+        <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_task_done_callback</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pool</span>
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="s2">&quot;BalancerV2Pool&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">pool</span><span class="o">.</span><span class="n">_deploy_block</span></div>
+        <span class="k">return</span> <span class="n">pool</span><span class="o">.</span><span class="n">_deploy_block</span>
+    <span class="k">def</span> <span class="nf">_task_done_callback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__tasks</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">t</span><span class="o">.</span><span class="n">cancelled</span><span class="p">():</span>
+            <span class="c1"># get the exc so it doesn&#39;t log, it will come up later</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">exception</span><span class="p">()</span></div>
 
 
-
-<span class="n">MESSED_UP_POOLS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">[</span>
-        <span class="s2">&quot;0xF3799CBAe9c028c1A590F4463dFF039b8F4986BE&quot;</span><span class="p">,</span>
-    <span class="p">],</span>
-<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[])</span>
 
 <div class="viewcode-block" id="BalancerV2Pool">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool">[docs]</a>
-<span class="k">class</span> <span class="nc">BalancerV2Pool</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
-    <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
-    <span class="n">_messed_up</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="k">class</span> <span class="nc">BalancerV2Pool</span><span class="p">(</span><span class="n">BalancerPool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A pool from Balancer Protocol v2&quot;&quot;&quot;</span>
     <span class="c1"># internal variables to save calls in some instances</span>
     <span class="c1"># they do not necessarily reflect real life at all times</span>
+    <span class="c1"># defaults are stored as class vars to keep instance dicts smaller</span>
     <span class="n">__nonweighted</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">__tokens</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">__weights</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;_id&quot;</span><span class="p">,</span> 
 <div class="viewcode-block" id="BalancerV2Pool.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
-        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HexBytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">HexBytes</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">specialization</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PoolSpecialization</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">vault</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2Vault</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
         <span class="n">_deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span> <span class="n">_deploy_block</span><span class="o">=</span><span class="n">_deploy_block</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="nb">id</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="ow">in</span> <span class="n">MESSED_UP_POOLS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_messed_up</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="k">if</span> <span class="n">specialization</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool_type</span> <span class="o">=</span> <span class="n">specialization</span>
+        <span class="k">if</span> <span class="n">vault</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">vault</span> <span class="o">=</span> <span class="n">vault</span></div>
 
 
 <div class="viewcode-block" id="BalancerV2Pool.id">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.id">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PoolId</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;getPoolId()(bytes32)&#39;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_id</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;getPoolId()(bytes32)&#39;</span><span class="p">])</span></div>
 
     <span class="n">__id__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">PoolId</span><span class="p">]</span>
     
 <div class="viewcode-block" id="BalancerV2Pool.vault">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.vault">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
+    <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">vault</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2Vault</span><span class="p">]:</span>
-        <span class="n">vault</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;getVault()&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">vault</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span> <span class="k">else</span> <span class="n">BalancerV2Vault</span><span class="p">(</span><span class="n">vault</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">ContractLogicError</span><span class="p">):</span>
+            <span class="n">vault</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;getVault()(address)&#39;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">vault</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">vault</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">BalancerV2Vault</span><span class="p">(</span><span class="n">vault</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both</span>
+        <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">==</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
+            <span class="c1"># NOTE: these `CronV1Pool` tokens ARE balancer pools but don&#39;t match the expected pool abi? </span>
+            <span class="k">return</span> <span class="n">BalancerV2Vault</span><span class="p">(</span><span class="s2">&quot;0xBA12222222228d8Ba445958a75a0704d566BF2C8&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
     <span class="n">__vault__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2Vault</span><span class="p">]]</span>
-    
-<div class="viewcode-block" id="BalancerV2Pool.get_pool_price">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.get_pool_price">[docs]</a>
-    <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-        <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_tvl</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-        <span class="p">)</span>
-        <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="n">tvl</span> <span class="o">/</span> <span class="n">total_supply</span><span class="p">)</span></div>
 
+<div class="viewcode-block" id="BalancerV2Pool.pool_type">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.pool_type">[docs]</a>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">PoolSpecialization</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+        <span class="n">vault</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__vault__</span>
+        <span class="k">if</span> <span class="n">vault</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no vault&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="n">poolid</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span><span class="p">:</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">specialization</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vault</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getPool</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">==</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
+            <span class="c1"># NOTE: these `CronV1Pool` tokens ARE balancer pools but don&#39;t match the expected pool abi? </span>
+            <span class="k">return</span> <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">CronV1Pool</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no poolid&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PoolSpecialization</span><span class="p">(</span><span class="n">specialization</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_warned</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;ypricemagic does not recognize this pool type, please add `</span><span class="si">%s</span><span class="s2"> = </span><span class="si">%s</span><span class="s2">` to </span><span class="si">%s</span><span class="s2">.PoolSpecialization (pool=</span><span class="si">%s</span><span class="s2">)&quot;</span><span class="p">,</span> 
+                        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span><span class="p">,</span> <span class="n">specialization</span><span class="p">,</span> <span class="vm">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
+                    <span class="p">)</span>
+                <span class="n">_warned</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">specialization</span></div>
+
+    <span class="n">__pool_type__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PoolSpecialization</span><span class="p">]]</span>
         
 <div class="viewcode-block" id="BalancerV2Pool.get_tvl">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.get_tvl">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdValue</span><span class="p">]:</span>
-        <span class="n">balances</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">balances</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">balance</span> <span class="k">for</span> <span class="n">balance</span> <span class="ow">in</span> <span class="n">balances</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">if</span> <span class="n">balance</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">address</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">),</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
+            <span class="c1"># overwrite ref to big obj with ref to little obj</span>
+            <span class="n">balances</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">balances</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+            <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">balances</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
 
 
 <div class="viewcode-block" id="BalancerV2Pool.get_balances">
@@ -288,21 +375,26 @@
     <span class="nd">@a_sync_ttl_cache</span>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_messed_up</span><span class="p">:</span>
-            <span class="k">return</span> <span class="p">{}</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">vault</span><span class="p">,</span> <span class="nb">id</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__vault__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span><span class="p">)</span>
-        <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
-            <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">!=</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is messed up&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-            <span class="k">return</span> <span class="p">{}</span>
+        <span class="n">vault</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__vault__</span>
         <span class="k">if</span> <span class="n">vault</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{}</span>
-        <span class="n">tokens</span><span class="p">,</span> <span class="n">balances</span><span class="p">,</span> <span class="n">lastChangedBlock</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vault</span><span class="o">.</span><span class="n">get_pool_tokens</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">tokens</span><span class="p">,</span> <span class="n">balances</span><span class="p">,</span> <span class="n">lastChangedBlock</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vault</span><span class="o">.</span><span class="n">get_pool_tokens</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">):</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="n">balance</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">balances</span><span class="p">)</span>
+            <span class="c1"># NOTE: some pools include themselves in their own token list, and we should ignore those</span>
+            <span class="k">if</span> <span class="n">token</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
         <span class="p">}</span></div>
+
+    
+<div class="viewcode-block" id="BalancerV2Pool.get_balance">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.get_balance">[docs]</a>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">info</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">info</span><span class="p">[</span><span class="n">token_address</span><span class="p">]</span>
+            <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">TokenNotFound</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="BalancerV2Pool.get_token_price">
@@ -345,16 +437,13 @@
 <div class="viewcode-block" id="BalancerV2Pool.tokens">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2Pool.tokens">[docs]</a>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+    <span class="nd">@stuck_coro_debugger</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tokens</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tokens</span>
         <span class="n">tokens</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">((</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">tokens_history</span> <span class="o">=</span> <span class="n">_tasks_to_help_me_find_pool_types_that_cant_change_tokens</span><span class="p">[</span><span class="bp">self</span><span class="p">]</span>
-        <span class="n">tokens_history</span><span class="p">[</span><span class="n">tokens</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">tokens_history</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">tokens_history</span><span class="p">[</span><span class="n">tokens</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
-            <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contracts</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">contract</span><span class="o">.</span><span class="n">verified</span><span class="p">:</span>
-                <span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">contract</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">ContractCall</span><span class="p">,</span> <span class="n">ContractTx</span><span class="p">,</span> <span class="n">OverloadedMethod</span><span class="p">))]</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has 100 blocks with unchanging list of tokens, contract methods are </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">)</span>
+        <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pool_type__</span> <span class="ow">in</span> <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">with_immutable_tokens</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__tokens</span> <span class="o">=</span> <span class="n">tokens</span>
         <span class="k">return</span> <span class="n">tokens</span></div>
 
 
@@ -370,95 +459,61 @@
             <span class="c1"># Contract has no method `getNormalizedWeights`</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__nonweighted</span> <span class="o">=</span> <span class="kc">True</span>
             <span class="n">num_tokens</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">tokens</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">__weights</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">18</span> <span class="o">//</span> <span class="n">num_tokens</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_tokens</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__weights</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span> <span class="o">**</span> <span class="mi">18</span> <span class="o">//</span> <span class="n">num_tokens</span><span class="p">]</span> <span class="o">*</span> <span class="n">num_tokens</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__weights</span></div>
 </div>
-
-
-<div class="viewcode-block" id="ImmutableTokensBalancerV2Pool">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool">[docs]</a>
-<span class="k">class</span> <span class="nc">ImmutableTokensBalancerV2Pool</span><span class="p">(</span><span class="n">BalancerV2Pool</span><span class="p">):</span>
-<div class="viewcode-block" id="ImmutableTokensBalancerV2Pool.tokens">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.ImmutableTokensBalancerV2Pool.tokens">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tokens</span></div>
-
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">tokens</span><span class="p">()</span></div>
-
-
-<span class="n">_tasks_to_help_me_find_pool_types_that_cant_change_tokens</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">int</span><span class="p">))</span>
-
-<span class="c1">#yLazyLogger(logger)</span>
-<div class="viewcode-block" id="_is_standard_pool">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2._is_standard_pool">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_is_standard_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">:</span> <span class="n">EthAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Returns `False` if `build_name(pool) in [&#39;ConvergentCurvePool&#39;,&#39;MetaStablePool&#39;]`, else `True`</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    
-    <span class="c1"># With `return_None_on_failure=True`, if `build_name(pool)` fails,</span>
-    <span class="c1"># we can&#39;t know for sure that its a standard pool, but... it probably is.</span>
-    <span class="k">return</span> <span class="k">await</span> <span class="n">contracts</span><span class="o">.</span><span class="n">build_name</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;ConvergentCurvePool&#39;</span><span class="p">,</span><span class="s1">&#39;MetaStablePool&#39;</span><span class="p">]</span></div>
 
 
 
 <div class="viewcode-block" id="BalancerV2">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2">[docs]</a>
-<span class="k">class</span> <span class="nc">BalancerV2</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">BalancerV2</span><span class="p">(</span><span class="n">BalancerABC</span><span class="p">[</span><span class="n">BalancerV2Pool</span><span class="p">]):</span>
+
+    <span class="n">_pool_type</span> <span class="o">=</span> <span class="n">BalancerV2Pool</span>
+
+    <span class="n">_check_methods</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;getPoolId()(bytes32)&#39;</span><span class="p">,</span><span class="s1">&#39;getPausedState()((bool,uint,uint))&#39;</span><span class="p">,</span><span class="s1">&#39;getSwapFeePercentage()(uint)&#39;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="BalancerV2.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">vaults</span> <span class="o">=</span> <span class="p">[</span><span class="n">BalancerV2Vault</span><span class="p">(</span><span class="n">vault</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">vault</span> <span class="ow">in</span> <span class="n">BALANCER_V2_VAULTS</span><span class="p">]</span></div>
 
-    
-<div class="viewcode-block" id="BalancerV2.__str__">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2.__str__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="k">return</span> <span class="s2">&quot;BalancerV2()&quot;</span></div>
-
-
-<div class="viewcode-block" id="BalancerV2.is_pool">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2.is_pool">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
-    <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">is_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">methods</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;getPoolId()(bytes32)&#39;</span><span class="p">,</span><span class="s1">&#39;getPausedState()((bool,uint,uint))&#39;</span><span class="p">,</span><span class="s1">&#39;getSwapFeePercentage()(uint)&#39;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">contracts</span><span class="o">.</span><span class="n">has_methods</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
-
-    
-<div class="viewcode-block" id="BalancerV2.get_pool_price">
-<a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2.get_pool_price">[docs]</a>
-    <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">BalancerV2Pool</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">get_pool_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span></div>
-
 
 <div class="viewcode-block" id="BalancerV2.get_token_price">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2.get_token_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_token_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-        <span class="n">deepest_pool</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2Pool</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">deepest_pool</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">deepest_pool_for</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">deepest_pool</span><span class="o">.</span><span class="n">get_token_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
     
+    <span class="c1"># NOTE: we need a tiny semaphore here because balancer is super arduous and every unpricable token must pass thru this section</span>
 <div class="viewcode-block" id="BalancerV2.deepest_pool_for">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v2.BalancerV2.deepest_pool_for">[docs]</a>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">Semaphore</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deepest_pool_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BalancerV2Pool</span><span class="p">]:</span>
-        <span class="n">deepest_pools</span> <span class="o">=</span> <span class="n">BalancerV2Vault</span><span class="o">.</span><span class="n">deepest_pool_for</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vaults</span><span class="p">,</span> <span class="n">token_address</span><span class="o">=</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="n">kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;token_address&quot;</span><span class="p">:</span> <span class="n">token_address</span><span class="p">,</span> <span class="s2">&quot;block&quot;</span><span class="p">:</span> <span class="n">block</span><span class="p">}</span>
+        <span class="n">deepest_pools</span> <span class="o">=</span> <span class="n">BalancerV2Vault</span><span class="o">.</span><span class="n">deepest_pool_for</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vaults</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">deepest_pools</span> <span class="o">:=</span> <span class="p">{</span><span class="n">vault</span><span class="o">.</span><span class="n">address</span><span class="p">:</span> <span class="n">deepest_pool</span> <span class="k">async</span> <span class="k">for</span> <span class="n">vault</span><span class="p">,</span> <span class="n">deepest_pool</span> <span class="ow">in</span> <span class="n">deepest_pools</span> <span class="k">if</span> <span class="n">deepest_pool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">}:</span>
-            <span class="n">deepest_pool_balance</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">dp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">dp</span> <span class="ow">in</span> <span class="n">deepest_pools</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-            <span class="k">for</span> <span class="n">pool_address</span><span class="p">,</span> <span class="n">pool_balance</span> <span class="ow">in</span> <span class="n">deepest_pools</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-                <span class="k">if</span> <span class="n">pool_balance</span> <span class="o">==</span> <span class="n">deepest_pool_balance</span> <span class="ow">and</span> <span class="n">pool_address</span><span class="p">:</span>
-                    <span class="k">return</span> <span class="n">BalancerV2Pool</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> deepest pools for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">deepest_pools</span><span class="p">)</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">BalancerV2Pool</span><span class="o">.</span><span class="n">get_balance</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">deepest_pools</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">pool</span></div>
 </div>
 
+        
+        <span class="c1"># TODO: afilter</span>
+        <span class="c1"># deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, **kwargs).values(pop=True).afilter()</span>
+        <span class="c1"># async for pool in BalancerV2Pool.get_balance.map(deepest_pools, **kwargs).keys(pop=True).aiterbyvalues(reverse=True):</span>
+        <span class="c1">#     return pool</span>
 
 <span class="n">balancer</span> <span class="o">=</span> <span class="n">BalancerV2</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">_lookup_balance_from_tuple</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span> <span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">pool_and_balance</span><span class="p">:</span> <span class="n">pool_and_balance</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="s2">&quot;Takes a tuple[K, V] and returns V.&quot;</span>
+
+<span class="n">_warned</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 </pre></div>
 
            </div>

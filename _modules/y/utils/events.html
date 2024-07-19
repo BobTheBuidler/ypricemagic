@@ -73,6 +73,7 @@
   <h1>Source code for y.utils.events</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
@@ -493,7 +494,7 @@
     <span class="k">def</span> <span class="nf">events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">decode_logs</span><span class="p">(</span><span class="n">objs</span><span class="p">))</span>
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">block_number</span></div>
@@ -503,7 +504,7 @@
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.ProcessedEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">ProcessedEvents</span><span class="p">(</span><span class="n">Events</span><span class="p">,</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this to exclude specific events from processing and collection.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
@@ -514,10 +515,21 @@
     <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_event</span><span class="p">(</span><span class="n">event</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_event</span><span class="p">(</span><span class="n">event</span><span class="p">))</span></div>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># .items() keeps the input order but yields them as they&#39;re ready</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+        <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">decoded</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="n">should_include</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_event</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+        <span class="c1"># sourcery skip: assign-if-exp</span>
+        <span class="n">include</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">include</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">include</span>
+        <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isawaitable</span><span class="p">(</span><span class="n">include</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="n">include</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">include</span><span class="p">)</span></div>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_lowest_deploy_block</span><span class="p">(</span><span class="n">addresses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">],</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Block</span><span class="p">:</span>

@@ -126,9 +126,9 @@
 
 
 
-<div class="viewcode-block" id="cache_middleware">
-<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.cache_middleware">[docs]</a>
-<span class="k">def</span> <span class="nf">cache_middleware</span><span class="p">(</span><span class="n">make_request</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">web3</span><span class="p">:</span> <span class="n">Web3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
+<div class="viewcode-block" id="getcode_cache_middleware">
+<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.getcode_cache_middleware">[docs]</a>
+<span class="k">def</span> <span class="nf">getcode_cache_middleware</span><span class="p">(</span><span class="n">make_request</span><span class="p">:</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">web3</span><span class="p">:</span> <span class="n">Web3</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">:</span>
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
     <span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
@@ -139,9 +139,9 @@
 
 
 
-<div class="viewcode-block" id="setup_middleware">
-<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.setup_middleware">[docs]</a>
-<span class="k">def</span> <span class="nf">setup_middleware</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<div class="viewcode-block" id="setup_getcode_cache_middleware">
+<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.setup_getcode_cache_middleware">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_getcode_cache_middleware</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="c1"># patch web3 provider with more connections and higher timeout</span>
     <span class="k">if</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -157,21 +157,15 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span>
 
-    <span class="c1"># patch and inject local filter middleware</span>
-    <span class="nb">filter</span><span class="o">.</span><span class="n">MAX_BLOCK_REQUEST</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span>
-    <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">filter</span><span class="o">.</span><span class="n">local_filter_middleware</span><span class="p">)</span>
-    <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">cache_middleware</span><span class="p">)</span>
+    <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">getcode_cache_middleware</span><span class="p">)</span>
     
     <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span>
-        <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">geth_poa_middleware</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">geth_poa_middleware</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;You can&#39;t add the same un-named instance twice&quot;</span><span class="p">:</span>
+                <span class="k">raise</span></div>
 
-
-<div class="viewcode-block" id="ensure_middleware">
-<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.ensure_middleware">[docs]</a>
-<span class="k">def</span> <span class="nf">ensure_middleware</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">setup_middleware</span><span class="p">()</span></div>
-
-    
 </pre></div>
 
            </div>
