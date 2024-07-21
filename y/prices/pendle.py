@@ -23,7 +23,7 @@ TWAP_DURATION = 1
 
 @a_sync("sync")
 async def is_pendle_lp(token: Address) -> bool:
-    return PENDLE_ORACLE and await has_method(token, 'readTokens()(address,address,address)', sync=False)
+    return PENDLE_ORACLE is not None and await has_method(token, 'readTokens()(address,address,address)', sync=False)
 
 @alru_cache(maxsize=None)
 async def get_tokens(lp_token: Address) -> Tuple[str, str, str]:
