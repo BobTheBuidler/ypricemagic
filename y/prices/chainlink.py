@@ -11,6 +11,7 @@ from multicall import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
@@ -205,6 +206,7 @@ class Feed:
         return await (10 ** a_sync.ASyncFuture(self.decimals()))
 
     #@a_sync.future
+    @stuck_coro_debugger
     async def get_price(self, block: int) -> Optional[UsdPrice]:
         if self._stale_thru_block and self._stale_thru_block > block:
             logger.debug('%s is stale, must fetch price from elsewhere', self)
@@ -280,6 +282,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         return False
 
    # @a_sync.future
+    @stuck_coro_debugger
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
             block = await dank_mids.eth.block_number
