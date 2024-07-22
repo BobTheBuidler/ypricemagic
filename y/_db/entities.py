@@ -93,17 +93,36 @@ class LogCacheInfo(db.Entity):
     cached_from = Required(int)
     cached_thru = Required(int)
 
+class LogTopic(db.Entity):
+    "Just makes the :ref:`Log` db smaller."
+    dbid = PrimaryKey(int, auto=True, size=64)
+    topic = Required(str, unique=True, lazy=True)
+
+    logs_as_topic0 = Set("Log", reverse="topic0")
+    logs_as_topic1 = Set("Log", reverse="topic1")
+    logs_as_topic2 = Set("Log", reverse="topic2")
+    logs_as_topic3 = Set("Log", reverse="topic3")
+
+class Hashes(db.Entity):
+    "Just makes :ref:`Log` pk and indexes smaller."
+    dbid = PrimaryKey(int, auto=True, size=64)
+    hash = Required(str, unique=True)
+
+    logs_for_tx = Set("Log", reverse="tx")
+    logs_for_addr = Set("Log", reverse="address")
+
 class Log(db.Entity):
     block = Required(Block, index=True, lazy=True)
-    transaction_hash = Required(str, lazy=True)
-    log_index = Required(int, lazy=True)
-    PrimaryKey(block, transaction_hash, log_index)
+    tx = Required(Hashes, lazy=True)
+    log_index = Required(int, size=16, lazy=True)
+    PrimaryKey(block, tx, log_index)
 
-    address = Required(str, index=True, lazy=True)
-    topic0 = Required(str, index=True, lazy=True)
-    topic1 = Optional(str, index=True, lazy=True)
-    topic2 = Optional(str, index=True, lazy=True)
-    topic3 = Optional(str, index=True, lazy=True)
+    address = Required(Hashes, index=True, lazy=True)
+    
+    topic0 = Required(LogTopic, index=True, lazy=True)
+    topic1 = Optional(LogTopic, index=True, lazy=True)
+    topic2 = Optional(LogTopic, index=True, lazy=True)
+    topic3 = Optional(LogTopic, index=True, lazy=True)
     composite_index(address, topic0)
     composite_index(topic0, topic1)
     composite_index(topic0, topic2)

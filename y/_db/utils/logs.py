@@ -1,11 +1,14 @@
 
+import asyncio
 import logging
 from typing import List, Optional
 
 from a_sync.executor import _AsyncExecutorMixin
+from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
+from eth_typing import HexStr
 from msgspec import json
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
@@ -18,21 +21,26 @@ from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
 
+LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
-def _prepare_log(log: LogReceipt) -> tuple:
+async def _prepare_log(log: LogReceipt) -> tuple:
+    transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log['transactionHash'].hex()), get_hash_dbid(log['address']))
     return  tuple({
         "block_chain": chain.id,
         "block_number": log['blockNumber'],
-        "transaction_hash": log['transactionHash'].hex(),
+        "transaction": transaction_dbid,
         "log_index": log['logIndex'],
-        "address": log['address'],
-        **{f"topic{i}": log_topics[i].hex() if i < len(log_topics := log['topics']) else None for i in range(4)},
+        "address": address_dbid,
+        **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log['topics']) else None for i in range(4)},
         "raw": json.encode(log, enc_hook=enc_hook)
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
 async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+    if not logs:
+        return
+    
     block_cols = ["chain", "number"]
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
@@ -43,8 +51,34 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
         blocks = [(chain.id, block) for block in {log['blockNumber'] for log in logs}]
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
 
-    log_cols = ["block_chain", "block_number", "transaction_hash", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
-    await executor.run(bulk.insert, entities.Log, log_cols, [_prepare_log(log) for log in logs], sync=True)
+    hashes = [[txhash.hex()] for txhash in {log["transactionHash"] for log in logs}] + [[EthAddress(addr)] for addr in {log["address"] for log in logs}]
+    await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
+
+    topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log['topics'])}
+    await executor.run(bulk.insert, entities.LogTopic, ["topic"], [[topic.hex()] for topic in topics], sync=True)
+
+    await executor.run(bulk.insert, entities.Log, LOG_COLS, await asyncio.gather(*[_prepare_log(log) for log in logs]), sync=True)
+
+@decorators.a_sync_write_db_session_cached
+def get_topic_dbid(topic: bytes) -> int:
+    topic = topic.hex()
+    entity = entities.LogTopic.get(topic=topic)
+    if entity is None:
+        entity = entities.LogTopic(topic=topic)
+    return entity.dbid
+
+@alru_cache(maxsize=1024, ttl=600)
+async def get_hash_dbid(txhash: HexStr) -> int:
+    return await _get_hash_dbid(txhash)
+
+@decorators.a_sync_write_db_session
+def _get_hash_dbid(hexstr: HexStr) -> int:
+    if len(hexstr) == 42:
+        hexstr = EthAddress(hexstr)
+    entity = entities.Hashes.get(hash=hexstr)
+    if entity is None:
+        entity = entities.Hashes(hash=hexstr)
+    return entity.dbid
 
 def get_decoded(log: structs.Log) -> _EventItem:
     # TODO: load these in bulk
@@ -150,7 +184,7 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
         for topic in [f"topic{i}" for i in range(4)]:
             generator = self._wrap_query_with_topic(generator, topic)
 
-        query = select(generator).without_distinct().order_by(lambda l: (l.block.number, l.transaction_hash, l.log_index))
+        query = select(generator).without_distinct().order_by(lambda l: (l.block.number, l.tx.hash, l.log_index))
         logger.debug(query.get_sql())
         return query
     
@@ -210,14 +244,14 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
         if addresses := self.addresses:
             logger.debug("%s addresses: %s", self, addresses)
             if isinstance(addresses, str):
-                return (log for log in generator if log.address == str(EthAddress(addresses)))
-            return (log for log in generator if log.address in addresses)
+                return (log for log in generator if log.address.hash == str(EthAddress(addresses)))
+            return (log for log in generator if log.address.hash in addresses)
         return generator
     
     def _wrap_query_with_topic(self, generator, topic: str) -> Query:
         if value := getattr(self, topic):
             logger.debug("%s %s is %s", self, topic, value)
             if isinstance(value, (bytes, str)):
-                return (log for log in generator if getattr(log, topic) == value)
-            return (log for log in generator if getattr(log, topic) in value)
+                return (log for log in generator if getattr(log, topic).topic == value)
+            return (log for log in generator if getattr(log, topic).topic in value)
         return generator

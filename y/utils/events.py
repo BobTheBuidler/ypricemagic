@@ -4,6 +4,7 @@ import inspect
 import logging
 import threading
 from collections import Counter, defaultdict
+from functools import cached_property
 from importlib.metadata import version
 from itertools import zip_longest
 from typing import (TYPE_CHECKING, Any, AsyncGenerator, Awaitable, 
@@ -352,7 +353,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
     def insert_to_db(self) -> Callable[[LogReceipt], None]:
         raise NotImplementedError  # TODO: refactor this out of the base class abc
     
-    @property
+    @cached_property
     def bulk_insert(self) -> Callable[[List[LogReceipt]], Awaitable[None]]:
         from y._db.utils.logs import bulk_insert
         return bulk_insert
