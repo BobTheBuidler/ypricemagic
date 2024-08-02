@@ -39,7 +39,7 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
 
 class BalancerV1Pool(BalancerPool):
     @a_sync.aka.cached_property
-    @optional_async_diskcache
+    #@optional_async_diskcache
     @stuck_coro_debugger
     async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
