@@ -46,7 +46,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
     __v2__: HiddenMethodDescriptor[Self, Optional[BalancerV2]]
 
     @stuck_coro_debugger
-    @optional_async_diskcache
+    #@optional_async_diskcache
     async def is_balancer_pool(self, token_address: AnyAddressType) -> bool:
         try:
             await self.get_version(token_address)
