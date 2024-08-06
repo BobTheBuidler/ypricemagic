@@ -334,7 +334,13 @@ class CurvePool(ERC20): # this shouldn't be ERC20 but works for inheritance for 
             return None
         try:
             return await contract.balances.coroutine(i, block_identifier=block)
+        except ContractLogicError as e:
+            # happens on web3py>=6.0
+            if str(e) == "execution reverted":
+                return None
+            raise
         except ValueError as e:
+            # happens on web3py<6.0
             if str(e) == "No data was returned - the call likely reverted":
                 return None
             raise
