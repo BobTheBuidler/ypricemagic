@@ -7,6 +7,7 @@ from itertools import cycle
 from typing import AsyncIterator, DefaultDict, List, Optional, Tuple
 
 import a_sync
+import eth_retry
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
