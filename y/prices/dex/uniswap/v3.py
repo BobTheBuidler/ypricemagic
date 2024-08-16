@@ -180,10 +180,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         logger.debug("paths: %s", paths)
         
         amount_in = await ERC20(token, asynchronous=True).scale
-        results = await asyncio.gather(
-            *(quoter.quoteExactInput.coroutine(_encode_path(path), amount_in, block_identifier=block) for path in paths), 
-            return_exceptions=True,
-        )
+        results = await asyncio.gather(*(self._quote_exact_input(path, amount_in, block) for path in paths), return_exceptions=True)
 
         for result in results:
             if isinstance(result, Exception) and not call_reverted(result):
@@ -255,6 +252,12 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         liquidity = await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
         logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
         return liquidity
+    
+    @stuck_coro_debugger
+    @eth_retry.auto_retry
+    async def _quote_exact_input(self, path: List[list], amount_in: int, block: int) -> int:
+        quoter = await self.__quoter__
+        return await quoter.quoteExactInput.coroutine(_encode_path(path), amount_in, block_identifier=block)
 
 def _encode_path(path) -> bytes:
     types = [type for _, type in zip(path, cycle(['address', 'uint24']))]
