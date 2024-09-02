@@ -47,7 +47,7 @@ jobs:
       - name: Build documentation
         run: |
           cd docs
-          BROWNIE_NETWORK_ID=mainnet make html
+          BROWNIE_NETWORK_ID=mainnet ETHERSCAN_TOKEN=${{ secrets.ETHERSCAN_TOKEN }} make html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
