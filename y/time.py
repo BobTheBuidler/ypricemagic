@@ -3,9 +3,8 @@ import asyncio
 import datetime
 import logging
 import time
-from typing import Union
+from typing import NewType, Union
 
-import a_sync
 import dank_mids
 import eth_retry
 from async_lru import alru_cache
@@ -103,8 +102,7 @@ async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
     return block_at_timestamp
 
 
-class UnixTimestamp(int):
-    pass
+UnixTimestamp = NewType("UnixTimestamp", int)
 
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 

@@ -9,9 +9,14 @@
 import os
 import sys
 
+from sphinx.util import logging
+
+
 project = 'ypricemagic'
 copyright = '2024, BobTheBuidler'
 author = 'BobTheBuidler'
+
+logger = logging.getLogger(__name__)
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -94,3 +99,24 @@ autodoc_class_signature = "separated"
 automodule_generate_module_stub = True
 
 sys.path.insert(0, os.path.abspath('./y'))
+
+
+def skip_specific_members(app, what, name, obj, skip, options):
+    """
+    Function to exclude specific members for a particular module.
+    """
+    
+    logger.info(f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}")
+
+    # Skip the __init__ and __call__ members of any NewType objects we defined.
+    if type(getattr(obj, "__self__", None)).__qualname__ == "typing.NewType" and name in ["__init__", "__call__"]:
+        return True
+    
+    # Skip the __init__, args, and with_traceback members of all Exceptions
+    if issubclass(getattr(obj, '__objclass__', type), BaseException) and name in ["__init__", "args", "with_traceback"]:
+        return True
+    
+    return skip
+
+def setup(app):
+    app.connect('autodoc-skip-member', skip_specific_members)
