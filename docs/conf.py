@@ -112,8 +112,8 @@ def skip_specific_members(app, what, name, obj, skip, options):
     if type(getattr(obj, "__self__", None)).__qualname__ == "typing.NewType" and name in ["__init__", "__call__"]:
         return True
     
-    # Skip the __init__, args, and with_traceback members of all Exceptions
-    if issubclass(getattr(obj, '__objclass__', type), BaseException) and name in ["__init__", "args", "with_traceback"]:
+    # Skip the __init__, __new__, __str__, __getattribute__, args, and with_traceback members of all Exceptions
+    if issubclass(getattr(obj, '__objclass__', type), BaseException) and name in ["__init__", "__new__", "__str__", "__getattribute__", "args", "with_traceback"]:
         return True
     
     return skip
