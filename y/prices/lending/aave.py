@@ -72,26 +72,65 @@ v3_pools = {
 }.get(chain.id, [])
 
 class AaveMarketBase(ContractBase):
-    def __contains__(self, __o: object) -> bool:
+    """
+    Base class for Aave markets.
+    """
+    def __contains__(self, token: object) -> bool:
+        """
+        Check if `token` is an aToken from this market.
+
+        Args:
+            atoken: The item to check.
+
+        Returns:
+            True if the token is an aToken from the market, False otherwise.
+        """
         if not self.asynchronous:
             cls = self.__class__.__name__
             raise RuntimeError(f"'self.asynchronous' must be False to use {cls}.__contains__.\nYou may wish to use {cls}.is_atoken instead.")
-        return convert.to_address(__o) in self.atokens
-    async def contains(self, __o: object) -> bool:
-        contains = convert.to_address(__o) in await self.__atokens__
-        logger.debug('%s contains %s: %s', self, __o, contains)
+        return convert.to_address(token) in self.atokens
+    async def contains(self, token: object) -> bool:
+        """
+        Check if `token` is an aToken from this market.
+
+        Args:
+            token: The item to check.
+
+        Returns:
+            True if the token is an aToken from the market, False otherwise.
+        """
+        contains = convert.to_address(token) in await self.__atokens__
+        logger.debug('%s contains %s: %s', self, token, contains)
         return contains
     async def get_reserves(self) -> List[Address]:
         return await Call(self.address, [self._get_reserves_method])
     async def get_reserve_data(self, reserve: AnyAddressType) -> tuple:
         return await self.contract.getReserveData.coroutine(reserve)
     @abstractproperty
-    async def atokens(self) -> Awaitable[List[ERC20]]:...
+    async def atokens(self) -> Awaitable[List[ERC20]]:
+        """
+        Get the aTokens of the market.
+
+        Returns:
+            A list of aTokens as :class:`~ERC20` objects.
+        """
     __atokens__: HiddenMethodDescriptor[Self, List[ERC20]]
     @abstractmethod
-    async def underlying(self, token_address: AddressOrContract) -> ERC20:...
+    async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
+        """
+        Get the underlying asset of the given aToken address.
+
+        Args:
+            atoken_address: The address of the aToken.
+
+        Returns:
+            The underlying asset.
+        """
     @abstractproperty
-    def _get_reserves_method(self) -> str:...
+    def _get_reserves_method(self) -> str:
+        """
+        The method that must be called to get the reserves list.
+        """
 
 class AaveMarketV1(AaveMarketBase):
     @a_sync.aka.cached_property
@@ -104,8 +143,8 @@ class AaveMarketV1(AaveMarketBase):
         logger.info('loaded %s v1 atokens for %s', len(atokens), self)
         return atokens
     @a_sync.a_sync(ram_cache_maxsize=256)
-    async def underlying(self, token_address: AddressOrContract) -> ERC20:
-        underlying = await raw_call(token_address, 'underlyingAssetAddress()', output='address', sync=False)
+    async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
+        underlying = await raw_call(atoken_address, 'underlyingAssetAddress()', output='address', sync=False)
         return ERC20(underlying)
     _get_reserves_method = 'getReserves()(address[])'
 
@@ -127,8 +166,8 @@ class AaveMarketV2(AaveMarketBase):
     async def get_reserve_data(self, reserve: AnyAddressType) -> tuple:
         return await Call(self.address, [_V2_RESERVE_DATA_METHOD, str(reserve)])
     @a_sync.a_sync(ram_cache_maxsize=256)
-    async def underlying(self, token_address: AddressOrContract) -> ERC20:
-        underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address', sync=False)
+    async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
+        underlying = await raw_call(atoken_address, 'UNDERLYING_ASSET_ADDRESS()',output='address', sync=False)
         logger.debug("underlying: %s", underlying)
         return ERC20(underlying, asynchronous=self.asynchronous)
     _get_reserves_method = 'getReservesList()(address[])'
@@ -147,8 +186,8 @@ class AaveMarketV3(AaveMarketBase):
             logger.warning('failed to load tokens for %s', self)
             return []
     @a_sync.a_sync(ram_cache_maxsize=256)
-    async def underlying(self, token_address: AddressOrContract) -> ERC20:
-        underlying = await raw_call(token_address, 'UNDERLYING_ASSET_ADDRESS()',output='address', sync=False)
+    async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
+        underlying = await raw_call(atoken_address, 'UNDERLYING_ASSET_ADDRESS()',output='address', sync=False)
         logger.debug("underlying: %s", underlying)
         return ERC20(underlying, asynchronous=self.asynchronous)
     _get_reserves_method = 'getReservesList()(address[])'
@@ -194,10 +233,10 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         return pools
     __pools_v3__: HiddenMethodDescriptor[Self, List[AaveMarketV3]]
     
-    async def pool_for_atoken(self, token_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
+    async def pool_for_atoken(self, atoken_address: AnyAddressType) -> Optional[Union[AaveMarketV1, AaveMarketV2, AaveMarketV3]]:
         pools = await self.__pools__
         for pool in pools:
-            if await pool.contains(token_address, sync=False):
+            if await pool.contains(atoken_address, sync=False):
                 return pool
 
     def __contains__(self, __o: object) -> bool:
@@ -206,39 +245,39 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         return any(__o in pool for pool in self.pools)
 
     @a_sync.a_sync(cache_type='memory')
-    async def is_atoken(self, token_address: AnyAddressType) -> bool:
-        logger = get_price_logger(token_address, block=None, extra='aave')
-        is_atoken = any(await asyncio.gather(*[pool.contains(token_address, sync=False) for pool in await self.__pools__]))
+    async def is_atoken(self, atoken_address: AnyAddressType) -> bool:
+        logger = get_price_logger(atoken_address, block=None, extra='aave')
+        is_atoken = any(await asyncio.gather(*[pool.contains(atoken_address, sync=False) for pool in await self.__pools__]))
         logger.debug("is_atoken: %s", is_atoken)
         return is_atoken
     
-    async def is_wrapped_atoken_v2(self, token_address: AnyAddressType) -> bool:
+    async def is_wrapped_atoken_v2(self, atoken_address: AnyAddressType) -> bool:
         # NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.
-        contract = await Contract.coroutine(token_address, require_success=False)
+        contract = await Contract.coroutine(atoken_address, require_success=False)
         return contract.verified and hasall(contract, _WRAPPED_V2_METHODS)
         
-    async def is_wrapped_atoken_v3(self, token_address: AnyAddressType) -> bool:
+    async def is_wrapped_atoken_v3(self, atoken_address: AnyAddressType) -> bool:
         # NOTE: Not sure if this wrapped version is actually related to aave but this works for pricing purposes.
-        contract = await Contract.coroutine(token_address, require_success=False)
+        contract = await Contract.coroutine(atoken_address, require_success=False)
         return contract.verified and hasall(contract, _WRAPPED_V3_METHODS)
     
     @a_sync.a_sync(cache_type='memory')
-    async def underlying(self, token_address: AddressOrContract) -> ERC20:
-        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = await self.pool_for_atoken(token_address, sync=False)
-        return await pool.underlying(token_address, sync=False)
+    async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
+        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = await self.pool_for_atoken(atoken_address, sync=False)
+        return await pool.underlying(atoken_address, sync=False)
     
-    async def get_price(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
-        underlying: ERC20 = await self.underlying(token_address, sync=False)
+    async def get_price(self, atoken_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+        underlying: ERC20 = await self.underlying(atoken_address, sync=False)
         return await underlying.price(block, skip_cache=skip_cache, sync=False)
 
-    async def get_price_wrapped_v2(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
-        return await self._get_price_wrapped(token_address, 'staticToDynamicAmount', block=block, skip_cache=skip_cache)
+    async def get_price_wrapped_v2(self, atoken_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+        return await self._get_price_wrapped(atoken_address, 'staticToDynamicAmount', block=block, skip_cache=skip_cache)
 
-    async def get_price_wrapped_v3(self, token_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
-        return await self._get_price_wrapped(token_address, 'convertToAssets', block=block, skip_cache=skip_cache)
+    async def get_price_wrapped_v3(self, atoken_address: AddressOrContract, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+        return await self._get_price_wrapped(atoken_address, 'convertToAssets', block=block, skip_cache=skip_cache)
     
-    async def _get_price_wrapped(self, token_address: AddressOrContract, method: str, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
-        contract, scale = await asyncio.gather(Contract.coroutine(token_address), ERC20(token_address, asynchronous=True).scale)
+    async def _get_price_wrapped(self, atoken_address: AddressOrContract, method: str, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+        contract, scale = await asyncio.gather(Contract.coroutine(atoken_address), ERC20(atoken_address, asynchronous=True).scale)
         try:
             underlying, price_per_share = await asyncio.gather(
                 contract.ATOKEN.coroutine(block_identifier=block),  # NOTE: We can probably cache this without breaking anything

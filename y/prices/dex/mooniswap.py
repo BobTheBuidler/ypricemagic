@@ -31,11 +31,31 @@ else:
 
 @a_sync.a_sync(default='sync', ram_cache_ttl=5*60)
 async def is_mooniswap_pool(token: AnyAddressType) -> bool:
+    """
+    Check if the given token address is a Mooniswap pool.
+
+    Args:
+        token: The address of the token to check.
+
+    Returns:
+        True if the token is a Mooniswap pool, False otherwise.
+    """
     address = convert.to_address(token)
     return False if router is None else await router.isPool.coroutine(address)
 
 @a_sync.a_sync(default='sync')
 async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+    """
+    Get the price of the given Mooniswap pool token.
+
+    Args:
+        token: The address of the pool token.
+        block (optional): The block number to get the price at. Defaults to latest block.
+        skip_cache (optional): Whether to skip the cache. Defaults to :obj:`ENVS.SKIP_CACHE`.
+
+    Returns:
+        The price of the pool token in USD.
+    """
     address = convert.to_address(token)
     token0, token1 = await gather_methods(address, ['token0', 'token1'])
     bal0, bal1, price0, price1, total_supply = await asyncio.gather(

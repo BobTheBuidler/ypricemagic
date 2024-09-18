@@ -174,6 +174,10 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xcb327b99ff831bf8223cced12b1338ff3aa322ff", # bsdETH
     ],
 }.get(chain.id, []) + acceptable_all_chains
+"""
+List of tokens addresses for which high prices are acceptable.
+Nothing will be logged for tokens in this list.
+"""
 
 async def sense_check(
     token_address: str, 
