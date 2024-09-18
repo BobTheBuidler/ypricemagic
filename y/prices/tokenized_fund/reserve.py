@@ -16,10 +16,46 @@ METHODS = "main()(address)", "issuanceAvailable()(uint)", "redemptionAvailable()
 @a_sync(default="sync")
 @optional_async_diskcache
 async def is_rtoken(token_address: Address) -> bool:
+    """
+    Check if the given token is a Reserve Protocol R-token.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Returns:
+        True if the token is a Reserve Protocol R-token, False otherwise.
+
+    Example:
+        >>> address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"  # USDC (not an R-token)
+        >>> is_r = is_rtoken(address)
+        >>> print(is_r)
+        False
+    """
     return await has_methods(token_address, METHODS, sync=False)
 
 @a_sync(default="sync")
 async def get_price(token_address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Decimal:
+    """
+    Get the price of a Reserve Protocol R-token in USD.
+
+    Args:
+        token_address: The address of the R-token.
+        block (optional): The block number to query. Defaults to None (latest).
+        skip_cache (optional): Whether to skip cache. Defaults to :obj:`ENVS.SKIP_CACHE`.
+
+    Returns:
+        The price of the R-token in USD.
+
+    Raises:
+        TypeError: If the token is not a valid R-token.
+        Exception: If unable to calculate the price.
+
+    Example:
+        >>> address = "0xaCeeD87BD5754c3d714F3Bd43a9B7B0C9250ab0D"  # RSV token
+        >>> price = await get_price(address, sync=False)
+        >>> print(price)
+        1.00
+    """
     main = await Call(token_address, "main()(address)", block_id=block)
     if main is None:
         raise TypeError(main, token_address, await is_rtoken(token_address))

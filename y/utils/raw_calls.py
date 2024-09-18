@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 from typing import Any, Callable, Optional, Union
 
@@ -45,10 +46,10 @@ async def decimals(
     block: Optional[Block] = None, 
     return_None_on_failure: bool = False
     ) -> int:
-    if block is None or return_None_on_failure is True: 
+    if block is None or return_None_on_failure: 
         return await _decimals(contract_address, block=block, return_None_on_failure=return_None_on_failure)
     else:
-        return await _cached_call_fn(_decimals,contract_address,block)
+        return await _cached_call_fn(_decimals, contract_address, block)
 
 
 @a_sync.a_sync(default='sync', cache_type='memory')
@@ -78,10 +79,8 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            try:
+            with contextlib.suppress(AttributeError):
                 decimals = brownie.Contract.from_explorer(contract_address).decimals(block_identifier=block)
-            except AttributeError:
-                pass
 
     if decimals is not None:
         return decimals
@@ -103,10 +102,8 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            try:
+            with contextlib.suppress(AttributeError):
                 decimals = brownie.Contract.from_explorer(contract_address).DECIMALS(block_identifier=block)
-            except AttributeError:
-                pass
                 
     if decimals is not None:
         return decimals
@@ -128,10 +125,8 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            try:
+            with contextlib.suppress(AttributeError):
                 decimals = brownie.Contract.from_explorer(contract_address).getDecimals(block_identifier=block)
-            except AttributeError:
-                pass
                 
     if decimals is not None:
         return decimals
@@ -173,10 +168,8 @@ async def _totalSupply(
                 raise
             # we got a response from the chain but brownie can't find `totalSupply` method, 
             # maybe our cached contract definition is messed up. let's repull it
-            try:
+            with contextlib.suppress(AttributeError):
                 total_supply = brownie.Contract.from_explorer(contract_address).totalSupply(block_identifier=block)
-            except AttributeError:
-                pass
 
     if total_supply is not None:
         return total_supply
@@ -278,10 +271,9 @@ async def raw_call(
 
     try: response = await dank_mids.eth.call(data,block_identifier=block)
     except ValueError as e:
-        if return_None_on_failure is False:                 raise
-        if call_reverted(e):                                return None
-        if 'invalid opcode' in str(e):                      return None
-        else:                                               raise
+        if return_None_on_failure and (call_reverted(e) or 'invalid opcode' in str(e)):
+            return None
+        raise
     
     if output is None:                                      return response
     elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
@@ -297,6 +289,28 @@ def prepare_data(
     method, 
     inputs = Union[None, bytes, int, str, Address, EthAddress, brownie.Contract, Contract]
     ) -> str:
+    """
+    Prepare data for a raw contract call by encoding the method signature and input data.
+
+    This function takes a method signature and input data, and returns a hexadecimal string
+    that can be used as the data field in a raw contract call.
+
+    Args:
+        method: The method signature as a string (e.g., "transfer(address,uint256)").
+        inputs: The input data for the method. Can be None, bytes, int, str, Address, 
+                EthAddress, brownie.Contract, or Contract.
+
+    Returns:
+        A hexadecimal string representing the encoded method call data.
+
+    Raises:
+        CalldataPreparationError: If the input type is not supported.
+
+    Note:
+        - The method signature is encoded to its 4-byte function selector.
+        - If inputs is None, only the method selector is returned.
+        - For other input types, the input is prepared and appended to the method selector.
+    """
     method = encode_hex(fourbyte(method))
 
     if inputs is None:
@@ -332,7 +346,28 @@ def prepare_input(
         Union[str, Address, EthAddress, brownie.Contract, Contract] # for address input
         ]
     ) -> str:
-    
+    """
+    Prepare input data for a raw contract call by encoding it to a hexadecimal string.
+
+    This function takes various input types and converts them to a hexadecimal string
+    that can be used as part of the data field in a raw contract call.
+
+    Args:
+        input: The input data to be prepared. Can be bytes, int, str, Address, 
+               EthAddress, brownie.Contract, or Contract.
+
+    Returns:
+        A hexadecimal string representing the encoded input data.
+
+    Raises:
+        CalldataPreparationError: If the input type is not supported.
+
+    Note:
+        - Bytes input is converted directly to its hexadecimal representation.
+        - Integer input is converted to bytes and then to hexadecimal.
+        - String, Address, EthAddress, brownie.Contract, and Contract inputs are 
+          assumed to be addresses and are padded to 32 bytes.
+    """
     input_type = type(input)
 
     if input_type == bytes:
@@ -343,7 +378,7 @@ def prepare_input(
 
     # we can't process actual strings so we can assume that any string input is an address. regular strings will fail
     if input_type in [str, Address, EthAddress, brownie.Contract, Contract]:
-        return '000000000000000000000000' + convert.to_address(input)[2:]
+        return f'000000000000000000000000{convert.to_address(input)[2:]}'
     
     raise CalldataPreparationError(f'''
         Supported input types are

@@ -17,6 +17,12 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 
 @eth_retry.auto_retry
 def _memory():
+    """
+    Create and return a :class:`Memory` object for caching values for the currently connected blockchain.
+
+    Returns:
+        A :class:`~Memory` object configured with the current chain's cache directory.
+    """
     return Memory(f"cache/{chain.id}", verbose=0)
 
 memory = _memory()

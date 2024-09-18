@@ -34,6 +34,12 @@ chain_specific_max_batch_sizes = {
 fallback_batch_size = 10_000
 
 def _get_batch_size() -> int:
+    """
+    Determine the appropriate batch size for the current network and provider.
+
+    Returns:
+        The determined batch size for log fetching.
+    """
     if batch_size := ENVS.GETLOGS_BATCH_SIZE:
         return batch_size
     for provider, size in provider_specific_batch_sizes.items():
@@ -45,12 +51,30 @@ BATCH_SIZE = _get_batch_size()
 
 
 def should_cache(method: str, params: Any) -> bool:
-    if method == "eth_getCode" and params[1] == "latest":
-        return True
-    return False
+    """
+    Determine if a method call should be cached.
+
+    Args:
+        method: The name of the method being called.
+        params: The parameters of the method call.
+
+    Returns:
+        True if the method call should be cached, False otherwise.
+    """
+    return method == "eth_getCode" and params[1] == "latest"
 
 
 def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
+    """
+    Middleware for caching eth_getCode calls.
+
+    Args:
+        make_request: The original request function.
+        web3: The Web3 instance.
+
+    Returns:
+        A middleware function that caches eth_getCode calls.
+    """
     @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
@@ -61,6 +85,14 @@ def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
 
 
 def setup_getcode_cache_middleware() -> None:
+    """
+    Set up the eth_getCode cache middleware for the current Web3 provider.
+
+    This function modifies the Web3 provider to use a custom session with increased
+    connection pool size and timeout, and adds the getcode cache middleware.
+
+    On Optimism, it also adds the POA middleware.
+    """
     # patch web3 provider with more connections and higher timeout
     if web3.provider:
         try:
@@ -71,9 +103,7 @@ def setup_getcode_cache_middleware() -> None:
             session.mount("https://", adapter)
             web3.provider = HTTPProvider(web3.provider.endpoint_uri, {"timeout": 600}, session)
         except AttributeError as e:
-            if "'IPCProvider' object has no attribute 'endpoint_uri'" in str(e):
-                pass 
-            else:
+            if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
                 raise
 
     web3.middleware_onion.add(getcode_cache_middleware)

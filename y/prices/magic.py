@@ -1,7 +1,7 @@
 import asyncio
 import functools
 import logging
-from typing import (Awaitable, Callable, Dict, Iterable, List, Literal, NoReturn, 
+from typing import (Callable, Dict, Iterable, List, Literal, 
                     Optional, Tuple, TypeVar, overload)
 
 import a_sync
@@ -65,18 +65,29 @@ async def get_price(
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
 ) -> Optional[UsdPrice]:
-    '''
-    Don't pass an int like `123` into `token_address` please, that's just silly.
-    - ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
-        so you can save yourself some keystrokes while testing in a console
-    - (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")`)
+    """
+    Get the price of a token in USD.
 
-    When `get_price` is unable to find a price:
-    - If `silent == True`, ypricemagic will print an error message using standard python logging
-    - If `silent == False`, ypricemagic will not log any error
-    - If `fail_to_None == True`, ypricemagic will return `None`
-    - If `fail_to_None == False`, ypricemagic will raise a PriceError
-    '''
+    Args:
+        token_address: The address of the token to price.
+        block (optional): The block number at which to get the price. If None, uses the latest block.
+        fail_to_None (optional): If True, return None instead of raising a :class:`~yPriceMagicError` on failure. Default False.
+        skip_cache (optional): If True, bypass the cache and fetch the price directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        ignore_pools (optional): A tuple of pool addresses to ignore when fetching the price.
+        silent (optional): If True, suppress error logging. Default False.
+
+    Returns:
+        The price of the token in USD, or None if the price couldn't be determined and fail_to_None is True.
+
+    Raises:
+        yPriceMagicError: If the price couldn't be determined and fail_to_None is False.
+    
+    Note:
+        Don't pass an int like `123` into `token_address` please, that's just silly.
+        - ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
+            so you can save yourself some keystrokes while testing in a console
+        - (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")`)
+    """
     block = block or await dank_mids.eth.block_number
     token_address = convert.to_address(token_address)
     try:
@@ -118,19 +129,21 @@ async def get_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
 ) -> List[Optional[UsdPrice]]:
-    '''
-    A more optimized way to fetch prices for multiple assets at the same block.
+    """
+    Get prices for multiple tokens in USD.
 
-    # NOTE silent kwarg is currently disabled.
-    In every case:
-    - if `silent == True`, tqdm will not be used
-    - if `silent == False`, tqdm will be used
+    You should use this function over :func:`get_price` where possible, it is better optimized for parallel execution.
 
-    When `get_prices` is unable to find a price:
-    - if `fail_to_None == True`, ypricemagic will return `None` for that token
-    - if `fail_to_None == False`, ypricemagic will raise a yPriceMagicError
-    '''
+    Args:
+        token_addresses: An iterable of token addresses to price.
+        block (optional): The block number at which to get the prices. Defaults to the latest block.
+        fail_to_None (optional): If True, return None for tokens whose price couldn't be determined. Default False.
+        skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        silent (optional): If True, suppress progress bar and error logging. This kwarg is not currently implemented.
 
+    Returns:
+        A list of token prices in USD, in the same order as the input token_addresses.
+    """
     return await map_prices(
         token_addresses, 
         block or await dank_mids.eth.block_number, 
@@ -169,6 +182,19 @@ def map_prices(
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
 ) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:
+    """
+    Map token addresses to their prices asynchronously.
+
+    Args:
+        token_addresses: An iterable of token addresses to price.
+        block (optional): The block number at which to get the prices. Defaults to latest block.
+        fail_to_None (optional): If True, map to None for tokens whose price couldn't be determined. Default False.
+        skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        silent (optional): If True, suppress error logging. Default False.
+
+    Returns:
+        An :class:`a_sync.TaskMapping` object mapping token addresses to their prices.
+    """
     return a_sync.map(
         get_price,
         token_addresses,
@@ -213,9 +239,24 @@ async def _get_price(
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False
     ) -> Optional[UsdPrice]:  # sourcery skip: remove-redundant-if
+    """
+    Internal function to get the price of a token.
 
+    This function implements the core logic for fetching token prices.
+
+    Args:
+        token: The address of the token to price.
+        block: The block number at which to get the price.
+        fail_to_None: If True, return None instead of raising an exception on failure.
+        skip_cache: If True, bypass the cache and fetch the price directly.
+        ignore_pools: A tuple of pool addresses to ignore when fetching the price.
+        silent: If True, suppress error logging.
+
+    Returns:
+        The price of the token in USD, or None if the price couldn't be determined and fail_to_None is True.
+    """
     if token == ZERO_ADDRESS:
-        _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+        _fail_appropriately(logger, symbol, fail_to_None, silent)
         return None
     
     try:
@@ -235,7 +276,7 @@ async def _get_price(
         if price:
             await utils.sense_check(token, block, price)
         else:
-            _fail_appropriately(logger, symbol, fail_to_None=fail_to_None, silent=silent)
+            _fail_appropriately(logger, symbol, fail_to_None, silent)
         logger.debug("%s price: %s", symbol, price)
         if price:  # checks for the erroneous 0 value we see once in a while
             return price
@@ -250,7 +291,22 @@ async def _exit_early_for_known_tokens(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
+    """
+    Attempt to get the price for known token types without having to fully load everything.
 
+    This function checks if the token is of a known type (e.g., atoken, balancer pool, etc.)
+    and attempts to get its price using type-specific methods.
+
+    Args:
+        token_address: The address of the token to price.
+        block: The block number at which to get the price.
+        logger: A logger instance for recording debug information.
+        skip_cache: If True, bypass the cache and fetch the price directly.
+        ignore_pools: A tuple of pool addresses to ignore when fetching the price.
+
+    Returns:
+        The price of the token if it can be determined early, or None otherwise.
+    """
     bucket = await utils.check_bucket(token_address, sync=False)
 
     price = None
@@ -306,12 +362,38 @@ async def _exit_early_for_known_tokens(
     return price
 
 async def _get_price_from_api(token: AnyAddressType, block: Block, logger: logging.Logger):
+    """
+    Attempt to get the price from the ypricemagic API.
+
+    Args:
+        token: The address of the token to price.
+        block: The block number at which to get the price.
+        logger: A logger instance for recording debug information.
+
+    Returns:
+        The price of the token if it can be fetched from the ypricemagic API, or None otherwise.
+    """
     if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
         price = await utils.ypriceapi.get_price(token, block)
         logger.debug("ypriceapi -> %s", price)
         return price
 
 async def _get_price_from_dexes(token: AnyAddressType, block: Block, ignore_pools, skip_cache: bool, logger: logging.Logger):
+    """
+    Attempt to get the price from decentralized exchanges.
+
+    This function tries to fetch the price from various DEXes like Uniswap, Curve, and Balancer.
+
+    Args:
+        token: The address of the token to price.
+        block : The block number at which to get the price.
+        ignore_pools: A tuple of pool addresses to ignore when fetching the price.
+        skip_cache: If True, bypass the cache and fetch the price directly.
+        logger: A logger instance for recording debug information.
+
+    Returns:
+        The price of the token if it can be determined from DEXes, or None otherwise.
+    """
     # TODO We need better logic to determine whether to use uniswap, curve, balancer. For now this works for all known cases.
     dexes = [uniswap_multiplexer]
     if curve:
@@ -343,18 +425,23 @@ async def _get_price_from_dexes(token: AnyAddressType, block: Block, ignore_pool
 def _fail_appropriately(
     logger: logging.Logger,
     symbol: str, 
-    fail_to_None: bool = False, 
-    silent: bool = False
+    fail_to_None: bool, 
+    silent: bool,
     ) -> None:
-    '''
-    dictates how `magic.get_price()` will handle failures
+    """
+    Handle failure to get a price appropriately.
 
-    when `get_price` is unable to find a price:
-        if `silent == True`, ypricemagic will print an error message using standard python logging
-        if `silent == False`, ypricemagic will not log any error
-        if `fail_to_None == True`, ypricemagic will return `None`
-        if `fail_to_None == False`, ypricemagic will raise a PriceError
-    '''
+    This function decides how to handle a failure to get a price based on the input parameters.
+
+    Args:
+        logger: A logger instance for recording error information.
+        symbol: The symbol of the token whose price couldn't be determined.
+        fail_to_None: If True, the function will return silently. If False, it will raise a PriceError.
+        silent: If True, suppress error logging.
+
+    Raises:
+        PriceError: If fail_to_None is False.
+    """
     if not silent:
         logger.warning(f"failed to get price for {symbol}")
 
