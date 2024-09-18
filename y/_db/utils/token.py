@@ -14,7 +14,7 @@ from y._db.decorators import a_sync_read_db_session, a_sync_write_db_session, lo
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token
-from y.erc20 import decimals
+from y.utils import _erc20
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +107,7 @@ def set_name(address: str, name: str) -> None:
 async def get_decimals(address: str) -> int:
     d = await _get_token_decimals(address)
     if d is None:
-        d = await decimals(address, sync=False)
+        d = await _erc20.decimals(address, sync=False)
         if d:
             if d > 2147483647:
                 # raise this here so the task doesnt break

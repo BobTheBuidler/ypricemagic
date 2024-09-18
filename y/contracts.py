@@ -593,7 +593,7 @@ async def proxy_implementation(address: AnyAddressType, block: Optional[Block]) 
 
     Args:
         address: The address of the proxy contract.
-        block (optional): The block number at which to get the implementation address. Defaults to latest block.
+        block: The block number at which to get the implementation address. Defaults to latest block.
 
     Returns:
         The address of the implementation contract.
