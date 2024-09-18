@@ -1678,12 +1678,6 @@ Pass <cite>at_least_one=True</cite> to only verify a contract has at least one o
 <dd><p>Bases: <a class="reference internal" href="#y.datatypes.UsdValue" title="y.datatypes.UsdValue"><code class="xref py py-class docutils literal notranslate"><span class="pre">UsdValue</span></code></a></p>
 <p>Represents a USD price.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__abs__">
-<span class="sig-name descname"><span class="pre">__abs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__abs__" title="Link to this definition"></a></dt>
-<dd><p>abs(self)</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__add__" title="Link to this definition"></a></dt>
 <dd><p>Return self+value.</p>
@@ -1696,45 +1690,15 @@ Pass <cite>at_least_one=True</cite> to only verify a contract has at least one o
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__ceil__">
-<span class="sig-name descname"><span class="pre">__ceil__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__ceil__" title="Link to this definition"></a></dt>
-<dd><p>Return the ceiling as an Integral.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__divmod__">
-<span class="sig-name descname"><span class="pre">__divmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__divmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(self, value).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__eq__" title="Link to this definition"></a></dt>
 <dd><p>Return self==value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__float__">
-<span class="sig-name descname"><span class="pre">__float__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__float__" title="Link to this definition"></a></dt>
-<dd><p>float(self)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__floor__">
-<span class="sig-name descname"><span class="pre">__floor__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__floor__" title="Link to this definition"></a></dt>
-<dd><p>Return the floor as an Integral.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__floordiv__">
 <span class="sig-name descname"><span class="pre">__floordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__floordiv__" title="Link to this definition"></a></dt>
 <dd><p>Return self//value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__format__">
-<span class="sig-name descname"><span class="pre">__format__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_spec</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__format__" title="Link to this definition"></a></dt>
-<dd><p>Formats the float according to format_spec.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1750,36 +1714,9 @@ Pass <cite>at_least_one=True</cite> to only verify a contract has at least one o
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__getformat__">
-<span class="sig-name descname"><span class="pre">__getformat__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__getformat__" title="Link to this definition"></a></dt>
-<dd><p>You probably don’t want to use this function.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>typestr</dt><dd><p>Must be ‘double’ or ‘float’.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>It exists mainly to be used in Python’s test suite.</p>
-<p>This function returns whichever of ‘unknown’, ‘IEEE, big-endian’ or ‘IEEE,
-little-endian’ best describes the format of floating point numbers used by the
-C type named by typestr.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__getnewargs__">
-<span class="sig-name descname"><span class="pre">__getnewargs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__getnewargs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__gt__">
 <span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__gt__" title="Link to this definition"></a></dt>
 <dd><p>Return self&gt;value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__int__" title="Link to this definition"></a></dt>
-<dd><p>int(self)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1795,33 +1732,9 @@ C type named by typestr.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__mod__">
-<span class="sig-name descname"><span class="pre">__mod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__mod__" title="Link to this definition"></a></dt>
-<dd><p>Return self%value.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__mul__">
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Return self*value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__ne__" title="Link to this definition"></a></dt>
-<dd><p>Return self!=value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__neg__">
-<span class="sig-name descname"><span class="pre">__neg__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__neg__" title="Link to this definition"></a></dt>
-<dd><p>-self</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__pos__">
-<span class="sig-name descname"><span class="pre">__pos__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__pos__" title="Link to this definition"></a></dt>
-<dd><p>+self</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1834,74 +1747,6 @@ C type named by typestr.</p>
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__radd__">
 <span class="sig-name descname"><span class="pre">__radd__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__radd__" title="Link to this definition"></a></dt>
 <dd><p>Return value+self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rdivmod__">
-<span class="sig-name descname"><span class="pre">__rdivmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rdivmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(value, self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rfloordiv__">
-<span class="sig-name descname"><span class="pre">__rfloordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rfloordiv__" title="Link to this definition"></a></dt>
-<dd><p>Return value//self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rmod__">
-<span class="sig-name descname"><span class="pre">__rmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rmod__" title="Link to this definition"></a></dt>
-<dd><p>Return value%self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rmul__">
-<span class="sig-name descname"><span class="pre">__rmul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rmul__" title="Link to this definition"></a></dt>
-<dd><p>Return value*self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__round__">
-<span class="sig-name descname"><span class="pre">__round__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndigits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__round__" title="Link to this definition"></a></dt>
-<dd><p>Return the Integral closest to x, rounding half toward even.</p>
-<p>When an argument is passed, work like built-in round(x, ndigits).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rpow__">
-<span class="sig-name descname"><span class="pre">__rpow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rpow__" title="Link to this definition"></a></dt>
-<dd><p>Return pow(value, self, mod).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rsub__">
-<span class="sig-name descname"><span class="pre">__rsub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rsub__" title="Link to this definition"></a></dt>
-<dd><p>Return value-self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__rtruediv__">
-<span class="sig-name descname"><span class="pre">__rtruediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__rtruediv__" title="Link to this definition"></a></dt>
-<dd><p>Return value/self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__setformat__">
-<span class="sig-name descname"><span class="pre">__setformat__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__setformat__" title="Link to this definition"></a></dt>
-<dd><p>You probably don’t want to use this function.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>typestr</dt><dd><p>Must be ‘double’ or ‘float’.</p>
-</dd>
-<dt>fmt</dt><dd><p>Must be one of ‘unknown’, ‘IEEE, big-endian’ or ‘IEEE, little-endian’,
-and in addition can only be one of the latter two if it appears to
-match the underlying C reality.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>It exists mainly to be used in Python’s test suite.</p>
-<p>Override the automatic determination of C-level floating point type.
-This affects how floats are converted to and from binary strings.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1928,12 +1773,6 @@ This affects how floats are converted to and from binary strings.</p>
 <dt class="sig sig-object py" id="y.datatypes.UsdPrice.__truediv__">
 <span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__truediv__" title="Link to this definition"></a></dt>
 <dd><p>Return self/value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdPrice.__trunc__">
-<span class="sig-name descname"><span class="pre">__trunc__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdPrice.__trunc__" title="Link to this definition"></a></dt>
-<dd><p>Return the Integral closest to x between 0 and x.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2009,12 +1848,6 @@ and with a positive denominator.</p>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a></p>
 <p>Represents a USD value with custom string representation.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__abs__">
-<span class="sig-name descname"><span class="pre">__abs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__abs__" title="Link to this definition"></a></dt>
-<dd><p>abs(self)</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__add__" title="Link to this definition"></a></dt>
 <dd><p>Return self+value.</p>
@@ -2027,45 +1860,15 @@ and with a positive denominator.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__ceil__">
-<span class="sig-name descname"><span class="pre">__ceil__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__ceil__" title="Link to this definition"></a></dt>
-<dd><p>Return the ceiling as an Integral.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__divmod__">
-<span class="sig-name descname"><span class="pre">__divmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__divmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(self, value).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__eq__" title="Link to this definition"></a></dt>
 <dd><p>Return self==value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__float__">
-<span class="sig-name descname"><span class="pre">__float__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__float__" title="Link to this definition"></a></dt>
-<dd><p>float(self)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__floor__">
-<span class="sig-name descname"><span class="pre">__floor__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__floor__" title="Link to this definition"></a></dt>
-<dd><p>Return the floor as an Integral.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__floordiv__">
 <span class="sig-name descname"><span class="pre">__floordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__floordiv__" title="Link to this definition"></a></dt>
 <dd><p>Return self//value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__format__">
-<span class="sig-name descname"><span class="pre">__format__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_spec</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__format__" title="Link to this definition"></a></dt>
-<dd><p>Formats the float according to format_spec.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2081,36 +1884,9 @@ and with a positive denominator.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__getformat__">
-<span class="sig-name descname"><span class="pre">__getformat__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__getformat__" title="Link to this definition"></a></dt>
-<dd><p>You probably don’t want to use this function.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>typestr</dt><dd><p>Must be ‘double’ or ‘float’.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>It exists mainly to be used in Python’s test suite.</p>
-<p>This function returns whichever of ‘unknown’, ‘IEEE, big-endian’ or ‘IEEE,
-little-endian’ best describes the format of floating point numbers used by the
-C type named by typestr.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__getnewargs__">
-<span class="sig-name descname"><span class="pre">__getnewargs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__getnewargs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__gt__">
 <span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__gt__" title="Link to this definition"></a></dt>
 <dd><p>Return self&gt;value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__int__" title="Link to this definition"></a></dt>
-<dd><p>int(self)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2126,33 +1902,9 @@ C type named by typestr.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__mod__">
-<span class="sig-name descname"><span class="pre">__mod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__mod__" title="Link to this definition"></a></dt>
-<dd><p>Return self%value.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__mul__">
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Return self*value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__ne__" title="Link to this definition"></a></dt>
-<dd><p>Return self!=value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__neg__">
-<span class="sig-name descname"><span class="pre">__neg__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__neg__" title="Link to this definition"></a></dt>
-<dd><p>-self</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__pos__">
-<span class="sig-name descname"><span class="pre">__pos__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__pos__" title="Link to this definition"></a></dt>
-<dd><p>+self</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2165,74 +1917,6 @@ C type named by typestr.</p>
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__radd__">
 <span class="sig-name descname"><span class="pre">__radd__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__radd__" title="Link to this definition"></a></dt>
 <dd><p>Return value+self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rdivmod__">
-<span class="sig-name descname"><span class="pre">__rdivmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rdivmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(value, self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rfloordiv__">
-<span class="sig-name descname"><span class="pre">__rfloordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rfloordiv__" title="Link to this definition"></a></dt>
-<dd><p>Return value//self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rmod__">
-<span class="sig-name descname"><span class="pre">__rmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rmod__" title="Link to this definition"></a></dt>
-<dd><p>Return value%self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rmul__">
-<span class="sig-name descname"><span class="pre">__rmul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rmul__" title="Link to this definition"></a></dt>
-<dd><p>Return value*self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__round__">
-<span class="sig-name descname"><span class="pre">__round__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndigits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__round__" title="Link to this definition"></a></dt>
-<dd><p>Return the Integral closest to x, rounding half toward even.</p>
-<p>When an argument is passed, work like built-in round(x, ndigits).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rpow__">
-<span class="sig-name descname"><span class="pre">__rpow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rpow__" title="Link to this definition"></a></dt>
-<dd><p>Return pow(value, self, mod).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rsub__">
-<span class="sig-name descname"><span class="pre">__rsub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rsub__" title="Link to this definition"></a></dt>
-<dd><p>Return value-self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__rtruediv__">
-<span class="sig-name descname"><span class="pre">__rtruediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__rtruediv__" title="Link to this definition"></a></dt>
-<dd><p>Return value/self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__setformat__">
-<span class="sig-name descname"><span class="pre">__setformat__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fmt</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__setformat__" title="Link to this definition"></a></dt>
-<dd><p>You probably don’t want to use this function.</p>
-<blockquote>
-<div><dl class="simple">
-<dt>typestr</dt><dd><p>Must be ‘double’ or ‘float’.</p>
-</dd>
-<dt>fmt</dt><dd><p>Must be one of ‘unknown’, ‘IEEE, big-endian’ or ‘IEEE, little-endian’,
-and in addition can only be one of the latter two if it appears to
-match the underlying C reality.</p>
-</dd>
-</dl>
-</div></blockquote>
-<p>It exists mainly to be used in Python’s test suite.</p>
-<p>Override the automatic determination of C-level floating point type.
-This affects how floats are converted to and from binary strings.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2259,12 +1943,6 @@ This affects how floats are converted to and from binary strings.</p>
 <dt class="sig sig-object py" id="y.datatypes.UsdValue.__truediv__">
 <span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__truediv__" title="Link to this definition"></a></dt>
 <dd><p>Return self/value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.datatypes.UsdValue.__trunc__">
-<span class="sig-name descname"><span class="pre">__trunc__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.datatypes.UsdValue.__trunc__" title="Link to this definition"></a></dt>
-<dd><p>Return the Integral closest to x between 0 and x.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2649,12 +2327,6 @@ Exceptions while calculating prices.</p>
 <p>A lightweight enum that enables lookup of chainids for popular blockchain networks.</p>
 <p>Each network is associated with its unique integer Chain ID.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__abs__">
-<span class="sig-name descname"><span class="pre">__abs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__abs__" title="Link to this definition"></a></dt>
-<dd><p>abs(self)</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__add__" title="Link to this definition"></a></dt>
 <dd><p>Return self+value.</p>
@@ -2673,45 +2345,15 @@ Exceptions while calculating prices.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__ceil__">
-<span class="sig-name descname"><span class="pre">__ceil__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__ceil__" title="Link to this definition"></a></dt>
-<dd><p>Ceiling of an Integral returns itself.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__divmod__">
-<span class="sig-name descname"><span class="pre">__divmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__divmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(self, value).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__eq__" title="Link to this definition"></a></dt>
 <dd><p>Return self==value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__float__">
-<span class="sig-name descname"><span class="pre">__float__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__float__" title="Link to this definition"></a></dt>
-<dd><p>float(self)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__floor__">
-<span class="sig-name descname"><span class="pre">__floor__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__floor__" title="Link to this definition"></a></dt>
-<dd><p>Flooring an Integral returns itself.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__floordiv__">
 <span class="sig-name descname"><span class="pre">__floordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__floordiv__" title="Link to this definition"></a></dt>
 <dd><p>Return self//value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__format__">
-<span class="sig-name descname"><span class="pre">__format__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__format__" title="Link to this definition"></a></dt>
-<dd><p>Returns format using actual value type unless __str__ has been overridden.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2727,11 +2369,6 @@ Exceptions while calculating prices.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__getnewargs__">
-<span class="sig-name descname"><span class="pre">__getnewargs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__getnewargs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__gt__">
 <span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__gt__" title="Link to this definition"></a></dt>
 <dd><p>Return self&gt;value.</p>
@@ -2741,12 +2378,6 @@ Exceptions while calculating prices.</p>
 <dt class="sig sig-object py" id="y.networks.Network.__index__">
 <span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__index__" title="Link to this definition"></a></dt>
 <dd><p>Return self converted to an integer, if self is suitable for use as an index into a list.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__int__" title="Link to this definition"></a></dt>
-<dd><p>int(self)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2774,39 +2405,15 @@ Exceptions while calculating prices.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__mod__">
-<span class="sig-name descname"><span class="pre">__mod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__mod__" title="Link to this definition"></a></dt>
-<dd><p>Return self%value.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__mul__">
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Return self*value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__ne__" title="Link to this definition"></a></dt>
-<dd><p>Return self!=value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__neg__">
-<span class="sig-name descname"><span class="pre">__neg__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__neg__" title="Link to this definition"></a></dt>
-<dd><p>-self</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__or__">
 <span class="sig-name descname"><span class="pre">__or__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__or__" title="Link to this definition"></a></dt>
 <dd><p>Return self|value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__pos__">
-<span class="sig-name descname"><span class="pre">__pos__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__pos__" title="Link to this definition"></a></dt>
-<dd><p>+self</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2828,52 +2435,15 @@ Exceptions while calculating prices.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rdivmod__">
-<span class="sig-name descname"><span class="pre">__rdivmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rdivmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(value, self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rfloordiv__">
-<span class="sig-name descname"><span class="pre">__rfloordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rfloordiv__" title="Link to this definition"></a></dt>
-<dd><p>Return value//self.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__rlshift__">
 <span class="sig-name descname"><span class="pre">__rlshift__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rlshift__" title="Link to this definition"></a></dt>
 <dd><p>Return value&lt;&lt;self.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rmod__">
-<span class="sig-name descname"><span class="pre">__rmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rmod__" title="Link to this definition"></a></dt>
-<dd><p>Return value%self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rmul__">
-<span class="sig-name descname"><span class="pre">__rmul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rmul__" title="Link to this definition"></a></dt>
-<dd><p>Return value*self.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.networks.Network.__ror__">
 <span class="sig-name descname"><span class="pre">__ror__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__ror__" title="Link to this definition"></a></dt>
 <dd><p>Return value|self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__round__">
-<span class="sig-name descname"><span class="pre">__round__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__round__" title="Link to this definition"></a></dt>
-<dd><p>Rounding an Integral returns itself.</p>
-<p>Rounding with an ndigits argument also returns an integer.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rpow__">
-<span class="sig-name descname"><span class="pre">__rpow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rpow__" title="Link to this definition"></a></dt>
-<dd><p>Return pow(value, self, mod).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2886,18 +2456,6 @@ Exceptions while calculating prices.</p>
 <dt class="sig sig-object py" id="y.networks.Network.__rshift__">
 <span class="sig-name descname"><span class="pre">__rshift__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rshift__" title="Link to this definition"></a></dt>
 <dd><p>Return self&gt;&gt;value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rsub__">
-<span class="sig-name descname"><span class="pre">__rsub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rsub__" title="Link to this definition"></a></dt>
-<dd><p>Return value-self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__rtruediv__">
-<span class="sig-name descname"><span class="pre">__rtruediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__rtruediv__" title="Link to this definition"></a></dt>
-<dd><p>Return value/self.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2922,12 +2480,6 @@ Exceptions while calculating prices.</p>
 <dt class="sig sig-object py" id="y.networks.Network.__truediv__">
 <span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__truediv__" title="Link to this definition"></a></dt>
 <dd><p>Return self/value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.networks.Network.__trunc__">
-<span class="sig-name descname"><span class="pre">__trunc__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.networks.Network.__trunc__" title="Link to this definition"></a></dt>
-<dd><p>Truncating an Integral returns itself.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4013,12 +3565,6 @@ object in future sessions.</p>
 <p>A lightweight enum that enables lookup of chainids for popular blockchain networks.</p>
 <p>Each network is associated with its unique integer Chain ID.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__abs__">
-<span class="sig-name descname"><span class="pre">__abs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__abs__" title="Link to this definition"></a></dt>
-<dd><p>abs(self)</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__add__">
 <span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__add__" title="Link to this definition"></a></dt>
 <dd><p>Return self+value.</p>
@@ -4037,45 +3583,15 @@ object in future sessions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__ceil__">
-<span class="sig-name descname"><span class="pre">__ceil__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__ceil__" title="Link to this definition"></a></dt>
-<dd><p>Ceiling of an Integral returns itself.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__divmod__">
-<span class="sig-name descname"><span class="pre">__divmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__divmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(self, value).</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__eq__" title="Link to this definition"></a></dt>
 <dd><p>Return self==value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__float__">
-<span class="sig-name descname"><span class="pre">__float__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__float__" title="Link to this definition"></a></dt>
-<dd><p>float(self)</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__floor__">
-<span class="sig-name descname"><span class="pre">__floor__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__floor__" title="Link to this definition"></a></dt>
-<dd><p>Flooring an Integral returns itself.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__floordiv__">
 <span class="sig-name descname"><span class="pre">__floordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__floordiv__" title="Link to this definition"></a></dt>
 <dd><p>Return self//value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__format__">
-<span class="sig-name descname"><span class="pre">__format__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format_spec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__format__" title="Link to this definition"></a></dt>
-<dd><p>Returns format using actual value type unless __str__ has been overridden.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4091,11 +3607,6 @@ object in future sessions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__getnewargs__">
-<span class="sig-name descname"><span class="pre">__getnewargs__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__getnewargs__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__gt__">
 <span class="sig-name descname"><span class="pre">__gt__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__gt__" title="Link to this definition"></a></dt>
 <dd><p>Return self&gt;value.</p>
@@ -4105,12 +3616,6 @@ object in future sessions.</p>
 <dt class="sig sig-object py" id="y.Network.__index__">
 <span class="sig-name descname"><span class="pre">__index__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__index__" title="Link to this definition"></a></dt>
 <dd><p>Return self converted to an integer, if self is suitable for use as an index into a list.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__int__">
-<span class="sig-name descname"><span class="pre">__int__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__int__" title="Link to this definition"></a></dt>
-<dd><p>int(self)</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4138,39 +3643,15 @@ object in future sessions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__mod__">
-<span class="sig-name descname"><span class="pre">__mod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__mod__" title="Link to this definition"></a></dt>
-<dd><p>Return self%value.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__mul__">
 <span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__mul__" title="Link to this definition"></a></dt>
 <dd><p>Return self*value.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__ne__">
-<span class="sig-name descname"><span class="pre">__ne__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__ne__" title="Link to this definition"></a></dt>
-<dd><p>Return self!=value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__neg__">
-<span class="sig-name descname"><span class="pre">__neg__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__neg__" title="Link to this definition"></a></dt>
-<dd><p>-self</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__or__">
 <span class="sig-name descname"><span class="pre">__or__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__or__" title="Link to this definition"></a></dt>
 <dd><p>Return self|value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__pos__">
-<span class="sig-name descname"><span class="pre">__pos__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__pos__" title="Link to this definition"></a></dt>
-<dd><p>+self</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4192,52 +3673,15 @@ object in future sessions.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rdivmod__">
-<span class="sig-name descname"><span class="pre">__rdivmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rdivmod__" title="Link to this definition"></a></dt>
-<dd><p>Return divmod(value, self).</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rfloordiv__">
-<span class="sig-name descname"><span class="pre">__rfloordiv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rfloordiv__" title="Link to this definition"></a></dt>
-<dd><p>Return value//self.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__rlshift__">
 <span class="sig-name descname"><span class="pre">__rlshift__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rlshift__" title="Link to this definition"></a></dt>
 <dd><p>Return value&lt;&lt;self.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rmod__">
-<span class="sig-name descname"><span class="pre">__rmod__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rmod__" title="Link to this definition"></a></dt>
-<dd><p>Return value%self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rmul__">
-<span class="sig-name descname"><span class="pre">__rmul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rmul__" title="Link to this definition"></a></dt>
-<dd><p>Return value*self.</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="y.Network.__ror__">
 <span class="sig-name descname"><span class="pre">__ror__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__ror__" title="Link to this definition"></a></dt>
 <dd><p>Return value|self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__round__">
-<span class="sig-name descname"><span class="pre">__round__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__round__" title="Link to this definition"></a></dt>
-<dd><p>Rounding an Integral returns itself.</p>
-<p>Rounding with an ndigits argument also returns an integer.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rpow__">
-<span class="sig-name descname"><span class="pre">__rpow__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mod</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rpow__" title="Link to this definition"></a></dt>
-<dd><p>Return pow(value, self, mod).</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4250,18 +3694,6 @@ object in future sessions.</p>
 <dt class="sig sig-object py" id="y.Network.__rshift__">
 <span class="sig-name descname"><span class="pre">__rshift__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rshift__" title="Link to this definition"></a></dt>
 <dd><p>Return self&gt;&gt;value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rsub__">
-<span class="sig-name descname"><span class="pre">__rsub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rsub__" title="Link to this definition"></a></dt>
-<dd><p>Return value-self.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__rtruediv__">
-<span class="sig-name descname"><span class="pre">__rtruediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__rtruediv__" title="Link to this definition"></a></dt>
-<dd><p>Return value/self.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -4286,12 +3718,6 @@ object in future sessions.</p>
 <dt class="sig sig-object py" id="y.Network.__truediv__">
 <span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__truediv__" title="Link to this definition"></a></dt>
 <dd><p>Return self/value.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="y.Network.__trunc__">
-<span class="sig-name descname"><span class="pre">__trunc__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.Network.__trunc__" title="Link to this definition"></a></dt>
-<dd><p>Truncating an Integral returns itself.</p>
 </dd></dl>
 
 <dl class="py method">
