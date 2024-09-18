@@ -23,8 +23,8 @@ class yPriceMagicError(ValueError):
     Exceptions while calculating prices.
     """
 
-    def __init__(self, exc: Exception, token: str, block: Optional[int], symbol: str):
-        self.token = token
+    def __init__(self, exc: Exception, token_address: str, block: Optional[int], symbol: str):
+        self.token = token_address
         """
         The token that caused the error.
         """
@@ -44,7 +44,7 @@ class yPriceMagicError(ValueError):
             detail += f'({exc})'
         # We do the import here to avoid a circular dependency
         from y import Network
-        super().__init__(f"{detail} while fetching {Network.printable()} {symbol} {address} at block {block}")
+        super().__init__(f"{detail} while fetching {Network.printable()} {symbol} {token_address} at block {block}")
 
 class PriceError(Exception):
     """
