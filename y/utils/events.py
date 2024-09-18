@@ -92,7 +92,7 @@ async def get_logs_asap(
     to_block: Optional[Block] = None,
     verbose: int = 0
 ) -> List[Any]:
-
+    """
     Args:
         address: The address of the contract to fetch logs from.
         topics: The event topics to filter logs by.
@@ -543,7 +543,7 @@ class Events(LogFilter):
         return obj.block_number
         
     __slots__ = []
-    
+
 
 class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     """
