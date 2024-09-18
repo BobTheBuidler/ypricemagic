@@ -55,14 +55,6 @@ y.datatypes module
    :undoc-members:
    :show-inheritance:
 
-y.erc20 module
---------------
-
-.. automodule:: y.erc20
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 y.exceptions module
 -------------------
 
