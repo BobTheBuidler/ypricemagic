@@ -106,6 +106,15 @@
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.mooniswap.is_mooniswap_pool">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_mooniswap_pool</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the given token address is a Mooniswap pool.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is a Mooniswap pool, False otherwise.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">router</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="k">await</span> <span class="n">router</span><span class="o">.</span><span class="n">isPool</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span></div>
 
@@ -114,6 +123,17 @@
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.mooniswap.get_pool_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool_price</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the price of the given Mooniswap pool token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the pool token.</span>
+<span class="sd">        block (optional): The block number to get the price at. Defaults to latest block.</span>
+<span class="sd">        skip_cache (optional): Whether to skip the cache. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The price of the pool token in USD.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;token0&#39;</span><span class="p">,</span> <span class="s1">&#39;token1&#39;</span><span class="p">])</span>
     <span class="n">bal0</span><span class="p">,</span> <span class="n">bal1</span><span class="p">,</span> <span class="n">price0</span><span class="p">,</span> <span class="n">price1</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
