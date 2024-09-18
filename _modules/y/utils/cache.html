@@ -90,6 +90,12 @@
 
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">_memory</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create and return a :class:`Memory` object for caching values for the currently connected blockchain.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A :class:`~Memory` object configured with the current chain&#39;s cache directory.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Memory</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="n">memory</span> <span class="o">=</span> <span class="n">_memory</span><span class="p">()</span>

@@ -72,7 +72,7 @@
              
   <h1>Source code for y.exceptions</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">Contract</span> <span class="k">as</span> <span class="n">BrownieContract</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">CompilerError</span>
@@ -90,14 +90,37 @@
 <div class="viewcode-block" id="yPriceMagicError">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.yPriceMagicError">[docs]</a>
 <span class="k">class</span> <span class="nc">yPriceMagicError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Custom exception for ypricemagic-related errors.</span>
+
+<span class="sd">    This exception is raised when any error occurs inside of ypricemagic.</span>
+<span class="sd">    For example, if a price fails to fetch or if there are unexpected </span>
+<span class="sd">    Exceptions while calculating prices.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="yPriceMagicError.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.yPriceMagicError.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">Network</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exc</span><span class="p">:</span> <span class="ne">Exception</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The token that caused the error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The block that was queried when the error occurred.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">exception</span> <span class="o">=</span> <span class="n">exc</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The original :class:`~Exception` that was raised and wrapped with the yPriceMagicError.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="n">detail</span> <span class="o">=</span> <span class="n">exc</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">exception</span><span class="p">,</span> <span class="n">PriceError</span><span class="p">):</span>
             <span class="n">detail</span> <span class="o">+=</span> <span class="sa">f</span><span class="s1">&#39;(</span><span class="si">{</span><span class="n">exc</span><span class="si">}</span><span class="s1">)&#39;</span>
+        <span class="c1"># We do the import here to avoid a circular dependency</span>
+        <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">Network</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">detail</span><span class="si">}</span><span class="s2"> while fetching </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> at block </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
 
@@ -105,6 +128,10 @@
 <div class="viewcode-block" id="PriceError">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.PriceError">[docs]</a>
 <span class="k">class</span> <span class="nc">PriceError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a queried price is not found.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="PriceError.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.PriceError.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span> <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
@@ -114,14 +141,18 @@
 
 <div class="viewcode-block" id="UnsupportedNetwork">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.UnsupportedNetwork">[docs]</a>
-<span class="k">class</span> <span class="nc">UnsupportedNetwork</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="k">class</span> <span class="nc">UnsupportedNetwork</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when an operation is attempted on an unsupported blockchain network.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NonStandardERC20">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NonStandardERC20">[docs]</a>
 <span class="k">class</span> <span class="nc">NonStandardERC20</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when an ERC20 token contract is expected but the provided address is not a standard ERC20 token.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="CantFetchParam">
@@ -130,11 +161,6 @@
     <span class="k">pass</span></div>
 
 
-<div class="viewcode-block" id="NoBlockFound">
-<a class="viewcode-back" href="../../source/y.html#y.exceptions.NoBlockFound">[docs]</a>
-<span class="k">class</span> <span class="nc">NoBlockFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
-
 
 <div class="viewcode-block" id="TokenError">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.TokenError">[docs]</a>
@@ -142,22 +168,27 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Raised when a token contract is not the correct contract type for the desired operation.&quot;&quot;&quot;</span>
 <div class="viewcode-block" id="TokenError.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.TokenError.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">desired_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2"> is not a </span><span class="si">{</span><span class="n">desired_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">desired_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">optional_extra_args</span><span class="p">:</span> <span class="n">Any</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">token</span><span class="si">}</span><span class="s2"> is not a </span><span class="si">{</span><span class="n">desired_type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">optional_extra_args</span><span class="p">)</span></div>
 </div>
 
 
 <span class="c1"># Explorer Exceptions</span>
 
-<div class="viewcode-block" id="ExplorerError">
-<a class="viewcode-back" href="../../source/y.html#y.exceptions.ExplorerError">[docs]</a>
-<span class="k">class</span> <span class="nc">ExplorerError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>  <span class="c1"># don&#39;t want these caught by general exc clauses</span>
-    <span class="o">...</span></div>
+<span class="k">class</span> <span class="nc">_ExplorerError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for exceptions related to block explorer interactions.</span>
 
+<span class="sd">    These errors are specific to issues encountered when interacting with blockchain explorers like Etherscan.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="InvalidAPIKeyError">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidAPIKeyError">[docs]</a>
-<span class="k">class</span> <span class="nc">InvalidAPIKeyError</span><span class="p">(</span><span class="n">ExplorerError</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">InvalidAPIKeyError</span><span class="p">(</span><span class="n">_ExplorerError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the API key for the block explorer has been rejected.</span>
+<span class="sd">    This typically occurs when making requests to a block explorer API with a missing, incorrect, or banned key.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_msg</span> <span class="o">=</span> <span class="s2">&quot;The block explorer for this network says your API key is invalid.&quot;</span>
 <div class="viewcode-block" id="InvalidAPIKeyError.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.InvalidAPIKeyError.__init__">[docs]</a>
@@ -170,19 +201,30 @@
 
 <div class="viewcode-block" id="ContractNotVerified">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.ContractNotVerified">[docs]</a>
-<span class="k">class</span> <span class="nc">ContractNotVerified</span><span class="p">(</span><span class="n">ExplorerError</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="k">class</span> <span class="nc">ContractNotVerified</span><span class="p">(</span><span class="n">_ExplorerError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when attempting to fetch the ABI for an unverified contract from a block explorer.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="NoProxyImplementation">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NoProxyImplementation">[docs]</a>
 <span class="k">class</span> <span class="nc">NoProxyImplementation</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when the implementation address of a proxy contract cannot be determined.</span>
+
+<span class="sd">    This may occur when trying to interact with proxy contracts that don&#39;t follow standard patterns.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="MessedUpBrownieContract">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.MessedUpBrownieContract">[docs]</a>
 <span class="k">class</span> <span class="nc">MessedUpBrownieContract</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when there&#39;s an issue initialized a Brownie contract instance,</span>
+<span class="sd">    typically in the compilation step.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="MessedUpBrownieContract.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.MessedUpBrownieContract.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -217,6 +259,9 @@
 <div class="viewcode-block" id="NotAUniswapV2Pool">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NotAUniswapV2Pool">[docs]</a>
 <span class="k">class</span> <span class="nc">NotAUniswapV2Pool</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a contract is incorrectly identified as a Uniswap V2 pool.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># NOTE: we use this exc to get the non-pool out of the pool singleton so it doesn&#39;t grow forever</span>
     <span class="c1"># TODO: Refactor this goofy thing out</span>
 <div class="viewcode-block" id="NotAUniswapV2Pool.__init__">
@@ -232,7 +277,9 @@
 <div class="viewcode-block" id="NotABalancerV2Pool">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NotABalancerV2Pool">[docs]</a>
 <span class="k">class</span> <span class="nc">NotABalancerV2Pool</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a contract is incorrectly identified as a Balancer V2 pool.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <span class="c1"># Uni</span>
@@ -246,6 +293,12 @@
 <div class="viewcode-block" id="TokenNotFound">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.TokenNotFound">[docs]</a>
 <span class="k">class</span> <span class="nc">TokenNotFound</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a specified token cannot be found in a given container.</span>
+
+<span class="sd">    This is usually used when searching for a token in a liquidity pool.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
 <div class="viewcode-block" id="TokenNotFound.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.TokenNotFound.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">container</span><span class="p">):</span>
@@ -258,13 +311,17 @@
 <div class="viewcode-block" id="CalldataPreparationError">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.CalldataPreparationError">[docs]</a>
 <span class="k">class</span> <span class="nc">CalldataPreparationError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when there&#39;s an error in preparing calldata for a contract interaction.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 <div class="viewcode-block" id="CallReverted">
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.CallReverted">[docs]</a>
 <span class="k">class</span> <span class="nc">CallReverted</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a contract call is reverted.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 
 

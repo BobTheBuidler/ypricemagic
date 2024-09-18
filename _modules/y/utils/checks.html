@@ -71,13 +71,36 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.checks</h1><div class="highlight"><pre>
-<span></span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility functions for performing various checks.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span>
+
 
 <div class="viewcode-block" id="hasall">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.checks.hasall">[docs]</a>
 <span class="k">def</span> <span class="nf">hasall</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">attrs</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;returns True if each attr in `attrs` is an attribute of `obj`, False otherwise&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if an object has all the specified attributes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj: The object to check.</span>
+<span class="sd">        attrs: An iterable of attribute names to check for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the object has all the specified attributes, False otherwise.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; class TestClass:</span>
+<span class="sd">        ...     attr1 = 1</span>
+<span class="sd">        ...     attr2 = 2</span>
+<span class="sd">        &gt;&gt;&gt; test_obj = TestClass()</span>
+<span class="sd">        &gt;&gt;&gt; hasall(test_obj, [&#39;attr1&#39;, &#39;attr2&#39;])</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; hasall(test_obj, [&#39;attr1&#39;, &#39;attr3&#39;])</span>
+<span class="sd">        False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">all</span><span class="p">(</span><span class="nb">hasattr</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span><span class="p">)</span></div>
 
 </pre></div>

@@ -82,25 +82,46 @@
     <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">UniswapV2Pool</span>
     <span class="kn">from</span> <span class="nn">y.prices.stable_swap.curve</span> <span class="kn">import</span> <span class="n">CurvePool</span>
 
-<span class="n">Pool</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;UniswapV2Pool&quot;</span><span class="p">,</span> <span class="s2">&quot;CurvePool&quot;</span><span class="p">]</span>
 
-<span class="n">Address</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span><span class="n">HexBytes</span><span class="p">,</span><span class="n">AnyAddress</span><span class="p">,</span><span class="n">EthAddress</span><span class="p">]</span>
-<span class="n">Block</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="n">BlockNumber</span><span class="p">]</span>
+<span class="n">Address</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">,</span> <span class="n">AnyAddress</span><span class="p">,</span> <span class="n">EthAddress</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A union of types used to represent Ethereum addresses.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">Block</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BlockNumber</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A union of types used to represent block numbers as integers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="n">AddressOrContract</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span><span class="n">Contract</span><span class="p">]</span>
-<span class="n">AnyAddressType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span><span class="n">Contract</span><span class="p">,</span><span class="nb">int</span><span class="p">]</span>
+
+<span class="n">AnyAddressType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A type alias representing any valid representation of an Ethereum address.</span>
+<span class="sd">This can be an Address, a :class:`~y.Contract`, or an integer.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">Pool</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;UniswapV2Pool&quot;</span><span class="p">,</span> <span class="s2">&quot;CurvePool&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A union of types representing liquidity pools.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UsdValue">
 <a class="viewcode-back" href="../../source/y.html#y.datatypes.UsdValue">[docs]</a>
 <span class="k">class</span> <span class="nc">UsdValue</span><span class="p">(</span><span class="nb">float</span><span class="p">):</span>
-<div class="viewcode-block" id="UsdValue.__init__">
-<a class="viewcode-back" href="../../source/y.html#y.datatypes.UsdValue.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
-
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a USD value with custom string representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
 <div class="viewcode-block" id="UsdValue.__str__">
 <a class="viewcode-back" href="../../source/y.html#y.datatypes.UsdValue.__str__">[docs]</a>
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return a string representation of the USD value.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A string formatted as a USD value with 8 decimal places.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;$</span><span class="si">{</span><span class="bp">self</span><span class="si">:</span><span class="s1">.8f</span><span class="si">}</span><span class="s1">&#39;</span></div>
 </div>
 
@@ -108,11 +129,9 @@
 <div class="viewcode-block" id="UsdPrice">
 <a class="viewcode-back" href="../../source/y.html#y.datatypes.UsdPrice">[docs]</a>
 <span class="k">class</span> <span class="nc">UsdPrice</span><span class="p">(</span><span class="n">UsdValue</span><span class="p">):</span>
-<div class="viewcode-block" id="UsdPrice.__init__">
-<a class="viewcode-back" href="../../source/y.html#y.datatypes.UsdPrice.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">v</span><span class="p">)</span></div>
-</div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a USD price.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
 
 </pre></div>
 

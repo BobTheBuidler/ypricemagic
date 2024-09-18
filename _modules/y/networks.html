@@ -82,27 +82,62 @@
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network">[docs]</a>
 <span class="k">class</span> <span class="nc">Network</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lightweight enum that enables lookup of popular chainids.</span>
+<span class="sd">    A lightweight enum that enables lookup of chainids for popular blockchain networks.</span>
+
+<span class="sd">    Each network is associated with its unique integer Chain ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># NOTE: If a particular network has changed names, do not remove</span>
     <span class="c1"># the old spec, simply add the new spec directly above the old one.</span>
     <span class="c1"># Both will work but Network(chainid) will return the new name. &quot;&quot;&quot;</span>
+
     <span class="n">Mainnet</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Ethereum Mainnet&quot;&quot;&quot;</span>
+
     <span class="n">Optimism</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Optimism&quot;&quot;&quot;</span>
+
     <span class="n">Cronos</span> <span class="o">=</span> <span class="mi">25</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Cronos Mainnet&quot;&quot;&quot;</span>
+
     <span class="n">BinanceSmartChain</span> <span class="o">=</span> <span class="mi">56</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Binance Smart Chain&quot;&quot;&quot;</span>
+
     <span class="n">OKEx</span> <span class="o">=</span> <span class="mi">66</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for OKEx Chain&quot;&quot;&quot;</span>
+
     <span class="n">Gnosis</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for xDai Chain (now Gnosis Chain)&quot;&quot;&quot;</span>
+
     <span class="n">xDai</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for xDai Chain (now Gnosis Chain)&quot;&quot;&quot;</span>
+
     <span class="n">Heco</span> <span class="o">=</span> <span class="mi">128</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Heco&quot;&quot;&quot;</span>
+
     <span class="n">Polygon</span> <span class="o">=</span> <span class="mi">137</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Polygon (formerly Matic) Network&quot;&quot;&quot;</span>
+
     <span class="n">Fantom</span> <span class="o">=</span> <span class="mi">250</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Fantom Opera Network&quot;&quot;&quot;</span>
+
     <span class="n">Moonriver</span> <span class="o">=</span> <span class="mi">1285</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Moonriver Network&quot;&quot;&quot;</span>
+
     <span class="n">Base</span> <span class="o">=</span> <span class="mi">8453</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Base&quot;&quot;&quot;</span>
+
     <span class="n">Arbitrum</span> <span class="o">=</span> <span class="mi">42161</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Arbitrum One&quot;&quot;&quot;</span>
+
     <span class="n">Avalanche</span> <span class="o">=</span> <span class="mi">43114</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Avalanche C-Chain&quot;&quot;&quot;</span>
+
     <span class="n">Harmony</span> <span class="o">=</span> <span class="mi">1666600000</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Harmony Mainnet Shard 0&quot;&quot;&quot;</span>
+
     <span class="n">Aurora</span> <span class="o">=</span> <span class="mi">1313161554</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;The Chain ID for Aurora&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="Network.label">
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network.label">[docs]</a>
@@ -156,7 +191,7 @@
     <span class="k">def</span> <span class="nf">printable</span><span class="p">(</span><span class="n">chain_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="c1"># will always work to print a readable string that identifies the network, even if network not supported</span>
         <span class="k">if</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
-        <span class="k">return</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">chain_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">chain_id</span><span class="p">)</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;chain </span><span class="si">{</span><span class="n">chain_id</span><span class="si">}</span><span class="s2">&quot;</span></div>
+        <span class="k">return</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">chain_id</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;chain </span><span class="si">{</span><span class="n">chain_id</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
 
 </pre></div>

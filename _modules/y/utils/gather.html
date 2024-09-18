@@ -71,7 +71,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.gather</h1><div class="highlight"><pre>
-<span></span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility functions for gathering method results asynchronously.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
@@ -89,6 +92,32 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Asynchronously gather results from multiple contract methods.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The contract address.</span>
+<span class="sd">        methods: An iterable of method names or encoded method calls.</span>
+<span class="sd">        block: The block number to query. Defaults to None.</span>
+<span class="sd">        return_exceptions: Whether to return exceptions or raise them. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple containing the results of the method calls.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; from y.utils import gather_methods</span>
+<span class="sd">        &gt;&gt;&gt; address = &quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;  # DAI</span>
+<span class="sd">        &gt;&gt;&gt; methods = [&quot;name()&quot;, &quot;symbol()&quot;, &quot;decimals()&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; results = await gather_methods(address, methods)</span>
+<span class="sd">        &gt;&gt;&gt; print(results)</span>
+<span class="sd">        (&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+
+<span class="sd">        &gt;&gt;&gt; # Using raw method calls</span>
+<span class="sd">        &gt;&gt;&gt; methods = [&quot;name()(string)&quot;, &quot;symbol()(string)&quot;, &quot;decimals()(uint8)&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; results = await gather_methods(address, methods)</span>
+<span class="sd">        &gt;&gt;&gt; print(results)</span>
+<span class="sd">        (&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">methods</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">methods</span><span class="p">)</span>
     <span class="n">gather_fn</span> <span class="o">=</span> <span class="n">_gather_methods_raw</span> <span class="k">if</span> <span class="s2">&quot;(&quot;</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">else</span> <span class="n">_gather_methods_brownie</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">gather_fn</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">)</span></div>
@@ -102,6 +131,27 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Internal function to gather results using Brownie.</span>
+
+<span class="sd">    This function uses the Contract.coroutine method to make asynchronous calls.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The contract address.</span>
+<span class="sd">        methods: An iterable of method names.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        return_exceptions: Whether to return exceptions or raise them. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple containing the results of the method calls.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; address = &quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;  # DAI</span>
+<span class="sd">        &gt;&gt;&gt; methods = [&quot;name&quot;, &quot;symbol&quot;, &quot;decimals&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; results = await _gather_methods_brownie(address, methods)</span>
+<span class="sd">        &gt;&gt;&gt; print(results)</span>
+<span class="sd">        (&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># skip circular import</span>
     <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">Contract</span>
     <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
@@ -115,6 +165,27 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
     <span class="n">return_exceptions</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Internal function to gather results using raw calls.</span>
+
+<span class="sd">    This function uses multicall.Call from the multicall library to make asynchronous calls.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The contract address.</span>
+<span class="sd">        methods: An iterable of encoded method calls.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        return_exceptions: Whether to return exceptions or raise them. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple containing the results of the method calls.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; address = &quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;  # DAI</span>
+<span class="sd">        &gt;&gt;&gt; methods = [&quot;name()(string)&quot;, &quot;symbol()(string)&quot;, &quot;decimals()(uint8)&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; results = await _gather_methods_raw(address, methods)</span>
+<span class="sd">        &gt;&gt;&gt; print(results)</span>
+<span class="sd">        (&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="n">method</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">],</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">)</span>
 </pre></div>
 
