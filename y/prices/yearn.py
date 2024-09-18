@@ -96,14 +96,50 @@ async def get_price(
     return await YearnInspiredVault(token).price(block=block, skip_cache=skip_cache, ignore_pools=ignore_pools, sync=False)
 
 class YearnInspiredVault(ERC20):
+    """
+    Represents a vault token from Yearn or a similar protocol.
+
+    This class extends ERC20 and provides methods to interact with vaults,
+    including fetching the underlying asset, share price, and token price.
+    """
+
     # defaults are stored as class vars to keep instance dicts smaller
+
     _get_share_price = None
+    """
+    Cached method to get the share price.
+    
+    This class will probe various share price methods to find the correct one, and then save it for reuse.
+    """
     # v1 vaults use getPricePerFullShare scaled to 18 decimals
     # v2 vaults use pricePerShare scaled to underlying token decimals
     # yearnish clones use all sorts of other things, we gotchu covered
     
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
+        """
+        Fetches the underlying asset of the vault.
+
+        Returns:
+            The underlying ERC20 token.
+
+        Raises:
+            CantFetchParam: If the underlying asset cannot be determined.
+
+        Special Cases:
+            1. Arbitrum USDL: For the specific address 0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7 on Arbitrum,
+               it uses the 'usdl()' method to fetch the underlying token.
+            2. Beefy Vaults: For certain Beefy vaults (BeefyVaultV6Matic and BeefyVenusVaultBNB),
+               it uses 'wmatic()' or 'wbnb()' methods respectively.
+            3. Reaper Vaults: For certain Reaper vaults, it checks for a 'lendPlatform()' method
+               and then queries the 'underlying()' method on the lend platform contract.
+
+        Example:
+            >>> vault = YearnInspiredVault("0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9")  # yvUSDC
+            >>> underlying = vault.underlying()
+            >>> underlying.address
+            "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"  # USDC address
+        """
         # special cases
         if chain.id == Network.Arbitrum and self.address == '0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7':
             return ERC20(await raw_call(self.address, 'usdl()', output='address', sync=False), asynchronous=self.asynchronous)
@@ -129,6 +165,24 @@ class YearnInspiredVault(ERC20):
 
     a_sync.a_sync(cache_type='memory', ram_cache_maxsize=1000)
     async def share_price(self, block: Optional[Block] = None) -> Optional[Decimal]:
+        """
+        Calculates the share price of the vault.
+
+        Args:
+            block (optional): The block number to query. Defaults to the latest block.
+
+        Returns:
+            The share price of the vault, or None if the vault's total supply is zero.
+
+        Raises:
+            CantFetchParam: If the share price cannot be fetched or calculated.
+
+        Example:
+            >>> vault = YearnInspiredVault("0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9")  # yvUSDC
+            >>> share_price = await vault.share_price(block=14_000_000)
+            >>> print(f"{share_price:.6f}")
+            1.096431
+        """
         if self._get_share_price:
             try:
                 share_price = await self._get_share_price.coroutine(block_id=block)
@@ -180,6 +234,23 @@ class YearnInspiredVault(ERC20):
         ignore_pools: Tuple[Pool, ...] = (),
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:
+        """
+        Calculates the USD price of the vault token.
+
+        Args:
+            block (optional): The block number to query. Defaults to the latest block.
+            ignore_pools: Pools to ignore when calculating the price.
+            skip_cache: Whether to skip the cache when fetching prices.
+
+        Returns:
+            The USD price of the vault token.
+
+        Example:
+            >>> vault = YearnInspiredVault("0x5f18C75AbDAe578b483E5F43f12a39cF75b973a9")  # yvUSDC
+            >>> price = vault.price(block=14_000_000)
+            >>> print(f"{price:.6f}")
+            1.096431  # The price of yvUSDC in USD
+        """
         logger = get_price_logger(self.address, block=None, extra='yearn')
         underlying: ERC20
         share_price, underlying = await asyncio.gather(self.share_price(block=block, sync=False), self.__underlying__)

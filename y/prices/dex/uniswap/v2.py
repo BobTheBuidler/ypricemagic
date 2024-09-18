@@ -52,9 +52,14 @@ except ContractNotVerified:
 
 
 class UniswapV2Pool(ERC20):
-    # defaults are stored as class vars to keep instance dicts smaller
+    """
+    Represents a Uniswap V2 liquidity pool.
+    """
+
+    # default stored as class var to keep instance dicts smaller
     __types_assumed = True
     "True if we're assuming types based on normal univ2 abi, False if we checked via block explorer."
+
     __slots__ = 'get_reserves',
     def __init__(
         self, 
@@ -208,6 +213,19 @@ class UniswapV2Pool(ERC20):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60*60, semaphore=10_000)  # lets try a semaphore here
     async def check_liquidity(self, token: Address, block: Block) -> int:
+        """
+        Check the liquidity of a specific token in the pool at a given block.
+
+        Args:
+            token: The address of the token to check.
+            block: The block number to query.
+
+        Returns:
+            The liquidity of the token in the pool.
+
+        Raises:
+            TokenNotFound: If the token is not one of the two tokens in the liquidity pool.
+        """
         logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if block and block < await self.deploy_block(sync=False):
             logger.debug("block %s is before %s deploy block", block, self)
@@ -224,6 +242,15 @@ class UniswapV2Pool(ERC20):
 
     @stuck_coro_debugger
     async def is_uniswap_pool(self, block: Optional[Block] = None) -> bool:
+        """
+        Check if this contract is a valid liquidity pool for Uniswap V2 or one of its forks.
+
+        Args:
+            block (optional): The block number to query. Defaults to latest block.
+
+        Returns:
+            True if the contract is a valid Uniswap V2 pool, False otherwise.
+        """
         try:
             return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
         except NotAUniswapV2Pool:

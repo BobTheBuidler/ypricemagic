@@ -1,4 +1,3 @@
-
 import asyncio
 import datetime
 import logging
@@ -16,14 +15,24 @@ try:
 except ImportError:
     from dank_mids._config import GANACHE_FORK
 
-from y import ENVIRONMENT_VARIABLES as ENVS
-from y.exceptions import NoBlockFound, NodeNotSynced
+from y.exceptions import NodeNotSynced
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache, memory
 from y.utils.client import get_ethereum_client, get_ethereum_client_async
 from y.utils.logging import yLazyLogger
 
+
+UnixTimestamp = NewType("UnixTimestamp", int)
+Timestamp = Union[UnixTimestamp, datetime.datetime]
+
 logger = logging.getLogger(__name__)
+
+class NoBlockFound(Exception):
+    """
+    Raised when no block is found for a specified timestamp because the timestamp is in the future.
+    """
+    def __init__(self, timestamp: Timestamp):
+        super().__init__(f"No block found after timestamp {timestamp}")
 
 @memory.cache()
 @yLazyLogger(logger)
@@ -101,11 +110,6 @@ async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
     db.set_block_at_timestamp(timestamp, block_at_timestamp)
     return block_at_timestamp
 
-
-UnixTimestamp = NewType("UnixTimestamp", int)
-
-Timestamp = Union[UnixTimestamp, datetime.datetime]
-
 def _parse_timestamp(timestamp: Timestamp) -> UnixTimestamp:
     if isinstance(timestamp, datetime.datetime):
         timestamp = int(timestamp.timestamp())
@@ -146,7 +150,7 @@ async def closest_block_after_timestamp_async(timestamp: Timestamp, wait_for_blo
         else:
             lo = mid
     if hi == height:
-        raise NoBlockFound(f"No block found after timestamp {timestamp}")
+        raise NoBlockFound(timestamp)
     return hi
 
 @memory.cache()
@@ -160,7 +164,7 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> int:
         else:
             lo = mid
     if hi == height:
-        raise NoBlockFound(f"No block found after timestamp {timestamp}")
+        raise NoBlockFound(timestamp)
     return hi
 
 

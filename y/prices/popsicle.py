@@ -22,11 +22,41 @@ logger = logging.getLogger(__name__)
 @a_sync.a_sync(default='sync', cache_type='memory', ram_cache_ttl=5*60)
 @optional_async_diskcache
 async def is_popsicle_lp(token_address: AnyAddressType) -> bool:
+    """
+    Determines if the given token address is a Popsicle Finance LP token.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Returns:
+        True if the token is a Popsicle LP token, False otherwise.
+
+    Example:
+        >>> is_popsicle = is_popsicle_lp("0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf")
+        >>> print(is_popsicle)
+        True
+    """
     # NOTE: contract to check for reference (mainnet): 0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf
     return await has_methods(token_address, ('token0()(address)','token1()(address)','usersAmounts()((uint,uint))'), sync=False)
 
 @a_sync.a_sync(default='sync')
 async def get_price(token: AnyAddressType, block: Optional[Block] = None, *, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+    """
+    Calculates the price of a Popsicle Finance LP token.
+
+    Args:
+        token: The address of the Popsicle LP token.
+        block (optional): The block number to query. Defaults to the latest block.
+        skip_cache (optional): Whether to skip the cache when fetching prices. Defaults to :obj:`ENVS.SKIP_CACHE`.
+
+    Returns:
+        The price of the LP token in USD, or None if the price cannot be determined.
+
+    Example:
+        >>> price = get_price("0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf", block=14_000_000)
+        >>> print(f"{price:.6f}")
+        1.234567  # The price of the Popsicle LP token in USD
+    """
     address = convert.to_address(token)
     total_val = await get_tvl(address, block, skip_cache=skip_cache, sync=False)
     if total_val is None:

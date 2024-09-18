@@ -1,5 +1,5 @@
 import logging
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from brownie import Contract as BrownieContract
 from brownie.exceptions import CompilerError
@@ -15,54 +15,102 @@ logger = logging.getLogger(__name__)
 # General
 
 class yPriceMagicError(ValueError):
-    def __init__(self, exc: Exception, address: str, block: Optional[int], symbol: str):
-        from y import Network
+    """
+    Custom exception for ypricemagic-related errors.
+
+    This exception is raised when any error occurs inside of ypricemagic.
+    For example, if a price fails to fetch or if there are unexpected 
+    Exceptions while calculating prices.
+    """
+
+    def __init__(self, exc: Exception, token: str, block: Optional[int], symbol: str):
+        self.token = token
+        """
+        The token that caused the error.
+        """
+
+        self.block = block
+        """
+        The block that was queried when the error occurred.
+        """
+
         self.exception = exc
+        """
+        The original :class:`~Exception` that was raised and wrapped with the yPriceMagicError.
+        """
+
         detail = exc.__class__.__name__
         if not isinstance(self.exception, PriceError):
             detail += f'({exc})'
+        # We do the import here to avoid a circular dependency
+        from y import Network
         super().__init__(f"{detail} while fetching {Network.printable()} {symbol} {address} at block {block}")
 
 class PriceError(Exception):
+    """
+    Raised when a queried price is not found.
+    """
+
     def __init__(self, logger: logging.Logger, symbol: str):
         super().__init__(f"No price found for {symbol} {logger.address} at block {logger.block}")
 
-class UnsupportedNetwork(Exception):
-    pass
+class UnsupportedNetwork(ValueError):
+    """
+    Raised when an operation is attempted on an unsupported blockchain network.
+    """
 
 class NonStandardERC20(Exception):
-    pass
+    """
+    Raised when an ERC20 token contract is expected but the provided address is not a standard ERC20 token.
+    """
 
 class CantFetchParam(Exception):
     pass
 
-class NoBlockFound(Exception):
-    pass
 
 class TokenError(ValueError):
     """Raised when a token contract is not the correct contract type for the desired operation."""
-    def __init__(self, token: AnyAddressType, desired_type: str):
-        super().__init__(f"{token} is not a {desired_type}")
+    def __init__(self, token: AnyAddressType, desired_type: str, *optional_extra_args: Any):
+        super().__init__(f"{token} is not a {desired_type}", *optional_extra_args)
 
 # Explorer Exceptions
 
-class ExplorerError(Exception):  # don't want these caught by general exc clauses
-    ...
+class _ExplorerError(Exception):
+    """
+    Base class for exceptions related to block explorer interactions.
 
-class InvalidAPIKeyError(ExplorerError):
+    These errors are specific to issues encountered when interacting with blockchain explorers like Etherscan.
+    """
+
+class InvalidAPIKeyError(_ExplorerError):
+    """
+    Raised when the API key for the block explorer has been rejected.
+    This typically occurs when making requests to a block explorer API with a missing, incorrect, or banned key.
+    """
     _msg = "The block explorer for this network says your API key is invalid."
     def __init__(self, msg: str = ''):
         super().__init__(msg or self._msg)
 
 # Contracts
 
-class ContractNotVerified(ExplorerError):
-    pass
+class ContractNotVerified(_ExplorerError):
+    """
+    Raised when attempting to fetch the ABI for an unverified contract from a block explorer.
+    """
 
 class NoProxyImplementation(Exception):
-    pass
+    """
+    Raised when the implementation address of a proxy contract cannot be determined.
+
+    This may occur when trying to interact with proxy contracts that don't follow standard patterns.
+    """
 
 class MessedUpBrownieContract(Exception):
+    """
+    Raised when there's an issue initialized a Brownie contract instance,
+    typically in the compilation step.
+    """
+
     def __init__(self, address, *args: object) -> None:
         super().__init__(*args)
         # try to recache the contract
@@ -88,6 +136,9 @@ def contract_not_verified(e: Exception) -> bool:
 # Pool detection
 
 class NotAUniswapV2Pool(Exception):
+    """
+    Raised when a contract is incorrectly identified as a Uniswap V2 pool.
+    """
     # NOTE: we use this exc to get the non-pool out of the pool singleton so it doesn't grow forever
     # TODO: Refactor this goofy thing out
     def __init__(self, non_pool: "UniswapV2Pool"):
@@ -97,7 +148,9 @@ class NotAUniswapV2Pool(Exception):
         super().__init__(non_pool.address)
 
 class NotABalancerV2Pool(Exception):
-    pass
+    """
+    Raised when a contract is incorrectly identified as a Balancer V2 pool.
+    """
 
 # Uni
 
@@ -105,16 +158,26 @@ class CantFindSwapPath(Exception):
     pass
 
 class TokenNotFound(ValueError):
+    """
+    Raised when a specified token cannot be found in a given container.
+
+    This is usually used when searching for a token in a liquidity pool.
+    """
+    
     def __init__(self, token, container):
         super().__init__(f"{token} is not in {container}")
 
 # Calls
 
 class CalldataPreparationError(Exception):
-    pass
+    """
+    Raised when there's an error in preparing calldata for a contract interaction.
+    """
 
 class CallReverted(Exception):
-    pass
+    """
+    Raised when a contract call is reverted.
+    """
 
 
 def call_reverted(e: Exception) -> bool:

@@ -1,4 +1,11 @@
-# async: done
+"""
+This module contains utils for sense checking prices returned from the library.
+
+A user will not need to use anything here.
+
+Developers can skip the sense check for additional tokens by adding them to the
+:obj:`ACCEPTABLE_HIGH_PRICES` mapping.
+"""
 
 import logging
 from typing import Optional
@@ -173,6 +180,25 @@ async def sense_check(
     block: Optional[int],
     price: float
     ):
+    """
+    Performs a sense check on the given token price and logs a warning if it is unexpectedly high.
+
+    This is just to help catch potential bugs before they cause issues.
+
+    Args:
+        token_address: The address of the token.
+        block: The optional block number to use for the error message.
+        price: The price to check.
+
+    Example:
+        >>> await sense_check("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", 14_000_000, 123450000.00)
+        unusually high price ($123450000.00) returned for USDC "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" on Mainnet block 14000000. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.
+
+    Note:
+        This function checks if the price is within acceptable ranges based on the token type and network.
+        It will not log for various special cases such as ETH-like tokens, BTC-like tokens, LP tokens, 
+        and vault tokens where the underlying is exempt from the sense check.
+    """
 
     # if price is in "normal" range, exit sense check
     if price < 1000:
