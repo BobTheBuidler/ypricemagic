@@ -119,6 +119,9 @@ def skip_specific_members(app, what, name, obj, skip, options):
     """
     
     logger.info(f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}")
+    # Skip some dundermethods in all cases.
+    if name in ["__abs__", "__ceil__", "__divmod__", "__float__", "__floor__", "__format__", "__getformat__", "__getnewargs__", "__int__", "__mod__", "__ne__", "__neg__", "__pos__", "__rdivmod__", "__rfloordiv__", "__rmod__", "__rmul__", "__round__", "__rpow__", "__rsub__", "__rtruediv__", "__setformat__", "__trunc__"]:
+        return True
 
     # Skip the __init__ and __call__ members of any NewType objects we defined.
     if type(getattr(obj, "__self__", None)).__qualname__ == "typing.NewType" and name in ["__init__", "__call__"]:
