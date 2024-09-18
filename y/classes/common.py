@@ -25,11 +25,10 @@ from y.constants import EEE_ADDRESS
 from y.contracts import (Contract, build_name, contract_creation_block_async,
                          has_method, probe)
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
-from y.erc20 import decimals, totalSupply
 from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
                           NonStandardERC20)
 from y.networks import Network
-from y.utils import logging, raw_calls
+from y.utils import _erc20, logging, raw_calls
 
 if TYPE_CHECKING:
     from y.utils.events import Events
@@ -172,7 +171,7 @@ class ERC20(ContractBase):
         '''used to fetch decimals at specific block'''
         if self.address == EEE_ADDRESS:
             return 18
-        return await decimals(self.address, block=block, sync=False)
+        return await _erc20.decimals(self.address, block=block, sync=False)
     
     @a_sync.aka.cached_property
     @stuck_coro_debugger
@@ -184,7 +183,16 @@ class ERC20(ContractBase):
         return 10 ** await self._decimals(block, sync=False)
 
     async def total_supply(self, block: Optional[Block] = None) -> int:
-        return await totalSupply(self.address, block=block, sync=False)
+        """
+        Get the total supply of the token.
+
+        Args:
+            block (optional): The block number to query. Defaults to latest block.
+
+        Returns:
+            The total supply of the token.
+        """
+        return await _erc20.totalSupply(self.address, block=block, sync=False)
 
     async def total_supply_readable(self, block: Optional[Block] = None) -> float:
         total_supply, scale = await asyncio.gather(self.total_supply(block=block, sync=False), self.__scale__)
