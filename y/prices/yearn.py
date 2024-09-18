@@ -38,6 +38,9 @@ underlying_methods = [
     'wbnb()(address)',
     'based()(address)',
 ]
+"""
+List of methods which might be used to get the underlying asset of a vault.
+"""
 
 share_price_methods = [
     'pricePerShare()(uint)',
@@ -46,6 +49,9 @@ share_price_methods = [
     'getSharesToUnderlying()(uint)',
     'exchangeRate()(uint)',
 ]
+"""
+List of methods which might be used to get the share price of a vault.
+"""
 
 force_false = {
     Network.Mainnet: [

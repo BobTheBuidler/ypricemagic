@@ -105,6 +105,17 @@ sys.path.insert(0, os.path.abspath('./y'))
 def skip_specific_members(app, what, name, obj, skip, options):
     """
     Function to exclude specific members for a particular module.
+
+    Args:
+        app: The Sphinx application object.
+        what: The type of the object which the docstring belongs to (one of "module", "class", "exception", "function", "method", "attribute").
+        name: The fully qualified name of the object.
+        obj: The object itself.
+        skip: A boolean indicating if autodoc will skip this member if True.
+        options: The options given to the directive: an object with attributes inherited_members, undoc_members, show_inheritance and noindex that are true if the flag option of same name was given to the auto directive.
+
+    Returns:
+        True if the member should be skipped, False otherwise.
     """
     
     logger.info(f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}")
@@ -120,4 +131,10 @@ def skip_specific_members(app, what, name, obj, skip, options):
     return skip
 
 def setup(app):
+    """
+    Connect the skip_specific_members function to the autodoc-skip-member event.
+
+    Args:
+        app: The Sphinx application object.
+    """
     app.connect('autodoc-skip-member', skip_specific_members)
