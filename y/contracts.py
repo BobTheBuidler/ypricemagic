@@ -4,7 +4,6 @@ import json
 import logging
 import threading
 from collections import defaultdict
-from contextlib import suppress
 from typing import Any, Callable, Dict, List, Literal, NewType, Optional, Set, Tuple, Union
 
 import a_sync
@@ -50,11 +49,31 @@ FORCE_IMPLEMENTATION = {
 
 
 def Contract_erc20(address: AnyAddressType) -> "Contract":
+    """
+    Create a Contract instance for an ERC20 token.
+
+    This function uses the standard ERC20 ABI instead of fetching the contract ABI from the block explorer.
+    
+    Args:
+        address: The address of the ERC20 token.
+
+    Returns:
+        A Contract instance for the ERC20 token.
+    """
     address = convert.to_address(address)
     return Contract.from_abi('ERC20',address,ERC20ABI)
 
 
 def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
+    """
+    Create a Contract instance for an address, falling back to an ERC20 token if the contract is not verified.
+
+    Args:
+        address: The address of the contract or ERC20 token.
+
+    Returns:
+        A Contract instance for the contract address.
+    """
     if isinstance(address, Contract):
         return address
     address = convert.to_address(address)
@@ -70,6 +89,17 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
+
+    Args:
+        address: The address of the contract.
+        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.
+
+    Returns:
+        The block number at which the contract was created.
+
+    Raises:
+        exceptions.NodeNotSynced: If the node is not fully synced.
+        ValueError: If the contract creation block cannot be determined.
     """
     address = convert.to_address(address)
     logger.debug("contract creation block %s", address)
@@ -124,6 +154,17 @@ async def contract_creation_block_async(address: AnyAddressType, when_no_history
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
+
+    Args:
+        address: The address of the contract.
+        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.
+
+    Returns:
+        The block number at which the contract was created.
+
+    Raises:
+        exceptions.NodeNotSynced: If the node is not fully synced.
+        ValueError: If the contract creation block cannot be determined.
     """
     from y._db.utils import contract as db
 
@@ -269,7 +310,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
             self._ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
             try:
-                self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, _pop, self._ChecksumAddressSingletonMeta__instances, self.address)
+                self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, self._ChecksumAddressSingletonMeta__instances.pop, self.address, None)
             except RuntimeError:
                 self._ttl_cache_popper = cache_ttl
 
@@ -284,6 +325,20 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         persist: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
+        """
+        Create a Contract instance from an ABI.
+
+        Args:
+            name: The name of the contract.
+            address: The address of the contract.
+            abi: The ABI of the contract.
+            owner (optional): The owner of the contract. Default None.
+            persist (optional): If True, persist the contract in brownie's local contract database. Default True.
+            cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in :mod:`~y.ENVIRONMENT_VARIABLES`.
+
+        Returns:
+            A Contract instance for the given ABI.
+        """
         self = cls.__new__(cls)
         build = {"abi": abi, "address": _resolve_address(address), "contractName": name, "type": "contract"}
         self.__init_from_abi__(build, owner, persist)
@@ -291,7 +346,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         _setup_events(self)             # Init an event container for each topic
         _squeeze(self)                  # Get rid of unnecessary memory-hog properties
         try:
-            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, self.address)
+            self._ttl_cache_popper = "disabled" if cache_ttl is None else asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, self.address, None)
         except RuntimeError:
             self._ttl_cache_popper = cache_ttl
         return self
@@ -313,7 +368,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         try:
             # We do this so we don't clog the threadpool with multiple jobs for the same contract.
             return await _contract_queue(address, require_success=require_success, cache_ttl=cache_ttl)
-        except (ContractNotFound, exceptions.ExplorerError, CompilerError) as e:
+        except (ContractNotFound, exceptions._ExplorerError, CompilerError) as e:
             # re-raise with nicer traceback
             raise type(e)(*e.args) from None
     
@@ -325,6 +380,17 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         require_success: bool = True, 
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
+        """
+        Internal method to create a Contract instance asynchronously.
+
+        Args:
+            address: The address of the contract.
+            require_success: If True, raise an exception if the contract cannot be initialized.
+            cache_ttl: The time-to-live for the contract cache in seconds.
+
+        Returns:
+            A Contract instance for the given address.
+        """
         contract = await contract_threads.run(cls, address, require_success=require_success)
 
         if not contract.verified or contract._ttl_cache_popper == "disabled":
@@ -337,14 +403,25 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     
         elif isinstance(contract._ttl_cache_popper, int):
             cache_ttl = max(contract._ttl_cache_popper, cache_ttl)
-            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
+            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, contract.address, None)
 
         elif asyncio.get_running_loop().time() + cache_ttl > contract._ttl_cache_popper.when():
             contract._ttl_cache_popper.cancel()
-            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, _pop, cls._ChecksumAddressSingletonMeta__instances, contract.address)
+            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(cache_ttl, cls._ChecksumAddressSingletonMeta__instances.pop, contract.address, None)
         return contract
 
     def __init_from_abi__(self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True) -> None:
+        """
+        Initialize a Contract instance from an ABI.
+
+        Args:
+            build: The build information for the contract.
+            owner (optional): The owner of the contract. Default None.
+            persist (optional): If True, persist the contract in the local database. Default True.
+
+        Returns:
+            The initialized Contract instance.
+        """
         _ContractBase.__init__(self, None, build, {})  # type: ignore
         _DeployedContractBase.__init__(self, build['address'], owner, None)
         if persist:
@@ -356,6 +433,16 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         return self
 
     def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
+        """
+        Check if the contract has a specific method.
+
+        Args:
+            method: The name of the method to check for.
+            return_response (optional): If True, return the response of the method call instead of a boolean. Default False.
+
+        Returns:
+            A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.
+        """
         return has_method(self.address, method, return_response=return_response, sync=False)
 
     async def has_methods(
@@ -363,12 +450,40 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         methods: List[str],
         _func: Union[any, all] = all
     ) -> bool:
+        """
+        Check if the contract has all the specified methods.
+
+        Args:
+            methods: A list of method names to check for.
+            _func (optional): The function to use for combining the results (either :func:`all` or :func:`any`). Default :func:`all`.
+
+        Returns:
+            A boolean indicating whether the contract has all the specified methods.
+        """
         return await has_methods(self.address, methods, _func, sync=False)
 
     async def build_name(self, return_None_on_failure: bool = False) -> Optional[str]:
+        """
+        Get the build name of the contract.
+
+        Args:
+            return_None_on_failure (optional): If True, return None if the build name cannot be determined instead of raising an Exception. Default False.
+
+        Returns:
+            The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.
+        """
         return await build_name(self.address, return_None_on_failure=return_None_on_failure, sync=False)
     
     async def get_code(self, block: Optional[Block] = None) -> HexBytes:
+        """
+        Get the bytecode of the contract at a specific block.
+
+        Args:
+            block (optional): The block number at which to get the bytecode. Defaults to latest block.
+
+        Returns:
+            The bytecode of the contract at the specified block.
+        """
         return await get_code(self.address, block=block)
 
 _contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=32)
@@ -454,6 +569,16 @@ async def probe(
 @a_sync.a_sync(default='sync')
 @stuck_coro_debugger
 async def build_name(address: AnyAddressType, return_None_on_failure: bool = False) -> str:
+    """
+    Get the build name of a contract.
+
+    Args:
+        address: The address of the contract.
+        return_None_on_failure (optional): If True, return None if the build name cannot be determined instead of raising an Exception. Default False.
+
+    Returns:
+        The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.
+    """
     try:
         contract = await Contract.coroutine(address)
         return contract.__dict__['_build']['contractName']
@@ -463,17 +588,47 @@ async def build_name(address: AnyAddressType, return_None_on_failure: bool = Fal
         return None
 
 async def proxy_implementation(address: AnyAddressType, block: Optional[Block]) -> Address:
+    """
+    Get the implementation address for a proxy contract.
+
+    Args:
+        address: The address of the proxy contract.
+        block (optional): The block number at which to get the implementation address. Defaults to latest block.
+
+    Returns:
+        The address of the implementation contract.
+    """
     return await probe(address, ['implementation()(address)','target()(address)'], block)
 
-def _squeeze(it):
-    """ Reduce the contract size in RAM significantly. """
+def _squeeze(contract: Contract) -> Contract:
+    """
+    Reduce the contract size in RAM by removing large data structures from the build.
+
+    Args:
+        contract: The contract object to squeeze.
+
+    Returns:
+        The squeezed contract object.
+    """
     for k in ["ast", "bytecode", "coverageMap", "deployedBytecode", "deployedSourceMap", "natspec", "opcodes", "pcMap"]:
-        if it._build and k in it._build.keys():
-            it._build[k] = {}
-    return it
+        if contract._build and k in contract._build.keys():
+            contract._build[k] = {}
+    return contract
 
 @eth_retry.auto_retry
-def _extract_abi_data(address):
+def _extract_abi_data(address: Address):
+    """
+    Extract ABI data for a contract from the blockchain explorer.
+
+    Args:
+        address: The address of the contract.
+
+    Returns:
+        A tuple containing the contract name, ABI, and implementation address (if applicable).
+
+    Raises:
+        Various exceptions based on the API response and contract status.
+    """
     try:
         data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
     except ConnectionError as e:
@@ -505,6 +660,15 @@ def _extract_abi_data(address):
     return name, abi, implementation
 
 def _resolve_proxy(address) -> Tuple[str, List]:
+    """
+    Resolve the implementation address for a proxy contract.
+
+    Args:
+        address: The address of the proxy contract.
+
+    Returns:
+        A tuple containing the contract name and ABI.
+    """
     address = convert.to_address(address)
     name, abi, implementation = _extract_abi_data(address)
     as_proxy_for = None
@@ -555,21 +719,20 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     return name, abi
 
 def _setup_events(contract: Contract) -> None:
-    """Helper function used to init contract event containers on a newly created `y.Contract` object."""
+    """
+    Helper function used to init contract event containers on a newly created `y.Contract` object.
+
+    Args:
+        contract: The contract object to set up events for.
+    """
     if not hasattr(contract, 'events'):
         contract.events = ContractEvents(contract)
     for k, v in contract.topics.items():
         setattr(contract.events, k, Events(addresses=[contract.address], topics=[[v]]))
-
-def _pop(d: dict, k: Any) -> None:
-    """Pops an item from a dict if present"""
-    with suppress(KeyError):
-        d.pop(k)
 
 _Address = NewType("_Address", str)
 _unverified: Set[_Address] = set()
 """A collection of unverified addresses that is used to prevent repetitive etherscan api calls"""
 
 
-_NOT_SYNCED = "`chain.height` returns 0 on your node, which means it is not fully synced."
-_NOT_SYNCED += "\nYou can only use this function on a fully synced node."
+_NOT_SYNCED = "`chain.height` returns 0 on your node, which means it is not fully synced.\nYou can only use this function on a fully synced node."
