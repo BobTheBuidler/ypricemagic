@@ -65,7 +65,7 @@ def _get_ethereum_client(client: str) -> str:
         'geth'
     """
     logger.debug("client: %s", client)
-    return next(output for prefix, identifier in _clients.items if client.startswith(prefix), client)
+    return next((identifier for prefix, identifier in _clients.items() if client.startswith(prefix)), client)
 
 _clients = {
     'geth': 'geth',
