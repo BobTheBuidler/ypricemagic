@@ -67,12 +67,11 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
                 raise e.__class__(log, *e.args) from e
 
     try:
-        if logs:
-            for i, log in enumerate(logs):
-                # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
-                setattr(decoded[i], "block_number", log.block_number)
-                setattr(decoded[i], "transaction_hash", log.transaction_hash)
-                setattr(decoded[i], "log_index", log.log_index)
+        for i, log in enumerate(logs):
+            # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
+            setattr(decoded[i], "block_number", log.block_number)
+            setattr(decoded[i], "transaction_hash", log.transaction_hash)
+            setattr(decoded[i], "log_index", log.log_index)
         return decoded
     except EventLookupError as e:
         raise type(e)(*e.args, len(logs), decoded) from None
