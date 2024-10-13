@@ -36,7 +36,7 @@ def enc_hook(obj: Any) -> bytes:
         return dict(obj)
     elif isinstance(obj, HexBytes):
         return obj.hex()
-    raise NotImplementedError(obj)
+    raise NotImplementedError(obj, type(obj))
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
     if typ == HexBytes:
