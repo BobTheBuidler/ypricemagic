@@ -52,7 +52,8 @@ def enc_hook(obj: Any) -> bytes:
         Currently supports encoding of AttributeDict and HexBytes objects.
     """
     try:
-        if isinstance(obj, int):
+        # we use issubclass instead of isinstance here to prevent a recursion error
+        if issubclass(type(obj), int):
             return int(obj)
         elif isinstance(obj, AttributeDict):
             return dict(obj)
