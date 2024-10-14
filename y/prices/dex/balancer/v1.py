@@ -19,6 +19,7 @@ from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
+from y.exceptions import continue_if_call_reverted
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
@@ -82,7 +83,11 @@ class BalancerV1Pool(BalancerPool):
         if block < await self.deploy_block(sync=False):
             return 0
         contract = await Contract.coroutine(self.address)
-        return await contract.getBalance.coroutine(token, block_identifier=block)
+        try:
+            return await contract.getBalance.coroutine(token, block_identifier=block)
+        except Exception as e:
+            continue_if_call_reverted(e)
+            return 0
     
 
 class BalancerV1(BalancerABC[BalancerV1Pool]):
