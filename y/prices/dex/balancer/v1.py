@@ -19,6 +19,7 @@ from y.constants import dai, usdc, wbtc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice, UsdValue)
+from y.exceptions import continue_if_call_reverted
 from y.networks import Network
 from y.prices import magic
 from y.prices.dex.balancer._abc import BalancerABC, BalancerPool
@@ -40,7 +41,7 @@ async def _calc_out_value(token_out: AddressOrContract, total_outout: int, scale
 class BalancerV1Pool(BalancerPool):
     @a_sync.aka.cached_property
     @stuck_coro_debugger
-    @optional_async_diskcache
+    #@optional_async_diskcache
     async def tokens(self) -> List[ERC20]:
         contract = await Contract.coroutine(self.address)
         return [ERC20(token, asynchronous=self.asynchronous) for token in await contract.getFinalTokens]
@@ -82,7 +83,14 @@ class BalancerV1Pool(BalancerPool):
         if block < await self.deploy_block(sync=False):
             return 0
         contract = await Contract.coroutine(self.address)
-        return await contract.getBalance.coroutine(token, block_identifier=block)
+        try:
+            return await contract.getBalance.coroutine(token, block_identifier=block)
+        except Exception as e:
+            # the pool was not yet finalized at this block
+            # NOTE: does this happen for any pool except YLA? tbd...
+            if "NOT_BOUND" in str(e):
+                return 0
+            raise
     
 
 class BalancerV1(BalancerABC[BalancerV1Pool]):
