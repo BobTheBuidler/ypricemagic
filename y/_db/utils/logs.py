@@ -167,14 +167,15 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
     
     def _select(self, from_block: int, to_block: int) -> List[structs.Log]:
         try:
-            return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
+            return [json.decode(log.raw, type=structs.Log, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(json.decode(log.raw, type=structs.Log))
+                    results.append(json.decode(log.raw, type=structs.Log, dec_hook=_decode_hook))
                 except ValidationError as e:
                     raise ValueError(e, json.decode(log.raw))
+            return results
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
@@ -263,3 +264,10 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
                 return (log for log in generator if getattr(log, topic).topic == value)
             return (log for log in generator if getattr(log, topic).topic in value)
         return generator
+
+def _decode_hook(typ, obj):
+    if typ is uint:
+        if isinstance(obj, str):
+            return uint(obj, 16)
+    raise NotImplementedError(typ, obj)
+    
