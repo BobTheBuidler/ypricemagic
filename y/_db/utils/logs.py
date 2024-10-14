@@ -172,7 +172,7 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(json.decode(log.raw, type=structs.Log)
+                    results.append(json.decode(log.raw, type=structs.Log))
                 except msgspec.ValidationError as e:
                     raise ValueError(e, json.decode(log.raw))
     
