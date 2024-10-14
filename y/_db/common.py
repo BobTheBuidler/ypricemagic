@@ -53,7 +53,7 @@ def enc_hook(obj: Any) -> bytes:
     """
     try:
         if isinstance(obj, int):
-            return obj
+            return int(obj)
         elif isinstance(obj, AttributeDict):
             return dict(obj)
         elif isinstance(obj, HexBytes):
