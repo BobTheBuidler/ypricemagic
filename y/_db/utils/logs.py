@@ -10,7 +10,7 @@ from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from dank_mids.types import Log
 from eth_typing import HexStr
-from msgspec import json
+from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
@@ -168,12 +168,12 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
     def _select(self, from_block: int, to_block: int) -> List[structs.Log]:
         try:
             return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
-        except msgspec.ValidationError:
+        except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
                     results.append(json.decode(log.raw, type=structs.Log))
-                except msgspec.ValidationError as e:
+                except ValidationError as e:
                     raise ValueError(e, json.decode(log.raw))
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
