@@ -17,10 +17,10 @@ class _CamelDictStruct(_DictStruct, rename="camel"):
 class Log(_CamelDictStruct):
     removed: Optional[bool]
     log_index: Optional[uint]
-    transaction_index: Optional[int]
+    transaction_index: Optional[uint]
     transaction_hash: str
     block_hash: Optional[str]
-    block_number: Optional[int]
+    block_number: Optional[uint]
     address: Optional[str]
     data: Optional[str]
     topics: Optional[List[str]]
