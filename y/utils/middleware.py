@@ -108,9 +108,10 @@ def setup_getcode_cache_middleware() -> None:
 
     web3.middleware_onion.add(getcode_cache_middleware)
     
-    if chain.id == Network.Optimism:
-        try:
-            web3.middleware_onion.inject(geth_poa_middleware, layer=0)
-        except ValueError as e:
-            if str(e) != "You can't add the same un-named instance twice":
-                raise
+
+def setup_geth_poa_middleware() -> None:
+    try:
+        web3.middleware_onion.inject(geth_poa_middleware, layer=0)
+    except ValueError as e:
+        if str(e) != "You can't add the same un-named instance twice":
+            raise
