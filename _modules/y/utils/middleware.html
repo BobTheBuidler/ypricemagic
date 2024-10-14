@@ -185,14 +185,18 @@
             <span class="k">if</span> <span class="s2">&quot;&#39;IPCProvider&#39; object has no attribute &#39;endpoint_uri&#39;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">raise</span>
 
-    <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">getcode_cache_middleware</span><span class="p">)</span>
+    <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">getcode_cache_middleware</span><span class="p">)</span></div>
+
     
-    <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">geth_poa_middleware</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;You can&#39;t add the same un-named instance twice&quot;</span><span class="p">:</span>
-                <span class="k">raise</span></div>
+
+<div class="viewcode-block" id="setup_geth_poa_middleware">
+<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.setup_geth_poa_middleware">[docs]</a>
+<span class="k">def</span> <span class="nf">setup_geth_poa_middleware</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">geth_poa_middleware</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;You can&#39;t add the same un-named instance twice&quot;</span><span class="p">:</span>
+            <span class="k">raise</span></div>
 
 </pre></div>
 
