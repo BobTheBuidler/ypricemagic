@@ -6,6 +6,9 @@ from dank_mids.types import _DictStruct
 from inflection import underscore
 
 
+class uint(int):
+    ...
+    
 class _CamelDictStruct(_DictStruct, rename="camel"):
     """
     A mixin class that allows camelCase key lookups for snake_case struct attrs
@@ -16,7 +19,7 @@ class _CamelDictStruct(_DictStruct, rename="camel"):
 
 class Log(_CamelDictStruct):
     removed: Optional[bool]
-    log_index: Optional[int]
+    log_index: Optional[uint]
     transaction_index: Optional[int]
     transaction_hash: str
     block_hash: Optional[str]
