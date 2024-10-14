@@ -8,11 +8,11 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
+from dank_mids.types import Log
 from eth_typing import HexStr
 from msgspec import json
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
-from web3.types import LogReceipt
 
 from y._db import decorators, entities, structs
 from y._db.common import DiskCache, enc_hook, default_filter_threads
@@ -23,21 +23,21 @@ logger = logging.getLogger(__name__)
 
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
-async def _prepare_log(log: LogReceipt) -> tuple:
-    transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log['transactionHash'].hex()), get_hash_dbid(log['address']))
+async def _prepare_log(log: Log) -> tuple:
+    transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
     return  tuple({
         "block_chain": chain.id,
-        "block_number": log['blockNumber'],
+        "block_number": log.blockNumber,
         "transaction": transaction_dbid,
-        "log_index": log['logIndex'],
+        "log_index": log.logIndex,
         "address": address_dbid,
-        **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log['topics']) else None for i in range(4)},
+        **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
         "raw": json.encode(log, enc_hook=enc_hook)
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     if not logs:
         return
     
@@ -46,12 +46,12 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
     if _check_using_extended_db():
         # TODO: refactor this ugly shit out
         block_cols.append("classtype")
-        blocks = [(chain.id, block, "BlockExtended") for block in {log['blockNumber'] for log in logs}]
+        blocks = [(chain.id, block, "BlockExtended") for block in {log.blockNumber for log in logs}]
     else:
-        blocks = [(chain.id, block) for block in {log['blockNumber'] for log in logs}]
+        blocks = [(chain.id, block) for block in {log.blockNumber for log in logs}]
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
 
-    hashes = [[txhash.hex()] for txhash in {log["transactionHash"] for log in logs}] + [[EthAddress(addr)] for addr in {log["address"] for log in logs}]
+    hashes = [[txhash.hex()] for txhash in {log.transactionHash for log in logs}] + [[EthAddress(addr)] for addr in {log.address for log in logs}]
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
 
     topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log['topics'])}
@@ -93,7 +93,7 @@ def set_decoded(log: structs.Log, decoded: _EventItem):
 
 page_size = 100
 
-class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
+class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -165,7 +165,7 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    def _select(self, from_block: int, to_block: int) -> List[LogReceipt]:
+    def _select(self, from_block: int, to_block: int) -> List[structs.Log]:
         return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
