@@ -51,13 +51,16 @@ def enc_hook(obj: Any) -> bytes:
     Note:
         Currently supports encoding of AttributeDict and HexBytes objects.
     """
-    if isinstance(obj, AttributeDict):
-        return dict(obj)
-    elif isinstance(obj, HexBytes):
-        return obj.hex()
-    elif isinstance(obj, int):
-        return obj
-    raise NotImplementedError(obj, type(obj))
+    try:
+        if isinstance(obj, AttributeDict):
+            return dict(obj)
+        elif isinstance(obj, HexBytes):
+            return obj.hex()
+        elif isinstance(obj, int):
+            return obj
+        raise NotImplementedError(obj, type(obj))
+    except RecursionError as e:
+        raise RecursionError(str(e), obj, type(obj)) from e
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
     """
