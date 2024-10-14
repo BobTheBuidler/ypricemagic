@@ -1,7 +1,7 @@
 import os
 from contextlib import suppress
 
-from brownie import network
+from brownie import chain, network
 from brownie.network.contract import _explorer_tokens
 
 # this helps ensure backwards compatability with older versions of brownie
