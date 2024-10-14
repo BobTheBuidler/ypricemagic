@@ -86,8 +86,11 @@ class BalancerV1Pool(BalancerPool):
         try:
             return await contract.getBalance.coroutine(token, block_identifier=block)
         except Exception as e:
-            continue_if_call_reverted(e)
-            return 0
+            # the pool was not yet finalized at this block
+            # NOTE: does this happen for any pool except YLA? tbd...
+            if "NOT_BOUND" in str(e):
+                return 0
+            raise
     
 
 class BalancerV1(BalancerABC[BalancerV1Pool]):
