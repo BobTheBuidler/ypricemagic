@@ -166,7 +166,15 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
         return 0
     
     def _select(self, from_block: int, to_block: int) -> List[structs.Log]:
-        return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
+        try:
+            return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
+        except msgspec.ValidationError:
+            results = []
+            for log in self._get_query(from_block, to_block):
+                try:
+                    results.append(json.decode(log.raw, type=structs.Log)
+                except msgspec.ValidationError as e:
+                    raise ValueError(e, json.decode(log.raw))
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
