@@ -29,7 +29,13 @@ def get_ethereum_client() -> str:
         >>> print(client)
         'geth'
     """
-    return _get_ethereum_client(web3.clientVersion)
+    try:
+        # web3py < 6.0
+        version = web3.clientVersion
+    except AttributeError:
+        # web3py >= 6.0
+        version = web3.client_version
+    return _get_ethereum_client(version)
 
 @alru_cache(maxsize=1)
 async def get_ethereum_client_async() -> str:
