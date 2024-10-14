@@ -267,7 +267,9 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
 
 def _decode_hook(typ, obj):
     if typ is uint:
-        if isinstance(obj, str):
+        if isinstance(obj, int):
+            return uint(obj)
+        elif isinstance(obj, str):
             return uint(obj, 16)
     raise NotImplementedError(typ, obj)
     
