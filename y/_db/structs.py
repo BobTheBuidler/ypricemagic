@@ -2,12 +2,9 @@
 from functools import lru_cache
 from typing import List, Optional
 
-from dank_mids.types import _DictStruct
+from dank_mids.types import _DictStruct, uint
 from inflection import underscore
 
-
-class uint(int):
-    ...
     
 class _CamelDictStruct(_DictStruct, rename="camel"):
     """
