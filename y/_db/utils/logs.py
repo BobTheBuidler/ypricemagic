@@ -8,7 +8,7 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
-from dank_mids.types import Log
+from dank_mids.types import Log, uint
 from eth_typing import HexStr
 from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
