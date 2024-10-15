@@ -2,11 +2,12 @@
 from functools import lru_cache
 from typing import List, Optional
 
-from dank_mids.types import _DictStruct, uint
+from dank_mids.structs import DictStruct
+from dank_mids.structs.data import uint
 from inflection import underscore
 
     
-class _CamelDictStruct(_DictStruct, rename="camel"):
+class _CamelDictStruct(DictStruct, rename="camel"):
     """
     A mixin class that allows camelCase key lookups for snake_case struct attrs
     Original use case was so Log structs can be used interchangably with LogReceipt instances
