@@ -148,7 +148,7 @@
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">reference_data</span> <span class="o">=</span> <span class="k">await</span> <span class="n">oracle</span><span class="o">.</span><span class="n">getReferenceData</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">asset_symbol</span><span class="p">,</span> <span class="s1">&#39;USDC&#39;</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">reference_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mf">1e18</span>
+            <span class="k">return</span> <span class="n">reference_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">18</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">except</span> <span class="n">VirtualMachineError</span><span class="p">:</span>

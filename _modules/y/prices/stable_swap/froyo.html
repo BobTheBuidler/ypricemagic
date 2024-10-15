@@ -99,7 +99,7 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span> <span class="o">==</span> <span class="n">POOL</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="n">virtual_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="n">POOL</span><span class="p">,</span> <span class="s2">&quot;get_virtual_price()&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;int&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="n">virtual_price</span> <span class="o">/</span> <span class="mf">1e18</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="n">virtual_price</span> <span class="o">/</span> <span class="mi">10</span> <span class="o">**</span> <span class="mi">18</span><span class="p">)</span></div>
 
 </pre></div>
 
