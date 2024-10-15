@@ -3,7 +3,8 @@ from functools import lru_cache
 from typing import List, Optional
 
 from dank_mids.structs import DictStruct
-from dank_mids.structs.data import uint
+from dank_mids.structs.data import Address, uint
+from hexbytes import HexBytes
 from inflection import underscore
 
     
@@ -13,18 +14,17 @@ class _CamelDictStruct(DictStruct, rename="camel"):
     Original use case was so Log structs can be used interchangably with LogReceipt instances
     """
     def __getitem__(self, attr: str):
-        return getattr(self, _make_snake(attr))
+        return super().__getitem__(_make_snake(attr))
 
 class Log(_CamelDictStruct):
     removed: Optional[bool]
-    log_index: Optional[uint]
-    transaction_index: Optional[uint]
-    transaction_hash: str
-    block_hash: Optional[str]
     block_number: Optional[uint]
-    address: Optional[str]
-    data: Optional[str]
-    topics: Optional[List[str]]
+    transaction_hash: HexBytes
+    transaction_index: Optional[uint]
+    log_index: Optional[uint]
+    address: Optional[Address]
+    topics: Optional[List[HexBytes]]
+    data: Optional[HexBytes]
 
 class Trace(_CamelDictStruct):
     # TODO so we can trace chain for eth_port on alt chains

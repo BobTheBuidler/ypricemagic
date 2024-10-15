@@ -8,8 +8,10 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
-from dank_mids.types import Log, uint
+from dank_mids.structs import Log
+from dank_mids.structs.data import Address, uint, checksum
 from eth_typing import HexStr
+from hexbytes import HexBytes
 from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
@@ -271,5 +273,9 @@ def _decode_hook(typ, obj):
             return uint(obj)
         elif isinstance(obj, str):
             return uint(obj, 16)
+    elif typ is HexBytes:
+        return HexBytes(obj)
+    elif typ is Address:
+        return checksum(obj)
     raise NotImplementedError(typ, obj)
     
