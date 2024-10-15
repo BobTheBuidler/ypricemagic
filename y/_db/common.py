@@ -12,6 +12,7 @@ import eth_retry
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
+from dank_mids.structs.data import Address
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
                       db_session)
@@ -56,12 +57,12 @@ def enc_hook(obj: Any) -> bytes:
         # we use issubclass instead of isinstance here to prevent a recursion error
         if issubclass(typ, int):
             return int(obj)
-        elif issubclass(typ, str):
-            return str(obj)
-        elif isinstance(obj, AttributeDict):
-            return dict(obj)
+        elif issubclass(typ, Address):
+            return obj[2:]
         elif isinstance(obj, HexBytes):
             return bytes(obj).hex()
+        elif isinstance(obj, AttributeDict):
+            return dict(obj)
         raise NotImplementedError(obj, type(obj))
     except RecursionError as e:
         # sometimes we get a recursion error from the instancecheck, this helps us debug that case.
