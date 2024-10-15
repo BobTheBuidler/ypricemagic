@@ -284,9 +284,16 @@
     <span class="p">)</span></div>
 
 
-
-
 <span class="k">def</span> <span class="nf">__cache</span><span class="p">(</span><span class="n">get_price</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="n">_P</span><span class="p">,</span> <span class="n">_T</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A decorator to cache the results of the get_price function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        get_price: The function to be cached.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A wrapped version of the input function with caching functionality.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">get_price</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">cache_wrap</span><span class="p">(</span>
         <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 

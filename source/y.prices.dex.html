@@ -810,10 +810,13 @@ skip_cache (optional): Whether to skip the cache. Defaults to <code class="xref 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Return the contract address as a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract address as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -961,8 +964,9 @@ skip_cache (optional): Whether to skip the cache. Defaults to <code class="xref 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.address">
-<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.address" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Address</span></em><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.address" title="Link to this definition"></a></dt>
+<dd><p>The contract address of the token.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.asynchronous">
@@ -972,15 +976,19 @@ skip_cache (optional): Whether to skip the cache. Defaults to <code class="xref 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.balance_of">
 <span class="sig-name descname"><span class="pre">balance_of</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.balance_of" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Query the balance of the token for a given address at a specific block.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address to query.</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The balance of the token held by <cite>address</cite> at block <cite>block</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1004,7 +1012,13 @@ skip_cache (optional): Whether to skip the cache. Defaults to <code class="xref 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.build_name">
 <span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.build_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the contract’s build name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract’s build name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.check_liquidity">
@@ -1043,7 +1057,13 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.decimals">
 <span class="sig-name descname"><span class="pre">decimals</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.decimals" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of decimal places for the token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of decimal places for the token.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.deploy_block">
@@ -1135,19 +1155,32 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The token’s name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The token’s name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.price">
 <span class="sig-name descname"><span class="pre">price</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.price" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the price of the token in USD.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>)</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
+<li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return None instead of raising a <a class="reference internal" href="y.html#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a> on failure.</p></li>
+<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, skip using the cache while fetching price data.</p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The price of the token in USD, or None if return_None_on_failure is True and the price cannot be retrieved.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="y.html#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><strong>yPriceMagicError</strong></a> – If return_None_on_failure is False and the price cannot be retrieved.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
@@ -1171,12 +1204,24 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.scale">
 <span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.scale" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the scaling factor for the token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The scaling factor for the token.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.symbol">
 <span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.symbol" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The token’s symbol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The token’s symbol.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.token0">
@@ -1213,12 +1258,16 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyPool.total_supply_readable">
 <span class="sig-name descname"><span class="pre">total_supply_readable</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyPool.total_supply_readable" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the total supply of the token scaled to a human-readable decimal.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p>
+<dd class="field-odd"><p><strong>block</strong> (<em>optional</em>) – The block number to query.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total supply of the token scaled to a decimal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1279,10 +1328,13 @@ block: The block number to query.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyRouter.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyRouter.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Return the contract address as a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract address as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1351,7 +1403,13 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyRouter.build_name">
 <span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyRouter.build_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the contract’s build name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract’s build name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyRouter.check_liquidity">
@@ -1637,10 +1695,13 @@ The <cite>uniswap_multiplexer</cite> is the entrypoint for pricing using this ob
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyRouterBase.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyRouterBase.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Return the contract address as a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract address as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1709,7 +1770,13 @@ The <cite>uniswap_multiplexer</cite> is the entrypoint for pricing using this ob
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyRouterBase.build_name">
 <span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.prices.dex.solidly.SolidlyRouterBase.build_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the contract’s build name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract’s build name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.solidly.SolidlyRouterBase.check_liquidity">
@@ -1978,10 +2045,13 @@ The <cite>uniswap_multiplexer</cite> is the entrypoint for pricing using this ob
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Return the contract address as a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract address as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2129,8 +2199,9 @@ The <cite>uniswap_multiplexer</cite> is the entrypoint for pricing using this ob
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.address">
-<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.address" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Address</span></em><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.address" title="Link to this definition"></a></dt>
+<dd><p>The contract address of the token.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.asynchronous">
@@ -2140,15 +2211,19 @@ The <cite>uniswap_multiplexer</cite> is the entrypoint for pricing using this ob
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.balance_of">
 <span class="sig-name descname"><span class="pre">balance_of</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.balance_of" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Query the balance of the token for a given address at a specific block.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address to query.</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The balance of the token held by <cite>address</cite> at block <cite>block</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2172,7 +2247,13 @@ The <cite>uniswap_multiplexer</cite> is the entrypoint for pricing using this ob
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.build_name">
 <span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.build_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the contract’s build name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract’s build name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.check_liquidity">
@@ -2211,7 +2292,13 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.decimals">
 <span class="sig-name descname"><span class="pre">decimals</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.decimals" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of decimal places for the token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of decimal places for the token.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.deploy_block">
@@ -2308,19 +2395,32 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The token’s name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The token’s name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.price">
 <span class="sig-name descname"><span class="pre">price</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.price" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the price of the token in USD.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>)</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
+<li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return None instead of raising a <a class="reference internal" href="y.html#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a> on failure.</p></li>
+<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, skip using the cache while fetching price data.</p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The price of the token in USD, or None if return_None_on_failure is True and the price cannot be retrieved.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="y.html#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><strong>yPriceMagicError</strong></a> – If return_None_on_failure is False and the price cannot be retrieved.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
@@ -2344,12 +2444,24 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.scale">
 <span class="sig-name descname"><span class="pre">scale</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.scale" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the scaling factor for the token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The scaling factor for the token.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.symbol">
 <span class="sig-name descname"><span class="pre">symbol</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.symbol" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The token’s symbol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The token’s symbol.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.token0">
@@ -2386,12 +2498,16 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromePool.total_supply_readable">
 <span class="sig-name descname"><span class="pre">total_supply_readable</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromePool.total_supply_readable" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the total supply of the token scaled to a human-readable decimal.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p>
+<dd class="field-odd"><p><strong>block</strong> (<em>optional</em>) – The block number to query.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total supply of the token scaled to a decimal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2445,10 +2561,13 @@ block: The block number to query.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromeRouterV2.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromeRouterV2.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Return the contract address as a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract address as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2517,7 +2636,13 @@ block: The block number to query.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromeRouterV2.build_name">
 <span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.prices.dex.velodrome.VelodromeRouterV2.build_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the contract’s build name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract’s build name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.velodrome.VelodromeRouterV2.check_liquidity">

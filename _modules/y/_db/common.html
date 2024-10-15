@@ -70,6 +70,7 @@
              
   <h1>Source code for y._db.common</h1><div class="highlight"><pre>
 <span></span>
+
 <span class="kn">import</span> <span class="nn">abc</span>
 <span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -101,8 +102,26 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 <span class="n">default_filter_threads</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">PruningThreadPoolExecutor</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">The thread pool executor used for all :class:`Filter` objects without one provided, with a maximum of 4 threads.</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="k">def</span> <span class="nf">enc_hook</span><span class="p">(</span><span class="n">obj</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bytes</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Encode hook for JSON serialization of special types.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        obj: The object to encode.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The encoded object as bytes.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NotImplementedError: If the object type is not supported for encoding.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Currently supports encoding of AttributeDict and HexBytes objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">AttributeDict</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">):</span>
@@ -110,24 +129,72 @@
     <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
 
 <span class="k">def</span> <span class="nf">dec_hook</span><span class="p">(</span><span class="n">typ</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Decode hook for JSON deserialization of special types.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        typ: The type to decode into.</span>
+<span class="sd">        obj: The object to decode.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The decoded object of type T.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the type is not supported for decoding.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        Currently only supports decoding of HexBytes objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="n">HexBytes</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2"> is not a valid type for decoding&quot;</span><span class="p">)</span>
 
 <span class="k">class</span> <span class="nc">DiskCache</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">S</span><span class="p">,</span> <span class="n">M</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[]</span>
+
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">_set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+<span class="sd">            done_thru: The ending block number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">_is_cached_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns max cached block for this cache or 0 if not cached.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns max cached block for this cache or 0 if not cached.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The maximum cached block number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
     <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Selects all cached objects from block `from_block` to block `to_block`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects all cached objects from block `from_block` to block `to_block`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+<span class="sd">            to_block: The ending block number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of cached objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
     <span class="nd">@retry_locked</span>
     <span class="k">def</span> <span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+<span class="sd">            done_thru: The ending block number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">db_session</span><span class="p">:</span>
                 <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_set_metadata</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">)</span>
@@ -141,22 +208,51 @@
     <span class="nd">@db_session</span>
     <span class="nd">@retry_locked</span>
     <span class="k">def</span> <span class="nf">select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Selects all cached objects from block `from_block` to block `to_block`&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Selects all cached objects from block `from_block` to block `to_block`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+<span class="sd">            to_block: The ending block number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of cached objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_select</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">)</span>
     <span class="nd">@db_session</span>
     <span class="nd">@retry_locked</span>
     <span class="k">def</span> <span class="nf">is_cached_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Returns max cached block for this cache or 0 if not cached.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns max cached block for this cache or 0 if not cached.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The maximum cached block number.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_cached_thru</span><span class="p">(</span><span class="n">from_block</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">check_and_select</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">S</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Selects all cached objects from block `from_block` to block `to_block` if the cache is fully populated.</span>
-<span class="sd">        Raises `CacheNotPopulatedError` if it is not.</span>
+<span class="sd">        Selects all cached objects within a specified block range.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+<span class="sd">            to_block: The ending block number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of cached objects.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            CacheNotPopulatedError: If the cache is not fully populated.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cached_thru</span><span class="p">(</span><span class="n">from_block</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">to_block</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">CacheNotPopulatedError</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">)</span>
+    
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[]</span>
+
 
 <span class="n">C</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">DiskCache</span><span class="p">)</span>
 
@@ -190,7 +286,12 @@
         <span class="o">...</span>
         
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this to pre-process objects before storing.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override this to pre-process objects before storing.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            objs: The objects to extend the list with.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
     <span class="k">def</span> <span class="nf">_remove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
@@ -198,7 +299,12 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_cache</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads cached logs from disk.</span>
-<span class="sd">        Returns max block of logs loaded from cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: The starting block number.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The maximum block number loaded from cache.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;checking to see if </span><span class="si">%s</span><span class="s1"> is cached in local db&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cached_thru</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">is_cached_thru</span><span class="p">,</span> <span class="n">from_block</span><span class="p">):</span>
@@ -270,7 +376,15 @@
         <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">done</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="k">else</span> <span class="kc">False</span>
     
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this as needed for different object types&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override this as needed for different object types.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            obj: The object to get the block number for.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The block number of the object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="p">[</span><span class="s1">&#39;blockNumber&#39;</span><span class="p">]</span>
     
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="o">.</span><span class="n">wrap</span>
@@ -328,7 +442,9 @@
             <span class="k">raise</span>
     
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this if you want&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override this if you want.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">from_block</span><span class="p">)</span>
     
     <span class="nd">@stuck_coro_debugger</span>
@@ -388,7 +504,12 @@
     
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to set the lock to.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
     
     <span class="k">def</span> <span class="nf">_insert_chunk</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

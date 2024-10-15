@@ -169,8 +169,6 @@
 
 <span class="sd">    This function modifies the Web3 provider to use a custom session with increased</span>
 <span class="sd">    connection pool size and timeout, and adds the getcode cache middleware.</span>
-
-<span class="sd">    On Optimism, it also adds the POA middleware.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># patch web3 provider with more connections and higher timeout</span>
     <span class="k">if</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="p">:</span>
@@ -192,6 +190,9 @@
 <div class="viewcode-block" id="setup_geth_poa_middleware">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.setup_geth_poa_middleware">[docs]</a>
 <span class="k">def</span> <span class="nf">setup_geth_poa_middleware</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Set up the geth proof-of-authority middleware for the current Web3 provider.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">geth_poa_middleware</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>

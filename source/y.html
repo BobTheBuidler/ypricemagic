@@ -70,7 +70,14 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.constants">y.constants module</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.EEE_ADDRESS"><code class="docutils literal notranslate"><span class="pre">EEE_ADDRESS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#y.constants.WRAPPED_GAS_COIN"><code class="docutils literal notranslate"><span class="pre">WRAPPED_GAS_COIN</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.dai"><code class="docutils literal notranslate"><span class="pre">dai</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.sushi"><code class="docutils literal notranslate"><span class="pre">sushi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.usdc"><code class="docutils literal notranslate"><span class="pre">usdc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.usdt"><code class="docutils literal notranslate"><span class="pre">usdt</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.wbtc"><code class="docutils literal notranslate"><span class="pre">wbtc</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.constants.weth"><code class="docutils literal notranslate"><span class="pre">weth</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.contracts">y.contracts module</a><ul>
@@ -898,10 +905,52 @@
 <section id="module-y.constants">
 <span id="y-constants-module"></span><h2>y.constants module<a class="headerlink" href="#module-y.constants" title="Link to this heading"></a></h2>
 <dl class="py data">
+<dt class="sig sig-object py" id="y.constants.EEE_ADDRESS">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">EEE_ADDRESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'</span></em><a class="headerlink" href="#y.constants.EEE_ADDRESS" title="Link to this definition"></a></dt>
+<dd><p>The address used to represent the native token (e.g., ETH on Ethereum, AVAX on Avalanche, etc.) in various DeFi protocols.</p>
+</dd></dl>
+
+<dl class="py data">
 <dt class="sig sig-object py" id="y.constants.WRAPPED_GAS_COIN">
 <span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">WRAPPED_GAS_COIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'</span></em><a class="headerlink" href="#y.constants.WRAPPED_GAS_COIN" title="Link to this definition"></a></dt>
 <dd><p>The address of the wrapped version of the native token on the active network.
 For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH address. On Fantom, it is equal to the WFTM address. And so on.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.constants.dai">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">dai</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;Dai</span> <span class="pre">Contract</span> <span class="pre">'0x6B175474E89094C44Da98b954EedeAC495271d0F'&gt;</span></em><a class="headerlink" href="#y.constants.dai" title="Link to this definition"></a></dt>
+<dd><p>Dai Stablecoin (DAI) contract on Base.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.constants.sushi">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">sushi</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#y.contracts.Contract" title="y.contracts.Contract"><span class="pre">Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;SushiToken</span> <span class="pre">Contract</span> <span class="pre">'0x6B3595068778DD592e39A122f4f5a5cF09C90fE2'&gt;</span></em><a class="headerlink" href="#y.constants.sushi" title="Link to this definition"></a></dt>
+<dd><p>SushiToken (SUSHI) contract on Ethereum Mainnet.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.constants.usdc">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">usdc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;FiatTokenV2_1</span> <span class="pre">Contract</span> <span class="pre">'0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48'&gt;</span></em><a class="headerlink" href="#y.constants.usdc" title="Link to this definition"></a></dt>
+<dd><p>USD Coin (USDC) contract on Optimism.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.constants.usdt">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">usdt</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;TetherToken</span> <span class="pre">Contract</span> <span class="pre">'0xdAC17F958D2ee523a2206206994597C13D831ec7'&gt;</span></em><a class="headerlink" href="#y.constants.usdt" title="Link to this definition"></a></dt>
+<dd><p>Tether USD (USDT) contract on Optimism.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.constants.wbtc">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">wbtc</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;WBTC</span> <span class="pre">Contract</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599'&gt;</span></em><a class="headerlink" href="#y.constants.wbtc" title="Link to this definition"></a></dt>
+<dd><p>Wrapped Bitcoin (WBTC) contract on Optimism.</p>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="y.constants.weth">
+<span class="sig-prename descclassname"><span class="pre">y.constants.</span></span><span class="sig-name descname"><span class="pre">weth</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;WETH9</span> <span class="pre">Contract</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'&gt;</span></em><a class="headerlink" href="#y.constants.weth" title="Link to this definition"></a></dt>
+<dd><p>Wrapped Ether (WETH) contract on Base.</p>
 </dd></dl>
 
 </section>
@@ -1576,6 +1625,14 @@ ValueError: If the contract creation block cannot be determined.</p>
 <dd><blockquote>
 <div><p>Checks to see if a contract has a <cite>method</cite> view method with no inputs.
 <cite>return_response=True</cite> will return <cite>response</cite> in bytes if <cite>response</cite> else <cite>False</cite></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>address: The address of the contract.
+method: The name of the method to check for.
+return_response: If True, return the response of the method call instead of a boolean. Default False.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
+</dd>
+</dl>
 </div></blockquote>
 <p>Since <cite>has_method</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
 <dl class="field-list simple">
@@ -1598,6 +1655,14 @@ ValueError: If the contract creation block cannot be determined.</p>
 <dd><blockquote>
 <div><p>Checks to see if a contract has each view method (with no inputs) in <cite>methods</cite>.
 Pass <cite>at_least_one=True</cite> to only verify a contract has at least one of the methods.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>address: The address of the contract.
+methods: A tuple of method names to check for.
+_func: The function to use for combining the results (either <a class="reference external" href="https://docs.python.org/3/library/functions.html#all" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">all()</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#any" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">any()</span></code></a>).</p>
+</dd>
+<dt>Returns:</dt><dd><p>A boolean indicating whether the contract has all the specified methods.</p>
+</dd>
+</dl>
 </div></blockquote>
 <p>Since <cite>has_methods</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
 <dl class="field-list simple">
@@ -3262,6 +3327,7 @@ object in future sessions.</p>
 <dt class="sig sig-object py" id="y.ERC20">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">ERC20</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="y.classes.html#y.classes.common.ContractBase" title="y.classes.common.ContractBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">ContractBase</span></code></a></p>
+<p>Represents an ERC20 token.</p>
 <dl class="py a_sync_function">
 <dt class="sig sig-object py" id="y.ERC20._decimals">
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-name descname"><span class="pre">_decimals</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20._decimals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20._decimals" title="Link to this definition"></a></dt>
@@ -3325,10 +3391,13 @@ object in future sessions.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.ERC20.__str__">
 <span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.ERC20.__str__" title="Link to this definition"></a></dt>
-<dd><p>Return str(self).</p>
+<dd><p>Return the contract address as a string.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract address as a string.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3408,8 +3477,9 @@ object in future sessions.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.address">
-<span class="sig-name descname"><span class="pre">address</span></span><a class="headerlink" href="#y.ERC20.address" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<span class="sig-name descname"><span class="pre">address</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><span class="pre">HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><span class="pre">AnyAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">EthAddress</span></a></em><a class="headerlink" href="#y.ERC20.address" title="Link to this definition"></a></dt>
+<dd><p>The contract address of the token.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.asynchronous">
@@ -3419,15 +3489,19 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.balance_of">
 <span class="sig-name descname"><span class="pre">balance_of</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.balance_of"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.balance_of" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Query the balance of the token for a given address at a specific block.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address to query.</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The balance of the token held by <cite>address</cite> at block <cite>block</cite>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3451,7 +3525,13 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.build_name">
 <span class="sig-name descname"><span class="pre">build_name</span></span><a class="headerlink" href="#y.ERC20.build_name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the contract’s build name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The contract’s build name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.ERC20.contract">
@@ -3461,7 +3541,13 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.decimals">
 <span class="sig-name descname"><span class="pre">decimals</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.decimals"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.decimals" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The number of decimal places for the token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The number of decimal places for the token.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.deploy_block">
@@ -3495,19 +3581,32 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.name">
 <span class="sig-name descname"><span class="pre">name</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.name" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The token’s name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The token’s name.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.price">
 <span class="sig-name descname"><span class="pre">price</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.price" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the price of the token in USD.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>)</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
+<li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return None instead of raising a <a class="reference internal" href="#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a> on failure.</p></li>
+<li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, skip using the cache while fetching price data.</p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The price of the token in USD, or None if return_None_on_failure is True and the price cannot be retrieved.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><strong>yPriceMagicError</strong></a> – If return_None_on_failure is False and the price cannot be retrieved.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
@@ -3518,12 +3617,24 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.scale">
 <span class="sig-name descname"><span class="pre">scale</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.scale"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.scale" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Get the scaling factor for the token.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The scaling factor for the token.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.symbol">
 <span class="sig-name descname"><span class="pre">symbol</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.symbol"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.symbol" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>The token’s symbol.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The token’s symbol.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.total_supply">
@@ -3545,12 +3656,16 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.ERC20.total_supply_readable">
 <span class="sig-name descname"><span class="pre">total_supply_readable</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ERC20.total_supply_readable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.ERC20.total_supply_readable" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the total supply of the token scaled to a human-readable decimal.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p>
+<dd class="field-odd"><p><strong>block</strong> (<em>optional</em>) – The block number to query.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The total supply of the token scaled to a decimal.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -4170,6 +4285,14 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 <dd><blockquote>
 <div><p>Checks to see if a contract has a <cite>method</cite> view method with no inputs.
 <cite>return_response=True</cite> will return <cite>response</cite> in bytes if <cite>response</cite> else <cite>False</cite></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>address: The address of the contract.
+method: The name of the method to check for.
+return_response: If True, return the response of the method call instead of a boolean. Default False.</p>
+</dd>
+<dt>Returns:</dt><dd><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
+</dd>
+</dl>
 </div></blockquote>
 <p>Since <cite>has_method</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
 <dl class="field-list simple">
@@ -4192,6 +4315,14 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 <dd><blockquote>
 <div><p>Checks to see if a contract has each view method (with no inputs) in <cite>methods</cite>.
 Pass <cite>at_least_one=True</cite> to only verify a contract has at least one of the methods.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>address: The address of the contract.
+methods: A tuple of method names to check for.
+_func: The function to use for combining the results (either <a class="reference external" href="https://docs.python.org/3/library/functions.html#all" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">all()</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#any" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">any()</span></code></a>).</p>
+</dd>
+<dt>Returns:</dt><dd><p>A boolean indicating whether the contract has all the specified methods.</p>
+</dd>
+</dl>
 </div></blockquote>
 <p>Since <cite>has_methods</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
 <dl class="field-list simple">

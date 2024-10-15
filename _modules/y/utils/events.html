@@ -169,6 +169,8 @@
     <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get logs as soon as possible.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the contract to fetch logs from.</span>
 <span class="sd">        topics: The event topics to filter logs by.</span>
@@ -493,7 +495,10 @@
 <div class="viewcode-block" id="LogFilter">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter">[docs]</a>
 <span class="k">class</span> <span class="nc">LogFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">,</span> <span class="s2">&quot;LogCache&quot;</span><span class="p">]):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;addresses&#39;</span><span class="p">,</span> <span class="s1">&#39;topics&#39;</span><span class="p">,</span> <span class="s1">&#39;from_block&#39;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A filter for fetching and processing event logs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="LogFilter.__init__">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
@@ -509,6 +514,20 @@
         <span class="n">is_reusable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># sourcery skip: default-mutable-arg</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a LogFilter instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            addresses: List of contract addresses to fetch logs from.</span>
+<span class="sd">            topics: List of event topics to filter logs by.</span>
+<span class="sd">            from_block: The starting block to fetch logs from.</span>
+<span class="sd">            chunk_size: The number of blocks to fetch in each chunk.</span>
+<span class="sd">            chunks_per_batch: The number of chunks to fetch in each batch.</span>
+<span class="sd">            semaphore: A semaphore for limiting concurrent requests.</span>
+<span class="sd">            executor: An executor for running tasks asynchronously.</span>
+<span class="sd">            is_reusable: Whether the filter is reusable.</span>
+<span class="sd">            verbose: Verbosity level for logging.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span> <span class="o">=</span> <span class="n">_clean_addresses</span><span class="p">(</span><span class="n">addresses</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="n">topics</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">chunks_per_batch</span><span class="o">=</span><span class="n">chunks_per_batch</span><span class="p">,</span> <span class="n">semaphore</span><span class="o">=</span><span class="n">semaphore</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="n">executor</span><span class="p">,</span> <span class="n">is_reusable</span><span class="o">=</span><span class="n">is_reusable</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
@@ -533,6 +552,15 @@
 <div class="viewcode-block" id="LogFilter.logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter.logs">[docs]</a>
     <span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get logs up to a given block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            to_block: The ending block to fetch logs to.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            A decoded event log.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
 
@@ -631,6 +659,12 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extend the list of events with decoded logs.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            objs: A list of raw event logs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">decode_logs</span><span class="p">(</span><span class="n">objs</span><span class="p">))</span>
     
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
