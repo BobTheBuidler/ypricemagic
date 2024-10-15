@@ -125,7 +125,7 @@ class CToken(ERC20):
                     raise
                 exchange_rate = 0
         
-        return exchange_rate / 1e18
+        return exchange_rate / 10 ** 18
     
     async def get_underlying_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[float]:
         # always query the oracle in case it was changed

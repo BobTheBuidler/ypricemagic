@@ -67,9 +67,9 @@ async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None, s
     )
 
     if token0 == ZERO_ADDRESS:
-        bal0 /= 1e18
+        bal0 /= 10 ** 18
     elif token1 == ZERO_ADDRESS:
-        bal1 /= 1e18
+        bal1 /= 10 ** 18
 
     totalVal = bal0 * float(price0) + bal1 * float(price1)
     price = totalVal / total_supply

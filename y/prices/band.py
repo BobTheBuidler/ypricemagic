@@ -64,7 +64,7 @@ class Band(a_sync.ASyncGenericSingleton):
         )
         try:
             reference_data = await oracle.getReferenceData.coroutine(asset_symbol, 'USDC', block_identifier=block)
-            return reference_data[0] / 1e18
+            return reference_data[0] / 10 ** 18
         except ValueError:
             return None
         except VirtualMachineError:

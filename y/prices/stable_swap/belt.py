@@ -29,4 +29,4 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Usd
     address = convert.to_address(token)
     pool = POOLS[address]
     virtual_price = await raw_call(pool, 'get_virtual_price()', output='int', block=block, sync=False)
-    return UsdPrice(virtual_price / 1e18)
+    return UsdPrice(virtual_price / 10 ** 18)
