@@ -47,6 +47,9 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
+    if not logs:
+        return EventDict()
+    
     from y.contracts import Contract
     for log in logs:
         if log.address not in _deployment_topics:
@@ -69,7 +72,6 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     try:
         if logs and isinstance(logs[0], structs.Log):
             for i, log in enumerate(logs):
-                # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
                 setattr(decoded[i], "block_number", log.block_number)
                 setattr(decoded[i], "transaction_hash", log.transaction_hash)
                 setattr(decoded[i], "log_index", log.log_index)

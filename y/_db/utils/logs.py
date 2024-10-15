@@ -82,10 +82,9 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
         entity = entities.Hashes(hash=hexstr)
     return entity.dbid
 
-def get_decoded(log: structs.Log) -> _EventItem:
+def get_decoded(log: structs.Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
-    log = entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index]
-    if decoded := log.decoded:
+    if decoded := entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index].decoded:
         return _EventItem(decoded['name'], decoded['address'], decoded['event_data'], decoded['pos'])
 
 @db_session
