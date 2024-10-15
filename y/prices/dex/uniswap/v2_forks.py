@@ -1,3 +1,15 @@
+"""
+This module contains data structures and utility functions for interacting with Uniswap V2 forks across various networks.
+
+Key components:
+- UNISWAPS: A dictionary mapping network names to dictionaries of Uniswap V2 fork protocols, including their factory and router addresses.
+- FACTORY_TO_ROUTER, ROUTER_TO_FACTORY: Mappings between factory and router addresses.
+- FACTORY_TO_PROTOCOL, ROUTER_TO_PROTOCOL: Mappings from addresses to protocol names.
+- SPECIAL_PATHS: A dictionary of special token paths for specific protocols and networks.
+
+The module also includes utility functions for working with these data structures.
+"""
+
 import logging
 from functools import lru_cache
 from typing import Dict, List
@@ -10,7 +22,7 @@ from y.networks import Network
 
 logger = logging.getLogger(__name__)
 
-
+# UNISWAPS dictionary definition
 UNISWAPS = {
     Network.Mainnet: {
         "uniswap v2":       {"factory": "0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f", "router": "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D"},
@@ -110,7 +122,7 @@ UNISWAPS = {
     },
 }.get(chain.id, {})
 
-
+# Derived mappings
 FACTORY_TO_ROUTER = {UNISWAPS[name]['factory']: UNISWAPS[name]['router'] for name in UNISWAPS}
 
 ROUTER_TO_FACTORY = {UNISWAPS[name]['router']: UNISWAPS[name]['factory'] for name in UNISWAPS}
@@ -119,23 +131,24 @@ FACTORY_TO_PROTOCOL = {UNISWAPS[name]['factory']: name for name in UNISWAPS}
 
 ROUTER_TO_PROTOCOL = {UNISWAPS[name]['router']: name for name in UNISWAPS}
 
+# SPECIAL_PATHS dictionary definition
 SPECIAL_PATHS = {
     Network.Mainnet: {
         "sushiswap": {
-            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": ["0xEF69B5697f2Fb0345cC680210fD39b593a2f9684","0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",weth,usdc]
-            ,"0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e": ["0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e","0xC28E27870558cF22ADD83540d2126da2e4b464c2",weth,usdc]
-            ,"0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2": ["0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2","0x4954Db6391F4feB5468b6B943D4935353596aEC9",usdc]
-            ,"0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6": ["0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6","0x87F5F9eBE40786D49D35E1B5997b07cCAA8ADbFF",weth,usdc]
-            ,"0x4954Db6391F4feB5468b6B943D4935353596aEC9": ["0x4954Db6391F4feB5468b6B943D4935353596aEC9",usdc]
-            ,"0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0": ["0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0","0xEF69B5697f2Fb0345cC680210fD39b593a2f9684","0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",weth,usdc]
-            ,"0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d": ["0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d","0xba100000625a3754423978a60c9317c58a424e3D",weth,usdc]
-            ,"0xBA50933C268F567BDC86E1aC131BE072C6B0b71a": ["0xBA50933C268F567BDC86E1aC131BE072C6B0b71a",weth,usdc]
-            ,"0x6102407f07029892eB5Ff02164ADFaFb85f4d222": ["0x6102407f07029892eB5Ff02164ADFaFb85f4d222",usdt]
-            ,"0x85034b3b2e292493D029443455Cc62ab669573B3": ["0x85034b3b2e292493D029443455Cc62ab669573B3","0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",weth,usdc]
-            ,"0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8": ["0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8", usdc]
-            ,"0x383518188C0C6d7730D91b2c03a03C837814a899": ["0x383518188C0C6d7730D91b2c03a03C837814a899",dai]
-            ,"0xafcE9B78D409bF74980CACF610AFB851BF02F257": ["0xafcE9B78D409bF74980CACF610AFB851BF02F257",wbtc,weth,usdc]
-            ,"0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7": ["0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7","0xD533a949740bb3306d119CC777fa900bA034cd52",weth,usdc]
+            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": ["0xEF69B5697f2Fb0345cC680210fD39b593a2f9684", "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2", weth, usdc],
+            "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e": ["0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e", "0xC28E27870558cF22ADD83540d2126da2e4b464c2", weth, usdc],
+            "0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2": ["0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2", "0x4954Db6391F4feB5468b6B943D4935353596aEC9", usdc],
+            "0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6": ["0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6", "0x87F5F9eBE40786D49D35E1B5997b07cCAA8ADbFF", weth, usdc],
+            "0x4954Db6391F4feB5468b6B943D4935353596aEC9": ["0x4954Db6391F4feB5468b6B943D4935353596aEC9", usdc],
+            "0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0": ["0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0", "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684", "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",weth,usdc],
+            "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d": ["0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d", "0xba100000625a3754423978a60c9317c58a424e3D", weth, usdc],
+            "0xBA50933C268F567BDC86E1aC131BE072C6B0b71a": ["0xBA50933C268F567BDC86E1aC131BE072C6B0b71a", weth, usdc],
+            "0x6102407f07029892eB5Ff02164ADFaFb85f4d222": ["0x6102407f07029892eB5Ff02164ADFaFb85f4d222", usdt],
+            "0x85034b3b2e292493D029443455Cc62ab669573B3": ["0x85034b3b2e292493D029443455Cc62ab669573B3", "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984", weth, usdc],
+            "0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8": ["0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8", usdc],
+            "0x383518188C0C6d7730D91b2c03a03C837814a899": ["0x383518188C0C6d7730D91b2c03a03C837814a899", dai],
+            "0xafcE9B78D409bF74980CACF610AFB851BF02F257": ["0xafcE9B78D409bF74980CACF610AFB851BF02F257", wbtc, weth, usdc],
+            "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7": ["0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7", "0xD533a949740bb3306d119CC777fa900bA034cd52", weth, usdc],
         },
     },
 }.get(chain.id, {})
@@ -143,5 +156,17 @@ SPECIAL_PATHS = {
 #yLazyLogger(logger)
 @lru_cache
 def special_paths(router_address: str) -> Dict[str,Dict[Address,List[Address]]]:
+    """
+    Retrieves special token paths for a given router address.
+
+    Args:
+        router_address: The address of the router.
+
+    Returns:
+        A dictionary of special paths (token in -> swap path) for the given router.
+
+    Note:
+        This function is cached using lru_cache to improve performance for repeated calls.
+    """
     protocol = ROUTER_TO_PROTOCOL[router_address]
     return SPECIAL_PATHS.get(protocol, {})

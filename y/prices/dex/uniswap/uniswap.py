@@ -40,6 +40,10 @@ _special_routers = {
 Uniswap = Union[UniswapV1, UniswapRouterV2, UniswapV3]
 
 class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
+    """
+    A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances and/or forks.
+    """
+
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
         self.v2_routers = {}
@@ -113,9 +117,24 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         block: Optional[Block] = None, 
         ignore_pools: Tuple[Pool, ...] = (),
     ) -> List[UniswapRouterV2]:
-        '''
-        Returns a dict {router: pool} ordered by liquidity depth, greatest to least
-        '''
+        """
+        Get Uniswap routers sorted by liquidity depth for a given token.
+
+        This method checks the liquidity of the input token across all Uniswap instances
+        and returns a list of routers sorted by their liquidity depth in descending order.
+
+        Args:
+            token_in: The address of the input token to check liquidity for.
+            block (optional): The block number to query. Defaults to latest block.
+            ignore_pools (optional): A tuple of Pool objects to ignore when checking liquidity.
+
+        Returns:
+            A list of UniswapRouterV2 objects sorted by liquidity depth in descending order.
+
+        Note:
+            - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
+            - Routers with zero liquidity are excluded from the result.
+        """
         token_in = convert.to_address(token_in)
         depth_to_router = dict(zip(await asyncio.gather(*[uniswap.check_liquidity(token_in, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]), self.uniswaps))
         return [depth_to_router[balance] for balance in sorted(depth_to_router, reverse=True) if balance]
@@ -128,6 +147,24 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         block: Block, 
         ignore_pools: Tuple[Pool, ...] = (),
     ) -> int:
+        """
+        Check the maximum liquidity for a token across all Uniswap instances.
+
+        This method checks the liquidity of the given token across all Uniswap instances
+        and returns the maximum liquidity found.
+
+        Args:
+            token: The address of the token to check liquidity for.
+            block: The block number to query.
+            ignore_pools (optional): A tuple of Pool objects to ignore when checking liquidity.
+
+        Returns:
+            The maximum liquidity found for the token across all Uniswap instances.
+
+        Note:
+            - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
+            - A semaphore is used to limit the number of concurrent checks to 100.
+        """
         return max(await asyncio.gather(*[uniswap.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for uniswap in self.uniswaps]))
 
 

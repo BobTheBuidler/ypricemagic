@@ -1,4 +1,5 @@
 
+
 import abc
 import asyncio
 import logging
@@ -30,8 +31,26 @@ M = TypeVar('M')
 
 logger = logging.getLogger(__name__)
 default_filter_threads = a_sync.PruningThreadPoolExecutor(4)
+"""
+The thread pool executor used for all :class:`Filter` objects without one provided, with a maximum of 4 threads.
+"""
 
 def enc_hook(obj: Any) -> bytes:
+    """
+    Encode hook for JSON serialization of special types.
+
+    Args:
+        obj: The object to encode.
+
+    Returns:
+        The encoded object as bytes.
+
+    Raises:
+        NotImplementedError: If the object type is not supported for encoding.
+
+    Note:
+        Currently supports encoding of AttributeDict and HexBytes objects.
+    """
     if isinstance(obj, AttributeDict):
         return dict(obj)
     elif isinstance(obj, HexBytes):
@@ -39,24 +58,72 @@ def enc_hook(obj: Any) -> bytes:
     raise NotImplementedError(obj, type(obj))
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
+    """
+    Decode hook for JSON deserialization of special types.
+
+    Args:
+        typ: The type to decode into.
+        obj: The object to decode.
+
+    Returns:
+        The decoded object of type T.
+
+    Raises:
+        ValueError: If the type is not supported for decoding.
+
+    Note:
+        Currently only supports decoding of HexBytes objects.
+    """
     if typ == HexBytes:
         return HexBytes(obj)
     raise ValueError(f"{typ} is not a valid type for decoding")
 
 class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
-    __slots__ = []
+
     @abc.abstractmethod
     def _set_metadata(self, from_block: int, done_thru: int) -> None:
-        """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
+        """
+        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
+
+        Args:
+            from_block: The starting block number.
+            done_thru: The ending block number.
+        """
+
     @abc.abstractmethod
     def _is_cached_thru(self, from_block: int) -> int:
-        """Returns max cached block for this cache or 0 if not cached."""
+        """
+        Returns max cached block for this cache or 0 if not cached.
+
+        Args:
+            from_block: The starting block number.
+
+        Returns:
+            The maximum cached block number.
+        """
+
     @abc.abstractmethod
     def _select(self, from_block: int, to_block: int) -> List[S]:
-        """Selects all cached objects from block `from_block` to block `to_block`"""
+        """
+        Selects all cached objects from block `from_block` to block `to_block`.
+
+        Args:
+            from_block: The starting block number.
+            to_block: The ending block number.
+
+        Returns:
+            A list of cached objects.
+        """
+
     @retry_locked
     def set_metadata(self, from_block: int, done_thru: int) -> None:
-        """Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`."""
+        """
+        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
+
+        Args:
+            from_block: The starting block number.
+            done_thru: The ending block number.
+        """
         try:
             with db_session:
                 return self._set_metadata(from_block, done_thru)
@@ -70,22 +137,51 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
     @db_session
     @retry_locked
     def select(self, from_block: int, to_block: int) -> List[S]:
-        """Selects all cached objects from block `from_block` to block `to_block`"""
+        """
+        Selects all cached objects from block `from_block` to block `to_block`.
+
+        Args:
+            from_block: The starting block number.
+            to_block: The ending block number.
+
+        Returns:
+            A list of cached objects.
+        """
         return self._select(from_block, to_block)
     @db_session
     @retry_locked
     def is_cached_thru(self, from_block: int) -> int:
-        """Returns max cached block for this cache or 0 if not cached."""
+        """
+        Returns max cached block for this cache or 0 if not cached.
+
+        Args:
+            from_block: The starting block number.
+
+        Returns:
+            The maximum cached block number.
+        """
         return self._is_cached_thru(from_block)
     def check_and_select(self, from_block: int, to_block: int) -> List[S]:
         """
-        Selects all cached objects from block `from_block` to block `to_block` if the cache is fully populated.
-        Raises `CacheNotPopulatedError` if it is not.
+        Selects all cached objects within a specified block range.
+
+        Args:
+            from_block: The starting block number.
+            to_block: The ending block number.
+
+        Returns:
+            A list of cached objects.
+
+        Raises:
+            CacheNotPopulatedError: If the cache is not fully populated.
         """
         if self.is_cached_thru(from_block) >= to_block:
             return self.select(from_block, to_block)
         else:
             raise CacheNotPopulatedError(self, from_block, to_block)
+    
+    __slots__ = []
+
 
 C = TypeVar('C', bound=DiskCache)
 
@@ -119,7 +215,12 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         ...
         
     async def _extend(self, objs) -> None:
-        """Override this to pre-process objects before storing."""
+        """
+        Override this to pre-process objects before storing.
+
+        Args:
+            objs: The objects to extend the list with.
+        """
         return self._objects.extend(objs)
     def _remove(self, obj: T) -> None:
         self._objects.remove(obj)
@@ -127,7 +228,12 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
     async def _load_cache(self, from_block: int) -> int:
         """
         Loads cached logs from disk.
-        Returns max block of logs loaded from cache.
+
+        Args:
+            from_block: The starting block number.
+
+        Returns:
+            The maximum block number loaded from cache.
         """
         logger.debug('checking to see if %s is cached in local db', self)
         if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
@@ -199,7 +305,15 @@ class Filter(_DiskCachedMixin[T, C]):
         return not self._sleep_fut.done() if self._sleep_fut else False
     
     def _get_block_for_obj(self, obj: T) -> int:
-        """Override this as needed for different object types"""
+        """
+        Override this as needed for different object types.
+
+        Args:
+            obj: The object to get the block number for.
+
+        Returns:
+            The block number of the object.
+        """
         return obj['blockNumber']
     
     @a_sync.ASyncIterator.wrap
@@ -257,7 +371,9 @@ class Filter(_DiskCachedMixin[T, C]):
             raise
     
     async def _fetch(self) -> NoReturn:
-        """Override this if you want"""
+        """
+        Override this if you want.
+        """
         await self._loop(self.from_block)
     
     @stuck_coro_debugger
@@ -317,7 +433,12 @@ class Filter(_DiskCachedMixin[T, C]):
     
     @stuck_coro_debugger
     async def _set_lock(self, block: int) -> None:
-        """Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module"""
+        """
+        Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module.
+
+        Args:
+            block: The block number to set the lock to.
+        """
         self._lock.set(block)
     
     def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int) -> None:

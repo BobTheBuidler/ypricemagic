@@ -492,20 +492,34 @@ _contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=3
 # TODO: async this and put it into ydb for quicker startups
 #yLazyLogger(logger)
 def is_contract(address: AnyAddressType) -> bool:
-    '''
+    """
     Checks to see if the input address is a contract. Returns `False` if:
     - The address is not and has never been a contract
     - The address used to be a contract but has self-destructed
-    '''
+
+    Args:
+        address: The address to check.
+
+    Returns:
+        True if the address is a contract, False otherwise.
+    """
     address = convert.to_address(address)
     return web3.eth.get_code(address) not in ['0x',b'']
 
 @a_sync.a_sync(default='sync', cache_type='memory')
 async def has_method(address: Address, method: str, return_response: bool = False) -> Union[bool,Any]:
-    '''
+    """
     Checks to see if a contract has a `method` view method with no inputs.
     `return_response=True` will return `response` in bytes if `response` else `False`
-    '''
+
+    Args:
+        address: The address of the contract.
+        method: The name of the method to check for.
+        return_response: If True, return the response of the method call instead of a boolean. Default False.
+
+    Returns:
+        A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.
+    """
     address = convert.to_address(address)
     try:
         response = await Call(address, [method])
@@ -522,11 +536,18 @@ async def has_methods(
     methods: Tuple[str],
     _func: Callable = all # Union[any, all]
 ) -> bool:
-    '''
+    """
     Checks to see if a contract has each view method (with no inputs) in `methods`.
     Pass `at_least_one=True` to only verify a contract has at least one of the methods.
-    '''
 
+    Args:
+        address: The address of the contract.
+        methods: A tuple of method names to check for.
+        _func: The function to use for combining the results (either :func:`all` or :func:`any`).
+
+    Returns:
+        A boolean indicating whether the contract has all the specified methods.
+    """
     assert _func in [all, any], '`_func` must be either `any` or `all`'
 
     address = convert.to_address(address)

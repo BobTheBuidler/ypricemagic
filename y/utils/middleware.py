@@ -90,8 +90,6 @@ def setup_getcode_cache_middleware() -> None:
 
     This function modifies the Web3 provider to use a custom session with increased
     connection pool size and timeout, and adds the getcode cache middleware.
-
-    On Optimism, it also adds the POA middleware.
     """
     # patch web3 provider with more connections and higher timeout
     if web3.provider:
@@ -110,6 +108,9 @@ def setup_getcode_cache_middleware() -> None:
     
 
 def setup_geth_poa_middleware() -> None:
+    """
+    Set up the geth proof-of-authority middleware for the current Web3 provider.
+    """
     try:
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)
     except ValueError as e:

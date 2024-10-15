@@ -93,6 +93,8 @@ async def get_logs_asap(
     verbose: int = 0
 ) -> List[Any]:
     """
+    Get logs as soon as possible.
+
     Args:
         address: The address of the contract to fetch logs from.
         topics: The event topics to filter logs by.
@@ -402,7 +404,10 @@ def _get_logs_batch_cached(
 
 
 class LogFilter(Filter[LogReceipt, "LogCache"]):
-    __slots__ = 'addresses', 'topics', 'from_block'
+    """
+    A filter for fetching and processing event logs.
+    """
+
     def __init__(
         self, 
         *, 
@@ -416,6 +421,20 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         is_reusable: bool = True,
         verbose: bool = False,
     ) -> None:  # sourcery skip: default-mutable-arg
+        """
+        Initialize a LogFilter instance.
+
+        Args:
+            addresses: List of contract addresses to fetch logs from.
+            topics: List of event topics to filter logs by.
+            from_block: The starting block to fetch logs from.
+            chunk_size: The number of blocks to fetch in each chunk.
+            chunks_per_batch: The number of chunks to fetch in each batch.
+            semaphore: A semaphore for limiting concurrent requests.
+            executor: An executor for running tasks asynchronously.
+            is_reusable: Whether the filter is reusable.
+            verbose: Verbosity level for logging.
+        """
         self.addresses = _clean_addresses(addresses)
         self.topics = topics
         super().__init__(from_block, chunk_size=chunk_size, chunks_per_batch=chunks_per_batch, semaphore=semaphore, executor=executor, is_reusable=is_reusable, verbose=verbose)
@@ -437,6 +456,15 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         return self._semaphore
 
     def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[LogReceipt]:
+        """
+        Get logs up to a given block.
+
+        Args:
+            to_block: The ending block to fetch logs to.
+
+        Yields:
+            A decoded event log.
+        """
         return self._objects_thru(block=to_block)
 
     @property
@@ -528,6 +556,12 @@ class Events(LogFilter):
         """
         return self._objects_thru(block=to_block)
     async def _extend(self, objs) -> None:
+        """
+        Extend the list of events with decoded logs.
+
+        Args:
+            objs: A list of raw event logs.
+        """
         return self._objects.extend(decode_logs(objs))
     
     def _get_block_for_obj(self, obj: _EventItem) -> int:

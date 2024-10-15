@@ -204,9 +204,16 @@ def map_prices(
         silent=silent, 
     )
 
-
-
 def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
+    """
+    A decorator to cache the results of the get_price function.
+
+    Args:
+        get_price: The function to be cached.
+
+    Returns:
+        A wrapped version of the input function with caching functionality.
+    """
     @functools.wraps(get_price)
     async def cache_wrap(
         token: AnyAddressType, 
