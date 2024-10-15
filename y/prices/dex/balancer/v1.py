@@ -57,13 +57,15 @@ class BalancerV1Pool(BalancerPool):
             if await token.price(block=block, return_None_on_failure=True, skip_cache=skip_cache, sync=False) is not None
         }
         
+        if not good_balances:
+            return None
+        
         prices = await ERC20.price.map(good_balances, block=block, return_None_on_failure=True, skip_cache=skip_cache).values()
 
         # in case we couldn't get prices for all tokens, we can extrapolate from the prices we did get
         good_value = sum(balance * Decimal(price) for balance, price in zip(good_balances.values(),prices))
-        if len(good_balances):
-            return good_value / len(good_balances) * len(token_balances)
-        return None
+
+        return good_value / len(good_balances) * len(token_balances)
     
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
