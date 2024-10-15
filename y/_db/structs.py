@@ -27,6 +27,10 @@ class Log(_CamelDictStruct, frozen=True):
     topics: Optional[List[HexBytes]]
     data: Optional[HexBytes]
 
+    @property
+    def block(self) -> Optional[uint]:
+        return self.block_number
+
 class Trace(_CamelDictStruct):
     # TODO so we can trace chain for eth_port on alt chains
     pass
