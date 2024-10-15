@@ -34,7 +34,7 @@ async def _prepare_log(log: Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
-        "raw": json.encode(log, enc_hook=enc_hook)
+        "raw": json.encode(log, enc_hook=enc_hook),
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
@@ -56,7 +56,7 @@ async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_f
     hashes = [[txhash.hex()] for txhash in {log.transactionHash for log in logs}] + [[EthAddress(addr)] for addr in {log.address for log in logs}]
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
 
-    topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log['topics'])}
+    topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log.topics)}
     await executor.run(bulk.insert, entities.LogTopic, ["topic"], [[topic.hex()] for topic in topics], sync=True)
 
     await executor.run(bulk.insert, entities.Log, LOG_COLS, await asyncio.gather(*[_prepare_log(log) for log in logs]), sync=True)

@@ -16,7 +16,8 @@ class _CamelDictStruct(DictStruct, rename="camel"):
     def __getitem__(self, attr: str):
         return super().__getitem__(_make_snake(attr))
 
-class Log(_CamelDictStruct):
+class Log(_CamelDictStruct, frozen=True):
+    """A slightly slimmed down version of the dank_mids.types.Log."""
     removed: Optional[bool]
     block_number: Optional[uint]
     transaction_hash: HexBytes

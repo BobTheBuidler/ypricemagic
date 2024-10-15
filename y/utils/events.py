@@ -20,6 +20,7 @@ from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import EventLookupError
 from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
+from dank_mids.structs.log import Log
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -43,7 +44,7 @@ logger = logging.getLogger(__name__)
 # not really sure why this breaks things
 ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
-def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
+def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log], List[structs.Log]]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
@@ -70,17 +71,27 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
             except Exception as e:
                 raise e.__class__(log, *e.args) from e
 
+    if not logs:
+        return EventDict()
+    
+    log_cls = type(logs[0])
+
     try:
-        if logs and isinstance(logs[0], structs.Log):
+        if log_cls is structs.Log:
             for i, log in enumerate(logs):
                 setattr(decoded[i], "block_number", log.block_number)
                 setattr(decoded[i], "transaction_hash", log.transaction_hash)
                 setattr(decoded[i], "log_index", log.log_index)
-        else:
+        elif log_cls is Log:
             for i, log in enumerate(logs):
                 setattr(decoded[i], "block_number", log.blockNumber)
                 setattr(decoded[i], "transaction_hash", log.transactionHash)
                 setattr(decoded[i], "log_index", log.logIndex)
+        else:
+            for i, log in enumerate(logs):
+                setattr(decoded[i], "block_number", log['blockNumber'])
+                setattr(decoded[i], "transaction_hash", log['transactionHash'])
+                setattr(decoded[i], "log_index", log['logIndex'])
         return decoded
     except EventLookupError as e:
         raise type(e)(*e.args, len(logs), decoded) from None
@@ -405,10 +416,12 @@ def _get_logs_batch_cached(
     return _get_logs_no_cache(address, topics, start, end)
 
 
-class LogFilter(Filter[LogReceipt, "LogCache"]):
+class LogFilter(Filter[Log, "LogCache"]):
     """
     A filter for fetching and processing event logs.
     """
+
+    __slots__ = 'addresses', 'topics', 'from_block'
 
     def __init__(
         self, 
@@ -457,7 +470,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
         return self._semaphore
 
-    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[LogReceipt]:
+    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
         """
         Get logs up to a given block.
 
@@ -470,7 +483,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         return self._objects_thru(block=to_block)
 
     @property
-    def insert_to_db(self) -> Callable[[LogReceipt], None]:
+    def insert_to_db(self) -> Callable[[Log], None]:
         """
         Get the function for inserting logs into the database.
 
