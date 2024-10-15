@@ -85,6 +85,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
 
 @memory.cache()
 #yLazyLogger(logger)
+@eth_retry.auto_retry
 def contract_creation_block(address: AnyAddressType, when_no_history_return_0: bool = False) -> int:
     """
     Determine the block when a contract was created using binary search.
@@ -117,7 +118,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         mid = lo + (hi - lo) // 2
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
-            if eth_retry.auto_retry(web3.eth.get_code)(address, mid):
+            if _get_code(address, mid):
                 hi = mid
             else:
                 lo = mid
@@ -145,6 +146,12 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 get_code = eth_retry.auto_retry(dank_mids.eth.get_code)
+
+@memory.cache
+@eth_retry.auto_retry
+def _get_code(address: str, block: int) -> HexBytes:
+    return web3.eth.get_code(address, block)
+  
 creation_block_semaphore = a_sync.ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
