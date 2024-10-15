@@ -6,6 +6,7 @@ from typing import AsyncIterator, List, Optional
 import a_sync
 import dank_mids
 from a_sync.executor import _AsyncExecutorMixin
+from dank_mids.structs import FilterTrace
 from msgspec import json
 from pony.orm import commit, select
 
@@ -18,11 +19,11 @@ from y.utils.middleware import BATCH_SIZE
 logger = logging.getLogger(__name__)
 
 @a_sync_write_db_session
-def insert_trace(trace: dict) -> None:
+def insert_trace(trace: FilterTrace) -> None:
     get_block = _get_get_block()
     kwargs = {
-        "block": get_block(trace['blockNumber'], sync=True),
-        "hash": trace['transactionHash'],
+        "block": get_block(trace.blockNumber, sync=True),
+        "hash": trace.transactionHash,
         "raw": json.encode(trace),
     }
     for dct in [trace, *trace.values()]:

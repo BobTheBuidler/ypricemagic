@@ -324,7 +324,7 @@ class Filter(_DiskCachedMixin[T, C]):
         Returns:
             The block number of the object.
         """
-        return obj['blockNumber']
+        return obj.blockNumber
     
     @a_sync.ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
