@@ -117,7 +117,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
         mid = lo + (hi - lo) // 2
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
-            if eth_retry.auto_retry(web3.eth.get_code)(address, mid):
+            if _get_code_sync(address, mid):
                 hi = mid
             else:
                 lo = mid
@@ -145,6 +145,7 @@ def contract_creation_block(address: AnyAddressType, when_no_history_return_0: b
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
 get_code = eth_retry.auto_retry(dank_mids.eth.get_code)
+_get_code_sync = lru_cache(maxsize=None)(eth_retry.auto_retry(web3.eth.get_code))
 creation_block_semaphore = a_sync.ThreadsafeSemaphore(10)
 
 @a_sync.a_sync(cache_type='memory')
