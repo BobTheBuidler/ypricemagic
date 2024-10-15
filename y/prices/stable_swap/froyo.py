@@ -23,4 +23,4 @@ async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> Opt
     if not token == POOL:
         return None
     virtual_price = await raw_call(POOL, "get_virtual_price()", block=block, output='int', sync=False)
-    return UsdPrice(virtual_price / 1e18)
+    return UsdPrice(virtual_price / 10 ** 18)
