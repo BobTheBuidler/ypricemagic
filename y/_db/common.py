@@ -61,7 +61,7 @@ def enc_hook(obj: Any) -> bytes:
         elif isinstance(obj, AttributeDict):
             return dict(obj)
         elif isinstance(obj, HexBytes):
-            return obj.hex()
+            return bytes(obj).hex()
         raise NotImplementedError(obj, type(obj))
     except RecursionError as e:
         # sometimes we get a recursion error from the instancecheck, this helps us debug that case.
