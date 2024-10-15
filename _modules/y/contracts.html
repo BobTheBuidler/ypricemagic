@@ -162,6 +162,7 @@
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="c1">#yLazyLogger(logger)</span>
+<span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">contract_creation_block</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the block when a contract was created using binary search.</span>
@@ -194,7 +195,7 @@
         <span class="n">mid</span> <span class="o">=</span> <span class="n">lo</span> <span class="o">+</span> <span class="p">(</span><span class="n">hi</span> <span class="o">-</span> <span class="n">lo</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
         <span class="c1"># TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">eth_retry</span><span class="o">.</span><span class="n">auto_retry</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">)(</span><span class="n">address</span><span class="p">,</span> <span class="n">mid</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">_get_code</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">mid</span><span class="p">):</span>
                 <span class="n">hi</span> <span class="o">=</span> <span class="n">mid</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span>
@@ -222,6 +223,12 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to find deploy block for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">get_code</span> <span class="o">=</span> <span class="n">eth_retry</span><span class="o">.</span><span class="n">auto_retry</span><span class="p">(</span><span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">)</span>
+
+<span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span>
+<span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
+<span class="k">def</span> <span class="nf">_get_code</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HexBytes</span><span class="p">:</span>
+    <span class="k">return</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+  
 <span class="n">creation_block_semaphore</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ThreadsafeSemaphore</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
 
 <div class="viewcode-block" id="contract_creation_block_async">

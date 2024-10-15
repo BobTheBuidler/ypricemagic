@@ -135,13 +135,15 @@
             <span class="k">if</span> <span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="p">}</span>
         
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">good_balances</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        
         <span class="n">prices</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">good_balances</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
 
         <span class="c1"># in case we couldn&#39;t get prices for all tokens, we can extrapolate from the prices we did get</span>
         <span class="n">good_value</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">balance</span> <span class="o">*</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">price</span><span class="p">)</span> <span class="k">for</span> <span class="n">balance</span><span class="p">,</span> <span class="n">price</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">good_balances</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span><span class="n">prices</span><span class="p">))</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_balances</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">good_value</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_balances</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_balances</span><span class="p">)</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
+
+        <span class="k">return</span> <span class="n">good_value</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">good_balances</span><span class="p">)</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">token_balances</span><span class="p">)</span></div>
 
     
 <div class="viewcode-block" id="BalancerV1Pool.get_balances">
@@ -176,6 +178,9 @@
             <span class="c1"># the pool was not yet finalized at this block</span>
             <span class="c1"># NOTE: does this happen for any pool except YLA? tbd...</span>
             <span class="k">if</span> <span class="s2">&quot;NOT_BOUND&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="k">elif</span> <span class="n">e</span><span class="o">.</span><span class="n">args</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="s2">&quot;execution reverted&quot;</span><span class="p">:</span>
+                <span class="c1"># we only want to continue on exact match of the original (no extra context added) exception</span>
                 <span class="k">return</span> <span class="mi">0</span>
             <span class="k">raise</span></div>
 </div>
