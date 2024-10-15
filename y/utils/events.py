@@ -51,6 +51,7 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
         return EventDict()
     
     from y.contracts import Contract
+    
     for log in logs:
         if log.address not in _deployment_topics:
             _add_deployment_topics(log.address, Contract(log.address).abi)
