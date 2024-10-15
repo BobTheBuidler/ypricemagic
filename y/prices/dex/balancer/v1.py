@@ -88,7 +88,10 @@ class BalancerV1Pool(BalancerPool):
         except Exception as e:
             # the pool was not yet finalized at this block
             # NOTE: does this happen for any pool except YLA? tbd...
-            if "NOT_BOUND" in str(e) or str(e) == "execution reverted":
+            if "NOT_BOUND" in str(e):
+                return 0
+            elif e.args and str(e.args[0]) == "execution reverted":
+                # we only want to continue on exact match of the original (no extra context added) exception
                 return 0
             raise
     
