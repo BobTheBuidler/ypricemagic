@@ -7,9 +7,9 @@ from collections import Counter, defaultdict
 from functools import cached_property
 from importlib.metadata import version
 from itertools import zip_longest
-from typing import (TYPE_CHECKING, Any, AsyncGenerator, AsyncIterator, Awaitable, 
-                    Callable, Dict, Iterable, List, NoReturn, Optional, TypeVar, 
-                    Union)
+from typing import (TYPE_CHECKING, Any, AsyncGenerator, Awaitable, 
+                    Callable, Dict, Iterable, List, NoReturn, Optional, 
+                    TypeVar, Union)
 
 import a_sync
 import dank_mids
@@ -28,7 +28,6 @@ from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import Filter, _clean_addresses
-
 from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
@@ -40,9 +39,6 @@ if TYPE_CHECKING:
 T = TypeVar('T')
 
 logger = logging.getLogger(__name__)
-
-# not really sure why this breaks things
-ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
 def decode_logs(logs: Union[List[LogReceipt], List[Log]]) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
@@ -371,6 +367,7 @@ def _get_logs_no_cache(
         else:
             raise
     
+    # our special subclass is better for encoding and saving to disk
     return [log if isinstance(log, Log) else Log(**log) for log in response]
 
 
@@ -508,7 +505,7 @@ class LogFilter(Filter[Log, "LogCache"]):
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
-    async def _fetch_range(self, range_start: int, range_end: int) -> AsyncIterator[Log]:
+    async def _fetch_range(self, range_start: int, range_end: int) -> List[Log]:
         """
         Fetch logs for a given block range.
 
@@ -522,17 +519,11 @@ class LogFilter(Filter[Log, "LogCache"]):
         tries = 0
         while True:
             try:
-                logs = await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
-                break
+                return await _get_logs_async_no_cache(self.addresses, self.topics, range_start, range_end)
             except ValueError as e:
                 if "parse error" not in str(e) or tries >= 50:
                     raise
                 tries += 1
-
-        for log in logs:
-            # our special subclass is better for encoding and saving to disk
-            yield log
-
 
     async def _fetch(self) -> NoReturn:
         """

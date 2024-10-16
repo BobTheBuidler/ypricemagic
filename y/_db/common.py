@@ -3,8 +3,8 @@
 import abc
 import asyncio
 import logging
-from typing import (Any, AsyncIterator, Awaitable, Callable, Generic, List, 
-                    NoReturn, Optional, Tuple, Type, TypeVar, Union)
+from typing import (Any, AsyncIterator, Awaitable, Callable, Generic, List, NoReturn,
+                    Optional, Type, TypeVar, Union)
 
 import a_sync
 import dank_mids
@@ -302,8 +302,8 @@ class Filter(_DiskCachedMixin[T, C]):
             self._task.cancel()
         
     @abc.abstractmethod
-    async def _fetch_range(self, from_block: int, to_block: int) -> AsyncIterator[T]:
-        yield
+    async def _fetch_range(self, from_block: int, to_block: int) -> List[T]:
+        ...
         
     @property
     def semaphore(self) -> dank_mids.BlockSemaphore:
@@ -388,10 +388,10 @@ class Filter(_DiskCachedMixin[T, C]):
         await self._loop(self.from_block)
     
     @stuck_coro_debugger
-    async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> Tuple[int, int, List[T]]:
+    async def _fetch_range_wrapped(self, i: int, range_start: int, range_end: int) -> List[T]:
         async with self.semaphore[range_end]:
             logger.debug("fetching %s block %s to %s", self, range_start, range_end)
-            return i, range_end, [x async for x in self._fetch_range(range_start, range_end)]
+            return i, range_end, await self._fetch_range(range_start, range_end)
 
     async def _loop(self, from_block: int) -> NoReturn:
         logger.debug('starting work loop for %s', self)

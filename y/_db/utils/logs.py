@@ -47,7 +47,7 @@ async def _prepare_log(log: structs.Log) -> tuple:
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-async def bulk_insert(logs: List[ArrayEncodableLog], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+async def bulk_insert(logs: List[structs.Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     if not logs:
         return
     
