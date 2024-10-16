@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
 
-class Log(structs.Log, frozen=True, array_like=True):
+class Log(structs.Log, frozen=True, kw_only=True, array_like=True):
     ...
 
 
