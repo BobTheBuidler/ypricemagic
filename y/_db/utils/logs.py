@@ -30,7 +30,7 @@ class Log(structs.Log, frozen=True, array_like=True):
     ...
 
 
-async def _prepare_log(log: Log) -> tuple:
+async def _prepare_log(log: structs.Log) -> tuple:
     transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
     return  tuple({
         "block_chain": chain.id,
@@ -39,7 +39,7 @@ async def _prepare_log(log: Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
-        "raw": json.encode(log, enc_hook=enc_hook),
+        "raw": json.encode(Log(**log), enc_hook=enc_hook),
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__

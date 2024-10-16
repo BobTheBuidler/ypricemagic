@@ -20,6 +20,7 @@ from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import EventLookupError
 from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
+from dank_mids.structs import Log
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -33,7 +34,6 @@ from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
 if TYPE_CHECKING:
-    from y._db.utils.logs import Log
     from y._db.utils.logs import LogCache
 
 
@@ -44,7 +44,7 @@ logger = logging.getLogger(__name__)
 # not really sure why this breaks things
 ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
-def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log]]) -> EventDict:
+def decode_logs(logs: Union[List[LogReceipt], List[Log]]) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
@@ -126,7 +126,7 @@ async def get_logs_asap_generator(
     run_forever: bool = False,
     run_forever_interval: int = 60,
     verbose: int = 0
-) -> AsyncGenerator[List["Log"], None]:  # sourcery skip: low-code-quality
+) -> AsyncGenerator[List[Log], None]:  # sourcery skip: low-code-quality
     """
     Get logs as soon as possible in a generator.
 
@@ -226,7 +226,7 @@ def _get_logs(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List["Log"]:
+    ) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -258,7 +258,7 @@ get_logs_semaphore = defaultdict(
     )
 )
 
-async def _get_logs_async(address, topics, start, end) -> List["Log"]:
+async def _get_logs_async(address, topics, start, end) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -277,7 +277,7 @@ async def _get_logs_async(address, topics, start, end) -> List["Log"]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
-async def _get_logs_async_no_cache(address, topics, start, end) -> List[dank_mids.structs.Log]:
+async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -329,7 +329,7 @@ def _get_logs_no_cache(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List["Log"]:
+    ) -> List[Log]:
     """
     Get logs without using the disk cache.
 
@@ -371,10 +371,7 @@ def _get_logs_no_cache(
         else:
             raise
     
-    # import here or you get weird conflicts with eth-portfolio
-    from y._db.utils.logs import Log
-    
-    return [Log(**log) for log in response]
+    return [log if isinstance(log, Log) else Log(**log) for log in response]
 
 
 
@@ -389,7 +386,7 @@ def _get_logs_batch_cached(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List["Log"]:
+    ) -> List[Log]:
     """
     Get logs from the disk cache, or fetch and cache them if not available.
 
@@ -405,7 +402,7 @@ def _get_logs_batch_cached(
     return _get_logs_no_cache(address, topics, start, end)
 
 
-class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
+class LogFilter(Filter[Log, "LogCache"]):
     """
     A filter for fetching and processing event logs.
     """
@@ -459,7 +456,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
             self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
         return self._semaphore
 
-    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[dank_mids.structs.Log]:
+    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
         """
         Get logs up to a given block.
 
@@ -472,7 +469,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
         return self._objects_thru(block=to_block)
 
     @property
-    def insert_to_db(self) -> Callable[[dank_mids.structs.Log], None]:
+    def insert_to_db(self) -> Callable[[Log], None]:
         """
         Get the function for inserting logs into the database.
 
@@ -483,7 +480,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
         raise NotImplementedError
     
     @cached_property
-    def bulk_insert(self) -> Callable[[List[dank_mids.structs.Log]], Awaitable[None]]:
+    def bulk_insert(self) -> Callable[[List[Log]], Awaitable[None]]:
         """
         Get the function for bulk inserting logs into the database.
 
@@ -511,7 +508,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
-    async def _fetch_range(self, range_start: int, range_end: int) -> AsyncIterator["Log"]:
+    async def _fetch_range(self, range_start: int, range_end: int) -> AsyncIterator[Log]:
         """
         Fetch logs for a given block range.
 
@@ -532,12 +529,9 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
                     raise
                 tries += 1
 
-        # import here or you get weird conflicts with eth-portfolio
-        from y._db.utils.logs import Log
-
         for log in logs:
             # our special subclass is better for encoding and saving to disk
-            yield Log(*log.values())
+            yield log
 
 
     async def _fetch(self) -> NoReturn:
@@ -625,7 +619,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, logs: List["Log"]) -> None:
+    async def _extend(self, logs: List[Log]) -> None:
         """
         Process a new set of logs and extend the list of processed events with the results.
 
