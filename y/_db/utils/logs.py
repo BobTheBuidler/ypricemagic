@@ -25,7 +25,12 @@ logger = logging.getLogger(__name__)
 
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
-async def _prepare_log(log: structs.Log) -> tuple:
+
+class Log(structs.Log, frozen=True, array_like=True):
+    ...
+
+
+async def _prepare_log(log: Log) -> tuple:
     transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
     return  tuple({
         "block_chain": chain.id,
@@ -39,7 +44,7 @@ async def _prepare_log(log: structs.Log) -> tuple:
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-async def bulk_insert(logs: List[structs.Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     if not logs:
         return
     
@@ -94,7 +99,7 @@ def set_decoded(log: structs.Log, decoded: _EventItem):
 
 page_size = 100
 
-class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
+class LogCache(DiskCache[Log, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -166,16 +171,16 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    def _select(self, from_block: int, to_block: int) -> List[structs.Log]:
+    def _select(self, from_block: int, to_block: int) -> List[Log]:
         try:
-            return [json.decode(log.raw, type=structs.Log, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
+            return [json.decode(log.raw, type=Log, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(json.decode(log.raw, type=structs.Log, dec_hook=_decode_hook))
+                    results.append(json.decode(log.raw, type=Log, dec_hook=_decode_hook))
                 except ValidationError as e:
-                    raise ValueError(e, json.decode(log.raw))
+                    raise ValueError(e, json.decode(log.raw)) from e
             return results
     
     def _get_query(self, from_block: int, to_block: int) -> Query:

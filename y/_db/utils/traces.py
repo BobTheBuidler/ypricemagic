@@ -185,15 +185,19 @@ class TraceFilter(Filter[dict, TraceCache]):
             self._cache = TraceCache(self.from_addresses, self.to_addresses)
         return self._cache
 
-    def traces(self, to_block: Optional[int]) -> AsyncIterator[dict]:
+    def traces(self, to_block: Optional[int]) -> AsyncIterator[FilterTrace]:
         return self._objects_thru(block=to_block)
 
-    async def _fetch_range(self, from_block: int, to_block: int) -> List[dict]:
+    async def _fetch_range(self, from_block: int, to_block: int) -> AsyncIterator[FilterTrace]:
         try:
-            return await dank_mids.web3.provider.make_request("TraceFilter", {})
+            for trace in await dank_mids.web3.provider.make_request("TraceFilter", {}):
+                yield trace
         except NotImplementedError:
-            results = {block: traces async for block, traces in a_sync.map(self._trace_block, range(from_block, to_block)).map()}
-            return list(chain(*[results[i] for i in range(from_block, to_block)]))
+            trace_block_tasks = a_sync.map(self._trace_block, range(from_block, to_block))
+            for block in range(from_block, to_block):
+                for trace in await trace_block_tasks.pop(block):
+                    # NOTE: These will still yield in chronological order even though they're fetched in FIFO manner.
+                    yield trace
         
     async def _trace_block(self, block: int) -> List[dict]:
         return [
