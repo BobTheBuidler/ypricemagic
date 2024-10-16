@@ -20,14 +20,13 @@ from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import EventLookupError
 from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
-from dank_mids.structs.log import Log
+from dank_mids.structs import Log
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y._db import structs
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
@@ -44,7 +43,8 @@ logger = logging.getLogger(__name__)
 # not really sure why this breaks things
 ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
-def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log], List[structs.Log]]) -> EventDict:
+def decode_logs(logs: Union[List[LogReceipt], List[Log]]) -> EventDict:
+    # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
     """
@@ -241,7 +241,7 @@ def _get_logs(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List[LogReceipt]:
+    ) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -273,7 +273,7 @@ get_logs_semaphore = defaultdict(
     )
 )
 
-async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
+async def _get_logs_async(address, topics, start, end) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -292,7 +292,7 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
-async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
+async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -344,7 +344,7 @@ def _get_logs_no_cache(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List[LogReceipt]:
+    ) -> List[Log]:
     """
     Get logs without using the disk cache.
 
@@ -400,7 +400,7 @@ def _get_logs_batch_cached(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List[LogReceipt]:
+    ) -> List[Log]:
     """
     Get logs from the disk cache, or fetch and cache them if not available.
 
@@ -494,7 +494,7 @@ class LogFilter(Filter[Log, "LogCache"]):
         raise NotImplementedError
     
     @cached_property
-    def bulk_insert(self) -> Callable[[List[LogReceipt]], Awaitable[None]]:
+    def bulk_insert(self) -> Callable[[List[Log]], Awaitable[None]]:
         """
         Get the function for bulk inserting logs into the database.
 
@@ -522,7 +522,7 @@ class LogFilter(Filter[Log, "LogCache"]):
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
-    async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
+    async def _fetch_range(self, range_start: int, range_end: int) -> List[Log]:
         """
         Fetch logs for a given block range.
 
@@ -627,7 +627,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, logs: List[LogReceipt]) -> None:
+    async def _extend(self, logs: List[Log]) -> None:
         """
         Process a new set of logs and extend the list of processed events with the results.
 
