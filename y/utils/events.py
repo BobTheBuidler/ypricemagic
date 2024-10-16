@@ -70,16 +70,10 @@ def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log]]) -> E
         return EventDict()
     
     try:
-        if type(logs[0]) is dank_mids.structs.Log:
-            for i, log in enumerate(logs):
-                setattr(decoded[i], "block_number", log.blockNumber)
-                setattr(decoded[i], "transaction_hash", log.transactionHash)
-                setattr(decoded[i], "log_index", log.logIndex)
-        else:
-            for i, log in enumerate(logs):
-                setattr(decoded[i], "block_number", log['blockNumber'])
-                setattr(decoded[i], "transaction_hash", log['transactionHash'])
-                setattr(decoded[i], "log_index", log['logIndex'])
+        for i, log in enumerate(logs):
+            setattr(decoded[i], "block_number", log['blockNumber'])
+            setattr(decoded[i], "transaction_hash", log['transactionHash'])
+            setattr(decoded[i], "log_index", log['logIndex'])
         return decoded
     except EventLookupError as e:
         raise type(e)(*e.args, len(logs), decoded) from None
@@ -280,7 +274,7 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 @eth_retry.auto_retry
-async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
+async def _get_logs_async_no_cache(address, topics, start, end) -> List[dank_mids.structs.Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -482,7 +476,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
         raise NotImplementedError
     
     @cached_property
-    def bulk_insert(self) -> Callable[[List[LogReceipt]], Awaitable[None]]:
+    def bulk_insert(self) -> Callable[[List[dank_mids.structs.Log]], Awaitable[None]]:
         """
         Get the function for bulk inserting logs into the database.
 
@@ -510,7 +504,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
-    async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
+    async def _fetch_range(self, range_start: int, range_end: int) -> List[dank_mids.structs.Log]:
         """
         Fetch logs for a given block range.
 
@@ -615,7 +609,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, logs: List[LogReceipt]) -> None:
+    async def _extend(self, logs: List[dank_mids.structs.Log]) -> None:
         """
         Process a new set of logs and extend the list of processed events with the results.
 
