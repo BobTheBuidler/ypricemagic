@@ -27,12 +27,13 @@ from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import Filter, _clean_addresses
-from y._db.utils.logs import Log
+
 from y.datatypes import Address, Block
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
 if TYPE_CHECKING:
+    from y._db.utils.logs import Log
     from y._db.utils.logs import LogCache
 
 
@@ -125,7 +126,7 @@ async def get_logs_asap_generator(
     run_forever: bool = False,
     run_forever_interval: int = 60,
     verbose: int = 0
-) -> AsyncGenerator[List[Log], None]:  # sourcery skip: low-code-quality
+) -> AsyncGenerator[List["Log"], None]:  # sourcery skip: low-code-quality
     """
     Get logs as soon as possible in a generator.
 
@@ -225,7 +226,7 @@ def _get_logs(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List[Log]:
+    ) -> List["Log"]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -257,7 +258,7 @@ get_logs_semaphore = defaultdict(
     )
 )
 
-async def _get_logs_async(address, topics, start, end) -> List[Log]:
+async def _get_logs_async(address, topics, start, end) -> List["Log"]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -328,7 +329,7 @@ def _get_logs_no_cache(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List[Log]:
+    ) -> List["Log"]:
     """
     Get logs without using the disk cache.
 
@@ -369,6 +370,10 @@ def _get_logs_no_cache(
             response = batch1 + batch2
         else:
             raise
+    
+    # import here or you get weird conflicts with eth-portfolio
+    from y._db.utils.logs import Log
+    
     return [Log(**log) for log in response]
 
 
@@ -384,7 +389,7 @@ def _get_logs_batch_cached(
     topics: Optional[List[str]],
     start: Block,
     end: Block
-    ) -> List[Log]:
+    ) -> List["Log"]:
     """
     Get logs from the disk cache, or fetch and cache them if not available.
 
@@ -506,7 +511,7 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
                 self.from_block = await contract_creation_block_async(self.addresses, when_no_history_return_0=True)
         return self.from_block
     
-    async def _fetch_range(self, range_start: int, range_end: int) -> AsyncIterator[Log]:
+    async def _fetch_range(self, range_start: int, range_end: int) -> AsyncIterator["Log"]:
         """
         Fetch logs for a given block range.
 
@@ -526,6 +531,9 @@ class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
                 if "parse error" not in str(e) or tries >= 50:
                     raise
                 tries += 1
+
+        # import here or you get weird conflicts with eth-portfolio
+        from y._db.utils.logs import Log
 
         for log in logs:
             # our special subclass is better for encoding and saving to disk
@@ -617,7 +625,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, logs: List[Log]) -> None:
+    async def _extend(self, logs: List["Log"]) -> None:
         """
         Process a new set of logs and extend the list of processed events with the results.
 
