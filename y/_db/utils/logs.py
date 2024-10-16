@@ -31,10 +31,6 @@ class ArrayEncodableLog(structs.Log, frozen=True, kw_only=True, array_like=True)
     """
     It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space when keys are known.
     """
-    @classmethod
-    def convert(cls, log: structs.Log) -> "ArrayEncodableLog":
-        return ArrayEncodableLog(**{key: getattr(log, key) for key in log.__struct_fields__})
-
 
 
 async def _prepare_log(log: structs.Log) -> tuple:
@@ -46,7 +42,7 @@ async def _prepare_log(log: structs.Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
-        "raw": json.encode(ArrayEncodableLog.convert(log), enc_hook=enc_hook),
+        "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
