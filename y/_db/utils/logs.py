@@ -16,7 +16,7 @@ from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
-from y._db import decorators, entities, structs
+from y._db import decorators, entities
 from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
@@ -82,14 +82,14 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
         entity = entities.Hashes(hash=hexstr)
     return entity.dbid
 
-def get_decoded(log: structs.Log) -> Optional[_EventItem]:
+def get_decoded(log: Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
     if decoded := entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index].decoded:
         return _EventItem(decoded['name'], decoded['address'], decoded['event_data'], decoded['pos'])
 
 @db_session
 @decorators.retry_locked
-def set_decoded(log: structs.Log, decoded: _EventItem):
+def set_decoded(log: Log, decoded: _EventItem) -> None:
     entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index].decoded = decoded
 
 page_size = 100
