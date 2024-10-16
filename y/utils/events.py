@@ -57,8 +57,8 @@ def decode_logs(logs: Union[List[LogReceipt], List[Log]]) -> EventDict:
         if log.address not in _deployment_topics:
             _add_deployment_topics(log.address, Contract(log.address).abi)
     
-    # for some reason < this version can decode them just fine but >= cannot
-    special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], structs.Log)
+    # for some reason < 1.2.4 can decode them just fine but >= cannot
+    special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], Log)
             
     try:
         decoded = _decode_logs([log.to_dict() for log in logs] if special_treatment else logs)
@@ -77,12 +77,7 @@ def decode_logs(logs: Union[List[LogReceipt], List[Log]]) -> EventDict:
     log_cls = type(logs[0])
 
     try:
-        if log_cls is structs.Log:
-            for i, log in enumerate(logs):
-                setattr(decoded[i], "block_number", log.block_number)
-                setattr(decoded[i], "transaction_hash", log.transaction_hash)
-                setattr(decoded[i], "log_index", log.log_index)
-        elif log_cls is Log:
+        if log_cls is Log:
             for i, log in enumerate(logs):
                 setattr(decoded[i], "block_number", log.blockNumber)
                 setattr(decoded[i], "transaction_hash", log.transactionHash)
