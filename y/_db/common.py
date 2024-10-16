@@ -12,6 +12,7 @@ import eth_retry
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
+from dank_mids.structs.data import Address
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
                       db_session)
@@ -51,11 +52,21 @@ def enc_hook(obj: Any) -> bytes:
     Note:
         Currently supports encoding of AttributeDict and HexBytes objects.
     """
-    if isinstance(obj, AttributeDict):
-        return dict(obj)
-    elif isinstance(obj, HexBytes):
-        return obj.hex()
-    raise NotImplementedError(obj, type(obj))
+    typ = type(obj)
+    try:
+        # we use issubclass instead of isinstance here to prevent a recursion error
+        if issubclass(typ, int):
+            return int(obj)
+        elif issubclass(typ, Address):
+            return obj[2:]
+        elif isinstance(obj, HexBytes):
+            return bytes(obj).hex()
+        elif isinstance(obj, AttributeDict):
+            return dict(obj)
+        raise NotImplementedError(obj, type(obj))
+    except RecursionError as e:
+        # sometimes we get a recursion error from the instancecheck, this helps us debug that case.
+        raise RecursionError(str(e), obj, type(obj)) from e
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
     """
@@ -314,7 +325,7 @@ class Filter(_DiskCachedMixin[T, C]):
         Returns:
             The block number of the object.
         """
-        return obj['blockNumber']
+        return obj.blockNumber
     
     @a_sync.ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:

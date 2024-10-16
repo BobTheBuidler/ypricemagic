@@ -1,20 +1,22 @@
 
 import asyncio
 import logging
-from typing import List, Optional
+from typing import List, Optional, final
 
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
+from dank_mids import structs
+from dank_mids.structs.data import Address, uint, checksum
 from eth_typing import HexStr
-from msgspec import json
+from hexbytes import HexBytes
+from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
-from web3.types import LogReceipt
 
-from y._db import decorators, entities, structs
+from y._db import decorators, entities
 from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
@@ -23,21 +25,29 @@ logger = logging.getLogger(__name__)
 
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
-async def _prepare_log(log: LogReceipt) -> tuple:
-    transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log['transactionHash'].hex()), get_hash_dbid(log['address']))
+
+@final
+class ArrayEncodableLog(structs.Log, frozen=True, kw_only=True, array_like=True):
+    """
+    It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space when keys are known.
+    """
+
+
+async def _prepare_log(log: structs.Log) -> tuple:
+    transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
     return  tuple({
         "block_chain": chain.id,
-        "block_number": log['blockNumber'],
+        "block_number": log.blockNumber,
         "transaction": transaction_dbid,
-        "log_index": log['logIndex'],
+        "log_index": log.logIndex,
         "address": address_dbid,
-        **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log['topics']) else None for i in range(4)},
-        "raw": json.encode(log, enc_hook=enc_hook)
+        **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
+        "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+async def bulk_insert(logs: List[structs.Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     if not logs:
         return
     
@@ -46,15 +56,15 @@ async def bulk_insert(logs: List[LogReceipt], executor: _AsyncExecutorMixin = de
     if _check_using_extended_db():
         # TODO: refactor this ugly shit out
         block_cols.append("classtype")
-        blocks = [(chain.id, block, "BlockExtended") for block in {log['blockNumber'] for log in logs}]
+        blocks = [(chain.id, block, "BlockExtended") for block in {log.blockNumber for log in logs}]
     else:
-        blocks = [(chain.id, block) for block in {log['blockNumber'] for log in logs}]
+        blocks = [(chain.id, block) for block in {log.blockNumber for log in logs}]
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
 
-    hashes = [[txhash.hex()] for txhash in {log["transactionHash"] for log in logs}] + [[EthAddress(addr)] for addr in {log["address"] for log in logs}]
+    hashes = [[txhash.hex()] for txhash in {log.transactionHash for log in logs}] + [[EthAddress(addr)] for addr in {log.address for log in logs}]
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
 
-    topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log['topics'])}
+    topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log.topics)}
     await executor.run(bulk.insert, entities.LogTopic, ["topic"], [[topic.hex()] for topic in topics], sync=True)
 
     await executor.run(bulk.insert, entities.Log, LOG_COLS, await asyncio.gather(*[_prepare_log(log) for log in logs]), sync=True)
@@ -80,10 +90,9 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
         entity = entities.Hashes(hash=hexstr)
     return entity.dbid
 
-def get_decoded(log: structs.Log) -> _EventItem:
+def get_decoded(log: structs.Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
-    log = entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index]
-    if decoded := log.decoded:
+    if decoded := entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index].decoded:
         return _EventItem(decoded['name'], decoded['address'], decoded['event_data'], decoded['pos'])
 
 @db_session
@@ -93,7 +102,7 @@ def set_decoded(log: structs.Log, decoded: _EventItem):
 
 page_size = 100
 
-class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
+class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -165,8 +174,17 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    def _select(self, from_block: int, to_block: int) -> List[LogReceipt]:
-        return [json.decode(log.raw, type=structs.Log) for log in self._get_query(from_block, to_block)]
+    def _select(self, from_block: int, to_block: int) -> List[ArrayEncodableLog]:
+        try:
+            return [json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
+        except ValidationError:
+            results = []
+            for log in self._get_query(from_block, to_block):
+                try:
+                    results.append(json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook))
+                except ValidationError as e:
+                    raise ValueError(e, json.decode(log.raw)) from e
+            return results
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
@@ -255,3 +273,16 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
                 return (log for log in generator if getattr(log, topic).topic == value)
             return (log for log in generator if getattr(log, topic).topic in value)
         return generator
+
+def _decode_hook(typ, obj):
+    if typ is uint:
+        if isinstance(obj, int):
+            return uint(obj)
+        elif isinstance(obj, str):
+            return uint(obj, 16)
+    elif typ is HexBytes:
+        return HexBytes(obj)
+    elif typ is Address:
+        return checksum(obj)
+    raise NotImplementedError(typ, obj)
+    
