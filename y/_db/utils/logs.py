@@ -1,7 +1,7 @@
 
 import asyncio
 import logging
-from typing import List, Optional
+from typing import List, Optional, final
 
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
@@ -26,8 +26,15 @@ logger = logging.getLogger(__name__)
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
 
-class Log(structs.Log, frozen=True, kw_only=True, array_like=True):
-    ...
+@final
+class ArrayEncodableLog(structs.Log, frozen=True, kw_only=True, array_like=True):
+    """
+    It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space when keys are known.
+    """
+    @classmethod
+    def convert(cls, log: structs.Log) -> "ArrayEncodableLog":
+        return ArrayEncodableLog(**{key: getattr(log, key) for key in log.__struct_fields__})
+
 
 
 async def _prepare_log(log: structs.Log) -> tuple:
@@ -39,12 +46,12 @@ async def _prepare_log(log: structs.Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
-        "raw": json.encode(Log(**log), enc_hook=enc_hook),
+        "raw": json.encode(ArrayEncodableLog.convert(log), enc_hook=enc_hook),
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+async def bulk_insert(logs: List[ArrayEncodableLog], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     if not logs:
         return
     
@@ -99,7 +106,7 @@ def set_decoded(log: structs.Log, decoded: _EventItem):
 
 page_size = 100
 
-class LogCache(DiskCache[Log, entities.LogCacheInfo]):
+class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -171,14 +178,14 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    def _select(self, from_block: int, to_block: int) -> List[Log]:
+    def _select(self, from_block: int, to_block: int) -> List[ArrayEncodableLog]:
         try:
-            return [json.decode(log.raw, type=Log, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
+            return [json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(json.decode(log.raw, type=Log, dec_hook=_decode_hook))
+                    results.append(json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook))
                 except ValidationError as e:
                     raise ValueError(e, json.decode(log.raw)) from e
             return results
