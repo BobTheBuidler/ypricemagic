@@ -1,7 +1,7 @@
 
 import asyncio
 import logging
-from typing import List, Optional
+from typing import List, Optional, final
 
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
@@ -25,6 +25,14 @@ logger = logging.getLogger(__name__)
 
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
+
+@final
+class ArrayEncodableLog(Log, frozen=True, kw_only=True, array_like=True):
+    """
+    It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space when keys are known.
+    """
+
+
 async def _prepare_log(log: Log) -> tuple:
     transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
     return  tuple({
@@ -34,7 +42,7 @@ async def _prepare_log(log: Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
-        "raw": json.encode(log, enc_hook=enc_hook),
+        "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
     }.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
@@ -94,7 +102,7 @@ def set_decoded(log: Log, decoded: _EventItem) -> None:
 
 page_size = 100
 
-class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
+class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -166,16 +174,16 @@ class LogCache(DiskCache[structs.Log, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    def _select(self, from_block: int, to_block: int) -> List[structs.Log]:
+    def _select(self, from_block: int, to_block: int) -> List[ArrayEncodableLog]:
         try:
-            return [json.decode(log.raw, type=structs.Log, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
+            return [json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(json.decode(log.raw, type=structs.Log, dec_hook=_decode_hook))
+                    results.append(json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook))
                 except ValidationError as e:
-                    raise ValueError(e, json.decode(log.raw))
+                    raise ValueError(e, json.decode(log.raw)) from e
             return results
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
