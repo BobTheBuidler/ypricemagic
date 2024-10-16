@@ -8,7 +8,7 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
-from dank_mids.structs import Log
+from dank_mids import structs
 from dank_mids.structs.data import Address, uint, checksum
 from eth_typing import HexStr
 from hexbytes import HexBytes
@@ -16,7 +16,7 @@ from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
-from y._db import decorators, entities, structs
+from y._db import decorators, entities
 from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
 
-async def _prepare_log(log: Log) -> tuple:
+async def _prepare_log(log: structs.Log) -> tuple:
     transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
     return  tuple({
         "block_chain": chain.id,
@@ -39,7 +39,7 @@ async def _prepare_log(log: Log) -> tuple:
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
-async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
+async def bulk_insert(logs: List[structs.Log], executor: _AsyncExecutorMixin = default_filter_threads) -> None:
     if not logs:
         return
     

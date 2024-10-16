@@ -20,14 +20,12 @@ from brownie import web3
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import EventLookupError
 from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
-from dank_mids.structs.log import Log
 from eth_typing import ChecksumAddress
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y._db import structs
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
 from y.utils.cache import memory
@@ -44,7 +42,7 @@ logger = logging.getLogger(__name__)
 # not really sure why this breaks things
 ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
-def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log], List[structs.Log]]) -> EventDict:
+def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log]]) -> EventDict:
     """
     Decode logs to events and enrich them with additional info.
     """
@@ -52,16 +50,13 @@ def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log], List[
         return EventDict()
     
     from y.contracts import Contract
-    
+
     for log in logs:
         if log.address not in _deployment_topics:
             _add_deployment_topics(log.address, Contract(log.address).abi)
-    
-    # for some reason < this version can decode them just fine but >= cannot
-    special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], structs.Log)
             
     try:
-        decoded = _decode_logs([log.to_dict() for log in logs] if special_treatment else logs)
+        decoded = _decode_logs(logs)
     except Exception:
         decoded = []
         for log in logs:
@@ -74,15 +69,8 @@ def decode_logs(logs: Union[List[LogReceipt], List[dank_mids.structs.Log], List[
     if not logs:
         return EventDict()
     
-    log_cls = type(logs[0])
-
     try:
-        if log_cls is structs.Log:
-            for i, log in enumerate(logs):
-                setattr(decoded[i], "block_number", log.block_number)
-                setattr(decoded[i], "transaction_hash", log.transaction_hash)
-                setattr(decoded[i], "log_index", log.log_index)
-        elif log_cls is Log:
+        if type(logs[0]) is dank_mids.structs.Log:
             for i, log in enumerate(logs):
                 setattr(decoded[i], "block_number", log.blockNumber)
                 setattr(decoded[i], "transaction_hash", log.transactionHash)
@@ -416,7 +404,7 @@ def _get_logs_batch_cached(
     return _get_logs_no_cache(address, topics, start, end)
 
 
-class LogFilter(Filter[Log, "LogCache"]):
+class LogFilter(Filter[dank_mids.structs.Log, "LogCache"]):
     """
     A filter for fetching and processing event logs.
     """
@@ -470,7 +458,7 @@ class LogFilter(Filter[Log, "LogCache"]):
             self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
         return self._semaphore
 
-    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
+    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[dank_mids.structs.Log]:
         """
         Get logs up to a given block.
 
@@ -483,7 +471,7 @@ class LogFilter(Filter[Log, "LogCache"]):
         return self._objects_thru(block=to_block)
 
     @property
-    def insert_to_db(self) -> Callable[[Log], None]:
+    def insert_to_db(self) -> Callable[[dank_mids.structs.Log], None]:
         """
         Get the function for inserting logs into the database.
 
