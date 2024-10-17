@@ -114,7 +114,7 @@ class Hashes(db.Entity):
 class Log(db.Entity):
     block = Required(Block, index=True, lazy=True)
     tx = Required(Hashes, lazy=True)
-    log_index = Required(int, 16, lazy=True)
+    log_index = Required(int, size=16, lazy=True)
     PrimaryKey(block, tx, log_index)
 
     address = Required(Hashes, index=True, lazy=True)
