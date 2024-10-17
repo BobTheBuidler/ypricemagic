@@ -275,8 +275,9 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         if not (addresses := self.addresses):
             return generator
         elif isinstance(addresses, str):
-            return (log for log in generator if log.address.hash == str(_remove_0x_prefix(EthAddress(addresses))))
-        return (log for log in generator if log.address.hash in [_remove_0x_prefix(address) for address in addresses])
+            return (log for log in generator if log.address.hash == _remove_0x_prefix(EthAddress(addresses)))
+        addresses = [_remove_0x_prefix(EthAddress(address)) for address in addresses]
+        return (log for log in generator if log.address.hash in addresses)
     
     def _wrap_query_with_topic(self, generator, topic: str) -> Query:
         if not (value := getattr(self, topic)):
