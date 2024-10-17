@@ -273,7 +273,7 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
     
     def _wrap_query_with_topic(self, generator, topic: str) -> Query:
         if value := getattr(self, topic):
-            logger.debug("%s %s is %s", self, topic, value)
+            logger.warning("%s %s is %s", self, topic, value)
             if isinstance(value, (bytes, str)):
                 if isinstance(value, bytes):
                     value = HexBytes32(value).strip()
