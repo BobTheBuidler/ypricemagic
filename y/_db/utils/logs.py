@@ -280,7 +280,7 @@ def _decode_hook(typ, obj):
             return uint(obj)
         elif isinstance(obj, str):
             return uint(obj, 16)
-    elif typ is HexBytes:
+    elif typ in [HexBytes, HexBytes32]:
         return HexBytes(obj)
     elif typ is Address:
         return checksum(obj)
