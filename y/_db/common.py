@@ -253,9 +253,9 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         """
         logger.debug('checking to see if %s is cached in local db', self)
         if cached_thru := await self.executor.run(self.cache.is_cached_thru, from_block):
-            logger.debug('%s is cached thru block %s, loading from db', self, cached_thru)
+            logger.warning('%s is cached thru block %s, loading from db', self, cached_thru)
             await self._extend(await self.executor.run(self.cache.select, from_block, cached_thru))
-            logger.debug('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
+            logger.warning('%s loaded %s objects thru block %s from disk', self, len(self._objects), cached_thru)
             return cached_thru
         return None
 
