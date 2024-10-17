@@ -200,6 +200,7 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
+        logger.warning("getting query for %s", self)
 
         generator = (
             log 
