@@ -12,7 +12,7 @@ import eth_retry
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
-from dank_mids.structs.data import Address, HexBytes32
+from dank_mids.structs.data import Address, Decimal, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import (OptimisticCheckError, TransactionIntegrityError,
                       db_session)
@@ -64,6 +64,8 @@ def enc_hook(obj: Any) -> bytes:
             return hex(int(obj.hex(), 16))[2:]
         elif isinstance(obj, HexBytes):
             return bytes(obj).hex()
+        elif typ is Decimal:
+            return typ.jsonify()
         elif isinstance(obj, AttributeDict):
             return dict(obj)
         raise NotImplementedError(obj, type(obj))
