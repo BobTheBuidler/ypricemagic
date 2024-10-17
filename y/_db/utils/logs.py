@@ -9,7 +9,7 @@ from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from dank_mids.structs import Log
-from dank_mids.structs.data import Address, uint, checksum
+from dank_mids.structs.data import Address, HexBytes32, uint, checksum
 from eth_typing import HexStr
 from hexbytes import HexBytes
 from msgspec import json, ValidationError
