@@ -187,7 +187,7 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         return 0
     
     def _select(self, from_block: int, to_block: int) -> List[ArrayEncodableLog]:
-        logger.warning("selecting %s", self)
+        logger.warning("executing select query for %s", self)
         try:
             return [json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
         except ValidationError:
@@ -201,7 +201,6 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
     
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
-        logger.warning("getting query for %s", self)
 
         generator = (
             log 
