@@ -114,6 +114,13 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         self.addresses = addresses
         self.topics = topics
     
+    def __repr__(self) -> str:
+        string = f"{type(self).__name__}(addresses={self.addresses}"
+        for topic in ['topic0', 'topic1', 'topic2', 'topic3']:
+            if value := getattr(self, topic):
+                string += f", {topic}={value}"
+        return f"{string})"
+
     @property
     def topic0(self) -> str:
         return self.topics[0] if self.topics else None
