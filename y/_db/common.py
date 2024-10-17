@@ -59,6 +59,9 @@ def enc_hook(obj: Any) -> bytes:
             return int(obj)
         elif issubclass(typ, Address):
             return obj[2:]
+        elif isinstance(obj, HexBytes32):
+            # we trim all leading zeroes since we know how many we need to put back later
+            return hex(int(obj.hex(), 16))[2:]
         elif isinstance(obj, HexBytes):
             return bytes(obj).hex()
         elif isinstance(obj, AttributeDict):
