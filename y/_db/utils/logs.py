@@ -62,8 +62,8 @@ async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_f
         blocks = [(chain.id, block) for block in {log.blockNumber for log in logs}]
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
 
-    hashes = [[txhash.hex()] for txhash in {log.transactionHash for log in logs}] + [[EthAddress(addr)] for addr in {log.address for log in logs}]
-    await executor.run(bulk.insert, entities.Hashes, ["hash"], [_remove_0x_prefix(hash) for hash in hashes], sync=True)
+    hashes = [txhash.hex() for txhash in {log.transactionHash for log in logs}] + [EthAddress(addr) for addr in {log.address for log in logs}]
+    await executor.run(bulk.insert, entities.Hashes, ["hash"], [[_remove_0x_prefix(hash)] for hash in hashes], sync=True)
 
     topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log.topics)}
     await executor.run(bulk.insert, entities.LogTopic, ["topic"], [[_remove_0x_prefix(topic.strip())] for topic in topics], sync=True)
