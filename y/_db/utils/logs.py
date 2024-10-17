@@ -290,5 +290,5 @@ def _decode_hook(typ, obj):
     
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
     if not isinstance(string, str):
-        raise TypeError(string)
+        raise TypeError(type(string), string)
     return string[2:] if string[:2] == "0x" else string
