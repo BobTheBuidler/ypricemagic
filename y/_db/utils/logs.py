@@ -10,6 +10,7 @@ from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from dank_mids.structs import Log
 from dank_mids.structs.data import Address, HexBytes32, uint, checksum
+from dank_mids.structs.log import Topic
 from eth_typing import HexStr
 from hexbytes import HexBytes
 from msgspec import json, ValidationError
@@ -65,13 +66,13 @@ async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_f
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
 
     topics = {log_topics[i] for i in range(4) for log in logs if i < len(log_topics := log.topics)}
-    await executor.run(bulk.insert, entities.LogTopic, ["topic"], [[topic.hex()] for topic in topics], sync=True)
+    await executor.run(bulk.insert, entities.LogTopic, ["topic"], [[topic.strip()] for topic in topics], sync=True)
 
     await executor.run(bulk.insert, entities.Log, LOG_COLS, await asyncio.gather(*[_prepare_log(log) for log in logs]), sync=True)
 
 @decorators.a_sync_write_db_session_cached
-def get_topic_dbid(topic: bytes) -> int:
-    topic = topic.hex()
+def get_topic_dbid(topic: Topic) -> int:
+    topic = topic.strip()
     entity = entities.LogTopic.get(topic=topic)
     if entity is None:
         entity = entities.LogTopic(topic=topic)
