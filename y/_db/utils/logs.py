@@ -275,8 +275,17 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         if value := getattr(self, topic):
             logger.debug("%s %s is %s", self, topic, value)
             if isinstance(value, (bytes, str)):
-                return (log for log in generator if getattr(log, topic).topic == value)
-            return (log for log in generator if getattr(log, topic).topic in value)
+                if isinstance(value, bytes):
+                    value = HexBytes32(value).strip()
+                return (log for log in generator if getattr(log, topic).topic == _remove_0x_prefix(value))
+            
+            if isinstance(value[0], bytes):
+                value = [HexBytes32(v).strip() for v in value]
+            elif not isinstance(value[0], str):
+                raise TypeError(type(value[0]), value[0])
+            
+            return (log for log in generator if getattr(log, topic).topic in [_remove_0x_prefix(v) for v in value])
+            
         return generator
 
 def _decode_hook(typ, obj):
