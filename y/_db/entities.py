@@ -95,7 +95,7 @@ class LogCacheInfo(db.Entity):
 
 class LogTopic(db.Entity):
     "Just makes the :ref:`Log` db smaller."
-    dbid = PrimaryKey(int, 64, auto=True)
+    dbid = PrimaryKey(int, size=64, auto=True)
     topic = Required(str, 64, unique=True, lazy=True)
 
     logs_as_topic0 = Set("Log", reverse="topic0")
@@ -105,7 +105,7 @@ class LogTopic(db.Entity):
 
 class Hashes(db.Entity):
     "Just makes :ref:`Log` pk and indexes smaller."
-    dbid = PrimaryKey(int, 64, auto=True)
+    dbid = PrimaryKey(int, size=64, auto=True)
     hash = Required(str, 64, unique=True)
 
     logs_for_tx = Set("Log", reverse="tx")
