@@ -270,15 +270,13 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
             commit()
             logger.debug('cached %s %s thru %s', self.addresses, self.topics, done_thru)
         return
-            
-    
+
     def _wrap_query_with_addresses(self, generator) -> Query:
-        if addresses := self.addresses:
-            logger.debug("%s addresses: %s", self, addresses)
-            if isinstance(addresses, str):
-                return (log for log in generator if log.address.hash == str(EthAddress(addresses)))
-            return (log for log in generator if log.address.hash in addresses)
-        return generator
+        if not (addresses := self.addresses):
+            return generator
+        elif isinstance(addresses, str):
+            return (log for log in generator if log.address.hash == str(_remove_0x_prefix(EthAddress(addresses))))
+        return (log for log in generator if log.address.hash in [_remove_0x_prefix(address) for address in addresses])
     
     def _wrap_query_with_topic(self, generator, topic: str) -> Query:
         if not (value := getattr(self, topic)):
