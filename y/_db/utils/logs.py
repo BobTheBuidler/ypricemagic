@@ -72,7 +72,7 @@ async def bulk_insert(logs: List[Log], executor: _AsyncExecutorMixin = default_f
 
 @decorators.a_sync_write_db_session_cached
 def get_topic_dbid(topic: Topic) -> int:
-    topic = topic.strip()
+    topic = _remove_0x_prefix(topic.strip())
     entity = entities.LogTopic.get(topic=topic)
     if entity is None:
         entity = entities.LogTopic(topic=topic)
@@ -86,9 +86,10 @@ async def get_hash_dbid(txhash: HexStr) -> int:
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
         hexstr = EthAddress(hexstr)
-    entity = entities.Hashes.get(hash=hexstr)
+    string = _remove_0x_prefix(hexstr)
+    entity = entities.Hashes.get(hash=string)
     if entity is None:
-        entity = entities.Hashes(hash=hexstr)
+        entity = entities.Hashes(hash=string)
     return entity.dbid
 
 def get_decoded(log: Log) -> Optional[_EventItem]:
@@ -287,3 +288,7 @@ def _decode_hook(typ, obj):
         return checksum(obj)
     raise NotImplementedError(typ, obj)
     
+def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
+    if not isinstance(string, str):
+        raise TypeError(string)
+    return string[2:] if string[:2] == "0x" else string
