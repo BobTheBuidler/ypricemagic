@@ -283,9 +283,11 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
             return generator
         
         if isinstance(topic_or_topics, (bytes, str)):
-            if isinstance(topic_or_topics, bytes):
-                topic = HexBytes32(topic_or_topics).strip()
+            topic = topic_or_topics
+            if isinstance(topic, bytes):
+                topic = HexBytes32(topic).strip()
                 logger.warning('new value %s', topic)
+            
             return (log for log in generator if getattr(log, topic_id).topic == _remove_0x_prefix(topic))
         
         topics = topic_or_topics
