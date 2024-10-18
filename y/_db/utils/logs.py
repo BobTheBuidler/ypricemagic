@@ -301,11 +301,13 @@ def _decode_hook(typ, obj):
         if isinstance(obj, int):
             return typ(obj)
         elif isinstance(obj, str):
-            return typ(obj, 16)
-    elif issubclass(typ, (HexBytes, HashableList)):
+            return typ.fromhex(obj)
+    elif issubclass(typ, (HexBytes)):
         return typ(obj)
     elif typ is Address:
         return checksum(obj)
+    elif isinstance(obj, list):
+        return HashableList(obj)
     raise NotImplementedError(typ, obj)
     
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
