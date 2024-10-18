@@ -278,22 +278,21 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         addresses = [_remove_0x_prefix(EthAddress(address)) for address in addresses]
         return (log for log in generator if log.address.hash in addresses)
     
-    def _wrap_query_with_topic(self, generator, topic: str) -> Query:
-        if not (value := getattr(self, topic)):
+    def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:
+        if not (topic_or_topics := getattr(self, topic_id)):
             return generator
         
-        if isinstance(value, (bytes, str)):
-            if isinstance(value, bytes):
-                value = HexBytes32(value).strip()
-                logger.warning('new value %s', value)
-            return (log for log in generator if getattr(log, topic).topic == _remove_0x_prefix(value))
+        if isinstance(topic_or_topics, (bytes, str)):
+            if isinstance(topic_or_topics, bytes):
+                topic = HexBytes32(topic_or_topics).strip()
+                logger.warning('new value %s', topic)
+            return (log for log in generator if getattr(log, topic_id).topic == _remove_0x_prefix(topic))
         
-        if isinstance(value[0], bytes):
-            value = [HexBytes32(v).strip() for v in value]
-        elif not isinstance(value[0], str):
-            raise TypeError(type(value[0]), value[0])
-        
-        return (log for log in generator if getattr(log, topic).topic in [_remove_0x_prefix(v) for v in value])
+        topics = topic_or_topics
+        if isinstance(topics[0], bytes):
+            topics = (HexBytes32(v).strip() for v in topic_or_topics)
+        topics = [_remove_0x_prefix(v) for v in topic_or_topics]
+        return (log for log in generator if getattr(log, topic_id).topic in topics)
 
 def _decode_hook(typ, obj):
     if typ is uint:
