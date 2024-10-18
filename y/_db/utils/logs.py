@@ -306,8 +306,7 @@ def _decode_hook(typ, obj):
         return typ(obj)
     elif typ is Address:
         return checksum(obj)
-    elif isinstance(typ, _GenericAlias):
-        container_cls = typ.__origin__
+    elif getattr(typ, "__origin__", None) is HashableList:
         obj_cls, = typ.__args__, 
         return container_cls(_decode_hook(obj_cls, x) for x in obj)
     raise NotImplementedError(typ, obj)
