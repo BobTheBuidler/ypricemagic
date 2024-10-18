@@ -2,7 +2,7 @@
 import asyncio
 import itertools
 import logging
-from typing import List, Optional, final
+from typing import _GenericAlias, List, Optional, final
 
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
@@ -306,8 +306,10 @@ def _decode_hook(typ, obj):
         return typ(obj)
     elif typ is Address:
         return checksum(obj)
-    elif isinstance(obj, list):
-        return HashableList(obj)
+    elif isinstance(typ, _GenericAlias):
+        container_cls = typ.__origin__
+        obj_cls, = typ.__args__, 
+        return container_cls(_decode_hook(obj_cls, x) for x in obj)
     raise NotImplementedError(typ, obj)
     
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
