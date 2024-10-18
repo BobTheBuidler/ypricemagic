@@ -311,7 +311,7 @@ def _decode_hook(typ, obj):
             assert len(typ.__args__) == 1, typ.__dict__
             obj_cls = typ.__args__[0]
             return HashableList(_decode_hook(obj_cls, x) for x in obj)
-    except (TypeError, ValueError) as e:
+    except (TypeError, ValueError, ValidationError) as e:
         raise Exception(e, typ, obj) from e
     raise NotImplementedError(typ, obj)
     
