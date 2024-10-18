@@ -272,10 +272,14 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
 
     def _wrap_query_with_addresses(self, generator) -> Query:
         if not (addresses := self.addresses):
+            logger.warning('skipping wrapping with addresses')
             return generator
         elif isinstance(addresses, str):
-            return (log for log in generator if log.address.hash == _remove_0x_prefix(EthAddress(addresses)))
+            address = _remove_0x_prefix(EthAddress(addresses))
+            logger.warning('address modified to %s', address)
+            return (log for log in generator if log.address.hash == address)
         addresses = [_remove_0x_prefix(EthAddress(address)) for address in addresses]
+        logger.warning('addresses modified to %s', addresses)
         return (log for log in generator if log.address.hash in addresses)
     
     def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:
