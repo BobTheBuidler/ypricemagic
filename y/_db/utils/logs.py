@@ -10,7 +10,7 @@ from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from dank_mids.structs import Log
-from dank_mids.structs.data import Address, HexBytes32, uint, checksum
+from dank_mids.structs.data import Address, HashableList, HexBytes32, uint, checksum
 from dank_mids.structs.log import Topic
 from eth_typing import HexStr
 from hexbytes import HexBytes
@@ -302,7 +302,7 @@ def _decode_hook(typ, obj):
             return typ(obj)
         elif isinstance(obj, str):
             return typ(obj, 16)
-    elif issubclass(typ, HexBytes):
+    elif issubclass(typ, (HexBytes, HashableList)):
         return typ(obj)
     elif typ is Address:
         return checksum(obj)
