@@ -8,13 +8,15 @@ from async_lru import alru_cache
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
-from y.contracts import Contract, has_method
+from y.contracts import Contract, has_method, is_contract
 from y.datatypes import Address, Block
 from y.exceptions import ContractNotVerified
 
 
 try:
-    PENDLE_ORACLE = Contract("0x9a9Fa8338dd5E5B2188006f1Cd2Ef26d921650C2")
+    oracle = "0x9a9Fa8338dd5E5B2188006f1Cd2Ef26d921650C2"
+    if is_contract(oracle):
+        PENDLE_ORACLE = Contract(oracle)
 except ContractNotVerified:
     PENDLE_ORACLE = None
     
