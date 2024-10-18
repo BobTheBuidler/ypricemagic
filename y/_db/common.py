@@ -90,8 +90,8 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
     Note:
         Currently only supports decoding of HexBytes objects.
     """
-    if typ == HexBytes:
-        return HexBytes(obj)
+    if typ in [HexBytes, HashableList]:
+        return typ(obj)
     raise ValueError(f"{typ} is not a valid type for decoding")
 
 class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
