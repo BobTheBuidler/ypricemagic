@@ -308,7 +308,7 @@ def _decode_hook(typ, obj):
         return checksum(obj)
     elif getattr(typ, "__origin__", None) is HashableList:
         obj_cls, = typ.__args__, 
-        return container_cls(_decode_hook(obj_cls, x) for x in obj)
+        return HashableList(_decode_hook(obj_cls, x) for x in obj)
     raise NotImplementedError(typ, obj)
     
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
