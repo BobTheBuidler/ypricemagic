@@ -308,7 +308,7 @@ def _decode_hook(typ, obj):
         elif typ is Address:
             return checksum(obj)
         elif getattr(typ, "__origin__", None) is HashableList:
-            obj_cls, = typ.__args__, 
+            obj_cls, = typ.__args__,
             return HashableList(_decode_hook(obj_cls, x) for x in obj)
     except (TypeError, ValueError) as e:
         raise Exception(e, typ, obj) from e
