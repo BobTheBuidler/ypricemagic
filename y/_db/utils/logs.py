@@ -302,13 +302,15 @@ def _decode_hook(typ, obj):
             return typ(obj)
         elif isinstance(obj, str):
             return typ.fromhex(obj)
-    elif issubclass(typ, (HexBytes)):
-        return typ(obj)
-    elif typ is Address:
-        return checksum(obj)
-    elif getattr(typ, "__origin__", None) is HashableList:
-        obj_cls, = typ.__args__, 
-        return HashableList(_decode_hook(obj_cls, x) for x in obj)
+        elif issubclass(typ, HexBytes):
+            return typ(obj)
+        elif typ is Address:
+            return checksum(obj)
+        elif getattr(typ, "__origin__", None) is HashableList:
+            obj_cls, = typ.__args__, 
+            return HashableList(_decode_hook(obj_cls, x) for x in obj)
+    except (TypeError, ValueError) as e:
+        raise Exception(e, typ, obj) from e
     raise NotImplementedError(typ, obj)
     
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
