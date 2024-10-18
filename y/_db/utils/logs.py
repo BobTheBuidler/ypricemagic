@@ -297,6 +297,7 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         return (log for log in generator if getattr(log, topic_id).topic in topics)
 
 def _decode_hook(typ, obj):
+    try:
         if issubclass(typ, uint):
             if isinstance(obj, int):
                 return typ(obj)
