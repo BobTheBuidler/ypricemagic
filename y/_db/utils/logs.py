@@ -29,9 +29,9 @@ LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0
 
 
 @final
-class ArrayEncodableLog(Log, frozen=True, kw_only=True, array_like=True):
+class Log(Log, frozen=True, kw_only=True, array_like=True):
     """
-    It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space when keys are known.
+    It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space since keys are known.
     """
 
 
@@ -48,7 +48,7 @@ async def _prepare_log(log: Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **{f"topic{i}": topic_dbid for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)},
-        "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
+        "raw": json.encode(Log(**log), enc_hook=enc_hook),
     }
     return tuple(params.values())
 
@@ -112,7 +112,7 @@ def set_decoded(log: Log, decoded: _EventItem) -> None:
 
 page_size = 100
 
-class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
+class LogCache(DiskCache[Log, entities.LogCacheInfo]):
     __slots__ = 'addresses', 'topics'
 
     def __init__(self, addresses, topics):
@@ -191,15 +191,15 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
     
-    def _select(self, from_block: int, to_block: int) -> List[ArrayEncodableLog]:
+    def _select(self, from_block: int, to_block: int) -> List[Log]:
         logger.warning("executing select query for %s", self)
         try:
-            return [json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
+            return [json.decode(log.raw, type=Log, dec_hook=_decode_hook) for log in self._get_query(from_block, to_block)]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(json.decode(log.raw, type=ArrayEncodableLog, dec_hook=_decode_hook))
+                    results.append(json.decode(log.raw, type=Log, dec_hook=_decode_hook))
                 except ValidationError as e:
                     raise ValueError(e, json.decode(log.raw)) from e
             return results
