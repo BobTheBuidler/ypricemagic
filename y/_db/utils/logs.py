@@ -36,16 +36,21 @@ class ArrayEncodableLog(Log, frozen=True, kw_only=True, array_like=True):
 
 
 async def _prepare_log(log: Log) -> tuple:
-    transaction_dbid, address_dbid = await asyncio.gather(get_hash_dbid(log.transactionHash.hex()), get_hash_dbid(log.address))
-    return  tuple({
+    transaction_dbid, address_dbid, topic_dbids = await asyncio.gather(
+        get_hash_dbid(log.transactionHash.hex()), 
+        get_hash_dbid(log.address),
+        asyncio.gather(*[get_topic_dbid(topic) for topic in log.topics]),
+    )
+    params = {
         "block_chain": chain.id,
         "block_number": log.blockNumber,
         "transaction": transaction_dbid,
         "log_index": log.logIndex,
         "address": address_dbid,
-        **{f"topic{i}": None if topic is None else await get_topic_dbid(topic) for i, topic in itertools.zip_longest(range(4), log.topics)},
+        **{f"topic{i}": topic_dbid for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)},
         "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
-    }.values())
+    }
+    return tuple(params.values())
 
 _check_using_extended_db = lambda: 'eth_portfolio' in _get_get_block().__module__
 
