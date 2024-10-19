@@ -63,10 +63,10 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @stuck_coro_debugger
     @a_sync_ttl_cache
     @eth_retry.auto_retry
-    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[UniswapV2Pool]:
+    async def get_pool(self, input_token: Address, output_token: Address, stable: bool, block: Block) -> Optional[VelodromePool]:
         if pool_address := await self.pool_for(input_token, output_token, stable, sync=False):
             if await contract_creation_block_async(pool_address) <= block:
-                return UniswapV2Pool(pool_address, asynchronous=self.asynchronous)
+                return VelodromePool(pool_address, asynchronous=self.asynchronous)
     
     @a_sync.aka.cached_property
     @stuck_coro_debugger
