@@ -63,6 +63,13 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     # for some reason < 1.2.4 can decode them just fine but >= cannot
     special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], Log)
             
+    if is_struct := isinstance(logs[0], Log):
+        # save these for later
+        orig_topics = [log.topics for log in logs]
+        for log in logs:
+            # these must support pop() for some reason
+            force_setattr(log, 'topics', list(log.topics))
+    
     try:
         decoded = _decode_logs([log.to_dict() for log in logs] if special_treatment else logs)
     except Exception:
@@ -75,18 +82,8 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
                 e.args = (log, *e.args)
                 raise
 
-    if not logs:
-        return EventDict()
-    
-    log_cls = logs[0]
-
     try:
-        if log_cls is Log:
-            # save these for later
-            orig_topics = [log.topics for log in logs]
-            for log in logs:
-                # these must support pop() for some reason
-                force_setattr(log, 'topics', list(log.topics))
+        if is_struct:
             for i, (log, orig_topics) in enumerate(zip(logs, orig_topics)):
                 setattr(decoded[i], "block_number", log.blockNumber)
                 setattr(decoded[i], "transaction_hash", log.transactionHash)
