@@ -90,7 +90,7 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
     Note:
         Currently only supports decoding of HexBytes objects.
     """
-    if typ in [HexBytes, HashableList]:
+    if typ is HexBytes:
         return typ(obj)
     raise ValueError(f"{typ} is not a valid type for decoding")
 
