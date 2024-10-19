@@ -286,11 +286,9 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
         if isinstance(topic_or_topics, (bytes, str)):
             topic = topic_or_topics
             topic = _remove_0x_prefix(HexBytes32(topic).strip())
-            logger.warning('new value %s', topic)
             return (log for log in generator if getattr(log, topic_id).topic == topic)
         
         topics = [_remove_0x_prefix(HexBytes32(v).strip()) for v in topic_or_topics]
-        logger.warning("selecting %s: %s", topic_id, topics)
         return (log for log in generator if getattr(log, topic_id).topic in topics)
 
 def _decode_hook(typ, obj):
