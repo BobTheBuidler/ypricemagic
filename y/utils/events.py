@@ -43,13 +43,15 @@ logger = logging.getLogger(__name__)
 # not really sure why this breaks things
 ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split('.')) >= (1, 2, 4)
 
-def decode_logs(logs: Union[List[LogReceipt], List[Log]]) -> EventDict:
+def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
     """
     if not logs:
         return EventDict()
+    
+    logs = list(logs)
     
     from y.contracts import Contract
     
