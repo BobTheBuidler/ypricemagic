@@ -22,6 +22,7 @@ from brownie.exceptions import EventLookupError
 from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
 from dank_mids.structs import Log
 from eth_typing import ChecksumAddress
+from msgspec.structs import force_setattr
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
@@ -76,14 +77,21 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     if not logs:
         return EventDict()
     
-    log_cls = type(logs[0])
+    log_cls = logs[0]
 
     try:
         if log_cls is Log:
-            for i, log in enumerate(logs):
+            # save these for later
+            orig_topics = [log.topics for log in logs]
+            for log in logs:
+                # these must support pop() for some reason
+                force_setattr(log, 'topics', list(log.topics))
+            for i, (log, orig_topics) in enumerate(zip(logs, orig_topics)):
                 setattr(decoded[i], "block_number", log.blockNumber)
                 setattr(decoded[i], "transaction_hash", log.transactionHash)
                 setattr(decoded[i], "log_index", log.logIndex)
+                # put the log back to normal
+                force_setattr(log, 'topics', orig_topics)
         else:
             for i, log in enumerate(logs):
                 setattr(decoded[i], "block_number", log['blockNumber'])
@@ -91,7 +99,9 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
                 setattr(decoded[i], "log_index", log['logIndex'])
         return decoded
     except EventLookupError as e:
-        raise type(e)(*e.args, len(logs), decoded) from None
+        e.args = (*e.args, len(logs), decoded)
+        raise
+
 
 
 @a_sync.a_sync(default='sync')
