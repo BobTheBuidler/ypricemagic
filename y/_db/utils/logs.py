@@ -2,7 +2,7 @@
 import asyncio
 import itertools
 import logging
-from typing import _GenericAlias, List, Optional, final
+from typing import List, Optional, final
 
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
@@ -43,7 +43,7 @@ async def _prepare_log(log: Log) -> tuple:
         "transaction": transaction_dbid,
         "log_index": log.logIndex,
         "address": address_dbid,
-        **{f"topic{i}": await get_topic_dbid(log_topics[i]) if i < len(log_topics := log.topics) else None for i in range(4)},
+        **{f"topic{i}": await get_topic_dbid(topic) if topic else None for i, topic in itertools.zip_longest(range(4), log.topics)},
         "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
     }.values())
 
@@ -272,14 +272,11 @@ class LogCache(DiskCache[ArrayEncodableLog, entities.LogCacheInfo]):
 
     def _wrap_query_with_addresses(self, generator) -> Query:
         if not (addresses := self.addresses):
-            logger.warning('skipping wrapping with addresses')
             return generator
         elif isinstance(addresses, str):
             address = _remove_0x_prefix(EthAddress(addresses))
-            logger.warning('address modified to %s', address)
             return (log for log in generator if log.address.hash == address)
         addresses = [_remove_0x_prefix(EthAddress(address)) for address in addresses]
-        logger.warning('addresses modified to %s', addresses)
         return (log for log in generator if log.address.hash in addresses)
     
     def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:
