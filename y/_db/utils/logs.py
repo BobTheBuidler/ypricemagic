@@ -43,7 +43,7 @@ async def _prepare_log(log: Log) -> tuple:
         "transaction": transaction_dbid,
         "log_index": log.logIndex,
         "address": address_dbid,
-        **{f"topic{i}": await get_topic_dbid(topic) if topic else None for i, topic in itertools.zip_longest(range(4), log.topics)},
+        **{f"topic{i}": None if topic is None else await get_topic_dbid(topic) for i, topic in itertools.zip_longest(range(4), log.topics)},
         "raw": json.encode(ArrayEncodableLog(**log), enc_hook=enc_hook),
     }.values())
 
