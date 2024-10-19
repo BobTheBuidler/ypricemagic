@@ -72,7 +72,8 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
                 # get some help for debugging
                 decoded.extend(_decode_logs([log]))
             except Exception as e:
-                raise e.__class__(log, *e.args) from e
+                e.args = (log, *e.args)
+                raise
 
     if not logs:
         return EventDict()
