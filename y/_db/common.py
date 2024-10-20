@@ -9,6 +9,7 @@ from typing import (Any, AsyncIterator, Awaitable, Callable, Generic, List, NoRe
 import a_sync
 import dank_mids
 import eth_retry
+import msgspec
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
