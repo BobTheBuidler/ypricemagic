@@ -68,10 +68,11 @@ def enc_hook(obj: Any) -> bytes:
             return typ.jsonify()
         elif isinstance(obj, AttributeDict):
             return dict(obj)
-        raise NotImplementedError(obj, type(obj))
+        raise TypeError(obj, type(obj))
     except RecursionError as e:
         # sometimes we get a recursion error from the instancecheck, this helps us debug that case.
-        raise RecursionError(str(e), obj, type(obj)) from e
+        e.args = *e.args, obj, type(obj)
+        raise
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
     """
