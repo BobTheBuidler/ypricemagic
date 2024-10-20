@@ -70,7 +70,9 @@ def enc_hook(obj: Any) -> bytes:
             return typ.jsonify()
         elif isinstance(obj, AttributeDict):
             return dict(obj)
-        raise TypeError(obj, type(obj))
+        elif obj is msgspec.UNSET:
+            return ""
+        raise TypeError
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
     """
