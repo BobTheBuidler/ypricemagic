@@ -24,6 +24,7 @@ from y import convert
 from y._db.decorators import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y._decorators import stuck_coro_debugger
+from y.exceptions import reraise_excs_with_extra_context
 from y.utils.middleware import BATCH_SIZE
 
 T = TypeVar('T')
@@ -53,7 +54,8 @@ def enc_hook(obj: Any) -> bytes:
         Currently supports encoding of AttributeDict and HexBytes objects.
     """
     typ = type(obj)
-    try:
+    # sometimes we get a recursion error from the instance checks, this helps us debug that case.
+    with reraise_excs_with_extra_context(obj, typ):
         # we use issubclass instead of isinstance here to prevent a recursion error
         if issubclass(typ, int):
             return int(obj)
@@ -69,10 +71,6 @@ def enc_hook(obj: Any) -> bytes:
         elif isinstance(obj, AttributeDict):
             return dict(obj)
         raise TypeError(obj, type(obj))
-    except RecursionError as e:
-        # sometimes we get a recursion error from the instancecheck, this helps us debug that case.
-        e.args = *e.args, obj, type(obj)
-        raise
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
     """

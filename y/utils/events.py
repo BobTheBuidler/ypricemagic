@@ -30,6 +30,7 @@ from web3.types import LogReceipt
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
+from y.exceptions import reraise_excs_with_extra_context
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
@@ -75,14 +76,11 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     except Exception:
         decoded = []
         for log in logs:
-            try:
+            with reraise_excs_with_extra_context(log):
                 # get some help for debugging
                 decoded.extend(_decode_logs([log]))
-            except Exception as e:
-                e.args = (log, *e.args)
-                raise
 
-    try:
+    with reraise_excs_with_extra_context(len(logs), decoded):
         if is_struct:
             for i, (log, orig_topics) in enumerate(zip(logs, orig_topics)):
                 setattr(decoded[i], "block_number", log.blockNumber)
@@ -96,9 +94,6 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
                 setattr(decoded[i], "transaction_hash", log['transactionHash'])
                 setattr(decoded[i], "log_index", log['logIndex'])
         return decoded
-    except EventLookupError as e:
-        e.args = (*e.args, len(logs), decoded)
-        raise
 
 
 

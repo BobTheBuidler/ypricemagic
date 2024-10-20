@@ -27,7 +27,8 @@ from y.datatypes import (Address, AddressOrContract, AnyAddressType, Block,
                          Pool, UsdPrice)
 from y.exceptions import (CantFindSwapPath, ContractNotVerified,
                           NonStandardERC20, NotAUniswapV2Pool, TokenNotFound,
-                          call_reverted, continue_if_call_reverted)
+                          call_reverted, continue_if_call_reverted,
+                          reraise_excs_with_extra_context)
 from y.interfaces.uniswap.factoryv2 import UNIV2_FACTORY_ABI
 from y.networks import Network
 from y.prices import magic
@@ -597,13 +598,10 @@ class UniswapRouterV2(ContractBase):
     @stuck_coro_debugger
     async def deepest_pool_for(self, token: Address, block: Block = None, *, ignore_pools = []) -> Tuple[Address, int]:
         # sourcery skip: default-mutable-arg
-        try:
+        with reraise_excs_with_extra_context(self, token, block, ignore_pools):
             deepest = await FACTORY_HELPER.deepestPoolFor.coroutine(self.factory, token, ignore_pools, block_identifier=block)
             logger.debug("got deepest pool for %s at %s: %s from helper", token, block, deepest)
             return deepest
-        except Exception as e:
-            e.args = (*e.args, self.__repr__(), token, block, ignore_pools)
-            raise
     
     @cached_property
     def _supports_uniswap_helper(self) -> bool:
