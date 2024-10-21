@@ -68,7 +68,7 @@ def enc_hook(obj: Any) -> bytes:
         elif isinstance(obj, HexBytes):
             return bytes(obj).hex()
         elif typ is Decimal:
-            return typ.jsonify()
+            return obj.jsonify()
         elif isinstance(obj, AttributeDict):
             return dict(obj)
         elif obj is msgspec.UNSET:
