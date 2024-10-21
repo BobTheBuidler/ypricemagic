@@ -254,7 +254,7 @@ class UniswapV2Pool(ERC20):
         """
         try:
             return all(await asyncio.gather(self.reserves(block=block, sync=False), self.total_supply(block, sync=False)))
-        except NotAUniswapV2Pool:
+        except (NotAUniswapV2Pool, ContractNotVerified):
             return False
     
     async def _check_return_types(self) -> None:
