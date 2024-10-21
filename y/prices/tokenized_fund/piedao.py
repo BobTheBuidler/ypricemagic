@@ -23,8 +23,9 @@ async def is_pie(token: AnyAddressType) -> bool:
     try:
         return await has_method(token, "getCap()(uint)", sync=False)
     except Exception as e:
-        if call_reverted(e):
-            return False
+        if not call_reverted(e):
+            raise
+        return False
 
 @a_sync.a_sync(default='sync')
 async def get_price(pie: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
