@@ -20,7 +20,11 @@ logger = logging.getLogger(__name__)
 
 @a_sync.a_sync(default='sync', cache_type='memory')
 async def is_pie(token: AnyAddressType) -> bool:
-    return await has_method(token, "getCap()(uint)", sync=False)
+    try:
+        return await has_method(token, "getCap()(uint)", sync=False)
+    except Exception as e:
+        if call_reverted(e):
+            return False
 
 @a_sync.a_sync(default='sync')
 async def get_price(pie: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
