@@ -19,9 +19,9 @@ from pony.orm.core import Query
 
 from y._db import decorators, entities
 from y._db.common import DiskCache, enc_hook, default_filter_threads
+from y._db.log import Log
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
-from y._db.utils.log import Log
 
 logger = logging.getLogger(__name__)
 
