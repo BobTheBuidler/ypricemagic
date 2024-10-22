@@ -9,7 +9,6 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
-from dank_mids.structs import Log
 from dank_mids.structs.data import Address, HexBytes32, uint, checksum
 from dank_mids.structs.log import Topic
 from eth_typing import HexStr
@@ -22,17 +21,11 @@ from y._db import decorators, entities
 from y._db.common import DiskCache, enc_hook, default_filter_threads
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
+from y._db.utils.log import Log
 
 logger = logging.getLogger(__name__)
 
 LOG_COLS = ["block_chain", "block_number", "tx", "log_index", "address", "topic0", "topic1", "topic2", "topic3", "raw"]
-
-
-@final
-class Log(Log, frozen=True, kw_only=True, array_like=True):
-    """
-    It works just like a :class:`~structs.Log` but it encodes to a tuple instead of a dict to save space since keys are known.
-    """
 
 
 async def _prepare_log(log: Log) -> tuple:

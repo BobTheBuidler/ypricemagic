@@ -18,7 +18,6 @@ from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
-from brownie.exceptions import EventLookupError
 from brownie.network.event import _EventItem, _add_deployment_topics, _decode_logs, _deployment_topics, EventDict
 from dank_mids.structs import Log
 from eth_typing import ChecksumAddress
