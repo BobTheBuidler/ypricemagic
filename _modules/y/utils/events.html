@@ -449,6 +449,7 @@
             <span class="s2">&quot;request timed out&quot;</span><span class="p">,</span>
             <span class="s2">&quot;parse error&quot;</span><span class="p">,</span>
             <span class="s2">&quot;method handler crashed&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Log response size exceeded.&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;your node is having trouble, breaking batch in half&#39;</span><span class="p">)</span>
