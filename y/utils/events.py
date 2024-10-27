@@ -360,6 +360,7 @@ def _get_logs_no_cache(
             "request timed out",
             "parse error",
             "method handler crashed",
+            "Log response size exceeded.",
         ]
         if any(err in str(e) for err in errs):
             logger.debug('your node is having trouble, breaking batch in half')
