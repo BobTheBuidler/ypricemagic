@@ -10,7 +10,6 @@ from multicall import Call
 from typing_extensions import Self
 
 from y import convert
-from y import ENVIRONMENT_VARIABLES as ENVS
 from y.contracts import Contract, has_method
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork, call_reverted
