@@ -15,8 +15,7 @@ from y.exceptions import ContractNotVerified
 
 try:
     oracle = "0x9a9Fa8338dd5E5B2188006f1Cd2Ef26d921650C2"
-    if is_contract(oracle):
-        PENDLE_ORACLE = Contract(oracle)
+    PENDLE_ORACLE = Contract(oracle) if is_contract(oracle) else None
 except ContractNotVerified:
     PENDLE_ORACLE = None
     
