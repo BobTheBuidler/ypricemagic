@@ -163,6 +163,8 @@ async def _totalSupply(
         try:
             contract = await Contract.coroutine(contract_address)
             total_supply = await contract.totalSupply.coroutine(block_identifier=block)
+        except ContractNotVerified:
+            pass
         except AttributeError as e:
             if "has no attribute 'totalSupply'" not in str(e):
                 raise
