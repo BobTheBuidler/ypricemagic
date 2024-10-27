@@ -175,6 +175,8 @@ ACCEPTABLE_HIGH_PRICES = {
         # eth and eth-like
         "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22", # cbeth
         "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452", # wsteth
+        "0x1f55a02A049033E3419a8E2975cF3F572F4e6E9A", # sfrxETH
+        "0xCb327b99fF831bF8223cCEd12B1338FF3aA322Ff", # bsdETH
         # btc and btc-like
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b", # tbtc
         "0xcb327b99ff831bf8223cced12b1338ff3aa322ff", # bsdETH
