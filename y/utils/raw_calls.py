@@ -277,12 +277,16 @@ async def raw_call(
             return None
         raise
     
-    if output is None:                                      return response
-    elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
-    elif output == 'address':                               return convert.to_address(f'0x{response.hex()[-40:]}')
-    elif output in [int, 'int','uint','uint256']:           return convert.to_int(response)
-    elif output in [str, 'str']:                            return convert.to_string(response).replace('\x00','').strip()
-
+    try:
+        if output is None:                                      return response
+        elif output == 'address' and response.hex() == '0x':    return ZERO_ADDRESS
+        elif output == 'address':                               return convert.to_address(f'0x{response.hex()[-40:]}')
+        elif output in [int, 'int','uint','uint256']:           return convert.to_int(response)
+        elif output in [str, 'str']:                            return convert.to_string(response).replace('\x00','').strip()
+    except OverflowError as e:
+        if "is outside allowable range for uint256" in str(e):
+            raise OverflowError(f"0x{response.hex()} is outside allowable range for uint256") from e
+        raise
     else: raise TypeError('Invalid output type, please select from ["str","int","address"]')
 
 
