@@ -99,12 +99,13 @@ class CToken(ERC20):
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
     
     async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
+        underlying: ERC20
         exchange_rate, decimals, underlying = await asyncio.gather(
             self.exchange_rate(block=block, sync=False),
             self.__decimals__,
             self.__underlying__,
         )
-        return exchange_rate * 10 ** (decimals - await underlying.__decimals__(asynchronous=True))
+        return exchange_rate * 10 ** (decimals - await underlying.__decimals__)
 
     #yLazyLogger(logger)
     async def exchange_rate(self, block: Optional[Block] = None) -> float:
@@ -128,14 +129,13 @@ class CToken(ERC20):
         return exchange_rate / 10 ** 18
     
     async def get_underlying_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[float]:
+        oracle: Contract
+        underlying: ERC20
         # always query the oracle in case it was changed
-        oracle, underlying = await asyncio.gather(
-            self.troller.oracle(block, asynchronous=True),
-            self.__underlying__(asynchronous=True),
-        )
+        oracle, underlying = await asyncio.gather(self.troller.oracle(block, asynchronous=True), self.__underlying__)
         price, underlying_decimals = await asyncio.gather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
-            underlying.__decimals__(asynchronous=True),
+            underlying.__decimals__,
             return_exceptions=True,
         )
         if isinstance(price, Exception):

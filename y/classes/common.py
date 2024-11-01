@@ -229,7 +229,7 @@ class ERC20(ContractBase):
         Returns:
             The scaling factor for the token.
         """
-        return 10 ** await self.__decimals__(asynchronous=True)
+        return 10 ** await self.__decimals__
     
     @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _scale(self, block: Optional[Block] = None) -> int:
@@ -274,7 +274,7 @@ class ERC20(ContractBase):
         return await raw_calls.balanceOf(self.address, address, block=block, sync=False)
     
     async def balance_of_readable(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
-        balance, scale = await asyncio.gather(self.balance_of(address, block=block, asynchronous=True), self.__scale__(asynchronous=True))
+        balance, scale = await asyncio.gather(self.balance_of(address, block=block, asynchronous=True), self.__scale__)
         return balance / scale
 
     async def price(
