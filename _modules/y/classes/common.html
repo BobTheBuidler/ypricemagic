@@ -340,7 +340,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The scaling factor for the token.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="mi">10</span> <span class="o">**</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decimals__</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="mi">10</span> <span class="o">**</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decimals__</span></div>
 
     
 <div class="viewcode-block" id="ERC20._scale">
@@ -400,7 +400,7 @@
 <div class="viewcode-block" id="ERC20.balance_of_readable">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.ERC20.balance_of_readable">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">balance_of_readable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
-        <span class="n">balance</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+        <span class="n">balance</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">balance</span> <span class="o">/</span> <span class="n">scale</span></div>
 
 
