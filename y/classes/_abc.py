@@ -1,4 +1,3 @@
-
 import abc
 import asyncio
 from decimal import Decimal
@@ -20,6 +19,7 @@ class Wrapper(ERC20):
     Note:
         This class is currently a placeholder and does not implement any additional methods.
     """
+
     # TODO: implement
 
 
@@ -34,7 +34,9 @@ class LiquidityPool(Wrapper):
     # TODO: implement this elsewhere outside of just balancer
 
     @stuck_coro_debugger
-    async def get_pool_price(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdPrice]:
+    async def get_pool_price(
+        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
+    ) -> Optional[UsdPrice]:
         """
         Calculate the price of the liquidity pool token.
 
@@ -53,9 +55,11 @@ class LiquidityPool(Wrapper):
             self.total_supply_readable(block=block, sync=False),
         )
         return None if tvl is None else UsdPrice(Decimal(tvl) / Decimal(total_supply))
-        
+
     @abc.abstractmethod
-    async def get_tvl(self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> Optional[UsdValue]:
+    async def get_tvl(
+        self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
+    ) -> Optional[UsdValue]:
         """
         Get the Total Value Locked (TVL) in the liquidity pool.
 

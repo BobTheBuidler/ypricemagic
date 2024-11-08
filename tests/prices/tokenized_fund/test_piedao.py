@@ -1,6 +1,6 @@
-
 from tests.fixtures import mainnet_only
 from y.prices import magic
+
 
 @mainnet_only
 def test_piedao_get_price():

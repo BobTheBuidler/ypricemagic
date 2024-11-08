@@ -1,4 +1,3 @@
-
 import dank_mids
 import pytest
 from brownie import ZERO_ADDRESS, chain
@@ -21,62 +20,94 @@ if chain.id == Network.Mainnet:
 
 OLD_SUSD = "0x57Ab1E02fEE23774580C119740129eAC7081e9D3"
 
-TOKENS_BY_BLOCK = [(token, block) for token in TOKENS for block in blocks_for_contract(token)]
+TOKENS_BY_BLOCK = [
+    (token, block) for token in TOKENS for block in blocks_for_contract(token)
+]
 
-@pytest.mark.parametrize('token',TOKENS)
+
+@pytest.mark.parametrize("token", TOKENS)
 def test_erc20_sync(token):
     token = ERC20(token)
 
     if token.address == OLD_SUSD:
-        pytest.skip('Not applicable to deprecated sUSD.')
+        pytest.skip("Not applicable to deprecated sUSD.")
 
     block = chain.height
-    assert isinstance(token.contract, Contract), f'Cannot fetch contract for token {token}'
-    assert isinstance(token.build_name, str), f'Cannot fetch build name for token {token}'
-    assert isinstance(token.symbol, str), f'Cannot fetch symbol for token {token}'
-    assert isinstance(token.name, str), f'Cannot fetch name for token {token}'
-    assert 10 ** token.decimals == token.scale, f'Incorrect scale fetched for token {token}'
-    assert token.total_supply(block) / token.scale == token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
-    assert token.price(), f'Cannot fetch price for token {token}'
+    assert isinstance(
+        token.contract, Contract
+    ), f"Cannot fetch contract for token {token}"
+    assert isinstance(
+        token.build_name, str
+    ), f"Cannot fetch build name for token {token}"
+    assert isinstance(token.symbol, str), f"Cannot fetch symbol for token {token}"
+    assert isinstance(token.name, str), f"Cannot fetch name for token {token}"
+    assert (
+        10**token.decimals == token.scale
+    ), f"Incorrect scale fetched for token {token}"
+    assert token.total_supply(block) / token.scale == token.total_supply_readable(
+        block
+    ), f"Incorrect total supply readable for token {token}"
+    assert token.price(), f"Cannot fetch price for token {token}"
 
-@pytest.mark.parametrize('token',TOKENS)
+
+@pytest.mark.parametrize("token", TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_erc20_async(token):
     token = ERC20(token, asynchronous=True)
 
     if token.address == OLD_SUSD:
-        pytest.skip('Not applicable to deprecated sUSD.')
+        pytest.skip("Not applicable to deprecated sUSD.")
 
     block = await dank_mids.eth.block_number
-    assert isinstance(token.contract, Contract), f'Cannot fetch contract for token {token}'
-    assert isinstance(await token.build_name, str), f'Cannot fetch build name for token {token}'
-    assert isinstance(await token.symbol, str), f'Cannot fetch symbol for token {token}'
-    assert isinstance(await token.name, str), f'Cannot fetch name for token {token}'
-    assert 10 ** await token.decimals == await token.scale, f'Incorrect scale fetched for token {token}'
-    assert await token.total_supply(block) / await token.scale == await token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
-    assert await token.price(), f'Cannot fetch price for token {token}'
+    assert isinstance(
+        token.contract, Contract
+    ), f"Cannot fetch contract for token {token}"
+    assert isinstance(
+        await token.build_name, str
+    ), f"Cannot fetch build name for token {token}"
+    assert isinstance(await token.symbol, str), f"Cannot fetch symbol for token {token}"
+    assert isinstance(await token.name, str), f"Cannot fetch name for token {token}"
+    assert (
+        10 ** await token.decimals == await token.scale
+    ), f"Incorrect scale fetched for token {token}"
+    assert await token.total_supply(
+        block
+    ) / await token.scale == await token.total_supply_readable(
+        block
+    ), f"Incorrect total supply readable for token {token}"
+    assert await token.price(), f"Cannot fetch price for token {token}"
 
-@pytest.mark.parametrize('token,block',TOKENS_BY_BLOCK)
+
+@pytest.mark.parametrize("token,block", TOKENS_BY_BLOCK)
 @pytest.mark.asyncio_cooperative
 async def test_erc20_at_block(token, block):
     token = ERC20(token, asynchronous=True)
 
     if token.address == OLD_SUSD and block >= 13222927:
-        pytest.skip('Not applicable to the old sUSD after migration block.')
+        pytest.skip("Not applicable to the old sUSD after migration block.")
 
     # NOTE Some proxy tokens would fail tests in early days because no implementation is specified.
     try:
-        if await Call(token.address, 'implementation()(address)', block_id = block) == ZERO_ADDRESS:
-            pytest.skip(f"Not applicable to proxy contracts with implementation not set.")
+        if (
+            await Call(token.address, "implementation()(address)", block_id=block)
+            == ZERO_ADDRESS
+        ):
+            pytest.skip(
+                f"Not applicable to proxy contracts with implementation not set."
+            )
     except Exception as e:
         if not call_reverted(e):
             raise
-    
+
     # NOTE We've validated token is not problematic proxy, proceed with test.
     try:
         # NOTE also tests ERC20._decimals
-        assert await token.total_supply(block) / await token._scale(block) == await token.total_supply_readable(block), f'Incorrect total supply readable for token {token}'
+        assert await token.total_supply(block) / await token._scale(
+            block
+        ) == await token.total_supply_readable(
+            block
+        ), f"Incorrect total supply readable for token {token}"
     except NoProxyImplementation:
         pass
-    
-    assert await token.price(block), f'Cannot fetch price for token {token}'
+
+    assert await token.price(block), f"Cannot fetch price for token {token}"

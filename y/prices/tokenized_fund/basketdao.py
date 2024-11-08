@@ -1,4 +1,3 @@
-
 import asyncio
 from decimal import Decimal
 from typing import Optional
@@ -13,7 +12,7 @@ from y.classes.common import ERC20, WeiBalance
 from y.datatypes import Block, UsdPrice
 
 
-@a_sync.a_sync(default='sync')
+@a_sync.a_sync(default="sync")
 async def is_basketdao_index(address: EthAddress) -> bool:
     """
     Check if the given token is a BasketDAO token.
@@ -30,14 +29,15 @@ async def is_basketdao_index(address: EthAddress) -> bool:
         True
     """
     try:
-        return bool(await Call(address, 'getAssetsAndBalances()(address[],uint[])'))
+        return bool(await Call(address, "getAssetsAndBalances()(address[],uint[])"))
     except (ContractLogicError, ValueError):
         return False
 
-@a_sync.a_sync(default='sync')
+
+@a_sync.a_sync(default="sync")
 async def get_price(
-    address: EthAddress, 
-    block: Optional[Block] = None, 
+    address: EthAddress,
+    block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
     """
@@ -60,9 +60,12 @@ async def get_price(
         1.05
     """
     balances, total_supply = await asyncio.gather(
-        Call(address, 'getAssetsAndBalances()(address[],uint[])',block_id=block),
+        Call(address, "getAssetsAndBalances()(address[],uint[])", block_id=block),
         ERC20(address, asynchronous=True).total_supply_readable(block=block),
     )
-    balances = (WeiBalance(balance, token, block, skip_cache=skip_cache) for token, balance in zip(balances[0], balances[1]))
+    balances = (
+        WeiBalance(balance, token, block, skip_cache=skip_cache)
+        for token, balance in zip(balances[0], balances[1])
+    )
     tvl = await WeiBalance.value_usd.sum(balances, sync=False)
     return UsdPrice(tvl / Decimal(total_supply))

@@ -14,6 +14,7 @@ from y.utils.logging import yLazyLogger
 
 logger = logging.getLogger(__name__)
 
+
 @lru_cache(1)
 @yLazyLogger(logger)
 def get_ethereum_client() -> str:
@@ -37,6 +38,7 @@ def get_ethereum_client() -> str:
         version = web3.client_version
     return _get_ethereum_client(version)
 
+
 @alru_cache(maxsize=1)
 async def get_ethereum_client_async() -> str:
     """
@@ -51,7 +53,10 @@ async def get_ethereum_client_async() -> str:
         >>> print(client)
         'erigon'
     """
-    return _get_ethereum_client(await dank_web3.manager.coro_request(RPC.web3_clientVersion, []))
+    return _get_ethereum_client(
+        await dank_web3.manager.coro_request(RPC.web3_clientVersion, [])
+    )
+
 
 @yLazyLogger(logger)
 def _get_ethereum_client(client: str) -> str:
@@ -71,10 +76,18 @@ def _get_ethereum_client(client: str) -> str:
         'geth'
     """
     logger.debug("client: %s", client)
-    return next((identifier for prefix, identifier in _clients.items() if client.startswith(prefix)), client)
+    return next(
+        (
+            identifier
+            for prefix, identifier in _clients.items()
+            if client.startswith(prefix)
+        ),
+        client,
+    )
+
 
 _clients = {
-    'geth': 'geth',
-    'erigon': 'erigon',
-    'TurboGeth': 'tg',
+    "geth": "geth",
+    "erigon": "erigon",
+    "TurboGeth": "tg",
 }

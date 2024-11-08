@@ -32,6 +32,7 @@ async_test = pytest.mark.asyncio_cooperative
 A pytest marker for concurrent asynchronous tests using asyncio_cooperative.
 """
 
+
 def blocks_for_contract(address: Address, count: int = 5) -> List[Block]:
     """
     Generate a list of block numbers for testing a contract.
@@ -44,9 +45,15 @@ def blocks_for_contract(address: Address, count: int = 5) -> List[Block]:
         A list of block numbers evenly spaced between the contract's creation and the current block height.
     """
     address = convert.to_address(address)
-    return [int(block) for block in np.linspace(contract_creation_block(address) + 10000, chain.height, count)]
+    return [
+        int(block)
+        for block in np.linspace(
+            contract_creation_block(address) + 10000, chain.height, count
+        )
+    ]
 
-def mutate_address(address: Address) -> Tuple[str,str,str,EthAddress]:
+
+def mutate_address(address: Address) -> Tuple[str, str, str, EthAddress]:
     """
     Returns the same address in various forms for testing.
 
@@ -64,13 +71,17 @@ def mutate_address(address: Address) -> Tuple[str,str,str,EthAddress]:
         address.lower(),
         address[:2] + address[2:].upper(),
         convert.to_address(address),
-        EthAddress(address)
+        EthAddress(address),
     )
+
 
 def mutate_addresses(addresses: Iterable[Address]):
     return [mutation for address in addresses for mutation in mutate_address(address)]
 
-def mutate_contract(contract_address: Address) -> Tuple[str,str,str,EthAddress,BrownieContract]:
+
+def mutate_contract(
+    contract_address: Address,
+) -> Tuple[str, str, str, EthAddress, BrownieContract]:
     """
     Returns the same contract address in various forms for testing.
     """
@@ -78,20 +89,26 @@ def mutate_contract(contract_address: Address) -> Tuple[str,str,str,EthAddress,B
     mutations.append(Contract(contract_address))
     return tuple(mutations)
 
+
 def mutate_contracts(addresses: Iterable[Address]):
     return [mutation for address in addresses for mutation in mutate_contract(address)]
 
-def mutate_token(token: Address) -> Tuple[str,str,str,EthAddress,BrownieContract,int,ERC20]:
+
+def mutate_token(
+    token: Address,
+) -> Tuple[str, str, str, EthAddress, BrownieContract, int, ERC20]:
     """
     Returns the same token address in various forms for testing.
     """
     mutations = list(mutate_contract(token))
     mutations.append(ERC20(token))
-    mutations.append(int(token,16))
+    mutations.append(int(token, 16))
     return tuple(mutations)
+
 
 def mutate_tokens(addresses: Iterable[Address]):
     return [mutation for address in addresses for mutation in mutate_token(address)]
+
 
 @pytest.fixture
 def async_uni_v1():

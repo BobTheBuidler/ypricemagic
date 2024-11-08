@@ -12,8 +12,9 @@ from y.datatypes import AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import MessedUpBrownieContract
 from y.utils import gather_methods, hasall
 
-_CHECK_METHODS = 'getReserves','token0','token1'
-_TOKEN_METHODS = 'token0()(address)', 'token1()(address)'
+_CHECK_METHODS = "getReserves", "token0", "token1"
+_TOKEN_METHODS = "token0()(address)", "token1()(address)"
+
 
 async def is_generic_amm(lp_token_address: AnyAddressType) -> bool:
     """
@@ -39,7 +40,8 @@ async def is_generic_amm(lp_token_address: AnyAddressType) -> bool:
     except MessedUpBrownieContract:
         # probably false, can get more specific when there's a need.
         return False
-        
+
+
 class GenericAmm(a_sync.ASyncGenericBase):
     """
     A class for handling generic Automated Market Maker (AMM) Liquidity Pool (LP) tokens.
@@ -55,9 +57,14 @@ class GenericAmm(a_sync.ASyncGenericBase):
             asynchronous (optional): Whether methods will return coroutines by default. Defaults to False.
         """
         self.asynchronous = asynchronous
-    
+
     @stuck_coro_debugger
-    async def get_price(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+    async def get_price(
+        self,
+        lp_token_address: AnyAddressType,
+        block: Optional[Block] = None,
+        skip_cache: bool = ENVS.SKIP_CACHE,
+    ) -> UsdPrice:
         """
         Get the price of the LP token in USD.
 
@@ -77,18 +84,22 @@ class GenericAmm(a_sync.ASyncGenericBase):
             1.0
         """
         tvl, total_supply = await asyncio.gather(
-            self.get_tvl(lp_token_address, block=block, skip_cache=skip_cache, sync=False),
-            ERC20(lp_token_address, asynchronous=True).total_supply_readable(block=block),
+            self.get_tvl(
+                lp_token_address, block=block, skip_cache=skip_cache, sync=False
+            ),
+            ERC20(lp_token_address, asynchronous=True).total_supply_readable(
+                block=block
+            ),
         )
         if total_supply is None:
             return None
         elif total_supply == 0:
             return 0
         return UsdPrice(tvl / total_supply)
-    
+
     @stuck_coro_debugger
-    @a_sync.a_sync(cache_type='memory')
-    async def get_tokens(self, lp_token_address: AnyAddressType) -> Tuple[ERC20,ERC20]:
+    @a_sync.a_sync(cache_type="memory")
+    async def get_tokens(self, lp_token_address: AnyAddressType) -> Tuple[ERC20, ERC20]:
         """
         Get the tokens in the AMM pool.
 
@@ -107,9 +118,14 @@ class GenericAmm(a_sync.ASyncGenericBase):
         """
         tokens = await gather_methods(lp_token_address, _TOKEN_METHODS)
         return tuple(ERC20(token, asynchronous=self.asynchronous) for token in tokens)
-    
+
     @stuck_coro_debugger
-    async def get_tvl(self, lp_token_address: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdValue:
+    async def get_tvl(
+        self,
+        lp_token_address: AnyAddressType,
+        block: Optional[Block] = None,
+        skip_cache: bool = ENVS.SKIP_CACHE,
+    ) -> UsdValue:
         """
         Get the Total Value Locked (TVL) in the AMM pool.
 
@@ -133,7 +149,10 @@ class GenericAmm(a_sync.ASyncGenericBase):
             self.get_tokens(lp_token_address, sync=False),
             lp_token_contract.getReserves.coroutine(block_identifier=block),
         )
-        reserves = (WeiBalance(reserve, token, block=block, skip_cache=skip_cache) for token, reserve in zip(tokens,reserves))
+        reserves = (
+            WeiBalance(reserve, token, block=block, skip_cache=skip_cache)
+            for token, reserve in zip(tokens, reserves)
+        )
         return UsdValue(await WeiBalance.value_usd.sum(reserves, sync=False))
 
 

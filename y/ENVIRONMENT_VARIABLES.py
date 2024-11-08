@@ -1,12 +1,13 @@
-
 from typed_envs import EnvVarFactory, create_env
 
 _envs = EnvVarFactory("YPRICEMAGIC")
 
-CACHE_TTL = _envs.create_env("CACHE_TTL", int, default=60*60, verbose=False)
+CACHE_TTL = _envs.create_env("CACHE_TTL", int, default=60 * 60, verbose=False)
 """TTL for various in-memory caches throughout the library"""
 
-CONTRACT_CACHE_TTL = _envs.create_env("CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False)
+CONTRACT_CACHE_TTL = _envs.create_env(
+    "CONTRACT_CACHE_TTL", int, default=int(CACHE_TTL), verbose=False
+)
 """TTL for contract cache, defaults to :obj:`CACHE_TTL` if not set"""
 
 GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int, default=0)
