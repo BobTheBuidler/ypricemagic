@@ -262,7 +262,7 @@
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The starting block to fetch logs from.</p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of blocks to fetch in each chunk.</p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The number of chunks to fetch in each batch.</p></li>
-<li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>) – A semaphore for limiting concurrent requests.</p></li>
+<li><p><strong>semaphore</strong> (<em>BlockSemaphore</em><em> | </em><em>None</em>) – A semaphore for limiting concurrent requests.</p></li>
 <li><p><strong>executor</strong> (<em>_AsyncExecutorMixin</em><em> | </em><em>None</em>) – An executor for running tasks asynchronously.</p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether the filter is reusable.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Verbosity level for logging.</p></li>
@@ -479,7 +479,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.Events.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.Events.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.utils.events.Events.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -549,7 +549,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The starting block to fetch logs from.</p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of blocks to fetch in each chunk.</p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The number of chunks to fetch in each batch.</p></li>
-<li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>) – A semaphore for limiting concurrent requests.</p></li>
+<li><p><strong>semaphore</strong> (<em>BlockSemaphore</em><em> | </em><em>None</em>) – A semaphore for limiting concurrent requests.</p></li>
 <li><p><strong>executor</strong> (<em>_AsyncExecutorMixin</em><em> | </em><em>None</em>) – An executor for running tasks asynchronously.</p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether the filter is reusable.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Verbosity level for logging.</p></li>
@@ -749,7 +749,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.LogFilter.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.utils.events.LogFilter.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -825,7 +825,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 <li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The starting block to fetch logs from.</p></li>
 <li><p><strong>chunk_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The number of blocks to fetch in each chunk.</p></li>
 <li><p><strong>chunks_per_batch</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The number of chunks to fetch in each batch.</p></li>
-<li><p><strong>semaphore</strong> (<a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><em>BlockSemaphore</em></a><em> | </em><em>None</em>) – A semaphore for limiting concurrent requests.</p></li>
+<li><p><strong>semaphore</strong> (<em>BlockSemaphore</em><em> | </em><em>None</em>) – A semaphore for limiting concurrent requests.</p></li>
 <li><p><strong>executor</strong> (<em>_AsyncExecutorMixin</em><em> | </em><em>None</em>) – An executor for running tasks asynchronously.</p></li>
 <li><p><strong>is_reusable</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether the filter is reusable.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Verbosity level for logging.</p></li>
@@ -1059,7 +1059,7 @@ overrides the normal algorithm (and the outcome is cached).</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.semaphore">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.semaphores.BlockSemaphore" title="(in dank_mids)"><span class="pre">BlockSemaphore</span></a></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.semaphore" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">semaphore</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">BlockSemaphore</span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.semaphore" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">

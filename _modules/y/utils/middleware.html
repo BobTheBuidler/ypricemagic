@@ -88,21 +88,22 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">provider_specific_batch_sizes</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s2">&quot;moralis&quot;</span><span class="p">:</span>  <span class="mi">2_000</span><span class="p">,</span>
-    <span class="s2">&quot;pokt&quot;</span><span class="p">:</span>     <span class="mi">2_000</span><span class="p">,</span>
+    <span class="s2">&quot;moralis&quot;</span><span class="p">:</span> <span class="mi">2_000</span><span class="p">,</span>
+    <span class="s2">&quot;pokt&quot;</span><span class="p">:</span> <span class="mi">2_000</span><span class="p">,</span>
     <span class="s2">&quot;tenderly&quot;</span><span class="p">:</span> <span class="mi">2_000</span><span class="p">,</span>
-    <span class="s2">&quot;ankr&quot;</span><span class="p">:</span>     <span class="mi">2_000</span><span class="p">,</span>
+    <span class="s2">&quot;ankr&quot;</span><span class="p">:</span> <span class="mi">2_000</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">chain_specific_max_batch_sizes</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>    <span class="mi">10_000</span><span class="p">,</span>     <span class="c1"># 1.58 days</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Gnosis</span><span class="p">:</span>     <span class="mi">20_000</span><span class="p">,</span>     <span class="c1"># 1.15 days</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span><span class="p">:</span>     <span class="mi">100_000</span><span class="p">,</span>    <span class="c1"># 1.03 days</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Arbitrum</span><span class="p">:</span>   <span class="mi">20_000</span><span class="p">,</span>     <span class="c1"># 0.34 days</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span>   <span class="mi">800_000</span><span class="p">,</span>    <span class="c1"># 10.02 days</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="mi">10_000</span><span class="p">,</span>  <span class="c1"># 1.58 days</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Gnosis</span><span class="p">:</span> <span class="mi">20_000</span><span class="p">,</span>  <span class="c1"># 1.15 days</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span><span class="p">:</span> <span class="mi">100_000</span><span class="p">,</span>  <span class="c1"># 1.03 days</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Arbitrum</span><span class="p">:</span> <span class="mi">20_000</span><span class="p">,</span>  <span class="c1"># 0.34 days</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span> <span class="mi">800_000</span><span class="p">,</span>  <span class="c1"># 10.02 days</span>
 <span class="p">}</span>
 
 <span class="n">fallback_batch_size</span> <span class="o">=</span> <span class="mi">10_000</span>
+
 
 <span class="k">def</span> <span class="nf">_get_batch_size</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -117,6 +118,7 @@
         <span class="k">if</span> <span class="n">provider</span> <span class="ow">in</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">endpoint_uri</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">size</span>
     <span class="k">return</span> <span class="n">chain_specific_max_batch_sizes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">fallback_batch_size</span><span class="p">)</span>
+
 
 <span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="n">_get_batch_size</span><span class="p">()</span>
 
@@ -151,12 +153,14 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A middleware function that caches eth_getCode calls.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
     <span class="k">def</span> <span class="nf">middleware</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">params</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">should_cache</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">memory</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="n">make_request</span><span class="p">)(</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">make_request</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+
     <span class="k">return</span> <span class="n">middleware</span></div>
 
 
@@ -173,19 +177,23 @@
     <span class="c1"># patch web3 provider with more connections and higher timeout</span>
     <span class="k">if</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">endpoint_uri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;http&quot;</span><span class="p">),</span> <span class="s2">&quot;only http and https providers are supported&quot;</span>
+            <span class="k">assert</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">endpoint_uri</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span>
+                <span class="s2">&quot;http&quot;</span>
+            <span class="p">),</span> <span class="s2">&quot;only http and https providers are supported&quot;</span>
             <span class="n">adapter</span> <span class="o">=</span> <span class="n">HTTPAdapter</span><span class="p">(</span><span class="n">pool_connections</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">pool_maxsize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
             <span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
             <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
             <span class="n">session</span><span class="o">.</span><span class="n">mount</span><span class="p">(</span><span class="s2">&quot;https://&quot;</span><span class="p">,</span> <span class="n">adapter</span><span class="p">)</span>
-            <span class="n">web3</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">HTTPProvider</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">endpoint_uri</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">600</span><span class="p">},</span> <span class="n">session</span><span class="p">)</span>
+            <span class="n">web3</span><span class="o">.</span><span class="n">provider</span> <span class="o">=</span> <span class="n">HTTPProvider</span><span class="p">(</span>
+                <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">endpoint_uri</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;timeout&quot;</span><span class="p">:</span> <span class="mi">600</span><span class="p">},</span> <span class="n">session</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;&#39;IPCProvider&#39; object has no attribute &#39;endpoint_uri&#39;&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">raise</span>
 
     <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">getcode_cache_middleware</span><span class="p">)</span></div>
 
-    
+
 
 <div class="viewcode-block" id="setup_geth_poa_middleware">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.middleware.setup_geth_poa_middleware">[docs]</a>

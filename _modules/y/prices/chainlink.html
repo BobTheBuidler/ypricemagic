@@ -94,14 +94,14 @@
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="n">DENOMINATIONS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;ETH&#39;</span><span class="p">:</span> <span class="s1">&#39;0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;BTC&#39;</span><span class="p">:</span> <span class="s1">&#39;0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;USD&#39;</span><span class="p">:</span> <span class="s1">&#39;0x0000000000000000000000000000000000000348&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;ETH&quot;</span><span class="p">:</span> <span class="s2">&quot;0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BTC&quot;</span><span class="p">:</span> <span class="s2">&quot;0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;USD&quot;</span><span class="p">:</span> <span class="s2">&quot;0x0000000000000000000000000000000000000348&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="n">registries</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># https://docs.chain.link/docs/feed-registry/#contract-addresses</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="s1">&#39;0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf&#39;</span><span class="p">,</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="s2">&quot;0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 
 <span class="c1"># These are feeds we specify anually in addition to the ones fetched from the registry.</span>
@@ -166,7 +166,6 @@
     <span class="p">},</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83&quot;</span><span class="p">:</span> <span class="s2">&quot;0xf4766552D15AE4d256Ad41B6cf2933482B0680dc&quot;</span><span class="p">,</span>  <span class="c1"># wftm -&gt; FTM</span>
-        
         <span class="s2">&quot;0x321162Cd933E2Be498Cd2267a90534A804051b11&quot;</span><span class="p">:</span> <span class="s2">&quot;0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4&quot;</span><span class="p">,</span>  <span class="c1"># wbtc -&gt; BTC</span>
         <span class="s2">&quot;0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2&quot;</span><span class="p">:</span> <span class="s2">&quot;0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4&quot;</span><span class="p">,</span>  <span class="c1"># anybtc -&gt; BTC</span>
         <span class="s2">&quot;0xDBf31dF14B66535aF65AaC99C32e9eA844e14501&quot;</span><span class="p">:</span> <span class="s2">&quot;0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4&quot;</span><span class="p">,</span>  <span class="c1"># renbtc -&gt; BTC</span>
@@ -230,56 +229,73 @@
         <span class="s2">&quot;0x82e3A8F066a6989666b031d916c43672085b1582&quot;</span><span class="p">:</span> <span class="s2">&quot;0x745Ab5b69E01E2BE1104Ca84937Bb71f96f5fB21&quot;</span><span class="p">,</span>  <span class="c1"># yfi -&gt; YFI</span>
     <span class="p">},</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;0x68f180fcCe6836688e9084f035309E29Bf0A2095&quot;</span><span class="p">:</span> <span class="s2">&quot;0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593&quot;</span><span class="p">,</span> <span class="c1"># wbtc -&gt; BTC</span>
-        <span class="s2">&quot;0x298B9B95708152ff6968aafd889c6586e9169f1D&quot;</span><span class="p">:</span> <span class="s2">&quot;0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593&quot;</span><span class="p">,</span> <span class="c1"># sbtc -&gt; BTC</span>
-        <span class="s2">&quot;0x4200000000000000000000000000000000000006&quot;</span><span class="p">:</span> <span class="s2">&quot;0x13e3Ee699D1909E989722E753853AE30b17e08c5&quot;</span><span class="p">,</span> <span class="c1"># weth -&gt; ETH</span>
-        <span class="s2">&quot;0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1&quot;</span><span class="p">:</span> <span class="s2">&quot;0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6&quot;</span><span class="p">,</span> <span class="c1"># dai -&gt; DAI</span>
-        <span class="s2">&quot;0x4200000000000000000000000000000000000042&quot;</span><span class="p">:</span> <span class="s2">&quot;0x0D276FC14719f9292D5C1eA2198673d1f4269246&quot;</span><span class="p">,</span> <span class="c1"># op -&gt; OP</span>
-        <span class="s2">&quot;0x2E3D870790dC77A83DD1d18184Acc7439A53f475&quot;</span><span class="p">:</span> <span class="s2">&quot;0xc7D132BeCAbE7Dcc4204841F33bae45841e41D9C&quot;</span><span class="p">,</span> <span class="c1"># frax -&gt; FRAX</span>
-        <span class="s2">&quot;0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6&quot;</span><span class="p">:</span> <span class="s2">&quot;0xCc232dcFAAE6354cE191Bd574108c1aD03f86450&quot;</span><span class="p">,</span> <span class="c1"># link -&gt; LINK</span>
-        <span class="s2">&quot;0x7F5c764cBc14f9669B88837ca1490cCa17c31607&quot;</span><span class="p">:</span> <span class="s2">&quot;0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3&quot;</span><span class="p">,</span> <span class="c1"># usdc -&gt; USDC</span>
-        <span class="s2">&quot;0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4&quot;</span><span class="p">:</span> <span class="s2">&quot;0x2FCF37343e916eAEd1f1DdaaF84458a359b53877&quot;</span><span class="p">,</span> <span class="c1"># snx -&gt; SNX</span>
-        <span class="s2">&quot;0x3c8B650257cFb5f272f799F5e2b4e65093a11a05&quot;</span><span class="p">:</span> <span class="s2">&quot;0x0f2Ed59657e391746C1a097BDa98F2aBb94b1120&quot;</span><span class="p">,</span> <span class="c1"># velo -&gt; VELO</span>
+        <span class="s2">&quot;0x68f180fcCe6836688e9084f035309E29Bf0A2095&quot;</span><span class="p">:</span> <span class="s2">&quot;0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593&quot;</span><span class="p">,</span>  <span class="c1"># wbtc -&gt; BTC</span>
+        <span class="s2">&quot;0x298B9B95708152ff6968aafd889c6586e9169f1D&quot;</span><span class="p">:</span> <span class="s2">&quot;0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593&quot;</span><span class="p">,</span>  <span class="c1"># sbtc -&gt; BTC</span>
+        <span class="s2">&quot;0x4200000000000000000000000000000000000006&quot;</span><span class="p">:</span> <span class="s2">&quot;0x13e3Ee699D1909E989722E753853AE30b17e08c5&quot;</span><span class="p">,</span>  <span class="c1"># weth -&gt; ETH</span>
+        <span class="s2">&quot;0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1&quot;</span><span class="p">:</span> <span class="s2">&quot;0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6&quot;</span><span class="p">,</span>  <span class="c1"># dai -&gt; DAI</span>
+        <span class="s2">&quot;0x4200000000000000000000000000000000000042&quot;</span><span class="p">:</span> <span class="s2">&quot;0x0D276FC14719f9292D5C1eA2198673d1f4269246&quot;</span><span class="p">,</span>  <span class="c1"># op -&gt; OP</span>
+        <span class="s2">&quot;0x2E3D870790dC77A83DD1d18184Acc7439A53f475&quot;</span><span class="p">:</span> <span class="s2">&quot;0xc7D132BeCAbE7Dcc4204841F33bae45841e41D9C&quot;</span><span class="p">,</span>  <span class="c1"># frax -&gt; FRAX</span>
+        <span class="s2">&quot;0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6&quot;</span><span class="p">:</span> <span class="s2">&quot;0xCc232dcFAAE6354cE191Bd574108c1aD03f86450&quot;</span><span class="p">,</span>  <span class="c1"># link -&gt; LINK</span>
+        <span class="s2">&quot;0x7F5c764cBc14f9669B88837ca1490cCa17c31607&quot;</span><span class="p">:</span> <span class="s2">&quot;0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3&quot;</span><span class="p">,</span>  <span class="c1"># usdc -&gt; USDC</span>
+        <span class="s2">&quot;0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4&quot;</span><span class="p">:</span> <span class="s2">&quot;0x2FCF37343e916eAEd1f1DdaaF84458a359b53877&quot;</span><span class="p">,</span>  <span class="c1"># snx -&gt; SNX</span>
+        <span class="s2">&quot;0x3c8B650257cFb5f272f799F5e2b4e65093a11a05&quot;</span><span class="p">:</span> <span class="s2">&quot;0x0f2Ed59657e391746C1a097BDa98F2aBb94b1120&quot;</span><span class="p">,</span>  <span class="c1"># velo -&gt; VELO</span>
     <span class="p">},</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Base</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;0x4200000000000000000000000000000000000006&quot;</span><span class="p">:</span> <span class="s2">&quot;0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70&quot;</span><span class="p">,</span> <span class="c1"># weth -&gt; ETH</span>
-        <span class="s2">&quot;0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb&quot;</span><span class="p">:</span> <span class="s2">&quot;0x591e79239a7d679378eC8c847e5038150364C78F&quot;</span><span class="p">,</span> <span class="c1"># dai -&gt; DAI</span>
+        <span class="s2">&quot;0x4200000000000000000000000000000000000006&quot;</span><span class="p">:</span> <span class="s2">&quot;0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70&quot;</span><span class="p">,</span>  <span class="c1"># weth -&gt; ETH</span>
+        <span class="s2">&quot;0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb&quot;</span><span class="p">:</span> <span class="s2">&quot;0x591e79239a7d679378eC8c847e5038150364C78F&quot;</span><span class="p">,</span>  <span class="c1"># dai -&gt; DAI</span>
     <span class="p">},</span>
 <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">{})</span>
 
 <span class="n">ONE_DAY</span> <span class="o">=</span> <span class="mi">24</span> <span class="o">*</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span>
 
+
 <div class="viewcode-block" id="Feed">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed">[docs]</a>
 <span class="k">class</span> <span class="nc">Feed</span><span class="p">:</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="s1">&#39;asset&#39;</span><span class="p">,</span> <span class="s1">&#39;latest_answer&#39;</span><span class="p">,</span> <span class="s1">&#39;latest_timestamp&#39;</span><span class="p">,</span> <span class="s1">&#39;start_block&#39;</span><span class="p">,</span> <span class="s1">&#39;_stale_thru_block&#39;</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;address&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;asset&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;latest_answer&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;latest_timestamp&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;start_block&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_stale_thru_block&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
 <div class="viewcode-block" id="Feed.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">start_block</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">start_block</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asset</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">start_block</span> <span class="o">=</span> <span class="n">start_block</span>
         <span class="c1"># we could make less calls by using latestRoundData but then we have to repeatedly decode a bunch of useless data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latest_answer</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;latestAnswer()(int256)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coroutine</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">latest_timestamp</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s1">&#39;latestTimestamp()(uint256)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">coroutine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latest_answer</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;latestAnswer()(int256)&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coroutine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">latest_timestamp</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;latestTimestamp()(uint256)&quot;</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">coroutine</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> address=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> asset=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">asset</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">contract</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Contract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
-    
-    <span class="c1">#@a_sync.future</span>
+
+    <span class="c1"># @a_sync.future</span>
 <div class="viewcode-block" id="Feed.decimals">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.decimals">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">decimals</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;decimals()(uint)&#39;</span><span class="p">],</span> <span class="p">[])</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;decimals()(uint)&quot;</span><span class="p">],</span> <span class="p">[])</span></div>
 
 
-    <span class="c1">#@a_sync.future(cache_type=&#39;memory&#39;)</span>
+    <span class="c1"># @a_sync.future(cache_type=&#39;memory&#39;)</span>
 <div class="viewcode-block" id="Feed.scale">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.scale">[docs]</a>
     <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
@@ -287,52 +303,64 @@
         <span class="k">return</span> <span class="k">await</span> <span class="p">(</span><span class="mi">10</span> <span class="o">**</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncFuture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">decimals</span><span class="p">()))</span></div>
 
 
-    <span class="c1">#@a_sync.future</span>
+    <span class="c1"># @a_sync.future</span>
 <div class="viewcode-block" id="Feed.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">&gt;</span> <span class="n">block</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> is stale, must fetch price from elsewhere&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is stale, must fetch price from elsewhere&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">updated_at</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_timestamp</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">updated_at</span> <span class="o">+</span> <span class="n">ONE_DAY</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">time</span><span class="o">.</span><span class="n">get_block_timestamp_async</span><span class="p">(</span><span class="n">block</span><span class="p">):</span>
             <span class="c1"># if 24h have passed since last feed update, we can&#39;t trust it</span>
             <span class="c1"># NOTE: is there a way to tell on chain if a feed is retired? I haven&#39;t yet seen one go stale and come back</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> is stale, must fetch price from elsewhere&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is stale, must fetch price from elsewhere&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">block</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">=</span> <span class="n">block</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="n">latest_answer</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_answer</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;latest_answer: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">latest_answer</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;latest_answer: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">latest_answer</span><span class="p">)</span>
         <span class="c1"># NOTE: just playing with smth here</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncFuture</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scale</span><span class="p">())</span>
         <span class="n">price</span> <span class="o">=</span> <span class="n">latest_answer</span> <span class="o">/</span> <span class="n">scale</span>
         <span class="n">price</span> <span class="o">=</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="k">await</span> <span class="n">price</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1"> price at </span><span class="si">%s</span><span class="s1">: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> price at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">price</span></div>
 </div>
 
-        
+
 
 <div class="viewcode-block" id="FeedsFromEvents">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.FeedsFromEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">FeedsFromEvents</span><span class="p">(</span><span class="n">ProcessedEvents</span><span class="p">[</span><span class="n">Feed</span><span class="p">]):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;asynchronous&#39;</span><span class="p">,</span> 
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;asynchronous&quot;</span><span class="p">,)</span>
+
 <div class="viewcode-block" id="FeedsFromEvents.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.FeedsFromEvents.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">addresses</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="n">addresses</span><span class="p">,</span> <span class="n">topics</span><span class="o">=</span><span class="n">topics</span><span class="p">)</span></div>
 
+
     <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;denomination&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DENOMINATIONS</span><span class="p">[</span><span class="s1">&#39;USD&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;latestAggregator&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">&quot;denomination&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DENOMINATIONS</span><span class="p">[</span><span class="s2">&quot;USD&quot;</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;latestAggregator&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span>
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Feed</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">Feed</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;latestAggregator&quot;</span><span class="p">],</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;asset&quot;</span><span class="p">],</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Feed</span><span class="p">(</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">&quot;latestAggregator&quot;</span><span class="p">],</span>
+            <span class="n">event</span><span class="p">[</span><span class="s2">&quot;asset&quot;</span><span class="p">],</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">Feed</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">start_block</span></div>
 
-    
+
 
 <div class="viewcode-block" id="Chainlink">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink">[docs]</a>
@@ -341,21 +369,24 @@
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_feeds</span> <span class="o">=</span> <span class="p">[</span><span class="n">Feed</span><span class="p">(</span><span class="n">feed</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">feed</span> <span class="ow">in</span> <span class="n">FEEDS</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_feeds</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Feed</span><span class="p">(</span><span class="n">feed</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">asset</span><span class="p">,</span> <span class="n">feed</span> <span class="ow">in</span> <span class="n">FEEDS</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">]</span>
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">registries</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">registry</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">registries</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_feeds_from_events</span> <span class="o">=</span> <span class="n">FeedsFromEvents</span><span class="p">(</span>
-                <span class="n">addresses</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="p">),</span> 
-                <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">topics</span><span class="p">[</span><span class="s1">&#39;FeedConfirmed&#39;</span><span class="p">]],</span> 
+                <span class="n">addresses</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="p">),</span>
+                <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">topics</span><span class="p">[</span><span class="s2">&quot;FeedConfirmed&quot;</span><span class="p">]],</span>
                 <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">FEEDS</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s1">&#39;chainlink is not supported on this network&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;chainlink is not supported on this network&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">registry</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_feeds_from_events</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_feeds_thru_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">Feed</span><span class="p">]:</span>
         <span class="k">for</span> <span class="n">feed</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feeds</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">feed</span>
@@ -372,7 +403,7 @@
             <span class="k">if</span> <span class="n">asset</span> <span class="o">==</span> <span class="n">feed</span><span class="o">.</span><span class="n">asset</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">feed</span></div>
 
-    
+
 <div class="viewcode-block" id="Chainlink.has_feed">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.has_feed">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">has_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -384,7 +415,7 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 
-   <span class="c1"># @a_sync.future</span>
+    <span class="c1"># @a_sync.future</span>
 <div class="viewcode-block" id="Chainlink.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Chainlink.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
@@ -396,7 +427,9 @@
 
 
     <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
         <span class="n">asset</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">asset</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">asset</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -404,8 +437,10 @@
         <span class="n">feed</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_feed</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">feed</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
-        <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">feed</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-            <span class="k">return</span> 
+        <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span>
+            <span class="n">feed</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="p">):</span>
+            <span class="k">return</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">feed</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -413,8 +448,10 @@
 
 
 
-<span class="k">try</span><span class="p">:</span> <span class="n">chainlink</span> <span class="o">=</span> <span class="n">Chainlink</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">except</span> <span class="n">UnsupportedNetwork</span><span class="p">:</span> <span class="n">chainlink</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">chainlink</span> <span class="o">=</span> <span class="n">Chainlink</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">UnsupportedNetwork</span><span class="p">:</span>
+    <span class="n">chainlink</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 </pre></div>
 
            </div>

@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.pendle</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
@@ -89,7 +88,7 @@
     <span class="n">PENDLE_ORACLE</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">oracle</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_contract</span><span class="p">(</span><span class="n">oracle</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
     <span class="n">PENDLE_ORACLE</span> <span class="o">=</span> <span class="kc">None</span>
-    
+
 <span class="n">TWAP_DURATION</span> <span class="o">=</span> <span class="mi">1</span>
 
 
@@ -111,7 +110,10 @@
 <span class="sd">        &gt;&gt;&gt; print(is_pendle)</span>
 <span class="sd">        True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">PENDLE_ORACLE</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="s1">&#39;readTokens()(address,address,address)&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">PENDLE_ORACLE</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span>
+        <span class="n">token</span><span class="p">,</span> <span class="s2">&quot;readTokens()(address,address,address)&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="get_tokens">
@@ -138,10 +140,13 @@
     <span class="k">return</span> <span class="k">await</span> <span class="n">lp_token</span><span class="o">.</span><span class="n">readTokens</span></div>
 
 
+
 <div class="viewcode-block" id="get_lp_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.pendle.get_lp_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="p">(</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_lp_price</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_lp_price</span><span class="p">(</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the price of a Pendle LP token.</span>
 
@@ -164,24 +169,28 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tokens</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="c1"># NOTE: we might not need this, leave it commented out for now</span>
-    <span class="c1">#names = await asyncio.gather(*[ERC20(t, asynchronous=True).name for t in tokens])</span>
-    <span class="c1">#if any(&quot;DAI&quot; in name for name in names):</span>
+    <span class="c1"># names = await asyncio.gather(*[ERC20(t, asynchronous=True).name for t in tokens])</span>
+    <span class="c1"># if any(&quot;DAI&quot; in name for name in names):</span>
     <span class="c1">#    use_asset = True</span>
     <span class="c1">#    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)</span>
-    <span class="c1">#elif any(&quot;crvUSD&quot; in name for name in (ERC20(t) for t in tokens)):</span>
+    <span class="c1"># elif any(&quot;crvUSD&quot; in name for name in (ERC20(t) for t in tokens)):</span>
     <span class="c1">#    use_asset = True</span>
     <span class="c1">#    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)</span>
-    <span class="c1">#else:</span>
+    <span class="c1"># else:</span>
     <span class="c1">#    use_asset = False</span>
     <span class="c1">#    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)</span>
     <span class="n">sy_token</span><span class="p">,</span> <span class="n">p_token</span><span class="p">,</span> <span class="n">y_token</span> <span class="o">=</span> <span class="n">tokens</span>
     <span class="n">sy</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">sy_token</span><span class="p">),</span>
-        <span class="n">PENDLE_ORACLE</span><span class="o">.</span><span class="n">getLpToAssetRate</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">TWAP_DURATION</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
+        <span class="n">PENDLE_ORACLE</span><span class="o">.</span><span class="n">getLpToAssetRate</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
+            <span class="n">token</span><span class="p">,</span> <span class="n">TWAP_DURATION</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
+        <span class="p">),</span>
     <span class="p">)</span>
     <span class="n">_</span><span class="p">,</span> <span class="n">asset</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">sy</span><span class="o">.</span><span class="n">assetInfo</span>
     <span class="n">rate</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="mi">10</span><span class="o">**</span><span class="n">decimals</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">rate</span> <span class="o">*</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">rate</span> <span class="o">*</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">price</span><span class="p">(</span>
+        <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 

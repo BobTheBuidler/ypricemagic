@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.solidly</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">continue_on_revert</span><span class="p">,</span> <span class="n">stuck_coro_debugger</span>
@@ -87,15 +86,19 @@
 <span class="sd">    Solidly is a modified fork of Uni V2.</span>
 <span class="sd">    The `uniswap_multiplexer` is the entrypoint for pricing using this object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-        
+
 <div class="viewcode-block" id="SolidlyRouterBase.get_quote">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.solidly.SolidlyRouterBase.get_quote">[docs]</a>
     <span class="nd">@continue_on_revert</span>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_quote</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_quote</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">amount_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
         <span class="n">routes</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_routes_from_path</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getAmountsOut</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">amount_in</span><span class="p">,</span> <span class="n">routes</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getAmountsOut</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
+                <span class="n">amount_in</span><span class="p">,</span> <span class="n">routes</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="n">strings</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;INSUFFICIENT_INPUT_AMOUNT&quot;</span><span class="p">,</span>
@@ -108,30 +111,37 @@
 </div>
 
 
+
 <div class="viewcode-block" id="SolidlyPool">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.solidly.SolidlyPool">[docs]</a>
 <span class="k">class</span> <span class="nc">SolidlyPool</span><span class="p">(</span><span class="n">UniswapV2Pool</span><span class="p">):</span>
     <span class="k">pass</span></div>
 
 
+
 <div class="viewcode-block" id="SolidlyRouter">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.solidly.SolidlyRouter">[docs]</a>
 <span class="k">class</span> <span class="nc">SolidlyRouter</span><span class="p">(</span><span class="n">SolidlyRouterBase</span><span class="p">):</span>
-
 <div class="viewcode-block" id="SolidlyRouter.pair_for">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.solidly.SolidlyRouter.pair_for">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">pair_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">pair_for</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">pairFor</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="SolidlyRouter.get_pool">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.solidly.SolidlyRouter.get_pool">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SolidlyPool</span><span class="p">]:</span>
-        <span class="n">pool_address</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_for</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">output_token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">stable</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">SolidlyPool</span><span class="p">]:</span>
+        <span class="n">pool_address</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pair_for</span><span class="p">(</span>
+            <span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="n">stable</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">isPair</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">SolidlyPool</span><span class="p">(</span><span class="n">pool_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
@@ -139,16 +149,18 @@
 <div class="viewcode-block" id="SolidlyRouter.get_routes_from_path">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.solidly.SolidlyRouter.get_routes_from_path">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_routes_from_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Address</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_routes_from_path</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Address</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]]:</span>
         <span class="n">routes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
-            <span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="c1"># Try for a stable pool first and use that if available</span>
             <span class="n">stable_pool</span><span class="p">,</span> <span class="n">unstable_pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="p">)</span>
-            
+
             <span class="k">if</span> <span class="n">stable_pool</span> <span class="ow">and</span> <span class="n">unstable_pool</span><span class="p">:</span>
                 <span class="c1"># We have to find out which of these pools is deepest</span>
                 <span class="n">stable_reserves</span><span class="p">,</span> <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -157,10 +169,13 @@
                 <span class="p">)</span>
                 <span class="n">stable_reserves</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">stable_reserves</span><span class="p">)</span>
                 <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">unstable_reserves</span><span class="p">)</span>
-                
+
                 <span class="c1"># NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they&#39;re already cached and return instantly</span>
                 <span class="c1">#       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.</span>
-                <span class="k">if</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__token0__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__token0__</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__token1__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__token1__</span><span class="p">:</span>
+                <span class="k">if</span> <span class="p">(</span>
+                    <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__token0__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__token0__</span>
+                    <span class="ow">and</span> <span class="k">await</span> <span class="n">stable_pool</span><span class="o">.</span><span class="n">__token1__</span> <span class="o">==</span> <span class="k">await</span> <span class="n">unstable_pool</span><span class="o">.</span><span class="n">__token1__</span>
+                <span class="p">):</span>
                     <span class="n">stable_reserve</span> <span class="o">=</span> <span class="n">stable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     <span class="n">unstable_reserve</span> <span class="o">=</span> <span class="n">unstable_reserves</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                 <span class="k">else</span><span class="p">:</span>  <span class="c1"># Order of tokens is flip flopped in the pools</span>
@@ -176,8 +191,10 @@
             <span class="k">elif</span> <span class="n">unstable_pool</span><span class="p">:</span>
                 <span class="n">routes</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">False</span><span class="p">])</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Not sure why this function is even running if no pool is found&quot;</span><span class="p">)</span>
-            
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="s2">&quot;Not sure why this function is even running if no pool is found&quot;</span>
+                <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">routes</span></div>
 </div>
 

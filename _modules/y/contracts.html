@@ -69,22 +69,37 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.contracts</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Literal</span><span class="p">,</span>
+    <span class="n">NewType</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">import</span> <span class="nn">eth_retry</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">web3</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">CompilerError</span><span class="p">,</span> <span class="n">ContractNotFound</span>
-<span class="kn">from</span> <span class="nn">brownie.network.contract</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ContractEvents</span><span class="p">,</span> <span class="n">_add_deployment</span><span class="p">,</span>
-                                      <span class="n">_ContractBase</span><span class="p">,</span> <span class="n">_DeployedContractBase</span><span class="p">,</span>
-                                      <span class="n">_fetch_from_explorer</span><span class="p">,</span> <span class="n">_resolve_address</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">brownie.network.contract</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ContractEvents</span><span class="p">,</span>
+    <span class="n">_add_deployment</span><span class="p">,</span>
+    <span class="n">_ContractBase</span><span class="p">,</span>
+    <span class="n">_DeployedContractBase</span><span class="p">,</span>
+    <span class="n">_fetch_from_explorer</span><span class="p">,</span>
+    <span class="n">_resolve_address</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">brownie.typing</span> <span class="kn">import</span> <span class="n">AccountsType</span>
 <span class="kn">from</span> <span class="nn">checksum_dict</span> <span class="kn">import</span> <span class="n">ChecksumAddressDict</span><span class="p">,</span> <span class="n">ChecksumAddressSingletonMeta</span>
 <span class="kn">from</span> <span class="nn">hexbytes</span> <span class="kn">import</span> <span class="n">HexBytes</span>
@@ -113,8 +128,8 @@
 <span class="c1"># These tokens have trouble when resolving the implementation via the chain.</span>
 <span class="n">FORCE_IMPLEMENTATION</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">{</span>
-        <span class="s2">&quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;</span><span class="p">:</span> <span class="s2">&quot;0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF&quot;</span><span class="p">,</span> <span class="c1"># USDC as of 2022-08-10</span>
-        <span class="s2">&quot;0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5&quot;</span><span class="p">:</span> <span class="s2">&quot;0xf51fC5ae556F5B8c6dCf50f70167B81ceb02a2b2&quot;</span><span class="p">,</span> <span class="c1"># dETH as of 2024-02-15</span>
+        <span class="s2">&quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;</span><span class="p">:</span> <span class="s2">&quot;0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF&quot;</span><span class="p">,</span>  <span class="c1"># USDC as of 2022-08-10</span>
+        <span class="s2">&quot;0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5&quot;</span><span class="p">:</span> <span class="s2">&quot;0xf51fC5ae556F5B8c6dCf50f70167B81ceb02a2b2&quot;</span><span class="p">,</span>  <span class="c1"># dETH as of 2024-02-15</span>
     <span class="p">},</span>
 <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">{})</span>
 
@@ -126,7 +141,7 @@
 <span class="sd">    Create a Contract instance for an ERC20 token.</span>
 
 <span class="sd">    This function uses the standard ERC20 ABI instead of fetching the contract ABI from the block explorer.</span>
-<span class="sd">    </span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the ERC20 token.</span>
 
@@ -134,7 +149,7 @@
 <span class="sd">        A Contract instance for the ERC20 token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s1">&#39;ERC20&#39;</span><span class="p">,</span><span class="n">address</span><span class="p">,</span><span class="n">ERC20ABI</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;ERC20&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">ERC20ABI</span><span class="p">)</span></div>
 
 
 
@@ -161,9 +176,11 @@
 
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
-<span class="c1">#yLazyLogger(logger)</span>
+<span class="c1"># yLazyLogger(logger)</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
-<span class="k">def</span> <span class="nf">contract_creation_block</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">contract_creation_block</span><span class="p">(</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the block when a contract was created using binary search.</span>
 <span class="sd">    NOTE Requires access to historical state. Doesn&#39;t account for CREATE2 or SELFDESTRUCT.</span>
@@ -185,7 +202,7 @@
 
     <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NodeNotSynced</span><span class="p">(</span><span class="n">_NOT_SYNCED</span><span class="p">)</span>
-    
+
     <span class="n">check_node</span><span class="p">()</span>
 
     <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span>
@@ -200,12 +217,14 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;missing trie node&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.&#39;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="s1">&#39;Server error: account aurora does not exist while viewing&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;missing trie node&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                    <span class="s2">&quot;missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.&quot;</span>
+                <span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;Server error: account aurora does not exist while viewing&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="s1">&#39;No state available for block&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="s2">&quot;No state available for block&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -214,7 +233,11 @@
             <span class="n">barrier</span> <span class="o">=</span> <span class="n">mid</span>
             <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span>
     <span class="k">if</span> <span class="n">hi</span> <span class="o">==</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">barrier</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">when_no_history_return_0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;could not determine creation block for </span><span class="si">%s</span><span class="s1"> on </span><span class="si">%s</span><span class="s1"> (deployed prior to barrier)&#39;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;could not determine creation block for </span><span class="si">%s</span><span class="s2"> on </span><span class="si">%s</span><span class="s2"> (deployed prior to barrier)&quot;</span><span class="p">,</span>
+            <span class="n">address</span><span class="p">,</span>
+            <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(),</span>
+        <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;contract creation block </span><span class="si">%s</span><span class="s2"> -&gt; 0&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">hi</span> <span class="o">!=</span> <span class="n">height</span><span class="p">:</span>
@@ -222,21 +245,27 @@
         <span class="k">return</span> <span class="n">hi</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unable to find deploy block for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
+
 <span class="n">get_code</span> <span class="o">=</span> <span class="n">eth_retry</span><span class="o">.</span><span class="n">auto_retry</span><span class="p">(</span><span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">)</span>
+
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">_get_code</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HexBytes</span><span class="p">:</span>
     <span class="k">return</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
-  
+
+
 <span class="n">creation_block_semaphore</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ThreadsafeSemaphore</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="contract_creation_block_async">
 <a class="viewcode-back" href="../../source/y.html#y.constants.contract_creation_block_async">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
 <span class="nd">@stuck_coro_debugger</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">contract_creation_block_async</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">contract_creation_block_async</span><span class="p">(</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determine the block when a contract was created using binary search.</span>
 <span class="sd">    NOTE Requires access to historical state. Doesn&#39;t account for CREATE2 or SELFDESTRUCT.</span>
@@ -257,13 +286,13 @@
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">deploy_block</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_deploy_block</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">deploy_block</span>
-    
+
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;contract creation block </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">height</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
 
     <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NodeNotSynced</span><span class="p">(</span><span class="n">_NOT_SYNCED</span><span class="p">)</span>
-    
+
     <span class="k">await</span> <span class="n">check_node_async</span><span class="p">()</span>
 
     <span class="n">lo</span><span class="p">,</span> <span class="n">hi</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span>
@@ -278,13 +307,15 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s1">&#39;missing trie node&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">if</span> <span class="s2">&quot;missing trie node&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.&#39;</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="s1">&#39;Server error: account aurora does not exist while viewing&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;missing trie node, `contract_creation_block` may output a higher block than actual. Please try again using an archive node.&quot;</span>
+                    <span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;Server error: account aurora does not exist while viewing&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
-            <span class="k">elif</span> <span class="s1">&#39;No state available for block&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">elif</span> <span class="s2">&quot;No state available for block&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">warned</span><span class="p">:</span>
                     <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
@@ -293,7 +324,9 @@
             <span class="n">barrier</span> <span class="o">=</span> <span class="n">mid</span>
             <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span>
     <span class="k">if</span> <span class="n">hi</span> <span class="o">==</span> <span class="n">lo</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="n">barrier</span> <span class="o">+</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">when_no_history_return_0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;could not determine creation block for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="si">}</span><span class="s1"> (deployed prior to barrier)&#39;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;could not determine creation block for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="si">}</span><span class="s2"> (deployed prior to barrier)&quot;</span>
+        <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;contract creation block </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> -&gt; 0&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span>
     <span class="k">if</span> <span class="n">hi</span> <span class="o">!=</span> <span class="n">height</span><span class="p">:</span>
@@ -307,6 +340,7 @@
 <span class="c1"># this defaultdict prevents congestion in the contracts thread pool</span>
 <span class="n">address_semaphores</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ThreadsafeSemaphore</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
 
+
 <div class="viewcode-block" id="ContractEvents">
 <a class="viewcode-back" href="../../source/y.html#y.constants.ContractEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">ContractEvents</span><span class="p">(</span><span class="n">ContractEvents</span><span class="p">):</span>
@@ -316,7 +350,8 @@
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattr__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span></div>
 </div>
 
-    
+
+
 <div class="viewcode-block" id="Contract">
 <a class="viewcode-back" href="../../source/y.html#y.constants.Contract">[docs]</a>
 <span class="k">class</span> <span class="nc">Contract</span><span class="p">(</span><span class="n">dank_mids</span><span class="o">.</span><span class="n">Contract</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumAddressSingletonMeta</span><span class="p">):</span>
@@ -327,7 +362,7 @@
 <span class="sd">    ```python</span>
 <span class="sd">    Contract(0xAddress).methodName.coroutine(*args, block_identifier=12345678)</span>
 <span class="sd">    ```</span>
-<span class="sd">    3. A few attributes were removed in order to minimize the size of a Contract object in memory: </span>
+<span class="sd">    3. A few attributes were removed in order to minimize the size of a Contract object in memory:</span>
 <span class="sd">        - ast, bytecode, coverageMap, deployedBytecode, deployedSourceMap, natspec, opcodes, pcMap</span>
 <span class="sd">    4. There are a few new util methods but they&#39;re not officially supported yet and may change without warning:</span>
 <span class="sd">        - has_method</span>
@@ -337,6 +372,7 @@
 <span class="sd">        - build_name_async</span>
 <span class="sd">        - get_code</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="c1"># the default state for Contract objects</span>
     <span class="n">verified</span> <span class="o">=</span> <span class="kc">True</span>
 
@@ -347,15 +383,18 @@
 <a class="viewcode-back" href="../../source/y.html#y.constants.Contract.__init__">[docs]</a>
     <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
-        <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
-        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">cache_ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_CACHE_TTL</span><span class="p">,</span>  <span class="c1"># units: seconds</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        
+
         <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;</span><span class="p">,</span> <span class="n">ZERO_ADDRESS</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;</span><span class="p">,</span>
+            <span class="n">ZERO_ADDRESS</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not a contract.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">require_success</span> <span class="ow">and</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">_unverified</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
@@ -366,20 +405,31 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">verified</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">verified</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span><span class="p">)</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span>
+                    <span class="p">)</span>
             <span class="k">except</span> <span class="ne">AssertionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">CompilerError</span><span class="p">(</span><span class="s2">&quot;y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+                <span class="k">raise</span> <span class="n">CompilerError</span><span class="p">(</span>
+                    <span class="s2">&quot;y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
             <span class="k">except</span> <span class="ne">IndexError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;pop from an empty deque&quot;</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="n">CompilerError</span><span class="p">(</span><span class="s2">&quot;y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+                    <span class="k">raise</span> <span class="n">CompilerError</span><span class="p">(</span>
+                        <span class="s2">&quot;y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script.&quot;</span>
+                    <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
                 <span class="k">raise</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Unknown contract address: &quot;</span><span class="p">):</span>
                     <span class="k">raise</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-                <span class="k">try</span><span class="p">:</span>                  
+                <span class="k">try</span><span class="p">:</span>
                     <span class="n">name</span><span class="p">,</span> <span class="n">abi</span> <span class="o">=</span> <span class="n">_resolve_proxy</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-                    <span class="n">build</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;abi&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">}</span>
+                    <span class="n">build</span> <span class="o">=</span> <span class="p">{</span>
+                        <span class="s2">&quot;abi&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">,</span>
+                        <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span>
+                        <span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+                        <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span>
+                    <span class="p">}</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">__init_from_abi__</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidAPIKeyError</span><span class="p">:</span>
                     <span class="c1"># re-raise with a cleaner traceback</span>
@@ -397,17 +447,28 @@
                             <span class="bp">self</span><span class="o">.</span><span class="n">verified</span> <span class="o">=</span> <span class="kc">None</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="s2">&quot;Broken Contract&quot;</span><span class="p">}</span>
                     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span><span class="p">)</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                            <span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span>
+                        <span class="p">)</span>
                 <span class="c1"># Patch the Contract with coroutines for each method.</span>
                 <span class="n">dank_mids</span><span class="o">.</span><span class="n">patch_contract</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verified</span><span class="p">:</span>
-            <span class="n">_setup_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>         <span class="c1"># Init an event container for each topic</span>
-            <span class="n">_squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>              <span class="c1"># Get rid of unnecessary memory-hog properties</span>
+            <span class="n">_setup_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># Init an event container for each topic</span>
+            <span class="n">_squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># Get rid of unnecessary memory-hog properties</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimerHandle</span><span class="p">]</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span> <span class="k">if</span> <span class="n">cache_ttl</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="n">cache_ttl</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="s2">&quot;disabled&quot;</span>
+                    <span class="k">if</span> <span class="n">cache_ttl</span> <span class="ow">is</span> <span class="kc">None</span>
+                    <span class="k">else</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
+                        <span class="n">cache_ttl</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                        <span class="kc">None</span><span class="p">,</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">cache_ttl</span></div>
 
@@ -440,13 +501,29 @@
 <span class="sd">            A Contract instance for the given ABI.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="n">build</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;abi&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">,</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">_resolve_address</span><span class="p">(</span><span class="n">address</span><span class="p">),</span> <span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">}</span>
+        <span class="n">build</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;abi&quot;</span><span class="p">:</span> <span class="n">abi</span><span class="p">,</span>
+            <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">_resolve_address</span><span class="p">(</span><span class="n">address</span><span class="p">),</span>
+            <span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;contract&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__init_from_abi__</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">owner</span><span class="p">,</span> <span class="n">persist</span><span class="p">)</span>
-        <span class="n">dank_mids</span><span class="o">.</span><span class="n">patch_contract</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># Patch the Contract with coroutines for each method.</span>
-        <span class="n">_setup_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>             <span class="c1"># Init an event container for each topic</span>
-        <span class="n">_squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>                  <span class="c1"># Get rid of unnecessary memory-hog properties</span>
+        <span class="n">dank_mids</span><span class="o">.</span><span class="n">patch_contract</span><span class="p">(</span>
+            <span class="bp">self</span>
+        <span class="p">)</span>  <span class="c1"># Patch the Contract with coroutines for each method.</span>
+        <span class="n">_setup_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># Init an event container for each topic</span>
+        <span class="n">_squeeze</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>  <span class="c1"># Get rid of unnecessary memory-hog properties</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span> <span class="k">if</span> <span class="n">cache_ttl</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="n">cache_ttl</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s2">&quot;disabled&quot;</span>
+                <span class="k">if</span> <span class="n">cache_ttl</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
+                    <span class="n">cache_ttl</span><span class="p">,</span>
+                    <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                    <span class="kc">None</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">cache_ttl</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -456,32 +533,37 @@
 <a class="viewcode-back" href="../../source/y.html#y.constants.Contract.coroutine">[docs]</a>
     <span class="nd">@classmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">coroutine</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> 
-        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
-        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">cache_ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_CACHE_TTL</span><span class="p">,</span>  <span class="c1"># units: seconds</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
-        
+
         <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">contract</span> <span class="o">:=</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">contract</span>
         <span class="c1"># dict lookups faster than string comparisons, keep this behind the singleton check</span>
-        <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;</span><span class="p">,</span> <span class="n">ZERO_ADDRESS</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
+            <span class="s2">&quot;0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee&quot;</span><span class="p">,</span>
+            <span class="n">ZERO_ADDRESS</span><span class="p">,</span>
+        <span class="p">]:</span>
             <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not a contract.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># We do this so we don&#39;t clog the threadpool with multiple jobs for the same contract.</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">_contract_queue</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span><span class="p">,</span> <span class="n">cache_ttl</span><span class="o">=</span><span class="n">cache_ttl</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">_contract_queue</span><span class="p">(</span>
+                <span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span><span class="p">,</span> <span class="n">cache_ttl</span><span class="o">=</span><span class="n">cache_ttl</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">_ExplorerError</span><span class="p">,</span> <span class="n">CompilerError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="c1"># re-raise with nicer traceback</span>
             <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)(</span><span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
 
-    
+
     <span class="nd">@classmethod</span>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_coroutine</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> 
-        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
-        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">require_success</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">cache_ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_CACHE_TTL</span><span class="p">,</span>  <span class="c1"># units: seconds</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -495,26 +577,43 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            A Contract instance for the given address.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_threads</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span><span class="p">)</span>
+        <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_threads</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">require_success</span><span class="o">=</span><span class="n">require_success</span>
+        <span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">contract</span><span class="o">.</span><span class="n">verified</span> <span class="ow">or</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">==</span> <span class="s2">&quot;disabled&quot;</span><span class="p">:</span>
             <span class="k">pass</span>
-    
+
         <span class="k">elif</span> <span class="n">cache_ttl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimerHandle</span><span class="p">):</span>
                 <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span>
-    
+
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">cache_ttl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="n">cache_ttl</span><span class="p">)</span>
-            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="n">cache_ttl</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
+                <span class="n">cache_ttl</span><span class="p">,</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span>
+                <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">cache_ttl</span> <span class="o">&gt;</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">when</span><span class="p">():</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">cache_ttl</span>
+            <span class="o">&gt;</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">when</span><span class="p">()</span>
+        <span class="p">):</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="n">cache_ttl</span><span class="p">,</span> <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span> <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
+                <span class="n">cache_ttl</span><span class="p">,</span>
+                <span class="bp">cls</span><span class="o">.</span><span class="n">_ChecksumAddressSingletonMeta__instances</span><span class="o">.</span><span class="n">pop</span><span class="p">,</span>
+                <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
+                <span class="kc">None</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">contract</span>
 
-    <span class="k">def</span> <span class="nf">__init_from_abi__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init_from_abi__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">:</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountsType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">persist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a Contract instance from an ABI.</span>
 
@@ -527,18 +626,22 @@
 <span class="sd">            The initialized Contract instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">_ContractBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">build</span><span class="p">,</span> <span class="p">{})</span>  <span class="c1"># type: ignore</span>
-        <span class="n">_DeployedContractBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">],</span> <span class="n">owner</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">_DeployedContractBase</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">build</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">],</span> <span class="n">owner</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">persist</span><span class="p">:</span>
             <span class="n">_add_deployment</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">verified</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;`Contract(&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s1">&quot;).verified` property will not be usable due to the contract having a `verified` method in its ABI.&#39;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span>
 
 <div class="viewcode-block" id="Contract.has_method">
 <a class="viewcode-back" href="../../source/y.html#y.constants.Contract.has_method">[docs]</a>
-    <span class="k">def</span> <span class="nf">has_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span><span class="n">Any</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">has_method</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the contract has a specific method.</span>
 
@@ -549,15 +652,15 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">has_method</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="n">return_response</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">has_method</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="n">return_response</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Contract.has_methods">
 <a class="viewcode-back" href="../../source/y.html#y.constants.Contract.has_methods">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">has_methods</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">_func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">any</span><span class="p">,</span> <span class="nb">all</span><span class="p">]</span> <span class="o">=</span> <span class="nb">all</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">_func</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">any</span><span class="p">,</span> <span class="nb">all</span><span class="p">]</span> <span class="o">=</span> <span class="nb">all</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the contract has all the specified methods.</span>
@@ -584,9 +687,11 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">build_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="n">return_None_on_failure</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">build_name</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="o">=</span><span class="n">return_None_on_failure</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Contract.get_code">
 <a class="viewcode-back" href="../../source/y.html#y.constants.Contract.get_code">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">HexBytes</span><span class="p">:</span>
@@ -603,11 +708,13 @@
 </div>
 
 
+
 <span class="n">_contract_queue</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">SmartProcessingQueue</span><span class="p">(</span><span class="n">Contract</span><span class="o">.</span><span class="n">_coroutine</span><span class="p">,</span> <span class="n">num_workers</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="c1"># TODO: async this and put it into ydb for quicker startups</span>
-<span class="c1">#yLazyLogger(logger)</span>
+<span class="c1"># yLazyLogger(logger)</span>
 <span class="k">def</span> <span class="nf">is_contract</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if the input address is a contract. Returns `False` if:</span>
@@ -621,12 +728,15 @@
 <span class="sd">        True if the address is a contract, False otherwise.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;0x&#39;</span><span class="p">,</span><span class="sa">b</span><span class="s1">&#39;&#39;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+
 
 <div class="viewcode-block" id="has_method">
 <a class="viewcode-back" href="../../source/y.html#y.constants.has_method">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">has_method</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span><span class="n">Any</span><span class="p">]:</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">has_method</span><span class="p">(</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a contract has a `method` view method with no inputs.</span>
 <span class="sd">    `return_response=True` will return `response` in bytes if `response` else `False`</span>
@@ -644,19 +754,24 @@
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="n">method</span><span class="p">])</span>
         <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">response</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">response</span> <span class="k">if</span> <span class="n">return_response</span> <span class="k">else</span> <span class="kc">True</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span> <span class="ow">or</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;invalid jump destination&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="s2">&quot;invalid jump destination&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">raise</span></div>
+
 
 
 <div class="viewcode-block" id="has_methods">
 <a class="viewcode-back" href="../../source/y.html#y.constants.has_methods">[docs]</a>
 <span class="nd">@stuck_coro_debugger</span>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">15</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">15</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">has_methods</span><span class="p">(</span>
-    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
+    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
     <span class="n">methods</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="nb">all</span> <span class="c1"># Union[any, all]</span>
+    <span class="n">_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="nb">all</span><span class="p">,</span>  <span class="c1"># Union[any, all]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Checks to see if a contract has each view method (with no inputs) in `methods`.</span>
@@ -670,54 +785,75 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A boolean indicating whether the contract has all the specified methods.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">assert</span> <span class="n">_func</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">all</span><span class="p">,</span> <span class="nb">any</span><span class="p">],</span> <span class="s1">&#39;`_func` must be either `any` or `all`&#39;</span>
+    <span class="k">assert</span> <span class="n">_func</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">all</span><span class="p">,</span> <span class="nb">any</span><span class="p">],</span> <span class="s2">&quot;`_func` must be either `any` or `all`&quot;</span>
 
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">_func</span><span class="p">([</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="n">_func</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)]</span>
+        <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span> <span class="k">raise</span> <span class="c1"># and not out_of_gas(e): raise</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">raise</span>  <span class="c1"># and not out_of_gas(e): raise</span>
         <span class="c1"># Out of gas error implies one or more method is state-changing.</span>
         <span class="c1"># If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs</span>
         <span class="c1"># If `_func == any` maybe one of the methods will work without &quot;out of gas&quot; error</span>
-        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">_func</span> <span class="o">==</span> <span class="nb">all</span> <span class="k">else</span> <span class="nb">any</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">has_method</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">]))</span></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="kc">False</span>
+            <span class="k">if</span> <span class="n">_func</span> <span class="o">==</span> <span class="nb">all</span>
+            <span class="k">else</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                    <span class="o">*</span><span class="p">[</span><span class="n">has_method</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">]</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 
-<span class="c1">#yLazyLogger(logger)</span>
+<span class="c1"># yLazyLogger(logger)</span>
 <div class="viewcode-block" id="probe">
 <a class="viewcode-back" href="../../source/y.html#y.constants.probe">[docs]</a>
 <span class="nd">@stuck_coro_debugger</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">probe</span><span class="p">(</span>
-    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> 
+    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
     <span class="n">methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">return_method</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">return_method</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;probe results: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
-    <span class="n">results</span> <span class="o">=</span> <span class="p">[(</span><span class="n">method</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;multiple results: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span>
+        <span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;probe results: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">methods</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="ow">and</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+    <span class="p">]</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;multiple results: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]:</span>
-            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;`probe` returned multiple results for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s1">. Must debug&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`probe` returned multiple results for </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">results</span><span class="si">}</span><span class="s2">. Must debug&quot;</span>
+            <span class="p">)</span>
         <span class="n">method</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">results</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
         <span class="n">results</span> <span class="o">=</span> <span class="p">[(</span><span class="n">method</span><span class="p">,</span> <span class="n">result</span><span class="p">)]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;final results: </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;final results: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
     <span class="n">method</span><span class="p">,</span> <span class="n">result</span> <span class="o">=</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">results</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">method</span><span class="p">:</span>
         <span class="k">assert</span> <span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span> <span class="k">if</span> <span class="n">return_method</span> <span class="k">else</span> <span class="n">result</span></div>
 
-    
+
 
 <div class="viewcode-block" id="build_name">
 <a class="viewcode-back" href="../../source/y.html#y.constants.build_name">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="nd">@stuck_coro_debugger</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">build_name</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">build_name</span><span class="p">(</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the build name of a contract.</span>
 
@@ -730,16 +866,19 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">contract</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s1">&#39;_build&#39;</span><span class="p">][</span><span class="s1">&#39;contractName&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">contract</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_build&quot;</span><span class="p">][</span><span class="s2">&quot;contractName&quot;</span><span class="p">]</span>
     <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">return_None_on_failure</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">return</span> <span class="kc">None</span></div>
 
 
+
 <div class="viewcode-block" id="proxy_implementation">
 <a class="viewcode-back" href="../../source/y.html#y.constants.proxy_implementation">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">proxy_implementation</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">proxy_implementation</span><span class="p">(</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the implementation address for a proxy contract.</span>
 
@@ -750,7 +889,10 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        The address of the implementation contract.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;implementation()(address)&#39;</span><span class="p">,</span><span class="s1">&#39;target()(address)&#39;</span><span class="p">],</span> <span class="n">block</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span>
+        <span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;implementation()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;target()(address)&quot;</span><span class="p">],</span> <span class="n">block</span>
+    <span class="p">)</span></div>
+
 
 
 <span class="k">def</span> <span class="nf">_squeeze</span><span class="p">(</span><span class="n">contract</span><span class="p">:</span> <span class="n">Contract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
@@ -763,10 +905,20 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        The squeezed contract object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;ast&quot;</span><span class="p">,</span> <span class="s2">&quot;bytecode&quot;</span><span class="p">,</span> <span class="s2">&quot;coverageMap&quot;</span><span class="p">,</span> <span class="s2">&quot;deployedBytecode&quot;</span><span class="p">,</span> <span class="s2">&quot;deployedSourceMap&quot;</span><span class="p">,</span> <span class="s2">&quot;natspec&quot;</span><span class="p">,</span> <span class="s2">&quot;opcodes&quot;</span><span class="p">,</span> <span class="s2">&quot;pcMap&quot;</span><span class="p">]:</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
+        <span class="s2">&quot;ast&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bytecode&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;coverageMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;deployedBytecode&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;deployedSourceMap&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;natspec&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;opcodes&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;pcMap&quot;</span><span class="p">,</span>
+    <span class="p">]:</span>
         <span class="k">if</span> <span class="n">contract</span><span class="o">.</span><span class="n">_build</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">contract</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="n">contract</span>
+
 
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">_extract_abi_data</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">):</span>
@@ -787,30 +939,42 @@
     <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;{&quot;message&quot;:&quot;Something went wrong.&quot;,&quot;result&quot;:null,&quot;status&quot;:&quot;0&quot;}&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Rate limited by Blockscout. Please try again.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rate limited by Blockscout. Please try again.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">if</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">raise</span>
     <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve data from API&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="s2">&quot;invalid api key&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">():</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve data from API&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="s2">&quot;invalid api key&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="p">):</span>
             <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidAPIKeyError</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">if</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">contract_not_verified</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s1"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">elif</span> <span class="s2">&quot;Unknown contract address:&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="n">exc_type</span> <span class="o">=</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span> <span class="k">if</span> <span class="n">is_contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="k">else</span> <span class="n">ContractNotFound</span>
+            <span class="n">exc_type</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span>
+                <span class="k">if</span> <span class="n">is_contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+                <span class="k">else</span> <span class="n">ContractNotFound</span>
+            <span class="p">)</span>
             <span class="k">raise</span> <span class="n">exc_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span>
 
     <span class="n">is_verified</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SourceCode&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_verified</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Contract source code not verified: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Contract source code not verified: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ContractName&quot;</span><span class="p">]</span>
     <span class="n">abi</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
     <span class="n">implementation</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Implementation&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">implementation</span>
+
 
 <span class="k">def</span> <span class="nf">_resolve_proxy</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -841,14 +1005,17 @@
         <span class="n">address</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;eip1967.proxy.implementation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="p">)</span>
     <span class="c1"># always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822</span>
-    <span class="n">implementation_eip1822</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_storage_at</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;PROXIABLE&quot;</span><span class="p">))</span>
+    <span class="n">implementation_eip1822</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_storage_at</span><span class="p">(</span>
+        <span class="n">address</span><span class="p">,</span> <span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;PROXIABLE&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="c1"># Just leave this code where it is for a helpful debugger as needed.</span>
     <span class="k">if</span> <span class="n">address</span> <span class="o">==</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;implementation: </span><span class="si">{</span><span class="n">implementation</span><span class="si">}</span>
 <span class="s2">            implementation_eip1967: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">implementation_eip1967</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">implementation_eip1967</span><span class="si">}</span>
-<span class="s2">            implementation_eip1822: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">implementation_eip1822</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">implementation_eip1822</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span><span class="p">)</span>
+<span class="s2">            implementation_eip1822: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">implementation_eip1822</span><span class="p">)</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">implementation_eip1822</span><span class="si">}</span><span class="s2">&quot;&quot;&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">implementation_eip1967</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">implementation_eip1967</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span> <span class="mi">16</span><span class="p">):</span>
         <span class="n">as_proxy_for</span> <span class="o">=</span> <span class="n">_resolve_address</span><span class="p">(</span><span class="n">implementation_eip1967</span><span class="p">[</span><span class="o">-</span><span class="mi">20</span><span class="p">:])</span>
@@ -871,6 +1038,7 @@
         <span class="n">name</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_extract_abi_data</span><span class="p">(</span><span class="n">as_proxy_for</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">abi</span>
 
+
 <span class="k">def</span> <span class="nf">_setup_events</span><span class="p">(</span><span class="n">contract</span><span class="p">:</span> <span class="n">Contract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Helper function used to init contract event containers on a newly created `y.Contract` object.</span>
@@ -878,10 +1046,11 @@
 <span class="sd">    Args:</span>
 <span class="sd">        contract: The contract object to set up events for.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="s1">&#39;events&#39;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="s2">&quot;events&quot;</span><span class="p">):</span>
         <span class="n">contract</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">ContractEvents</span><span class="p">(</span><span class="n">contract</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">contract</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="nb">setattr</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">events</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">Events</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[[</span><span class="n">v</span><span class="p">]]))</span>
+
 
 <span class="n">_Address</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;_Address&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
 <span class="n">_unverified</span><span class="p">:</span> <span class="n">Set</span><span class="p">[</span><span class="n">_Address</span><span class="p">]</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>

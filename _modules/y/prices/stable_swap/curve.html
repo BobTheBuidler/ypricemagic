@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.stable_swap.curve</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
@@ -92,24 +91,35 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">,</span> <span class="n">_EventsLoader</span><span class="p">,</span> <span class="n">_Loader</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="p">(</span><span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span>
-                         <span class="n">Pool</span><span class="p">,</span> <span class="n">UsdPrice</span><span class="p">,</span> <span class="n">UsdValue</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">,</span> <span class="n">MessedUpBrownieContract</span><span class="p">,</span>
-                          <span class="n">PriceError</span><span class="p">,</span> <span class="n">UnsupportedNetwork</span><span class="p">,</span> <span class="n">call_reverted</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Address</span><span class="p">,</span>
+    <span class="n">AddressOrContract</span><span class="p">,</span>
+    <span class="n">AnyAddressType</span><span class="p">,</span>
+    <span class="n">Block</span><span class="p">,</span>
+    <span class="n">Pool</span><span class="p">,</span>
+    <span class="n">UsdPrice</span><span class="p">,</span>
+    <span class="n">UsdValue</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ContractNotVerified</span><span class="p">,</span>
+    <span class="n">MessedUpBrownieContract</span><span class="p">,</span>
+    <span class="n">PriceError</span><span class="p">,</span>
+    <span class="n">UnsupportedNetwork</span><span class="p">,</span>
+    <span class="n">call_reverted</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">y.interfaces.curve.CurveRegistry</span> <span class="kn">import</span> <span class="n">CURVE_REGISTRY_ABI</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
 <span class="kn">from</span> <span class="nn">y.utils.events</span> <span class="kn">import</span> <span class="n">ProcessedEvents</span>
-<span class="kn">from</span> <span class="nn">y.utils.multicall</span> <span class="kn">import</span> \
-    <span class="n">multicall_same_func_same_contract_different_inputs</span>
+<span class="kn">from</span> <span class="nn">y.utils.multicall</span> <span class="kn">import</span> <span class="n">multicall_same_func_same_contract_different_inputs</span>
 <span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># curve registry documentation https://curve.readthedocs.io/registry-address-provider.html</span>
-<span class="n">ADDRESS_PROVIDER</span> <span class="o">=</span> <span class="s1">&#39;0x0000000022D53366457F9d5E68Ec105046FC4383&#39;</span>
+<span class="n">ADDRESS_PROVIDER</span> <span class="o">=</span> <span class="s2">&quot;0x0000000022D53366457F9d5E68Ec105046FC4383&quot;</span>
 <span class="s2">&quot;Curve&#39;s address provider contract on all chains.&quot;</span>
 
 <span class="n">DED_POOLS</span> <span class="o">=</span> <span class="p">{</span>
@@ -118,6 +128,7 @@
     <span class="p">},</span>
 <span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">{})</span>
 <span class="s2">&quot;The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually.&quot;</span>
+
 
 <div class="viewcode-block" id="Ids">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Ids">[docs]</a>
@@ -145,13 +156,16 @@
 
 <span class="n">_LT</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_LT&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">_Loader</span><span class="p">)</span>
 
+
 <span class="k">class</span> <span class="nc">_CurveEventsLoader</span><span class="p">(</span><span class="n">_EventsLoader</span><span class="p">):</span>
     <span class="n">_events</span><span class="p">:</span> <span class="s2">&quot;CurveEvents&quot;</span>
+
 
 <div class="viewcode-block" id="CurveEvents">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">CurveEvents</span><span class="p">(</span><span class="n">ProcessedEvents</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;_base&quot;</span><span class="p">,</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_base&quot;</span><span class="p">,)</span>
+
 <div class="viewcode-block" id="CurveEvents.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">_LT</span><span class="p">):</span>
@@ -159,48 +173,60 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_base</span> <span class="o">=</span> <span class="n">base</span></div>
 </div>
 
-    
+
+
 <div class="viewcode-block" id="AddressProviderEvents">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">AddressProviderEvents</span><span class="p">(</span><span class="n">CurveEvents</span><span class="p">):</span>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">provider</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;AddressProvider&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span>
+
     <span class="k">def</span> <span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;NewAddressIdentifier&#39;</span> <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;addr&#39;</span><span class="p">])</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;AddressModified&#39;</span> <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;new_address&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;new_address&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;NewAddressIdentifier&quot;</span> <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;addr&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;addr&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;AddressModified&quot;</span> <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;new_address&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;new_address&quot;</span><span class="p">])</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">event</span></div>
 
-        
+
+
 <div class="viewcode-block" id="RegistryEvents">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents">[docs]</a>
 <span class="k">class</span> <span class="nc">RegistryEvents</span><span class="p">(</span><span class="n">CurveEvents</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;_tasks&quot;</span><span class="p">,</span>
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;_tasks&quot;</span><span class="p">,)</span>
+
 <div class="viewcode-block" id="RegistryEvents.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">:</span> <span class="n">_LT</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="s2">&quot;asyncio.Task[EthAddress]&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span></div>
 
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">registry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Registry&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span>
+
     <span class="k">def</span> <span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;PoolAdded&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;PoolAdded&quot;</span><span class="p">:</span>
             <span class="c1"># TODO async this</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">pool</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;pool&#39;</span><span class="p">]</span>
+                <span class="n">pool</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;pool&quot;</span><span class="p">]</span>
             <span class="k">except</span> <span class="n">EventLookupError</span><span class="p">:</span>
-                <span class="n">pool</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;newPool&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Registry._add_pool for pool </span><span class="si">{</span><span class="n">pool</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">))</span>
+                <span class="n">pool</span> <span class="o">=</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;newPool&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                    <span class="n">coro</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_add_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">),</span>
+                    <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Registry._add_pool for pool </span><span class="si">{</span><span class="n">pool</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
             <span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;PoolRemoved&#39;</span><span class="p">:</span>
-            <span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;pool&#39;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;PoolRemoved&quot;</span><span class="p">:</span>
+            <span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;pool&quot;</span><span class="p">])</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">event</span>
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_add_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EthAddress</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">DED_POOLS</span><span class="p">:</span>
             <span class="c1"># The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually.</span>
@@ -208,6 +234,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">lp_token</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">get_lp_token</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">lp_token</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_set_lock</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_tasks</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
@@ -215,11 +242,14 @@
 
 
 
-
 <div class="viewcode-block" id="AddressProvider">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProvider">[docs]</a>
 <span class="k">class</span> <span class="nc">AddressProvider</span><span class="p">(</span><span class="n">_CurveEventsLoader</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;identifiers&quot;</span><span class="p">,</span> <span class="s2">&quot;_events&quot;</span><span class="p">,</span> 
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s2">&quot;identifiers&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;_events&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+
 <div class="viewcode-block" id="AddressProvider.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProvider.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
@@ -227,25 +257,36 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="n">AddressProviderEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="AddressProvider.get_registry">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProvider.get_registry">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_registry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EthAddress</span><span class="p">:</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">get_registry</span></div>
 
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_factories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># factory events are quite useless, so we use a different method</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">)</span>
         <span class="c1"># TODO: remove this once curve adds to address provider</span>
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="s2">&quot;0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf&quot;</span>
+            <span class="p">]</span>
 
         <span class="k">if</span> <span class="n">metapool_factories</span> <span class="o">:=</span> <span class="p">[</span>
             <span class="n">Factory</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Metapool_Factory</span><span class="p">,</span> <span class="n">Ids</span><span class="o">.</span><span class="n">crvUSD_Plain_Pools</span><span class="p">,</span> <span class="n">Ids</span><span class="o">.</span><span class="n">Curve_Tricrypto_Factory</span><span class="p">,</span> <span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span>
+                <span class="n">Ids</span><span class="o">.</span><span class="n">Metapool_Factory</span><span class="p">,</span>
+                <span class="n">Ids</span><span class="o">.</span><span class="n">crvUSD_Plain_Pools</span><span class="p">,</span>
+                <span class="n">Ids</span><span class="o">.</span><span class="n">Curve_Tricrypto_Factory</span><span class="p">,</span>
+                <span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">,</span>
+            <span class="p">]</span>
             <span class="k">for</span> <span class="n">factory</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
         <span class="p">]:</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">factory</span><span class="p">,</span> <span class="n">pool_list</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Factory</span><span class="o">.</span><span class="n">read_pools</span><span class="p">,</span> <span class="n">metapool_factories</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">factory</span><span class="p">,</span> <span class="n">pool_list</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="n">Factory</span><span class="o">.</span><span class="n">read_pools</span><span class="p">,</span> <span class="n">metapool_factories</span>
+            <span class="p">):</span>
                 <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pool_list</span><span class="p">:</span>
                     <span class="c1"># for metpool factories pool is the same as lp token</span>
                     <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
@@ -253,25 +294,38 @@
 
         <span class="c1"># if there are factories that haven&#39;t yet been added to the on-chain address provider,</span>
         <span class="c1"># please refer to commit 3f70c4246615017d87602e03272b3ed18d594d3c to see how to add them manually</span>
-        <span class="k">if</span> <span class="n">identifiers</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CryptoPool_Factory</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Cryptopool_Factory</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">identifiers</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CryptoPool_Factory</span><span class="p">]</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Cryptopool_Factory</span><span class="p">]</span>
+        <span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Factory</span><span class="p">,</span> <span class="n">identifiers</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">curve</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;loaded </span><span class="si">%s</span><span class="s1"> pools from </span><span class="si">%s</span><span class="s1"> registries and </span><span class="si">%s</span><span class="s1"> factories&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools from </span><span class="si">%s</span><span class="s2"> registries and </span><span class="si">%s</span><span class="s2"> factories&quot;</span><span class="p">,</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">),</span>
+                <span class="nb">len</span><span class="p">(</span><span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">),</span>
+            <span class="p">)</span>
             <span class="n">curve</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">set</span><span class="p">()</span></div>
+
 
 
 <div class="viewcode-block" id="Registry">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Registry">[docs]</a>
 <span class="k">class</span> <span class="nc">Registry</span><span class="p">(</span><span class="n">_CurveEventsLoader</span><span class="p">):</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;_events&quot;</span>
+
 <div class="viewcode-block" id="Registry.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Registry.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">curve</span><span class="p">:</span> <span class="s2">&quot;CurveRegistry&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">curve</span><span class="p">:</span> <span class="s2">&quot;CurveRegistry&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="n">RegistryEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
 </div>
+
 
 
 <div class="viewcode-block" id="Factory">
@@ -283,11 +337,13 @@
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">pool_list</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">i</span><span class="p">)</span></div>
 
+
 <div class="viewcode-block" id="Factory.pool_count">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Factory.pool_count">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">pool_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">pool_count</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span></div>
+
 
 <div class="viewcode-block" id="Factory.read_pools">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Factory.read_pools">[docs]</a>
@@ -304,37 +360,48 @@
         <span class="n">pool_count</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_count</span><span class="p">()</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="n">pool_count</span><span class="p">))</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pool_list</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_pools</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pool_list</span> <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">]])</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_load_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pool_list</span>
+                <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">]</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="c1"># for curve v5 pools, pool and lp token are separate</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;get_token&#39;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s2">&quot;get_token&quot;</span><span class="p">):</span>
             <span class="n">lp_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">get_token</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;get_lp_token&#39;</span><span class="p">):</span>
+        <span class="k">elif</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s2">&quot;get_lp_token&quot;</span><span class="p">):</span>
             <span class="n">lp_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">get_lp_token</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;New factory </span><span class="si">{</span><span class="n">factory</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not yet supported. Please notify a ypricemagic maintainer.&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;New factory </span><span class="si">{</span><span class="n">factory</span><span class="o">.</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not yet supported. Please notify a ypricemagic maintainer.&quot;</span>
+            <span class="p">)</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">lp_token</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="n">factory</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span></div>
 
-        
 
 
 <div class="viewcode-block" id="CurvePool">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool">[docs]</a>
-<span class="k">class</span> <span class="nc">CurvePool</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span> <span class="c1"># this shouldn&#39;t be ERC20 but works for inheritance for now</span>
+<span class="k">class</span> <span class="nc">CurvePool</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>  <span class="c1"># this shouldn&#39;t be ERC20 but works for inheritance for now</span>
 <div class="viewcode-block" id="CurvePool.factory">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.factory">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">factory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">get_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
+
     <span class="n">__factory__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
+
 <div class="viewcode-block" id="CurvePool.coins">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.coins">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
@@ -353,13 +420,18 @@
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">coins</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="n">ZERO_ADDRESS</span><span class="p">}:</span>
             <span class="n">coins</span> <span class="o">=</span> <span class="k">await</span> <span class="n">multicall_same_func_same_contract_different_inputs</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
-                <span class="s1">&#39;coins(uint256)(address)&#39;</span><span class="p">,</span>
+                <span class="s2">&quot;coins(uint256)(address)&quot;</span><span class="p">,</span>
                 <span class="n">inputs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)),</span>
                 <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                 <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="n">ERC20</span><span class="p">(</span><span class="n">coin</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">coins</span> <span class="k">if</span> <span class="n">coin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="kc">None</span><span class="p">,</span> <span class="n">ZERO_ADDRESS</span><span class="p">}]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">ERC20</span><span class="p">(</span><span class="n">coin</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">coins</span>
+            <span class="k">if</span> <span class="n">coin</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="kc">None</span><span class="p">,</span> <span class="n">ZERO_ADDRESS</span><span class="p">}</span>
+        <span class="p">]</span></div>
+
 
     <span class="n">__coins__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]]</span>
 
@@ -369,22 +441,23 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_coin_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">coin</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_coin</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coins__</span><span class="p">)</span> <span class="k">if</span> <span class="n">_coin</span> <span class="o">==</span> <span class="n">coin</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span></div>
 
-    
+
 <div class="viewcode-block" id="CurvePool.num_coins">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.num_coins">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">num_coins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coins__</span><span class="p">)</span></div>
 
+
     <span class="n">__num_coins__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
-    
+
 <div class="viewcode-block" id="CurvePool.get_dy">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.get_dy">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_dy</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">coin_ix_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-        <span class="n">coin_ix_out</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> 
-        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">coin_ix_in</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">coin_ix_out</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
@@ -394,14 +467,22 @@
         <span class="n">amount_in</span> <span class="o">=</span> <span class="k">await</span> <span class="n">token_in</span><span class="o">.</span><span class="n">__scale__</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">amount_out</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">get_dy</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">coin_ix_in</span><span class="p">,</span> <span class="n">coin_ix_out</span><span class="p">,</span> <span class="n">amount_in</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="n">amount_out</span><span class="p">,</span> <span class="n">token_out</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span>
+            <span class="n">amount_out</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">get_dy</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
+                <span class="n">coin_ix_in</span><span class="p">,</span> <span class="n">coin_ix_out</span><span class="p">,</span> <span class="n">amount_in</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">WeiBalance</span><span class="p">(</span>
+                <span class="n">amount_out</span><span class="p">,</span>
+                <span class="n">token_out</span><span class="p">,</span>
+                <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
+                <span class="n">ignore_pools</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="bp">self</span><span class="p">),</span>
+                <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">raise</span></div>
 
-    
+
 <div class="viewcode-block" id="CurvePool.coins_decimals">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.coins_decimals">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
@@ -412,39 +493,49 @@
 
         <span class="c1"># pool not in registry</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">coins_decimals</span><span class="p">):</span>
-            <span class="n">coins_decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ERC20</span><span class="o">.</span><span class="n">decimals</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coins__</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        
+            <span class="n">coins_decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="n">ERC20</span><span class="o">.</span><span class="n">decimals</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coins__</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="p">[</span><span class="n">dec</span> <span class="k">for</span> <span class="n">dec</span> <span class="ow">in</span> <span class="n">coins_decimals</span> <span class="k">if</span> <span class="n">dec</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">]</span></div>
+
 
     <span class="n">__coins_decimals__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span>
 
 <div class="viewcode-block" id="CurvePool.get_underlying_coins">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.get_underlying_coins">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_underlying_coins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>    
-        <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>    
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_underlying_coins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+        <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
         <span class="k">if</span> <span class="n">factory</span><span class="p">:</span>
             <span class="c1"># new factory reverts for non-meta pools</span>
-            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s1">&#39;is_meta&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">factory</span><span class="o">.</span><span class="n">is_meta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s2">&quot;is_meta&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">factory</span><span class="o">.</span><span class="n">is_meta</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
                 <span class="n">coins</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">get_underlying_coins</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">coins</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">get_coins</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">registry</span> <span class="o">=</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">registry</span>
             <span class="n">coins</span> <span class="o">=</span> <span class="k">await</span> <span class="n">registry</span><span class="o">.</span><span class="n">get_underlying_coins</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
-        
+
         <span class="c1"># pool not in registry, not checking for underlying_coins here</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">coins</span><span class="p">)</span> <span class="o">==</span> <span class="p">{</span><span class="n">ZERO_ADDRESS</span><span class="p">}:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coins__</span>
 
-        <span class="k">return</span> <span class="p">[</span><span class="n">ERC20</span><span class="p">(</span><span class="n">coin</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">coins</span> <span class="k">if</span> <span class="n">coin</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">ERC20</span><span class="p">(</span><span class="n">coin</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="n">coins</span>
+            <span class="k">if</span> <span class="n">coin</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span>
+        <span class="p">]</span></div>
+
 
     <span class="n">__get_underlying_coins__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]]</span>
-    
+
 <div class="viewcode-block" id="CurvePool.get_balances">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.get_balances">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balances</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get {token: balance} of liquidity in the pool.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -452,27 +543,33 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
             <span class="n">source</span> <span class="o">=</span> <span class="n">factory</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">__registry__</span>
-            <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">source</span><span class="o">.</span><span class="n">get_balances</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+            <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">source</span><span class="o">.</span><span class="n">get_balances</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
+            <span class="p">)</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
             <span class="c1"># ContractLogicError in web3&gt;=6.0, ValueError in &lt;6.0</span>
             <span class="c1"># fallback for historical queries where registry was not yet deployed</span>
-            <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_balance</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coins</span><span class="p">)),</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_balance</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coins</span><span class="p">)),</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">balances</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;could not fetch balances </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="si">}</span><span class="s1"> at </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;could not fetch balances </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">WeiBalance</span><span class="p">(</span><span class="n">balance</span><span class="p">,</span> <span class="n">coin</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span> 
-            <span class="k">for</span> <span class="n">coin</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coins</span><span class="p">,</span> <span class="n">balances</span><span class="p">)</span> 
+            <span class="n">WeiBalance</span><span class="p">(</span><span class="n">balance</span><span class="p">,</span> <span class="n">coin</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">coin</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">coins</span><span class="p">,</span> <span class="n">balances</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">coin</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span>
         <span class="p">]</span></div>
 
-    
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_balance</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
-            <span class="c1"># TODO: figure out if we need to build this, usually they get verified quickly </span>
+            <span class="c1"># TODO: figure out if we need to build this, usually they get verified quickly</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">balances</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
@@ -489,13 +586,15 @@
 
 <div class="viewcode-block" id="CurvePool.get_tvl">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.get_tvl">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdValue</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdValue</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get total value in Curve pool.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> 
+                <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
                 <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
             <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
@@ -504,10 +603,10 @@
                 <span class="k">return</span> <span class="kc">None</span>
             <span class="k">raise</span></div>
 
-    
+
 <div class="viewcode-block" id="CurvePool.check_liquidity">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.check_liquidity">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -519,24 +618,28 @@
 
 
 
-
 <div class="viewcode-block" id="CurveRegistry">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry">[docs]</a>
 <span class="k">class</span> <span class="nc">CurveRegistry</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;__task&quot;</span><span class="p">,</span> 
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;__task&quot;</span><span class="p">,)</span>
+
 <div class="viewcode-block" id="CurveRegistry.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
-        <span class="k">try</span><span class="p">:</span> 
-            <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span> <span class="o">=</span> <span class="n">AddressProvider</span><span class="p">(</span><span class="n">ADDRESS_PROVIDER</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span> <span class="o">=</span> <span class="n">AddressProvider</span><span class="p">(</span>
+                <span class="n">ADDRESS_PROVIDER</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span>
+            <span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="o">.</span><span class="n">contract</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;curve is not supported on this network&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">except</span> <span class="n">MessedUpBrownieContract</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Cronos</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;curve is not supported on this network&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span>
+                    <span class="s2">&quot;curve is not supported on this network&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span>
 
@@ -545,21 +648,30 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">pools</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token_to_pool</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>  <span class="c1"># lp_token -&gt; pool</span></div>
 
-    
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="s2">&quot;&lt;CurveRegistry&gt;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">identifiers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">]:</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="o">.</span><span class="n">identifiers</span>
+
 <div class="viewcode-block" id="CurveRegistry.registry">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.registry">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">registry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span> <span class="c1"># if we couldn&#39;t get the registry via logs</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="p">,</span> <span class="s1">&#39;get_registry()&#39;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;address&#39;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>  <span class="c1"># if we couldn&#39;t get the registry via logs</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="p">,</span>
+                    <span class="s2">&quot;get_registry()&quot;</span><span class="p">,</span>
+                    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span>
+                    <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span></div>
+
 
     <span class="n">__registry__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
 
@@ -583,13 +695,18 @@
             <span class="p">)</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">None</span>    </div>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
-    
+
 <div class="viewcode-block" id="CurveRegistry.get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.get_price">[docs]</a>
     <span class="nd">@a_sync_ttl_cache</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
         <span class="n">pool</span><span class="p">:</span> <span class="n">CurvePool</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -601,13 +718,13 @@
 
 <div class="viewcode-block" id="CurveRegistry.get_pool">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.get_pool">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CurvePool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Curve pool (swap) address by LP token address. Supports factory pools.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all</span><span class="p">()</span>
-        
+
         <span class="n">token</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_to_pool</span> <span class="ow">and</span> <span class="n">token</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">CurvePool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">token</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
@@ -615,11 +732,11 @@
 
 <div class="viewcode-block" id="CurveRegistry.get_price_for_underlying">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.get_price_for_underlying">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price_for_underlying</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">token_in</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> 
-        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">token_in</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
         <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
@@ -627,7 +744,7 @@
             <span class="n">pools</span> <span class="o">=</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coin_to_pools__</span><span class="p">)[</span><span class="n">token_in</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
-        
+
         <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">ignore_pools</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">pools</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
@@ -636,9 +753,10 @@
 
         <span class="k">if</span> <span class="n">pools</span> <span class="ow">and</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span>
-                <span class="n">pool</span> 
-                <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">deploy_block</span> 
-                <span class="ow">in</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">deploy_block</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> 
+                <span class="n">pool</span>
+                <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">deploy_block</span> <span class="ow">in</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">deploy_block</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="n">pools</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
                 <span class="k">if</span> <span class="n">deploy_block</span> <span class="o">&lt;=</span> <span class="n">block</span>
             <span class="p">]</span>
 
@@ -650,7 +768,9 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># Use the pool with deepest liquidity.</span>
             <span class="n">deepest_pool</span><span class="p">,</span> <span class="n">deepest_bal</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">():</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">map</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">depth</span> <span class="o">&gt;</span> <span class="n">deepest_bal</span><span class="p">:</span>
                     <span class="n">deepest_pool</span> <span class="o">=</span> <span class="n">pool</span>
                     <span class="n">deepest_bal</span> <span class="o">=</span> <span class="n">depth</span>
@@ -668,7 +788,14 @@
 
         <span class="n">token_in_ix</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_coin_index</span><span class="p">(</span><span class="n">token_in</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">token_out_ix</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">token_in_ix</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">token_in_ix</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="kc">None</span>
-        <span class="n">dy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_dy</span><span class="p">(</span><span class="n">token_in_ix</span><span class="p">,</span> <span class="n">token_out_ix</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">dy</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">get_dy</span><span class="p">(</span>
+            <span class="n">token_in_ix</span><span class="p">,</span>
+            <span class="n">token_out_ix</span><span class="p">,</span>
+            <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
+            <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span>
+            <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span>
+            <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">dy</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
 
@@ -678,65 +805,90 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span></div>
 
-    
+
 <div class="viewcode-block" id="CurveRegistry.coin_to_pools">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.coin_to_pools">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">coin_to_pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">CurvePool</span><span class="p">]]:</span>
         <span class="n">mapping</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">set</span><span class="p">)</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="p">{</span><span class="n">CurvePool</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span> <span class="k">for</span> <span class="n">pools</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factories</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools</span><span class="p">}:</span>
+        <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="p">{</span>
+            <span class="n">CurvePool</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span> <span class="k">for</span> <span class="n">pools</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">factories</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools</span>
+        <span class="p">}:</span>
             <span class="k">for</span> <span class="n">coin</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">__coins__</span><span class="p">:</span>
                 <span class="n">mapping</span><span class="p">[</span><span class="n">coin</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">{</span><span class="n">coin</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span> <span class="k">for</span> <span class="n">coin</span><span class="p">,</span> <span class="n">pools</span> <span class="ow">in</span> <span class="n">mapping</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span></div>
 
+
     <span class="n">__coin_to_pools__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">CurvePool</span><span class="p">]]]</span>
-    
+
 <div class="viewcode-block" id="CurveRegistry.check_liquidity">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.check_liquidity">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">pools</span> <span class="o">:=</span> <span class="p">[</span><span class="n">pool</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coin_to_pools__</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="p">[])</span> <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_pools</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">pools</span> <span class="o">:=</span> <span class="p">[</span>
+            <span class="n">pool</span>
+            <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coin_to_pools__</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="p">[])</span>
+            <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_pools</span>
+        <span class="p">]:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+                <span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span></div>
 
-    
+
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">_done</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">Event</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A helper function to ensure the Event is attached to the correct loop.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task</span>
         <span class="k">return</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;curve&quot;</span><span class="p">)</span>
-    
+
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;creating loader task for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="n">task</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_load_all</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">._load_all()&quot;</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">done_callback</span><span class="p">(</span><span class="n">t</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Task</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">e</span> <span class="o">:=</span> <span class="n">t</span><span class="o">.</span><span class="n">exception</span><span class="p">():</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;exception while loading </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__task</span> <span class="o">=</span> <span class="kc">None</span>
                 <span class="k">raise</span> <span class="n">e</span>
+
         <span class="n">task</span><span class="o">.</span><span class="n">add_done_callback</span><span class="p">(</span><span class="n">done_callback</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">task</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;curve address provider events loaded, now loading factories and pools&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;curve address provider events loaded, now loading factories and pools&quot;</span>
+        <span class="p">)</span>
         <span class="c1"># NOTE: Gnosis chain&#39;s address provider fails to provide registry via events. Maybe other chains as well.</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Main_Registry</span><span class="p">]</span> <span class="ow">and</span> <span class="p">(</span><span class="n">registry</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="o">.</span><span class="n">get_registry</span><span class="p">())</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Main_Registry</span><span class="p">]</span>
+            <span class="ow">and</span> <span class="p">(</span><span class="n">registry</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="o">.</span><span class="n">get_registry</span><span class="p">())</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span>
+        <span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Main_Registry</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">registry</span><span class="p">]</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="c1"># Check if any registries were updated, then ensure all old and new are loaded</span>
-            <span class="k">if</span> <span class="n">registries</span> <span class="o">:=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Main_Registry</span><span class="p">,</span> <span class="n">Ids</span><span class="o">.</span><span class="n">CryptoSwap_Registry</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">]]:</span>
-                <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Registry</span><span class="p">,</span> <span class="n">registries</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">registries</span> <span class="o">:=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Main_Registry</span><span class="p">,</span> <span class="n">Ids</span><span class="o">.</span><span class="n">CryptoSwap_Registry</span><span class="p">]</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="p">]:</span>
+                <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="n">Registry</span><span class="p">,</span> <span class="n">registries</span><span class="p">,</span> <span class="n">curve</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span>
+                <span class="p">)</span>
             <span class="c1"># load metapool and curve v5 factories</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">address_provider</span><span class="o">.</span><span class="n">_load_factories</span><span class="p">()</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">600</span><span class="p">)</span></div>
 
-   
-<span class="k">try</span><span class="p">:</span> 
+
+
+<span class="k">try</span><span class="p">:</span>
     <span class="n">curve</span><span class="p">:</span> <span class="n">CurveRegistry</span> <span class="o">=</span> <span class="n">CurveRegistry</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">except</span> <span class="n">UnsupportedNetwork</span><span class="p">:</span> 
+<span class="k">except</span> <span class="n">UnsupportedNetwork</span><span class="p">:</span>
     <span class="n">curve</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
 </pre></div>
 

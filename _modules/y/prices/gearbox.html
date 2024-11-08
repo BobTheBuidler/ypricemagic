@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.gearbox</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Dict</span>
 
@@ -89,6 +88,7 @@
 
 <span class="n">registry</span> <span class="o">=</span> <span class="s2">&quot;0xA50d4E7D8946a7c90652339CDBd262c375d54D99&quot;</span>
 
+
 <div class="viewcode-block" id="DieselPool">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.DieselPool">[docs]</a>
 <span class="k">class</span> <span class="nc">DieselPool</span><span class="p">(</span><span class="n">ContractBase</span><span class="p">):</span>
@@ -98,8 +98,9 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">contract</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span></div>
 
+
     <span class="n">__contract__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
-    
+
 <div class="viewcode-block" id="DieselPool.diesel_token">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.DieselPool.diesel_token">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
@@ -107,11 +108,12 @@
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__contract__</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ERC20</span><span class="p">(</span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">dieselToken</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span> <span class="c1"># NOTE: there could be better ways of doing this with hueristics, not sure yet</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>  <span class="c1"># NOTE: there could be better ways of doing this with hueristics, not sure yet</span>
             <span class="k">return</span> <span class="n">ERC20</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
+
     <span class="n">__diesel_token__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
-    
+
 <div class="viewcode-block" id="DieselPool.underlying">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.DieselPool.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
@@ -119,26 +121,33 @@
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__contract__</span>
         <span class="k">return</span> <span class="n">ERC20</span><span class="p">(</span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">underlyingToken</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
+
     <span class="n">__underlying__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]</span>
-    
+
 <div class="viewcode-block" id="DieselPool.exchange_rate">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.DieselPool.exchange_rate">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">exchange_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
         <span class="n">underlying</span><span class="p">:</span> <span class="n">ERC20</span>
         <span class="n">pool</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__contract__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span><span class="p">)</span>
         <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">underlying</span><span class="o">.</span><span class="n">__scale__</span>
-        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">fromDiesel</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">))</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span>
+            <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">fromDiesel</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="p">)</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">scale</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="DieselPool.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.DieselPool.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
-        <span class="n">underlying</span><span class="p">,</span> <span class="n">exchange_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+        <span class="n">underlying</span><span class="p">,</span> <span class="n">exchange_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="n">und_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">underlying</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">und_price</span><span class="p">)</span> <span class="o">*</span> <span class="n">exchange_rate</span></div>
 </div>
 
-        
+
 
 <div class="viewcode-block" id="Gearbox">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.Gearbox">[docs]</a>
@@ -149,29 +158,34 @@
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;gearbox not supported on this network&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dtokens</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">DieselPool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>            </div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dtokens</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">DieselPool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
 
-    
+
 <div class="viewcode-block" id="Gearbox.registry">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.Gearbox.registry">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">registry</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">registry</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Gearbox.pools">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.Gearbox.pools">[docs]</a>
     <span class="nd">@a_sync_ttl_cache</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">pools</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">DieselPool</span><span class="p">]:</span>
         <span class="n">registry</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">registry</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">DieselPool</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">registry</span><span class="o">.</span><span class="n">getPools</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">DieselPool</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">registry</span><span class="o">.</span><span class="n">getPools</span>
+        <span class="p">]</span></div>
 
-    
+
 <div class="viewcode-block" id="Gearbox.diesel_tokens">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.Gearbox.diesel_tokens">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">diesel_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">DieselPool</span><span class="p">]:</span>
         <span class="n">pools</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">DieselPool</span><span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pools</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="k">await</span> <span class="n">DieselPool</span><span class="o">.</span><span class="n">diesel_token</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">pools</span><span class="p">))</span></div>
+        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span>
+            <span class="nb">zip</span><span class="p">(</span><span class="k">await</span> <span class="n">DieselPool</span><span class="o">.</span><span class="n">diesel_token</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="n">pools</span><span class="p">)</span>
+        <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="Gearbox.is_diesel_token">
@@ -179,15 +193,18 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">is_diesel_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">token</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">diesel_tokens</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="Gearbox.get_price">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.Gearbox.get_price">[docs]</a>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
         <span class="n">dtokens</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">diesel_tokens</span><span class="p">()</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">dtokens</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 </div>
 
-    
+
+
 <span class="k">try</span><span class="p">:</span>
     <span class="n">gearbox</span> <span class="o">=</span> <span class="n">Gearbox</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="k">except</span><span class="p">:</span>

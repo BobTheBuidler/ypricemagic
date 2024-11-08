@@ -78,9 +78,20 @@
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
 <span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">version</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span><span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncGenerator</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">,</span> 
-                    <span class="n">Callable</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> 
-                    <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">TYPE_CHECKING</span><span class="p">,</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">AsyncGenerator</span><span class="p">,</span>
+    <span class="n">Awaitable</span><span class="p">,</span>
+    <span class="n">Callable</span><span class="p">,</span>
+    <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">NoReturn</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">TypeVar</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+<span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
@@ -90,7 +101,13 @@
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">web3</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">EventLookupError</span>
-<span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span><span class="p">,</span> <span class="n">_add_deployment_topics</span><span class="p">,</span> <span class="n">_decode_logs</span><span class="p">,</span> <span class="n">_deployment_topics</span><span class="p">,</span> <span class="n">EventDict</span>
+<span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">_EventItem</span><span class="p">,</span>
+    <span class="n">_add_deployment_topics</span><span class="p">,</span>
+    <span class="n">_decode_logs</span><span class="p">,</span>
+    <span class="n">_deployment_topics</span><span class="p">,</span>
+    <span class="n">EventDict</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span>
 <span class="kn">from</span> <span class="nn">toolz</span> <span class="kn">import</span> <span class="n">groupby</span>
 <span class="kn">from</span> <span class="nn">web3.middleware.filter</span> <span class="kn">import</span> <span class="n">block_ranges</span>
@@ -107,12 +124,17 @@
     <span class="kn">from</span> <span class="nn">y._db.utils.logs</span> <span class="kn">import</span> <span class="n">LogCache</span>
 
 
-<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s1">&#39;T&#39;</span><span class="p">)</span>
+<span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># not really sure why this breaks things</span>
-<span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;eth-event&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">version</span><span class="p">(</span><span class="s2">&quot;eth-event&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">))</span> <span class="o">&gt;=</span> <span class="p">(</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="mi">2</span><span class="p">,</span>
+    <span class="mi">4</span><span class="p">,</span>
+<span class="p">)</span>
+
 
 <div class="viewcode-block" id="decode_logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.decode_logs">[docs]</a>
@@ -121,16 +143,21 @@
 <span class="sd">    Decode logs to events and enrich them with additional info.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
+
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
-        <span class="n">address</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="s1">&#39;address&#39;</span><span class="p">]</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_deployment_topics</span><span class="p">:</span>
             <span class="n">_add_deployment_topics</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
-    
+
     <span class="c1"># for some reason &lt; this version can decode them just fine but &gt;= cannot</span>
-    <span class="n">special_treatment</span> <span class="o">=</span> <span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="ow">and</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">)</span>
-            
+    <span class="n">special_treatment</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="ow">and</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">)</span>
+    <span class="p">)</span>
+
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">]</span> <span class="k">if</span> <span class="n">special_treatment</span> <span class="k">else</span> <span class="n">logs</span><span class="p">)</span>
+        <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">]</span> <span class="k">if</span> <span class="n">special_treatment</span> <span class="k">else</span> <span class="n">logs</span>
+        <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">decoded</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
@@ -160,13 +187,13 @@
 
 <div class="viewcode-block" id="get_logs_asap">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.get_logs_asap">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_logs_asap</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">],</span>
     <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs as soon as possible.</span>
@@ -183,15 +210,20 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">from_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
-        <span class="n">from_block</span> <span class="o">=</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">address</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">from_block</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="mi">0</span> <span class="k">if</span> <span class="n">address</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="k">if</span> <span class="n">to_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">to_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
 
     <span class="n">ranges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_ranges</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">))</span>
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;fetching </span><span class="si">%d</span><span class="s1"> batches&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">))</span>
-    
-    <span class="n">batches</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;fetching </span><span class="si">%d</span><span class="s2"> batches&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">))</span>
+
+    <span class="n">batches</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="o">*</span><span class="p">[</span><span class="n">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">log</span> <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">batches</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">batch</span><span class="p">]</span></div>
 
 
@@ -206,7 +238,7 @@
     <span class="n">chronological</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">run_forever</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">run_forever_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
-    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>  <span class="c1"># sourcery skip: low-code-quality</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs as soon as possible in a generator.</span>
@@ -228,27 +260,34 @@
 
     <span class="k">if</span> <span class="n">from_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
+
         <span class="k">if</span> <span class="n">address</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">from_block</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_lowest_deploy_block</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_lowest_deploy_block</span><span class="p">(</span>
+                <span class="n">address</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">to_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">to_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
     <span class="k">elif</span> <span class="n">run_forever</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s1">&#39;`to_block` must be None if `run_forever` is True.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;`to_block` must be None if `run_forever` is True.&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">from_block</span> <span class="o">&gt;</span> <span class="n">to_block</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;from_block must be &lt;= to_block. You passed from_block: </span><span class="si">{</span><span class="n">from_block</span><span class="si">}</span><span class="s2"> to_block: </span><span class="si">{</span><span class="n">to_block</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;from_block must be &lt;= to_block. You passed from_block: </span><span class="si">{</span><span class="n">from_block</span><span class="si">}</span><span class="s2"> to_block: </span><span class="si">{</span><span class="n">to_block</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="p">)</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
         <span class="n">ranges</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">block_ranges</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">,</span> <span class="n">BATCH_SIZE</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;fetching </span><span class="si">%d</span><span class="s1"> batches&#39;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;fetching </span><span class="si">%d</span><span class="s2"> batches&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">))</span>
         <span class="n">coros</span> <span class="o">=</span> <span class="p">[</span><span class="n">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">chronological</span><span class="p">:</span>
             <span class="n">yielded</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">done</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">coros</span><span class="p">)),</span> <span class="nb">aiter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span>
+                <span class="nb">dict</span><span class="p">(</span><span class="nb">enumerate</span><span class="p">(</span><span class="n">coros</span><span class="p">)),</span> <span class="nb">aiter</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">):</span>
                 <span class="n">done</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span>
                 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coros</span><span class="p">)):</span>
                     <span class="k">if</span> <span class="n">yielded</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
@@ -262,9 +301,9 @@
                 <span class="k">yield</span> <span class="k">await</span> <span class="n">logs</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">run_forever</span><span class="p">:</span>
             <span class="k">return</span>
-        
+
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">run_forever_interval</span><span class="p">)</span>
-        
+
         <span class="c1"># Find start and end block for next loop</span>
         <span class="n">current_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
         <span class="k">while</span> <span class="n">current_block</span> <span class="o">&lt;=</span> <span class="n">to_block</span><span class="p">:</span>
@@ -277,17 +316,21 @@
 
 <div class="viewcode-block" id="logs_to_balance_checkpoints">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.logs_to_balance_checkpoints">[docs]</a>
-<span class="k">def</span> <span class="nf">logs_to_balance_checkpoints</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">,</span><span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">logs_to_balance_checkpoints</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert Transfer logs to `{address: {from_block: balance}}` checkpoints.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">balances</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
     <span class="n">checkpoints</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">block</span><span class="p">,</span> <span class="n">block_logs</span> <span class="ow">in</span> <span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;blockNumber&#39;</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">for</span> <span class="n">block</span><span class="p">,</span> <span class="n">block_logs</span> <span class="ow">in</span> <span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;blockNumber&quot;</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">block_logs</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
             <span class="c1"># ZERO_ADDRESS tracks -totalSupply</span>
-            <span class="n">sender</span><span class="p">,</span> <span class="n">receiver</span><span class="p">,</span> <span class="n">amount</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># there can be several different aliases</span>
+            <span class="p">(</span>
+                <span class="n">sender</span><span class="p">,</span>
+                <span class="n">receiver</span><span class="p">,</span>
+                <span class="n">amount</span><span class="p">,</span>
+            <span class="p">)</span> <span class="o">=</span> <span class="n">log</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># there can be several different aliases</span>
             <span class="n">balances</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span> <span class="o">-=</span> <span class="n">amount</span>
             <span class="n">checkpoints</span><span class="p">[</span><span class="n">sender</span><span class="p">][</span><span class="n">block</span><span class="p">]</span> <span class="o">=</span> <span class="n">balances</span><span class="p">[</span><span class="n">sender</span><span class="p">]</span>
             <span class="n">balances</span><span class="p">[</span><span class="n">receiver</span><span class="p">]</span> <span class="o">+=</span> <span class="n">amount</span>
@@ -308,6 +351,7 @@
     <span class="k">return</span> <span class="n">total</span></div>
 
 
+
 <div class="viewcode-block" id="_get_logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events._get_logs">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span>
@@ -315,8 +359,8 @@
     <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">],</span>
     <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-    <span class="n">end</span><span class="p">:</span> <span class="n">Block</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+    <span class="n">end</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs for a given address, topics, and block range.</span>
 
@@ -335,19 +379,23 @@
         <span class="n">response</span> <span class="o">=</span> <span class="n">_get_logs_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">response</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">address</span> <span class="ow">and</span> <span class="n">log</span><span class="o">.</span><span class="n">address</span> <span class="o">!=</span> <span class="n">address</span><span class="p">:</span>
-<span class="w">            </span><span class="sd">&#39;&#39;&#39; I have this due to a corrupt cache on my local box that I would prefer not to lose. &#39;&#39;&#39;</span>
-<span class="w">            </span><span class="sd">&#39;&#39;&#39; It will not impact your scripts. &#39;&#39;&#39;</span> 
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;I have this due to a corrupt cache on my local box that I would prefer not to lose.&quot;&quot;&quot;</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot; It will not impact your scripts. &quot;&quot;&quot;</span>
             <span class="n">response</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">log</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">response</span></div>
 
 
+
 <span class="n">get_logs_semaphore</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
     <span class="k">lambda</span><span class="p">:</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">BlockSemaphore</span><span class="p">(</span>
-        <span class="n">ENVS</span><span class="o">.</span><span class="n">GETLOGS_DOP</span><span class="p">,</span> 
+        <span class="n">ENVS</span><span class="o">.</span><span class="n">GETLOGS_DOP</span><span class="p">,</span>
         <span class="c1"># We need to do this in case users use the sync api in a multithread context</span>
-        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y.get_logs&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span> <span class="o">==</span> <span class="n">threading</span><span class="o">.</span><span class="n">main_thread</span><span class="p">()</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y.get_logs&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span> <span class="o">==</span> <span class="n">threading</span><span class="o">.</span><span class="n">main_thread</span><span class="p">()</span>
+        <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">threading</span><span class="o">.</span><span class="n">current_thread</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 <span class="p">)</span>
+
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -367,6 +415,7 @@
     <span class="k">async</span> <span class="k">with</span> <span class="n">get_logs_semaphore</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()][</span><span class="n">end</span><span class="p">]:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_logs_async_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -385,11 +434,22 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">address</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">({</span><span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">topics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">({</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">({</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span>
+                    <span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span>
+                    <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">errs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;Service Unavailable for url:&quot;</span><span class="p">,</span>
@@ -401,8 +461,8 @@
         <span class="p">]</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">err</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">):</span>
             <span class="k">raise</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;your node is having trouble, breaking batch in half&#39;</span><span class="p">)</span>
-        <span class="n">batch_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;your node is having trouble, breaking batch in half&quot;</span><span class="p">)</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="k">if</span> <span class="n">batch_size</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="c1"># breaks the logic below and usually just succeeds on retry anyway</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs_async_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
@@ -414,13 +474,14 @@
         <span class="n">response</span> <span class="o">=</span> <span class="n">batch1</span> <span class="o">+</span> <span class="n">batch2</span>
     <span class="k">return</span> <span class="n">response</span>
 
+
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">_get_logs_no_cache</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">],</span>
     <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-    <span class="n">end</span><span class="p">:</span> <span class="n">Block</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+    <span class="n">end</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs without using the disk cache.</span>
 
@@ -433,14 +494,25 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of decoded event logs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;fetching logs </span><span class="si">%s</span><span class="s1"> to </span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;fetching logs </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">address</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">({</span><span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
+            <span class="p">)</span>
         <span class="k">elif</span> <span class="n">topics</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">({</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span>
+                <span class="p">{</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">}</span>
+            <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">response</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">({</span><span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span> <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span> <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">})</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">address</span><span class="p">,</span>
+                    <span class="s2">&quot;topics&quot;</span><span class="p">:</span> <span class="n">topics</span><span class="p">,</span>
+                    <span class="s2">&quot;fromBlock&quot;</span><span class="p">:</span> <span class="n">start</span><span class="p">,</span>
+                    <span class="s2">&quot;toBlock&quot;</span><span class="p">:</span> <span class="n">end</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">errs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;Service Unavailable for url:&quot;</span><span class="p">,</span>
@@ -452,8 +524,8 @@
             <span class="s2">&quot;Log response size exceeded.&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;your node is having trouble, breaking batch in half&#39;</span><span class="p">)</span>
-            <span class="n">batch_size</span> <span class="o">=</span> <span class="p">(</span><span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;your node is having trouble, breaking batch in half&quot;</span><span class="p">)</span>
+            <span class="n">batch_size</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">half_of_batch</span> <span class="o">=</span> <span class="n">batch_size</span> <span class="o">//</span> <span class="mi">2</span>
             <span class="n">batch1_end</span> <span class="o">=</span> <span class="n">start</span> <span class="o">+</span> <span class="n">half_of_batch</span>
             <span class="n">batch2_start</span> <span class="o">=</span> <span class="n">batch1_end</span> <span class="o">+</span> <span class="mi">1</span>
@@ -465,7 +537,6 @@
     <span class="k">return</span> <span class="n">response</span>
 
 
-
 <span class="c1">##############################</span>
 <span class="c1"># Leaving this here so as to not upset people&#39;s caches</span>
 <span class="c1">##############################</span>
@@ -473,11 +544,8 @@
 
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">_get_logs_batch_cached</span><span class="p">(</span>
-    <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-    <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
-    <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-    <span class="n">end</span><span class="p">:</span> <span class="n">Block</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Block</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs from the disk cache, or fetch and cache them if not available.</span>
 
@@ -503,10 +571,10 @@
 <div class="viewcode-block" id="LogFilter.__init__">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="o">*</span><span class="p">,</span> 
-        <span class="n">addresses</span> <span class="o">=</span> <span class="p">[],</span> 
-        <span class="n">topics</span> <span class="o">=</span> <span class="p">[],</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
+        <span class="n">addresses</span><span class="o">=</span><span class="p">[],</span>
+        <span class="n">topics</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span><span class="p">,</span>
         <span class="n">chunks_per_batch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -531,19 +599,28 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span> <span class="o">=</span> <span class="n">_clean_addresses</span><span class="p">(</span><span class="n">addresses</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="n">topics</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">,</span> <span class="n">chunks_per_batch</span><span class="o">=</span><span class="n">chunks_per_batch</span><span class="p">,</span> <span class="n">semaphore</span><span class="o">=</span><span class="n">semaphore</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="n">executor</span><span class="p">,</span> <span class="n">is_reusable</span><span class="o">=</span><span class="n">is_reusable</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">from_block</span><span class="p">,</span>
+            <span class="n">chunk_size</span><span class="o">=</span><span class="n">chunk_size</span><span class="p">,</span>
+            <span class="n">chunks_per_batch</span><span class="o">=</span><span class="n">chunks_per_batch</span><span class="p">,</span>
+            <span class="n">semaphore</span><span class="o">=</span><span class="n">semaphore</span><span class="p">,</span>
+            <span class="n">executor</span><span class="o">=</span><span class="n">executor</span><span class="p">,</span>
+            <span class="n">is_reusable</span><span class="o">=</span><span class="n">is_reusable</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-    
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> addresses=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="si">}</span><span class="s2"> topics=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;LogCache&quot;</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">y._db.utils.logs</span> <span class="kn">import</span> <span class="n">LogCache</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="n">LogCache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span>
-    
+
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">semaphore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">BlockSemaphore</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_semaphore</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -575,7 +652,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: refactor this out of the base class abc</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-    
+
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -585,8 +662,9 @@
 <span class="sd">            A function for bulk inserting logs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">y._db.utils.logs</span> <span class="kn">import</span> <span class="n">bulk_insert</span>
+
         <span class="k">return</span> <span class="n">bulk_insert</span>
-    
+
     <span class="nd">@async_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_from_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -597,14 +675,21 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
+
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_lowest_deploy_block</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="nb">str</span>
+            <span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_lowest_deploy_block</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="kc">True</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span>
-    
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch logs for a given block range.</span>
@@ -619,7 +704,9 @@
         <span class="n">tries</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs_async_no_cache</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">,</span> <span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span><span class="p">)</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs_async_no_cache</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">,</span> <span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span>
+                <span class="p">)</span>
             <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;parse error&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="ow">or</span> <span class="n">tries</span> <span class="o">&gt;=</span> <span class="mi">50</span><span class="p">:</span>
                     <span class="k">raise</span>
@@ -631,8 +718,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_block</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">(</span><span class="n">from_block</span><span class="p">)</span>
-        
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;addresses&#39;</span><span class="p">,</span> <span class="s1">&#39;topics&#39;</span><span class="p">,</span> <span class="s1">&#39;from_block&#39;</span></div>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;addresses&quot;</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">,</span> <span class="s2">&quot;from_block&quot;</span></div>
 
 
 
@@ -659,6 +746,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
+
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extend the list of events with decoded logs.</span>
@@ -667,7 +755,7 @@
 <span class="sd">            objs: A list of raw event logs.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">decode_logs</span><span class="p">(</span><span class="n">objs</span><span class="p">))</span>
-    
+
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the block number for a given event.</span>
@@ -679,7 +767,7 @@
 <span class="sd">            The block number.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">block_number</span>
-        
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
@@ -731,7 +819,9 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># .items() keeps the input order but yields them as they&#39;re ready</span>
         <span class="n">decoded</span> <span class="o">=</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
-        <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">decoded</span><span class="p">])</span>
+        <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+            <span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">decoded</span><span class="p">]</span>
+        <span class="p">)</span>
         <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="n">should_include</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_event</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
@@ -753,12 +843,14 @@
         <span class="k">if</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isawaitable</span><span class="p">(</span><span class="n">include</span><span class="p">):</span>
             <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="n">include</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
-        
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[]</span></div>
 
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_lowest_deploy_block</span><span class="p">(</span><span class="n">addresses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">],</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Block</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_lowest_deploy_block</span><span class="p">(</span>
+    <span class="n">addresses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">],</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Block</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the lowest deployment block for a list of addresses.</span>
 
@@ -770,9 +862,10 @@
 <span class="sd">        The lowest deployment block.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
+
     <span class="k">return</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-        <span class="n">contract_creation_block_async</span><span class="p">,</span> 
-        <span class="n">addresses</span><span class="p">,</span> 
+        <span class="n">contract_creation_block_async</span><span class="p">,</span>
+        <span class="n">addresses</span><span class="p">,</span>
         <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="n">when_no_history_return_0</span><span class="p">,</span>
     <span class="p">)</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>

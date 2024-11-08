@@ -959,7 +959,7 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dl class="py class">
 <dt class="sig sig-object py" id="y.contracts.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="reference internal" href="../_modules/y/contracts.html#Contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></p>
 <p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
 1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
 2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
@@ -1009,7 +1009,7 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractCall" title="(in dank_mids)"><em>DankContractCall</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractTx" title="(in dank_mids)"><em>DankContractTx</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankOverloadedMethod" title="(in dank_mids)"><em>DankOverloadedMethod</em></a></p>
+<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1163,7 +1163,7 @@ cache_ttl (optional): The time-to-live for the contract cache in seconds. Defaul
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
+<dd class="field-even"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1187,7 +1187,7 @@ performed using this account.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
+<dd class="field-even"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2909,7 +2909,7 @@ is raised.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="y.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="reference internal" href="../_modules/y/contracts.html#Contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Contract" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></p>
 <p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
 1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
 2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
@@ -2959,7 +2959,7 @@ is raised.</p>
 <dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractCall" title="(in dank_mids)"><em>DankContractCall</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankContractTx" title="(in dank_mids)"><em>DankContractTx</em></a> | <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.types.DankOverloadedMethod" title="(in dank_mids)"><em>DankOverloadedMethod</em></a></p>
+<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3113,7 +3113,7 @@ cache_ttl (optional): The time-to-live for the contract cache in seconds. Defaul
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
+<dd class="field-even"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3137,7 +3137,7 @@ performed using this account.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.brownie_patch.html#dank_mids.brownie_patch.contract.Contract" title="(in dank_mids)"><em>Contract</em></a></p>
+<dd class="field-even"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>

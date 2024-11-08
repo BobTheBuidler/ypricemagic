@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.cache</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">functools</span>
+<span></span><span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">inspect</span> <span class="kn">import</span> <span class="n">iscoroutinefunction</span>
@@ -96,6 +95,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Memory</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
+
 <span class="n">memory</span> <span class="o">=</span> <span class="n">_memory</span><span class="p">()</span>
 
 <span class="n">a_sync_ttl_cache</span><span class="p">:</span> <span class="n">ASyncDecorator</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
@@ -111,25 +111,28 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User doesn&#39;t has toolcache, this diskcache decorator will work.&quot;&quot;&quot;</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="n">cache_base_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;./cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s1">/&#39;</span>
+    <span class="n">cache_base_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;./cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
 
     <span class="k">def</span> <span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s1"> is sync&#39;</span><span class="p">)</span>
-        
-        <span class="n">module</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
-        <span class="n">cache_path_for_fn</span> <span class="o">=</span> <span class="n">cache_base_path</span> <span class="o">+</span> <span class="n">module</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2"> is sync&quot;</span><span class="p">)</span>
+
+        <span class="n">module</span> <span class="o">=</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">cache_path_for_fn</span> <span class="o">=</span> <span class="n">cache_base_path</span> <span class="o">+</span> <span class="n">module</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">fn</span><span class="o">.</span><span class="vm">__name__</span>
 
         <span class="c1"># Ensure the cache dir exists</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">cache_path_for_fn</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="nd">@toolcache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="s1">&#39;disk&#39;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_path_for_fn</span><span class="p">)</span>
+        <span class="nd">@toolcache</span><span class="o">.</span><span class="n">cache</span><span class="p">(</span><span class="s2">&quot;disk&quot;</span><span class="p">,</span> <span class="n">cache_dir</span><span class="o">=</span><span class="n">cache_path_for_fn</span><span class="p">)</span>
         <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">def</span> <span class="nf">diskcache_wrap</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;fetching </span><span class="si">{</span><span class="n">fn</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;fetching </span><span class="si">{</span><span class="n">fn</span><span class="o">.</span><span class="vm">__qualname__</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="ow">in</span><span class="w"> </span><span class="n">args</span><span class="p">)</span><span class="si">}</span><span class="s2">)&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">fn</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">diskcache_wrap</span>
-        
+
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;User doesn&#39;t have toolcache, this decorator will just return the undecorated function.&quot;&quot;&quot;</span>

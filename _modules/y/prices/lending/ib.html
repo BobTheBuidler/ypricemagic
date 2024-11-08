@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.lending.ib</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
@@ -87,9 +86,10 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="is_ib_token">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.ib.is_ib_token">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_ib_token</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Determines if the given token address is an Iron Bank token.</span>
@@ -105,13 +105,28 @@
 <span class="sd">        &gt;&gt;&gt; print(is_ib)</span>
 <span class="sd">        True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="p">(</span><span class="s1">&#39;debtShareToVal(uint)(uint)&#39;</span><span class="p">,</span><span class="s1">&#39;debtValToShare(uint)(uint)&#39;</span><span class="p">,</span><span class="s1">&#39;token()(address)&#39;</span><span class="p">,</span><span class="s1">&#39;totalToken()(uint)&#39;</span><span class="p">,</span><span class="s1">&#39;totalSupply()(uint)&#39;</span><span class="p">),</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span>
+        <span class="n">token</span><span class="p">,</span>
+        <span class="p">(</span>
+            <span class="s2">&quot;debtShareToVal(uint)(uint)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;debtValToShare(uint)(uint)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;token()(address)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;totalToken()(uint)&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;totalSupply()(uint)&quot;</span><span class="p">,</span>
+        <span class="p">),</span>
+        <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.ib.get_price">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s1">&#39;sync&#39;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+    <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+    <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates the price of an Iron Bank token.</span>
 
@@ -133,8 +148,12 @@
 <span class="sd">        relative to its underlying asset, and then multiplying by the price of the underlying asset.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
-    <span class="n">token</span><span class="p">,</span> <span class="n">total_bal</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;token&#39;</span><span class="p">,</span> <span class="s1">&#39;totalToken&#39;</span><span class="p">,</span> <span class="s1">&#39;totalSupply&#39;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-    <span class="n">token_scale</span><span class="p">,</span> <span class="n">pool_scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">)</span>
+    <span class="n">token</span><span class="p">,</span> <span class="n">total_bal</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span>
+        <span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;totalToken&quot;</span><span class="p">,</span> <span class="s2">&quot;totalSupply&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
+    <span class="p">)</span>
+    <span class="n">token_scale</span><span class="p">,</span> <span class="n">pool_scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span>
+    <span class="p">)</span>
     <span class="n">total_bal</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">token_scale</span><span class="p">)</span>
     <span class="n">total_supply</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">pool_scale</span><span class="p">)</span>
     <span class="n">share_price</span> <span class="o">=</span> <span class="n">total_bal</span> <span class="o">/</span> <span class="n">total_supply</span>

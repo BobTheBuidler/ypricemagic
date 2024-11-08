@@ -83,8 +83,9 @@
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">MessedUpBrownieContract</span>
 <span class="kn">from</span> <span class="nn">y.utils</span> <span class="kn">import</span> <span class="n">gather_methods</span><span class="p">,</span> <span class="n">hasall</span>
 
-<span class="n">_CHECK_METHODS</span> <span class="o">=</span> <span class="s1">&#39;getReserves&#39;</span><span class="p">,</span><span class="s1">&#39;token0&#39;</span><span class="p">,</span><span class="s1">&#39;token1&#39;</span>
-<span class="n">_TOKEN_METHODS</span> <span class="o">=</span> <span class="s1">&#39;token0()(address)&#39;</span><span class="p">,</span> <span class="s1">&#39;token1()(address)&#39;</span>
+<span class="n">_CHECK_METHODS</span> <span class="o">=</span> <span class="s2">&quot;getReserves&quot;</span><span class="p">,</span> <span class="s2">&quot;token0&quot;</span><span class="p">,</span> <span class="s2">&quot;token1&quot;</span>
+<span class="n">_TOKEN_METHODS</span> <span class="o">=</span> <span class="s2">&quot;token0()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;token1()(address)&quot;</span>
+
 
 <div class="viewcode-block" id="is_generic_amm">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.genericamm.is_generic_amm">[docs]</a>
@@ -113,7 +114,8 @@
         <span class="c1"># probably false, can get more specific when there&#39;s a need.</span>
         <span class="k">return</span> <span class="kc">False</span></div>
 
-        
+
+
 <div class="viewcode-block" id="GenericAmm">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.genericamm.GenericAmm">[docs]</a>
 <span class="k">class</span> <span class="nc">GenericAmm</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
@@ -134,11 +136,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span></div>
 
-    
+
 <div class="viewcode-block" id="GenericAmm.get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.genericamm.GenericAmm.get_price">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lp_token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lp_token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the price of the LP token in USD.</span>
 
@@ -158,8 +165,12 @@
 <span class="sd">            1.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">get_tvl</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-            <span class="n">ERC20</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get_tvl</span><span class="p">(</span>
+                <span class="n">lp_token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">),</span>
+            <span class="n">ERC20</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span>
+                <span class="n">block</span><span class="o">=</span><span class="n">block</span>
+            <span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">total_supply</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">None</span>
@@ -167,12 +178,12 @@
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="n">tvl</span> <span class="o">/</span> <span class="n">total_supply</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="GenericAmm.get_tokens">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.genericamm.GenericAmm.get_tokens">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s1">&#39;memory&#39;</span><span class="p">)</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lp_token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span><span class="n">ERC20</span><span class="p">]:</span>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lp_token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the tokens in the AMM pool.</span>
 
@@ -192,11 +203,16 @@
         <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">_TOKEN_METHODS</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">)</span></div>
 
-    
+
 <div class="viewcode-block" id="GenericAmm.get_tvl">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.genericamm.GenericAmm.get_tvl">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">lp_token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdValue</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">lp_token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdValue</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the Total Value Locked (TVL) in the AMM pool.</span>
 
@@ -220,7 +236,10 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">get_tokens</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="n">lp_token_contract</span><span class="o">.</span><span class="n">getReserves</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
         <span class="p">)</span>
-        <span class="n">reserves</span> <span class="o">=</span> <span class="p">(</span><span class="n">WeiBalance</span><span class="p">(</span><span class="n">reserve</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">reserve</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span><span class="n">reserves</span><span class="p">))</span>
+        <span class="n">reserves</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">WeiBalance</span><span class="p">(</span><span class="n">reserve</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">token</span><span class="p">,</span> <span class="n">reserve</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">tokens</span><span class="p">,</span> <span class="n">reserves</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">reserves</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span></div>
 </div>
 

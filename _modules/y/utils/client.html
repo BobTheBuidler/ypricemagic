@@ -85,6 +85,7 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="get_ethereum_client">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.client.get_ethereum_client">[docs]</a>
 <span class="nd">@lru_cache</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -111,6 +112,7 @@
     <span class="k">return</span> <span class="n">_get_ethereum_client</span><span class="p">(</span><span class="n">version</span><span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="get_ethereum_client_async">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.client.get_ethereum_client_async">[docs]</a>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -127,7 +129,10 @@
 <span class="sd">        &gt;&gt;&gt; print(client)</span>
 <span class="sd">        &#39;erigon&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">_get_ethereum_client</span><span class="p">(</span><span class="k">await</span> <span class="n">dank_web3</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">coro_request</span><span class="p">(</span><span class="n">RPC</span><span class="o">.</span><span class="n">web3_clientVersion</span><span class="p">,</span> <span class="p">[]))</span></div>
+    <span class="k">return</span> <span class="n">_get_ethereum_client</span><span class="p">(</span>
+        <span class="k">await</span> <span class="n">dank_web3</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">coro_request</span><span class="p">(</span><span class="n">RPC</span><span class="o">.</span><span class="n">web3_clientVersion</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="p">)</span></div>
+
 
 
 <span class="nd">@yLazyLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
@@ -148,12 +153,20 @@
 <span class="sd">        &#39;geth&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
-    <span class="k">return</span> <span class="nb">next</span><span class="p">((</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="n">_clients</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)),</span> <span class="n">client</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">next</span><span class="p">(</span>
+        <span class="p">(</span>
+            <span class="n">identifier</span>
+            <span class="k">for</span> <span class="n">prefix</span><span class="p">,</span> <span class="n">identifier</span> <span class="ow">in</span> <span class="n">_clients</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">client</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">prefix</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">client</span><span class="p">,</span>
+    <span class="p">)</span>
+
 
 <span class="n">_clients</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;geth&#39;</span><span class="p">:</span> <span class="s1">&#39;geth&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;erigon&#39;</span><span class="p">:</span> <span class="s1">&#39;erigon&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;TurboGeth&#39;</span><span class="p">:</span> <span class="s1">&#39;tg&#39;</span><span class="p">,</span>
+    <span class="s2">&quot;geth&quot;</span><span class="p">:</span> <span class="s2">&quot;geth&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;erigon&quot;</span><span class="p">:</span> <span class="s2">&quot;erigon&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;TurboGeth&quot;</span><span class="p">:</span> <span class="s2">&quot;tg&quot;</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 
