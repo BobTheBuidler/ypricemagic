@@ -23,14 +23,14 @@ from y.utils.events import ProcessedEvents
 logger = logging.getLogger(__name__)
 
 DENOMINATIONS = {
-    'ETH': '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',
-    'BTC': '0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB',
-    'USD': '0x0000000000000000000000000000000000000348',
+    "ETH": "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    "BTC": "0xbBbBBBBbbBBBbbbBbbBbbbbBBbBbbbbBbBbbBBbB",
+    "USD": "0x0000000000000000000000000000000000000348",
 }
 
 registries = {
     # https://docs.chain.link/docs/feed-registry/#contract-addresses
-    Network.Mainnet: '0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf',
+    Network.Mainnet: "0x47Fb2585D2C56Fe188D0E6ec628a38b74fCeeeDf",
 }
 
 # These are feeds we specify anually in addition to the ones fetched from the registry.
@@ -95,7 +95,6 @@ FEEDS = {
     },
     Network.Fantom: {
         "0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83": "0xf4766552D15AE4d256Ad41B6cf2933482B0680dc",  # wftm -> FTM
-        
         "0x321162Cd933E2Be498Cd2267a90534A804051b11": "0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4",  # wbtc -> BTC
         "0x2406dCe4dA5aB125A18295f4fB9FD36a0f7879A2": "0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4",  # anybtc -> BTC
         "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501": "0x8e94C22142F4A64b99022ccDd994f4e9EC86E4B4",  # renbtc -> BTC
@@ -159,106 +158,138 @@ FEEDS = {
         "0x82e3A8F066a6989666b031d916c43672085b1582": "0x745Ab5b69E01E2BE1104Ca84937Bb71f96f5fB21",  # yfi -> YFI
     },
     Network.Optimism: {
-        "0x68f180fcCe6836688e9084f035309E29Bf0A2095": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593", # wbtc -> BTC
-        "0x298B9B95708152ff6968aafd889c6586e9169f1D": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593", # sbtc -> BTC
-        "0x4200000000000000000000000000000000000006": "0x13e3Ee699D1909E989722E753853AE30b17e08c5", # weth -> ETH
-        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1": "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6", # dai -> DAI
-        "0x4200000000000000000000000000000000000042": "0x0D276FC14719f9292D5C1eA2198673d1f4269246", # op -> OP
-        "0x2E3D870790dC77A83DD1d18184Acc7439A53f475": "0xc7D132BeCAbE7Dcc4204841F33bae45841e41D9C", # frax -> FRAX
-        "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6": "0xCc232dcFAAE6354cE191Bd574108c1aD03f86450", # link -> LINK
-        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607": "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3", # usdc -> USDC
-        "0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4": "0x2FCF37343e916eAEd1f1DdaaF84458a359b53877", # snx -> SNX
-        "0x3c8B650257cFb5f272f799F5e2b4e65093a11a05": "0x0f2Ed59657e391746C1a097BDa98F2aBb94b1120", # velo -> VELO
+        "0x68f180fcCe6836688e9084f035309E29Bf0A2095": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593",  # wbtc -> BTC
+        "0x298B9B95708152ff6968aafd889c6586e9169f1D": "0xD702DD976Fb76Fffc2D3963D037dfDae5b04E593",  # sbtc -> BTC
+        "0x4200000000000000000000000000000000000006": "0x13e3Ee699D1909E989722E753853AE30b17e08c5",  # weth -> ETH
+        "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1": "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6",  # dai -> DAI
+        "0x4200000000000000000000000000000000000042": "0x0D276FC14719f9292D5C1eA2198673d1f4269246",  # op -> OP
+        "0x2E3D870790dC77A83DD1d18184Acc7439A53f475": "0xc7D132BeCAbE7Dcc4204841F33bae45841e41D9C",  # frax -> FRAX
+        "0x350a791Bfc2C21F9Ed5d10980Dad2e2638ffa7f6": "0xCc232dcFAAE6354cE191Bd574108c1aD03f86450",  # link -> LINK
+        "0x7F5c764cBc14f9669B88837ca1490cCa17c31607": "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3",  # usdc -> USDC
+        "0x8700dAec35aF8Ff88c16BdF0418774CB3D7599B4": "0x2FCF37343e916eAEd1f1DdaaF84458a359b53877",  # snx -> SNX
+        "0x3c8B650257cFb5f272f799F5e2b4e65093a11a05": "0x0f2Ed59657e391746C1a097BDa98F2aBb94b1120",  # velo -> VELO
     },
     Network.Base: {
-        "0x4200000000000000000000000000000000000006": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70", # weth -> ETH
-        "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb": "0x591e79239a7d679378eC8c847e5038150364C78F", # dai -> DAI
+        "0x4200000000000000000000000000000000000006": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",  # weth -> ETH
+        "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb": "0x591e79239a7d679378eC8c847e5038150364C78F",  # dai -> DAI
     },
 }.get(chain.id, {})
 
 ONE_DAY = 24 * 60 * 60
 
+
 class Feed:
-    __slots__ = 'address', 'asset', 'latest_answer', 'latest_timestamp', 'start_block', '_stale_thru_block'
-    def __init__(self, address: AnyAddressType, asset: AnyAddressType, start_block: int = 0, asynchronous: bool = False):
+    __slots__ = (
+        "address",
+        "asset",
+        "latest_answer",
+        "latest_timestamp",
+        "start_block",
+        "_stale_thru_block",
+    )
+
+    def __init__(
+        self,
+        address: AnyAddressType,
+        asset: AnyAddressType,
+        start_block: int = 0,
+        asynchronous: bool = False,
+    ):
         self.address = convert.to_address(address)
         self.asset = ERC20(asset, asynchronous=asynchronous)
         self.start_block = start_block
         # we could make less calls by using latestRoundData but then we have to repeatedly decode a bunch of useless data
-        self.latest_answer = Call(self.address, 'latestAnswer()(int256)').coroutine
-        self.latest_timestamp = Call(self.address, 'latestTimestamp()(uint256)').coroutine
+        self.latest_answer = Call(self.address, "latestAnswer()(int256)").coroutine
+        self.latest_timestamp = Call(
+            self.address, "latestTimestamp()(uint256)"
+        ).coroutine
         self._stale_thru_block = None
-    
+
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} address={self.address} asset={self.asset}>"
 
     @property
     def contract(self) -> Contract:
         return Contract(self.address)
-    
-    #@a_sync.future
-    async def decimals(self) -> int:
-        return await Call(self.address, ['decimals()(uint)'], [])
 
-    #@a_sync.future(cache_type='memory')
+    # @a_sync.future
+    async def decimals(self) -> int:
+        return await Call(self.address, ["decimals()(uint)"], [])
+
+    # @a_sync.future(cache_type='memory')
     @alru_cache(maxsize=None)
     async def scale(self) -> Optional[int]:
         return await (10 ** a_sync.ASyncFuture(self.decimals()))
 
-    #@a_sync.future
+    # @a_sync.future
     @stuck_coro_debugger
     async def get_price(self, block: int) -> Optional[UsdPrice]:
         if self._stale_thru_block and self._stale_thru_block > block:
-            logger.debug('%s is stale, must fetch price from elsewhere', self)
+            logger.debug("%s is stale, must fetch price from elsewhere", self)
             return None
         updated_at = await self.latest_timestamp(block_id=block)
         if updated_at + ONE_DAY < await time.get_block_timestamp_async(block):
             # if 24h have passed since last feed update, we can't trust it
             # NOTE: is there a way to tell on chain if a feed is retired? I haven't yet seen one go stale and come back
-            logger.debug('%s is stale, must fetch price from elsewhere', self)
+            logger.debug("%s is stale, must fetch price from elsewhere", self)
             if self._stale_thru_block is None or block > self._stale_thru_block:
                 self._stale_thru_block = block
             return None
         latest_answer = await self.latest_answer(block_id=block)
-        logger.debug('latest_answer: %s', latest_answer)
+        logger.debug("latest_answer: %s", latest_answer)
         # NOTE: just playing with smth here
         scale = a_sync.ASyncFuture(self.scale())
         price = latest_answer / scale
         price = UsdPrice(await price)
-        logger.debug('%s price at %s: %s', self, block, price)
+        logger.debug("%s price at %s: %s", self, block, price)
         return price
-        
+
 
 class FeedsFromEvents(ProcessedEvents[Feed]):
-    __slots__ = 'asynchronous', 
+    __slots__ = ("asynchronous",)
+
     def __init__(self, addresses, topics, asynchronous: bool = True):
         self.asynchronous = asynchronous
         super().__init__(addresses=addresses, topics=topics)
+
     def _include_event(self, event: _EventItem) -> bool:
-        return event['denomination'] == DENOMINATIONS['USD'] and event['latestAggregator'] != ZERO_ADDRESS
+        return (
+            event["denomination"] == DENOMINATIONS["USD"]
+            and event["latestAggregator"] != ZERO_ADDRESS
+        )
+
     def _process_event(self, event: _EventItem) -> Feed:
-        return Feed(event["latestAggregator"], event["asset"], event.block_number, asynchronous=self.asynchronous)
+        return Feed(
+            event["latestAggregator"],
+            event["asset"],
+            event.block_number,
+            asynchronous=self.asynchronous,
+        )
+
     def _get_block_for_obj(self, obj: Feed) -> int:
         return obj.start_block
-    
+
 
 class Chainlink(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = True) -> None:
         self.asynchronous = asynchronous
-        self._feeds = [Feed(feed, asset, asynchronous=self.asynchronous) for asset, feed in FEEDS.items()]
+        self._feeds = [
+            Feed(feed, asset, asynchronous=self.asynchronous)
+            for asset, feed in FEEDS.items()
+        ]
         if chain.id in registries:
             self.registry = Contract(registries[chain.id])
             self._feeds_from_events = FeedsFromEvents(
-                addresses=str(self.registry), 
-                topics=[self.registry.topics['FeedConfirmed']], 
+                addresses=str(self.registry),
+                topics=[self.registry.topics["FeedConfirmed"]],
                 asynchronous=asynchronous,
             )
         elif len(FEEDS) == 0:
-            raise UnsupportedNetwork('chainlink is not supported on this network')
+            raise UnsupportedNetwork("chainlink is not supported on this network")
         else:
             self.registry = None
             self._feeds_from_events = None
-    
+
     async def _feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
         for feed in self._feeds:
             yield feed
@@ -272,7 +303,7 @@ class Chainlink(a_sync.ASyncGenericBase):
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
             if asset == feed.asset:
                 return feed
-    
+
     async def has_feed(self, asset: AnyAddressType) -> bool:
         # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
         asset = convert.to_address(asset)
@@ -281,7 +312,7 @@ class Chainlink(a_sync.ASyncGenericBase):
                 return True
         return False
 
-   # @a_sync.future
+    # @a_sync.future
     @stuck_coro_debugger
     async def get_price(self, asset, block: Optional[Block] = None) -> UsdPrice:
         if block is None:
@@ -290,7 +321,9 @@ class Chainlink(a_sync.ASyncGenericBase):
         return await self._get_price(asset, block)
 
     @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
-    async def _get_price(self, asset: AnyAddressType, block: Block) -> Optional[UsdPrice]:
+    async def _get_price(
+        self, asset: AnyAddressType, block: Block
+    ) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None
@@ -298,13 +331,17 @@ class Chainlink(a_sync.ASyncGenericBase):
         feed = await self.get_feed(asset, sync=False)
         if feed is None:
             return
-        if block is not None and block < await contract_creation_block_async(feed.address, True):
-            return 
+        if block is not None and block < await contract_creation_block_async(
+            feed.address, True
+        ):
+            return
         try:
             return await feed.get_price(block=block)
         except (TypeError, ValueError) as e:
             logger.debug("error for feed %s: %s", feed, e)
 
 
-try: chainlink = Chainlink(asynchronous=True)
-except UnsupportedNetwork: chainlink = set()
+try:
+    chainlink = Chainlink(asynchronous=True)
+except UnsupportedNetwork:
+    chainlink = set()

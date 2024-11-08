@@ -1,4 +1,3 @@
-
 import logging
 import os
 
@@ -7,11 +6,12 @@ from brownie import chain
 import y
 from y.prices.stable_swap.curve import CurveRegistry, curve
 
-y_logger = logging.getLogger('y')
+y_logger = logging.getLogger("y")
 y_logger.setLevel(logging.DEBUG)
 y_logger.addHandler(logging.StreamHandler())
 
 curve: CurveRegistry
+
 
 def main():
     BAD = os.environ.get("BAD")
@@ -25,4 +25,3 @@ def main():
         curve.get_price(BAD, int(BLOCK), sync=True)
     else:
         y_logger.info("%s is not a curve pool", BAD)
-    

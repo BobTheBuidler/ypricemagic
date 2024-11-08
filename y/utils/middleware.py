@@ -17,21 +17,22 @@ from y.utils.cache import memory
 logger = logging.getLogger(__name__)
 
 provider_specific_batch_sizes = {
-    "moralis":  2_000,
-    "pokt":     2_000,
+    "moralis": 2_000,
+    "pokt": 2_000,
     "tenderly": 2_000,
-    "ankr":     2_000,
+    "ankr": 2_000,
 }
 
 chain_specific_max_batch_sizes = {
-    Network.Mainnet:    10_000,     # 1.58 days
-    Network.Gnosis:     20_000,     # 1.15 days
-    Network.Fantom:     100_000,    # 1.03 days
-    Network.Arbitrum:   20_000,     # 0.34 days
-    Network.Optimism:   800_000,    # 10.02 days
+    Network.Mainnet: 10_000,  # 1.58 days
+    Network.Gnosis: 20_000,  # 1.15 days
+    Network.Fantom: 100_000,  # 1.03 days
+    Network.Arbitrum: 20_000,  # 0.34 days
+    Network.Optimism: 800_000,  # 10.02 days
 }
 
 fallback_batch_size = 10_000
+
 
 def _get_batch_size() -> int:
     """
@@ -46,6 +47,7 @@ def _get_batch_size() -> int:
         if provider in web3.provider.endpoint_uri:
             return size
     return chain_specific_max_batch_sizes.get(chain.id, fallback_batch_size)
+
 
 BATCH_SIZE = _get_batch_size()
 
@@ -75,12 +77,14 @@ def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
     Returns:
         A middleware function that caches eth_getCode calls.
     """
+
     @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
         if should_cache(method, params):
             return memory.cache(make_request)(method, params)
         return make_request(method, params)
+
     return middleware
 
 
@@ -94,18 +98,22 @@ def setup_getcode_cache_middleware() -> None:
     # patch web3 provider with more connections and higher timeout
     if web3.provider:
         try:
-            assert web3.provider.endpoint_uri.startswith("http"), "only http and https providers are supported"
+            assert web3.provider.endpoint_uri.startswith(
+                "http"
+            ), "only http and https providers are supported"
             adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
             session = Session()
             session.mount("http://", adapter)
             session.mount("https://", adapter)
-            web3.provider = HTTPProvider(web3.provider.endpoint_uri, {"timeout": 600}, session)
+            web3.provider = HTTPProvider(
+                web3.provider.endpoint_uri, {"timeout": 600}, session
+            )
         except AttributeError as e:
             if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
                 raise
 
     web3.middleware_onion.add(getcode_cache_middleware)
-    
+
 
 def setup_geth_poa_middleware() -> None:
     """

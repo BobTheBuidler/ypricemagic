@@ -1,4 +1,3 @@
-
 import logging
 import os
 
@@ -6,9 +5,10 @@ from brownie import chain
 
 import y
 
-y_logger = logging.getLogger('y')
+y_logger = logging.getLogger("y")
 y_logger.setLevel(logging.DEBUG)
 y_logger.addHandler(logging.StreamHandler())
+
 
 def main():
     BAD = os.environ.get("BAD")

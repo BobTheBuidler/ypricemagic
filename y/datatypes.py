@@ -1,4 +1,3 @@
-
 from typing import TYPE_CHECKING, Union
 
 from brownie import Contract
@@ -20,7 +19,7 @@ Block = Union[int, BlockNumber]
 A union of types used to represent block numbers as integers.
 """
 
-AddressOrContract = Union[Address,Contract]
+AddressOrContract = Union[Address, Contract]
 
 AnyAddressType = Union[Address, Contract, int]
 """
@@ -33,11 +32,12 @@ Pool = Union["UniswapV2Pool", "CurvePool"]
 A union of types representing liquidity pools.
 """
 
+
 class UsdValue(float):
     """
     Represents a USD value with custom string representation.
     """
-    
+
     def __str__(self) -> str:
         """
         Return a string representation of the USD value.
@@ -45,7 +45,8 @@ class UsdValue(float):
         Returns:
             A string formatted as a USD value with 8 decimal places.
         """
-        return f'${self:.8f}'
+        return f"${self:.8f}"
+
 
 class UsdPrice(UsdValue):
     """

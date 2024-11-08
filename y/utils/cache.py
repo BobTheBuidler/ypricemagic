@@ -1,4 +1,3 @@
-
 import functools
 import logging
 import os
@@ -25,6 +24,7 @@ def _memory():
     """
     return Memory(f"cache/{chain.id}", verbose=0)
 
+
 memory = _memory()
 
 a_sync_ttl_cache: ASyncDecorator = a_sync.a_sync(ram_cache_ttl=ENVS.CACHE_TTL)
@@ -40,25 +40,28 @@ try:
     """User doesn't has toolcache, this diskcache decorator will work."""
 
     logger = logging.getLogger(__name__)
-    cache_base_path = f'./cache/{chain.id}/'
+    cache_base_path = f"./cache/{chain.id}/"
 
     def optional_async_diskcache(fn: AnyFn[P, T]) -> AnyFn[P, T]:
         if not iscoroutinefunction(fn):
-            raise NotImplementedError(f'{fn} is sync')
-        
-        module = fn.__module__.replace('.','/')
-        cache_path_for_fn = cache_base_path + module + '/' + fn.__name__
+            raise NotImplementedError(f"{fn} is sync")
+
+        module = fn.__module__.replace(".", "/")
+        cache_path_for_fn = cache_base_path + module + "/" + fn.__name__
 
         # Ensure the cache dir exists
         os.makedirs(cache_path_for_fn, exist_ok=True)
 
-        @toolcache.cache('disk', cache_dir=cache_path_for_fn)
+        @toolcache.cache("disk", cache_dir=cache_path_for_fn)
         @functools.wraps(fn)
         async def diskcache_wrap(*args, **kwargs) -> T:
-            logger.debug(f"fetching {fn.__qualname__}({', '.join(str(a) for a in args)})")
+            logger.debug(
+                f"fetching {fn.__qualname__}({', '.join(str(a) for a in args)})"
+            )
             return await fn(*args, **kwargs)
+
         return diskcache_wrap
-        
+
 except ImportError:
 
     """User doesn't have toolcache, this decorator will just return the undecorated function."""

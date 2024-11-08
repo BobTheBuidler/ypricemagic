@@ -1,12 +1,21 @@
-
 import abc
 import asyncio
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
-from typing import (TYPE_CHECKING, Any, Awaitable, Generator, Literal, NoReturn,
-                    Optional, Tuple, Union, final)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Awaitable,
+    Generator,
+    Literal,
+    NoReturn,
+    Optional,
+    Tuple,
+    Union,
+    final,
+)
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor, HiddenMethod
@@ -22,11 +31,15 @@ from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.singleton import ChecksumASyncSingletonMeta
 from y.constants import EEE_ADDRESS
-from y.contracts import (Contract, build_name, contract_creation_block_async,
-                         has_method, probe)
+from y.contracts import (
+    Contract,
+    build_name,
+    contract_creation_block_async,
+    has_method,
+    probe,
+)
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
-from y.exceptions import (ContractNotVerified, MessedUpBrownieContract,
-                          NonStandardERC20)
+from y.exceptions import ContractNotVerified, MessedUpBrownieContract, NonStandardERC20
 from y.networks import Network
 from y.utils import _erc20, logging, raw_calls
 
@@ -34,6 +47,7 @@ if TYPE_CHECKING:
     from y.utils.events import Events
 
 logger = getLogger(__name__)
+
 
 def hex_to_string(h: HexString) -> str:
     """
@@ -50,15 +64,17 @@ def hex_to_string(h: HexString) -> str:
         h += "0"
     return bytes.fromhex(h).decode("utf-8")
 
+
 class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta):
     # defaults are stored as class vars to keep instance dicts smaller
     asynchronous: bool = False
     _deploy_block: Optional[int] = None
-    __slots__ = "address",
+    __slots__ = ("address",)
+
     def __init__(
-        self, 
-        address: AnyAddressType, 
-        asynchronous: bool = False, 
+        self,
+        address: AnyAddressType,
+        asynchronous: bool = False,
         _deploy_block: Optional[int] = None,
     ) -> None:
         self.address = convert.to_address(address)
@@ -67,7 +83,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         if _deploy_block:
             self._deploy_block = _deploy_block
         super().__init__()
-    
+
     def __str__(self) -> str:
         """
         Return the contract address as a string.
@@ -75,11 +91,11 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         Returns:
             The contract address as a string.
         """
-        return f'{self.address}'
+        return f"{self.address}"
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} '{self.address}'"
-    
+
     def __eq__(self, __o: object) -> bool:
         if isinstance(__o, (ContractBase, Contract)):
             return __o.address == self.address
@@ -91,14 +107,14 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
             return convert.to_address(__o) == self.address
         except Exception:
             return False
-    
+
     def __hash__(self) -> int:
         return hash(self.address)
-    
+
     @property
     def contract(self) -> Contract:
         return Contract(self.address)
-    
+
     @cached_property
     def _is_cached(self) -> bool:
         try:
@@ -119,17 +135,25 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
             The contract's build name.
         """
         return await build_name(self.address, sync=False)
+
     __build_name__: HiddenMethodDescriptor[Self, str]
 
     @stuck_coro_debugger
     async def deploy_block(self, when_no_history_return_0: bool = False) -> int:
         if self._deploy_block is None:
-            self._deploy_block = await contract_creation_block_async(self.address, when_no_history_return_0=when_no_history_return_0)
+            self._deploy_block = await contract_creation_block_async(
+                self.address, when_no_history_return_0=when_no_history_return_0
+            )
         return self._deploy_block
+
     deploy_block: ASyncBoundMethod[Self, Any, int]
-    
-    async def has_method(self, method: str, return_response: bool = False) -> Union[bool,Any]:
-        return await has_method(self.address, method, return_response=return_response, sync=False)
+
+    async def has_method(
+        self, method: str, return_response: bool = False
+    ) -> Union[bool, Any]:
+        return await has_method(
+            self.address, method, return_response=return_response, sync=False
+        )
 
 
 class ERC20(ContractBase):
@@ -154,7 +178,7 @@ class ERC20(ContractBase):
                 except NonStandardERC20:
                     return f"<{cls} SYMBOL_INVALID '{self.address}'>"
         return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
-    
+
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def symbol(self) -> str:
@@ -174,12 +198,13 @@ class ERC20(ContractBase):
                 Network.Base: "ETH",
             }.get(chain.id, "ETH")
         import y._db.utils.token as db
+
         if symbol := await db.get_symbol(self.address):
             return symbol
         symbol = await self._symbol()
         db.set_symbol(self.address, symbol)
         return symbol
-    
+
     @a_sync.aka.property
     @stuck_coro_debugger
     async def name(self) -> str:
@@ -192,13 +217,14 @@ class ERC20(ContractBase):
         if self.address == EEE_ADDRESS:
             return "Ethereum"
         import y._db.utils.token as db
+
         name = await db.get_name(self.address)
         if name:
             return name
         name = await self._name()
         db.set_name(self.address, name)
         return name
-    
+
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def decimals(self) -> int:
@@ -211,15 +237,16 @@ class ERC20(ContractBase):
         if self.address == EEE_ADDRESS:
             return 18
         import y._db.utils.token as db
+
         return await db.get_decimals(self.address)
 
-    @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
+    @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
-        '''used to fetch decimals at specific block'''
+        """used to fetch decimals at specific block"""
         if self.address == EEE_ADDRESS:
             return 18
         return await _erc20.decimals(self.address, block=block, sync=False)
-    
+
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def scale(self) -> int:
@@ -230,8 +257,8 @@ class ERC20(ContractBase):
             The scaling factor for the token.
         """
         return 10 ** await self.__decimals__
-    
-    @a_sync.a_sync # Override the leading underscore so a_sync lib doesn't bypass this fn
+
+    @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _scale(self, block: Optional[Block] = None) -> int:
         return 10 ** await self._decimals(block, sync=False)
 
@@ -257,10 +284,14 @@ class ERC20(ContractBase):
         Returns:
             The total supply of the token scaled to a decimal.
         """
-        total_supply, scale = await asyncio.gather(self.total_supply(block=block, sync=False), self.__scale__)
+        total_supply, scale = await asyncio.gather(
+            self.total_supply(block=block, sync=False), self.__scale__
+        )
         return total_supply / scale
-    
-    async def balance_of(self, address: AnyAddressType, block: Optional[Block] = None) -> int:
+
+    async def balance_of(
+        self, address: AnyAddressType, block: Optional[Block] = None
+    ) -> int:
         """
         Query the balance of the token for a given address at a specific block.
 
@@ -272,15 +303,19 @@ class ERC20(ContractBase):
             The balance of the token held by `address` at block `block`.
         """
         return await raw_calls.balanceOf(self.address, address, block=block, sync=False)
-    
-    async def balance_of_readable(self, address: AnyAddressType, block: Optional[Block] = None) -> float:
-        balance, scale = await asyncio.gather(self.balance_of(address, block=block, asynchronous=True), self.__scale__)
+
+    async def balance_of_readable(
+        self, address: AnyAddressType, block: Optional[Block] = None
+    ) -> float:
+        balance, scale = await asyncio.gather(
+            self.balance_of(address, block=block, asynchronous=True), self.__scale__
+        )
         return balance / scale
 
     async def price(
-        self, 
-        block: Optional[Block] = None, 
-        return_None_on_failure: bool = False, 
+        self,
+        block: Optional[Block] = None,
+        return_None_on_failure: bool = False,
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
     ) -> Optional[UsdPrice]:
@@ -295,20 +330,21 @@ class ERC20(ContractBase):
 
         Returns:
             The price of the token in USD, or None if return_None_on_failure is True and the price cannot be retrieved.
-        
+
         Raises:
             yPriceMagicError: If return_None_on_failure is False and the price cannot be retrieved.
         """
         from y.prices.magic import get_price
+
         return await get_price(
-            self.address, 
-            block=block, 
+            self.address,
+            block=block,
             fail_to_None=return_None_on_failure,
             skip_cache=skip_cache,
             ignore_pools=ignore_pools,
             sync=False,
         )
-        
+
     async def _symbol(self) -> str:
         """
         Get the token's symbol from the contract.
@@ -319,7 +355,10 @@ class ERC20(ContractBase):
         Raises:
             NonStandardERC20: If the symbol cannot be retrieved from the contract.
         """
-        symbol = await probe(self.address, ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"])
+        symbol = await probe(
+            self.address,
+            ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"],
+        )
         if symbol is None:
             # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
             symbol = await probe(self.address, ["symbol()(bytes32)"])
@@ -328,8 +367,8 @@ class ERC20(ContractBase):
         if symbol:
             return symbol
         # we've failed to fetch
-        self.__raise_exception('symbol')
-    
+        self.__raise_exception("symbol")
+
     async def _name(self) -> str:
         """
         Get the token's name from the contract.
@@ -340,7 +379,9 @@ class ERC20(ContractBase):
         Raises:
             NonStandardERC20: If the name cannot be retrieved from the contract.
         """
-        name = await probe(self.address, ["name()(string)", "NAME()(string)", "getName()(string)"])
+        name = await probe(
+            self.address, ["name()(string)", "NAME()(string)", "getName()(string)"]
+        )
         if name is None:
             # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
             name = await probe(self.address, ["name()(bytes32)"])
@@ -349,7 +390,7 @@ class ERC20(ContractBase):
         if name:
             return name
         # we've failed to fetch
-        self.__raise_exception('name')
+        self.__raise_exception("name")
 
     def __raise_exception(self, fn_name: str):
         """
@@ -361,11 +402,13 @@ class ERC20(ContractBase):
         Raises:
             NonStandardERC20: Always raised with a custom error message.
         """
-        raise NonStandardERC20(f'''
+        raise NonStandardERC20(
+            f"""
             Unable to fetch `{fn_name}` for {self.address} on {Network.printable()}
             If the contract is verified, please check to see if it has a strangely named
             `{fn_name}` method and create an issue on https://github.com/BobTheBuidler/ypricemagic
-            with the contract address and correct method name so we can keep things going smoothly :)''') from None
+            with the contract address and correct method name so we can keep things going smoothly :)"""
+        ) from None
 
     # These dundermethods are created by a_sync for the async_properties on this class
     __symbol__: HiddenMethodDescriptor[Self, str]
@@ -391,7 +434,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     _ignore_pools: Tuple[Pool, ...] = ()
 
     def __init__(
-        self, 
+        self,
         balance: int,
         token: AnyAddressType,
         block: Optional[Block] = None,
@@ -399,7 +442,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         skip_cache: bool = ENVS.SKIP_CACHE,
         ignore_pools: Tuple[Pool, ...] = (),
         asynchronous: bool = False,
-        ) -> None:
+    ) -> None:
         """
         Initialize a WeiBalance object.
 
@@ -431,12 +474,16 @@ class WeiBalance(a_sync.ASyncGenericBase):
             The balance in wei as a string.
         """
         return str(self.balance)
-    
+
     def __repr__(self) -> str:
-        return f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
-    
+        return (
+            f"<WeiBalance token={self.token} balance={self.balance} block={self.block}>"
+        )
+
     def __hash__(self) -> int:
-        return hash((self.balance, self.token, self.block, self._skip_cache, self._ignore_pools))
+        return hash(
+            (self.balance, self.token, self.block, self._skip_cache, self._ignore_pools)
+        )
 
     def __bool__(self) -> bool:
         """
@@ -461,22 +508,26 @@ class WeiBalance(a_sync.ASyncGenericBase):
             return __o == self.balance
         elif isinstance(__o, WeiBalance):
             return (
-                self.balance == __o.balance and 
-                self.token == __o.token and 
-                self.block == __o.block and 
-                self._skip_cache == __o._skip_cache and
-                self._ignore_pools == __o._ignore_pools
+                self.balance == __o.balance
+                and self.token == __o.token
+                and self.block == __o.block
+                and self._skip_cache == __o._skip_cache
+                and self._ignore_pools == __o._ignore_pools
             )
         return False
-    
+
     def __lt__(self, __o: object) -> bool:
         if isinstance(__o, int):
             return __o < self.balance
         elif isinstance(__o, WeiBalance):
             if self.token != __o.token:
-                raise ValueError(f"'<' only supported between {self.__class__.__name__} instances when denominated in the same token.") from None
+                raise ValueError(
+                    f"'<' only supported between {self.__class__.__name__} instances when denominated in the same token."
+                ) from None
             return self.balance < __o.balance
-        raise TypeError(f"'<' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+        raise TypeError(
+            f"'<' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'"
+        ) from None
 
     def __ge__(self, __o: object) -> bool:
         """
@@ -495,52 +546,102 @@ class WeiBalance(a_sync.ASyncGenericBase):
             return True
         elif type(__o) is type(self):
             return self == __o
-        raise TypeError(f"'>=' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
-    
+        raise TypeError(
+            f"'>=' not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'"
+        ) from None
+
     def __radd__(self, __o: Union["WeiBalance", Literal[0]]) -> "WeiBalance":
         if __o == 0:
             return self
         try:
             if self.token != __o.token:
-                raise ValueError(f"addition not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+                raise ValueError(
+                    f"addition not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'"
+                ) from None
             if self.block != __o.block:
-                raise ValueError("addition not supported between balances at different block heights") from None
+                raise ValueError(
+                    "addition not supported between balances at different block heights"
+                ) from None
             if self._skip_cache != __o._skip_cache:
-                raise ValueError("addition not supported between balances with different `_skip_cache` values") from None
+                raise ValueError(
+                    "addition not supported between balances with different `_skip_cache` values"
+                ) from None
             if self._ignore_pools != __o._ignore_pools:
-                raise ValueError("addition not supported between balances with different `_ignore_pools` values") from None
-            return WeiBalance(self.balance - __o.balance, self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+                raise ValueError(
+                    "addition not supported between balances with different `_ignore_pools` values"
+                ) from None
+            return WeiBalance(
+                self.balance - __o.balance,
+                self.token,
+                self.block,
+                skip_cache=self._skip_cache,
+                ignore_pools=self._ignore_pools,
+            )
         except AttributeError:
-            raise TypeError(f"right addition not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
-    
+            raise TypeError(
+                f"right addition not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'"
+            ) from None
+
     def __add__(self, __o: "WeiBalance") -> "WeiBalance":
         try:
             if self.token != __o.token:
-                raise ValueError(f"addition not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+                raise ValueError(
+                    f"addition not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'"
+                ) from None
             if self.block != __o.block:
-                raise ValueError("addition not supported between balances at different block heights") from None
+                raise ValueError(
+                    "addition not supported between balances at different block heights"
+                ) from None
             if self._skip_cache != __o._skip_cache:
-                raise ValueError("addition not supported between balances with different `_skip_cache` values") from None
+                raise ValueError(
+                    "addition not supported between balances with different `_skip_cache` values"
+                ) from None
             if self._ignore_pools != __o._ignore_pools:
-                raise ValueError("addition not supported between balances with different `_ignore_pools` values") from None
-            return WeiBalance(self.balance - __o.balance, self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+                raise ValueError(
+                    "addition not supported between balances with different `_ignore_pools` values"
+                ) from None
+            return WeiBalance(
+                self.balance - __o.balance,
+                self.token,
+                self.block,
+                skip_cache=self._skip_cache,
+                ignore_pools=self._ignore_pools,
+            )
         except AttributeError:
-            raise TypeError(f"addition not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
-    
+            raise TypeError(
+                f"addition not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'"
+            ) from None
+
     def __sub__(self, __o: "WeiBalance") -> "WeiBalance":
         try:
             if self.token != __o.token:
-                raise ValueError(f"subtraction not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'") from None
+                raise ValueError(
+                    f"subtraction not supported between instances of '{self.__class__.__name__}' and '{__o.__class__.__name__}'"
+                ) from None
             if self.block != __o.block:
-                raise ValueError("subtraction not supported between balances at different block heights") from None
+                raise ValueError(
+                    "subtraction not supported between balances at different block heights"
+                ) from None
             if self._skip_cache != __o._skip_cache:
-                raise ValueError("subtraction not supported between balances with different `_skip_cache` values") from None
+                raise ValueError(
+                    "subtraction not supported between balances with different `_skip_cache` values"
+                ) from None
             if self._ignore_pools != __o._ignore_pools:
-                raise ValueError("subtraction not supported between balances with different `_ignore_pools` values") from None
-            return WeiBalance(self.balance - __o.balance, self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
+                raise ValueError(
+                    "subtraction not supported between balances with different `_ignore_pools` values"
+                ) from None
+            return WeiBalance(
+                self.balance - __o.balance,
+                self.token,
+                self.block,
+                skip_cache=self._skip_cache,
+                ignore_pools=self._ignore_pools,
+            )
         except AttributeError:
-            raise TypeError(f"subtraction not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
-    
+            raise TypeError(
+                f"subtraction not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'"
+            ) from None
+
     def __mul__(self, __o: Union[int, float, Decimal]) -> "WeiBalance":
         """
         Multiply a WeiBalance object by a scalar value.
@@ -555,9 +656,17 @@ class WeiBalance(a_sync.ASyncGenericBase):
             TypeError: If the scalar value is not a number.
         """
         if not isinstance(__o, (int, float, Decimal)):
-            raise TypeError(f"multiplication not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
-        return WeiBalance(self.balance * Decimal(__o), self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
-    
+            raise TypeError(
+                f"multiplication not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'"
+            ) from None
+        return WeiBalance(
+            self.balance * Decimal(__o),
+            self.token,
+            self.block,
+            skip_cache=self._skip_cache,
+            ignore_pools=self._ignore_pools,
+        )
+
     def __truediv__(self, __o: Union[int, float, Decimal]) -> "WeiBalance":
         """
         Divide a WeiBalance object by a scalar value.
@@ -572,9 +681,17 @@ class WeiBalance(a_sync.ASyncGenericBase):
             TypeError: If the scalar value is not a number.
         """
         if not isinstance(__o, (int, float, Decimal)):
-            raise TypeError(f"division not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'") from None
-        return WeiBalance(self.balance / Decimal(__o), self.token, self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools)
-    
+            raise TypeError(
+                f"division not supported between instances of '{type(self).__name__}' and '{type(__o).__name__}'"
+            ) from None
+        return WeiBalance(
+            self.balance / Decimal(__o),
+            self.token,
+            self.block,
+            skip_cache=self._skip_cache,
+            ignore_pools=self._ignore_pools,
+        )
+
     @a_sync.aka.property
     async def readable(self) -> Decimal:
         """
@@ -587,10 +704,16 @@ class WeiBalance(a_sync.ASyncGenericBase):
             return 0
         scale = await self.token.__scale__
         readable = self.balance / scale
-        self._logger.debug("balance: %s  decimals: %s  readable: %s", self.balance, str(scale).count("0"), readable)
+        self._logger.debug(
+            "balance: %s  decimals: %s  readable: %s",
+            self.balance,
+            str(scale).count("0"),
+            readable,
+        )
         return readable
+
     __readable__: HiddenMethodDescriptor[Self, Decimal]
-    
+
     @a_sync.aka.property
     async def price(self) -> Decimal:
         """
@@ -599,11 +722,19 @@ class WeiBalance(a_sync.ASyncGenericBase):
         Returns:
             The price of the token in USD.
         """
-        price = Decimal(await self.token.price(block=self.block, skip_cache=self._skip_cache, ignore_pools=self._ignore_pools, sync=False))
+        price = Decimal(
+            await self.token.price(
+                block=self.block,
+                skip_cache=self._skip_cache,
+                ignore_pools=self._ignore_pools,
+                sync=False,
+            )
+        )
         self._logger.debug("balance: %s  price: %s", self, price)
         return price
+
     __price__: HiddenMethodDescriptor[Self, Decimal]
-    
+
     @a_sync.aka.property
     async def value_usd(self) -> Decimal:
         """
@@ -618,8 +749,9 @@ class WeiBalance(a_sync.ASyncGenericBase):
         value = balance * price
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
+
     __value_usd__: HiddenMethodDescriptor[Self, Decimal]
-    
+
     @cached_property
     def _logger(self) -> logging.logging.Logger:
         """
@@ -628,12 +760,21 @@ class WeiBalance(a_sync.ASyncGenericBase):
         Returns:
             The logger for the WeiBalance object.
         """
-        return logging.get_price_logger(self.token.address, self.block, extra=self.__class__.__name__)
+        return logging.get_price_logger(
+            self.token.address, self.block, extra=self.__class__.__name__
+        )
 
 
 class _Loader(ContractBase):
     """Used for use cases where you need to load data thru present time before proceeding, and then continue loading data in the background."""
-    __slots__ = "_loaded", "_init_block", "__exc", "__task",
+
+    __slots__ = (
+        "_loaded",
+        "_init_block",
+        "__exc",
+        "__task",
+    )
+
     def __init__(self, address: Address, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self._init_block = auto_retry(web3.eth.get_block_number)()
@@ -656,6 +797,7 @@ class _Loader(ContractBase):
         `self._load` is the coro that will run in the daemon task associated with this _Loader.
         Your implementation MUST set Event `self._loaded` once data has been loaded thru the current block, or it will hang indefinitely.
         """
+
     @property
     def loaded(self) -> Awaitable[Literal[True]]:
         """
@@ -685,7 +827,9 @@ class _Loader(ContractBase):
             raise type(self.__exc)(*self.__exc.args).with_traceback(self.__tb)
         if self.__task is None:
             logger.debug("creating loader task for %s", self)
-            self.__task = asyncio.create_task(coro=self.__load(), name=f"{self}.__load()")
+            self.__task = asyncio.create_task(
+                coro=self.__load(), name=f"{self}.__load()"
+            )
             self.__task.add_done_callback(self._done_callback)
         return self.__task
 
@@ -709,6 +853,7 @@ class _Loader(ContractBase):
             await self._load()
         except Exception as e:
             import traceback
+
             self.__exc = e
             self.__tb = e.__traceback__
             # no need to hold vars in memory
@@ -738,7 +883,9 @@ class _EventsLoader(_Loader):
         """
         self._task  # ensure task is running and not err'd
         if self._loaded is None:
-            self._loaded = asyncio.ensure_future(self._events._lock.wait_for(self._init_block))
+            self._loaded = asyncio.ensure_future(
+                self._events._lock.wait_for(self._init_block)
+            )
         return self._loaded
 
     async def _load(self) -> NoReturn:

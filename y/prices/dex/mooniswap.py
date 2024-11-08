@@ -1,4 +1,3 @@
-
 import asyncio
 import logging
 from decimal import Decimal
@@ -24,12 +23,13 @@ if chain.id == 1:
     gas_coin = weth
 elif chain.id == 56:
     router = Contract("0xD41B24bbA51fAc0E4827b6F94C0D6DDeB183cD64")
-    gas_coin = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c") #wbnb
-else: 
+    gas_coin = Contract("0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c")  # wbnb
+else:
     router = None
     gas_coin = None
 
-@a_sync.a_sync(default='sync', ram_cache_ttl=5*60)
+
+@a_sync.a_sync(default="sync", ram_cache_ttl=5 * 60)
 async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     """
     Check if the given token address is a Mooniswap pool.
@@ -43,8 +43,13 @@ async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     address = convert.to_address(token)
     return False if router is None else await router.isPool.coroutine(address)
 
-@a_sync.a_sync(default='sync')
-async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE) -> UsdPrice:
+
+@a_sync.a_sync(default="sync")
+async def get_pool_price(
+    token: AnyAddressType,
+    block: Optional[Block] = None,
+    skip_cache: bool = ENVS.SKIP_CACHE,
+) -> UsdPrice:
     """
     Get the price of the given Mooniswap pool token.
 
@@ -57,21 +62,28 @@ async def get_pool_price(token: AnyAddressType, block: Optional[Block] = None, s
         The price of the pool token in USD.
     """
     address = convert.to_address(token)
-    token0, token1 = await gather_methods(address, ['token0', 'token1'])
+    token0, token1 = await gather_methods(address, ["token0", "token1"])
     bal0, bal1, price0, price1, total_supply = await asyncio.gather(
-        dank_mids.eth.get_balance(address, block_identifier=block) if token0 == ZERO_ADDRESS else ERC20(token0, asynchronous=True).balance_of_readable(address, block),
-        dank_mids.eth.get_balance(address, block_identifier=block) if token1 == ZERO_ADDRESS else ERC20(token1, asynchronous=True).balance_of_readable(address, block),
-        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False) if token0 == ZERO_ADDRESS else magic.get_price(token0, block, skip_cache=skip_cache, sync=False),
-        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False) if token1 == ZERO_ADDRESS else magic.get_price(token1, block, skip_cache=skip_cache, sync=False),
+        dank_mids.eth.get_balance(address, block_identifier=block)
+        if token0 == ZERO_ADDRESS
+        else ERC20(token0, asynchronous=True).balance_of_readable(address, block),
+        dank_mids.eth.get_balance(address, block_identifier=block)
+        if token1 == ZERO_ADDRESS
+        else ERC20(token1, asynchronous=True).balance_of_readable(address, block),
+        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False)
+        if token0 == ZERO_ADDRESS
+        else magic.get_price(token0, block, skip_cache=skip_cache, sync=False),
+        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False)
+        if token1 == ZERO_ADDRESS
+        else magic.get_price(token1, block, skip_cache=skip_cache, sync=False),
         ERC20(address, asynchronous=True).total_supply_readable(block),
     )
 
     if token0 == ZERO_ADDRESS:
-        bal0 /= 10 ** 18
+        bal0 /= 10**18
     elif token1 == ZERO_ADDRESS:
-        bal1 /= 10 ** 18
+        bal1 /= 10**18
 
     totalVal = bal0 * float(price0) + bal1 * float(price1)
     price = totalVal / total_supply
     return Decimal(price)
-    
