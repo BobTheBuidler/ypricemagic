@@ -100,7 +100,6 @@
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">web3</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
-<span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">EventLookupError</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_EventItem</span><span class="p">,</span>
     <span class="n">_add_deployment_topics</span><span class="p">,</span>
@@ -109,14 +108,16 @@
     <span class="n">EventDict</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span>
+<span class="kn">from</span> <span class="nn">evmspec.log</span> <span class="kn">import</span> <span class="n">Log</span>
+<span class="kn">from</span> <span class="nn">msgspec.structs</span> <span class="kn">import</span> <span class="n">force_setattr</span>
 <span class="kn">from</span> <span class="nn">toolz</span> <span class="kn">import</span> <span class="n">groupby</span>
 <span class="kn">from</span> <span class="nn">web3.middleware.filter</span> <span class="kn">import</span> <span class="n">block_ranges</span>
 <span class="kn">from</span> <span class="nn">web3.types</span> <span class="kn">import</span> <span class="n">LogReceipt</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y._db</span> <span class="kn">import</span> <span class="n">structs</span>
 <span class="kn">from</span> <span class="nn">y._db.common</span> <span class="kn">import</span> <span class="n">Filter</span><span class="p">,</span> <span class="n">_clean_addresses</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">reraise_excs_with_extra_context</span>
 <span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">memory</span>
 <span class="kn">from</span> <span class="nn">y.utils.middleware</span> <span class="kn">import</span> <span class="n">BATCH_SIZE</span>
 
@@ -138,21 +139,31 @@
 
 <div class="viewcode-block" id="decode_logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.decode_logs">[docs]</a>
-<span class="k">def</span> <span class="nf">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">EventDict</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Iterable</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">],</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">Log</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">EventDict</span><span class="p">:</span>
+    <span class="c1"># NOTE: we want to ensure backward-compatability with LogReceipt</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decode logs to events and enrich them with additional info.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">logs</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">EventDict</span><span class="p">()</span>
+
+    <span class="n">logs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+
     <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
 
     <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
-        <span class="n">address</span> <span class="o">=</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;address&quot;</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_deployment_topics</span><span class="p">:</span>
-            <span class="n">_add_deployment_topics</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">log</span><span class="o">.</span><span class="n">address</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_deployment_topics</span><span class="p">:</span>
+            <span class="n">_add_deployment_topics</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">address</span><span class="p">)</span><span class="o">.</span><span class="n">abi</span><span class="p">)</span>
 
-    <span class="c1"># for some reason &lt; this version can decode them just fine but &gt;= cannot</span>
-    <span class="n">special_treatment</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="ow">and</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">)</span>
-    <span class="p">)</span>
+    <span class="c1"># for some reason &lt; 1.2.4 can decode them just fine but &gt;= cannot</span>
+    <span class="n">special_treatment</span> <span class="o">=</span> <span class="n">ETH_EVENT_GTE_1_2_4</span> <span class="ow">and</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_struct</span> <span class="o">:=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">):</span>
+        <span class="c1"># save these for later</span>
+        <span class="n">orig_topics</span> <span class="o">=</span> <span class="p">[</span><span class="n">log</span><span class="o">.</span><span class="n">topics</span> <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
+            <span class="c1"># these must support pop() for some reason</span>
+            <span class="n">force_setattr</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">topics</span><span class="p">))</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">decoded</span> <span class="o">=</span> <span class="n">_decode_logs</span><span class="p">(</span>
@@ -161,27 +172,24 @@
     <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
         <span class="n">decoded</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">log</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="n">log</span><span class="p">):</span>
                 <span class="c1"># get some help for debugging</span>
                 <span class="n">decoded</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">_decode_logs</span><span class="p">([</span><span class="n">log</span><span class="p">]))</span>
-            <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
 
-    <span class="k">try</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">logs</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">logs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">structs</span><span class="o">.</span><span class="n">Log</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
-                <span class="c1"># When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">transaction_hash</span><span class="p">)</span>
-                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">log_index</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">logs</span><span class="p">),</span> <span class="n">decoded</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">is_struct</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="n">orig_topics</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">logs</span><span class="p">,</span> <span class="n">orig_topics</span><span class="p">)):</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">blockNumber</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">transactionHash</span><span class="p">)</span>
+                <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="o">.</span><span class="n">logIndex</span><span class="p">)</span>
+                <span class="c1"># put the log back to normal</span>
+                <span class="n">force_setattr</span><span class="p">(</span><span class="n">log</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">,</span> <span class="n">orig_topics</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">log</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">logs</span><span class="p">):</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;block_number&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;blockNumber&quot;</span><span class="p">])</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;transaction_hash&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;transactionHash&quot;</span><span class="p">])</span>
                 <span class="nb">setattr</span><span class="p">(</span><span class="n">decoded</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="s2">&quot;log_index&quot;</span><span class="p">,</span> <span class="n">log</span><span class="p">[</span><span class="s2">&quot;logIndex&quot;</span><span class="p">])</span>
-        <span class="k">return</span> <span class="n">decoded</span>
-    <span class="k">except</span> <span class="n">EventLookupError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="p">)(</span><span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">logs</span><span class="p">),</span> <span class="n">decoded</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span></div>
+        <span class="k">return</span> <span class="n">decoded</span></div>
 
 
 
@@ -360,7 +368,7 @@
     <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
     <span class="n">end</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs for a given address, topics, and block range.</span>
 
@@ -397,7 +405,7 @@
 <span class="p">)</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs for a given address, topics, and block range.</span>
 
@@ -417,7 +425,7 @@
 
 
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_get_logs_async_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_get_logs_async_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs for a given address, topics, and block range.</span>
 
@@ -481,7 +489,7 @@
     <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
     <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
     <span class="n">end</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs without using the disk cache.</span>
 
@@ -545,7 +553,7 @@
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">_get_logs_batch_cached</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">topics</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">end</span><span class="p">:</span> <span class="n">Block</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs from the disk cache, or fetch and cache them if not available.</span>
 
@@ -563,10 +571,12 @@
 
 <div class="viewcode-block" id="LogFilter">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter">[docs]</a>
-<span class="k">class</span> <span class="nc">LogFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">,</span> <span class="s2">&quot;LogCache&quot;</span><span class="p">]):</span>
+<span class="k">class</span> <span class="nc">LogFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">[</span><span class="n">Log</span><span class="p">,</span> <span class="s2">&quot;LogCache&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A filter for fetching and processing event logs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;addresses&quot;</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">,</span> <span class="s2">&quot;from_block&quot;</span>
 
 <div class="viewcode-block" id="LogFilter.__init__">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter.__init__">[docs]</a>
@@ -629,7 +639,7 @@
 
 <div class="viewcode-block" id="LogFilter.logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter.logs">[docs]</a>
-    <span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get logs up to a given block.</span>
 
@@ -643,7 +653,7 @@
 
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">insert_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">LogReceipt</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">insert_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Log</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the function for inserting logs into the database.</span>
 
@@ -654,7 +664,7 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 
     <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
+    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the function for bulk inserting logs into the database.</span>
 
@@ -690,7 +700,7 @@
                 <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch logs for a given block range.</span>
 
@@ -810,7 +820,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">LogReceipt</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process a new set of logs and extend the list of processed events with the results.</span>
 

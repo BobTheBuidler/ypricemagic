@@ -54,21 +54,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">CACHE_TTL</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.CONTRACT_CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">CONTRACT_CACHE_TTL</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.DB_DATABASE"><code class="docutils literal notranslate"><span class="pre">DB_DATABASE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.DB_HOST"><code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.DB_PASSWORD"><code class="docutils literal notranslate"><span class="pre">DB_PASSWORD</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.DB_PORT"><code class="docutils literal notranslate"><span class="pre">DB_PORT</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.DB_PROVIDER"><code class="docutils literal notranslate"><span class="pre">DB_PROVIDER</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.DB_USER"><code class="docutils literal notranslate"><span class="pre">DB_USER</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.GETLOGS_BATCH_SIZE"><code class="docutils literal notranslate"><span class="pre">GETLOGS_BATCH_SIZE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.GETLOGS_DOP"><code class="docutils literal notranslate"><span class="pre">GETLOGS_DOP</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.SKIP_CACHE"><code class="docutils literal notranslate"><span class="pre">SKIP_CACHE</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.SKIP_YPRICEAPI"><code class="docutils literal notranslate"><span class="pre">SKIP_YPRICEAPI</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l3"><a class="reference internal" href="#y-environment-variables-module">y.ENVIRONMENT_VARIABLES module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.constants">y.constants module</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#y.constants.EEE_ADDRESS"><code class="docutils literal notranslate"><span class="pre">EEE_ADDRESS</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#y.constants.WRAPPED_GAS_COIN"><code class="docutils literal notranslate"><span class="pre">WRAPPED_GAS_COIN</span></code></a></li>
@@ -128,6 +114,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#y.exceptions.continue_if_call_reverted"><code class="docutils literal notranslate"><span class="pre">continue_if_call_reverted()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#y.exceptions.contract_not_verified"><code class="docutils literal notranslate"><span class="pre">contract_not_verified()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#y.exceptions.out_of_gas"><code class="docutils literal notranslate"><span class="pre">out_of_gas()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#y.exceptions.reraise_excs_with_extra_context"><code class="docutils literal notranslate"><span class="pre">reraise_excs_with_extra_context()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#module-y.networks">y.networks module</a><ul>
@@ -827,80 +814,8 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.ENVIRONMENT_VARIABLES">
-<span id="y-environment-variables-module"></span><h2>y.ENVIRONMENT_VARIABLES module<a class="headerlink" href="#module-y.ENVIRONMENT_VARIABLES" title="Link to this heading"></a></h2>
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.CACHE_TTL">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">CACHE_TTL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_CACHE_TTL`,</span> <span class="pre">type=int,</span> <span class="pre">default_value=3600,</span> <span class="pre">current_value=3600,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.CACHE_TTL" title="Link to this definition"></a></dt>
-<dd><p>TTL for various in-memory caches throughout the library</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.CONTRACT_CACHE_TTL">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">CONTRACT_CACHE_TTL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`,</span> <span class="pre">type=int,</span> <span class="pre">default_value=3600,</span> <span class="pre">current_value=3600,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.CONTRACT_CACHE_TTL" title="Link to this definition"></a></dt>
-<dd><p>TTL for contract cache, defaults to <a class="reference internal" href="#y.ENVIRONMENT_VARIABLES.CACHE_TTL" title="y.ENVIRONMENT_VARIABLES.CACHE_TTL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CACHE_TTL</span></code></a> if not set</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.DB_DATABASE">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">DB_DATABASE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_DB_DATABASE`,</span> <span class="pre">type=str,</span> <span class="pre">default_value=ypricemagic,</span> <span class="pre">current_value=ypricemagic,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.DB_DATABASE" title="Link to this definition"></a></dt>
-<dd><p>Database name</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.DB_HOST">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">DB_HOST</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_DB_HOST`,</span> <span class="pre">type=str,</span> <span class="pre">default_value=,</span> <span class="pre">current_value=,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.DB_HOST" title="Link to this definition"></a></dt>
-<dd><p>Database host address</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.DB_PASSWORD">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">DB_PASSWORD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_DB_PASSWORD`,</span> <span class="pre">type=str,</span> <span class="pre">default_value=,</span> <span class="pre">current_value=,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.DB_PASSWORD" title="Link to this definition"></a></dt>
-<dd><p>Database password</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.DB_PORT">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">DB_PORT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_DB_PORT`,</span> <span class="pre">type=str,</span> <span class="pre">default_value=,</span> <span class="pre">current_value=,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.DB_PORT" title="Link to this definition"></a></dt>
-<dd><p>Database port number</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.DB_PROVIDER">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">DB_PROVIDER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_DB_PROVIDER`,</span> <span class="pre">type=str,</span> <span class="pre">default_value=sqlite,</span> <span class="pre">current_value=sqlite,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.DB_PROVIDER" title="Link to this definition"></a></dt>
-<dd><p>Database provider (e.g., ‘sqlite’, ‘postgresql’)</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.DB_USER">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">DB_USER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_DB_USER`,</span> <span class="pre">type=str,</span> <span class="pre">default_value=,</span> <span class="pre">current_value=,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.DB_USER" title="Link to this definition"></a></dt>
-<dd><p>Database user name</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.GETLOGS_BATCH_SIZE">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">GETLOGS_BATCH_SIZE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_GETLOGS_BATCH_SIZE`,</span> <span class="pre">type=int,</span> <span class="pre">default_value=0,</span> <span class="pre">current_value=0,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.GETLOGS_BATCH_SIZE" title="Link to this definition"></a></dt>
-<dd><p>Batch size for getlogs operations, 0 will use default as determined by your provider.</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.GETLOGS_DOP">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">GETLOGS_DOP</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_GETLOGS_DOP`,</span> <span class="pre">type=int,</span> <span class="pre">default_value=32,</span> <span class="pre">current_value=32,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.GETLOGS_DOP" title="Link to this definition"></a></dt>
-<dd><p>Degree of parallelism for eth_getLogs operations</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.SKIP_CACHE">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">SKIP_CACHE</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.SKIP_CACHE" title="Link to this definition"></a></dt>
-<dd><p>Flag to skip cache usage</p>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.ENVIRONMENT_VARIABLES.SKIP_YPRICEAPI">
-<span class="sig-prename descclassname"><span class="pre">y.ENVIRONMENT_VARIABLES.</span></span><span class="sig-name descname"><span class="pre">SKIP_YPRICEAPI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;EnvironmentVariable[name=`SKIP_YPRICEAPI`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><a class="headerlink" href="#y.ENVIRONMENT_VARIABLES.SKIP_YPRICEAPI" title="Link to this definition"></a></dt>
-<dd><p>Flag to skip using ypriceapi</p>
-</dd></dl>
-
+<section id="y-environment-variables-module">
+<h2>y.ENVIRONMENT_VARIABLES module<a class="headerlink" href="#y-environment-variables-module" title="Link to this heading"></a></h2>
 </section>
 <section id="module-y.constants">
 <span id="y-constants-module"></span><h2>y.constants module<a class="headerlink" href="#module-y.constants" title="Link to this heading"></a></h2>
@@ -1003,13 +918,18 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.__getattribute__">
 <span class="sig-name descname"><span class="pre">__getattribute__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dank_mids/brownie_patch/contract.html#Contract.__getattribute__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.__getattribute__" title="Link to this definition"></a></dt>
-<dd><p>This doesn’t functionally do anythiing, it just enables type hints</p>
+<dd><p>Get a contract method attribute.</p>
+<p>This method implements lazy initialization of contract methods.
+If a method object does not yet exist, it is created and cached.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the attribute to get.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The contract method object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1017,16 +937,13 @@ For example, on Ethereum Mainnet, <cite>WRAPPED_GAS_COIN</cite> == the WETH addr
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/contracts.html#Contract.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.__init__" title="Link to this definition"></a></dt>
-<dd><p>Recreate a <cite>Contract</cite> object from the local database.</p>
-<p>The init method is used to access deployments that have already previously
-been stored locally. For new deployments use <cite>from_abi</cite> or <cite>from_etherscan</cite>.</p>
+<dd><p>Initialize the Contract instance.</p>
+<p>This method sets up lazy initialization for contract methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address_or_alias</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Address or user-defined alias of the deployment.</p></li>
-<li><p><strong>owner</strong> (<em>Account</em><em>, </em><em>optional</em>) – Contract owner. If set, transactions without a <cite>from</cite> field
-will be performed using this account.</p></li>
 <li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
+<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>require_success</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
 <li><p><strong>cache_ttl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -1125,7 +1042,7 @@ address: The address of the contract.
 abi: The ABI of the contract.
 owner (optional): The owner of the contract. Default None.
 persist (optional): If True, persist the contract in brownie’s local contract database. Default True.
-cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in <a class="reference internal" href="#module-y.ENVIRONMENT_VARIABLES" title="y.ENVIRONMENT_VARIABLES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code></a>.</p>
+cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in <code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code>.</p>
 </dd>
 <dt>Returns:</dt><dd><p>A Contract instance for the given ABI.</p>
 </dd>
@@ -1152,18 +1069,24 @@ cache_ttl (optional): The time-to-live for the contract cache in seconds. Defaul
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.from_ethpm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ethpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dank_mids/brownie_patch/contract.html#Contract.from_ethpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.from_ethpm" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Create a new Contract instance from an ethPM manifest.</p>
+<p>This method allows for the creation of a Contract instance using an ethPM manifest,
+which is a standardized format for Ethereum smart contract packages.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the contract.</p></li>
+<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The URI of the ethPM manifest.</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>) – The address of the deployed contract (optional).</p></li>
+<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>) – The account that owns this contract instance.</p></li>
+<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to persist the contract data to brownie’s local db for future use.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Contract instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1171,23 +1094,24 @@ cache_ttl (optional): The time-to-live for the contract cache in seconds. Defaul
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.from_explorer">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_explorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_proxy_for</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dank_mids/brownie_patch/contract.html#Contract.from_explorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.from_explorer" title="Link to this definition"></a></dt>
-<dd><p>Create a new <cite>Contract</cite> object with source code queried from a block explorer.</p>
+<dd><p>Create a new Contract instance by fetching the ABI from a block explorer.</p>
+<p>This method is useful for interacting with contracts that are not part of the current project,
+as it automatically fetches the contract’s ABI from a block explorer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Address where the contract is deployed.</p></li>
-<li><p><strong>as_proxy_for</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Address of the implementation contract, if <cite>address</cite> is a proxy contract.
-The generated object will send transactions to <cite>address</cite>, but use the ABI
-and NatSpec of <cite>as_proxy_for</cite>. This field is only required when the
-block explorer API does not provide an implementation address.</p></li>
-<li><p><strong>owner</strong> (<em>Account</em><em>, </em><em>optional</em>) – Contract owner. If set, transactions without a <cite>from</cite> field will be
-performed using this account.</p></li>
-<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The address of the deployed contract.</p></li>
+<li><p><strong>as_proxy_for</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>) – The address of the implementation contract if this is a proxy contract.</p></li>
+<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>) – The account that owns this contract instance.</p></li>
+<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to suppress console output during the process.</p></li>
+<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to persist the contract data to brownie’s db for future use.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Contract instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -1359,12 +1283,14 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.signatures">
 <span class="sig-name descname"><span class="pre">signatures</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Method</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Signature</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.contracts.Contract.signatures" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A dictionary mapping method names to their corresponding signatures.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.topics">
 <span class="sig-name descname"><span class="pre">topics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.contracts.Contract.topics" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A dictionary mapping event names to their corresponding topics.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.verified">
@@ -2381,6 +2307,19 @@ Exceptions while calculating prices.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="y.exceptions.reraise_excs_with_extra_context">
+<span class="sig-prename descclassname"><span class="pre">y.exceptions.</span></span><span class="sig-name descname"><span class="pre">reraise_excs_with_extra_context</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">extra_context</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">after</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/exceptions.html#reraise_excs_with_extra_context"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.exceptions.reraise_excs_with_extra_context" title="Link to this definition"></a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra_context</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>)</p></li>
+<li><p><strong>after</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 <section id="module-y.networks">
 <span id="y-networks-module"></span><h2>y.networks module<a class="headerlink" href="#module-y.networks" title="Link to this heading"></a></h2>
@@ -2953,13 +2892,18 @@ is raised.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Contract.__getattribute__">
 <span class="sig-name descname"><span class="pre">__getattribute__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dank_mids/brownie_patch/contract.html#Contract.__getattribute__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Contract.__getattribute__" title="Link to this definition"></a></dt>
-<dd><p>This doesn’t functionally do anythiing, it just enables type hints</p>
+<dd><p>Get a contract method attribute.</p>
+<p>This method implements lazy initialization of contract methods.
+If a method object does not yet exist, it is created and cached.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p>
+<dd class="field-odd"><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the attribute to get.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The contract method object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>DankContractCall</em> | <em>DankContractTx</em> | <em>DankOverloadedMethod</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2967,16 +2911,13 @@ is raised.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Contract.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/contracts.html#Contract.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Contract.__init__" title="Link to this definition"></a></dt>
-<dd><p>Recreate a <cite>Contract</cite> object from the local database.</p>
-<p>The init method is used to access deployments that have already previously
-been stored locally. For new deployments use <cite>from_abi</cite> or <cite>from_etherscan</cite>.</p>
+<dd><p>Initialize the Contract instance.</p>
+<p>This method sets up lazy initialization for contract methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address_or_alias</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Address or user-defined alias of the deployment.</p></li>
-<li><p><strong>owner</strong> (<em>Account</em><em>, </em><em>optional</em>) – Contract owner. If set, transactions without a <cite>from</cite> field
-will be performed using this account.</p></li>
 <li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
+<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>require_success</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
 <li><p><strong>cache_ttl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -3075,7 +3016,7 @@ address: The address of the contract.
 abi: The ABI of the contract.
 owner (optional): The owner of the contract. Default None.
 persist (optional): If True, persist the contract in brownie’s local contract database. Default True.
-cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in <a class="reference internal" href="#module-y.ENVIRONMENT_VARIABLES" title="y.ENVIRONMENT_VARIABLES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code></a>.</p>
+cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in <code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code>.</p>
 </dd>
 <dt>Returns:</dt><dd><p>A Contract instance for the given ABI.</p>
 </dd>
@@ -3102,18 +3043,24 @@ cache_ttl (optional): The time-to-live for the contract cache in seconds. Defaul
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Contract.from_ethpm">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_ethpm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">manifest_uri</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dank_mids/brownie_patch/contract.html#Contract.from_ethpm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Contract.from_ethpm" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Create a new Contract instance from an ethPM manifest.</p>
+<p>This method allows for the creation of a Contract instance using an ethPM manifest,
+which is a standardized format for Ethereum smart contract packages.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the contract.</p></li>
+<li><p><strong>manifest_uri</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The URI of the ethPM manifest.</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>) – The address of the deployed contract (optional).</p></li>
+<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>) – The account that owns this contract instance.</p></li>
+<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to persist the contract data to brownie’s local db for future use.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Contract instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3121,23 +3068,24 @@ cache_ttl (optional): The time-to-live for the contract cache in seconds. Defaul
 <dl class="py method">
 <dt class="sig sig-object py" id="y.Contract.from_explorer">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_explorer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_proxy_for</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/dank_mids/brownie_patch/contract.html#Contract.from_explorer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.Contract.from_explorer" title="Link to this definition"></a></dt>
-<dd><p>Create a new <cite>Contract</cite> object with source code queried from a block explorer.</p>
+<dd><p>Create a new Contract instance by fetching the ABI from a block explorer.</p>
+<p>This method is useful for interacting with contracts that are not part of the current project,
+as it automatically fetches the contract’s ABI from a block explorer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Address where the contract is deployed.</p></li>
-<li><p><strong>as_proxy_for</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>, </em><em>optional</em>) – Address of the implementation contract, if <cite>address</cite> is a proxy contract.
-The generated object will send transactions to <cite>address</cite>, but use the ABI
-and NatSpec of <cite>as_proxy_for</cite>. This field is only required when the
-block explorer API does not provide an implementation address.</p></li>
-<li><p><strong>owner</strong> (<em>Account</em><em>, </em><em>optional</em>) – Contract owner. If set, transactions without a <cite>from</cite> field will be
-performed using this account.</p></li>
-<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The address of the deployed contract.</p></li>
+<li><p><strong>as_proxy_for</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>) – The address of the implementation contract if this is a proxy contract.</p></li>
+<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>) – The account that owns this contract instance.</p></li>
+<li><p><strong>silent</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to suppress console output during the process.</p></li>
+<li><p><strong>persist</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to persist the contract data to brownie’s db for future use.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>Contract</em></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A new Contract instance.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>Contract</em></p>
 </dd>
 </dl>
 </dd></dl>
@@ -3309,12 +3257,14 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Contract.signatures">
 <span class="sig-name descname"><span class="pre">signatures</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">Method</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Signature</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.Contract.signatures" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A dictionary mapping method names to their corresponding signatures.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Contract.topics">
 <span class="sig-name descname"><span class="pre">topics</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.Contract.topics" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A dictionary mapping event names to their corresponding topics.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.Contract.verified">

@@ -92,9 +92,9 @@
 <span class="kn">from</span> <span class="nn">a_sync.executor</span> <span class="kn">import</span> <span class="n">_AsyncExecutorMixin</span>
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
+<span class="kn">from</span> <span class="nn">evmspec.data</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">HexBytes32</span>
 <span class="kn">from</span> <span class="nn">hexbytes</span> <span class="kn">import</span> <span class="n">HexBytes</span>
 <span class="kn">from</span> <span class="nn">pony.orm</span> <span class="kn">import</span> <span class="n">OptimisticCheckError</span><span class="p">,</span> <span class="n">TransactionIntegrityError</span><span class="p">,</span> <span class="n">db_session</span>
-<span class="kn">from</span> <span class="nn">tqdm.asyncio</span> <span class="kn">import</span> <span class="n">tqdm_asyncio</span>
 <span class="kn">from</span> <span class="nn">web3.datastructures</span> <span class="kn">import</span> <span class="n">AttributeDict</span>
 <span class="kn">from</span> <span class="nn">web3.middleware.filter</span> <span class="kn">import</span> <span class="n">block_ranges</span>
 
@@ -102,6 +102,7 @@
 <span class="kn">from</span> <span class="nn">y._db.decorators</span> <span class="kn">import</span> <span class="n">retry_locked</span>
 <span class="kn">from</span> <span class="nn">y._db.exceptions</span> <span class="kn">import</span> <span class="n">CacheNotPopulatedError</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
+<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">reraise_excs_with_extra_context</span>
 <span class="kn">from</span> <span class="nn">y.utils.middleware</span> <span class="kn">import</span> <span class="n">BATCH_SIZE</span>
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
@@ -131,11 +132,22 @@
 <span class="sd">    Note:</span>
 <span class="sd">        Currently supports encoding of AttributeDict and HexBytes objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">AttributeDict</span><span class="p">):</span>
-        <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
-    <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">))</span>
+    <span class="n">typ</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="c1"># sometimes we get a recursion error from the instance checks, this helps us debug that case.</span>
+    <span class="k">with</span> <span class="n">reraise_excs_with_extra_context</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">typ</span><span class="p">):</span>
+        <span class="c1"># we use issubclass instead of isinstance here to prevent a recursion error</span>
+        <span class="k">if</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">issubclass</span><span class="p">(</span><span class="n">typ</span><span class="p">,</span> <span class="n">Address</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">obj</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">HexBytes32</span><span class="p">):</span>
+            <span class="c1"># we trim all leading zeroes since we know how many we need to put back later</span>
+            <span class="k">return</span> <span class="nb">hex</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span> <span class="mi">16</span><span class="p">))[</span><span class="mi">2</span><span class="p">:]</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">AttributeDict</span><span class="p">):</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
 
 
 <span class="k">def</span> <span class="nf">dec_hook</span><span class="p">(</span><span class="n">typ</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">obj</span><span class="p">:</span> <span class="nb">bytes</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
@@ -155,8 +167,8 @@
 <span class="sd">    Note:</span>
 <span class="sd">        Currently only supports decoding of HexBytes objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">typ</span> <span class="o">==</span> <span class="n">HexBytes</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">HexBytes</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">typ</span> <span class="ow">is</span> <span class="n">HexBytes</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">typ</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">typ</span><span class="si">}</span><span class="s2"> is not a valid type for decoding&quot;</span><span class="p">)</span>
 
 
@@ -328,13 +340,13 @@
         <span class="k">if</span> <span class="n">cached_thru</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">is_cached_thru</span><span class="p">,</span> <span class="n">from_block</span>
         <span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is cached thru block </span><span class="si">%s</span><span class="s2">, loading from db&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">cached_thru</span>
             <span class="p">)</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extend</span><span class="p">(</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="n">from_block</span><span class="p">,</span> <span class="n">cached_thru</span><span class="p">)</span>
             <span class="p">)</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded </span><span class="si">%s</span><span class="s2"> objects thru block </span><span class="si">%s</span><span class="s2"> from disk&quot;</span><span class="p">,</span>
                 <span class="bp">self</span><span class="p">,</span>
                 <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">),</span>
@@ -424,7 +436,7 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The block number of the object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">obj</span><span class="p">[</span><span class="s2">&quot;blockNumber&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">blockNumber</span>
 
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="o">.</span><span class="n">wrap</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_objects_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>

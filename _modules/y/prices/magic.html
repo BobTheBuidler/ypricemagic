@@ -185,7 +185,7 @@
 <span class="sd">            so you can save yourself some keystrokes while testing in a console</span>
 <span class="sd">        - (as opposed to `y.get_price(&quot;0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e&quot;)`)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">block</span> <span class="o">=</span> <span class="n">block</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
+    <span class="n">block</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">block</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
     <span class="n">token_address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">_get_price</span><span class="p">(</span>

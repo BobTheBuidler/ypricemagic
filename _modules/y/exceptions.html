@@ -70,6 +70,7 @@
              
   <h1>Source code for y.exceptions</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">contextmanager</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">TYPE_CHECKING</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">Contract</span> <span class="k">as</span> <span class="n">BrownieContract</span>
@@ -410,6 +411,18 @@
 <a class="viewcode-back" href="../../source/y.html#y.exceptions.NodeNotSynced">[docs]</a>
 <span class="k">class</span> <span class="nc">NodeNotSynced</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="k">pass</span></div>
+
+
+
+<div class="viewcode-block" id="reraise_excs_with_extra_context">
+<a class="viewcode-back" href="../../source/y.html#y.exceptions.reraise_excs_with_extra_context">[docs]</a>
+<span class="nd">@contextmanager</span>
+<span class="k">def</span> <span class="nf">reraise_excs_with_extra_context</span><span class="p">(</span><span class="o">*</span><span class="n">extra_context</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">after</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="n">e</span><span class="o">.</span><span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="n">e</span><span class="o">.</span><span class="n">args</span><span class="p">,</span> <span class="o">*</span><span class="n">extra_context</span><span class="p">)</span>
+        <span class="k">raise</span></div>
 
 </pre></div>
 
