@@ -1,4 +1,5 @@
 import asyncio
+import itertools
 import logging
 from typing import List, Optional
 
@@ -8,13 +9,16 @@ from brownie import chain
 from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
-from msgspec import json
+from evmspec.data import Address, HexBytes32, uint
+from evmspec.log import Topic
+from hexbytes import HexBytes
+from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
-from web3.types import LogReceipt
 
-from y._db import decorators, entities, structs
+from y._db import decorators, entities
 from y._db.common import DiskCache, enc_hook, default_filter_threads
+from y._db.log import Log
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
 
@@ -34,33 +38,33 @@ LOG_COLS = [
 ]
 
 
-async def _prepare_log(log: LogReceipt) -> tuple:
-    transaction_dbid, address_dbid = await asyncio.gather(
-        get_hash_dbid(log["transactionHash"].hex()), get_hash_dbid(log["address"])
+async def _prepare_log(log: Log) -> tuple:
+    transaction_dbid, address_dbid, topic_dbids = await asyncio.gather(
+        get_hash_dbid(log.transactionHash.hex()),
+        get_hash_dbid(log.address),
+        asyncio.gather(*[get_topic_dbid(topic) for topic in log.topics]),
     )
-    return tuple(
-        {
-            "block_chain": chain.id,
-            "block_number": log["blockNumber"],
-            "transaction": transaction_dbid,
-            "log_index": log["logIndex"],
-            "address": address_dbid,
-            **{
-                f"topic{i}": await get_topic_dbid(log_topics[i])
-                if i < len(log_topics := log["topics"])
-                else None
-                for i in range(4)
-            },
-            "raw": json.encode(log, enc_hook=enc_hook),
-        }.values()
-    )
+    topics = {
+        f"topic{i}": topic_dbid
+        for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)
+    }
+    params = {
+        "block_chain": chain.id,
+        "block_number": log.blockNumber,
+        "transaction": transaction_dbid,
+        "log_index": log.logIndex,
+        "address": address_dbid,
+        **topics,
+        "raw": json.encode(Log(**log), enc_hook=enc_hook),
+    }
+    return tuple(params.values())
 
 
 _check_using_extended_db = lambda: "eth_portfolio" in _get_get_block().__module__
 
 
 async def bulk_insert(
-    logs: List[LogReceipt], executor: _AsyncExecutorMixin = default_filter_threads
+    logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads
 ) -> None:
     if not logs:
         return
@@ -72,28 +76,25 @@ async def bulk_insert(
         block_cols.append("classtype")
         blocks = [
             (chain.id, block, "BlockExtended")
-            for block in {log["blockNumber"] for log in logs}
+            for block in {log.blockNumber for log in logs}
         ]
     else:
-        blocks = [(chain.id, block) for block in {log["blockNumber"] for log in logs}]
+        blocks = [(chain.id, block) for block in {log.blockNumber for log in logs}]
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
 
-    hashes = [[txhash.hex()] for txhash in {log["transactionHash"] for log in logs}] + [
-        [EthAddress(addr)] for addr in {log["address"] for log in logs}
+    txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
+    addresses = (EthAddress(addr) for addr in {log.address for log in logs})
+    hashes = [
+        [_remove_0x_prefix(hash)] for hash in itertools.chain(txhashes, addresses)
     ]
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
 
-    topics = {
-        log_topics[i]
-        for i in range(4)
-        for log in logs
-        if i < len(log_topics := log["topics"])
-    }
+    topics = {*itertools.chain(*(log.topics for log in logs))}
     await executor.run(
         bulk.insert,
         entities.LogTopic,
         ["topic"],
-        [[topic.hex()] for topic in topics],
+        [[_remove_0x_prefix(topic.strip())] for topic in topics],
         sync=True,
     )
 
@@ -107,8 +108,8 @@ async def bulk_insert(
 
 
 @decorators.a_sync_write_db_session_cached
-def get_topic_dbid(topic: bytes) -> int:
-    topic = topic.hex()
+def get_topic_dbid(topic: Topic) -> int:
+    topic = _remove_0x_prefix(topic.strip())
     entity = entities.LogTopic.get(topic=topic)
     if entity is None:
         entity = entities.LogTopic(topic=topic)
@@ -124,16 +125,18 @@ async def get_hash_dbid(txhash: HexStr) -> int:
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
         hexstr = EthAddress(hexstr)
-    entity = entities.Hashes.get(hash=hexstr)
+    string = _remove_0x_prefix(hexstr)
+    entity = entities.Hashes.get(hash=string)
     if entity is None:
-        entity = entities.Hashes(hash=hexstr)
+        entity = entities.Hashes(hash=string)
     return entity.dbid
 
 
-def get_decoded(log: structs.Log) -> _EventItem:
+def get_decoded(log: Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
-    log = entities.Log[chain.id, log.block_number, log.transaction_hash, log.log_index]
-    if decoded := log.decoded:
+    if decoded := entities.Log[
+        chain.id, log.block_number, log.transaction_hash, log.log_index
+    ].decoded:
         return _EventItem(
             decoded["name"], decoded["address"], decoded["event_data"], decoded["pos"]
         )
@@ -141,7 +144,7 @@ def get_decoded(log: structs.Log) -> _EventItem:
 
 @db_session
 @decorators.retry_locked
-def set_decoded(log: structs.Log, decoded: _EventItem):
+def set_decoded(log: Log, decoded: _EventItem) -> None:
     entities.Log[
         chain.id, log.block_number, log.transaction_hash, log.log_index
     ].decoded = decoded
@@ -150,12 +153,19 @@ def set_decoded(log: structs.Log, decoded: _EventItem):
 page_size = 100
 
 
-class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
+class LogCache(DiskCache[Log, entities.LogCacheInfo]):
     __slots__ = "addresses", "topics"
 
     def __init__(self, addresses, topics):
         self.addresses = addresses
         self.topics = topics
+
+    def __repr__(self) -> str:
+        string = f"{type(self).__name__}(addresses={self.addresses}"
+        for topic in ["topic0", "topic1", "topic2", "topic3"]:
+            if value := getattr(self, topic):
+                string += f", {topic}={value}"
+        return f"{string})"
 
     @property
     def topic0(self) -> str:
@@ -238,11 +248,23 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
             return info.cached_thru
         return 0
 
-    def _select(self, from_block: int, to_block: int) -> List[LogReceipt]:
-        return [
-            json.decode(log.raw, type=structs.Log)
-            for log in self._get_query(from_block, to_block)
-        ]
+    def _select(self, from_block: int, to_block: int) -> List[Log]:
+        logger.warning("executing select query for %s", self)
+        try:
+            return [
+                json.decode(log.raw, type=Log, dec_hook=_decode_hook)
+                for log in self._get_query(from_block, to_block)
+            ]
+        except ValidationError:
+            results = []
+            for log in self._get_query(from_block, to_block):
+                try:
+                    results.append(
+                        json.decode(log.raw, type=Log, dec_hook=_decode_hook)
+                    )
+                except ValidationError as e:
+                    raise ValueError(e, json.decode(log.raw)) from e
+            return results
 
     def _get_query(self, from_block: int, to_block: int) -> Query:
         from y._db.utils import utils as db
@@ -323,21 +345,44 @@ class LogCache(DiskCache[LogReceipt, entities.LogCacheInfo]):
         return
 
     def _wrap_query_with_addresses(self, generator) -> Query:
-        if addresses := self.addresses:
-            logger.debug("%s addresses: %s", self, addresses)
-            if isinstance(addresses, str):
-                return (
-                    log
-                    for log in generator
-                    if log.address.hash == str(EthAddress(addresses))
-                )
-            return (log for log in generator if log.address.hash in addresses)
-        return generator
+        if not (addresses := self.addresses):
+            return generator
+        elif isinstance(addresses, str):
+            address = _remove_0x_prefix(EthAddress(addresses))
+            return (log for log in generator if log.address.hash == address)
+        addresses = [_remove_0x_prefix(EthAddress(address)) for address in addresses]
+        return (log for log in generator if log.address.hash in addresses)
 
-    def _wrap_query_with_topic(self, generator, topic: str) -> Query:
-        if value := getattr(self, topic):
-            logger.debug("%s %s is %s", self, topic, value)
-            if isinstance(value, (bytes, str)):
-                return (log for log in generator if getattr(log, topic).topic == value)
-            return (log for log in generator if getattr(log, topic).topic in value)
-        return generator
+    def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:
+        if not (topic_or_topics := getattr(self, topic_id)):
+            return generator
+
+        if isinstance(topic_or_topics, (bytes, str)):
+            topic = topic_or_topics
+            topic = _remove_0x_prefix(HexBytes32(topic).strip())
+            return (log for log in generator if getattr(log, topic_id).topic == topic)
+
+        topics = [_remove_0x_prefix(HexBytes32(v).strip()) for v in topic_or_topics]
+        return (log for log in generator if getattr(log, topic_id).topic in topics)
+
+
+def _decode_hook(typ, obj):
+    try:
+        if issubclass(typ, uint):
+            if isinstance(obj, int):
+                return typ(obj)
+            elif isinstance(obj, str):
+                return typ.fromhex(obj)
+        elif issubclass(typ, HexBytes):
+            return typ(obj)
+        elif typ is Address:
+            return Address.checksum(obj)
+    except (TypeError, ValueError, ValidationError) as e:
+        raise Exception(e, typ, obj) from e
+    raise NotImplementedError(typ, obj)
+
+
+def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
+    if not isinstance(string, str):
+        raise TypeError(type(string), string)
+    return string[2:] if string[:2] == "0x" else string

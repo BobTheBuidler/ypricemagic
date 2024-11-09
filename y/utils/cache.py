@@ -37,7 +37,7 @@ try:
 
     import toolcache
 
-    """User doesn't has toolcache, this diskcache decorator will work."""
+    """User has toolcache, this diskcache decorator will work."""
 
     logger = logging.getLogger(__name__)
     cache_base_path = f"./cache/{chain.id}/"

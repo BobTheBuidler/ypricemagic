@@ -112,7 +112,7 @@ async def get_price(
             so you can save yourself some keystrokes while testing in a console
         - (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")`)
     """
-    block = block or await dank_mids.eth.block_number
+    block = int(block or await dank_mids.eth.block_number)
     token_address = convert.to_address(token_address)
     try:
         return await _get_price(

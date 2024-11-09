@@ -29,7 +29,6 @@ from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
 from brownie.convert.datatypes import EthAddress
-from brownie.exceptions import EventLookupError
 from brownie.network.event import (
     _EventItem,
     _add_deployment_topics,
@@ -38,14 +37,16 @@ from brownie.network.event import (
     EventDict,
 )
 from eth_typing import ChecksumAddress
+from evmspec.log import Log
+from msgspec.structs import force_setattr
 from toolz import groupby
 from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y._db import structs
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, Block
+from y.exceptions import reraise_excs_with_extra_context
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
@@ -65,21 +66,31 @@ ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split(".")) >= 
 )
 
 
-def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
+def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
+    # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
     """
+    if not logs:
+        return EventDict()
+
+    logs = list(logs)
+
     from y.contracts import Contract
 
     for log in logs:
-        address = log["address"]
-        if address not in _deployment_topics:
-            _add_deployment_topics(address, Contract(address).abi)
+        if log.address not in _deployment_topics:
+            _add_deployment_topics(log.address, Contract(log.address).abi)
 
-    # for some reason < this version can decode them just fine but >= cannot
-    special_treatment = (
-        ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], structs.Log)
-    )
+    # for some reason < 1.2.4 can decode them just fine but >= cannot
+    special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], Log)
+
+    if is_struct := isinstance(logs[0], Log):
+        # save these for later
+        orig_topics = [log.topics for log in logs]
+        for log in logs:
+            # these must support pop() for some reason
+            force_setattr(log, "topics", list(log.topics))
 
     try:
         decoded = _decode_logs(
@@ -88,27 +99,24 @@ def decode_logs(logs: Union[List[LogReceipt], List[structs.Log]]) -> EventDict:
     except Exception:
         decoded = []
         for log in logs:
-            try:
+            with reraise_excs_with_extra_context(log):
                 # get some help for debugging
                 decoded.extend(_decode_logs([log]))
-            except Exception as e:
-                raise e.__class__(log, *e.args) from e
 
-    try:
-        if logs and isinstance(logs[0], structs.Log):
-            for i, log in enumerate(logs):
-                # When we load logs from the ydb cache, its faster if we lookup attrs with getattr vs getitem
-                setattr(decoded[i], "block_number", log.block_number)
-                setattr(decoded[i], "transaction_hash", log.transaction_hash)
-                setattr(decoded[i], "log_index", log.log_index)
+    with reraise_excs_with_extra_context(len(logs), decoded):
+        if is_struct:
+            for i, (log, orig_topics) in enumerate(zip(logs, orig_topics)):
+                setattr(decoded[i], "block_number", log.blockNumber)
+                setattr(decoded[i], "transaction_hash", log.transactionHash)
+                setattr(decoded[i], "log_index", log.logIndex)
+                # put the log back to normal
+                force_setattr(log, "topics", orig_topics)
         else:
             for i, log in enumerate(logs):
                 setattr(decoded[i], "block_number", log["blockNumber"])
                 setattr(decoded[i], "transaction_hash", log["transactionHash"])
                 setattr(decoded[i], "log_index", log["logIndex"])
         return decoded
-    except EventLookupError as e:
-        raise type(e)(*e.args, len(logs), decoded) from None
 
 
 @a_sync.a_sync(default="sync")
@@ -272,7 +280,7 @@ def _get_logs(
     topics: Optional[List[str]],
     start: Block,
     end: Block,
-) -> List[LogReceipt]:
+) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -308,7 +316,7 @@ get_logs_semaphore = defaultdict(
 )
 
 
-async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
+async def _get_logs_async(address, topics, start, end) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -328,7 +336,7 @@ async def _get_logs_async(address, topics, start, end) -> List[LogReceipt]:
 
 
 @eth_retry.auto_retry
-async def _get_logs_async_no_cache(address, topics, start, end) -> List[LogReceipt]:
+async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
     """
     Get logs for a given address, topics, and block range.
 
@@ -392,7 +400,7 @@ def _get_logs_no_cache(
     topics: Optional[List[str]],
     start: Block,
     end: Block,
-) -> List[LogReceipt]:
+) -> List[Log]:
     """
     Get logs without using the disk cache.
 
@@ -456,7 +464,7 @@ def _get_logs_no_cache(
 @memory.cache()
 def _get_logs_batch_cached(
     address: Optional[str], topics: Optional[List[str]], start: Block, end: Block
-) -> List[LogReceipt]:
+) -> List[Log]:
     """
     Get logs from the disk cache, or fetch and cache them if not available.
 
@@ -472,10 +480,12 @@ def _get_logs_batch_cached(
     return _get_logs_no_cache(address, topics, start, end)
 
 
-class LogFilter(Filter[LogReceipt, "LogCache"]):
+class LogFilter(Filter[Log, "LogCache"]):
     """
     A filter for fetching and processing event logs.
     """
+
+    __slots__ = "addresses", "topics", "from_block"
 
     def __init__(
         self,
@@ -533,7 +543,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
             self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
         return self._semaphore
 
-    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[LogReceipt]:
+    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
         """
         Get logs up to a given block.
 
@@ -546,7 +556,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         return self._objects_thru(block=to_block)
 
     @property
-    def insert_to_db(self) -> Callable[[LogReceipt], None]:
+    def insert_to_db(self) -> Callable[[Log], None]:
         """
         Get the function for inserting logs into the database.
 
@@ -557,7 +567,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
         raise NotImplementedError
 
     @cached_property
-    def bulk_insert(self) -> Callable[[List[LogReceipt]], Awaitable[None]]:
+    def bulk_insert(self) -> Callable[[List[Log]], Awaitable[None]]:
         """
         Get the function for bulk inserting logs into the database.
 
@@ -593,7 +603,7 @@ class LogFilter(Filter[LogReceipt, "LogCache"]):
                 )
         return self.from_block
 
-    async def _fetch_range(self, range_start: int, range_end: int) -> List[LogReceipt]:
+    async def _fetch_range(self, range_start: int, range_end: int) -> List[Log]:
         """
         Fetch logs for a given block range.
 
@@ -701,7 +711,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, logs: List[LogReceipt]) -> None:
+    async def _extend(self, logs: List[Log]) -> None:
         """
         Process a new set of logs and extend the list of processed events with the results.
 
