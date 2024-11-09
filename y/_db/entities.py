@@ -65,7 +65,7 @@ class Block(db.Entity, _AsyncEntityMixin):
 
 class Address(db.Entity, _AsyncEntityMixin):
     chain = Required(Chain, lazy=True, reverse="addresses")
-    address = Required(str, lazy=True)
+    address = Required(str, 42, lazy=True)
     PrimaryKey(chain, address)
     notes = Optional(str, lazy=True)
 
@@ -108,7 +108,7 @@ class TraceCacheInfo(db.Entity):
 
 class LogCacheInfo(db.Entity):
     chain = Required(Chain, index=True)
-    address = Required(str, index=True)
+    address = Required(str, 42, index=True)
     topics = Required(bytes)
     PrimaryKey(chain, address, topics)
     cached_from = Required(int)
@@ -117,8 +117,8 @@ class LogCacheInfo(db.Entity):
 
 class LogTopic(db.Entity):
     "Just makes the :ref:`Log` db smaller."
-    dbid = PrimaryKey(int, auto=True, size=64)
-    topic = Required(str, unique=True, lazy=True)
+    dbid = PrimaryKey(int, size=64, auto=True)
+    topic = Required(str, 64, unique=True, lazy=True)
 
     logs_as_topic0 = Set("Log", reverse="topic0")
     logs_as_topic1 = Set("Log", reverse="topic1")
@@ -128,8 +128,8 @@ class LogTopic(db.Entity):
 
 class Hashes(db.Entity):
     "Just makes :ref:`Log` pk and indexes smaller."
-    dbid = PrimaryKey(int, auto=True, size=64)
-    hash = Required(str, unique=True)
+    dbid = PrimaryKey(int, size=64, auto=True)
+    hash = Required(str, 64, unique=True)
 
     logs_for_tx = Set("Log", reverse="tx")
     logs_for_addr = Set("Log", reverse="address")
@@ -163,9 +163,9 @@ class Log(db.Entity):
 class Trace(db.Entity):
     id = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
-    hash = Required(str, index=True, lazy=True)
-    from_address = Required(str, index=True, lazy=True)
-    to_address = Required(str, index=True, lazy=True)
+    hash = Required(str, 64, index=True, lazy=True)
+    from_address = Required(str, 42, index=True, lazy=True)
+    to_address = Required(str, 42, index=True, lazy=True)
     raw = Required(bytes)
 
 

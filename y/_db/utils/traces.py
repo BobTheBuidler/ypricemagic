@@ -7,6 +7,7 @@ import dank_mids
 import msgspec.json
 import pony.orm
 from a_sync.executor import _AsyncExecutorMixin
+from evmspec import FilterTrace
 
 from y._db.common import DiskCache, Filter, _clean_addresses, default_filter_threads
 from y._db.decorators import a_sync_write_db_session
@@ -18,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 @a_sync_write_db_session
-def insert_trace(trace: dict) -> None:
+def insert_trace(trace: FilterTrace) -> None:
     get_block = _get_get_block()
     kwargs = {
         "block": get_block(trace.blockNumber, sync=True),
@@ -215,30 +216,23 @@ class TraceFilter(Filter[dict, TraceCache]):
         try:
             return await dank_mids.web3.provider.make_request("TraceFilter", {})
         except NotImplementedError:
-            results = {
-                block: traces
-                async for block, traces in a_sync.map(
-                    self._trace_block, range(from_block, to_block)
-                ).map()
-            }
+            tasks = a_sync.map(self._trace_block, range(from_block, to_block))
+            results = {block: traces async for block, traces in tasks.map()}
             return list(chain(*[results[i] for i in range(from_block, to_block)]))
 
     async def _trace_block(self, block: int) -> List[dict]:
         return [
             trace
             for trace in await dank_mids.web3.provider.make_request("TraceBlock", block)
-            if (
-                not self.from_addresses
-                or any(
-                    "from" in x and x["from"] in self.from_addresses
-                    for x in [trace, trace.values()]
-                )
-            )
-            and (
-                not self.to_addresses
-                or any(
-                    "to" in x and x["to"] in self.to_addresses
-                    for x in [trace, trace.values()]
-                )
-            )
+            if (not self.from_addresses or trace_is_from(self.from_addresses))
+            and (not self.to_addresses or trace_is_to(self.to_addresses, trace))
         ]
+
+
+trace_is_from = lambda addresses, trace: any(
+    "from" in x and x["from"] in addresses for x in [trace, trace.values()]
+)
+
+trace_is_to = lambda addresses, trace: any(
+    "to" in x and x["to"] in addresses for x in [trace, trace.values()]
+)

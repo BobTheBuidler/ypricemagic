@@ -70,8 +70,7 @@ async def get_block_timestamp_async(height: int) -> int:
         )
         ts = int(header.timestamp, 16)
     else:
-        block = await dank_mids.eth.get_block(height)
-        ts = block.timestamp
+        ts = await dank_mids.eth.get_block_timestamp(height)
     db.set_block_timestamp(height, ts)
     return ts
 
@@ -210,8 +209,7 @@ async def check_node_async() -> None:
     if GANACHE_FORK:
         return
     current_time = time.time()
-    latest = await dank_mids.eth.get_block("latest")
-    node_timestamp = latest.timestamp
+    node_timestamp = await dank_mids.eth.get_block_timestamp("latest")
     if current_time - node_timestamp > 5 * 60:
         raise NodeNotSynced(
             f"current time: {current_time}  latest block time: {node_timestamp}  discrepancy: {round((current_time - node_timestamp) / 60, 2)} minutes"

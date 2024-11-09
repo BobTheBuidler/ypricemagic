@@ -1,4 +1,5 @@
 import logging
+from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, Optional
 
 from brownie import Contract as BrownieContract
@@ -256,3 +257,12 @@ def out_of_gas(e: Exception) -> bool:
 
 class NodeNotSynced(Exception):
     pass
+
+
+@contextmanager
+def reraise_excs_with_extra_context(*extra_context: Any, after: bool = True):
+    try:
+        yield
+    except Exception as e:
+        e.args = (*e.args, *extra_context)
+        raise

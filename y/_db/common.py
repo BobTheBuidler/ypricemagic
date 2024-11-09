@@ -21,9 +21,9 @@ import eth_retry
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
+from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
-from tqdm.asyncio import tqdm_asyncio
 from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
@@ -31,6 +31,7 @@ from y import convert
 from y._db.decorators import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y._decorators import stuck_coro_debugger
+from y.exceptions import reraise_excs_with_extra_context
 from y.utils.middleware import BATCH_SIZE
 
 T = TypeVar("T")
@@ -60,11 +61,22 @@ def enc_hook(obj: Any) -> bytes:
     Note:
         Currently supports encoding of AttributeDict and HexBytes objects.
     """
-    if isinstance(obj, AttributeDict):
-        return dict(obj)
-    elif isinstance(obj, HexBytes):
-        return obj.hex()
-    raise NotImplementedError(obj, type(obj))
+    typ = type(obj)
+    # sometimes we get a recursion error from the instance checks, this helps us debug that case.
+    with reraise_excs_with_extra_context(obj, typ):
+        # we use issubclass instead of isinstance here to prevent a recursion error
+        if issubclass(typ, int):
+            return int(obj)
+        elif issubclass(typ, Address):
+            return obj[2:]
+        elif isinstance(obj, HexBytes32):
+            # we trim all leading zeroes since we know how many we need to put back later
+            return hex(int(obj.hex(), 16))[2:]
+        elif isinstance(obj, HexBytes):
+            return bytes(obj).hex()
+        elif isinstance(obj, AttributeDict):
+            return dict(obj)
+        raise TypeError
 
 
 def dec_hook(typ: Type[T], obj: bytes) -> T:
@@ -84,8 +96,8 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
     Note:
         Currently only supports decoding of HexBytes objects.
     """
-    if typ == HexBytes:
-        return HexBytes(obj)
+    if typ is HexBytes:
+        return typ(obj)
     raise ValueError(f"{typ} is not a valid type for decoding")
 
 
@@ -257,13 +269,13 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         if cached_thru := await self.executor.run(
             self.cache.is_cached_thru, from_block
         ):
-            logger.debug(
+            logger.warning(
                 "%s is cached thru block %s, loading from db", self, cached_thru
             )
             await self._extend(
                 await self.executor.run(self.cache.select, from_block, cached_thru)
             )
-            logger.debug(
+            logger.warning(
                 "%s loaded %s objects thru block %s from disk",
                 self,
                 len(self._objects),
@@ -353,7 +365,7 @@ class Filter(_DiskCachedMixin[T, C]):
         Returns:
             The block number of the object.
         """
-        return obj["blockNumber"]
+        return obj.blockNumber
 
     @a_sync.ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
