@@ -1,5 +1,4 @@
 bobs_lazy_logging==0.0.4
-cachetools>=4.1.1,<4.3
 checksum_dict>=1.1.1
 dank_mids>=4.20.97
 eth-brownie>=1.19.3,<1.21
