@@ -589,19 +589,22 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if cache_ttl is None:
             self._ttl_cache_popper = "disabled"
             return
-            
-        cache = self._ChecksumAddressSingletonMeta__instances
         
         try:
-            self._ttl_cache_popper = asyncio.get_running_loop().call_later(
-                cache_ttl,
-                cache.pop,
-                self.address,
-                None,
-            )
+            loop = asyncio.get_running_loop()
         except RuntimeError:
             # If the event loop isn't running yet we can just specify the cache_ttl for later use
             self._ttl_cache_popper = cache_ttl
+            return
+
+        cache = self._ChecksumAddressSingletonMeta__instances
+
+        self._ttl_cache_popper = loop.call_later(
+            cache_ttl,
+            cache.pop,
+            self.address,
+            None,
+        )
 
 
 _contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=32)
