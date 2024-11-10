@@ -26,5 +26,10 @@ jobs:
         python -m pip install --upgrade pip
         pip install mypy
 
+    - name: Install dependencies
+      run: |
+        pip install wheel
+        pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
+
     - name: Run MyPy
       run: mypy . --strict --pretty --show-error-codes --show-error-context --install-types --non-interactive
