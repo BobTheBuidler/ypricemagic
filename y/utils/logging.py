@@ -44,8 +44,8 @@ def get_price_logger(
     if extra:
         name += f".{extra}"
     # the built-in logging module caches loggers but we need to make sure they have the proper members for ypm
-    if logger := _all_price_loggers.get(name, None):
-        return logger
+    if cached_logger := _all_price_loggers.get(name, None):
+        return cached_logger
     logger = logging.getLogger(name)
     logger.address = address
     logger.block = block
