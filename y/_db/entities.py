@@ -22,33 +22,39 @@ from y._db.decorators import retry_locked, ydb_write_threads
 
 db = Database()
 
+# makes type checking work, see below for info:
+# https://pypi.org/project/pony-stubs/
+DbEntity = db.Entity
+
 
 logger = logging.getLogger(__name__)
 
 
 class _AsyncEntityMixin:
+    # TODO: implement this
     pass
     """
     @classmethod
     @a_sync('async')
     def get(cls: E, *args, **kwargs) -> E:
-        return super(db.Entity).get(*args, **kwargs)
+        return super(DbEntity).get(*args, **kwargs)
     @classmethod
     @a_sync('async')
     def select(cls: E, *args, **kwargs) -> E:
-        return super(db.Entity).select(*args, **kwargs)"""
+        return super(DbEntity).select(*args, **kwargs)
+    """
 
 
-class Chain(db.Entity, _AsyncEntityMixin):
+class Chain(DbEntity, _AsyncEntityMixin):
     id = PrimaryKey(int)
 
-    blocks = Set("Block")
-    addresses = Set("Address")
-    log_cached = Set("LogCacheInfo")
-    trace_caches = Set("TraceCacheInfo")
+    blocks: Set["Block"] = Set("Block")
+    addresses: Set["Address"] = Set("Address")
+    log_cached: Set["LogCacheInfo"] = Set("LogCacheInfo")
+    trace_caches: Set["TraceCacheInfo"] = Set("TraceCacheInfo")
 
 
-class Block(db.Entity, _AsyncEntityMixin):
+class Block(DbEntity, _AsyncEntityMixin):
     chain = Required(Chain, reverse="blocks")
     number = Required(int)
     PrimaryKey(chain, number)
@@ -57,19 +63,19 @@ class Block(db.Entity, _AsyncEntityMixin):
 
     composite_index(chain, hash)
 
-    prices = Set("Price", reverse="block", cascade_delete=False)
-    contracts_deployed = Set("Contract", reverse="deploy_block")
-    logs = Set("Log", reverse="block", cascade_delete=False)
-    traces = Set("Trace", reverse="block", cascade_delete=False)
+    prices: Set["Price"] = Set("Price", reverse="block", cascade_delete=False)
+    contracts_deployed: Set["Contract"] = Set("Contract", reverse="deploy_block")
+    logs: Set["Log"] = Set("Log", reverse="block", cascade_delete=False)
+    traces: Set["Trace"] = Set("Trace", reverse="block", cascade_delete=False)
 
 
-class Address(db.Entity, _AsyncEntityMixin):
+class Address(DbEntity, _AsyncEntityMixin):
     chain = Required(Chain, lazy=True, reverse="addresses")
     address = Required(str, 42, lazy=True)
     PrimaryKey(chain, address)
     notes = Optional(str, lazy=True)
 
-    contracts_deployed = Set("Contract", reverse="deployer")
+    contracts_deployed: Set["Contract"] = Set("Contract", reverse="deployer")
 
 
 class Contract(Address):
@@ -87,17 +93,17 @@ class Token(Contract):
     decimals = Optional(int, lazy=True)
     bucket = Optional(str, index=True, lazy=True)
 
-    prices = Set("Price", reverse="token")
+    prices: Set["Price"] = Set("Price", reverse="token")
 
 
-class Price(db.Entity):
+class Price(DbEntity):
     block = Required(Block, index=True, lazy=True)
     token = Required(Token, index=True, lazy=True)
     PrimaryKey(block, token)
     price = Required(Decimal, 38, 18)
 
 
-class TraceCacheInfo(db.Entity):
+class TraceCacheInfo(DbEntity):
     chain = Required(Chain, index=True)
     to_addresses = Required(bytes, index=True)
     from_addresses = Required(bytes, index=True)
@@ -106,7 +112,7 @@ class TraceCacheInfo(db.Entity):
     cached_thru = Required(int)
 
 
-class LogCacheInfo(db.Entity):
+class LogCacheInfo(DbEntity):
     chain = Required(Chain, index=True)
     address = Required(str, 42, index=True)
     topics = Required(bytes)
@@ -115,27 +121,27 @@ class LogCacheInfo(db.Entity):
     cached_thru = Required(int)
 
 
-class LogTopic(db.Entity):
+class LogTopic(DbEntity):
     "Just makes the :ref:`Log` db smaller."
     dbid = PrimaryKey(int, size=64, auto=True)
     topic = Required(str, 64, unique=True, lazy=True)
 
-    logs_as_topic0 = Set("Log", reverse="topic0")
-    logs_as_topic1 = Set("Log", reverse="topic1")
-    logs_as_topic2 = Set("Log", reverse="topic2")
-    logs_as_topic3 = Set("Log", reverse="topic3")
+    logs_as_topic0: Set["Log"] = Set("Log", reverse="topic0")
+    logs_as_topic1: Set["Log"] = Set("Log", reverse="topic1")
+    logs_as_topic2: Set["Log"] = Set("Log", reverse="topic2")
+    logs_as_topic3: Set["Log"] = Set("Log", reverse="topic3")
 
 
-class Hashes(db.Entity):
+class Hashes(DbEntity):
     "Just makes :ref:`Log` pk and indexes smaller."
     dbid = PrimaryKey(int, size=64, auto=True)
     hash = Required(str, 64, unique=True)
 
-    logs_for_tx = Set("Log", reverse="tx")
-    logs_for_addr = Set("Log", reverse="address")
+    logs_for_tx: Set["Log"] = Set("Log", reverse="tx")
+    logs_for_addr: Set["Log"] = Set("Log", reverse="address")
 
 
-class Log(db.Entity):
+class Log(DbEntity):
     block = Required(Block, index=True, lazy=True)
     tx = Required(Hashes, lazy=True)
     log_index = Required(int, size=16, lazy=True)
@@ -160,7 +166,7 @@ class Log(db.Entity):
     raw = Required(bytes, lazy=True)
 
 
-class Trace(db.Entity):
+class Trace(DbEntity):
     id = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
     hash = Required(str, 64, index=True, lazy=True)
@@ -169,7 +175,7 @@ class Trace(db.Entity):
     raw = Required(bytes)
 
 
-class BlockAtTimestamp(db.Entity):
+class BlockAtTimestamp(DbEntity):
     chainid = Required(int)
     timestamp = Required(datetime)
     PrimaryKey(chainid, timestamp)
@@ -179,7 +185,7 @@ class BlockAtTimestamp(db.Entity):
 @a_sync.a_sync(executor=ydb_write_threads)
 @db_session
 @retry_locked
-def insert(type: db.Entity, **kwargs: Any) -> typing_Optional[db.Entity]:
+def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
     try:
         while True:
             try:
