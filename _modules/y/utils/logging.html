@@ -123,8 +123,8 @@
     <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="c1"># the built-in logging module caches loggers but we need to make sure they have the proper members for ypm</span>
-    <span class="k">if</span> <span class="n">logger</span> <span class="o">:=</span> <span class="n">_all_price_loggers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">logger</span>
+    <span class="k">if</span> <span class="n">cached_logger</span> <span class="o">:=</span> <span class="n">_all_price_loggers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">cached_logger</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
