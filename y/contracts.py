@@ -585,7 +585,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         """
         return await get_code(self.address, block=block)
 
-    def _schedule_cache_pop(self) -> None:
+    def _schedule_cache_pop(self, cache_ttl: Optional[int]) -> None:
         try:
             self._ttl_cache_popper = (
                 "disabled"
