@@ -586,18 +586,21 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         return await get_code(self.address, block=block)
 
     def _schedule_cache_pop(self, cache_ttl: Optional[int]) -> None:
+        if cache_ttl is None:
+            self._ttl_cache_popper = "disabled"
+            return
+            
+        cache = self._ChecksumAddressSingletonMeta__instances
+        
         try:
-            self._ttl_cache_popper = (
-                "disabled"
-                if cache_ttl is None
-                else asyncio.get_running_loop().call_later(
-                    cache_ttl,
-                    cls._ChecksumAddressSingletonMeta__instances.pop,
-                    self.address,
-                    None,
-                )
+            self._ttl_cache_popper = asyncio.get_running_loop().call_later(
+                cache_ttl,
+                cache.pop,
+                self.address,
+                None,
             )
         except RuntimeError:
+            # If the event loop isn't running yet we can just specify the cache_ttl for later use
             self._ttl_cache_popper = cache_ttl
 
 
