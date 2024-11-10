@@ -25,12 +25,15 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install mypy
-
-    - name: Install dependencies
+      
+    - name: Install pyyaml on python <= 3.9
+      if: ${{ matrix.pyversion }} == "3.8" | ${{ matrix.pyversion }} == "3.9"
       run: |
         pip install wheel
         pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
-        pip install -r requirements.txt
+        
+    - name: Install dependencies 
+      run: pip install -r requirements.txt
 
     - name: Run MyPy
       run: mypy . --strict --pretty --show-error-codes --show-error-context --install-types --non-interactive
