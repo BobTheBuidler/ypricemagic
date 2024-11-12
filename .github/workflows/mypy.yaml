@@ -27,7 +27,7 @@ jobs:
         pip install mypy
       
     - name: Install pyyaml on python <= 3.9
-      if: ${{ matrix.pyversion }} == "3.8" | ${{ matrix.pyversion }} == "3.9"
+      if: ${{ matrix.pyversion == '3.8' || matrix.pyversion == '3.9' }}
       run: |
         pip install wheel
         pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
