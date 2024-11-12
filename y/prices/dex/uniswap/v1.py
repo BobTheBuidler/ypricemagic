@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from contextlib import suppress
 from typing import Optional, Tuple
 
 import a_sync
@@ -11,7 +12,7 @@ from y.classes.common import ERC20
 from y.constants import usdc
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, Block, Pool, UsdPrice
-from y.exceptions import UnsupportedNetwork, continue_if_call_reverted
+from y.exceptions import ContractNotVerified, UnsupportedNetwork, continue_if_call_reverted
 from y.networks import Network
 from y.utils.raw_calls import _decimals
 
@@ -32,7 +33,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
         factory = await Contract.coroutine(self.factory)
         exchange = await factory.getExchange.coroutine(token_address)
         if exchange != ZERO_ADDRESS:
-            return await Contract.coroutine(exchange)
+            with suppress(ContractNotVerified):
+                return await Contract.coroutine(exchange)
 
     @stuck_coro_debugger
     async def get_price(
