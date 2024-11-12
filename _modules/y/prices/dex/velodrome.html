@@ -80,6 +80,7 @@
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">multicall.call</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
@@ -147,7 +148,8 @@
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.velodrome.VelodromeRouterV2.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span> <span class="o">=</span> <span class="n">default_factory</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span> <span class="o">=</span> <span class="n">default_factory</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_pools</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;allPools(uint256)(address)&quot;</span><span class="p">])</span></div>
 
 
 <div class="viewcode-block" id="VelodromeRouterV2.pool_for">
@@ -313,14 +315,19 @@
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_init_pool_from_poolid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poolid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VelodromePool</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;initing poolid </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">poolid</span><span class="p">)</span>
-        <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;allPools(uint256)(address)&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
-            <span class="n">poolid</span>
-        <span class="p">)</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span>
-        <span class="p">):</span>  <span class="c1"># TODO: debug why this happens sometimes and why this if clause works to get back on track</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_pools</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+            <span class="c1"># sometimes a failure returns None above, </span>
+            <span class="c1"># sometimes it raises ContractLogicError.</span>
+            <span class="n">pool</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">pool</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># TODO: debug why this happens sometimes and why this if clause works to get back on track</span>
             <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
             <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">allPools</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
+
         <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="p">,</span> <span class="n">stable</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">_INIT_METHODS</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">VelodromePool</span><span class="p">(</span>
             <span class="n">address</span><span class="o">=</span><span class="n">pool</span><span class="p">,</span>
