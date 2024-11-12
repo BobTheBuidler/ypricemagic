@@ -218,11 +218,11 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @stuck_coro_debugger
     async def _init_pool_from_poolid(self, poolid: int) -> VelodromePool:
         logger.debug("initing poolid %s", poolid)
-        
+
         try:
             pool = await self._all_pools.coroutine(poolid)
         except ContractLogicError:
-            # sometimes a failure returns None above, 
+            # sometimes a failure returns None above,
             # sometimes it raises ContractLogicError.
             pool = None
 
