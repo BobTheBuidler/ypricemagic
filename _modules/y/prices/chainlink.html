@@ -79,6 +79,7 @@
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
+<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
@@ -311,7 +312,12 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">&gt;</span> <span class="n">block</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is stale, must fetch price from elsewhere&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span> <span class="kc">None</span>
-        <span class="n">updated_at</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_timestamp</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">updated_at</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_timestamp</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
         <span class="k">if</span> <span class="n">updated_at</span> <span class="o">+</span> <span class="n">ONE_DAY</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">time</span><span class="o">.</span><span class="n">get_block_timestamp_async</span><span class="p">(</span><span class="n">block</span><span class="p">):</span>
             <span class="c1"># if 24h have passed since last feed update, we can&#39;t trust it</span>
             <span class="c1"># NOTE: is there a way to tell on chain if a feed is retired? I haven&#39;t yet seen one go stale and come back</span>
@@ -319,6 +325,7 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">block</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">=</span> <span class="n">block</span>
             <span class="k">return</span> <span class="kc">None</span>
+
         <span class="n">latest_answer</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">latest_answer</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;latest_answer: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">latest_answer</span><span class="p">)</span>
         <span class="c1"># NOTE: just playing with smth here</span>

@@ -315,11 +315,11 @@
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_init_pool_from_poolid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">poolid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">VelodromePool</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;initing poolid </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">poolid</span><span class="p">)</span>
-        
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_all_pools</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
-            <span class="c1"># sometimes a failure returns None above, </span>
+            <span class="c1"># sometimes a failure returns None above,</span>
             <span class="c1"># sometimes it raises ContractLogicError.</span>
             <span class="n">pool</span> <span class="o">=</span> <span class="kc">None</span>
 
