@@ -49,7 +49,7 @@ class Chain(DbEntity, _AsyncEntityMixin):
     id = PrimaryKey(int)
 
     if TYPE_CHECKING:
-        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        # if we execute this code we get `TypeError: 'type' object is not subscriptable`
         blocks: Set["Block"]
         addresses: Set["Address"]
         log_cached: Set["LogCacheInfo"]
@@ -71,7 +71,7 @@ class Block(DbEntity, _AsyncEntityMixin):
     composite_index(chain, hash)
 
     if TYPE_CHECKING:
-        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        # if we execute this code we get `TypeError: 'type' object is not subscriptable`
         prices: Set["Price"]
         contracts_deployed: Set["Contract"]
         logs: Set["Log"]
@@ -90,7 +90,7 @@ class Address(DbEntity, _AsyncEntityMixin):
     notes = Optional(str, lazy=True)
 
     if TYPE_CHECKING:
-        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        # if we execute this code we get `TypeError: 'type' object is not subscriptable`
         contracts_deployed: Set["Contract"]
 
     contracts_deployed = Set("Contract", reverse="deployer")
@@ -112,7 +112,7 @@ class Token(Contract):
     bucket = Optional(str, index=True, lazy=True)
 
     if TYPE_CHECKING:
-        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        # if we execute this code we get `TypeError: 'type' object is not subscriptable`
         prices: Set["Price"]
 
     prices = Set("Price", reverse="token")
@@ -149,7 +149,7 @@ class LogTopic(DbEntity):
     topic = Required(str, 64, unique=True, lazy=True)
 
     if TYPE_CHECKING:
-        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        # if we execute this code we get `TypeError: 'type' object is not subscriptable`
         logs_as_topic0: Set["Log"]
         logs_as_topic1: Set["Log"]
         logs_as_topic2: Set["Log"]
@@ -167,7 +167,7 @@ class Hashes(DbEntity):
     hash = Required(str, 64, unique=True)
 
     if TYPE_CHECKING:
-        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        # if we execute this code we get `TypeError: 'type' object is not subscriptable`
         logs_for_tx: Set["Log"]
         logs_for_addr: Set["Log"]
 
