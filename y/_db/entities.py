@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from typing import Optional as typing_Optional
 
 import a_sync
@@ -48,10 +48,17 @@ class _AsyncEntityMixin:
 class Chain(DbEntity, _AsyncEntityMixin):
     id = PrimaryKey(int)
 
-    blocks: Set["Block"] = Set("Block")
-    addresses: Set["Address"] = Set("Address")
-    log_cached: Set["LogCacheInfo"] = Set("LogCacheInfo")
-    trace_caches: Set["TraceCacheInfo"] = Set("TraceCacheInfo")
+    if TYPE_CHECKING:
+        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        blocks: Set["Block"]
+        addresses: Set["Address"]
+        log_cached: Set["LogCacheInfo"]
+        trace_caches: Set["TraceCacheInfo"]
+
+    blocks = Set("Block")
+    addresses = Set("Address")
+    log_cached = Set("LogCacheInfo")
+    trace_caches = Set("TraceCacheInfo")
 
 
 class Block(DbEntity, _AsyncEntityMixin):
@@ -63,10 +70,17 @@ class Block(DbEntity, _AsyncEntityMixin):
 
     composite_index(chain, hash)
 
-    prices: Set["Price"] = Set("Price", reverse="block", cascade_delete=False)
-    contracts_deployed: Set["Contract"] = Set("Contract", reverse="deploy_block")
-    logs: Set["Log"] = Set("Log", reverse="block", cascade_delete=False)
-    traces: Set["Trace"] = Set("Trace", reverse="block", cascade_delete=False)
+    if TYPE_CHECKING:
+        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        prices: Set["Price"]
+        contracts_deployed: Set["Contract"]
+        logs: Set["Log"]
+        traces: Set["Trace"]
+
+    prices = Set("Price", reverse="block", cascade_delete=False)
+    contracts_deployed = Set("Contract", reverse="deploy_block")
+    logs = Set("Log", reverse="block", cascade_delete=False)
+    traces = Set("Trace", reverse="block", cascade_delete=False)
 
 
 class Address(DbEntity, _AsyncEntityMixin):
@@ -75,7 +89,11 @@ class Address(DbEntity, _AsyncEntityMixin):
     PrimaryKey(chain, address)
     notes = Optional(str, lazy=True)
 
-    contracts_deployed: Set["Contract"] = Set("Contract", reverse="deployer")
+    if TYPE_CHECKING:
+        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        contracts_deployed: Set["Contract"]
+
+    contracts_deployed = Set("Contract", reverse="deployer")
 
 
 class Contract(Address):
@@ -93,7 +111,11 @@ class Token(Contract):
     decimals = Optional(int, lazy=True)
     bucket = Optional(str, index=True, lazy=True)
 
-    prices: Set["Price"] = Set("Price", reverse="token")
+    if TYPE_CHECKING:
+        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        prices: Set["Price"]
+    
+    prices = Set("Price", reverse="token")
 
 
 class Price(DbEntity):
@@ -126,10 +148,17 @@ class LogTopic(DbEntity):
     dbid = PrimaryKey(int, size=64, auto=True)
     topic = Required(str, 64, unique=True, lazy=True)
 
-    logs_as_topic0: Set["Log"] = Set("Log", reverse="topic0")
-    logs_as_topic1: Set["Log"] = Set("Log", reverse="topic1")
-    logs_as_topic2: Set["Log"] = Set("Log", reverse="topic2")
-    logs_as_topic3: Set["Log"] = Set("Log", reverse="topic3")
+    if TYPE_CHECKING:
+        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        logs_as_topic0: Set["Log"]
+        logs_as_topic1: Set["Log"]
+        logs_as_topic2: Set["Log"]
+        logs_as_topic3: Set["Log"]
+
+    logs_as_topic0 = Set("Log", reverse="topic0")
+    logs_as_topic1 = Set("Log", reverse="topic1")
+    logs_as_topic2 = Set("Log", reverse="topic2")
+    logs_as_topic3 = Set("Log", reverse="topic3")
 
 
 class Hashes(DbEntity):
@@ -137,8 +166,13 @@ class Hashes(DbEntity):
     dbid = PrimaryKey(int, size=64, auto=True)
     hash = Required(str, 64, unique=True)
 
-    logs_for_tx: Set["Log"] = Set("Log", reverse="tx")
-    logs_for_addr: Set["Log"] = Set("Log", reverse="address")
+    if TYPE_CHECKING:
+        # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
+        logs_for_tx: Set["Log"]
+        logs_for_addr: Set["Log"]
+
+    logs_for_tx = Set("Log", reverse="tx")
+    logs_for_addr = Set("Log", reverse="address")
 
 
 class Log(DbEntity):
