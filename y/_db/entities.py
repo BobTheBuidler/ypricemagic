@@ -114,7 +114,7 @@ class Token(Contract):
     if TYPE_CHECKING:
         # in older python we get `TypeError: 'type' object is not subscriptable` at runtime
         prices: Set["Price"]
-    
+
     prices = Set("Price", reverse="token")
 
 
