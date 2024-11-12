@@ -30,7 +30,9 @@ class DieselPool(ContractBase):
         contract = await self.__contract__
         try:
             return ERC20(await contract.dieselToken, asynchronous=self.asynchronous)
-        except AttributeError:  # NOTE: there could be better ways of doing this with hueristics, not sure yet
+        except (
+            AttributeError
+        ):  # NOTE: there could be better ways of doing this with hueristics, not sure yet
             return ERC20(self.address, asynchronous=self.asynchronous)
 
     __diesel_token__: HiddenMethodDescriptor[Self, ERC20]

@@ -27,8 +27,7 @@ class PriceLogger(logging.Logger):
     key: Tuple[AnyAddressType, Block, Optional[str], str]
     debug_task: Optional["asyncio.Task[None]"]
 
-    def close(self) -> None:
-        ...
+    def close(self) -> None: ...
 
 
 def get_price_logger(

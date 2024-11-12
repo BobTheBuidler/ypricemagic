@@ -225,8 +225,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         self._pruned = 0
 
     @abc.abstractproperty
-    def cache(self) -> C:
-        ...
+    def cache(self) -> C: ...
 
     @property
     def executor(self) -> _AsyncExecutorMixin:
@@ -235,12 +234,10 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         return self._executor
 
     @abc.abstractproperty
-    def insert_to_db(self) -> Callable[[T], None]:
-        ...
+    def insert_to_db(self) -> Callable[[T], None]: ...
 
     # abc.abstractproperty
-    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
-        ...
+    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]: ...
 
     async def _extend(self, objs) -> None:
         """
@@ -342,8 +339,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._task.cancel()
 
     @abc.abstractmethod
-    async def _fetch_range(self, from_block: int, to_block: int) -> List[T]:
-        ...
+    async def _fetch_range(self, from_block: int, to_block: int) -> List[T]: ...
 
     @property
     def semaphore(self) -> dank_mids.BlockSemaphore:

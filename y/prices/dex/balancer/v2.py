@@ -464,9 +464,11 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
                 block,
                 deepest_pools,
             )
-            async for pool in BalancerV2Pool.get_balance.map(
-                deepest_pools.values(), **kwargs
-            ).keys(pop=True).aiterbyvalues(reverse=True):
+            async for pool in (
+                BalancerV2Pool.get_balance.map(deepest_pools.values(), **kwargs)
+                .keys(pop=True)
+                .aiterbyvalues(reverse=True)
+            ):
                 return pool
 
         # TODO: afilter
@@ -477,9 +479,9 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
 
 balancer = BalancerV2(asynchronous=True)
 
-_lookup_balance_from_tuple: Callable[
-    [Tuple[Any, T]], T
-] = lambda pool_and_balance: pool_and_balance[1]
+_lookup_balance_from_tuple: Callable[[Tuple[Any, T]], T] = (
+    lambda pool_and_balance: pool_and_balance[1]
+)
 "Takes a tuple[K, V] and returns V."
 
 _warned = set()

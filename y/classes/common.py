@@ -120,7 +120,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         try:
             self.contract
             return True
-        except (ContractNotVerified):
+        except ContractNotVerified:
             return False
         except (ContractNotFound, MessedUpBrownieContract):
             return None

@@ -61,34 +61,29 @@ B = TypeVar("B", bound=ASyncGenericBase)
 @overload
 def stuck_coro_debugger(
     fn: Callable[Concatenate[B, P], AsyncIterator[T]]
-) -> ASyncGeneratorFunction[P, T]:
-    ...
+) -> ASyncGeneratorFunction[P, T]: ...
 
 
 @overload
 def stuck_coro_debugger(
     fn: Callable[Concatenate[B, P], Awaitable[T]]
-) -> ASyncBoundMethod[B, P, T]:
-    ...
+) -> ASyncBoundMethod[B, P, T]: ...
 
 
 @overload
 def stuck_coro_debugger(
     fn: Callable[Concatenate[B, P], T]
-) -> ASyncBoundMethod[B, P, T]:
-    ...
+) -> ASyncBoundMethod[B, P, T]: ...
 
 
 @overload
 def stuck_coro_debugger(
     fn: Callable[P, AsyncIterator[T]]
-) -> Callable[P, AsyncIterator[T]]:
-    ...
+) -> Callable[P, AsyncIterator[T]]: ...
 
 
 @overload
-def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]:
-    ...
+def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]: ...
 
 
 def stuck_coro_debugger(fn):

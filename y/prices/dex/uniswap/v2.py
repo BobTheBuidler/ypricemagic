@@ -672,9 +672,11 @@ class UniswapRouterV2(ContractBase):
         )
 
         deepest_pool: UniswapV2Pool
-        async for deepest_pool in UniswapV2Pool.check_liquidity.map(
-            pools, token=token_address, block=block
-        ).keys(pop=True).aiterbyvalues(reverse=True):
+        async for deepest_pool in (
+            UniswapV2Pool.check_liquidity.map(pools, token=token_address, block=block)
+            .keys(pop=True)
+            .aiterbyvalues(reverse=True)
+        ):
             return deepest_pool
 
     @stuck_coro_debugger
@@ -721,9 +723,13 @@ class UniswapRouterV2(ContractBase):
                     )
                 )
 
-            async for deepest_stable_pool, depth in UniswapV2Pool.check_liquidity.map(
-                stable_pools, token=token_address, block=block
-            ).items(pop=True).aiterbyvalues(reverse=True):
+            async for deepest_stable_pool, depth in (
+                UniswapV2Pool.check_liquidity.map(
+                    stable_pools, token=token_address, block=block
+                )
+                .items(pop=True)
+                .aiterbyvalues(reverse=True)
+            ):
                 return deepest_stable_pool
 
     @stuck_coro_debugger

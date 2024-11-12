@@ -64,18 +64,26 @@ async def get_pool_price(
     address = convert.to_address(token)
     token0, token1 = await gather_methods(address, ["token0", "token1"])
     bal0, bal1, price0, price1, total_supply = await asyncio.gather(
-        dank_mids.eth.get_balance(address, block_identifier=block)
-        if token0 == ZERO_ADDRESS
-        else ERC20(token0, asynchronous=True).balance_of_readable(address, block),
-        dank_mids.eth.get_balance(address, block_identifier=block)
-        if token1 == ZERO_ADDRESS
-        else ERC20(token1, asynchronous=True).balance_of_readable(address, block),
-        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False)
-        if token0 == ZERO_ADDRESS
-        else magic.get_price(token0, block, skip_cache=skip_cache, sync=False),
-        magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False)
-        if token1 == ZERO_ADDRESS
-        else magic.get_price(token1, block, skip_cache=skip_cache, sync=False),
+        (
+            dank_mids.eth.get_balance(address, block_identifier=block)
+            if token0 == ZERO_ADDRESS
+            else ERC20(token0, asynchronous=True).balance_of_readable(address, block)
+        ),
+        (
+            dank_mids.eth.get_balance(address, block_identifier=block)
+            if token1 == ZERO_ADDRESS
+            else ERC20(token1, asynchronous=True).balance_of_readable(address, block)
+        ),
+        (
+            magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False)
+            if token0 == ZERO_ADDRESS
+            else magic.get_price(token0, block, skip_cache=skip_cache, sync=False)
+        ),
+        (
+            magic.get_price(gas_coin, block, skip_cache=skip_cache, sync=False)
+            if token1 == ZERO_ADDRESS
+            else magic.get_price(token1, block, skip_cache=skip_cache, sync=False)
+        ),
         ERC20(address, asynchronous=True).total_supply_readable(block),
     )
 

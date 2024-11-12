@@ -428,6 +428,7 @@ SPECIAL_PATHS = {
     },
 }.get(chain.id, {})
 
+
 # yLazyLogger(logger)
 @lru_cache
 def special_paths(router_address: str) -> Dict[str, Dict[Address, List[Address]]]:

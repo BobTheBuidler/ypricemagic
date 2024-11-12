@@ -62,8 +62,7 @@ async def get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
-) -> Optional[UsdPrice]:
-    ...
+) -> Optional[UsdPrice]: ...
 
 
 @overload
@@ -75,8 +74,7 @@ async def get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
-) -> UsdPrice:
-    ...
+) -> UsdPrice: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -138,8 +136,7 @@ async def get_prices(
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[Optional[UsdPrice]]:
-    ...
+) -> List[Optional[UsdPrice]]: ...
 
 
 @overload
@@ -150,8 +147,7 @@ async def get_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[UsdPrice]:
-    ...
+) -> List[UsdPrice]: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -195,8 +191,7 @@ def map_prices(
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:
-    ...
+) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]: ...
 
 
 @overload
@@ -207,8 +202,7 @@ def map_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]:
-    ...
+) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]: ...
 
 
 def map_prices(
@@ -381,10 +375,12 @@ async def _exit_early_for_known_tokens(
         price = await aave.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "balancer pool":
         price = await balancer_multiplexer.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "basketdao":
         price = await basketdao.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
@@ -392,10 +388,12 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == "belt lp":
         price = await belt.get_price(token_address, block, sync=False)
+
     elif bucket == "chainlink and band":
         price = await chainlink.get_price(
             token_address, block, sync=False
         ) or await band.get_price(token_address, block, sync=False)
+
     elif bucket == "chainlink feed":
         price = await chainlink.get_price(token_address, block, sync=False)
 
@@ -403,10 +401,12 @@ async def _exit_early_for_known_tokens(
         price = await compound.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "convex":
         price = await convex.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "creth":
         price = await creth.get_price_creth(
             token_address, block, skip_cache=skip_cache, sync=False
@@ -416,10 +416,12 @@ async def _exit_early_for_known_tokens(
         price = await curve.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "ellipsis lp":
         price = await ellipsis.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "froyo":
         price = await froyo.get_price(token_address, block=block, sync=False)
 
@@ -427,10 +429,12 @@ async def _exit_early_for_known_tokens(
         price = await gearbox.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "gelato":
         price = await gelato.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "generic amm":
         price = await generic_amm.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
@@ -440,10 +444,12 @@ async def _exit_early_for_known_tokens(
         price = await ib.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "mooniswap lp":
         price = await mooniswap.get_pool_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "mstable feeder pool":
         price = await mstablefeederpool.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
@@ -453,10 +459,12 @@ async def _exit_early_for_known_tokens(
         price = await one_to_one.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "pendle lp":
         price = await pendle.get_lp_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "piedao lp":
         price = await piedao.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
@@ -466,10 +474,12 @@ async def _exit_early_for_known_tokens(
         price = await popsicle.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "reserve":
         price = await reserve.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "rkp3r":
         price = await rkp3r.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
@@ -479,19 +489,23 @@ async def _exit_early_for_known_tokens(
         price = await saddle.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "solidex":
         price = await solidex.get_price(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "stable usd":
         price = 1
 
     elif bucket == "synthetix":
         price = await synthetix.get_price(token_address, block, sync=False)
+
     elif bucket == "token set":
         price = await tokensets.get_price(
             token_address, block=block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "uni or uni-like lp":
         price = await UniswapV2Pool(token_address).get_price(
             block=block, skip_cache=skip_cache, sync=False
@@ -501,10 +515,12 @@ async def _exit_early_for_known_tokens(
         price = await get_price(
             constants.WRAPPED_GAS_COIN, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "wrapped atoken v2":
         price = await aave.get_price_wrapped_v2(
             token_address, block, skip_cache=skip_cache, sync=False
         )
+
     elif bucket == "wrapped atoken v3":
         price = await aave.get_price_wrapped_v3(
             token_address, block, skip_cache=skip_cache, sync=False
@@ -512,6 +528,7 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == "wsteth":
         price = await wsteth.wsteth.get_price(block, skip_cache=skip_cache, sync=False)
+
     elif bucket == "yearn or yearn-like":
         price = await yearn.get_price(
             token_address,
