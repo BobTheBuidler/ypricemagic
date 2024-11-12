@@ -309,9 +309,11 @@ get_logs_semaphore = defaultdict(
     lambda: dank_mids.BlockSemaphore(
         ENVS.GETLOGS_DOP,
         # We need to do this in case users use the sync api in a multithread context
-        name="y.get_logs" + ""
-        if threading.current_thread() == threading.main_thread()
-        else f".{threading.current_thread()}",
+        name=(
+            "y.get_logs" + ""
+            if threading.current_thread() == threading.main_thread()
+            else f".{threading.current_thread()}"
+        ),
     )
 )
 

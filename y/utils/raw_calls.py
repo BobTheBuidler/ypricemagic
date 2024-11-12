@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 We use raw calls for commonly used functions because its much faster than using brownie Contracts
 """
 
+
 # yLazyLogger(logger)
 @a_sync.a_sync(cache_type="memory")
 async def _cached_call_fn(

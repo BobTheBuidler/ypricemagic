@@ -289,7 +289,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     verified = True
 
     events: ContractEvents
-    
+
     _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
     _ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
 
@@ -407,19 +407,19 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             "type": "contract",
         }
         self.__init_from_abi__(build, owner, persist)
-        
+
         # Patch the Contract with coroutines for each method.
         dank_mids.patch_contract(self)
-        
+
         # Init an event container for each topic
         _setup_events(self)
-        
+
         # Get rid of unnecessary memory-hog properties
         _squeeze(self)
 
         # schedule call to pop from cache
         self._schedule_cache_pop(cache_ttl)
-        
+
         return self
 
     @classmethod
@@ -589,7 +589,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if cache_ttl is None:
             self._ttl_cache_popper = "disabled"
             return
-        
+
         try:
             loop = asyncio.get_running_loop()
         except RuntimeError:

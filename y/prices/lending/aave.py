@@ -177,7 +177,9 @@ class AaveMarketV2(AaveMarketBase):
             ]
             logger.info("loaded %s v2 atokens for %s", len(atokens), self)
             return atokens
-        except TypeError as e:  # TODO figure out what to do about non verified aave markets
+        except (
+            TypeError
+        ) as e:  # TODO figure out what to do about non verified aave markets
             logger.exception(e)
             logger.warning("failed to load tokens for %s", self)
             return []
@@ -207,7 +209,9 @@ class AaveMarketV3(AaveMarketBase):
             ]
             logger.info("loaded %s v3 atokens for %s", len(atokens), self)
             return atokens
-        except TypeError as e:  # TODO figure out what to do about non verified aave markets
+        except (
+            TypeError
+        ) as e:  # TODO figure out what to do about non verified aave markets
             logger.exception(e)
             logger.warning("failed to load tokens for %s", self)
             return []
@@ -315,9 +319,9 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(cache_type="memory")
     async def underlying(self, atoken_address: AddressOrContract) -> ERC20:
-        pool: Union[
-            AaveMarketV1, AaveMarketV2, AaveMarketV3
-        ] = await self.pool_for_atoken(atoken_address, sync=False)
+        pool: Union[AaveMarketV1, AaveMarketV2, AaveMarketV3] = (
+            await self.pool_for_atoken(atoken_address, sync=False)
+        )
         return await pool.underlying(atoken_address, sync=False)
 
     async def get_price(

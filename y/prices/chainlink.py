@@ -314,16 +314,16 @@ class Chainlink(a_sync.ASyncGenericBase):
 
     # @a_sync.future
     @stuck_coro_debugger
-    async def get_price(self, asset: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
+    async def get_price(
+        self, asset: AnyAddressType, block: Optional[Block] = None
+    ) -> UsdPrice:
         if block is None:
             block = await dank_mids.eth.block_number
         logger.debug("getting price for %s at %s", asset, block)
         return await self._get_price(str(asset), block)  # force to string for cache key
 
     @alru_cache(maxsize=1000, ttl=ENVS.CACHE_TTL)
-    async def _get_price(
-        self, asset: Address, block: Block
-    ) -> Optional[UsdPrice]:
+    async def _get_price(self, asset: Address, block: Block) -> Optional[UsdPrice]:
         asset = convert.to_address(asset)
         if asset == ZERO_ADDRESS:
             return None

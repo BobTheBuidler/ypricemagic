@@ -55,24 +55,22 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
     return retry_locked_wrap
 
 
-a_sync_read_db_session: Callable[
-    [Callable[_P, _T]], ASyncFunction[_P, _T]
-] = lambda fn: a_sync.a_sync(default="async", executor=ydb_read_threads)(
-    retry_locked(db_session(retry_locked(fn)))
+a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
+    lambda fn: a_sync.a_sync(default="async", executor=ydb_read_threads)(
+        retry_locked(db_session(retry_locked(fn)))
+    )
 )
 
-a_sync_write_db_session: Callable[
-    [Callable[_P, _T]], ASyncFunction[_P, _T]
-] = lambda fn: a_sync.a_sync(default="async", executor=ydb_write_threads)(
-    retry_locked(db_session(retry_locked(fn)))
+a_sync_write_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
+    lambda fn: a_sync.a_sync(default="async", executor=ydb_write_threads)(
+        retry_locked(db_session(retry_locked(fn)))
+    )
 )
 
-a_sync_write_db_session_cached: Callable[
-    [Callable[_P, _T]], ASyncFunction[_P, _T]
-] = lambda fn: a_sync.a_sync(
-    default="async", executor=ydb_write_threads, ram_cache_maxsize=None
-)(
-    retry_locked(lru_cache(maxsize=None)(db_session(retry_locked(fn))))
+a_sync_write_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
+    lambda fn: a_sync.a_sync(
+        default="async", executor=ydb_write_threads, ram_cache_maxsize=None
+    )(retry_locked(lru_cache(maxsize=None)(db_session(retry_locked(fn)))))
 )
 
 

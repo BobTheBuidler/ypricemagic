@@ -40,12 +40,10 @@ class BalancerABC(a_sync.ASyncGenericBase, Generic[_B]):
         )
 
     @abc.abstractproperty
-    def _pool_type(self) -> Type[_B]:
-        ...
+    def _pool_type(self) -> Type[_B]: ...
 
     @abc.abstractproperty
-    def _check_methods(self) -> Tuple[str]:
-        ...
+    def _check_methods(self) -> Tuple[str]: ...
 
     @abc.abstractmethod
     async def get_token_price(
@@ -53,5 +51,4 @@ class BalancerABC(a_sync.ASyncGenericBase, Generic[_B]):
         token_address: AddressOrContract,
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
-    ) -> Optional[UsdPrice]:
-        ...
+    ) -> Optional[UsdPrice]: ...

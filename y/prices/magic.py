@@ -62,8 +62,7 @@ async def get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
-) -> Optional[UsdPrice]:
-    ...
+) -> Optional[UsdPrice]: ...
 
 
 @overload
@@ -75,8 +74,7 @@ async def get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
     silent: bool = False,
-) -> UsdPrice:
-    ...
+) -> UsdPrice: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -138,8 +136,7 @@ async def get_prices(
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[Optional[UsdPrice]]:
-    ...
+) -> List[Optional[UsdPrice]]: ...
 
 
 @overload
@@ -150,8 +147,7 @@ async def get_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> List[UsdPrice]:
-    ...
+) -> List[UsdPrice]: ...
 
 
 @a_sync.a_sync(default="sync")
@@ -195,8 +191,7 @@ def map_prices(
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:
-    ...
+) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]: ...
 
 
 @overload
@@ -207,8 +202,7 @@ def map_prices(
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]:
-    ...
+) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]: ...
 
 
 def map_prices(
@@ -534,7 +528,7 @@ async def _exit_early_for_known_tokens(
 
     elif bucket == "wsteth":
         price = await wsteth.wsteth.get_price(block, skip_cache=skip_cache, sync=False)
-        
+
     elif bucket == "yearn or yearn-like":
         price = await yearn.get_price(
             token_address,

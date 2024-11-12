@@ -6,6 +6,7 @@ from tests.fixtures import blocks_for_contract
 
 STABLECOINS = STABLECOINS.keys()
 
+
 # TODO Implement this after imlementing non-stable stables to validate tokens' spots in `STABLECOINS`.
 @pytest.mark.parametrize("token", STABLECOINS)
 def test_stablecoins(token):
