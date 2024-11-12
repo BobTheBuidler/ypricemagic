@@ -813,9 +813,11 @@
         <span class="p">)</span>
 
         <span class="n">deepest_pool</span><span class="p">:</span> <span class="n">UniswapV2Pool</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">deepest_pool</span> <span class="ow">in</span> <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-            <span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">async</span> <span class="k">for</span> <span class="n">deepest_pool</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="n">deepest_pool</span></div>
 
 
@@ -865,9 +867,13 @@
                     <span class="p">)</span>
                 <span class="p">)</span>
 
-            <span class="k">async</span> <span class="k">for</span> <span class="n">deepest_stable_pool</span><span class="p">,</span> <span class="n">depth</span> <span class="ow">in</span> <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                <span class="n">stable_pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">deepest_stable_pool</span><span class="p">,</span> <span class="n">depth</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                    <span class="n">stable_pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
+                <span class="p">)</span>
+                <span class="o">.</span><span class="n">items</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="n">deepest_stable_pool</span></div>
 
 

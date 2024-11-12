@@ -279,7 +279,9 @@
             <span class="p">]</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v2 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">atokens</span>
-        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># TODO figure out what to do about non verified aave markets</span>
+        <span class="k">except</span> <span class="p">(</span>
+            <span class="ne">TypeError</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># TODO figure out what to do about non verified aave markets</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;failed to load tokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[]</span></div>
@@ -321,7 +323,9 @@
             <span class="p">]</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v3 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">atokens</span>
-        <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># TODO figure out what to do about non verified aave markets</span>
+        <span class="k">except</span> <span class="p">(</span>
+            <span class="ne">TypeError</span>
+        <span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>  <span class="c1"># TODO figure out what to do about non verified aave markets</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;failed to load tokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="k">return</span> <span class="p">[]</span></div>
@@ -468,9 +472,9 @@
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoken_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
-        <span class="n">pool</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span>
-            <span class="n">AaveMarketV1</span><span class="p">,</span> <span class="n">AaveMarketV2</span><span class="p">,</span> <span class="n">AaveMarketV3</span>
-        <span class="p">]</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_for_atoken</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">pool</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">AaveMarketV1</span><span class="p">,</span> <span class="n">AaveMarketV2</span><span class="p">,</span> <span class="n">AaveMarketV3</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool_for_atoken</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">underlying</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 

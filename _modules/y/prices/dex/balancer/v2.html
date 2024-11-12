@@ -611,9 +611,11 @@
                 <span class="n">block</span><span class="p">,</span>
                 <span class="n">deepest_pools</span><span class="p">,</span>
             <span class="p">)</span>
-            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">BalancerV2Pool</span><span class="o">.</span><span class="n">get_balance</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
-                <span class="n">deepest_pools</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="p">(</span>
+                <span class="n">BalancerV2Pool</span><span class="o">.</span><span class="n">get_balance</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">deepest_pools</span><span class="o">.</span><span class="n">values</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">keys</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">aiterbyvalues</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="k">return</span> <span class="n">pool</span></div>
 </div>
 
@@ -626,9 +628,9 @@
 
 <span class="n">balancer</span> <span class="o">=</span> <span class="n">BalancerV2</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">_lookup_balance_from_tuple</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span>
-    <span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span> <span class="n">T</span>
-<span class="p">]</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">pool_and_balance</span><span class="p">:</span> <span class="n">pool_and_balance</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">_lookup_balance_from_tuple</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">T</span><span class="p">]],</span> <span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="k">lambda</span> <span class="n">pool_and_balance</span><span class="p">:</span> <span class="n">pool_and_balance</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="p">)</span>
 <span class="s2">&quot;Takes a tuple[K, V] and returns V.&quot;</span>
 
 <span class="n">_warned</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>

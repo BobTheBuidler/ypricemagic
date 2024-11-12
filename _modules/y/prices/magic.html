@@ -133,8 +133,7 @@
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span> <span class="o">...</span>
 
 
 <span class="nd">@overload</span>
@@ -146,8 +145,7 @@
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span> <span class="o">...</span>
 
 
 <div class="viewcode-block" id="get_price">
@@ -212,8 +210,7 @@
     <span class="n">fail_to_None</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]]:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]]:</span> <span class="o">...</span>
 
 
 <span class="nd">@overload</span>
@@ -224,8 +221,7 @@
     <span class="n">fail_to_None</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span> <span class="o">...</span>
 
 
 <div class="viewcode-block" id="get_prices">
@@ -272,8 +268,7 @@
     <span class="n">fail_to_None</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="kc">True</span><span class="p">],</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">TaskMapping</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]]:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">TaskMapping</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]]:</span> <span class="o">...</span>
 
 
 <span class="nd">@overload</span>
@@ -284,8 +279,7 @@
     <span class="n">fail_to_None</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">TaskMapping</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">UsdPrice</span><span class="p">]:</span>
-    <span class="o">...</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">TaskMapping</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">UsdPrice</span><span class="p">]:</span> <span class="o">...</span>
 
 
 <div class="viewcode-block" id="map_prices">
@@ -461,10 +455,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aave</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;balancer pool&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">balancer_multiplexer</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;basketdao&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">basketdao</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -472,10 +468,12 @@
 
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;belt lp&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">belt</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;chainlink and band&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span> <span class="ow">or</span> <span class="k">await</span> <span class="n">band</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;chainlink feed&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -483,10 +481,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">compound</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;convex&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convex</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;creth&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">creth</span><span class="o">.</span><span class="n">get_price_creth</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -496,10 +496,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;ellipsis lp&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ellipsis</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;froyo&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">froyo</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
@@ -507,10 +509,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gearbox</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;gelato&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gelato</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;generic amm&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">generic_amm</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -520,10 +524,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ib</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;mooniswap lp&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">mooniswap</span><span class="o">.</span><span class="n">get_pool_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;mstable feeder pool&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">mstablefeederpool</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -533,10 +539,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">one_to_one</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;pendle lp&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pendle</span><span class="o">.</span><span class="n">get_lp_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;piedao lp&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">piedao</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -546,10 +554,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">popsicle</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;reserve&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reserve</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;rkp3r&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">rkp3r</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -559,19 +569,23 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">saddle</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;solidex&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">solidex</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;stable usd&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;synthetix&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">synthetix</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;token set&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">tokensets</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;uni or uni-like lp&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">UniswapV2Pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -581,10 +595,12 @@
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_price</span><span class="p">(</span>
             <span class="n">constants</span><span class="o">.</span><span class="n">WRAPPED_GAS_COIN</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;wrapped atoken v2&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aave</span><span class="o">.</span><span class="n">get_price_wrapped_v2</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;wrapped atoken v3&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">aave</span><span class="o">.</span><span class="n">get_price_wrapped_v3</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -592,6 +608,7 @@
 
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;wsteth&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">wsteth</span><span class="o">.</span><span class="n">wsteth</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;yearn or yearn-like&quot;</span><span class="p">:</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">yearn</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span>

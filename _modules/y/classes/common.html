@@ -205,7 +205,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">contract</span>
             <span class="k">return</span> <span class="kc">True</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">):</span>
+        <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">MessedUpBrownieContract</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">None</span>
