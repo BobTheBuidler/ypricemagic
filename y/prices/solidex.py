@@ -35,7 +35,7 @@ async def get_price(
     block: Optional[int] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ):
-    pool = await _get_pool(token)
+    pool = await _get_pool(str(token))  # force to string for cache key
     return await magic.get_price(pool, block, skip_cache=skip_cache, sync=False)
 
 

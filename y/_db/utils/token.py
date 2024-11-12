@@ -17,6 +17,7 @@ from y._db.decorators import (
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token
+from y.datatypes import AnyAddressType
 from y.utils import _erc20
 
 logger = logging.getLogger(__name__)
@@ -39,8 +40,8 @@ def get_token(address: str) -> Token:
 
 
 @a_sync.a_sync(default="sync", ram_cache_maxsize=None)
-def ensure_token(address: str) -> None:
-    return _ensure_token(address)
+def ensure_token(address: AnyAddressType) -> None:
+    return _ensure_token(str(address))  # force to string for cache key
 
 
 @lru_cache(maxsize=None)

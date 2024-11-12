@@ -88,7 +88,7 @@ async def get_lp_price(
         This function uses the Pendle Oracle contract to get the LP to asset rate and then
         calculates the USD price based on the underlying asset's price.
     """
-    tokens = await get_tokens(token)
+    tokens = await get_tokens(str(token))  # force to string for cache key
     # NOTE: we might not need this, leave it commented out for now
     # names = await asyncio.gather(*[ERC20(t, asynchronous=True).name for t in tokens])
     # if any("DAI" in name for name in names):
