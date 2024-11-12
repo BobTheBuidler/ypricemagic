@@ -9,6 +9,7 @@ from a_sync.a_sync.property import HiddenMethodDescriptor
 from brownie import chain
 from multicall.call import Call
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y._decorators import stuck_coro_debugger
 from y.contracts import Contract, contract_creation_block_async
@@ -64,6 +65,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
         self.default_factory = default_factory[chain.id]
+        self._all_pools = Call(self.factory, ["allPools(uint256)(address)"])
 
     @stuck_coro_debugger
     @a_sync_ttl_cache
@@ -216,14 +218,19 @@ class VelodromeRouterV2(SolidlyRouterBase):
     @stuck_coro_debugger
     async def _init_pool_from_poolid(self, poolid: int) -> VelodromePool:
         logger.debug("initing poolid %s", poolid)
-        pool = await Call(self.factory, ["allPools(uint256)(address)"]).coroutine(
-            poolid
-        )
-        if (
-            pool is None
-        ):  # TODO: debug why this happens sometimes and why this if clause works to get back on track
+        
+        try:
+            pool = await self._all_pools.coroutine(poolid)
+        except ContractLogicError:
+            # sometimes a failure returns None above, 
+            # sometimes it raises ContractLogicError.
+            pool = None
+
+        if pool is None:
+            # TODO: debug why this happens sometimes and why this if clause works to get back on track
             factory = await Contract.coroutine(self.factory)
             pool = await factory.allPools.coroutine(poolid)
+
         token0, token1, stable = await gather_methods(pool, _INIT_METHODS)
         return VelodromePool(
             address=pool,
