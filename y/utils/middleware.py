@@ -78,11 +78,15 @@ def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
         A middleware function that caches eth_getCode calls.
     """
 
+    @memory.cache
+    def make_request_cached(method: str, params: Any) -> Any:
+        return make_request(method, params)
+
     @eth_retry.auto_retry
     def middleware(method: str, params: Any) -> Any:
         logger.debug("%s %s", method, params)
         if should_cache(method, params):
-            return memory.cache(make_request)(method, params)
+            return make_request_cached(method, params)
         return make_request(method, params)
 
     return middleware
