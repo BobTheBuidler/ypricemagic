@@ -39,7 +39,7 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
     await ensure_block(block, sync=False)
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
-    await ensure_token(address, sync=False)
+    await ensure_token(str(address), sync=False)  # force to string for cache key
     with suppress(
         InvalidOperation
     ):  # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
