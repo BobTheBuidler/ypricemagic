@@ -8,6 +8,7 @@ from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain
 from brownie.network.event import _EventItem
 from multicall import Call
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -227,7 +228,12 @@ class Feed:
         if self._stale_thru_block and self._stale_thru_block > block:
             logger.debug("%s is stale, must fetch price from elsewhere", self)
             return None
-        updated_at = await self.latest_timestamp(block_id=block)
+            
+        try:
+            updated_at = await self.latest_timestamp(block_id=block)
+        except ContractLogicError:
+            return None
+            
         if updated_at + ONE_DAY < await time.get_block_timestamp_async(block):
             # if 24h have passed since last feed update, we can't trust it
             # NOTE: is there a way to tell on chain if a feed is retired? I haven't yet seen one go stale and come back
@@ -235,6 +241,7 @@ class Feed:
             if self._stale_thru_block is None or block > self._stale_thru_block:
                 self._stale_thru_block = block
             return None
+            
         latest_answer = await self.latest_answer(block_id=block)
         logger.debug("latest_answer: %s", latest_answer)
         # NOTE: just playing with smth here
