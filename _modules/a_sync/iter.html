@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for a_sync.iter</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">functools</span>
 <span class="kn">import</span> <span class="nn">inspect</span>
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -93,6 +92,7 @@
     <span class="n">SortKey</span> <span class="o">=</span> <span class="n">SyncFn</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
     <span class="n">ViewFn</span> <span class="o">=</span> <span class="n">AnyFn</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="nb">bool</span><span class="p">]</span>
 
+
 <span class="k">class</span> <span class="nc">_AwaitableAsyncIterableMixin</span><span class="p">(</span><span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A mixin class defining logic for making an AsyncIterable awaitable.</span>
@@ -101,24 +101,23 @@
 
 <span class="sd">    Example:</span>
 <span class="sd">        You must subclass this mixin class and define your own `__aiter__` method as shown below.</span>
-<span class="sd">        ```</span>
+
 <span class="sd">        &gt;&gt;&gt; class MyAwaitableAIterable(_AwaitableAsyncIterableMixin):</span>
-<span class="sd">        ...    def __aiter__(self):</span>
+<span class="sd">        ...    async def __aiter__(self):</span>
 <span class="sd">        ...        for i in range(4):</span>
 <span class="sd">        ...            yield i</span>
-<span class="sd">        ... </span>
+
 <span class="sd">        &gt;&gt;&gt; aiterable = MyAwaitableAIterable()</span>
 <span class="sd">        &gt;&gt;&gt; await aiterable</span>
-<span class="sd">        [0, 1, 2, 3, 4]</span>
-
-<span class="sd">        ```</span>
+<span class="sd">        [0, 1, 2, 3]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">__wrapped__</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">]</span>
-    
+
     <span class="k">def</span> <span class="fm">__await__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Generator</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Asynchronously iterate through the {cls} and return all objects.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of the objects yielded by the {cls}.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -128,13 +127,15 @@
     <span class="k">def</span> <span class="nf">materialized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synchronously iterate through the {cls} and return all objects.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of the objects yielded by the {cls}.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">_helpers</span><span class="o">.</span><span class="n">_await</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_materialized</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">SortKey</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncSorter[T]&quot;</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">sort</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="n">SortKey</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncSorter[T]&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sort the contents of the {cls}.</span>
 
@@ -163,7 +164,7 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_materialized</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Asynchronously iterate through the {cls} and return all objects.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of the objects yielded by the {cls}.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -177,7 +178,7 @@
             <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">new</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">cls</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="si">{</span><span class="n">new</span><span class="si">}</span><span class="s2">&quot;</span>
-    
+
         <span class="c1"># format the member docstrings</span>
         <span class="k">for</span> <span class="n">attr_name</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
             <span class="n">attr</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">attr_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -186,27 +187,40 @@
 
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init_subclass__</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s1">&#39;__async_property__&#39;</span><span class="p">,</span> 
-    
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;__async_property__&quot;</span><span class="p">,)</span>
+
+
 <span class="k">class</span> <span class="nc">ASyncIterable</span><span class="p">(</span><span class="n">_AwaitableAsyncIterableMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A hybrid Iterable/AsyncIterable implementation designed to offer dual compatibility with both synchronous and asynchronous iteration protocols.</span>
-<span class="sd">    </span>
+
 <span class="sd">    This class allows objects to be iterated over using either a standard `for` loop or an `async for` loop, making it versatile in scenarios where the mode of iteration (synchronous or asynchronous) needs to be flexible or is determined at runtime.</span>
 
 <span class="sd">    The class achieves this by implementing both `__iter__` and `__aiter__` methods, enabling it to return appropriate iterator objects that can handle synchronous and asynchronous iteration, respectively. This dual functionality is particularly useful in codebases that are transitioning between synchronous and asynchronous code, or in libraries that aim to support both synchronous and asynchronous usage patterns without requiring the user to manage different types of iterable objects.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncIterable[T]&quot;</span><span class="p">:</span>
         <span class="s2">&quot;Class method to wrap an AsyncIterable for backward compatibility.&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;ASyncIterable.wrap will be removed soon. Please replace uses with simple instantiation ie `ASyncIterable(wrapped)`&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+            <span class="s2">&quot;ASyncIterable.wrap will be removed soon. Please replace uses with simple instantiation ie `ASyncIterable(wrapped)`&quot;</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">wrapped</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_iterable</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-        <span class="s2">&quot;Initializes the ASyncIterable with an async iterable.&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the ASyncIterable with an async iterable.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            async_iterable: The async iterable to wrap.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">async_iterable</span><span class="p">,</span> <span class="n">AsyncIterable</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`async_iterable` must be an AsyncIterable. You passed </span><span class="si">{</span><span class="n">async_iterable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`async_iterable` must be an AsyncIterable. You passed </span><span class="si">{</span><span class="n">async_iterable</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span> <span class="o">=</span> <span class="n">async_iterable</span>
         <span class="s2">&quot;The wrapped async iterable object.&quot;</span>
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">start</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="k">if</span> <span class="n">wrapped</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;__wrapped__&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
@@ -222,9 +236,12 @@
     <span class="k">def</span> <span class="fm">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="s2">&quot;Return an iterator that yields :obj:`T` objects from the </span><span class="si">{cls}</span><span class="s2">.&quot;</span>
         <span class="k">yield from</span> <span class="n">ASyncIterator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__aiter__</span><span class="p">())</span>
-    <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;__wrapped__&quot;</span><span class="p">,</span> 
+
+    <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;__wrapped__&quot;</span><span class="p">,)</span>
+
 
 <span class="n">AsyncGenFunc</span> <span class="o">=</span> <span class="n">Callable</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">Union</span><span class="p">[</span><span class="n">AsyncGenerator</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]]]</span>
+
 
 <span class="k">class</span> <span class="nc">ASyncIterator</span><span class="p">(</span><span class="n">_AwaitableAsyncIterableMixin</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -234,11 +251,11 @@
 
 <span class="sd">    This class is particularly useful for library developers seeking to provide a consistent iteration interface across synchronous and asynchronous code, reducing the cognitive load on users and promoting code reusability and simplicity.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Synchronously fetch the next item from the {cls}.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Raises:</span>
 <span class="sd">            :class:`StopIteration`: Once all items have been fetched from the {cls}.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -248,34 +265,61 @@
             <span class="k">raise</span> <span class="ne">StopIteration</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;This event loop is already running&quot;</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">SyncModeInAsyncContextError</span><span class="p">(</span><span class="s2">&quot;The event loop is already running. Try iterating using `async for` instead of `for`.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">SyncModeInAsyncContextError</span><span class="p">(</span>
+                    <span class="s2">&quot;The event loop is already running. Try iterating using `async for` instead of `for`.&quot;</span>
+                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">raise</span>
 
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aiterator</span><span class="p">:</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncIterator[T]&quot;</span><span class="p">:</span><span class="o">...</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">aiterator</span><span class="p">:</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncIterator[T]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wraps an AsyncIterator in an ASyncIterator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            aiterator: The AsyncIterator to wrap.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
     <span class="nd">@overload</span>
-    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">async_gen_func</span><span class="p">:</span> <span class="n">AsyncGenFunc</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncGeneratorFunction[P, T]&quot;</span><span class="p">:</span><span class="o">...</span>
+    <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">async_gen_func</span><span class="p">:</span> <span class="n">AsyncGenFunc</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="s2">&quot;ASyncGeneratorFunction[P, T]&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wraps an async generator function in an ASyncGeneratorFunction.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            async_gen_func: The async generator function to wrap.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
     <span class="nd">@classmethod</span>
     <span class="k">def</span> <span class="nf">wrap</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">wrapped</span><span class="p">):</span>
         <span class="s2">&quot;Class method to wrap either an AsyncIterator or an async generator function.&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">wrapped</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;This use case for ASyncIterator.wrap will be removed soon. Please replace uses with simple instantiation ie `ASyncIterator(wrapped)`&quot;</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                <span class="s2">&quot;This use case for ASyncIterator.wrap will be removed soon. Please replace uses with simple instantiation ie `ASyncIterator(wrapped)`&quot;</span>
+            <span class="p">)</span>
             <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">wrapped</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">inspect</span><span class="o">.</span><span class="n">isasyncgenfunction</span><span class="p">(</span><span class="n">wrapped</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">ASyncGeneratorFunction</span><span class="p">(</span><span class="n">wrapped</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`wrapped` must be an AsyncIterator or an async generator function. You passed </span><span class="si">{</span><span class="n">wrapped</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;`wrapped` must be an AsyncIterator or an async generator function. You passed </span><span class="si">{</span><span class="n">wrapped</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_iterator</span><span class="p">:</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
-        <span class="s2">&quot;Initializes the ASyncIterator with an async iterator.&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the ASyncIterator with an async iterator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            async_iterator: The async iterator to wrap.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">async_iterator</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`async_iterator` must be an AsyncIterator. You passed </span><span class="si">{</span><span class="n">async_iterator</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`async_iterator` must be an AsyncIterator. You passed </span><span class="si">{</span><span class="n">async_iterator</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span> <span class="o">=</span> <span class="n">async_iterator</span>
         <span class="s2">&quot;The wrapped :class:`AsyncIterator`.&quot;</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">T</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Asynchronously fetch the next item from the {cls}.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Raises:</span>
 <span class="sd">            :class:`StopAsyncIteration`: Once all items have been fetched from the {cls}.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -288,6 +332,7 @@
     <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
         <span class="s2">&quot;Return the </span><span class="si">{cls}</span><span class="s2"> for aiteration.&quot;</span>
         <span class="k">return</span> <span class="bp">self</span>
+
 
 <span class="k">class</span> <span class="nc">ASyncGeneratorFunction</span><span class="p">(</span><span class="n">Generic</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -304,7 +349,9 @@
     <span class="n">__weakself__</span><span class="p">:</span> <span class="s2">&quot;weakref.ref[object]&quot;</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="s2">&quot;A weak reference to the instance the function is bound to, if any.&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">async_gen_func</span><span class="p">:</span> <span class="n">AsyncGenFunc</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">async_gen_func</span><span class="p">:</span> <span class="n">AsyncGenFunc</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">],</span> <span class="n">instance</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initializes the ASyncGeneratorFunction with the given async generator function and optionally an instance.</span>
 
@@ -312,7 +359,7 @@
 <span class="sd">            async_gen_func: The async generator function to wrap.</span>
 <span class="sd">            instance (optional): The object to bind to the function, if applicable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        
+
         <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span> <span class="o">=</span> <span class="n">async_gen_func</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="s2">&quot;The name of the async generator function.&quot;</span>
 
@@ -334,7 +381,7 @@
 <span class="sd">        Args:</span>
 <span class="sd">            *args: Positional arguments for the function.</span>
 <span class="sd">            **kwargs: Keyword arguments for the function.</span>
-<span class="sd">    </span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            An :class:`ASyncIterator` wrapping the :class:`AsyncIterator` returned from the wrapped function call.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -367,10 +414,13 @@
 
     <span class="k">def</span> <span class="nf">__get_cache_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimerHandle</span><span class="p">:</span>
         <span class="c1"># NOTE: we create a strong reference to instance here. I&#39;m not sure if this is good or not but its necessary for now.</span>
-        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="nb">delattr</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
+            <span class="mi">300</span><span class="p">,</span> <span class="nb">delattr</span><span class="p">,</span> <span class="n">instance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">field_name</span>
+        <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__cancel_cache_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instance</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache_handle</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
+
 
 <span class="k">class</span> <span class="nc">_ASyncView</span><span class="p">(</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -384,8 +434,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;An optional iterator. If None, :attr:`~_ASyncView.__aiterator__` will have a value.&quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">function</span><span class="p">:</span> <span class="n">ViewFn</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> 
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">function</span><span class="p">:</span> <span class="n">ViewFn</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
         <span class="n">iterable</span><span class="p">:</span> <span class="n">AnyIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -402,18 +452,21 @@
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">iterable</span><span class="p">,</span> <span class="n">Iterable</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span> <span class="o">=</span> <span class="n">iterable</span><span class="o">.</span><span class="fm">__iter__</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;`iterable` must be AsyncIterable or Iterable, you passed </span><span class="si">{</span><span class="n">iterable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;`iterable` must be AsyncIterable or Iterable, you passed </span><span class="si">{</span><span class="n">iterable</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
 
-<span class="nd">@final</span>  
+
+<span class="nd">@final</span>
 <span class="k">class</span> <span class="nc">ASyncFilter</span><span class="p">(</span><span class="n">_ASyncView</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An async filter class that filters items of an async iterable based on a provided function. </span>
-<span class="sd">    </span>
+<span class="sd">    An async filter class that filters items of an async iterable based on a provided function.</span>
+
 <span class="sd">    This class inherits from :class:`~_ASyncView` and provides the functionality to asynchronously</span>
 <span class="sd">    iterate over items, applying the filter function to each item to determine if it should be</span>
 <span class="sd">    included in the result.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
+
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;ASyncFilter for iterator=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__wrapped__</span><span class="si">}</span><span class="s2"> function=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> at </span><span class="si">{</span><span class="nb">hex</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
@@ -453,28 +506,27 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        obj: The object to return.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The object itself.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">obj</span>
+
 
 <span class="nd">@final</span>
 <span class="k">class</span> <span class="nc">ASyncSorter</span><span class="p">(</span><span class="n">_ASyncView</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    An async sorter class that sorts items of an async iterable based on a provided key function. </span>
-<span class="sd">    </span>
+<span class="sd">    An async sorter class that sorts items of an async iterable based on a provided key function.</span>
+
 <span class="sd">    This class inherits from :class:`~_ASyncView` and provides the functionality to asynchronously</span>
 <span class="sd">    iterate over items, applying the key function to each item for sorting.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="nb">reversed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">_consumed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">,</span>
         <span class="n">iterable</span><span class="p">:</span> <span class="n">AsyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span>
         <span class="o">*</span><span class="p">,</span>
-        <span class="n">key</span><span class="p">:</span> <span class="n">SortKey</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
+        <span class="n">key</span><span class="p">:</span> <span class="n">SortKey</span><span class="p">[</span><span class="n">T</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -538,7 +590,9 @@
                 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__iterator__</span><span class="p">:</span>
                     <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
                     <span class="n">sort_tasks</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_function</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
-                <span class="k">for</span> <span class="n">sort_value</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">sort_tasks</span><span class="p">),</span> <span class="n">items</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span><span class="p">):</span>
+                <span class="k">for</span> <span class="n">sort_value</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span>
+                    <span class="nb">zip</span><span class="p">(</span><span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="n">sort_tasks</span><span class="p">),</span> <span class="n">items</span><span class="p">),</span> <span class="n">reverse</span><span class="o">=</span><span class="n">reverse</span>
+                <span class="p">):</span>
                     <span class="k">yield</span> <span class="n">obj</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__aiterator__</span><span class="p">:</span>
@@ -551,7 +605,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_consumed</span> <span class="o">=</span> <span class="kc">True</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;ASyncIterable&quot;</span><span class="p">,</span> <span class="s2">&quot;ASyncIterator&quot;</span><span class="p">,</span> <span class="s2">&quot;ASyncFilter&quot;</span><span class="p">,</span> <span class="s2">&quot;ASyncSorter&quot;</span><span class="p">,</span> <span class="s2">&quot;ASyncGeneratorFunction&quot;</span><span class="p">]</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s2">&quot;ASyncIterable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ASyncIterator&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ASyncFilter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ASyncSorter&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;ASyncGeneratorFunction&quot;</span><span class="p">,</span>
+<span class="p">]</span>
 </pre></div>
 
            </div>
