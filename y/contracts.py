@@ -289,7 +289,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             - :meth:`~has_methods`
             - :meth:`~build_name`
             - :meth:`~get_code`
-            
+
         4. A few attributes were removed in order to minimize the size of a Contract object in memory:
             - :attr:`~ast`
             - :attr:`~bytecode`
