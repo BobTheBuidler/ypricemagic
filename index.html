@@ -173,32 +173,47 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 <dl class="py class" id="module-y.contracts">
 <dt class="sig sig-object py" id="y.contracts.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="reference internal" href="_modules/y/contracts.html#Contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract" title="Link to this definition"></a></dt>
-<dd><p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
-1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
-2. To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:
-<code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier=12345678)</span>
-<span class="pre">`</span></code>
-3. A few attributes were removed in order to minimize the size of a Contract object in memory:</p>
+<dd><p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:</p>
 <blockquote>
-<div><ul class="simple">
-<li><p>ast, bytecode, coverageMap, deployedBytecode, deployedSourceMap, natspec, opcodes, pcMap</p></li>
+<div><ol class="arabic simple">
+<li><dl class="simple">
+<dt>Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.</dt><dd><p>NOTE: You must set <cite>autofetch_sources=false</cite> in your project’s brownie-config.yaml for this to work correctly.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">`python</span>
+<span class="pre">Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier=12345678)</span>
+<span class="pre">`</span></code></p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>A few attributes were removed in order to minimize the size of a Contract object in memory:</dt><dd><ul class="simple">
+<li><p>:attr`~ast`</p></li>
+<li><p>:attr`~bytecode`</p></li>
+<li><p>:attr`~coverageMap`</p></li>
+<li><p>:attr`~deployedBytecode`</p></li>
+<li><p>:attr`~deployedSourceMap`</p></li>
+<li><p>:attr`~natspec`</p></li>
+<li><p>:attr`~opcodes`</p></li>
+<li><p>:attr`~pcMap`</p></li>
 </ul>
-</div></blockquote>
-<ol class="arabic simple" start="4">
+</dd>
+</dl>
+</li>
 <li><dl class="simple">
 <dt>There are a few new util methods but they’re not officially supported yet and may change without warning:</dt><dd><ul class="simple">
-<li><p>has_method</p></li>
-<li><p>has_methods</p></li>
-<li><p>has_methods_async</p></li>
-<li><p>build_name</p></li>
-<li><p>build_name_async</p></li>
-<li><p>get_code</p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.has_method" title="y.contracts.has_method"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.has_methods" title="y.contracts.has_methods"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_methods()</span></code></a></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.build_name" title="y.contracts.build_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_name()</span></code></a></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.Contract.get_code" title="y.contracts.Contract.get_code"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_code()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
 </li>
 </ol>
+</div></blockquote>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract.__eq__" title="Link to this definition"></a></dt>
@@ -576,7 +591,9 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.events">
 <span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="source/y.html#y.contracts.ContractEvents" title="y.contracts.ContractEvents"><span class="pre">ContractEvents</span></a></em><a class="headerlink" href="#y.contracts.Contract.events" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>A container for various event types associated with this contract.</p>
+<p>Provides a convenient way to query contract events with minimal code.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.signatures">
@@ -593,7 +610,8 @@ object in future sessions.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.contracts.Contract.verified">
 <span class="sig-name descname"><span class="pre">verified</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#y.contracts.Contract.verified" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>True if the contract is verified on this network’s block explorer. False otherwise.</p>
+</dd></dl>
 
 </dd></dl>
 
