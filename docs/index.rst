@@ -8,7 +8,7 @@ Welcome to ypricemagic's documentation! Time to price some shitcoins!
 
 .. module:: y
 
-   There is a lot of stuff in ypricemagic's docs that a you probably won't need as a user.
+   There is a lot of stuff in ypricemagic's docs that you probably won't need as a typical user.
    I've collected the most interesting components of the library here for your convenience:
 
    .. autofunction:: y.get_price
@@ -20,6 +20,8 @@ Welcome to ypricemagic's documentation! Time to price some shitcoins!
 .. automodule:: y.time
 
 .. automodule:: y.contracts
+
+For everything else, navigate the library structure below.
 
 .. toctree::
    :maxdepth: 2
