@@ -68,6 +68,7 @@ autodoc_default_options = {
             "__module__",
             "__hash__",
             "__repr__",
+            "__del__",
             "__setattr__",
             "__delattr__",
             "__init_from_abi__",
@@ -93,7 +94,19 @@ autodoc_default_options = {
             "__a_sync_modifiers__",
             "__class_getitem__",
             "__init_subclass__",
-            "__subclass_hook__",
+            "__subclasshook__",
+            "__orig_bases__",
+            "__parameters__",
+            # cache dict for instances for async_property lib
+            "__async_property__",
+            # float stuff
+            "bit_count",
+            "bit_length",
+            "as_integer_ratio",
+            "conjugate",
+            "is_integer",
+            "imag",
+            "real",
         ]
     ),
 }
