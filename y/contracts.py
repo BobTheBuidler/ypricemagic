@@ -279,14 +279,14 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             ```
 
         3. A few attributes were removed in order to minimize the size of a Contract object in memory:
-            - :attr`~ast`
-            - :attr`~bytecode`
-            - :attr`~coverageMap`
-            - :attr`~deployedBytecode`
-            - :attr`~deployedSourceMap`
-            - :attr`~natspec`
-            - :attr`~opcodes`
-            - :attr`~pcMap`
+            - :attr:`~ast`
+            - :attr:`~bytecode`
+            - :attr:`~coverageMap`
+            - :attr:`~deployedBytecode`
+            - :attr:`~deployedSourceMap`
+            - :attr:`~natspec`
+            - :attr:`~opcodes`
+            - :attr:`~pcMap`
 
         4. There are a few new util methods but they're not officially supported yet and may change without warning:
             - :meth:`~has_method`
