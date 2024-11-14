@@ -13,15 +13,21 @@ Welcome to ypricemagic's documentation! Time to price some shitcoins!
 
    .. autofunction:: y.get_price
 
+   If you do not know the block number but you know the timestamp at which you need your price, you first need to calculate it using this function:
+
+   .. autofunction:: y.get_block_at_timestamp
+
+   Usually, if you need one price you need more than one. The next two functions enable you to price multiple tokens in a streamlined, concurrent manner.
+
    .. autofunction:: y.get_prices
 
    .. autofunction:: y.map_prices
 
-.. automodule:: y.time
+There are some powerful tools for interacting with deployed contracts in the `contracts` module.
 
 .. automodule:: y.contracts
 
-For everything else, navigate the library structure below.
+To learn about the rest of ypricemagic's capabilities, navigate the library structure below.
 
 .. toctree::
    :maxdepth: 2
