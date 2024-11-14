@@ -175,39 +175,49 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="reference internal" href="_modules/y/contracts.html#Contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract" title="Link to this definition"></a></dt>
 <dd><p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:</p>
 <blockquote>
-<div><ol class="arabic simple">
+<div><ol class="arabic">
 <li><dl class="simple">
 <dt>Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.</dt><dd><p>NOTE: You must set <cite>autofetch_sources=false</cite> in your project’s brownie-config.yaml for this to work correctly.</p>
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls using the following syntax:</dt><dd><p><code class="docutils literal notranslate"><span class="pre">`python</span>
-<span class="pre">Contract(0xAddress).methodName.coroutine(*args,</span> <span class="pre">block_identifier=12345678)</span>
-<span class="pre">`</span></code></p>
+<li><dl>
+<dt>To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls which are intelligently batched in the background by <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#module-dank_mids" title="(in dank_mids)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dank_mids</span></code></a> to reduce overhead.</dt><dd><dl>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0xAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
+<span class="go">1000000000000000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coro</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coro</span>
+<span class="go">&lt;coroutine coroutine object at 0x12345678&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span> <span class="o">==</span> <span class="k">await</span> <span class="n">coro</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>A few attributes were removed in order to minimize the size of a Contract object in memory:</dt><dd><ul class="simple">
-<li><p>:attr`~ast`</p></li>
-<li><p>:attr`~bytecode`</p></li>
-<li><p>:attr`~coverageMap`</p></li>
-<li><p>:attr`~deployedBytecode`</p></li>
-<li><p>:attr`~deployedSourceMap`</p></li>
-<li><p>:attr`~natspec`</p></li>
-<li><p>:attr`~opcodes`</p></li>
-<li><p>:attr`~pcMap`</p></li>
+<dt>New methods:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="source/y.html#y.contracts.has_method" title="y.contracts.has_method"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.has_methods" title="y.contracts.has_methods"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_methods()</span></code></a></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.build_name" title="y.contracts.build_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_name()</span></code></a></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.contracts.Contract.get_code" title="y.contracts.Contract.get_code"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_code()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>There are a few new util methods but they’re not officially supported yet and may change without warning:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="source/y.html#y.contracts.has_method" title="y.contracts.has_method"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
-<li><p><a class="reference internal" href="source/y.html#y.contracts.has_methods" title="y.contracts.has_methods"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_methods()</span></code></a></p></li>
-<li><p><a class="reference internal" href="source/y.html#y.contracts.build_name" title="y.contracts.build_name"><code class="xref py py-meth docutils literal notranslate"><span class="pre">build_name()</span></code></a></p></li>
-<li><p><a class="reference internal" href="source/y.html#y.contracts.Contract.get_code" title="y.contracts.Contract.get_code"><code class="xref py py-meth docutils literal notranslate"><span class="pre">get_code()</span></code></a></p></li>
+<dt>A few attributes were removed in order to minimize the size of a Contract object in memory:</dt><dd><ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">ast</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">bytecode</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">coverageMap</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">deployedBytecode</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">deployedSourceMap</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">natspec</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">opcodes</span></code></p></li>
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">pcMap</span></code></p></li>
 </ul>
 </dd>
 </dl>
