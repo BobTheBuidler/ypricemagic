@@ -269,15 +269,15 @@ class ContractEvents(ContractEvents):
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
-    
+
         1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
             NOTE: You must set `autofetch_sources=false` in your project's brownie-config.yaml for this to work correctly.
-        
+
         2. To each contract method, a `coroutine` property has been defined which allows you to make asynchronous calls using the following syntax:
             ```python
             Contract(0xAddress).methodName.coroutine(*args, block_identifier=12345678)
             ```
-            
+
         3. A few attributes were removed in order to minimize the size of a Contract object in memory:
             - :attr`~ast`
             - :attr`~bytecode`
@@ -287,7 +287,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             - :attr`~natspec`
             - :attr`~opcodes`
             - :attr`~pcMap`
-        
+
         4. There are a few new util methods but they're not officially supported yet and may change without warning:
             - :meth:`~has_method`
             - :meth:`~has_methods`
