@@ -100,14 +100,14 @@
 
 
 <div class="viewcode-block" id="NoBlockFound">
-<a class="viewcode-back" href="../../source/y.html#y.time.NoBlockFound">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.NoBlockFound">[docs]</a>
 <span class="k">class</span> <span class="nc">NoBlockFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised when no block is found for a specified timestamp because the timestamp is in the future.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NoBlockFound.__init__">
-<a class="viewcode-back" href="../../source/y.html#y.time.NoBlockFound.__init__">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.NoBlockFound.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No block found after timestamp </span><span class="si">{</span><span class="n">timestamp</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 </div>
@@ -133,7 +133,7 @@
 
 
 <div class="viewcode-block" id="get_block_timestamp_async">
-<a class="viewcode-back" href="../../source/y.html#y.time.get_block_timestamp_async">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.get_block_timestamp_async">[docs]</a>
 <span class="nd">@a_sync_ttl_cache</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_block_timestamp_async</span><span class="p">(</span><span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -186,7 +186,7 @@
 
 
 <div class="viewcode-block" id="get_block_at_timestamp">
-<a class="viewcode-back" href="../../source/y.html#y.time.get_block_at_timestamp">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.get_block_at_timestamp">[docs]</a>
 <span class="nd">@a_sync_ttl_cache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">y._db.utils.utils</span> <span class="k">as</span> <span class="nn">db</span>
@@ -212,7 +212,7 @@
 
 <span class="c1"># yLazyLogger(logger)</span>
 <div class="viewcode-block" id="closest_block_after_timestamp">
-<a class="viewcode-back" href="../../source/y.html#y.time.closest_block_after_timestamp">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.closest_block_after_timestamp">[docs]</a>
 <span class="k">def</span> <span class="nf">closest_block_after_timestamp</span><span class="p">(</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -232,7 +232,7 @@
 
 
 <div class="viewcode-block" id="closest_block_after_timestamp_async">
-<a class="viewcode-back" href="../../source/y.html#y.time.closest_block_after_timestamp_async">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.closest_block_after_timestamp_async">[docs]</a>
 <span class="nd">@a_sync_ttl_cache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">closest_block_after_timestamp_async</span><span class="p">(</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
@@ -280,7 +280,7 @@
 
 
 <div class="viewcode-block" id="check_node">
-<a class="viewcode-back" href="../../source/y.html#y.time.check_node">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.check_node">[docs]</a>
 <span class="nd">@ttl_cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">check_node</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -296,7 +296,7 @@
 
 
 <div class="viewcode-block" id="check_node_async">
-<a class="viewcode-back" href="../../source/y.html#y.time.check_node_async">[docs]</a>
+<a class="viewcode-back" href="../../source/y.html#y.check_node_async">[docs]</a>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">check_node_async</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>

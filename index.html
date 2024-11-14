@@ -107,6 +107,22 @@ silent (optional): If True, suppress error logging. Default False.</p>
 <p>Since <cite>get_price</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
 </dd></dl>
 
+<p>If you do not know the block number but you know the timestamp at which you need your price, you first need to calculate it using this function:</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="y.get_block_at_timestamp">
+<span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">get_block_at_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/time.html#get_block_at_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.get_block_at_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Since <cite>get_block_at_timestamp</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<p>Usually, if you need one price you need more than one. The next two functions enable you to price multiple tokens in a streamlined, concurrent manner.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.get_prices">
 <span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">get_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_addresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">AnyAddressType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Block</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fail_to_None</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Literal</span><span class="p"><span class="pre">[</span></span><span class="k"><span class="pre">True</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ENVS.SKIP_CACHE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="source/y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">UsdPrice</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="_modules/y/prices/magic.html#get_prices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.get_prices" title="Link to this definition"></a></dt>
@@ -151,103 +167,7 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 </dl>
 </dd></dl>
 
-<dl class="py exception" id="module-y.time">
-<dt class="sig sig-object py" id="y.time.NoBlockFound">
-<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">NoBlockFound</span></span><a class="reference internal" href="_modules/y/time.html#NoBlockFound"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.NoBlockFound" title="Link to this definition"></a></dt>
-<dd><p>Raised when no block is found for a specified timestamp because the timestamp is in the future.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="y.time.NoBlockFound.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/time.html#NoBlockFound.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.NoBlockFound.__init__" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>timestamp</strong> (<em>UnixTimestamp</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.time.check_node">
-<span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">check_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/time.html#check_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.check_node" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.time.check_node_async">
-<span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">check_node_async</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/time.html#check_node_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.check_node_async" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="y.time.closest_block_after_timestamp">
-<span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">closest_block_after_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_block_if_needed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/time.html#closest_block_after_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.closest_block_after_timestamp" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>timestamp</strong> (<em>UnixTimestamp</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p></li>
-<li><p><strong>wait_for_block_if_needed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.time.closest_block_after_timestamp_async">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">closest_block_after_timestamp_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">y.time.UnixTimestamp</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><span class="pre">datetime.datetime</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">wait_for_block_if_needed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/y/time.html#closest_block_after_timestamp_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.closest_block_after_timestamp_async" title="Link to this definition"></a></dt>
-<dd><p>Since <cite>closest_block_after_timestamp_async</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>timestamp</strong> (<em>UnixTimestamp</em><em> | </em><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p></li>
-<li><p><strong>wait_for_block_if_needed</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-</ul>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.time.get_block_at_timestamp">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">get_block_at_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><span class="pre">datetime.datetime</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/y/time.html#get_block_at_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.get_block_at_timestamp" title="Link to this definition"></a></dt>
-<dd><p>Since <cite>get_block_at_timestamp</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.time.get_block_timestamp_async">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.time.</span></span><span class="sig-name descname"><span class="pre">get_block_timestamp_async</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></span><a class="reference internal" href="_modules/y/time.html#get_block_timestamp_async"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.time.get_block_timestamp_async" title="Link to this definition"></a></dt>
-<dd><p>Since <cite>get_block_timestamp_async</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>height</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
-</dd>
-</dl>
-</dd></dl>
-
+<p>There are some powerful tools for interacting with deployed contracts in the <cite>contracts</cite> module.</p>
 <dl class="py class" id="module-y.contracts">
 <dt class="sig sig-object py" id="y.contracts.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="reference internal" href="_modules/y/contracts.html#Contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract" title="Link to this definition"></a></dt>
@@ -1018,7 +938,7 @@ _func: The function to use for combining the results (either <a class="reference
 </dl>
 </dd></dl>
 
-<p>For everything else, navigate the library structure below.</p>
+<p>To learn about the rest of ypricemagic’s capabilities, navigate the library structure below.</p>
 <div class="toctree-wrapper compound">
 <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
