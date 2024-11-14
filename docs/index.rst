@@ -3,13 +3,17 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ypricemagic's documentation! Time to price some shitcoins!
+Welcome to ypricemagic's documentation!
 =============================================
+
+Time to price some shitcoins!
 
 .. module:: y
 
    There is a lot of stuff in ypricemagic's docs that you probably won't need as a typical user.
    I've collected the most interesting components of the library here for your convenience:
+
+   The main use case for this library is the pricing of shitcoins. `y.get_price` handles that for you.
 
    .. autofunction:: y.get_price
 
