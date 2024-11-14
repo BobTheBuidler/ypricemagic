@@ -17,7 +17,7 @@ Welcome to ypricemagic's documentation! Time to price some shitcoins!
 
    .. autofunction:: y.map_prices
 
-.. automodule:: y.time
+   .. autofunction:: y.get_block_at_timestamp
 
 .. automodule:: y.contracts
 
