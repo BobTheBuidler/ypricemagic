@@ -30,7 +30,12 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "../y/interfaces/*",
+]
 
 # Looks for objects in documentation of external libraries
 intersphinx_mapping = {
@@ -135,7 +140,6 @@ def skip_specific_members(app, what, name, obj, skip, options):
         True if the member should be skipped, False otherwise.
     """
 
-    logger.info(f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}")
     # Skip some dundermethods in all cases.
     if name in [
         "__abs__",
@@ -161,6 +165,8 @@ def skip_specific_members(app, what, name, obj, skip, options):
         "__rtruediv__",
         "__setformat__",
         "__trunc__",
+        # not a dunder but this can go here
+        "_ChecksumAddressSingletonMeta__instances",
     ]:
         return True
 
@@ -180,6 +186,10 @@ def skip_specific_members(app, what, name, obj, skip, options):
     ]:
         return True
 
+    if not skip:
+        logger.info(
+            f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}"
+        )
     return skip
 
 
