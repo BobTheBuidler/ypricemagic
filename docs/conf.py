@@ -166,7 +166,7 @@ def skip_specific_members(app, what, name, obj, skip, options):
         "__setformat__",
         "__trunc__",
         # not a dunder but this can go here
-        "_ChecksumAddressSingletonMeta__instances"
+        "_ChecksumAddressSingletonMeta__instances",
     ]:
         return True
 
@@ -187,7 +187,9 @@ def skip_specific_members(app, what, name, obj, skip, options):
         return True
 
     if not skip:
-        logger.info(f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}")
+        logger.info(
+            f"module: {getattr(obj, '__module__', None)}  name: {name}  obj: {obj}"
+        )
     return skip
 
 
