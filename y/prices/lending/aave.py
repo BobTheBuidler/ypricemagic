@@ -236,6 +236,7 @@ _WRAPPED_V3_METHODS = "ATOKEN", "AAVE_POOL", "UNDERLYING"
 class AaveRegistry(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
+        super().__init__()
 
     @a_sync.aka.cached_property
     async def pools(self) -> List[AaveMarket]:
