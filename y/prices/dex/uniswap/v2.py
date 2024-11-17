@@ -808,7 +808,7 @@ class UniswapRouterV2(ContractBase):
                     e,
                 )
             except ValueError as e:
-                if "out of gas" not in str(e):
+                if "timeout" not in str(e) and "out of gas" not in str(e):
                     raise
                 logger.debug(
                     "helper out of gas on check_liquidity for %s at block %s: %s",
