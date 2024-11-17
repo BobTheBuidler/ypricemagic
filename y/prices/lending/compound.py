@@ -69,7 +69,8 @@ class CToken(ERC20):
         self,
         address: AnyAddressType,
         comptroller: Optional["Comptroller"] = None,
-        *, asynchronous: bool = False,
+        *,
+        asynchronous: bool = False,
     ) -> None:
         self.troller = comptroller
         super().__init__(address, asynchronous=asynchronous)

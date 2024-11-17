@@ -351,7 +351,9 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
 
 
 class UniswapRouterV2(ContractBase):
-    def __init__(self, router_address: AnyAddressType, *, asynchronous: bool = False) -> None:
+    def __init__(
+        self, router_address: AnyAddressType, *, asynchronous: bool = False
+    ) -> None:
         super().__init__(router_address, asynchronous=asynchronous)
 
         self.label = ROUTER_TO_PROTOCOL[self.address]

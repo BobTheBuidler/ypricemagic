@@ -194,7 +194,7 @@ class Feed:
         address: AnyAddressType,
         asset: AnyAddressType,
         start_block: int = 0,
-        *, 
+        *,
         asynchronous: bool = False,
     ):
         self.address = convert.to_address(address)
