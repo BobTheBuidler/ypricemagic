@@ -648,7 +648,7 @@ class UniswapRouterV2(ContractBase):
                     msg = "reverted"
                 else:
                     raise
-                    
+
                 logger.debug(
                     "helper %s for %s at block %s ignore_pools %s: %s",
                     msg,
@@ -809,7 +809,7 @@ class UniswapRouterV2(ContractBase):
                     msg = "reverted"
                 else:
                     raise
-                    
+
                 logger.debug(
                     "helper %s for %s at block %s ignore_pools %s: %s",
                     msg,
