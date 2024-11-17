@@ -13,6 +13,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
+from eth_typing import HexAddress
 from multicall import Call
 from typing_extensions import Self
 
@@ -537,30 +538,33 @@ class UniswapRouterV2(ContractBase):
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=60 * 60)
-    async def get_pools_for(
-        self, token_in: Address, block: Optional[Block] = None
-    ) -> Dict[UniswapV2Pool, Address]:
-        if self._supports_uniswap_helper:
-            try:
-                pools = [
-                    UniswapV2Pool(pool, asynchronous=self.asynchronous)
-                    for pool in await FACTORY_HELPER.getPairsFor.coroutine(
-                        self.factory, token_in, block_identifier=block
-                    )
-                ]
-            except Exception as e:
-                if not (
-                    call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e)
-                ):
-                    raise
-                pools = await self.__pools__
-
-        else:
-            pools = await self.__pools__
-
+    @a_sync.a_sync(ram_cache_maxsize=None)
+    async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
-        for pool in pools:
+        for pool in await self.__pools__:
+            # these will return immediately since the pools are already loaded by this point
+            if token_in == await pool.__token0__:
+                pool_to_token_out[pool] = await pool.__token1__
+            elif token_in == await pool.__token1__:
+                pool_to_token_out[pool] = await pool.__token0__
+        return pool_to_token_out
+
+    @stuck_coro_debugger
+    async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
+        if not self._supports_uniswap_helper:
+            return await self.all_pools_for(token_in, sync=False)
+        try:
+            pools: List[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
+                self.factory, token_in, block_identifier=block
+            )
+        except Exception as e:
+            if call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e):
+                return await self.all_pools_for(token_in, sync=False)
+            raise
+        
+        pool_to_token_out = {}
+        for p in pools:
+            pool = UniswapV2Pool(p, asynchronous=self.asynchronous)
             # these will return immediately since the pools are already loaded by this point
             if token_in == await pool.__token0__:
                 pool_to_token_out[pool] = await pool.__token1__
