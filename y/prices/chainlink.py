@@ -248,7 +248,12 @@ class Feed:
         # NOTE: just playing with smth here
         scale = a_sync.ASyncFuture(self.scale())
         price = latest_answer / scale
-        price = UsdPrice(await price)
+        try:
+            price = UsdPrice(await price)
+        except ContractLogicError as e:
+            if "execution reverted" not in str(e):
+                raise
+            price = None
         logger.debug("%s price at %s: %s", self, block, price)
         return price
 
