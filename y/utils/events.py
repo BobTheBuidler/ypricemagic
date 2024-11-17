@@ -45,7 +45,7 @@ from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.common import Filter, _clean_addresses
-from y.datatypes import Address, Block
+from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import reraise_excs_with_extra_context
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
@@ -751,7 +751,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
 
 async def _lowest_deploy_block(
-    addresses: Iterable[EthAddress], when_no_history_return_0: bool
+    addresses: Iterable[AnyAddressType], when_no_history_return_0: bool
 ) -> Block:
     """
     Get the lowest deployment block for a list of addresses.

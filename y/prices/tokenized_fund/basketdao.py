@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Optional
 
 import a_sync
-from brownie.convert.datatypes import EthAddress
+from eth_typing import ChecksumAddress
 from multicall import Call
 from web3.exceptions import ContractLogicError
 
@@ -13,7 +13,7 @@ from y.datatypes import Block, UsdPrice
 
 
 @a_sync.a_sync(default="sync")
-async def is_basketdao_index(address: EthAddress) -> bool:
+async def is_basketdao_index(address: ChecksumAddress) -> bool:
     """
     Check if the given token is a BasketDAO token.
 
@@ -36,7 +36,7 @@ async def is_basketdao_index(address: EthAddress) -> bool:
 
 @a_sync.a_sync(default="sync")
 async def get_price(
-    address: EthAddress,
+    address: ChecksumAddress,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
