@@ -47,7 +47,7 @@ class VelodromePool(UniswapV2Pool):
         token1: Optional[AnyAddressType] = None,
         stable: Optional[bool] = None,
         deploy_block: Optional[int] = None,
-        asynchronous: bool = False,
+        *, asynchronous: bool = False,
     ):
         super().__init__(
             address,

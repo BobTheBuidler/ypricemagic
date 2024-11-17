@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 class UniswapV1(a_sync.ASyncGenericBase):
     factory = "0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95"
 
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         if chain.id != Network.Mainnet:
             raise UnsupportedNetwork(f"UniswapV1 does not suppport chainid {chain.id}")
         super().__init__()

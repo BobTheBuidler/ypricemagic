@@ -147,7 +147,7 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
         "totalSupply()(uint)",
     )
 
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         super().__init__()
         self.asynchronous = asynchronous
         self.exchange_proxy = Contract(EXCHANGE_PROXY) if EXCHANGE_PROXY else None

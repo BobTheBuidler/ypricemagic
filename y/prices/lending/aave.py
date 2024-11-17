@@ -234,7 +234,7 @@ _WRAPPED_V3_METHODS = "ATOKEN", "AAVE_POOL", "UNDERLYING"
 
 
 class AaveRegistry(a_sync.ASyncGenericSingleton):
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
         super().__init__()
 

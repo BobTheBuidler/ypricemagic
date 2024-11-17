@@ -63,7 +63,7 @@ class DieselPool(ContractBase):
 
 
 class Gearbox(a_sync.ASyncGenericBase):
-    def __init__(self, asynchronous: bool = False):
+    def __init__(self, *, asynchronous: bool = False):
         if chain.id != Network.Mainnet:
             raise UnsupportedNetwork("gearbox not supported on this network")
         self.asynchronous = asynchronous

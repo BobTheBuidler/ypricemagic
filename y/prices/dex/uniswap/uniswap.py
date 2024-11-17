@@ -44,7 +44,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
     A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances and/or forks.
     """
 
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         super().__init__()
         self.asynchronous = asynchronous
         self.v2_routers = {}

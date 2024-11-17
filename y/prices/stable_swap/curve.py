@@ -159,7 +159,7 @@ class AddressProvider(_CurveEventsLoader):
         "_events",
     )
 
-    def __init__(self, address: Address, asynchronous: bool = False):
+    def __init__(self, address: Address, *, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self.identifiers = defaultdict(list)
         self._events = AddressProviderEvents(self)
@@ -218,7 +218,7 @@ class Registry(_CurveEventsLoader):
     __slots__ = "_events"
 
     def __init__(
-        self, address: Address, curve: "CurveRegistry", asynchronous: bool = False
+        self, address: Address, curve: "CurveRegistry", *, asynchronous: bool = False
     ):
         super().__init__(address, asynchronous=asynchronous)
         self._events = RegistryEvents(self)
@@ -472,7 +472,7 @@ class CurvePool(ERC20):  # this shouldn't be ERC20 but works for inheritance for
 class CurveRegistry(a_sync.ASyncGenericSingleton):
     __slots__ = ("__task",)
 
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         super().__init__()
         self.asynchronous = asynchronous
         try:

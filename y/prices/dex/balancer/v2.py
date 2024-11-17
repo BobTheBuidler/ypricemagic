@@ -93,7 +93,7 @@ class PoolSpecialization(IntEnum):
 
 
 class BalancerV2Vault(ContractBase):
-    def __init__(self, address: AnyAddressType, asynchronous: bool = False) -> None:
+    def __init__(self, address: AnyAddressType, *, asynchronous: bool = False) -> None:
         super().__init__(address, asynchronous=asynchronous)
         self._events = BalancerEvents(
             self,
@@ -423,7 +423,7 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         "getSwapFeePercentage()(uint)",
     )
 
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         super().__init__()
         self.asynchronous = asynchronous
         self.vaults = [

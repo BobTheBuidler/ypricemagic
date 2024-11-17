@@ -74,6 +74,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     def __init__(
         self,
         address: AnyAddressType,
+        *,
         asynchronous: bool = False,
         _deploy_block: Optional[int] = None,
     ) -> None:
@@ -775,7 +776,7 @@ class _Loader(ContractBase):
         "__task",
     )
 
-    def __init__(self, address: Address, asynchronous: bool = False):
+    def __init__(self, address: Address, *, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self._init_block = auto_retry(web3.eth.get_block_number)()
         self._loaded = None

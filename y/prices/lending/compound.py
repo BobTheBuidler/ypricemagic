@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import chain, convert
+from brownie import chain
 from brownie.exceptions import VirtualMachineError
 from multicall import Call
 from typing_extensions import Self
@@ -69,7 +69,7 @@ class CToken(ERC20):
         self,
         address: AnyAddressType,
         comptroller: Optional["Comptroller"] = None,
-        asynchronous: bool = False,
+        *, asynchronous: bool = False,
     ) -> None:
         self.troller = comptroller
         super().__init__(address, asynchronous=asynchronous)
@@ -174,6 +174,7 @@ class Comptroller(ContractBase):
         self,
         address: Optional[AnyAddressType] = None,
         key: Optional[str] = None,
+        *,
         asynchronous: bool = False,
     ) -> None:
         assert address or key, "Must provide either an address or a key"
@@ -186,9 +187,8 @@ class Comptroller(ContractBase):
         else:
             key = [key for key in TROLLERS if address == TROLLERS[key]][0]
 
-        self.address = convert.to_address(address)
+        super().__init__(address, asynchronous=asynchronous)
         self.key = key
-        self.asynchronous = asynchronous
 
     def __repr__(self) -> str:
         return f"<Comptroller {self.key} '{self.address}'>"
@@ -231,7 +231,7 @@ class Comptroller(ContractBase):
 
 
 class Compound(a_sync.ASyncGenericSingleton):
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         super().__init__()
         self.asynchronous = asynchronous
         self.trollers = {
