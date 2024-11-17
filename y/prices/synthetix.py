@@ -36,7 +36,8 @@ addresses = {
 
 
 class Synthetix(a_sync.ASyncGenericSingleton):
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
+        super().__init__()
         if chain.id not in addresses:
             raise UnsupportedNetwork("synthetix is not supported on this network")
         self.asynchronous = asynchronous

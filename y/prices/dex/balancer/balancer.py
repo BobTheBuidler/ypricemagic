@@ -21,7 +21,8 @@ logger = logging.getLogger(__name__)
 
 
 class BalancerMultiplexer(a_sync.ASyncGenericBase):
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
 
     @a_sync.aka.property

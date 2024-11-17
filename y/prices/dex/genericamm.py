@@ -49,13 +49,14 @@ class GenericAmm(a_sync.ASyncGenericBase):
     This class provides methods to interact with and price generic AMM LP token contracts.
     """
 
-    def __init__(self, asynchronous: bool = False) -> None:
+    def __init__(self, *, asynchronous: bool = False) -> None:
         """
         Initialize the GenericAmm instance.
 
         Args:
             asynchronous (optional): Whether methods will return coroutines by default. Defaults to False.
         """
+        super().__init__()
         self.asynchronous = asynchronous
 
     @stuck_coro_debugger

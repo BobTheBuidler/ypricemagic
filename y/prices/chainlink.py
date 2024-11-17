@@ -194,6 +194,7 @@ class Feed:
         address: AnyAddressType,
         asset: AnyAddressType,
         start_block: int = 0,
+        *,
         asynchronous: bool = False,
     ):
         self.address = convert.to_address(address)
@@ -255,7 +256,7 @@ class Feed:
 class FeedsFromEvents(ProcessedEvents[Feed]):
     __slots__ = ("asynchronous",)
 
-    def __init__(self, addresses, topics, asynchronous: bool = True):
+    def __init__(self, addresses, topics, *, asynchronous: bool = True):
         self.asynchronous = asynchronous
         super().__init__(addresses=addresses, topics=topics)
 
@@ -278,7 +279,8 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
 
 
 class Chainlink(a_sync.ASyncGenericBase):
-    def __init__(self, asynchronous: bool = True) -> None:
+    def __init__(self, *, asynchronous: bool = True) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         self._feeds = [
             Feed(feed, asset, asynchronous=self.asynchronous)

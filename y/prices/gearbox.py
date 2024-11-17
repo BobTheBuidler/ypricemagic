@@ -63,11 +63,12 @@ class DieselPool(ContractBase):
 
 
 class Gearbox(a_sync.ASyncGenericBase):
-    def __init__(self, asynchronous: bool = False):
+    def __init__(self, *, asynchronous: bool = False):
         if chain.id != Network.Mainnet:
             raise UnsupportedNetwork("gearbox not supported on this network")
         self.asynchronous = asynchronous
         self._dtokens: Dict[ERC20, DieselPool] = {}
+        super().__init__()
 
     @a_sync.aka.cached_property
     async def registry(self) -> Contract:

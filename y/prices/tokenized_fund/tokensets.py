@@ -48,7 +48,7 @@ async def get_price(
 
 
 class TokenSet(ERC20):
-    def __init__(self, address: AnyAddressType, asynchronous: bool = False):
+    def __init__(self, address: AnyAddressType, *, asynchronous: bool = False):
         super().__init__(address, asynchronous=asynchronous)
         self.get_total_component_real_units = Call(
             self.address, "getTotalComponentRealUnits(address)(int256)"
