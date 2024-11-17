@@ -2,7 +2,7 @@ from typing import Optional
 
 import a_sync
 from brownie import chain
-from brownie.convert.datatypes import EthAddress
+from eth_typing import ChecksumAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Block, UsdPrice
@@ -20,13 +20,13 @@ MAPPING = {
 }.get(chain.id, {})
 
 
-def is_one_to_one_token(token_address: EthAddress) -> bool:
+def is_one_to_one_token(token_address: ChecksumAddress) -> bool:
     return token_address in MAPPING
 
 
 @a_sync.a_sync(default="sync")
 async def get_price(
-    token_address: EthAddress,
+    token_address: ChecksumAddress,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:

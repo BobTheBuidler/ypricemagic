@@ -587,40 +587,27 @@ class UniswapRouterV2(ContractBase):
             and self.label == "uniswap v2"
         ):
             # This will run out of gas if we use the helper so we bypass it with a known liquid pool
-            pools = {
-                UniswapV2Pool(
-                    "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True
-                ): "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
-            }
+            usdc_pool = UniswapV2Pool("0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True)
+            pools = {usdc_pool: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
         else:
-            try:
-                pools = await self.get_pools_for(token_address, sync=False)
-            except Exception as e:
-                raise
-                if "out of gas" not in str(e) and not call_reverted(e):
-                    e.args = (*e.args, self, token_address, block)
-                    raise
-                try:
-                    # if it fails with no block we will try once with a block before we fetch the long way
-                    pools = await self.get_pools_for(
-                        token_address, block=block, sync=False
-                    )
-                except Exception as e:
-                    e.args = (*e.args, self, token_address, block)
-                    raise
+            pools = await self.get_pools_for(token_address, block=block, sync=False)
+
         for pool in _ignore_pools:
             pools.pop(pool, None)
+
         if not pools:
             return
+        
         elif block is None:
             for pool in pools:
                 yield pool
-        else:
-            async for pool, deploy_block in ERC20.deploy_block.map(
-                when_no_history_return_0=True
-            ).map(pools):
-                if deploy_block <= block:
-                    yield pool
+            return
+
+        async for pool, deploy_block in ERC20.deploy_block.map(
+            when_no_history_return_0=True
+        ).map(pools):
+            if deploy_block <= block:
+                yield pool
 
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=500)
