@@ -424,6 +424,7 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
     )
 
     def __init__(self, asynchronous: bool = False) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         self.vaults = [
             BalancerV2Vault(vault, asynchronous=self.asynchronous)

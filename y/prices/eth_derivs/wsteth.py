@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 
 class wstEth(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = False) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         try:
             self.address = {

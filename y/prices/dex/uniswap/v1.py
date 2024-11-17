@@ -29,6 +29,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = False) -> None:
         if chain.id != Network.Mainnet:
             raise UnsupportedNetwork(f"UniswapV1 does not suppport chainid {chain.id}")
+        super().__init__()
         self.asynchronous = asynchronous
 
     @stuck_coro_debugger

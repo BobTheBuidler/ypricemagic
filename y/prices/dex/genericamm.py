@@ -56,6 +56,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
         Args:
             asynchronous (optional): Whether methods will return coroutines by default. Defaults to False.
         """
+        super().__init__()
         self.asynchronous = asynchronous
 
     @stuck_coro_debugger

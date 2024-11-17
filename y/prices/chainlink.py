@@ -279,6 +279,7 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
 
 class Chainlink(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = True) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         self._feeds = [
             Feed(feed, asset, asynchronous=self.asynchronous)
