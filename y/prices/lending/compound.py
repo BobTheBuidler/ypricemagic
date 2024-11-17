@@ -232,6 +232,7 @@ class Comptroller(ContractBase):
 
 class Compound(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = False) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         self.trollers = {
             protocol: Comptroller(troller, asynchronous=self.asynchronous)

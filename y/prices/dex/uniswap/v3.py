@@ -135,6 +135,7 @@ class UniswapV3Pool(ContractBase):
 
 class UniswapV3(a_sync.ASyncGenericSingleton):
     def __init__(self, asynchronous: bool = True) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         if chain.id not in addresses:
             raise UnsupportedNetwork("compound is not supported on this network")
