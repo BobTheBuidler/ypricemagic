@@ -351,6 +351,27 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
         return pool
 
 
+def _log_factory_helper_failure(e: Exception, token_address, block, _ignore_pools) -> str:
+    stre = f"{e}"
+    if "timeout" in stre:
+        msg = "timeout"
+    elif "out of gas" in stre:
+        msg = "out of gas"
+    elif isinstance(e, Revert):
+        # TODO: debug me!
+        msg = "reverted"
+    else:
+        raise e
+        
+    logger.debug(
+        "helper %s for %s at block %s ignore_pools %s: %s",
+        msg,
+        token_address,
+        block,
+        _ignore_pools,
+        e,
+    )
+    
 class UniswapRouterV2(ContractBase):
     def __init__(
         self, router_address: AnyAddressType, *, asynchronous: bool = False
@@ -639,24 +660,7 @@ class UniswapRouterV2(ContractBase):
                     else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
                 )
             except (Revert, ValueError) as e:
-                if "timeout" in str(e):
-                    msg = "timeout"
-                elif "out of gas" in str(e):
-                    msg = "out of gas"
-                elif isinstance(e, Revert):
-                    # TODO: debug me!
-                    msg = "reverted"
-                else:
-                    raise
-
-                logger.debug(
-                    "helper %s for %s at block %s ignore_pools %s: %s",
-                    msg,
-                    token_address,
-                    block,
-                    _ignore_pools,
-                    e,
-                )
+                msg = _log_factory_helper_failure(e, token_address, block, _ignore_pools)
 
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
         logger.debug(
@@ -800,24 +804,7 @@ class UniswapRouterV2(ContractBase):
                 )
                 return liquidity
             except (Revert, ValueError) as e:
-                if "timeout" in str(e):
-                    msg = "timeout"
-                elif "out of gas" in str(e):
-                    msg = "out of gas"
-                elif isinstance(e, Revert):
-                    # TODO: debug me!
-                    msg = "reverted"
-                else:
-                    raise
-
-                logger.debug(
-                    "helper %s for %s at block %s ignore_pools %s: %s",
-                    msg,
-                    token_address,
-                    block,
-                    _ignore_pools,
-                    e,
-                )
+                _log_factory_helper_failure(e, token, block, ignore_pools)
 
         pools = self.pools_for_token(token, block=block, _ignore_pools=ignore_pools)
         try:
