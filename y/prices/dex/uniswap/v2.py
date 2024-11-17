@@ -351,6 +351,30 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
         return pool
 
 
+def _log_factory_helper_failure(
+    e: Exception, token_address, block, _ignore_pools
+) -> str:
+    stre = f"{e}"
+    if "timeout" in stre:
+        msg = "timeout"
+    elif "out of gas" in stre:
+        msg = "out of gas"
+    elif isinstance(e, Revert):
+        # TODO: debug me!
+        msg = "reverted"
+    else:
+        raise e
+
+    logger.debug(
+        "helper %s for %s at block %s ignore_pools %s: %s",
+        msg,
+        token_address,
+        block,
+        _ignore_pools,
+        e,
+    )
+
+
 class UniswapRouterV2(ContractBase):
     def __init__(
         self, router_address: AnyAddressType, *, asynchronous: bool = False
@@ -638,24 +662,9 @@ class UniswapRouterV2(ContractBase):
                     if deepest_pool == brownie.ZERO_ADDRESS
                     else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
                 )
-            except Revert as e:
-                # TODO: debug me!
-                logger.debug(
-                    "helper reverted for %s at block %s ignore_pools %s: %s",
-                    token_address,
-                    block,
-                    _ignore_pools,
-                    e,
-                )
-            except ValueError as e:
-                if "out of gas" not in str(e):
-                    raise
-                logger.debug(
-                    "helper out of gas for %s at block %s ignore_pools %s: %s",
-                    token_address,
-                    block,
-                    _ignore_pools,
-                    e,
+            except (Revert, ValueError) as e:
+                msg = _log_factory_helper_failure(
+                    e, token_address, block, _ignore_pools
                 )
 
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
@@ -799,23 +808,8 @@ class UniswapRouterV2(ContractBase):
                     "%s liquidity for %s at %s is %s", self, token, block, liquidity
                 )
                 return liquidity
-            except Revert as e:
-                # TODO: debug me!
-                logger.debug(
-                    "helper reverted on check_liquidity for %s at block %s: %s",
-                    token,
-                    block,
-                    e,
-                )
-            except ValueError as e:
-                if "timeout" not in str(e) and "out of gas" not in str(e):
-                    raise
-                logger.debug(
-                    "helper out of gas on check_liquidity for %s at block %s: %s",
-                    token,
-                    block,
-                    e,
-                )
+            except (Revert, ValueError) as e:
+                _log_factory_helper_failure(e, token, block, ignore_pools)
 
         pools = self.pools_for_token(token, block=block, _ignore_pools=ignore_pools)
         try:
