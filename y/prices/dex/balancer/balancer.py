@@ -23,6 +23,7 @@ logger = logging.getLogger(__name__)
 class BalancerMultiplexer(a_sync.ASyncGenericBase):
     def __init__(self, asynchronous: bool = False) -> None:
         self.asynchronous = asynchronous
+        super().__init__()
 
     @a_sync.aka.property
     async def versions(self) -> List[Union[BalancerV1, BalancerV2]]:
