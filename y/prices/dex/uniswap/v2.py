@@ -550,7 +550,9 @@ class UniswapRouterV2(ContractBase):
         return pool_to_token_out
 
     @stuck_coro_debugger
-    async def get_pools_for(self, token_in: Address, block: Optional[Block] = None) -> Dict[UniswapV2Pool, Address]:
+    async def get_pools_for(
+        self, token_in: Address, block: Optional[Block] = None
+    ) -> Dict[UniswapV2Pool, Address]:
         if not self._supports_uniswap_helper:
             return await self.all_pools_for(token_in, sync=False)
         try:
@@ -561,7 +563,7 @@ class UniswapRouterV2(ContractBase):
             if call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e):
                 return await self.all_pools_for(token_in, sync=False)
             raise
-        
+
         pool_to_token_out = {}
         for p in pools:
             pool = UniswapV2Pool(p, asynchronous=self.asynchronous)
