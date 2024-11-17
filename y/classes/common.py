@@ -98,8 +98,10 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         return f"<{self.__class__.__name__} '{self.address}'"
 
     def __eq__(self, __o: object) -> bool:
-        if isinstance(__o, (ContractBase, Contract)):
-            return __o.address == self.address
+        # if other is an object with an `address` attribute, check against that
+        if other_address := getattr(__o, "address", None):
+            return other_address == self.address
+            
         # Skip checksumming if applicable, its computationally expensive
         # NOTE: We assume a mixed-case address is checksummed. If it isn't, wtf are you doing?
         elif isinstance(__o, str) and __o != __o.lower() and __o != __o.upper():
