@@ -45,6 +45,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
     """
 
     def __init__(self, asynchronous: bool = False) -> None:
+        super().__init__()
         self.asynchronous = asynchronous
         self.v2_routers = {}
         for name in UNISWAPS:
