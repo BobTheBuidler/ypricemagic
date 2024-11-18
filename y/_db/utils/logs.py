@@ -9,7 +9,6 @@ from async_lru import alru_cache
 from brownie import chain
 from brownie.network.event import _EventItem
 from eth_typing import ChecksumAddress, HexStr
-from eth_utils import to_checksum_address
 from evmspec.data import Address, HexBytes32, uint
 from evmspec.log import Topic
 from hexbytes import HexBytes
@@ -18,7 +17,7 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
 from y._db import decorators, entities
-from y._db.common import DiskCache, enc_hook, default_filter_threads, get_checksum
+from y._db.common import DiskCache, default_filter_threads, enc_hook, get_checksum
 from y._db.log import Log
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
