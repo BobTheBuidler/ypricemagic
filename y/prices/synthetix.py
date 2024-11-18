@@ -5,7 +5,7 @@ from typing import Callable, List, Optional
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
-from brownie.convert.datatypes import EthAddress, HexString
+from eth_typing import ChecksumAddress, HexStr
 from multicall import Call
 from typing_extensions import Self
 
@@ -37,7 +37,6 @@ addresses = {
 
 class Synthetix(a_sync.ASyncGenericSingleton):
     def __init__(self, *, asynchronous: bool = False) -> None:
-        super().__init__()
         if chain.id not in addresses:
             raise UnsupportedNetwork("synthetix is not supported on this network")
         self.asynchronous = asynchronous
@@ -69,14 +68,17 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         )
 
     @a_sync.aka.cached_property
-    async def synths(self) -> List[EthAddress]:
+    async def synths(self) -> List[ChecksumAddress]:
         """
         Get target addresses of all synths.
         """
         proxy_erc20 = await self.get_address("ProxyERC20", sync=False)
-        synths = await proxy_erc20.availableSynths.map(
-            range(await proxy_erc20.availableSynthCount)
-        )
+        synth_count = await proxy_erc20.availableSynthCount
+        # Force the addresses to strings so we aren't forced to use brownie's comparison functionality
+        synths = [
+            ChecksumAddress(synth)
+            for synth in await proxy_erc20.availableSynths.map(range(synth_count))
+        ]
         logger.info("loaded %s synths", len(synths))
         return synths
 
@@ -99,7 +101,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             raise
 
     @a_sync_ttl_cache
-    async def get_currency_key(self, token: AnyAddressType) -> Optional[HexString]:
+    async def get_currency_key(self, token: AnyAddressType) -> Optional[HexStr]:
         target = (
             await Call(token, ["target()(address)"])
             if await has_method(token, "target()(address)", sync=False)

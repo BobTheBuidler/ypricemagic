@@ -6,9 +6,9 @@ from typing import List, Optional
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
 from brownie import chain
-from brownie.convert import EthAddress
 from brownie.network.event import _EventItem
-from eth_typing import HexStr
+from eth_typing import ChecksumAddress, HexStr
+from eth_utils import to_checksum_address
 from evmspec.data import Address, HexBytes32, uint
 from evmspec.log import Topic
 from hexbytes import HexBytes
@@ -17,7 +17,7 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
 from y._db import decorators, entities
-from y._db.common import DiskCache, enc_hook, default_filter_threads
+from y._db.common import DiskCache, enc_hook, default_filter_threads, get_checksum
 from y._db.log import Log
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
@@ -83,7 +83,7 @@ async def bulk_insert(
     await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
 
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
-    addresses = (EthAddress(addr) for addr in {log.address for log in logs})
+    addresses = {log.address for log in logs}
     hashes = [
         [_remove_0x_prefix(hash)] for hash in itertools.chain(txhashes, addresses)
     ]
@@ -116,7 +116,7 @@ def get_topic_dbid(topic: Topic) -> int:
     return entity.dbid
 
 
-@alru_cache(maxsize=1024, ttl=600)
+@alru_cache(maxsize=10000, ttl=600)
 async def get_hash_dbid(txhash: HexStr) -> int:
     return await _get_hash_dbid(txhash)
 
@@ -124,7 +124,7 @@ async def get_hash_dbid(txhash: HexStr) -> int:
 @decorators.a_sync_write_db_session
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
-        hexstr = EthAddress(hexstr)
+        hexstr = get_checksum(hexstr)
     string = _remove_0x_prefix(hexstr)
     entity = entities.Hashes.get(hash=string)
     if entity is None:
@@ -348,9 +348,9 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
         if not (addresses := self.addresses):
             return generator
         elif isinstance(addresses, str):
-            address = _remove_0x_prefix(EthAddress(addresses))
+            address = _remove_0x_prefix(get_checksum(addresses))
             return (log for log in generator if log.address.hash == address)
-        addresses = [_remove_0x_prefix(EthAddress(address)) for address in addresses]
+        addresses = [_remove_0x_prefix(get_checksum(address)) for address in addresses]
         return (log for log in generator if log.address.hash in addresses)
 
     def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:

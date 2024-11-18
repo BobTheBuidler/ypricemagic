@@ -45,6 +45,11 @@ The thread pool executor used for all :class:`Filter` objects without one provid
 """
 
 
+@lru_cache(maxsize=20000)
+def get_checksum(hexaddr: HexStr) -> ChecksumAddress:
+    return ChecksumAddress(to_checksum_address(hexaddr))
+
+
 def enc_hook(obj: Any) -> bytes:
     """
     Encode hook for JSON serialization of special types.
