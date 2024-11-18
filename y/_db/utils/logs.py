@@ -120,6 +120,7 @@ def get_topic_dbid(topic: Topic) -> int:
 async def get_hash_dbid(txhash: HexStr) -> int:
     return await _get_hash_dbid(txhash)
 
+
 @decorators.a_sync_write_db_session
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
