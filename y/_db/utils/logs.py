@@ -1,6 +1,7 @@
 import asyncio
 import itertools
 import logging
+from functools import lru_cache
 from typing import List, Optional
 
 from a_sync.executor import _AsyncExecutorMixin
