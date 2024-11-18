@@ -23,6 +23,7 @@ from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
 from eth_typing import ChecksumAddress, HexStr
+from eth_utils import to_checksum_address
 from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
