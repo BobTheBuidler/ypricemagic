@@ -75,7 +75,10 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         proxy_erc20 = await self.get_address("ProxyERC20", sync=False)
         synth_count = await proxy_erc20.availableSynthCount
         # Force the addresses to strings so we aren't forced to use brownie's comparison functionality
-        synths = [ChecksumAddress(synth) for synth in await proxy_erc20.availableSynths.map(range(synth_count))]
+        synths = [
+            ChecksumAddress(synth)
+            for synth in await proxy_erc20.availableSynths.map(range(synth_count))
+        ]
         logger.info("loaded %s synths", len(synths))
         return synths
 
