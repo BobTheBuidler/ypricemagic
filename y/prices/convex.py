@@ -1,7 +1,7 @@
 from typing import Optional
 
 import a_sync
-from brownie.convert.datatypes import EthAddress
+from eth_typing import AnyAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Block, UsdPrice
@@ -16,13 +16,13 @@ MAPPING = {
 }
 
 
-def is_convex_lp(token_address: EthAddress) -> bool:
+def is_convex_lp(token_address: AnyAddress) -> bool:
     return token_address in MAPPING
 
 
 @a_sync.a_sync(default="sync")
 async def get_price(
-    token_address: EthAddress,
+    token_address: AnyAddress,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
