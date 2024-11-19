@@ -18,7 +18,7 @@ from typing import (
 )
 
 import a_sync
-from a_sync.a_sync import HiddenMethodDescriptor, HiddenMethod
+from a_sync.a_sync import HiddenMethodDescriptor
 from a_sync.a_sync.method import ASyncBoundMethod
 from brownie import Contract, chain, web3
 from brownie.convert.datatypes import HexString
@@ -98,18 +98,18 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         return f"<{self.__class__.__name__} '{self.address}'"
 
     def __eq__(self, __o: object) -> bool:
-        # if other is an object with an `address` attribute, check against that
-        if other_address := getattr(__o, "address", None):
-            return other_address == self.address
-
         # Skip checksumming if applicable, its computationally expensive
-        # NOTE: We assume a mixed-case address is checksummed. If it isn't, wtf are you doing?
-        elif isinstance(__o, str) and __o != __o.lower() and __o != __o.upper():
-            return __o == self.address
-        try:
-            return convert.to_address(__o) == self.address
-        except Exception:
-            return False
+        if isinstance(__o, str):
+            if self.address == __o:
+                return True
+            try:
+                return self.address == convert.to_address(__o)
+            except Exception:
+                return False
+        elif isinstance(__o, (ContractBase, Contract)):
+            return self.address == __o.address
+        return False
+        
 
     def __hash__(self) -> int:
         return hash(self.address)
