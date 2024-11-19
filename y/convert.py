@@ -1,9 +1,13 @@
+from functools import lru_cache
+
 import brownie.convert
 from brownie.convert.datatypes import HexBytes
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import AnyAddressType
 
 
+@lru_cache(maxsize=ENVS.CHECKSUM_CACHE_MAXSIZE)
 def to_address(address: AnyAddressType) -> str:
     if type(address) == int:
         return _int_to_address(address)

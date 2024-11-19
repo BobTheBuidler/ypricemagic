@@ -1,7 +1,7 @@
 from typing import Optional
 
 import a_sync
-from eth_typing import AnyAddress
+from eth_typing import ChecksumAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import Block, UsdPrice
@@ -16,13 +16,13 @@ MAPPING = {
 }
 
 
-def is_convex_lp(token_address: AnyAddress) -> bool:
+def is_convex_lp(token_address: ChecksumAddress) -> bool:
     return token_address in MAPPING
 
 
 @a_sync.a_sync(default="sync")
 async def get_price(
-    token_address: AnyAddress,
+    token_address: ChecksumAddress,
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:

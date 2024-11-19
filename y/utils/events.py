@@ -28,7 +28,6 @@ import eth_retry
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
-from brownie.convert.datatypes import EthAddress
 from brownie.network.event import (
     _EventItem,
     _add_deployment_topics,
@@ -242,7 +241,7 @@ async def get_logs_asap_generator(
         to_block = current_block
 
 
-def logs_to_balance_checkpoints(logs) -> Dict[EthAddress, int]:
+def logs_to_balance_checkpoints(logs) -> Dict[ChecksumAddress, int]:
     """
     Convert Transfer logs to `{address: {from_block: balance}}` checkpoints.
     """

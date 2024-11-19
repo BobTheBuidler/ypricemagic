@@ -13,8 +13,11 @@ CONTRACT_CACHE_TTL = _envs.create_env(
 GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int, default=0)
 """Batch size for getlogs operations, 0 will use default as determined by your provider."""
 
-GETLOGS_DOP = _envs.create_env("GETLOGS_DOP", int, default=32)
+GETLOGS_DOP = _envs.create_env("GETLOGS_DOP", int, default=32, verbose=False)
 """Degree of parallelism for eth_getLogs operations"""
+
+CHECKSUM_CACHE_MAXSIZE = _envs.create_env("CHECKSUM_CACHE_MAXSIZE", int, default=100_000, verbose=False)
+"""The maximum number of lru-cached keys kept in the checksum cache."""
 
 DB_PROVIDER = _envs.create_env("DB_PROVIDER", str, default="sqlite", verbose=False)
 """Database provider (e.g., 'sqlite', 'postgresql')"""
