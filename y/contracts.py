@@ -355,11 +355,11 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             except ValueError as e:
                 if str(e).startswith("Unknown contract address: "):
                     unknown_contract_address = True
+                    logger.debug(f"{e}")
                 else:
                     raise
 
         if unknown_contract_address:
-            logger.debug(f"{e}")
             try:
                 name, abi = _resolve_proxy(address)
                 build = {
