@@ -390,8 +390,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 logger.warning(
                     f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
                 )
-            
-        
+
     @classmethod
     @a_sync.a_sync
     def from_abi(
@@ -611,12 +610,12 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             self.address,
             None,
         )
-        
+
     def __finish_init(self, cache_ttl):
         # Patch the Contract with coroutines for each method.
         # TODO I think we can maybe remove this now, gotta check
         dank_mids.patch_contract(self)
-        
+
         # Init an event container for each topic
         _setup_events(self)
 
