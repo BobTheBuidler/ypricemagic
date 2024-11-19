@@ -4,11 +4,11 @@ from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
-from brownie import chain, convert
+from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import commit, db_session, select
 
-from y import constants
+from y import constants, convert
 from y._db.decorators import (
     a_sync_read_db_session,
     a_sync_write_db_session,

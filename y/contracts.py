@@ -357,12 +357,17 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     unknown_contract_address = True
                 else:
                     raise
-        
+
         if unknown_contract_address:
             logger.debug(f"{e}")
             try:
                 name, abi = _resolve_proxy(address)
-                build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
+                build = {
+                    "abi": abi,
+                    "address": address,
+                    "contractName": name,
+                    "type": "contract",
+                }
                 self.__init_from_abi__(build, owner=owner, persist=True)
             except (ContractNotFound, exceptions.ContractNotVerified) as e:
                 if isinstance(e, exceptions.ContractNotVerified):
@@ -380,7 +385,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     logger.warning(
                         f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
                     )
-        
+
         # Patch the Contract with coroutines for each method.
         dank_mids.patch_contract(self)
 
