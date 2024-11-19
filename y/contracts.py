@@ -264,6 +264,11 @@ class ContractEvents(ContractEvents):
     def __getattr__(self, name: str) -> Events:
         return super().__getattr__(name)
 
+_COMPILER_ERROR = CompilerError(
+    "y.Contract objects work best when we bypass compilers.\n"
+    "In this case, it will *only* work when we bypass.\n"
+    "Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
+)
 
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
@@ -346,21 +351,13 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 )
             self.__finish_init(cache_ttl)
             return
-        except AssertionError as e:
-            raise CompilerError(
-                "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
-            ) from None
-        except IndexError as e:
-            if str(e) != "pop from an empty deque":
-                raise
-            raise CompilerError(
-                "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
-            ) from None
+        except (AssertionError, IndexError) as e:
+            if str(e) == "pop from an empty deque" or isinstance(e, AssertionError):
+                raise _COMPILER_ERROR from None
+            raise
         except ValueError as e:
-            if str(e).startswith("Unknown contract address: "):
-                unknown_contract_address = True
-                logger.debug(f"{e}")
-            else:
+            logger.debug(f"{e}")
+            if not str(e).startswith("Unknown contract address: "):
                 raise
 
         # The contract does not exist in your local brownie deployments.db
