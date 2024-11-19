@@ -15,8 +15,9 @@ from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
+from y import convert
 from y._db import decorators, entities
-from y._db.common import DiskCache, default_filter_threads, enc_hook, get_checksum
+from y._db.common import DiskCache, default_filter_threads, enc_hook
 from y._db.log import Log
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
@@ -123,7 +124,7 @@ async def get_hash_dbid(txhash: HexStr) -> int:
 @decorators.a_sync_write_db_session
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
-        hexstr = get_checksum(hexstr)
+        hexstr = convert.to_address(hexstr)
     string = _remove_0x_prefix(hexstr)
     entity = entities.Hashes.get(hash=string)
     if entity is None:
@@ -347,9 +348,9 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
         if not (addresses := self.addresses):
             return generator
         elif isinstance(addresses, str):
-            address = _remove_0x_prefix(get_checksum(addresses))
+            address = _remove_0x_prefix(convert.to_address(addresses))
             return (log for log in generator if log.address.hash == address)
-        addresses = [_remove_0x_prefix(get_checksum(address)) for address in addresses]
+        addresses = [_remove_0x_prefix(convert.to_address(address)) for address in addresses]
         return (log for log in generator if log.address.hash in addresses)
 
     def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:

@@ -22,8 +22,6 @@ import eth_retry
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import ZERO_ADDRESS
-from eth_typing import ChecksumAddress, HexStr
-from eth_utils import to_checksum_address
 from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
@@ -46,11 +44,6 @@ default_filter_threads = a_sync.PruningThreadPoolExecutor(4)
 """
 The thread pool executor used for all :class:`Filter` objects without one provided, with a maximum of 4 threads.
 """
-
-
-@lru_cache(maxsize=20000)
-def get_checksum(hexaddr: HexStr) -> ChecksumAddress:
-    return ChecksumAddress(to_checksum_address(hexaddr))
 
 
 def enc_hook(obj: Any) -> bytes:
