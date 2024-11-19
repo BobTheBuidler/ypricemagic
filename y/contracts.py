@@ -265,6 +265,13 @@ class ContractEvents(ContractEvents):
         return super().__getattr__(name)
 
 
+_COMPILER_ERROR = CompilerError(
+    "y.Contract objects work best when we bypass compilers.\n"
+    "In this case, it will *only* work when we bypass.\n"
+    "Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
+)
+
+
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
@@ -322,6 +329,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         require_success: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> None:
+        """
+        Note:
+            autofetch-sources: false
+        """
 
         address = str(address)
         if address.lower() in [
@@ -332,71 +343,52 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if require_success and address in _unverified:
             raise exceptions.ContractNotVerified(address)
 
-        unknown_contract_address = False
-        with _brownie_deployments_db_lock:
-            # autofetch-sources: false
+        try:
             # Try to fetch the contract from the local sqlite db.
-            try:
+            with _brownie_deployments_db_lock:
                 super().__init__(address, owner=owner)
-                if not isinstance(self.verified, bool) and self.verified is not None:
-                    logger.warning(
-                        f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
-                    )
-            except AssertionError as e:
-                raise CompilerError(
-                    "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
-                ) from None
-            except IndexError as e:
-                if str(e) != "pop from an empty deque":
-                    raise
-                raise CompilerError(
-                    "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
-                ) from None
-            except ValueError as e:
-                if str(e).startswith("Unknown contract address: "):
-                    unknown_contract_address = True
-                    logger.debug(f"{e}")
-                else:
-                    raise
+            if not isinstance(self.verified, bool) and self.verified is not None:
+                logger.warning(
+                    f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
+                )
+            self.__finish_init(cache_ttl)
+            return
+        except (AssertionError, IndexError) as e:
+            if str(e) == "pop from an empty deque" or isinstance(e, AssertionError):
+                raise _COMPILER_ERROR from None
+            raise
+        except ValueError as e:
+            logger.debug(f"{e}")
+            if not str(e).startswith("Unknown contract address: "):
+                raise
 
-        if unknown_contract_address:
+        # The contract does not exist in your local brownie deployments.db
+        try:
+            name, abi = _resolve_proxy(address)
+            build = {
+                "abi": abi,
+                "address": address,
+                "contractName": name,
+                "type": "contract",
+            }
+            self.__init_from_abi__(build, owner=owner, persist=True)
+            self.__finish_init(cache_ttl)
+        except (ContractNotFound, exceptions.ContractNotVerified) as e:
+            if isinstance(e, exceptions.ContractNotVerified):
+                _unverified.add(address)
+            if require_success:
+                raise
             try:
-                name, abi = _resolve_proxy(address)
-                build = {
-                    "abi": abi,
-                    "address": address,
-                    "contractName": name,
-                    "type": "contract",
-                }
-                self.__init_from_abi__(build, owner=owner, persist=True)
-            except (ContractNotFound, exceptions.ContractNotVerified) as e:
                 if isinstance(e, exceptions.ContractNotVerified):
-                    _unverified.add(address)
-                if require_success:
-                    raise
-                try:
-                    if isinstance(e, exceptions.ContractNotVerified):
-                        self.verified = False
-                        self._build = {"contractName": "Non-Verified Contract"}
-                    else:
-                        self.verified = None
-                        self._build = {"contractName": "Broken Contract"}
-                except AttributeError:
-                    logger.warning(
-                        f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
-                    )
-
-        # Patch the Contract with coroutines for each method.
-        dank_mids.patch_contract(self)
-
-        if self.verified:
-            # Init an event container for each topic
-            _setup_events(self)
-
-            # Get rid of unnecessary memory-hog properties
-            _squeeze(self)
-
-            self._schedule_cache_pop(cache_ttl)
+                    self.verified = False
+                    self._build = {"contractName": "Non-Verified Contract"}
+                else:
+                    self.verified = None
+                    self._build = {"contractName": "Broken Contract"}
+            except AttributeError:
+                logger.warning(
+                    f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
+                )
 
     @classmethod
     @a_sync.a_sync
@@ -431,19 +423,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             "type": "contract",
         }
         self.__init_from_abi__(build, owner, persist)
-
-        # Patch the Contract with coroutines for each method.
-        dank_mids.patch_contract(self)
-
-        # Init an event container for each topic
-        _setup_events(self)
-
-        # Get rid of unnecessary memory-hog properties
-        _squeeze(self)
-
-        # schedule call to pop from cache
-        self._schedule_cache_pop(cache_ttl)
-
+        self.__finish_init(cache_ttl)
         return self
 
     @classmethod
@@ -629,6 +609,20 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             self.address,
             None,
         )
+
+    def __finish_init(self, cache_ttl):
+        # Patch the Contract with coroutines for each method.
+        # TODO I think we can maybe remove this now, gotta check
+        dank_mids.patch_contract(self)
+
+        # Init an event container for each topic
+        _setup_events(self)
+
+        # Get rid of unnecessary memory-hog properties
+        _squeeze(self)
+
+        # schedule call to pop from cache
+        self._schedule_cache_pop(cache_ttl)
 
 
 _contract_queue = a_sync.SmartProcessingQueue(Contract._coroutine, num_workers=32)
