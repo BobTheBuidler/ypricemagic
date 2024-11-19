@@ -357,7 +357,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             return
         except (AssertionError, IndexError) as e:
             if str(e) == "pop from an empty deque" or isinstance(e, AssertionError):
-                raise _COMPILER_ERROR from None
+                raise CompilerError from None
             raise
         except ValueError as e:
             logger.debug(f"{e}")
