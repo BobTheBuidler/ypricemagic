@@ -16,7 +16,9 @@ GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int, default=0)
 GETLOGS_DOP = _envs.create_env("GETLOGS_DOP", int, default=32, verbose=False)
 """Degree of parallelism for eth_getLogs operations"""
 
-CHECKSUM_CACHE_MAXSIZE = _envs.create_env("CHECKSUM_CACHE_MAXSIZE", int, default=100_000, verbose=False)
+CHECKSUM_CACHE_MAXSIZE = _envs.create_env(
+    "CHECKSUM_CACHE_MAXSIZE", int, default=100_000, verbose=False
+)
 """The maximum number of lru-cached keys kept in the checksum cache."""
 
 DB_PROVIDER = _envs.create_env("DB_PROVIDER", str, default="sqlite", verbose=False)

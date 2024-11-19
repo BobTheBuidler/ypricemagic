@@ -109,7 +109,6 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         elif isinstance(__o, (ContractBase, Contract)):
             return self.address == __o.address
         return False
-        
 
     def __hash__(self) -> int:
         return hash(self.address)

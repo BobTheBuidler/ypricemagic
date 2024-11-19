@@ -350,7 +350,9 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
         elif isinstance(addresses, str):
             address = _remove_0x_prefix(convert.to_address(addresses))
             return (log for log in generator if log.address.hash == address)
-        addresses = [_remove_0x_prefix(convert.to_address(address)) for address in addresses]
+        addresses = [
+            _remove_0x_prefix(convert.to_address(address)) for address in addresses
+        ]
         return (log for log in generator if log.address.hash in addresses)
 
     def _wrap_query_with_topic(self, generator, topic_id: str) -> Query:
