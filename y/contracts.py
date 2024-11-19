@@ -51,8 +51,7 @@ logger = logging.getLogger(__name__)
 
 contract_threads = a_sync.PruningThreadPoolExecutor(16)
 
-# cached Contract instance, saves about 20ms of init time
-_contract_lock = threading.Lock()
+_brownie_deployments_db_lock = threading.Lock()
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -333,7 +332,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if require_success and address in _unverified:
             raise exceptions.ContractNotVerified(address)
 
-        with _contract_lock:
+        unknown_contract_address = False
+        with _brownie_deployments_db_lock:
             # autofetch-sources: false
             # Try to fetch the contract from the local sqlite db.
             try:
@@ -347,45 +347,42 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
                 ) from None
             except IndexError as e:
-                if str(e) == "pop from an empty deque":
-                    raise CompilerError(
-                        "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
-                    ) from None
-                raise
-            except ValueError as e:
-                if not str(e).startswith("Unknown contract address: "):
+                if str(e) != "pop from an empty deque":
                     raise
-                logger.debug(f"{e}")
+                raise CompilerError(
+                    "y.Contract objects work best when we bypass compilers. In this case, it will *only* work when we bypass. Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
+                ) from None
+            except ValueError as e:
+                if str(e).startswith("Unknown contract address: "):
+                    unknown_contract_address = True
+                else:
+                    raise
+        
+        if unknown_contract_address:
+            logger.debug(f"{e}")
+            try:
+                name, abi = _resolve_proxy(address)
+                build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
+                self.__init_from_abi__(build, owner=owner, persist=True)
+            except (ContractNotFound, exceptions.ContractNotVerified) as e:
+                if isinstance(e, exceptions.ContractNotVerified):
+                    _unverified.add(address)
+                if require_success:
+                    raise
                 try:
-                    name, abi = _resolve_proxy(address)
-                    build = {
-                        "abi": abi,
-                        "address": address,
-                        "contractName": name,
-                        "type": "contract",
-                    }
-                    self.__init_from_abi__(build, owner=owner, persist=True)
-                except exceptions.InvalidAPIKeyError:
-                    # re-raise with a cleaner traceback
-                    raise exceptions.InvalidAPIKeyError from None
-                except (ContractNotFound, exceptions.ContractNotVerified) as e:
                     if isinstance(e, exceptions.ContractNotVerified):
-                        _unverified.add(address)
-                    if require_success:
-                        raise
-                    try:
-                        if isinstance(e, exceptions.ContractNotVerified):
-                            self.verified = False
-                            self._build = {"contractName": "Non-Verified Contract"}
-                        else:
-                            self.verified = None
-                            self._build = {"contractName": "Broken Contract"}
-                    except AttributeError:
-                        logger.warning(
-                            f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
-                        )
-                # Patch the Contract with coroutines for each method.
-                dank_mids.patch_contract(self)
+                        self.verified = False
+                        self._build = {"contractName": "Non-Verified Contract"}
+                    else:
+                        self.verified = None
+                        self._build = {"contractName": "Broken Contract"}
+                except AttributeError:
+                    logger.warning(
+                        f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
+                    )
+        
+        # Patch the Contract with coroutines for each method.
+        dank_mids.patch_contract(self)
 
         if self.verified:
             # Init an event container for each topic
