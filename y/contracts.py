@@ -265,11 +265,13 @@ class ContractEvents(ContractEvents):
         return super().__getattr__(name)
 
 
-_COMPILER_ERROR = CompilerError(
-    "y.Contract objects work best when we bypass compilers.\n"
-    "In this case, it will *only* work when we bypass.\n"
-    "Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
-)
+class CompilerError(Exception):
+    def __init__(self):
+        super().__init__(
+            "y.Contract objects work best when we bypass compilers.\n"
+            "In this case, it will *only* work when we bypass.\n"
+            "Please ensure autofetch_sources=False in your brownie-config.yaml and rerun your script."
+        )
 
 
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
