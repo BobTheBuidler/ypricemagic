@@ -286,6 +286,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
 _E = TypeVar("_E", bound=_AsyncExecutorMixin)
 _MAX_LONG_LONG = 18446744073709551615
 
+
 class Filter(_DiskCachedMixin[T, C]):
     # defaults are stored as class vars to keep instance dicts smaller
     _chunk_size = BATCH_SIZE
