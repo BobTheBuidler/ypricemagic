@@ -284,6 +284,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
 
 
 _E = TypeVar("_E", bound=_AsyncExecutorMixin)
+_MAX_LONG_LONG = 18446744073709551615
 
 
 class Filter(_DiskCachedMixin[T, C]):
@@ -405,8 +406,6 @@ class Filter(_DiskCachedMixin[T, C]):
         self._sleep_fut.set_result(None)
 
     async def __fetch(self) -> NoReturn:
-        from y.constants import BIG_VALUE
-
         try:
             await self._fetch()
         except Exception as e:
@@ -417,7 +416,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._tb = e.__traceback__
             # no need to hold vars in memory
             traceback.clear_frames(self._tb)
-            self._lock.set(BIG_VALUE)
+            self._lock.set(_MAX_LONG_LONG)
             raise
 
     async def _fetch(self) -> NoReturn:
