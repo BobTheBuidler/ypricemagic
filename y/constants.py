@@ -360,5 +360,3 @@ For example, on Ethereum Mainnet, `WRAPPED_GAS_COIN` == the WETH address. On Fan
 thread_pool_executor = a_sync.PruningThreadPoolExecutor(
     max_workers=int(os.environ.get("DOP", 32))
 )
-
-BIG_VALUE = 9999999999999999999999999999999999999999999999999999999999999999999999999
