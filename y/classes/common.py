@@ -810,7 +810,7 @@ class _Loader(ContractBase):
         """
         self._task  # ensure task is running and not errd
         if self._loaded is None:
-            self._loaded = a_sync.Event(name=self)
+            self._loaded = a_sync.Event(name=str(self))
         return self._loaded.wait()
 
     @property
