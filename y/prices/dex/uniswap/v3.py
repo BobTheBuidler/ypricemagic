@@ -148,7 +148,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
 
     @cached_property
     def loaded(self) -> a_sync.Event:
-        return a_sync.Event(name=self)
+        return a_sync.Event(name=str(self))
 
     @a_sync.aka.property
     async def factory(self) -> Contract:
