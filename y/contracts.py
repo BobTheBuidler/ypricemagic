@@ -49,8 +49,6 @@ from y.utils.gather import gather_methods
 
 logger = logging.getLogger(__name__)
 
-contract_threads = a_sync.PruningThreadPoolExecutor(16)
-
 _brownie_deployments_db_lock = threading.Lock()
 
 # These tokens have trouble when resolving the implementation via the chain.
@@ -473,7 +471,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         Returns:
             A Contract instance for the given address.
         """
-        contract = await contract_threads.run(
+        contract = await ENVS.CONTRACT_THREADS.run(
             cls, address, require_success=require_success
         )
 
