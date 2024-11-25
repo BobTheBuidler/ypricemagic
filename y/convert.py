@@ -1,20 +1,20 @@
 from functools import lru_cache
 
-import brownie.convert
-from brownie.convert.datatypes import HexBytes
+from brownie.convert.datatypes import EthAddress, HexBytes
+from eth_typing import ChecksumAddress, HexAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import AnyAddressType
 
 
 @lru_cache(maxsize=ENVS.CHECKSUM_CACHE_MAXSIZE)
-def to_address(address: AnyAddressType) -> str:
+def to_address(address: AnyAddressType) -> ChecksumAddress:
     if type(address) == int:
-        return _int_to_address(address)
-    return brownie.convert.to_address(address)
+        address = _int_to_address(address)
+    return str(EthAddress(address))
 
 
-def _int_to_address(int_address: int) -> str:
+def _int_to_address(int_address: int) -> HexAddress:
     hex_value = HexBytes(int_address).hex()[2:]
     padding = "0" * (40 - len(hex_value))
-    return brownie.convert.to_address(f"0x{padding}{hex_value}")
+    return f"0x{padding}{hex_value}"
