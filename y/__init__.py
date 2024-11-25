@@ -25,15 +25,8 @@ if not network.is_connected():
 # for backwards-compatability
 from dank_mids import dank_web3 as dank_w3
 
-# Overwrite with faster version
-import eth_utils
-import eth_event.main
-from checksum_dict import to_checksum_address
 
-eth_utils.to_checksum_address = eth_utils.address.to_checksum_addres = eth_event.main.to_checksum_address = to_checksum_address
-
-
-from y import time
+from y import convert, time
 from y.classes.common import ERC20
 from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN, dai, usdc, wbtc, weth
 from y.contracts import (
@@ -74,6 +67,8 @@ from y.utils.raw_calls import balanceOf, raw_call
 
 setup_getcode_cache_middleware()
 
+convert._monkey_patch_dependencies()
+
 if chain.id == Network.Optimism:
     setup_geth_poa_middleware()
 
@@ -106,6 +101,8 @@ __all__ = [
     "magic",
     # raw calls
     "raw_call",
+    # convert
+    "convert",
     # time
     "time",
     "get_block_at_timestamp",
