@@ -26,6 +26,7 @@ if not network.is_connected():
 from dank_mids import dank_web3 as dank_w3
 
 # Monkey patch dependency checksums with faster versions
+import checksum_dict
 import eth_event.main
 import eth_utils
 from checksum_dict import to_checksum_address
