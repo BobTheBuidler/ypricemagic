@@ -25,6 +25,12 @@ if not network.is_connected():
 # for backwards-compatability
 from dank_mids import dank_web3 as dank_w3
 
+# Overwrite with faster version
+import eth_utils
+from checksum_dict import to_checksum_address
+
+eth_utils.to_checksum_address = to_checksum_address
+
 from y import time
 from y.classes.common import ERC20
 from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN, dai, usdc, wbtc, weth
