@@ -27,10 +27,11 @@ from dank_mids import dank_web3 as dank_w3
 
 # Overwrite with faster version
 import eth_utils
+import eth_event.main
 from checksum_dict import to_checksum_address
 
-eth_utils.to_checksum_address = to_checksum_address
-eth_utils.address.to_checksum_address = to_checksum_address
+eth_utils.to_checksum_address = eth_utils.address.to_checksum_addres = eth_event.main.to_checksum_address = to_checksum_address
+
 
 from y import time
 from y.classes.common import ERC20
