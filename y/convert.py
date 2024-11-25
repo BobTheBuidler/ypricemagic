@@ -38,6 +38,9 @@ def _monkey_patch_dependencies():
     # this monkey patches brownie's convert.to_address with our lru_cache
     brownie.convert.to_address = to_address
 
+    # this monkey patches evmspec's Address decode hook with our lru cache
+    evmspec.data.to_address = to_address
+
     # y.convert.to_address depends on brownie.convert.to_address which depends on eth_utils.to_checksum_address
     # so we cannot overwrite eth_utils.to_checksum_address with y.convert.to_address like we do for eth_event
     # or we will create a circular dependency
