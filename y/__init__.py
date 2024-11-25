@@ -25,34 +25,8 @@ if not network.is_connected():
 # for backwards-compatability
 from dank_mids import dank_web3 as dank_w3
 
-# Monkey patch dependency checksums with faster versions
-import checksum_dict
-import eth_event.main
-import eth_utils
-from checksum_dict import to_checksum_address
-from y import convert
 
-# this monkey patches checksum_dict's checksumming with our lru_cache
-checksum_dict._key.to_checksum_address = convert.to_address
-
-# this monkey patches eth_event's address checksumming with our lru_cache
-eth_event.main.to_checksum_address = convert.to_address
-
-# this monkey patches brownie's convert.to_address with our lru_cache
-brownie.convert.to_address = convert.to_address
-
-# y.convert.to_address depends on brownie.convert.to_address which depends on eth_utils.to_checksum_address
-# so we cannot overwrite eth_utils.to_checksum_address with y.convert.to_address like we do for eth_event
-# or we will create a circular dependency
-
-# this monkey patches brownie's EthAddress class with faster execution
-eth_utils.to_checksum_address = to_checksum_address
-
-# this monkey patches anything I didn't think of with faster execution
-eth_utils.address.to_checksum_addres = to_checksum_address
-
-
-from y import time
+from y import convert, time
 from y.classes.common import ERC20
 from y.constants import EEE_ADDRESS, WRAPPED_GAS_COIN, dai, usdc, wbtc, weth
 from y.contracts import (
@@ -93,6 +67,8 @@ from y.utils.raw_calls import balanceOf, raw_call
 
 setup_getcode_cache_middleware()
 
+convert._monkey_patch_dependencies()
+
 if chain.id == Network.Optimism:
     setup_geth_poa_middleware()
 
@@ -125,6 +101,8 @@ __all__ = [
     "magic",
     # raw calls
     "raw_call",
+    # convert
+    "convert",
     # time
     "time",
     "get_block_at_timestamp",
