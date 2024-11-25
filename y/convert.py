@@ -24,25 +24,26 @@ def _int_to_address(int_address: int) -> HexAddress:
     padding = "0" * (40 - len(hex_value))
     return f"0x{padding}{hex_value}"
 
+
 def _monkey_patch_dependencies():
     """
     Monkey patch dependency checksums with faster versions.
     """
     # this monkey patches checksum_dict's checksumming with our lru_cache
     checksum_dict._key.to_checksum_address = to_address
-    
+
     # this monkey patches eth_event's address checksumming with our lru_cache
     eth_event.main.to_checksum_address = to_address
-    
+
     # this monkey patches brownie's convert.to_address with our lru_cache
     brownie.convert.to_address = to_address
-    
+
     # y.convert.to_address depends on brownie.convert.to_address which depends on eth_utils.to_checksum_address
     # so we cannot overwrite eth_utils.to_checksum_address with y.convert.to_address like we do for eth_event
     # or we will create a circular dependency
-    
+
     # this monkey patches brownie's EthAddress class with faster execution
     eth_utils.to_checksum_address = to_checksum_address
-    
+
     # this monkey patches something else I don't remember now with faster execution
     eth_utils.address.to_checksum_addres = to_checksum_address
