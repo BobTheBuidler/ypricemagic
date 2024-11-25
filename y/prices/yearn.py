@@ -14,6 +14,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
+from y.constants import weth
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
@@ -173,14 +174,15 @@ class YearnInspiredVault(ERC20):
             "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"  # USDC address
         """
         # special cases
-        if (
-            chain.id == Network.Arbitrum
-            and self.address == "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7"
-        ):
-            return ERC20(
-                await raw_call(self.address, "usdl()", output="address", sync=False),
-                asynchronous=self.asynchronous,
-            )
+        if chain.id == Network.Arbitrum:
+            if self.address == "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7":
+                return ERC20(
+                    await raw_call(self.address, "usdl()", output="address", sync=False),
+                    asynchronous=self.asynchronous,
+                )
+        elif chain.id == Network.Mainnet and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48":
+            # ynETH yield nest has no method for underlying
+            return ERC20(weth, asynchronous=self.asynchronous)
 
         try:
             underlying = await probe(self.address, underlying_methods)
