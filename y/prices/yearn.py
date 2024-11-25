@@ -177,10 +177,15 @@ class YearnInspiredVault(ERC20):
         if chain.id == Network.Arbitrum:
             if self.address == "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7":
                 return ERC20(
-                    await raw_call(self.address, "usdl()", output="address", sync=False),
+                    await raw_call(
+                        self.address, "usdl()", output="address", sync=False
+                    ),
                     asynchronous=self.asynchronous,
                 )
-        elif chain.id == Network.Mainnet and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48":
+        elif (
+            chain.id == Network.Mainnet
+            and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48"
+        ):
             # ynETH yield nest has no method for underlying
             return ERC20(weth, asynchronous=self.asynchronous)
 
