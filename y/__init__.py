@@ -30,6 +30,7 @@ import eth_utils
 from checksum_dict import to_checksum_address
 
 eth_utils.to_checksum_address = to_checksum_address
+eth_utils.address.to_checksum_address = to_checksum_address
 
 from y import time
 from y.classes.common import ERC20
