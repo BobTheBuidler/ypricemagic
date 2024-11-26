@@ -38,12 +38,33 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
         return address
     elif address in _is_not_checksummed:
         return checksum(address)
+    checksummed = checksum(address)
+    if address == checksummed:
+        _is_checksummed.add(address)
+    else:
+        _is_not_checksummed.add(address)
+    return checksummed
 
-    try:
-        checksummed = to_checksum_address(address)
-    except ValueError:
-        raise ValueError(f"'{address}' is not a valid ETH address") from None
 
+_checksum_thread = a_sync.ThreadPoolExecutor(1)
+
+async def to_address_in_thread(address: AnyAddressType) -> ChecksumAddress:
+    if isinstance(address, bytes):
+        address = (
+            address.hex()
+            if type(address).__name__ == "HexBytes"
+            else HexBytes(address).hex()
+        )
+    elif type(address) == int:
+        address = _int_to_address(address)
+    else:
+        address = str(address)
+    if address in _is_checksummed:
+        return address
+    elif address in _is_not_checksummed:
+        return await _checksum_thread.run(checksum, address)
+
+    checksummed = await _checksum_thread.run(checksum, address)
     if address == checksummed:
         _is_checksummed.add(address)
     else:
@@ -77,12 +98,8 @@ def _monkey_patch_dependencies():
     # this monkey patches evmspec's Address decode hook with our lru cache
     evmspec.data.to_checksum_address = to_address
 
-    # y.convert.to_address depends on brownie.convert.to_address which depends on eth_utils.to_checksum_address
-    # so we cannot overwrite eth_utils.to_checksum_address with y.convert.to_address like we do for eth_event
-    # or we will create a circular dependency
-
     # this monkey patches brownie's EthAddress class with faster execution
-    eth_utils.to_checksum_address = to_checksum_address
+    eth_utils.to_checksum_address = to_address
 
     # this monkey patches something else I don't remember now with faster execution
-    eth_utils.address.to_checksum_address = to_checksum_address
+    eth_utils.address.to_checksum_address = to_address
