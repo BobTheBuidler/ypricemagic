@@ -48,6 +48,7 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
 
 _checksum_thread = a_sync.ThreadPoolExecutor(1)
 
+
 async def to_address_in_thread(address: AnyAddressType) -> ChecksumAddress:
     if isinstance(address, bytes):
         address = (
