@@ -562,7 +562,7 @@ class UniswapRouterV2(ContractBase):
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None)
+    @a_sync.a_sync(ram_cache_maxsize=None, semaphore=10)
     async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for pool in await self.__pools__:
