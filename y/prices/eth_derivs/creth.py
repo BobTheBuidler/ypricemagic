@@ -31,7 +31,7 @@ async def get_price_creth(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
-    address = await convert.to_address_in_thread(token)
+    address = await convert.to_address_async(token)
     total_balance, total_supply, weth_price = await asyncio.gather(
         raw_call(address, "accumulated()", output="int", block=block, sync=False),
         ERC20(address, asynchronous=True).total_supply(block),

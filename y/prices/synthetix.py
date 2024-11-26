@@ -84,7 +84,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
 
     async def is_synth(self, token: AnyAddressType) -> bool:
         """returns `True` if a `token` is a synth, `False` if not"""
-        token = await convert.to_address_in_thread(token)
+        token = await convert.to_address_async(token)
         try:
             if await synthetix.get_currency_key(token, sync=False):
                 return True
@@ -119,7 +119,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         """
         Get a price of a synth in dollars.
         """
-        token = await convert.to_address_in_thread(token)
+        token = await convert.to_address_async(token)
         rates, key = await asyncio.gather(
             self.get_address("ExchangeRates", block=block, sync=False),
             self.get_currency_key(token, sync=False),

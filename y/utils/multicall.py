@@ -61,7 +61,7 @@ async def multicall_same_func_no_input(
     return_None_on_failure: bool = False,
 ) -> List[Any]:
 
-    addresses = [await convert.to_address_in_thread(address) for address in addresses]
+    addresses = [await convert.to_address_async(address) for address in addresses]
     results = await asyncio.gather(
         *[
             Call(address, [method], [[address, apply_func]], block_id=block)
@@ -82,7 +82,7 @@ async def multicall_same_func_same_contract_different_inputs(
     return_None_on_failure: bool = False,
 ) -> List[Any]:
     assert inputs
-    address = await convert.to_address_in_thread(address)
+    address = await convert.to_address_async(address)
     results = await asyncio.gather(
         *[
             Call(address, [method, input], [[input, apply_func]], block_id=block)

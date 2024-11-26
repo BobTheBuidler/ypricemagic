@@ -201,7 +201,7 @@ async def contract_creation_block_async(
     """
     from y._db.utils import contract as db
 
-    address = await convert.to_address_in_thread(address)
+    address = await convert.to_address_async(address)
     if deploy_block := await db.get_deploy_block(address):
         return deploy_block
 
@@ -663,7 +663,7 @@ async def has_method(
     Returns:
         A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.
     """
-    address = await convert.to_address_in_thread(address)
+    address = await convert.to_address_async(address)
     try:
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
@@ -698,7 +698,7 @@ async def has_methods(
     """
     assert _func in [all, any], "`_func` must be either `any` or `all`"
 
-    address = await convert.to_address_in_thread(address)
+    address = await convert.to_address_async(address)
     try:
         return _func(
             [result is not None for result in await gather_methods(address, methods)]
@@ -728,7 +728,7 @@ async def probe(
     block: Optional[Block] = None,
     return_method: bool = False,
 ) -> Any:
-    address = await convert.to_address_in_thread(address)
+    address = await convert.to_address_async(address)
     results = await gather_methods(
         address, methods, block=block, return_exceptions=True
     )

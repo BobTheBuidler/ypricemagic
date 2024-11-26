@@ -30,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 @a_sync.a_sync(default="sync", cache_type="memory")
 async def check_bucket(token: AnyAddressType) -> str:
-    token_address = await convert.to_address_in_thread(token)
+    token_address = await convert.to_address_async(token)
     logger = get_price_logger(token_address, block=None, extra="buckets")
 
     import y._db.utils.token as db

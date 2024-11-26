@@ -71,7 +71,7 @@ async def get_price(
         This function calculates the price by determining the share price of the Iron Bank token
         relative to its underlying asset, and then multiplying by the price of the underlying asset.
     """
-    address = await convert.to_address_in_thread(token)
+    address = await convert.to_address_async(token)
     token, total_bal, total_supply = await gather_methods(
         address, ["token", "totalToken", "totalSupply"], block=block
     )

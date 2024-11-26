@@ -27,7 +27,7 @@ async def get_price(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
-    address = await convert.to_address_in_thread(token)
+    address = await convert.to_address_async(token)
     contract = await Contract.coroutine(address)
     ratio, masset, scale = await asyncio.gather(
         contract.getPrice.coroutine(block_identifier=block),

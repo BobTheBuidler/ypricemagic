@@ -36,7 +36,7 @@ async def is_saddle_lp(token_address: AnyAddressType) -> bool:
 
 @a_sync.a_sync(default="sync", ram_cache_ttl=ENVS.CACHE_TTL)
 async def get_pool(token_address: AnyAddressType) -> Address:
-    convert.to_address(token_address)
+    token_address = await convert.to_address_async(token_address)
     if chain.id == Network.Mainnet:
         if (
             token_address == "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368"

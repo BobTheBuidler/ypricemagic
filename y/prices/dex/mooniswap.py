@@ -40,7 +40,7 @@ async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     Returns:
         True if the token is a Mooniswap pool, False otherwise.
     """
-    address = await convert.to_address_in_thread(token)
+    address = await convert.to_address_async(token)
     return False if router is None else await router.isPool.coroutine(address)
 
 
@@ -61,7 +61,7 @@ async def get_pool_price(
     Returns:
         The price of the pool token in USD.
     """
-    address = await convert.to_address_in_thread(token)
+    address = await convert.to_address_async(token)
     token0, token1 = await gather_methods(address, ["token0", "token1"])
     bal0, bal1, price0, price1, total_supply = await asyncio.gather(
         (

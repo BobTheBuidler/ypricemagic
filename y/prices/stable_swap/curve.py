@@ -557,7 +557,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         """
         await self.load_all()
 
-        token = await convert.to_address_in_thread(token)
+        token = await convert.to_address_async(token)
         if token in self.token_to_pool and token != ZERO_ADDRESS:
             return CurvePool(self.token_to_pool[token], asynchronous=self.asynchronous)
 

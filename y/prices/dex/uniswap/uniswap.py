@@ -76,7 +76,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
 
     @stuck_coro_debugger
     async def is_uniswap_pool(self, token_address: AnyAddressType) -> bool:
-        token_address = convert.to_address(token_address)
+        token_address = await convert.to_address_async(token_address)
         try:
             await ERC20(token_address, asynchronous=True).decimals
         except NonStandardERC20:
@@ -107,7 +107,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         Always finds the deepest swap path for `token_in`.
         """
         router: Uniswap
-        token_in = convert.to_address(token_in)
+        token_in = await convert.to_address_async(token_in)
         logger = get_price_logger(token_in, block, extra=type(self).__name__)
         routers_by_depth = await self.routers_by_depth(
             token_in, block=block, ignore_pools=ignore_pools, sync=False
@@ -153,7 +153,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
             - Routers with zero liquidity are excluded from the result.
         """
-        token_in = convert.to_address(token_in)
+        token_in = await convert.to_address_async(token_in)
         depth_to_router = dict(
             zip(
                 await asyncio.gather(

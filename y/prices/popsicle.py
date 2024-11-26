@@ -71,7 +71,7 @@ async def get_price(
         >>> print(f"{price:.6f}")
         1.234567  # The price of the Popsicle LP token in USD
     """
-    address = await convert.to_address_in_thread(token)
+    address = await convert.to_address_async(token)
     total_val = await get_tvl(address, block, skip_cache=skip_cache, sync=False)
     if total_val is None:
         return None
@@ -103,7 +103,7 @@ async def get_balances(
 ) -> Optional[Tuple[WeiBalance, WeiBalance]]:
     try:
         token0, token1, (balance0, balance1) = await gather_methods(
-            await convert.to_address_in_thread(token), _RESERVES_METHODS, block=block
+            await convert.to_address_async(token), _RESERVES_METHODS, block=block
         )
     except Exception as e:
         if call_reverted(e):

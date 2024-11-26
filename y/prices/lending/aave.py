@@ -102,7 +102,7 @@ class AaveMarketBase(ContractBase):
         Returns:
             True if the token is an aToken from the market, False otherwise.
         """
-        contains = await convert.to_address_in_thread(token) in await self.__atokens__
+        contains = await convert.to_address_async(token) in await self.__atokens__
         logger.debug("%s contains %s: %s", self, token, contains)
         return contains
 
