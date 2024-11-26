@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 @a_sync_read_db_session
 def get_token(address: str) -> Token:
-    address = await convert.to_address_async(address)
+    address = convert.to_address(address)
     if address == constants.EEE_ADDRESS:
         raise EEEError(f"cannot create token entity for {constants.EEE_ADDRESS}")
     while True:
