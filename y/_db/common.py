@@ -395,7 +395,11 @@ class Filter(_DiskCachedMixin[T, C]):
                 return
             done_thru = self._lock.value
             if debug_logs:
-                logger._log(logging.DEBUG, "%s lock value %s to_block %s", (self, done_thru, block))
+                logger._log(
+                    logging.DEBUG,
+                    "%s lock value %s to_block %s",
+                    (self, done_thru, block),
+                )
             if block is None:
                 await asyncio.sleep(self._sleep_time)
 
@@ -434,7 +438,11 @@ class Filter(_DiskCachedMixin[T, C]):
     ) -> List[T]:
         if debug_logs:
             async with self.semaphore[range_end]:
-                logger._log(logging.DEBUG, "fetching %s block %s to %s", (self, range_start, range_end))
+                logger._log(
+                    logging.DEBUG,
+                    "fetching %s block %s to %s",
+                    (self, range_start, range_end),
+                )
                 return i, range_end, await self._fetch_range(range_start, range_end)
         else:
             async with self.semaphore[range_end]:
@@ -456,7 +464,7 @@ class Filter(_DiskCachedMixin[T, C]):
         SLEEP_TIME = 1
 
         if debug_logs := logger.isEnabledFor(logging.DEBUG):
-            logger._log(logging.DEBUG, "loading new objects for %s", (self, ))
+            logger._log(logging.DEBUG, "loading new objects for %s", (self,))
 
         start = (
             v + 1 if (v := self._lock.value) else start_from_block or self.from_block
@@ -467,11 +475,13 @@ class Filter(_DiskCachedMixin[T, C]):
                 raise ValueError(
                     f"start {start} is bigger than end {end}, can't do that"
                 )
-            
+
         elif debug_logs:
             while start > (end := await dank_mids.eth.block_number):
                 logger._log(
-                    logging.DEBUG, "%s start %s is greater than end %s, sleeping...", (self, start, end)
+                    logging.DEBUG,
+                    "%s start %s is greater than end %s, sleeping...",
+                    (self, start, end),
                 )
                 await asyncio.sleep(SLEEP_TIME)
 
@@ -484,7 +494,9 @@ class Filter(_DiskCachedMixin[T, C]):
     @stuck_coro_debugger
     async def _load_range(self, from_block: int, to_block: int) -> None:
         if debug_logs := logger.isEnabledFor(logging.DEBUG):
-            logger._log(logging.DEBUG, "loading block range %s to %s", (from_block, to_block))
+            logger._log(
+                logging.DEBUG, "loading block range %s to %s", (from_block, to_block)
+            )
         chunks_yielded = 0
         done = {}
         coros = [
@@ -522,7 +534,9 @@ class Filter(_DiskCachedMixin[T, C]):
         """
         self._lock.set(block)
 
-    def _insert_chunk(self, objs: List[T], from_block: int, done_thru: int, debug_logs: bool) -> None:
+    def _insert_chunk(
+        self, objs: List[T], from_block: int, done_thru: int, debug_logs: bool
+    ) -> None:
         if (
             (prev_task := self._db_task)
             and prev_task.done()
@@ -530,10 +544,14 @@ class Filter(_DiskCachedMixin[T, C]):
         ):
             raise e
         depth = prev_task._depth + 1 if prev_task else 0
-        insert_coro = self.__insert_chunk(objs, from_block, done_thru, prev_task, depth, debug_logs)
+        insert_coro = self.__insert_chunk(
+            objs, from_block, done_thru, prev_task, depth, debug_logs
+        )
         if debug_logs:
             logger._log(
-                logging.DEBUG, "%s queuing next db insert chunk %s thru block %s", (self, depth, done_thru)
+                logging.DEBUG,
+                "%s queuing next db insert chunk %s thru block %s",
+                (self, depth, done_thru),
             )
             task = asyncio.create_task(
                 coro=insert_coro,
@@ -574,7 +592,11 @@ class Filter(_DiskCachedMixin[T, C]):
             await self.bulk_insert(objs)
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
-            logger._log(logging.DEBUG, "%s chunk %s thru block %s is now in db", (self, depth, done_thru))
+            logger._log(
+                logging.DEBUG,
+                "%s chunk %s thru block %s is now in db",
+                (self, depth, done_thru),
+            )
 
 
 def _clean_addresses(addresses) -> Union[str, List[str]]:
