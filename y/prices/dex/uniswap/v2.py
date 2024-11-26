@@ -375,7 +375,9 @@ def _log_factory_helper_failure(
     )
 
 
-_all_pools_semaphore = a_sync.Semaphore(10, name=f"{__name__}.UniswapRouterV2.all_pools_for")
+_all_pools_semaphore = a_sync.Semaphore(
+    10, name=f"{__name__}.UniswapRouterV2.all_pools_for"
+)
 
 
 class UniswapRouterV2(ContractBase):

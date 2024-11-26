@@ -31,19 +31,19 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
         )
     elif type(address) == int:
         address = _int_to_address(address)
-    else: 
+    else:
         address = str(address)
 
     if address in _is_checksummed:
         return address
     elif address in _is_not_checksummed:
         return checksum(address)
-    
+
     try:
         checksummed = to_checksum_address(address)
     except ValueError:
         raise ValueError(f"'{address}' is not a valid ETH address") from None
-    
+
     if address == checksummed:
         _is_checksummed.add(address)
     else:
