@@ -120,13 +120,15 @@ def _monkey_patch_dependencies():
 
     try:
         import web3.utils.address as web3_address
+
         web3_address.to_checksum_address = to_address
     except ModuleNotFoundError:
         # youre on an older web3py, no monkey patch for you
         pass
-    
+
     try:
         import ens.ens
+
         ens.ens.to_checksum_address = to_address
     except ModuleNotFoundError:
         # youre on an older web3py, no monkey patch for you
@@ -134,6 +136,7 @@ def _monkey_patch_dependencies():
 
     try:
         import ens.async_ens
+
         ens.async_ens.to_checksum_address = to_address
     except ModuleNotFoundError:
         # youre on an older web3py, no monkey patch for you
