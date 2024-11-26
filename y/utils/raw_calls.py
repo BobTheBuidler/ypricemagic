@@ -346,7 +346,10 @@ async def raw_call(
     if type(contract_address) != str:
         contract_address = str(contract_address)
 
-    data = {"to": await to_address_async(contract_address), "data": prepare_data(method, inputs)}
+    data = {
+        "to": await to_address_async(contract_address),
+        "data": prepare_data(method, inputs),
+    }
 
     try:
         response = await dank_mids.eth.call(data, block_identifier=block)
