@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Set
+from typing import Optional, Set
 
 import a_sync
 import brownie.convert
@@ -27,26 +27,11 @@ def checksum(address: AnyAddressType) -> ChecksumAddress:
 
 
 def to_address(address: AnyAddressType) -> ChecksumAddress:
-    if isinstance(address, bytes):
-        address = (
-            address.hex()
-            if type(address).__name__ == "HexBytes"
-            else HexBytes(address).hex()
-        )
-    elif type(address) == int:
-        address = _int_to_address(address)
-    else:
-        address = str(address)
-
-    if address in _is_checksummed:
-        return address
-    elif address in _is_not_checksummed:
-        return checksum(address)
+    address = __normalize_input_to_string(address)
+    if checksummed := __get_checksum_from_cache(address):
+        return checksummed
     checksummed = checksum(address)
-    if address == checksummed:
-        _is_checksummed.add(address)
-    else:
-        _is_not_checksummed.add(address)
+    __cache_if_is_checksummed(address, checksummed)
     return checksummed
 
 
@@ -54,16 +39,19 @@ _checksum_thread = a_sync.ThreadPoolExecutor(1)
 
 
 async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
-    if isinstance(address, bytes):
-        address = (
-            address.hex()
-            if type(address).__name__ == "HexBytes"
-            else HexBytes(address).hex()
-        )
-    elif type(address) == int:
-        address = _int_to_address(address)
-    else:
-        address = str(address)
+    address = __normalize_input_to_string(address)
+    if checksummed := __get_checksum_from_cache(address):
+        return checksummed
+    checksummed = await _checksum_thread.run(checksum, address)
+    __cache_if_is_checksummed(address, checksummed)
+    return checksummed
+
+
+_is_checksummed: Set[HexAddress] = set()
+_is_not_checksummed: Set[HexAddress] = set()
+
+
+def __get_checksum_from_cache(address: AnyAddressType) -> Optional[ChecksumAddress]:
     if address in _is_checksummed:
         return address
     elif address in _is_not_checksummed:
@@ -71,16 +59,30 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
         # is no reason to dispatch this function call to a thread.
         return checksum(address)
 
-    checksummed = await _checksum_thread.run(checksum, address)
+
+def __cache_if_is_checksummed(
+    address: HexAddress, checksummed: ChecksumAddress
+) -> None:
     if address == checksummed:
         _is_checksummed.add(address)
     else:
         _is_not_checksummed.add(address)
-    return checksummed
 
 
-_is_checksummed: Set[HexAddress] = set()
-_is_not_checksummed: Set[HexAddress] = set()
+def __normalize_input_to_string(address: AnyAddressType) -> HexAddress:
+    address_type = type(address)
+    if address_type is str:
+        return address
+    elif issubclass(address_type, bytes):
+        return (
+            address.hex()
+            if address_type.__name__ == "HexBytes"
+            else HexBytes(address).hex()
+        )
+    elif address_type is int:
+        return _int_to_address(address)
+    else:
+        return str(address)
 
 
 def _int_to_address(int_address: int) -> HexAddress:
