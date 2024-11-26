@@ -4,7 +4,7 @@ import inspect
 import logging
 import threading
 from collections import Counter, defaultdict
-from functools import cached_property
+from functools import cached_property, partial
 from importlib.metadata import version
 from itertools import zip_longest
 from typing import (
@@ -577,7 +577,7 @@ class LogFilter(Filter[Log, "LogCache"]):
         """
         from y._db.utils.logs import bulk_insert
 
-        return bulk_insert
+        return partial(bulk_insert, executor=self.executor)
 
     @async_property
     async def _from_block(self) -> int:
@@ -655,14 +655,15 @@ class Events(LogFilter):
         """
         return self._objects_thru(block=to_block)
 
-    async def _extend(self, objs) -> None:
+    async def _extend(self, logs: List[Log]) -> None:
         """
         Extend the list of events with decoded logs.
 
         Args:
             objs: A list of raw event logs.
         """
-        return self._objects.extend(decode_logs(objs))
+        if logs:
+            return self._objects.extend(await self.executor.run(decode_logs, logs))
 
     def _get_block_for_obj(self, obj: _EventItem) -> int:
         """
@@ -719,14 +720,14 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         Args:
             logs: A list of raw event logs.
         """
-        # .items() keeps the input order but yields them as they're ready
-        decoded = decode_logs(logs)
-        should_include = await asyncio.gather(
-            *[self.__include_event(event) for event in decoded]
-        )
-        for event, include in zip(decoded, should_include):
-            if include:
-                self._objects.append(self._process_event(event))
+        if logs:
+            decoded = await self.executor.run(decode_logs, logs)
+            should_include = await asyncio.gather(
+                *[self.__include_event(event) for event in decoded]
+            )
+            for event, include in zip(decoded, should_include):
+                if include:
+                    self._objects.append(self._process_event(event))
 
     async def __include_event(self, event: _EventItem) -> bool:
         """
