@@ -16,16 +16,34 @@ from y.datatypes import AnyAddressType
 
 @lru_cache(maxsize=ENVS.CHECKSUM_CACHE_MAXSIZE)
 def checksum(address: AnyAddressType) -> ChecksumAddress:
-    return str(EthAddress(address))
+    try:
+        return to_checksum_address(address)
+    except ValueError:
+        raise ValueError(f"'{address}' is not a valid ETH address") from None
 
 
 def to_address(address: AnyAddressType) -> ChecksumAddress:
-    address = _int_to_address(address) if type(address) == int else str(address)
+    if isinstance(address, bytes):
+        address = (
+            address.hex()
+            if type(address).__name__ == "HexBytes"
+            else HexBytes(address).hex()
+        )
+    elif type(address) == int:
+        address = _int_to_address(address)
+    else: 
+        address = str(address)
+
     if address in _is_checksummed:
         return address
     elif address in _is_not_checksummed:
         return checksum(address)
-    checksummed = str(EthAddress(address))
+    
+    try:
+        checksummed = to_checksum_address(address)
+    except ValueError:
+        raise ValueError(f"'{address}' is not a valid ETH address") from None
+    
     if address == checksummed:
         _is_checksummed.add(address)
     else:
