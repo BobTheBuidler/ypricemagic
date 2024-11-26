@@ -26,7 +26,7 @@ def is_belt_lp(token: AnyAddressType) -> bool:
 
 @a_sync.a_sync(default="sync")
 async def get_price(token: AnyAddressType, block: Optional[Block] = None) -> UsdPrice:
-    address = convert.to_address(token)
+    address = await convert.to_address_in_thread(token)
     pool = POOLS[address]
     virtual_price = await raw_call(
         pool, "get_virtual_price()", output="int", block=block, sync=False

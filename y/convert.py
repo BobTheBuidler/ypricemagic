@@ -1,12 +1,13 @@
 from functools import lru_cache
 from typing import Set
 
+import a_sync
 import brownie.convert
 import checksum_dict._key
 import eth_event.main
 import eth_utils
 import evmspec.data
-from brownie.convert.datatypes import EthAddress, HexBytes
+from brownie.convert.datatypes import HexBytes
 from checksum_dict import to_checksum_address
 from eth_typing import ChecksumAddress, HexAddress
 

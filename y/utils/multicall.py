@@ -61,7 +61,7 @@ async def multicall_same_func_no_input(
     return_None_on_failure: bool = False,
 ) -> List[Any]:
 
-    addresses = _clean_addresses(addresses)
+    addresses = [await convert.to_address_in_thread(address) for address in addresses]
     results = await asyncio.gather(
         *[
             Call(address, [method], [[address, apply_func]], block_id=block)
@@ -82,7 +82,7 @@ async def multicall_same_func_same_contract_different_inputs(
     return_None_on_failure: bool = False,
 ) -> List[Any]:
     assert inputs
-    address = convert.to_address(address)
+    address = await convert.to_address_in_thread(address)
     results = await asyncio.gather(
         *[
             Call(address, [method, input], [[input, apply_func]], block_id=block)
@@ -188,9 +188,3 @@ async def fetch_multicall(
             decoded.append(None)
 
     return decoded
-
-
-# yLazyLogger(logger)
-def _clean_addresses(addresses: Iterable[AnyAddressType]) -> List[Address]:
-
-    return [convert.to_address(address) for address in addresses]
