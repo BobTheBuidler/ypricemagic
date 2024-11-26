@@ -7,6 +7,9 @@ import checksum_dict._key
 import eth_event.main
 import eth_utils
 import evmspec.data
+import web3._utils as web3_utils
+import web3.main as web3_main
+import web3.middleware as web3_middleware
 from brownie.convert.datatypes import HexBytes
 from checksum_dict import to_checksum_address
 from eth_typing import ChecksumAddress, HexAddress
@@ -107,3 +110,34 @@ def _monkey_patch_dependencies():
 
     # this monkey patches something else I don't remember now with faster execution
     eth_utils.address.to_checksum_address = to_address
+
+    # this monkey patches all checksums in web3py with faster execution
+    web3_main.to_checksum_address = to_address
+    web3_utils.ens.to_checksum_address = to_address
+    web3_utils.method_formatters.to_checksum_address = to_address
+    web3_utils.normalizers.to_checksum_address = to_address
+    web3_middleware.signing.to_checksum_address = to_address
+
+    try:
+        import web3.utils.address as web3_address
+
+        web3_address.to_checksum_address = to_address
+    except ModuleNotFoundError:
+        # youre on an older web3py, no monkey patch for you
+        pass
+
+    try:
+        import ens.ens
+
+        ens.ens.to_checksum_address = to_address
+    except ModuleNotFoundError:
+        # youre on an older web3py, no monkey patch for you
+        pass
+
+    try:
+        import ens.async_ens
+
+        ens.async_ens.to_checksum_address = to_address
+    except ModuleNotFoundError:
+        # youre on an older web3py, no monkey patch for you
+        pass
