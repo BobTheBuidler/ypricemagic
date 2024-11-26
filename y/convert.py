@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Set
 
 import brownie.convert
 import checksum_dict._key
@@ -14,10 +15,26 @@ from y.datatypes import AnyAddressType
 
 
 @lru_cache(maxsize=ENVS.CHECKSUM_CACHE_MAXSIZE)
-def to_address(address: AnyAddressType) -> ChecksumAddress:
-    if type(address) == int:
-        address = _int_to_address(address)
+def checksum(address: AnyAddressType) -> ChecksumAddress:
     return str(EthAddress(address))
+
+
+def to_address(address: AnyAddressType) -> ChecksumAddress:
+    address = _int_to_address(address) if type(address) == int else str(address)
+    if address in _is_checksummed:
+        return address
+    elif address in _is_not_checksummed:
+        return checksum(address)
+    checksummed = str(EthAddress(address))
+    if address == checksummed:
+        _is_checksummed.add(address)
+    else:
+        _is_not_checksummed.add(address)
+    return checksummed
+
+
+_is_checksummed: Set[HexAddress] = set()
+_is_not_checksummed: Set[HexAddress] = set()
 
 
 def _int_to_address(int_address: int) -> HexAddress:
