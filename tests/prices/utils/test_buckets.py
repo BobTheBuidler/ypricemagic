@@ -25,7 +25,7 @@ async def test_check_bucket_aave(token):
 @pytest.mark.parametrize("token", FEEDS)
 @pytest.mark.asyncio_cooperative
 async def test_check_bucket_chainlink(token):
-    if convert.to_address(token) in [
+    if await convert.to_address_async(token) in [
         stable for stable in STABLECOINS if not isinstance(stable, int)
     ]:
         pytest.skip(f"Not applicable to stablecoins.")

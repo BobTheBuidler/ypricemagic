@@ -30,7 +30,7 @@ async def get_price(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
-    address = convert.to_address(token)
+    address = await convert.to_address_async(token)
 
     token0, token1 = await asyncio.gather(
         raw_call(address, "token0()", block=block, output="address", sync=False),

@@ -570,12 +570,14 @@ class UniswapRouterV2(ContractBase):
     @a_sync.a_sync(ram_cache_maxsize=None, semaphore=_all_pools_semaphore)
     async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
-        for pool in await self.__pools__:
+        for i, pool in enumerate(await self.__pools__):
             # these will return immediately since the pools are already loaded by this point
             if token_in == await pool.__token0__:
                 pool_to_token_out[pool] = await pool.__token1__
             elif token_in == await pool.__token1__:
                 pool_to_token_out[pool] = await pool.__token0__
+            if not i % 10_000:
+                await asyncio.sleep(0)
         return pool_to_token_out
 
     @stuck_coro_debugger
@@ -651,7 +653,7 @@ class UniswapRouterV2(ContractBase):
         _ignore_pools: Tuple[UniswapV2Pool, ...] = (),
     ) -> Optional[UniswapV2Pool]:
         """returns the deepest pool for `token_address` at `block`, excluding pools in `_ignore_pools`"""
-        token_address = convert.to_address(token_address)
+        token_address = await convert.to_address_async(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return await self.deepest_stable_pool(token_address, block, sync=False)
         if self._supports_uniswap_helper and (
@@ -699,9 +701,9 @@ class UniswapRouterV2(ContractBase):
         """returns the deepest pool for `token_address` at `block` which has `token_address` paired with a stablecoin, excluding pools in `_ignore_pools`"""
         token_out_tasks: a_sync.TaskMapping[UniswapV2Pool, ERC20]
         deepest_stable_pool: UniswapV2Pool
-
+        token_address = await convert.to_address_async(token_address)
         pools = self.pools_for_token(
-            convert.to_address(token_address), block=block, _ignore_pools=_ignore_pools
+            token_address, block=block, _ignore_pools=_ignore_pools
         )
         token_out_tasks = UniswapV2Pool.get_token_out.map(token_in=token_address)
         if stable_pools := [
@@ -752,7 +754,7 @@ class UniswapRouterV2(ContractBase):
     ) -> Path:
         if _loop_count > 10:
             raise CantFindSwapPath
-        token_address = convert.to_address(token)
+        token_address = await convert.to_address_async(token)
         path = [token_address]
         deepest_pool = await self.deepest_pool(
             token_address, block, _ignore_pools, sync=False

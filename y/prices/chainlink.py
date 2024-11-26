@@ -313,7 +313,7 @@ class Chainlink(a_sync.ASyncGenericBase):
 
     @a_sync_ttl_cache
     async def get_feed(self, asset: Address) -> Optional[Feed]:
-        asset = convert.to_address(asset)
+        asset = await convert.to_address_async(asset)
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
             if asset == feed.asset:
                 return feed

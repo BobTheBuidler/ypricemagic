@@ -26,7 +26,7 @@ def test_compound_pricing_sync(token):
 @pytest.mark.parametrize("token", CTOKENS)
 async def test_compound_pricing_async(token):
     print(token)
-    # if convert.to_address(token) == '0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0':
+    # if await convert.to_address_in_thread(token) == '0x892B14321a4FCba80669aE30Bd0cd99a7ECF6aC0':
     #    continue  # creth is broken
     ctoken = CToken(token, asynchronous=True)
     for block in blocks_for_contract(token):

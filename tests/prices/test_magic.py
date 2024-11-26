@@ -105,7 +105,7 @@ chainlink_identifiers_not_tokens = [
 
 async def relevant_tokens(tokens, block):
     tokens = (
-        convert.to_address(token)
+        await convert.to_address_async(token)
         for token in tokens
         if token not in chainlink_identifiers_not_tokens
     )

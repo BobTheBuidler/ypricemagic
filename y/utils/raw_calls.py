@@ -12,7 +12,7 @@ from eth_utils import encode_hex
 from eth_utils import function_signature_to_4byte_selector as fourbyte
 
 from y.contracts import Contract, proxy_implementation
-from y.convert import to_address
+from y.convert import to_address, to_address_async
 from y.datatypes import Address, AddressOrContract, Block
 from y.exceptions import (
     CalldataPreparationError,
@@ -346,7 +346,10 @@ async def raw_call(
     if type(contract_address) != str:
         contract_address = str(contract_address)
 
-    data = {"to": to_address(contract_address), "data": prepare_data(method, inputs)}
+    data = {
+        "to": await to_address_async(contract_address),
+        "data": prepare_data(method, inputs),
+    }
 
     try:
         response = await dank_mids.eth.call(data, block_identifier=block)
@@ -361,7 +364,7 @@ async def raw_call(
         elif output == "address" and response.hex() == "0x":
             return ZERO_ADDRESS
         elif output == "address":
-            return to_address(f"0x{response.hex()[-40:]}")
+            return await to_address_async(f"0x{response.hex()[-40:]}")
         elif output in [int, "int", "uint", "uint256"]:
             return convert.to_int(response)
         elif output in [str, "str"]:
