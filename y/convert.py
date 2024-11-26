@@ -40,7 +40,7 @@ def _monkey_patch_dependencies():
     brownie.convert.to_address = to_address
 
     # this monkey patches evmspec's Address decode hook with our lru cache
-    evmspec.data.to_address = to_address
+    evmspec.data.to_checksum_address = to_address
 
     # y.convert.to_address depends on brownie.convert.to_address which depends on eth_utils.to_checksum_address
     # so we cannot overwrite eth_utils.to_checksum_address with y.convert.to_address like we do for eth_event
@@ -50,4 +50,4 @@ def _monkey_patch_dependencies():
     eth_utils.to_checksum_address = to_checksum_address
 
     # this monkey patches something else I don't remember now with faster execution
-    eth_utils.address.to_checksum_addres = to_checksum_address
+    eth_utils.address.to_checksum_address = to_checksum_address
