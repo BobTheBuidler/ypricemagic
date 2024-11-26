@@ -375,6 +375,9 @@ def _log_factory_helper_failure(
     )
 
 
+_all_pools_semaphore = a_sync.Semaphore(10, name=f"{__name__}.UniswapRouterV2.all_pools_for")
+
+
 class UniswapRouterV2(ContractBase):
     def __init__(
         self, router_address: AnyAddressType, *, asynchronous: bool = False
@@ -562,7 +565,7 @@ class UniswapRouterV2(ContractBase):
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None, semaphore=10)
+    @a_sync.a_sync(ram_cache_maxsize=None, semaphore=_all_pools_semaphore)
     async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for pool in await self.__pools__:
