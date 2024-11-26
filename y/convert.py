@@ -60,7 +60,9 @@ def __get_checksum_from_cache(address: AnyAddressType) -> Optional[ChecksumAddre
         return checksum(address)
 
 
-def __cache_if_is_checksummed(address: HexAddress, checksummed: ChecksumAddress) -> None:
+def __cache_if_is_checksummed(
+    address: HexAddress, checksummed: ChecksumAddress
+) -> None:
     if address == checksummed:
         _is_checksummed.add(address)
     else:
