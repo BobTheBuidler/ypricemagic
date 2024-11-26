@@ -63,7 +63,9 @@ async def to_address_in_thread(address: AnyAddressType) -> ChecksumAddress:
     if address in _is_checksummed:
         return address
     elif address in _is_not_checksummed:
-        return await _checksum_thread.run(checksum, address)
+        # The checksum value is already in the lru-cache, there
+        # is no reason to dispatch this function call to a thread.
+        return checksum(address)
 
     checksummed = await _checksum_thread.run(checksum, address)
     if address == checksummed:
