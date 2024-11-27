@@ -4,6 +4,7 @@ from typing import Optional, Set
 import a_sync
 import brownie.convert
 import checksum_dict._key
+import dank_mids.brownie_patch.call
 import eth_event.main
 import eth_utils
 import evmspec.data
@@ -102,6 +103,9 @@ def _monkey_patch_dependencies():
     # this monkey patches checksum_dict's checksumming with our lru_cache
     checksum_dict._key.to_checksum_address = to_address
 
+    # this monkey patches the dank_mids brownie patch's checksums with our lru_cache
+    dank_mids.brownie_patch.call.to_checksum_address = to_address
+    
     # this monkey patches eth_event's address checksumming with our lru_cache
     eth_event.main.to_checksum_address = to_address
 
