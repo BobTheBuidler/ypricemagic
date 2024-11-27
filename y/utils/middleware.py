@@ -100,21 +100,14 @@ def setup_getcode_cache_middleware() -> None:
     connection pool size and timeout, and adds the getcode cache middleware.
     """
     # patch web3 provider with more connections and higher timeout
-    if web3.provider:
-        try:
-            assert web3.provider.endpoint_uri.startswith(
-                "http"
-            ), "only http and https providers are supported"
-            adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
-            session = Session()
-            session.mount("http://", adapter)
-            session.mount("https://", adapter)
-            web3.provider = HTTPProvider(
-                web3.provider.endpoint_uri, {"timeout": 600}, session
-            )
-        except AttributeError as e:
-            if "'IPCProvider' object has no attribute 'endpoint_uri'" not in str(e):
-                raise
+    if web3.provider and hasattr(web3.provider, "endpoint_uri") and web3.provider.endpoint_uri.startswith("http"):
+        adapter = HTTPAdapter(pool_connections=100, pool_maxsize=100)
+        session = Session()
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        web3.provider = HTTPProvider(
+            web3.provider.endpoint_uri, {"timeout": 600}, session
+        )
 
     web3.middleware_onion.add(getcode_cache_middleware)
 
