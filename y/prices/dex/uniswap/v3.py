@@ -102,7 +102,7 @@ class UniswapV3Pool(ContractBase):
             cache_value = token in (self.token0, self.token1)
             self.__contains_cache__[token][self.address] = cache_value
         return cache_value
-        
+
     def __getitem__(self, token: Address) -> ERC20:
         if token not in self:
             raise TokenNotFound(token, self)
