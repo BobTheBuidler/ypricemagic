@@ -7,6 +7,7 @@ from typing import (
     AsyncIterator,
     Awaitable,
     Callable,
+    Container,
     Generic,
     List,
     NoReturn,
@@ -240,7 +241,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
     # abc.abstractproperty
     def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]: ...
 
-    async def _extend(self, objs) -> None:
+    async def _extend(self, objs: Container[T]) -> None:
         """
         Override this to pre-process objects before storing.
 

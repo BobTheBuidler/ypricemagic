@@ -7,6 +7,7 @@ import checksum_dict._key
 import eth_event.main
 import eth_utils
 import evmspec.data
+import multicall.call
 import web3._utils as web3_utils
 import web3.main as web3_main
 import web3.middleware as web3_middleware
@@ -95,23 +96,26 @@ def _monkey_patch_dependencies():
     """
     Monkey patch dependency checksums with faster versions.
     """
+    # this monkey patches brownie's convert.to_address with our lru_cache
+    brownie.convert.to_address = to_address
+
     # this monkey patches checksum_dict's checksumming with our lru_cache
     checksum_dict._key.to_checksum_address = to_address
 
     # this monkey patches eth_event's address checksumming with our lru_cache
     eth_event.main.to_checksum_address = to_address
 
-    # this monkey patches brownie's convert.to_address with our lru_cache
-    brownie.convert.to_address = to_address
-
-    # this monkey patches evmspec's Address decode hook with our lru cache
-    evmspec.data.to_checksum_address = to_address
-
     # this monkey patches brownie's EthAddress class with faster execution
     eth_utils.to_checksum_address = to_address
 
     # this monkey patches something else I don't remember now with faster execution
     eth_utils.address.to_checksum_address = to_address
+
+    # this monkey patches evmspec's Address decode hook with our lru cache
+    evmspec.data.to_checksum_address = to_address
+
+    # this monkey patches multicall.Call.target checksumming with our lru cache
+    multicall.call.to_checksum_address = to_address
 
     # this monkey patches all checksums in web3py with faster execution
     web3_main.to_checksum_address = to_address
