@@ -4,13 +4,14 @@ import math
 from collections import defaultdict
 from functools import cached_property, lru_cache
 from itertools import cycle
-from typing import AsyncIterator, DefaultDict, List, Optional, Tuple
+from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
 
 import a_sync
 import eth_retry
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.network.event import _EventItem
+from eth_typing import ChecksumAddress
 from typing_extensions import Self
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -68,6 +69,9 @@ FEE_DENOMINATOR = 1_000_000
 
 
 class UniswapV3Pool(ContractBase):
+
+    __contains_cache__: Dict[Address, Dict[ChecksumAddress, bool]] = {}
+
     __slots__ = "fee", "token0", "token1", "tick_spacing"
 
     def __init__(
@@ -88,8 +92,17 @@ class UniswapV3Pool(ContractBase):
         self._deploy_block = deploy_block
 
     def __contains__(self, token: Address) -> bool:
-        return token in [self.token0, self.token1]
-
+        # force token to string in case it is Contract or EthAddress etc
+        token = str(token)
+        cache_for_token = self.__contains_cache__.get(token, {})
+        cache_value = cache_for_token.get(self.address)
+        if cache_value is None:
+            if not cache_for_token:
+                self.__contains_cache__[token] = {}
+            cache_value = token in (self.token0, self.token1)
+            self.__contains_cache__[token][self.address] = cache_value
+        return cache_value
+        
     def __getitem__(self, token: Address) -> ERC20:
         if token not in self:
             raise TokenNotFound(token, self)
