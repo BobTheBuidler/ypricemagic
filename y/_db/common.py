@@ -250,7 +250,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         """
         if objs:
             self._objects.extend(objs)
-            if self._is_reusable:
+            if self.is_reusable:
                 block = self._get_block_for_obj(self._objects[-1])
                 self._checkpoints[block] = len(self._objects)
 
@@ -278,7 +278,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
             await self._extend(
                 await self.executor.run(self.cache.select, from_block, cached_thru)
             )
-            if self._is_reusable:
+            if self.is_reusable:
                 objs_per_chunk = 50
                 num_checkpoints = len(self._objects) // objs_per_chunk
                 checkpoint_indexes = (
@@ -400,7 +400,7 @@ class Filter(_DiskCachedMixin[T, C]):
         debug_logs = logger.isEnabledFor(logging.DEBUG)
         yielded = 0
         done_thru = 0
-        if self._is_reusable and self._objects:
+        if self.is_reusable and self._objects:
             if block is None:
                 for obj in self._objects:
                     yield obj
