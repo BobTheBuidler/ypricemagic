@@ -994,9 +994,7 @@ def _extract_abi_data_async(address: Address):
         Various exceptions based on the API response and contract status.
     """
     try:
-        data = await _fetch_from_explorer_async(address, "getsourcecode", False)[
-            "result"
-        ][0]
+        response = await _fetch_from_explorer_async(address, "getsourcecode", False)
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
@@ -1026,6 +1024,7 @@ def _extract_abi_data_async(address: Address):
         else:
             raise
 
+    data = response["result"][0]
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
         raise exceptions.ContractNotVerified(
