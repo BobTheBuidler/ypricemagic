@@ -249,7 +249,10 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
             objs: The objects to extend the list with.
         """
         if objs:
-            return self._objects.extend(objs)
+            self._objects.extend(objs)
+            if self._is_reusable and len(self._objects) > tuple(self._checkpoints.values())[-1] + 50:
+                block = self._get_block_for_obj(self._objects[-1])
+                self._checkpoints[block] = len(self._objects)
 
     def _remove(self, obj: T) -> None:
         self._objects.remove(obj)
@@ -303,6 +306,7 @@ class Filter(_DiskCachedMixin[T, C]):
     __slots__ = (
         "from_block",
         "to_block",
+        "_checkpoints",
         "_interval",
         "_lock",
         "__dict__",
@@ -333,6 +337,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._sleep_time = sleep_time
         if verbose != self._verbose:
             self._verbose = verbose
+        self._checkpoints = {}
         super().__init__(executor=executor, is_reusable=is_reusable)
 
     def __aiter__(self) -> AsyncIterator[T]:
@@ -373,6 +378,23 @@ class Filter(_DiskCachedMixin[T, C]):
         debug_logs = logger.isEnabledFor(logging.DEBUG)
         yielded = 0
         done_thru = 0
+        if self._is_reusable and self._objects:
+            if block is None:
+                for obj in self._objects:
+                    yield obj
+            else:
+                for _block in self._checkpoints:
+                    if _block <= block:
+                        checkpoint_block = _block
+                    else:
+                        break
+
+                checkpoint_index = self._checkpoints[checkpoint_block]
+                for obj in self._objects[:checkpoint_index]:
+                    yield obj
+                    
+            done_thru = self._get_block_for_obj(obj)
+                
         while True:
             if block is None or done_thru < block:
                 if self.is_asleep:
