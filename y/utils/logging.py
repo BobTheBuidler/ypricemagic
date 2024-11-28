@@ -56,16 +56,16 @@ def get_price_logger(
     name = f"y.prices.{Network.label()}.{address}.{block}"
     if extra:
         name += f".{extra}"
-        
+
     # the built-in logging module caches loggers but we need to make sure they have the proper members for ypm
     if cached_logger := _all_price_loggers.get(name, None):
         return cached_logger
-        
+
     logger = getLogger(name)
     logger.address = address
     logger.block = block
     logger.enabled = logger.isEnabledFor(DEBUG)
-    
+
     if logger.enabled:
         logger.debug = lambda msg, *args, **kwargs: logger._log(
             DEBUG, msg, args, **kwargs
