@@ -514,6 +514,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         address,
                     )
 
+        # Cache manually since we aren't calling init
+        cls._ChecksumAddressSingletonMeta__instances[address] = contract
+        
         if not contract.verified or contract._ttl_cache_popper == "disabled":
             pass
 
