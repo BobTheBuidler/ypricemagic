@@ -170,7 +170,8 @@ class AddressProvider(_CurveEventsLoader):
 
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
-        logger.debug("loading pools from metapool factories")
+        if debug_logs := logger.isEnabledFor(logging.DEBUG):
+            logger._log(logging.DEBUG, "loading pools from metapool factories", ())
         # TODO: remove this once curve adds to address provider
         if chain.id == Network.Mainnet:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
@@ -201,7 +202,10 @@ class AddressProvider(_CurveEventsLoader):
             identifiers := self.identifiers[Ids.CryptoPool_Factory]
             + self.identifiers[Ids.Cryptopool_Factory]
         ):
-            logger.debug("loading pools from cryptopool factories")
+            if debug_logs:
+                logger._log(
+                    logging.DEBUG, "loading pools from cryptopool factories", ()
+                )
             await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
@@ -248,17 +252,19 @@ class Factory(_Loader):
 
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
+        debug_logs = logger.isEnabledFor(logging.DEBUG)
         await asyncio.gather(
             *[
-                self._load_pool(pool)
+                self.__load_pool(pool, debug_logs)
                 for pool in pool_list
                 if pool not in curve.factories[self.address]
             ]
         )
-        logger.debug("loaded %s pools for %s", len(pool_list), self)
         self._loaded.set()
+        if debug_logs:
+            logger._log(logging.DEBUG, "loaded %s pools for %s", (len(pool_list), self))
 
-    async def _load_pool(self, pool: Address) -> None:
+    async def __load_pool(self, pool: Address, debug_logs: bool) -> None:
         factory = await Contract.coroutine(self.address)
         # for curve v5 pools, pool and lp token are separate
         if hasattr(factory, "get_token"):
@@ -271,7 +277,8 @@ class Factory(_Loader):
             )
         curve.token_to_pool[lp_token] = pool
         curve.factories[factory.address].add(pool)
-        logger.debug("loaded %s pool %s", self, pool)
+        if debug_logs:
+            logger._log(logging.DEBUG, "loaded %s pool %s", (self, pool))
 
 
 class CurvePool(ERC20):  # this shouldn't be ERC20 but works for inheritance for now
