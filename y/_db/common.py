@@ -382,6 +382,7 @@ class Filter(_DiskCachedMixin[T, C]):
             if block is None:
                 for obj in self._objects:
                     yield obj
+                    yielded += 1
             else:
                 for _block in self._checkpoints:
                     if _block <= block:
@@ -392,6 +393,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 checkpoint_index = self._checkpoints[checkpoint_block]
                 for obj in self._objects[:checkpoint_index]:
                     yield obj
+                    yielded += 1
 
             done_thru = self._get_block_for_obj(obj)
 
