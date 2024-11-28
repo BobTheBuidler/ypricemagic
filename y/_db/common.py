@@ -253,7 +253,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
             if self._is_reusable:
                 block = self._get_block_for_obj(self._objects[-1])
                 self._checkpoints[block] = len(self._objects)
-                
+
     def _remove(self, obj: T) -> None:
         self._objects.remove(obj)
         self._pruned += 1
