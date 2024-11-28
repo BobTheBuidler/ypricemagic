@@ -575,8 +575,7 @@ class UniswapRouterV2(ContractBase):
     __pools__: HiddenMethodDescriptor[Self, List[UniswapV2Pool]]
 
     @stuck_coro_debugger
-    @a_sync.a_sync(ram_cache_maxsize=None, semaphore=_all_pools_semaphore)
-    async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
+    async def __all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for i, pool in enumerate(await self.__pools__):
             # these will return immediately since the pools are already loaded by this point
@@ -587,6 +586,13 @@ class UniswapRouterV2(ContractBase):
             if not i % 10_000:
                 await asyncio.sleep(0)
         return pool_to_token_out
+    
+    _all_pools_for = a_sync.SmartProcessingQueue(__all_pools_for, num_workers=10)
+
+    @stuck_coro_debugger
+    @a_sync.a_sync(ram_cache_maxsize=None)
+    async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
+        return await self._all_pools_for(self, token_in)
 
     @stuck_coro_debugger
     async def get_pools_for(
