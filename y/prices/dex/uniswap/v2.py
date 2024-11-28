@@ -401,10 +401,6 @@ class UniswapRouterV2(ContractBase):
                 "UniClone Factory [forced]", self.factory, UNIV2_FACTORY_ABI
             )
 
-        self._events = PoolsFromEvents(
-            self.factory, self.label, asynchronous=self.asynchronous
-        )
-
     def __str__(self) -> str:
         return self.__repr__()
 
@@ -530,14 +526,16 @@ class UniswapRouterV2(ContractBase):
             self.label,
             Network.printable(),
         )
-        pools = [
-            pool
-            async for pool in self._events.pools(
-                to_block=await dank_mids.eth.block_number
-            )
-        ]
+        factory = self.factory
+        events = self.PoolsFromEvents(
+            factory, self.label, asynchronous=self.asynchronous, is_reusable=False
+        )
+        to_block = await dank_mids.eth.block_number
+        pools = [pool async for pool in events.pools(to_block=to_block)]
+        events._task.cancel()
+        del events
         all_pairs_len = await raw_call(
-            self.factory, "allPairsLength()", output="int", sync=False
+            factory, "allPairsLength()", output="int", sync=False
         )
         if len(pools) > all_pairs_len:
             raise NotImplementedError("this shouldnt happen again")
