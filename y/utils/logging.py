@@ -52,10 +52,7 @@ def get_price_logger(
         logger.setLevel(logger.parent.level)
 
     logger.enabled = logger.isEnabledFor(logging.DEBUG)
-    if not logger.enabled:
-        logger.debug = _noop
-
-    else:
+    if logger.enabled:
         logger.debug = lambda msg, *args, **kwargs: logger._log(
             DEBUG, msg, args, **kwargs
         )
@@ -67,6 +64,9 @@ def get_price_logger(
                 name=f"_debug_tsk({symbol}, {logger})",
                 log_destroy_pending=False,
             )
+
+    else:
+        logger.debug = _noop
 
     logger.close = MethodType(_close_logger, logger)
 
