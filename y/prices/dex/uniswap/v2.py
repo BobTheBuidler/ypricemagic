@@ -330,7 +330,9 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     def __init__(self, factory: AnyAddressType, label: str, asynchronous: bool = False):
         self.asynchronous = asynchronous
         self.label = label
-        super().__init__(addresses=[factory], topics=[[self.PairCreated]], is_reusable=False)
+        super().__init__(
+            addresses=[factory], topics=[[self.PairCreated]], is_reusable=False
+        )
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} label={self.label}>"
