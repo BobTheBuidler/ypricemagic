@@ -55,13 +55,16 @@ def get_price_logger(
     if not logger.enabled:
         logger.debug = _noop
 
-    elif start_task:
-        # will kill itself when this logger is garbage collected
-        logger.debug_task = a_sync.create_task(
-            coro=_debug_tsk(symbol, weakref.ref(logger)),
-            name=f"_debug_tsk({symbol}, {logger})",
-            log_destroy_pending=False,
-        )
+    else:
+        logger.debug = lambda msg, *args, **kwargs: logger._log(DEBUG, msg, args, **kwargs)
+        
+        if start_task:
+            # will kill itself when this logger is garbage collected
+            logger.debug_task = a_sync.create_task(
+                coro=_debug_tsk(symbol, weakref.ref(logger)),
+                name=f"_debug_tsk({symbol}, {logger})",
+                log_destroy_pending=False,
+            )
 
     logger.close = MethodType(_close_logger, logger)
 
