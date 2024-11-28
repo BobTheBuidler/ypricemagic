@@ -255,7 +255,7 @@ class Factory(_Loader):
         debug_logs = logger.isEnabledFor(logging.DEBUG)
         await asyncio.gather(
             *[
-                self._load_pool(pool, debug_logs)
+                self.__load_pool(pool, debug_logs)
                 for pool in pool_list
                 if pool not in curve.factories[self.address]
             ]
@@ -264,7 +264,7 @@ class Factory(_Loader):
         if debug_logs:
             logger._log(logging.DEBUG, "loaded %s pools for %s", (len(pool_list), self))
 
-    async def _load_pool(self, pool: Address, debug_logs: bool) -> None:
+    async def __load_pool(self, pool: Address, debug_logs: bool) -> None:
         factory = await Contract.coroutine(self.address)
         # for curve v5 pools, pool and lp token are separate
         if hasattr(factory, "get_token"):
