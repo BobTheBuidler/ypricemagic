@@ -56,8 +56,10 @@ def get_price_logger(
         logger.debug = _noop
 
     else:
-        logger.debug = lambda msg, *args, **kwargs: logger._log(DEBUG, msg, args, **kwargs)
-        
+        logger.debug = lambda msg, *args, **kwargs: logger._log(
+            DEBUG, msg, args, **kwargs
+        )
+
         if start_task:
             # will kill itself when this logger is garbage collected
             logger.debug_task = a_sync.create_task(
