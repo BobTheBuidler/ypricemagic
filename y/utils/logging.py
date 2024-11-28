@@ -50,7 +50,15 @@ def get_price_logger(
     logger.block = block
     if logger.level != logger.parent.level:
         logger.setLevel(logger.parent.level)
+        
     logger.enabled = logger.isEnabledFor(logging.DEBUG)
+    if not logger.enabled:
+        logger.isEnabledFor = lambda level: (
+            False 
+            if level == logging.DEBUG 
+            else logging.Logger.isEnabledFor(logger, x)
+        )
+        
     if start_task and logger.enabled:
         # will kill itself when this logger is garbage collected
         logger.debug_task = a_sync.create_task(
