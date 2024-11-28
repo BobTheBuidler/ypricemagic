@@ -244,9 +244,9 @@ class UniswapV2Pool(ERC20):
                 vals *= 2
             if len(vals) == 2:
                 if logger.isEnabledFor(DEBUG):
-                    logger._log(DEBUG, "reserves: %s", (reserves, ))
-                    logger._log(DEBUG, "prices: %s", (prices, ))
-                    logger._log(DEBUG, "vals: %s", (vals, ))
+                    logger._log(DEBUG, "reserves: %s", (reserves,))
+                    logger._log(DEBUG, "prices: %s", (prices,))
+                    logger._log(DEBUG, "vals: %s", (vals,))
                 return sum(vals)
             else:
                 raise Exception("how did we get here?") from None
@@ -270,7 +270,9 @@ class UniswapV2Pool(ERC20):
             TokenNotFound: If the token is not one of the two tokens in the liquidity pool.
         """
         if debug_logs := logger.isEnabledFor(DEBUG):
-            logger._log(DEBUG, "checking %s liquidity for %s at %s", (self, token, block))
+            logger._log(
+                DEBUG, "checking %s liquidity for %s at %s", (self, token, block)
+            )
         if block and block < await self.deploy_block(sync=False):
             if debug_logs:
                 logger._log(DEBUG, "block %s is before %s deploy block", (block, self))
@@ -282,7 +284,9 @@ class UniswapV2Pool(ERC20):
                     liquidity = balance.balance
                     if debug_logs:
                         logger._log(
-                            DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity)
+                            DEBUG,
+                            "%s liquidity for %s at %s is %s",
+                            (self, token, block, liquidity),
                         )
                     return liquidity
             raise TokenNotFound(token, reserves)
@@ -446,7 +450,7 @@ class UniswapRouterV2(ContractBase):
             return None
 
         debug_logs = logger.isEnabledFor(DEBUG)
-        
+
         if token_in in [weth.address, WRAPPED_GAS_COIN] and token_out in STABLECOINS:
             path = [token_in, token_out]
 
@@ -586,7 +590,7 @@ class UniswapRouterV2(ContractBase):
             if not i % 10_000:
                 await asyncio.sleep(0)
         return pool_to_token_out
-    
+
     _all_pools_for = a_sync.SmartProcessingQueue(__all_pools_for, num_workers=10)
 
     @stuck_coro_debugger
@@ -814,7 +818,9 @@ class UniswapRouterV2(ContractBase):
         self, token: Address, block: Block, ignore_pools=[]
     ) -> int:
         if debug_logs := logger.isEnabledFor(DEBUG):
-            logger._log(DEBUG, "checking %s liquidity for %s at %s", (self, token, block))
+            logger._log(
+                DEBUG, "checking %s liquidity for %s at %s", (self, token, block)
+            )
         if block and block < await contract_creation_block_async(self.factory):
             if debug_logs:
                 logger._log(DEBUG, "block %s is before %s deploy block")
@@ -829,7 +835,9 @@ class UniswapRouterV2(ContractBase):
                 )
                 if debug_logs:
                     logger._log(
-                        DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity)
+                        DEBUG,
+                        "%s liquidity for %s at %s is %s",
+                        (self, token, block, liquidity),
                     )
                 return liquidity
             except (Revert, ValueError) as e:
@@ -843,7 +851,11 @@ class UniswapRouterV2(ContractBase):
         except a_sync.exceptions.EmptySequenceError:
             liquidity = 0
         if debug_logs:
-            logger._log(DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity))
+            logger._log(
+                DEBUG,
+                "%s liquidity for %s at %s is %s",
+                (self, token, block, liquidity),
+            )
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
