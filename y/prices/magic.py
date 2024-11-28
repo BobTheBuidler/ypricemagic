@@ -317,8 +317,7 @@ async def _get_price(
     logger = get_price_logger(
         token, block, symbol=symbol, extra="magic", start_task=True
     )
-    if logger.enabled:
-        logger._log(logging.DEBUG, "fetching price for %s", (symbol,))
+    logger.debug("fetching price for %s", symbol)
     try:
         price = await _get_price_from_api(token, block, logger)
         if price is None:
@@ -331,14 +330,13 @@ async def _get_price(
             )
         if price is None:
             price = await _get_price_from_dexes(
-                token, block, ignore_pools, skip_cache, logger, logger.enabled
+                token, block, ignore_pools, skip_cache, logger
             )
         if price:
             await utils.sense_check(token, block, price)
         else:
             _fail_appropriately(logger, symbol, fail_to_None, silent)
-        if logger.enabled:
-            logger._log(logging.DEBUG, "%s price: %s", (symbol, price))
+        logger.debug("%s price: %s", symbol, price)
         if price:  # checks for the erroneous 0 value we see once in a while
             return price
     finally:
@@ -540,8 +538,7 @@ async def _exit_early_for_known_tokens(
             sync=False,
         )
 
-    if logger.enabled:
-        logger._log(logging.DEBUG, "%s -> %s", (bucket, price))
+    logger.debug("%s -> %s", bucket, price)
 
     return price
 
@@ -564,8 +561,7 @@ async def _get_price_from_api(
     """
     if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
         price = await utils.ypriceapi.get_price(token, block)
-        if logger.enabled:
-            logger._log(logging.DEBUG, "ypriceapi -> %s", (price,))
+        logger.debug("ypriceapi -> %s", price)
         return price
 
 
@@ -613,8 +609,7 @@ async def _get_price_from_dexes(
         for depth in sorted(depth_to_dex, reverse=True)
         if depth
     }
-    if logger.enabled:
-        logger._log(logging.DEBUG, "dexes by depth: %s", (dexes_by_depth,))
+    logger.debug("dexes by depth: %s", dexes_by_depth)
 
     for dex in dexes_by_depth.values():
         method = (
@@ -622,25 +617,21 @@ async def _get_price_from_dexes(
             if hasattr(dex, "get_price_for_underlying")
             else "get_price"
         )
-        if logger.enabled:
-            logger._log(logging.DEBUG, "trying %s", (dex,))
+        logger.debug("trying %s", dex)
         price = await getattr(dex, method)(
             token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False
         )
-        if logger.enabled:
-            logger._log(logging.DEBUG, "%s -> %s", (dex, price))
+        logger.debug("%s -> %s", dex, price)
         if price:
             return price
 
-    if logger.enabled:
-        logger._log(logging.DEBUG, "no %s liquidity found on primary markets", (token,))
+    logger.debug("no %s liquidity found on primary markets", token)
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price := await balancer_multiplexer.get_price(
         token, block=block, skip_cache=skip_cache, sync=False
     ):
-        if logger.enabled:
-            logger._log(logging.DEBUG, "balancer -> %s", (price,))
+        logger.debug("balancer -> %s", price)
         return price
 
 
