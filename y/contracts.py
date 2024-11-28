@@ -277,6 +277,7 @@ class CompilerError(Exception):
 
 _brownie_deployments_db_alock = asyncio.Lock()
 
+
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
@@ -485,7 +486,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if build is None or sources is None:
             if not CONFIG.active_network.get("explorer"):
                 raise ValueError(f"Unknown contract address: '{address}'")
-            
+
             # The contract does not exist in your local brownie deployments.db
             try:
                 name, abi = await _resolve_proxy_async(address)
@@ -517,7 +518,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
         # Cache manually since we aren't calling init
         cls._ChecksumAddressSingletonMeta__instances[address] = contract
-        
+
         if not contract.verified or contract._ttl_cache_popper == "disabled":
             pass
 
@@ -549,7 +550,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         return contract
 
     _coro_queue = a_sync.SmartProcessingQueue(_coroutine, num_workers=32)
-    
+
     def __init_from_abi__(
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
@@ -996,7 +997,9 @@ def _extract_abi_data_async(address: Address):
         Various exceptions based on the API response and contract status.
     """
     try:
-        data = await _fetch_from_explorer_async(address, "getsourcecode", False)["result"][0]
+        data = await _fetch_from_explorer_async(address, "getsourcecode", False)[
+            "result"
+        ][0]
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if chain.id == Network.xDai:
@@ -1048,7 +1051,10 @@ def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
 
     code = (await dank_mids.eth.get_code(address)).hex()[2:]
     # EIP-1167: Minimal Proxy Contract
-    if code[:20] == "363d3d373d3d3d363d73" and code[60:] == "5af43d82803e903d91602b57fd5bf3":
+    if (
+        code[:20] == "363d3d373d3d3d363d73"
+        and code[60:] == "5af43d82803e903d91602b57fd5bf3"
+    ):
         address = _resolve_address(code[20:60])
     # Vyper <0.2.9 `create_forwarder_to`
     elif (
@@ -1064,7 +1070,9 @@ def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
     ):
         address = _resolve_address(code[120:160])
 
-    return await _fetch_explorer_data(url, silent=silent, module="contract", action=action, address=address)
+    return await _fetch_explorer_data(
+        url, silent=silent, module="contract", action=action, address=address
+    )
 
 
 async def _fetch_explorer_data(url, silent, **params):
@@ -1081,19 +1089,23 @@ async def _fetch_explorer_data(url, silent, **params):
                 f"as the environment variable ${env_key}",
                 BrownieEnvironmentWarning,
             )
-        
+
     async with _brownie_deployments_db_semaphore:
         if not silent:
             print(
                 f"Fetching source of {color('bright blue')}{address}{color} "
                 f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
             )
-        
+
         async with aiohttp.ClientSession() as session:
-            async with session.get(url, params=params, headers=request_headers) as response:
+            async with session.get(
+                url, params=params, headers=request_headers
+            ) as response:
                 # Check the status code of the response
                 if response.status != 200:
-                    raise ConnectionError(f"Status {response.status} when querying {url}: {await response.text()}")
+                    raise ConnectionError(
+                        f"Status {response.status} when querying {url}: {await response.text()}"
+                    )
                 data = await response.json()
                 if int(data["status"]) != 1:
                     raise ValueError(f"Failed to retrieve data from API: {data}")
@@ -1128,7 +1140,9 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
     # always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822
     implementation_eip1967, implementation_eip1822 = await asyncio.gather(
-        dank_mids.eth.get_storage_at(address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1),
+        dank_mids.eth.get_storage_at(
+            address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1
+        ),
         dank_mids.eth.get_storage_at(address, web3.keccak(text="PROXIABLE")),
     )
 
