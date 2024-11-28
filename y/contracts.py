@@ -980,7 +980,7 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     return name, abi
 
 
-def _extract_abi_data_async(address: Address):
+async def _extract_abi_data_async(address: Address):
     """
     Extract ABI data for a contract from the blockchain explorer.
 
