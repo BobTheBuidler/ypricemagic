@@ -1064,8 +1064,6 @@ def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
     ):
         address = _resolve_address(code[120:160])
 
-    params: Dict = 
-
     return await _fetch_explorer_data(url, silent=silent, module="contract", action=action, address=address)
 
 
