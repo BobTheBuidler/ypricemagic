@@ -30,6 +30,7 @@ from brownie.network.contract import (
     _fetch_from_explorer,
     _resolve_address,
 )
+from brownie.network.state import _get_deployment
 from brownie.typing import AccountsType
 from brownie.utils import color
 from checksum_dict import ChecksumAddressDict, ChecksumAddressSingletonMeta
