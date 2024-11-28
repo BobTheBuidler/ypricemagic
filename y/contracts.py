@@ -833,12 +833,13 @@ async def proxy_implementation(
     return await probe(
         address, ["implementation()(address)", "target()(address)"], block
     )
-    
+
 
 _get_deployment_from_db = a_sync.SmartProcessingQueue(
-    lambda address: await ENVS.CONTRACT_THREADS.run(_get_deployment, address), 
+    lambda address: await ENVS.CONTRACT_THREADS.run(_get_deployment, address),
     num_workers=8,
 )
+
 
 def _squeeze(contract: Contract) -> Contract:
     """
@@ -1097,7 +1098,7 @@ async def _fetch_explorer_data(url, silent, **params):
                     f"Fetching source of {color('bright blue')}{address}{color} "
                     f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
                 )
-                
+
             async with session.get(
                 url, params=params, headers=request_headers
             ) as response:
