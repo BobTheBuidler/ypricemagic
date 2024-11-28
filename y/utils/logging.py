@@ -1,6 +1,6 @@
 import asyncio
-import logging
 import weakref
+from logging import DEBUG, Logger, StreamHandler, getLogger, _lock
 from types import MethodType
 from typing import List, NoReturn, Optional, Tuple, TypeVar, Union
 
@@ -17,17 +17,31 @@ P = ParamSpec("P")
 
 yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
-class PriceLogger(logging.Logger):
+def enable_debug_logging(logger: str = "y") -> None:
+    """
+    Enables ypricemagic's debugging mode. Very verbose.
+    """
+    logger = getLogger(logger)
+    logger.setLevel(DEBUG)
+    if not logger.handlers:
+        logger.addHandler(StreamHandler())
+
+
+class PriceLogger(Logger):
     enabled: bool
     address: str
     block: int
     key: Tuple[AnyAddressType, Block, Optional[str], str]
     debug_task: Optional["asyncio.Task[None]"]
 
-    def close(self) -> None: ...
+    def close(self) -> None:
+        # since we make a lot of these we don't want logging module to cache them
+        self.debug("closing %s", logger)
+        with _lock:
+            Logger.manager.loggerDict.pop(self.name, None)
 
 
 def get_price_logger(
@@ -42,16 +56,16 @@ def get_price_logger(
     name = f"y.prices.{Network.label()}.{address}.{block}"
     if extra:
         name += f".{extra}"
+
     # the built-in logging module caches loggers but we need to make sure they have the proper members for ypm
     if cached_logger := _all_price_loggers.get(name, None):
         return cached_logger
-    logger = logging.getLogger(name)
+
+    logger = getLogger(name)
     logger.address = address
     logger.block = block
-    if logger.level != logger.parent.level:
-        logger.setLevel(logger.parent.level)
+    logger.enabled = logger.isEnabledFor(DEBUG)
 
-    logger.enabled = logger.isEnabledFor(logging.DEBUG)
     if logger.enabled:
         logger.debug = lambda msg, *args, **kwargs: logger._log(
             DEBUG, msg, args, **kwargs
@@ -68,7 +82,7 @@ def get_price_logger(
     else:
         logger.debug = _noop
 
-    logger.close = MethodType(_close_logger, logger)
+    logger.close = MethodType(PriceLogger.close, logger)
 
     _all_price_loggers[name] = logger
     return logger
@@ -77,16 +91,8 @@ def get_price_logger(
 def _noop(*_a, **_k): ...
 
 
-def _close_logger(logger: PriceLogger) -> None:
-    # since we make a lot of these we don't want logging module to cache them
-    logger.debug("closing %s", logger)
-    logging._lock.acquire()
-    logging.Logger.manager.loggerDict.pop(logger.name, None)
-    logging._lock.release()
-
-
 async def _debug_tsk(
-    symbol: Optional[str], logger_ref: "weakref.ref[logging.Logger]"
+    symbol: Optional[str], logger_ref: "weakref.ref[Logger]"
 ) -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns"""
     if symbol:
@@ -106,13 +112,6 @@ _all_price_loggers: "weakref.WeakValueDictionary[str, PriceLogger]" = (
 )
 
 
-def enable_debug_logging(logger: str = "y") -> None:
-    logger = logging.getLogger(logger)
-    logger.setLevel(logging.DEBUG)
-    if not logger.handlers:
-        logger.addHandler(logging.StreamHandler())
-
-
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ = (
     f"name ({Network.name()})" if Network.name() else f"chainid ({chain.id})"
 )
@@ -122,8 +121,7 @@ def _gh_issue_request(
     issue_request_details: Union[str, List[str]], _logger=None
 ) -> None:
 
-    if _logger is None:
-        _logger = logger
+    _logger = _logger or logger
 
     if type(issue_request_details) == str:
         _logger.warning(issue_request_details)
