@@ -54,7 +54,6 @@ from y.utils.gather import gather_methods
 logger = logging.getLogger(__name__)
 
 _brownie_deployments_db_lock = threading.Lock()
-_brownie_deployments_db_semaphore = a_sync.Semaphore(8)
 _explorer_semaphore = a_sync.Semaphore(8)
 
 # These tokens have trouble when resolving the implementation via the chain.
@@ -478,12 +477,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         Returns:
             A Contract instance for the given address.
         """
-
         contract = cls.__new__(cls)
-
-        async with _brownie_deployments_db_semaphore:
-            build, sources = await ENVS.CONTRACT_THREADS.run(_get_deployment, address)
-
+        build, sources = await _get_deployment_from_db(address)
         if build is None or sources is None:
             if not CONFIG.active_network.get("explorer"):
                 raise ValueError(f"Unknown contract address: '{address}'")
@@ -838,7 +833,12 @@ async def proxy_implementation(
     return await probe(
         address, ["implementation()(address)", "target()(address)"], block
     )
+    
 
+_get_deployment_from_db = a_sync.SmartProcessingQueue(
+    lambda address: await ENVS.CONTRACT_THREADS.run(_get_deployment, address), 
+    num_workers=8,
+)
 
 def _squeeze(contract: Contract) -> Contract:
     """
@@ -1091,13 +1091,13 @@ async def _fetch_explorer_data(url, silent, **params):
             )
 
     async with _explorer_semaphore:
-        if not silent:
-            print(
-                f"Fetching source of {color('bright blue')}{address}{color} "
-                f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
-            )
-
         async with aiohttp.ClientSession() as session:
+            if not silent:
+                print(
+                    f"Fetching source of {color('bright blue')}{address}{color} "
+                    f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
+                )
+                
             async with session.get(
                 url, params=params, headers=request_headers
             ) as response:
