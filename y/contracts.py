@@ -17,6 +17,7 @@ from typing import (
 from urllib.parse import urlparse
 
 import a_sync
+import aiohttp
 import dank_mids
 import eth_retry
 from brownie import ZERO_ADDRESS, chain, web3
@@ -1089,13 +1090,16 @@ async def _fetch_explorer_data(url, silent, **params):
                 f"Fetching source of {color('bright blue')}{address}{color} "
                 f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
             )
-        response = await ENVS.CONTRACT_THREADS(requests.get, url, params=params, headers=REQUEST_HEADERS)
-        if response.status_code != 200:
-            raise ConnectionError(f"Status {response.status_code} when querying {url}: {response.text}")
-        data = response.json()
-        if int(data["status"]) != 1:
-            raise ValueError(f"Failed to retrieve data from API: {data}")
-        return data
+        
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url, params=params, headers=request_headers) as response:
+                # Check the status code of the response
+                if response.status != 200:
+                    raise ConnectionError(f"Status {response.status} when querying {url}: {await response.text()}")
+                data = await response.json()
+                if int(data["status"]) != 1:
+                    raise ValueError(f"Failed to retrieve data from API: {data}")
+                return data
 
 
 async def _resolve_proxy_async(address) -> Tuple[str, List]:
@@ -1110,12 +1114,12 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
     """
     address = convert.to_address(address)
     async with _brownie_deployments_db_semaphore:
-        name, abi, implementation = await ENVS.CONTRACT_THREADS.run(_extract_abi_data, address)
+        name, abi, implementation = await _extract_abi_data_async(address)
         as_proxy_for = None
 
     if address in FORCE_IMPLEMENTATION:
         implementation = FORCE_IMPLEMENTATION[address]
-        name, implementation_abi, _ = await ENVS.CONTRACT_THREADS.run(_extract_abi_data, implementation)
+        name, implementation_abi, _ = await _extract_abi_data_async(implementation)
         # Here we merge the proxy ABI with the implementation ABI
         # without doing this, we'd only get the implementation
         # and would lack any valid methods/events from the proxy itself.
@@ -1157,7 +1161,7 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
 
     if as_proxy_for:
         async with _brownie_deployments_db_semaphore:
-            name, abi, _ = await ENVS.CONTRACT_THREADS.run(_extract_abi_data, as_proxy_for)
+            name, abi, _ = await _extract_abi_data_async(as_proxy_for)
     return name, abi
 
 
