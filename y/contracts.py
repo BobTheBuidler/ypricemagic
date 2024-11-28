@@ -275,9 +275,6 @@ class CompilerError(Exception):
         )
 
 
-_brownie_deployments_db_alock = asyncio.Lock()
-
-
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
