@@ -89,7 +89,7 @@ class UniswapV2Pool(ERC20):
         super().__init__(address, asynchronous=asynchronous)
         self.get_reserves = Call(
             self.address, "getReserves()((uint112,uint112,uint32))"
-        )
+        ).coroutine
         if deploy_block:
             self._deploy_block = deploy_block
         if token0:
@@ -178,7 +178,7 @@ class UniswapV2Pool(ERC20):
         self, *, block: Optional[Block] = None
     ) -> Optional[Tuple[WeiBalance, WeiBalance]]:
         try:
-            reserves = await self.get_reserves.coroutine(block_id=block)
+            reserves = await self.get_reserves(block_id=block)
         except Exception as e:
             if not call_reverted(e):
                 raise
@@ -315,7 +315,9 @@ class UniswapV2Pool(ERC20):
             )
             self._verified = True
             assert reserves_types.count(",") == 2, reserves_types
-            self.get_reserves = Call(self.address, f"getReserves()(({reserves_types}))")
+            self.get_reserves = Call(
+                self.address, f"getReserves()(({reserves_types}))"
+            ).coroutine
         except ContractNotVerified:
             self._verified = False
         self.__types_assumed = False
@@ -391,7 +393,7 @@ class UniswapRouterV2(ContractBase):
         self.special_paths = special_paths(self.address)
         self.get_amounts_out = Call(
             self.address, "getAmountsOut(uint,address[])(uint[])"
-        )
+        ).coroutine
 
         # we need the factory contract object cached in brownie so we can decode logs properly
         if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
@@ -503,9 +505,7 @@ class UniswapRouterV2(ContractBase):
         self, amount_in: int, path: Path, block: Optional[Block] = None
     ) -> Tuple[int, int]:
         if not self._is_cached:
-            return await self.get_amounts_out.coroutine(
-                (amount_in, path), block_id=block
-            )
+            return await self.get_amounts_out((amount_in, path), block_id=block)
         try:
             return await self.contract.getAmountsOut.coroutine(
                 amount_in, path, block_identifier=block
