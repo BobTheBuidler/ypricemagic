@@ -62,16 +62,16 @@ def get_price_logger(
             name=f"_debug_tsk({symbol}, {logger})",
             log_destroy_pending=False,
         )
-        
+
     logger.close = MethodType(_close_logger, logger)
-    
+
     _all_price_loggers[name] = logger
     return logger
 
 
-def _noop(*_a, **_k):
-    ...
-    
+def _noop(*_a, **_k): ...
+
+
 def _close_logger(logger: PriceLogger) -> None:
     # since we make a lot of these we don't want logging module to cache them
     logger.debug("closing %s", logger)
