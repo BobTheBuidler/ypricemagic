@@ -1037,7 +1037,7 @@ def _extract_abi_data_async(address: Address):
 
 
 @eth_retry.auto_retry
-def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
+async def _fetch_from_explorer_async(address: str, action: str, silent: bool) -> Dict:
     url = CONFIG.active_network.get("explorer")
     if url is None:
         raise ValueError("Explorer API not set for this network")
