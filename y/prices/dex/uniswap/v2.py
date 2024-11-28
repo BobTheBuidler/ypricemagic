@@ -527,12 +527,16 @@ class UniswapRouterV2(ContractBase):
             Network.printable(),
         )
         factory = self.factory
-        events = self.PoolsFromEvents(factory, self.label, asynchronous=self.asynchronous, is_reusable=False)
+        events = self.PoolsFromEvents(
+            factory, self.label, asynchronous=self.asynchronous, is_reusable=False
+        )
         to_block = await dank_mids.eth.block_number
         pools = [pool async for pool in events.pools(to_block=to_block)]
         events._task.cancel()
         del events
-        all_pairs_len = await raw_call(factory, "allPairsLength()", output="int", sync=False)
+        all_pairs_len = await raw_call(
+            factory, "allPairsLength()", output="int", sync=False
+        )
         if len(pools) > all_pairs_len:
             raise NotImplementedError("this shouldnt happen again")
         elif to_get := all_pairs_len - len(pools):  # <
