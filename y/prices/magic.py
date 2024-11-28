@@ -615,7 +615,7 @@ async def _get_price_from_dexes(
     }
     if logger.enabled:
         logger._log(logging.DEBUG, "dexes by depth: %s", (dexes_by_depth,))
-        
+
     for dex in dexes_by_depth.values():
         method = (
             "get_price_for_underlying"
