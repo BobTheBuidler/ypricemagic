@@ -1162,7 +1162,7 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
         try:
             # first try to call `implementation` per EIP897
             # https://eips.ethereum.org/EIPS/eip-897
-            c = await ENVS.CONTRACT_THREADS.run(Contract.from_abi, name, address, abi)
+            c = Contract.from_abi(name, address, abi)
             as_proxy_for = await c.implementation
         except Exception:
             # if that fails, fall back to the address provided by etherscan
