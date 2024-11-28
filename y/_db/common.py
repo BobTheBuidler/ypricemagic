@@ -250,7 +250,10 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         """
         if objs:
             self._objects.extend(objs)
-            if self._is_reusable and len(self._objects) > tuple(self._checkpoints.values())[-1] + 50:
+            if (
+                self._is_reusable
+                and len(self._objects) > tuple(self._checkpoints.values())[-1] + 50
+            ):
                 block = self._get_block_for_obj(self._objects[-1])
                 self._checkpoints[block] = len(self._objects)
 
@@ -392,9 +395,9 @@ class Filter(_DiskCachedMixin[T, C]):
                 checkpoint_index = self._checkpoints[checkpoint_block]
                 for obj in self._objects[:checkpoint_index]:
                     yield obj
-                    
+
             done_thru = self._get_block_for_obj(obj)
-                
+
         while True:
             if block is None or done_thru < block:
                 if self.is_asleep:
