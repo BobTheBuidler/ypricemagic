@@ -53,22 +53,25 @@ def get_price_logger(
 
     logger.enabled = logger.isEnabledFor(logging.DEBUG)
     if not logger.enabled:
-        logger.isEnabledFor = lambda level: (
-            False if level == logging.DEBUG else logging.Logger.isEnabledFor(logger, x)
-        )
+        logger.debug = _noop
 
-    if start_task and logger.enabled:
+    elif start_task:
         # will kill itself when this logger is garbage collected
         logger.debug_task = a_sync.create_task(
             coro=_debug_tsk(symbol, weakref.ref(logger)),
             name=f"_debug_tsk({symbol}, {logger})",
             log_destroy_pending=False,
         )
+        
     logger.close = MethodType(_close_logger, logger)
+    
     _all_price_loggers[name] = logger
     return logger
 
 
+def _noop(*_a, **_k):
+    ...
+    
 def _close_logger(logger: PriceLogger) -> None:
     # since we make a lot of these we don't want logging module to cache them
     logger.debug("closing %s", logger)
