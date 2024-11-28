@@ -52,6 +52,7 @@ from y.utils.gather import gather_methods
 
 logger = logging.getLogger(__name__)
 
+_brownie_deployments_db_lock = threading.Lock()
 _brownie_deployments_db_semaphore = a_sync.Semaphore(8)
 
 # These tokens have trouble when resolving the implementation via the chain.
