@@ -317,10 +317,9 @@ async def _get_price(
     logger = get_price_logger(
         token, block, symbol=symbol, extra="magic", start_task=True
     )
-    if debug_logs := logger.isEnabledFor(logging.DEBUG):
-        logger._log(logging.DEBUG, "fetching price for %s", (symbol,))
+    logger.debug("fetching price for %s", symbol)
     try:
-        price = await _get_price_from_api(token, block, logger, debug_logs)
+        price = await _get_price_from_api(token, block, logger)
         if price is None:
             price = await _exit_early_for_known_tokens(
                 token,
@@ -331,14 +330,13 @@ async def _get_price(
             )
         if price is None:
             price = await _get_price_from_dexes(
-                token, block, ignore_pools, skip_cache, logger, debug_logs
+                token, block, ignore_pools, skip_cache, logger
             )
         if price:
             await utils.sense_check(token, block, price)
         else:
             _fail_appropriately(logger, symbol, fail_to_None, silent)
-        if debug_logs:
-            logger._log(logging.DEBUG, "%s price: %s", (symbol, price))
+        logger.debug("%s price: %s", symbol, price)
         if price:  # checks for the erroneous 0 value we see once in a while
             return price
     finally:
@@ -350,7 +348,6 @@ async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block,
     logger: logging.Logger,
-    debug_logs: bool,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
 ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
@@ -541,8 +538,7 @@ async def _exit_early_for_known_tokens(
             sync=False,
         )
 
-    if debug_logs:
-        logger._log(logging.DEBUG, "%s -> %s", (bucket, price))
+    logger.debug("%s -> %s", bucket, price)
 
     return price
 
@@ -551,7 +547,6 @@ async def _get_price_from_api(
     token: AnyAddressType,
     block: Block,
     logger: logging.Logger,
-    debug_logs: bool,
 ):
     """
     Attempt to get the price from the ypricemagic API.
@@ -566,8 +561,7 @@ async def _get_price_from_api(
     """
     if utils.ypriceapi.should_use and token not in utils.ypriceapi.skip_tokens:
         price = await utils.ypriceapi.get_price(token, block)
-        if debug_logs:
-            logger._log(logging.DEBUG, "ypriceapi -> %s", (price,))
+        logger.debug("ypriceapi -> %s", price)
         return price
 
 
@@ -577,7 +571,6 @@ async def _get_price_from_dexes(
     ignore_pools,
     skip_cache: bool,
     logger: logging.Logger,
-    debug_logs: bool,
 ):
     """
     Attempt to get the price from decentralized exchanges.
@@ -616,33 +609,29 @@ async def _get_price_from_dexes(
         for depth in sorted(depth_to_dex, reverse=True)
         if depth
     }
-    if debug_logs:
-        logger._log(logging.DEBUG, "dexes by depth: %s", (dexes_by_depth,))
+    logger.debug("dexes by depth: %s", dexes_by_depth)
+
     for dex in dexes_by_depth.values():
         method = (
             "get_price_for_underlying"
             if hasattr(dex, "get_price_for_underlying")
             else "get_price"
         )
-        if debug_logs:
-            logger._log(logging.DEBUG, "trying %s", (dex,))
+        logger.debug("trying %s", dex)
         price = await getattr(dex, method)(
             token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False
         )
-        if debug_logs:
-            logger._log(logging.DEBUG, "%s -> %s", (dex, price))
+        logger.debug("%s -> %s", dex, price)
         if price:
             return price
 
-    if debug_logs:
-        logger._log(logging.DEBUG, "no %s liquidity found on primary markets", (token,))
+    logger.debug("no %s liquidity found on primary markets", token)
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price := await balancer_multiplexer.get_price(
         token, block=block, skip_cache=skip_cache, sync=False
     ):
-        if debug_logs:
-            logger._log(logging.DEBUG, "balancer -> %s", (price,))
+        logger.debug("balancer -> %s", price)
         return price
 
 
