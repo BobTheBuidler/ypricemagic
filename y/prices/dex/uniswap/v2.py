@@ -330,7 +330,7 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
     def __init__(self, factory: AnyAddressType, label: str, asynchronous: bool = False):
         self.asynchronous = asynchronous
         self.label = label
-        super().__init__(addresses=[factory], topics=[[self.PairCreated]])
+        super().__init__(addresses=[factory], topics=[[self.PairCreated]], is_reusable=False)
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__} label={self.label}>"
@@ -527,9 +527,7 @@ class UniswapRouterV2(ContractBase):
             Network.printable(),
         )
         factory = self.factory
-        events = self.PoolsFromEvents(
-            factory, self.label, asynchronous=self.asynchronous, is_reusable=False
-        )
+        events = PoolsFromEvents(factory, self.label, asynchronous=self.asynchronous)
         to_block = await dank_mids.eth.block_number
         pools = [pool async for pool in events.pools(to_block=to_block)]
         events._task.cancel()
