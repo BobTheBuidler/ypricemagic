@@ -54,6 +54,7 @@ logger = logging.getLogger(__name__)
 
 _brownie_deployments_db_lock = threading.Lock()
 _brownie_deployments_db_semaphore = a_sync.Semaphore(8)
+_explorer_semaphore = a_sync.Semaphore(8)
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -1087,7 +1088,7 @@ async def _fetch_explorer_data(url, silent, **params):
                 BrownieEnvironmentWarning,
             )
 
-    async with _brownie_deployments_db_semaphore:
+    async with _explorer_semaphore:
         if not silent:
             print(
                 f"Fetching source of {color('bright blue')}{address}{color} "
@@ -1120,9 +1121,8 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
         A tuple containing the contract name and ABI.
     """
     address = convert.to_address(address)
-    async with _brownie_deployments_db_semaphore:
-        name, abi, implementation = await _extract_abi_data_async(address)
-        as_proxy_for = None
+    name, abi, implementation = await _extract_abi_data_async(address)
+    as_proxy_for = None
 
     if address in FORCE_IMPLEMENTATION:
         implementation = FORCE_IMPLEMENTATION[address]
@@ -1169,8 +1169,7 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
             as_proxy_for = _resolve_address(implementation)
 
     if as_proxy_for:
-        async with _brownie_deployments_db_semaphore:
-            name, abi, _ = await _extract_abi_data_async(as_proxy_for)
+        name, abi, _ = await _extract_abi_data_async(as_proxy_for)
     return name, abi
 
 
