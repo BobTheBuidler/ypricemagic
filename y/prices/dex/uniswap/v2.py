@@ -315,7 +315,9 @@ class UniswapV2Pool(ERC20):
             )
             self._verified = True
             assert reserves_types.count(",") == 2, reserves_types
-            self.get_reserves = Call(self.address, f"getReserves()(({reserves_types}))").coroutine
+            self.get_reserves = Call(
+                self.address, f"getReserves()(({reserves_types}))"
+            ).coroutine
         except ContractNotVerified:
             self._verified = False
         self.__types_assumed = False
