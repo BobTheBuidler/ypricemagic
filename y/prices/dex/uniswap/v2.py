@@ -1,8 +1,8 @@
 import asyncio
-import logging
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
+from logging import DEBUG, getLogger
 from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import a_sync
@@ -52,7 +52,7 @@ from y.prices.dex.uniswap.v2_forks import (
 from y.utils.events import ProcessedEvents
 from y.utils.raw_calls import raw_call
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 Path = List[AddressOrContract]
 Reserves = Tuple[int, int, int]
@@ -243,9 +243,10 @@ class UniswapV2Pool(ERC20):
             if len(vals) == 1:
                 vals *= 2
             if len(vals) == 2:
-                logger.debug("reserves: %s", reserves)
-                logger.debug("prices: %s", prices)
-                logger.debug("vals: %s", vals)
+                if logger.isEnabledFor(DEBUG):
+                    logger._log(DEBUG, "reserves: %s", (reserves, ))
+                    logger._log(DEBUG, "prices: %s", (prices, ))
+                    logger._log(DEBUG, "vals: %s", (vals, ))
                 return sum(vals)
             else:
                 raise Exception("how did we get here?") from None
@@ -268,18 +269,21 @@ class UniswapV2Pool(ERC20):
         Raises:
             TokenNotFound: If the token is not one of the two tokens in the liquidity pool.
         """
-        logger.debug("checking %s liquidity for %s at %s", self, token, block)
+        if debug_logs := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "checking %s liquidity for %s at %s", (self, token, block))
         if block and block < await self.deploy_block(sync=False):
-            logger.debug("block %s is before %s deploy block", block, self)
+            if debug_logs:
+                logger._log(DEBUG, "block %s is before %s deploy block", (block, self))
             return 0
         if reserves := await self.reserves(block=block, sync=False):
             balance: WeiBalance
             for balance in reserves:
                 if token == balance.token:
                     liquidity = balance.balance
-                    logger.debug(
-                        "%s liquidity for %s at %s is %s", self, token, block, liquidity
-                    )
+                    if debug_logs:
+                        logger._log(
+                            DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity)
+                        )
                     return liquidity
             raise TokenNotFound(token, reserves)
         return 0
@@ -441,6 +445,8 @@ class UniswapRouterV2(ContractBase):
         except NonStandardERC20:
             return None
 
+        debug_logs = logger.isEnabledFor(DEBUG)
+        
         if token_in in [weth.address, WRAPPED_GAS_COIN] and token_out in STABLECOINS:
             path = [token_in, token_out]
 
@@ -449,7 +455,8 @@ class UniswapRouterV2(ContractBase):
                 path = await self.get_path_to_stables(
                     token_in, block, _ignore_pools=ignore_pools, sync=False
                 )
-                logger.debug("smrt")
+                if debug_logs:
+                    logger._log(DEBUG, "smrt")
 
         # If we can't find a good path to stables, we might still be able to determine price from price of paired token
         if path is None and (
@@ -457,14 +464,16 @@ class UniswapRouterV2(ContractBase):
                 token_in, block, _ignore_pools=ignore_pools, sync=False
             )
         ):
-            logger.debug("deepest pool: %s", deepest_pool)
+            if debug_logs:
+                logger._log(DEBUG, "deepest pool: %s", (deepest_pool,))
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
             quote, out_scale = await asyncio.gather(
                 self.get_quote(amount_in, path, block=block, sync=False),
                 ERC20(path[-1], asynchronous=True).scale,
             )
-            logger.debug("quote: %s", quote)
+            if debug_logs:
+                logger._log(DEBUG, "quote: %s", (quote,))
             if quote is not None:
                 amount_out = Decimal(quote[-1]) / out_scale
                 fees = Decimal(0.997) ** (len(path) - 1)
@@ -488,7 +497,8 @@ class UniswapRouterV2(ContractBase):
             logger.warning("using smol brain path selector")
 
         fees = 0.997 ** (len(path) - 1)
-        logger.debug("router: %s     path: %s", self.label, path)
+        if debug_logs:
+            logger._log(DEBUG, "router: %s     path: %s", (self.label, path))
         quote, out_scale = await asyncio.gather(
             self.get_quote(amount_in, path, block=block, sync=False),
             ERC20(path[-1], asynchronous=True).scale,
@@ -797,9 +807,11 @@ class UniswapRouterV2(ContractBase):
     async def check_liquidity(
         self, token: Address, block: Block, ignore_pools=[]
     ) -> int:
-        logger.debug("checking %s liquidity for %s at %s", self, token, block)
+        if debug_logs := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "checking %s liquidity for %s at %s", (self, token, block))
         if block and block < await contract_creation_block_async(self.factory):
-            logger.debug("block %s is before %s deploy block")
+            if debug_logs:
+                logger._log(DEBUG, "block %s is before %s deploy block")
             return 0
         if self._supports_uniswap_helper and (
             block is None
@@ -809,9 +821,10 @@ class UniswapRouterV2(ContractBase):
                 deepest_pool, liquidity = await self.deepest_pool_for(
                     token, block, ignore_pools=ignore_pools
                 )
-                logger.debug(
-                    "%s liquidity for %s at %s is %s", self, token, block, liquidity
-                )
+                if debug_logs:
+                    logger._log(
+                        DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity)
+                    )
                 return liquidity
             except (Revert, ValueError) as e:
                 _log_factory_helper_failure(e, token, block, ignore_pools)
@@ -823,7 +836,8 @@ class UniswapRouterV2(ContractBase):
             )
         except a_sync.exceptions.EmptySequenceError:
             liquidity = 0
-        logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+        if debug_logs:
+            logger._log(DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity))
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
