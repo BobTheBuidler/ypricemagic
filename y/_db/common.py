@@ -278,6 +278,25 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
             await self._extend(
                 await self.executor.run(self.cache.select, from_block, cached_thru)
             )
+            if self._is_reusable:
+                objs_per_chunk = 50
+                num_checkpoints = len(self._objects) // objs_per_chunk
+                checkpoint_indexes = (i*objs_per_chunk for i in range(1, num_checkpoints))
+                for index in checkpoint_indexes:
+                    obj = self._objects[index]
+                    if index < len(self._objects):
+                        next_obj = self._objects[index+1]
+                        while self._get_block_from_obj(obj) == self._get_block_from_obj(next_obj):
+                            obj = next_obj
+                            index += 1
+                            try:
+                                next_obj = self._objects[index+1]
+                            except IndexError:
+                                break
+                    
+                    self._checkpoints[self._get_block_from_obj(obj)] = index
+
+                
             logger.info(
                 "%s loaded %s objects thru block %s from disk",
                 self,
