@@ -450,7 +450,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             raise ContractNotFound(f"{address} is not a contract.") from None
         try:
             # We do this so we don't clog the threadpool with multiple jobs for the same contract.
-            #return await cls._coro_queue(
+            # return await cls._coro_queue(
             return await cls._coroutine(
                 address, require_success=require_success, cache_ttl=cache_ttl
             )
