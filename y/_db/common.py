@@ -288,7 +288,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
                     obj = self._objects[index]
                     if index < len(self._objects):
                         next_obj = self._objects[index + 1]
-                        while self._get_block_from_obj(obj) == self._get_block_from_obj(
+                        while self._get_block_for_obj(obj) == self._get_block_for_obj(
                             next_obj
                         ):
                             obj = next_obj
@@ -298,7 +298,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
                             except IndexError:
                                 break
 
-                    self._checkpoints[self._get_block_from_obj(obj)] = index
+                    self._checkpoints[self._get_block_for_obj(obj)] = index
 
             logger.info(
                 "%s loaded %s objects thru block %s from disk",
