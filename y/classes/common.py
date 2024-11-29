@@ -755,7 +755,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     __value_usd__: HiddenMethodDescriptor[Self, Decimal]
 
     @cached_property
-    def _logger(self) -> logging.logging.Logger:
+    def _logger(self) -> logging.Logger:
         """
         Get the logger for the WeiBalance object.
 
