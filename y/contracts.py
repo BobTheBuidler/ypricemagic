@@ -432,6 +432,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         return self
 
     @classmethod
+    @stuck_coro_debugger
     async def coroutine(
         cls,
         address: AnyAddressType,
@@ -451,82 +452,63 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             ZERO_ADDRESS,
         ]:
             raise ContractNotFound(f"{address} is not a contract.") from None
-
-        try:
-            # We do this so we don't clog the threadpool with multiple jobs for the same contract.
-            return await cls._coroutine(
-                address,
-                owner=owner,
-                persist=persist,
-                require_success=require_success,
-                cache_ttl=cache_ttl,
-            )
-        except (ContractNotFound, exceptions._ExplorerError, CompilerError) as e:
-            # re-raise with nicer traceback
-            raise type(e)(*e.args) from None
-
-    @classmethod
-    @stuck_coro_debugger
-    async def __coroutine(
-        cls,
-        address: AnyAddressType,
-        owner: Optional[AccountsType] = None,
-        persist: bool = True,
-        require_success: bool = True,
-        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
-    ) -> Self:
-        """
-        Internal method to create a Contract instance asynchronously.
-
-        Args:
-            address: The address of the contract.
-            require_success: If True, raise an exception if the contract cannot be initialized.
-            cache_ttl: The time-to-live for the contract cache in seconds.
-
-        Returns:
-            A Contract instance for the given address.
-        """
-
+            
         contract = cls.__new__(cls)
         build, _ = await _get_deployment_from_db(address)
+        
         if build:
-            contract.__init_from_abi__(build, owner=owner, persist=persist)
-            contract.__finish_init(cache_ttl)
+            async with _contract_locks[address]:
+                # now that we're inside the lock, check and see if another coro populated the cache
+                if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
+                    return contract
+                    
+                # nope, continue
+                contract.__init_from_abi__(build, owner=owner, persist=persist)
+                contract.__finish_init(cache_ttl)
+                
         elif not CONFIG.active_network.get("explorer"):
             raise ValueError(f"Unknown contract address: '{address}'")
+            
         else:
             try:
                 # The contract does not exist in your local brownie deployments.db
                 name, abi = await _resolve_proxy_async(address)
             except (ContractNotFound, exceptions.ContractNotVerified) as e:
-                if isinstance(e, exceptions.ContractNotVerified):
+                if not_verified := isinstance(e, exceptions.ContractNotVerified):
                     _unverified.add(address)
                 if require_success:
                     raise
                 try:
-                    if isinstance(e, exceptions.ContractNotVerified):
-                        contract.verified = False
-                        contract._build = {"contractName": "Non-Verified Contract"}
-                    else:
-                        contract.verified = None
-                        contract._build = {"contractName": "Broken Contract"}
+                    contract.verified = False if not_verified else None
                 except AttributeError:
                     logger.warning(
                         '`Contract("%s").verified` property will not be usable due to the contract having a `verified` method in its ABI.',
                         address,
                     )
+                contract._build = {"contractName": "Non-Verified Contract" if not_verified else "Broken Contract"}
+                    
             else:
-                build = {
-                    "abi": abi,
-                    "address": address,
-                    "contractName": name,
-                    "type": "contract",
-                }
-                contract.__init_from_abi__(build, owner=owner, persist=persist)
-                contract.__finish_init(cache_ttl)
-
+                async with _contract_locks[address]:
+                    # now that we're inside the lock, check and see if another coro populated the cache
+                    if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
+                        return contract
+                        
+                    # nope, continue
+                    build = {
+                        "abi": abi,
+                        "address": address,
+                        "contractName": name,
+                        "type": "contract",
+                    }
+                    contract.__init_from_abi__(build, owner=owner, persist=persist)
+                    contract.__finish_init(cache_ttl)
+                    
+        
         # Cache manually since we aren't calling init
         cls._ChecksumAddressSingletonMeta__instances[address] = contract
+
+        # keep the dict small, we cache Contract instances so we won't need these in the future
+        _contract_locks.pop(address, None)
 
         if not contract.verified or contract._ttl_cache_popper == "disabled":
             pass
@@ -557,9 +539,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 None,
             )
         return contract
-
-    _coroutine = a_sync.SmartProcessingQueue
-
+      
     def __init_from_abi__(
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
@@ -1133,9 +1113,6 @@ async def _fetch_explorer_data(url, silent, params):
             return data
 
 
-_fetch_explorer_data = a_sync.SmartProcessingQueue(_fetch_explorer_data, num_workers=8)
-
-
 async def _resolve_proxy_async(address) -> Tuple[str, List]:
     """
     Resolve the implementation address for a proxy contract.
@@ -1197,6 +1174,9 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
     if as_proxy_for:
         name, abi, _ = await _extract_abi_data_async(as_proxy_for)
     return name, abi
+
+    
+_resolve_proxy_async = a_sync.SmartProcessingQueue(_resolve_proxy_async, num_workers=8)
 
 
 def _setup_events(contract: Contract) -> None:
