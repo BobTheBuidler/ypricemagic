@@ -444,15 +444,16 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         address = str(address)
         if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
             return contract
+            
         # dict lookups faster than string comparisons, keep this behind the singleton check
         if address.lower() in [
             "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
             ZERO_ADDRESS,
         ]:
             raise ContractNotFound(f"{address} is not a contract.") from None
+            
         try:
             # We do this so we don't clog the threadpool with multiple jobs for the same contract.
-            # return await cls._coro_queue(
             return await cls._coroutine(
                 address,
                 owner=owner,
@@ -466,7 +467,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
     @classmethod
     @stuck_coro_debugger
-    async def _coroutine(
+    async def __coroutine(
         cls,
         address: AnyAddressType,
         owner: Optional[AccountsType] = None,
@@ -485,6 +486,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         Returns:
             A Contract instance for the given address.
         """
+        
         contract = cls.__new__(cls)
         build, _ = await _get_deployment_from_db(address)
         if build:
@@ -556,8 +558,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             )
         return contract
 
-    _coro_queue = a_sync.SmartProcessingQueue(_coroutine, num_workers=32)
-
+    _coroutine = a_sync.SmartProcessingQueue
     def __init_from_abi__(
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
@@ -1131,7 +1132,7 @@ async def _fetch_explorer_data(url, silent, params):
             return data
 
 
-_fetch_explorer_data = a_sync.SmartProcessingQueue(__fetch_explorer_data, num_workers=8)
+_fetch_explorer_data = a_sync.SmartProcessingQueue(_fetch_explorer_data, num_workers=8)
 
 
 async def _resolve_proxy_async(address) -> Tuple[str, List]:
