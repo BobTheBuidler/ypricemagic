@@ -830,7 +830,7 @@ async def proxy_implementation(
 
 _get_deployment_from_db = a_sync.SmartProcessingQueue(
     lambda address: ENVS.CONTRACT_THREADS.run(_get_deployment, address),
-    num_workers=8,
+    num_workers=64,
 )
 
 
