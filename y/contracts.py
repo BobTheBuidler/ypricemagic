@@ -645,7 +645,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             None,
         )
 
-    def __post_init__(self, cache_ttl) -> None:
+    def __post_init__(
+        self, 
+        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
+    ) -> None:
         super().__post_init__()
 
         # Init an event container for each topic
