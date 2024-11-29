@@ -54,7 +54,6 @@ from y.utils.gather import gather_methods
 logger = logging.getLogger(__name__)
 
 _brownie_deployments_db_lock = threading.Lock()
-_explorer_semaphore = a_sync.Semaphore(8)
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -435,6 +434,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def coroutine(
         cls,
         address: AnyAddressType,
+        owner: Optional[AccountsType] = None,
+        persist: bool = True,
         require_success: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
@@ -452,7 +453,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             # We do this so we don't clog the threadpool with multiple jobs for the same contract.
             # return await cls._coro_queue(
             return await cls._coroutine(
-                address, require_success=require_success, cache_ttl=cache_ttl
+                address, owner=owner, persist=persist, require_success=require_success, cache_ttl=cache_ttl
             )
         except (ContractNotFound, exceptions._ExplorerError, CompilerError) as e:
             # re-raise with nicer traceback
@@ -463,6 +464,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     async def _coroutine(
         cls,
         address: AnyAddressType,
+        owner: Optional[AccountsType] = None,
+        persist: bool = True,
         require_success: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
@@ -480,7 +483,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         contract = cls.__new__(cls)
         build, _ = await _get_deployment_from_db(address)
         if build:
-            contract.__init_from_abi__(build, owner=owner, persist=True)
+            contract.__init_from_abi__(build, owner=owner, persist=persist)
             contract.__finish_init(cache_ttl)
         elif not CONFIG.active_network.get("explorer"):
             raise ValueError(f"Unknown contract address: '{address}'")
@@ -512,7 +515,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     "contractName": name,
                     "type": "contract",
                 }
-                contract.__init_from_abi__(build, owner=owner, persist=True)
+                contract.__init_from_abi__(build, owner=owner, persist=persist)
                 contract.__finish_init(cache_ttl)
 
         # Cache manually since we aren't calling init
@@ -1079,42 +1082,49 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
     )
 
 
-async def _fetch_explorer_data(url, silent, **params):
-    explorer, env_key = next(
-        ((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None)
-    )
-    if env_key is not None:
-        if os.getenv(env_key):
-            params["apiKey"] = os.getenv(env_key)
-        elif not silent:
-            warnings.warn(
-                f"No {explorer} API token set. You may experience issues with rate limiting. "
-                f"Visit https://{explorer}.io/register to obtain a token, and then store it "
-                f"as the environment variable ${env_key}",
-                BrownieEnvironmentWarning,
+@lru_cache(maxsize=None):
+def _get_explorer_api_key(url) -> Tuple[str, str]:
+    explorer, env_key = next(((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None))
+    if env_key is None:
+        return None
+    if api_key := os.getenv(env_key):
+        return api_key
+    if not silent:
+        warnings.warn(
+            f"No {explorer} API token set. You may experience issues with rate limiting. "
+            f"Visit https://{explorer}.io/register to obtain a token, and then store it "
+            f"as the environment variable ${env_key}",
+            BrownieEnvironmentWarning,
+        )
+    return None
+    
+
+async def _fetch_explorer_data(url, silent, params):
+    api_key = _get_explorer_api_key(url)
+    if api_key is not None:
+        params["apiKey"] = api_key
+            
+    async with aiohttp.ClientSession() as session:
+        if not silent:
+            print(
+                f"Fetching source of {color('bright blue')}{address}{color} "
+                f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
             )
 
-    async with _explorer_semaphore:
-        async with aiohttp.ClientSession() as session:
-            if not silent:
-                print(
-                    f"Fetching source of {color('bright blue')}{address}{color} "
-                    f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
+        async with session.get(
+            url, params=params, headers=request_headers
+        ) as response:
+            # Check the status code of the response
+            if response.status != 200:
+                raise ConnectionError(
+                    f"Status {response.status} when querying {url}: {await response.text()}"
                 )
+            data = await response.json()
+            if int(data["status"]) != 1:
+                raise ValueError(f"Failed to retrieve data from API: {data}")
+            return data
 
-            async with session.get(
-                url, params=params, headers=request_headers
-            ) as response:
-                # Check the status code of the response
-                if response.status != 200:
-                    raise ConnectionError(
-                        f"Status {response.status} when querying {url}: {await response.text()}"
-                    )
-                data = await response.json()
-                if int(data["status"]) != 1:
-                    raise ValueError(f"Failed to retrieve data from API: {data}")
-                return data
-
+_fetch_explorer_data = a_sync.SmartProcessingQueue(__fetch_explorer_data, num_workers=8)
 
 async def _resolve_proxy_async(address) -> Tuple[str, List]:
     """
