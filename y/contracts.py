@@ -454,7 +454,11 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             # We do this so we don't clog the threadpool with multiple jobs for the same contract.
             # return await cls._coro_queue(
             return await cls._coroutine(
-                address, owner=owner, persist=persist, require_success=require_success, cache_ttl=cache_ttl
+                address,
+                owner=owner,
+                persist=persist,
+                require_success=require_success,
+                cache_ttl=cache_ttl,
             )
         except (ContractNotFound, exceptions._ExplorerError, CompilerError) as e:
             # re-raise with nicer traceback
@@ -1085,7 +1089,9 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
 
 @lru_cache(maxsize=None)
 def _get_explorer_api_key(url) -> Tuple[str, str]:
-    explorer, env_key = next(((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None))
+    explorer, env_key = next(
+        ((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None)
+    )
     if env_key is None:
         return None
     if api_key := os.getenv(env_key):
@@ -1098,14 +1104,14 @@ def _get_explorer_api_key(url) -> Tuple[str, str]:
             BrownieEnvironmentWarning,
         )
     return None
-    
+
 
 @eth_retry.auto_retry
 async def _fetch_explorer_data(url, silent, params):
     api_key = _get_explorer_api_key(url)
     if api_key is not None:
         params["apiKey"] = api_key
-            
+
     async with aiohttp.ClientSession() as session:
         if not silent:
             print(
@@ -1113,9 +1119,7 @@ async def _fetch_explorer_data(url, silent, params):
                 f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
             )
 
-        async with session.get(
-            url, params=params, headers=request_headers
-        ) as response:
+        async with session.get(url, params=params, headers=request_headers) as response:
             # Check the status code of the response
             if response.status != 200:
                 raise ConnectionError(
@@ -1126,7 +1130,9 @@ async def _fetch_explorer_data(url, silent, params):
                 raise ValueError(f"Failed to retrieve data from API: {data}")
             return data
 
+
 _fetch_explorer_data = a_sync.SmartProcessingQueue(__fetch_explorer_data, num_workers=8)
+
 
 async def _resolve_proxy_async(address) -> Tuple[str, List]:
     """
