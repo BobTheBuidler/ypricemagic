@@ -459,8 +459,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if build:
             async with _contract_locks[address]:
                 # now that we're inside the lock, check and see if another coro populated the cache
-                if contract := cls.get_instance(address):
-                    return contract
+                if cache_value := cls.get_instance(address):
+                    return cache_value
                     
                 # nope, continue
                 contract.__init_from_abi__(build, owner=owner, persist=persist)
@@ -490,8 +490,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             else:
                 async with _contract_locks[address]:
                     # now that we're inside the lock, check and see if another coro populated the cache
-                    if contract := cls.get_instance(address):
-                        return contract
+                    if cache_value := cls.get_instance(address):
+                        return cache_value
                         
                     # nope, continue
                     build = {
