@@ -646,7 +646,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         )
 
     def __post_init__(
-        self, 
+        self,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> None:
         super().__post_init__()
