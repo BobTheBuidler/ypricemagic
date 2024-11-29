@@ -1,8 +1,8 @@
 import asyncio
-import logging
 from collections import defaultdict
 from contextlib import suppress
 from enum import IntEnum
+from logging import DEBUG, getLogger
 from typing import (
     Any,
     AsyncIterator,
@@ -72,7 +72,7 @@ T = TypeVar("T")
 PoolId = NewType("PoolId", bytes)
 PoolBalances = Dict[ERC20, WeiBalance]
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class PoolSpecialization(IntEnum):
@@ -117,11 +117,22 @@ class BalancerV2Vault(ContractBase):
     async def pools_for_token(
         self, token: Address, block: Optional[Block] = None
     ) -> AsyncIterator["BalancerV2Pool"]:
-        async for pool, tokens in BalancerV2Pool.tokens.map(block=block).map(
-            self.pools(block=block), pop=True
-        ):
+        tasks = a_sync.map(BalancerV2Pool.tokens, block=block)
+        debug_logs = logger.isEnabledFor(DEBUG)
+        async for pool in self.pools(block=block):
+            if tokens := pool._tokens:
+                if token in tokens:
+                    if debug_logs:
+                        logger._log(DEBUG, "%s contains %s", (pool, token))
+                    yield pool
+            else:
+                # start the task now, we can await it later
+                tasks[pool]
+
+        async for pool, tokens in tasks.map(pop=True):
             if token in tokens:
-                logger.debug("%s contains %s", pool, token)
+                if debug_logs:
+                    logger._log(DEBUG, "%s contains %s", (pool, token))
                 yield pool
 
     @a_sync_ttl_cache
@@ -214,8 +225,8 @@ class BalancerV2Pool(BalancerPool):
     # internal variables to save calls in some instances
     # they do not necessarily reflect real life at all times
     # defaults are stored as class vars to keep instance dicts smaller
+    _tokens: Tuple[ERC20, ...] = None
     __nonweighted: bool = False
-    __tokens: Tuple[ERC20, ...] = None
     __weights: List[int] = None
 
     def __init__(
@@ -387,15 +398,15 @@ class BalancerV2Pool(BalancerPool):
     async def tokens(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Tuple[ERC20, ...]:
-        if self.__tokens:
-            return self.__tokens
+        if self._tokens:
+            return self._tokens
         tokens = tuple(
             (
                 await self.get_balances(block=block, skip_cache=skip_cache, sync=False)
             ).keys()
         )
         if await self.__pool_type__ in PoolSpecialization.with_immutable_tokens():
-            self.__tokens = tokens
+            self._tokens = tokens
         return tokens
 
     @a_sync_ttl_cache
