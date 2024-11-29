@@ -55,6 +55,7 @@ from y.utils.gather import gather_methods
 logger = logging.getLogger(__name__)
 
 _brownie_deployments_db_lock = threading.Lock()
+_contract_locks = defaultdict(asyncio.Lock)
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
