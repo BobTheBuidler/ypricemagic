@@ -1,6 +1,6 @@
 bobs_lazy_logging==0.0.4
 checksum_dict>=1.4.1,<2
-dank_mids>=4.20.107
+dank_mids>=4.20.108
 eth-brownie>=1.19.3,<1.21
 eth_retry>=0.1.19,<0.2
 ez-a-sync>=0.24.20
