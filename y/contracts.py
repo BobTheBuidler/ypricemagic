@@ -324,7 +324,6 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     Provides a convenient way to query contract events with minimal code.
     """
 
-    _ChecksumAddressSingletonMeta__instances: ChecksumAddressDict["Contract"]
     _ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
 
     @eth_retry.auto_retry
@@ -444,7 +443,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     ) -> Self:
 
         address = str(address)
-        if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
+        if contract := cls.get_instance(address)
             return contract
 
         # dict lookups faster than string comparisons, keep this behind the singleton check
@@ -460,7 +459,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         if build:
             async with _contract_locks[address]:
                 # now that we're inside the lock, check and see if another coro populated the cache
-                if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
+                if contract := cls.get_instance(address):
                     return contract
                     
                 # nope, continue
@@ -491,7 +490,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             else:
                 async with _contract_locks[address]:
                     # now that we're inside the lock, check and see if another coro populated the cache
-                    if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
+                    if contract := cls.get_instance(address):
                         return contract
                         
                     # nope, continue
@@ -506,7 +505,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     
         
         # Cache manually since we aren't calling init
-        cls._ChecksumAddressSingletonMeta__instances[address] = contract
+        cls[address] = contract
 
         # keep the dict small, we cache Contract instances so we won't need these in the future
         _contract_locks.pop(address, None)
@@ -523,19 +522,19 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             cache_ttl = max(contract._ttl_cache_popper, cache_ttl)
             contract._ttl_cache_popper = asyncio.get_running_loop().call_later(
                 cache_ttl,
-                cls._ChecksumAddressSingletonMeta__instances.pop,
+                cls.delete_instance,
                 contract.address,
                 None,
             )
 
         elif (
-            asyncio.get_running_loop().time() + cache_ttl
+            (loop := asyncio.get_running_loop()).time() + cache_ttl
             > contract._ttl_cache_popper.when()
         ):
             contract._ttl_cache_popper.cancel()
-            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(
+            contract._ttl_cache_popper = loop.call_later(
                 cache_ttl,
-                cls._ChecksumAddressSingletonMeta__instances.pop,
+                cls.delete_instance,
                 contract.address,
                 None,
             )
@@ -637,11 +636,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             self._ttl_cache_popper = cache_ttl
             return
 
-        cache = self._ChecksumAddressSingletonMeta__instances
-
         self._ttl_cache_popper = loop.call_later(
             cache_ttl,
-            cache.pop,
+            cls.delete_instance,
             self.address,
             None,
         )
