@@ -638,7 +638,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
         self._ttl_cache_popper = loop.call_later(
             cache_ttl,
-            cls.delete_instance,
+            type(self).delete_instance,
             self.address,
             None,
         )
