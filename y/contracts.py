@@ -2,6 +2,7 @@ import asyncio
 import logging
 import threading
 from collections import defaultdict
+from functools import lru_cache
 from typing import (
     Any,
     Callable,
@@ -1082,7 +1083,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
     )
 
 
-@lru_cache(maxsize=None):
+@lru_cache(maxsize=None)
 def _get_explorer_api_key(url) -> Tuple[str, str]:
     explorer, env_key = next(((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None))
     if env_key is None:
