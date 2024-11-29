@@ -352,12 +352,6 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             # Try to fetch the contract from the local sqlite db.
             with _brownie_deployments_db_lock:
                 super().__init__(address, owner=owner)
-            if not isinstance(self.verified, bool) and self.verified is not None:
-                logger.warning(
-                    f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
-                )
-            self.__post_init__(cache_ttl)
-            return
         except (AssertionError, IndexError) as e:
             if str(e) == "pop from an empty deque" or isinstance(e, AssertionError):
                 raise CompilerError from None
@@ -366,6 +360,14 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             logger.debug(f"{e}")
             if not str(e).startswith("Unknown contract address: "):
                 raise
+        else: # Nice, we got it from the db.
+            if not isinstance(self.verified, bool) and self.verified is not None:
+                logger.warning(
+                    f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
+                )
+            # schedule call to pop from cache
+            self._schedule_cache_pop(cache_ttl)
+            return
 
         # The contract does not exist in your local brownie deployments.db
         try:
@@ -645,10 +647,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             None,
         )
 
-    def __post_init__(
-        self,
-        cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
-    ) -> None:
+    def __post_init__(self, cache_ttl: Optional[int] = None) -> None:
         super().__post_init__()
 
         # Init an event container for each topic
