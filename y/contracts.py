@@ -352,12 +352,6 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             # Try to fetch the contract from the local sqlite db.
             with _brownie_deployments_db_lock:
                 super().__init__(address, owner=owner)
-            if not isinstance(self.verified, bool) and self.verified is not None:
-                logger.warning(
-                    f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
-                )
-            self.__finish_init(cache_ttl)
-            return
         except (AssertionError, IndexError) as e:
             if str(e) == "pop from an empty deque" or isinstance(e, AssertionError):
                 raise CompilerError from None
@@ -366,6 +360,14 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             logger.debug(f"{e}")
             if not str(e).startswith("Unknown contract address: "):
                 raise
+        else:  # Nice, we got it from the db.
+            if not isinstance(self.verified, bool) and self.verified is not None:
+                logger.warning(
+                    f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
+                )
+            # schedule call to pop from cache
+            self._schedule_cache_pop(cache_ttl)
+            return
 
         # The contract does not exist in your local brownie deployments.db
         try:
@@ -377,7 +379,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 "type": "contract",
             }
             self.__init_from_abi__(build, owner=owner, persist=True)
-            self.__finish_init(cache_ttl)
+            self.__post_init__(cache_ttl)
         except (ContractNotFound, exceptions.ContractNotVerified) as e:
             if isinstance(e, exceptions.ContractNotVerified):
                 _unverified.add(address)
@@ -428,7 +430,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             "type": "contract",
         }
         self.__init_from_abi__(build, owner, persist)
-        self.__finish_init(cache_ttl)
+        self.__post_init__(cache_ttl)
         return self
 
     @classmethod
@@ -443,7 +445,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     ) -> Self:
 
         address = str(address)
-        if contract := cls.get_instance(address)
+        if contract := cls.get_instance(address):
             return contract
 
         # dict lookups faster than string comparisons, keep this behind the singleton check
@@ -452,23 +454,23 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             ZERO_ADDRESS,
         ]:
             raise ContractNotFound(f"{address} is not a contract.") from None
-            
+
         contract = cls.__new__(cls)
         build, _ = await _get_deployment_from_db(address)
-        
+
         if build:
             async with _contract_locks[address]:
                 # now that we're inside the lock, check and see if another coro populated the cache
                 if cache_value := cls.get_instance(address):
                     return cache_value
-                    
+
                 # nope, continue
-                contract.__init_from_abi__(build, owner=owner, persist=persist)
-                contract.__finish_init(cache_ttl)
-                
+                contract.__init_from_abi__(build, owner=owner, persist=False)
+                contract.__post_init__(cache_ttl)
+
         elif not CONFIG.active_network.get("explorer"):
             raise ValueError(f"Unknown contract address: '{address}'")
-            
+
         else:
             try:
                 # The contract does not exist in your local brownie deployments.db
@@ -485,14 +487,18 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         '`Contract("%s").verified` property will not be usable due to the contract having a `verified` method in its ABI.',
                         address,
                     )
-                contract._build = {"contractName": "Non-Verified Contract" if not_verified else "Broken Contract"}
-                    
+                contract._build = {
+                    "contractName": (
+                        "Non-Verified Contract" if not_verified else "Broken Contract"
+                    )
+                }
+
             else:
                 async with _contract_locks[address]:
                     # now that we're inside the lock, check and see if another coro populated the cache
                     if cache_value := cls.get_instance(address):
                         return cache_value
-                        
+
                     # nope, continue
                     build = {
                         "abi": abi,
@@ -501,9 +507,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         "type": "contract",
                     }
                     contract.__init_from_abi__(build, owner=owner, persist=persist)
-                    contract.__finish_init(cache_ttl)
-                    
-        
+                    contract.__post_init__(cache_ttl)
+
         # Cache manually since we aren't calling init
         cls[address] = contract
 
@@ -528,9 +533,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             )
 
         elif (
-            (loop := asyncio.get_running_loop()).time() + cache_ttl
-            > contract._ttl_cache_popper.when()
-        ):
+            loop := asyncio.get_running_loop()
+        ).time() + cache_ttl > contract._ttl_cache_popper.when():
             contract._ttl_cache_popper.cancel()
             contract._ttl_cache_popper = loop.call_later(
                 cache_ttl,
@@ -539,7 +543,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 None,
             )
         return contract
-      
+
     def __init_from_abi__(
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
@@ -638,15 +642,13 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
         self._ttl_cache_popper = loop.call_later(
             cache_ttl,
-            cls.delete_instance,
+            type(self).delete_instance,
             self.address,
             None,
         )
 
-    def __finish_init(self, cache_ttl):
-        # Patch the Contract with coroutines for each method.
-        # TODO I think we can maybe remove this now, gotta check
-        dank_mids.patch_contract(self)
+    def __post_init__(self, cache_ttl: Optional[int] = None) -> None:
+        super().__post_init__()
 
         # Init an event container for each topic
         _setup_events(self)
@@ -1173,7 +1175,7 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
         name, abi, _ = await _extract_abi_data_async(as_proxy_for)
     return name, abi
 
-    
+
 _resolve_proxy_async = a_sync.SmartProcessingQueue(_resolve_proxy_async, num_workers=8)
 
 
