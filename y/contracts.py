@@ -356,7 +356,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 logger.warning(
                     f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
                 )
-            self.__finish_init(cache_ttl)
+            self.__post_init__(cache_ttl)
             return
         except (AssertionError, IndexError) as e:
             if str(e) == "pop from an empty deque" or isinstance(e, AssertionError):
@@ -377,7 +377,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 "type": "contract",
             }
             self.__init_from_abi__(build, owner=owner, persist=True)
-            self.__finish_init(cache_ttl)
+            self.__post_init__(cache_ttl)
         except (ContractNotFound, exceptions.ContractNotVerified) as e:
             if isinstance(e, exceptions.ContractNotVerified):
                 _unverified.add(address)
@@ -428,7 +428,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             "type": "contract",
         }
         self.__init_from_abi__(build, owner, persist)
-        self.__finish_init(cache_ttl)
+        self.__post_init__(cache_ttl)
         return self
 
     @classmethod
@@ -464,7 +464,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
                 # nope, continue
                 contract.__init_from_abi__(build, owner=owner, persist=persist)
-                contract.__finish_init(cache_ttl)
+                contract.__post_init__(cache_ttl)
 
         elif not CONFIG.active_network.get("explorer"):
             raise ValueError(f"Unknown contract address: '{address}'")
@@ -505,7 +505,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         "type": "contract",
                     }
                     contract.__init_from_abi__(build, owner=owner, persist=persist)
-                    contract.__finish_init(cache_ttl)
+                    contract.__post_init__(cache_ttl)
 
         # Cache manually since we aren't calling init
         cls[address] = contract
@@ -645,10 +645,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             None,
         )
 
-    def __finish_init(self, cache_ttl):
-        # Patch the Contract with coroutines for each method.
-        # TODO I think we can maybe remove this now, gotta check
-        dank_mids.patch_contract(self)
+    def __post_init__(self, cache_ttl) -> None:
+        super().__post_init__()
 
         # Init an event container for each topic
         _setup_events(self)
