@@ -360,7 +360,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             logger.debug(f"{e}")
             if not str(e).startswith("Unknown contract address: "):
                 raise
-        else: # Nice, we got it from the db.
+        else:  # Nice, we got it from the db.
             if not isinstance(self.verified, bool) and self.verified is not None:
                 logger.warning(
                     f'`Contract("{address}").verified` property will not be usable due to the contract having a `verified` method in its ABI.'
