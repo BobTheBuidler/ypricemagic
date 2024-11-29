@@ -443,7 +443,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     ) -> Self:
 
         address = str(address)
-        if contract := cls.get_instance(address)
+        if contract := cls.get_instance(address):
             return contract
 
         # dict lookups faster than string comparisons, keep this behind the singleton check
