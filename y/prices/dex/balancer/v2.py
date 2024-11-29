@@ -225,8 +225,8 @@ class BalancerV2Pool(BalancerPool):
     # internal variables to save calls in some instances
     # they do not necessarily reflect real life at all times
     # defaults are stored as class vars to keep instance dicts smaller
-    __nonweighted: bool = False
     _tokens: Tuple[ERC20, ...] = None
+    __nonweighted: bool = False
     __weights: List[int] = None
 
     def __init__(
