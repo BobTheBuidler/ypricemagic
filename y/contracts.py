@@ -529,7 +529,6 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 cache_ttl,
                 cls.delete_instance,
                 contract.address,
-                None,
             )
 
         elif (
@@ -540,7 +539,6 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 cache_ttl,
                 cls.delete_instance,
                 contract.address,
-                None,
             )
         return contract
 
@@ -644,7 +642,6 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             cache_ttl,
             type(self).delete_instance,
             self.address,
-            None,
         )
 
     def __post_init__(self, cache_ttl: Optional[int] = None) -> None:
