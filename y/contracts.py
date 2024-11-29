@@ -444,14 +444,14 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         address = str(address)
         if contract := cls._ChecksumAddressSingletonMeta__instances.get(address, None):
             return contract
-            
+
         # dict lookups faster than string comparisons, keep this behind the singleton check
         if address.lower() in [
             "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
             ZERO_ADDRESS,
         ]:
             raise ContractNotFound(f"{address} is not a contract.") from None
-            
+
         try:
             # We do this so we don't clog the threadpool with multiple jobs for the same contract.
             return await cls._coroutine(
@@ -486,7 +486,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         Returns:
             A Contract instance for the given address.
         """
-        
+
         contract = cls.__new__(cls)
         build, _ = await _get_deployment_from_db(address)
         if build:
@@ -559,6 +559,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         return contract
 
     _coroutine = a_sync.SmartProcessingQueue
+
     def __init_from_abi__(
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
