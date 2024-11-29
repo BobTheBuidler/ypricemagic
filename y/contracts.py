@@ -465,7 +465,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     return cache_value
 
                 # nope, continue
-                contract.__init_from_abi__(build, owner=owner, persist=persist)
+                contract.__init_from_abi__(build, owner=owner, persist=False)
                 contract.__post_init__(cache_ttl)
 
         elif not CONFIG.active_network.get("explorer"):
