@@ -506,7 +506,12 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         address,
                     )
             else:
-                build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
+                build = {
+                    "abi": abi,
+                    "address": address,
+                    "contractName": name,
+                    "type": "contract",
+                }
                 contract.__init_from_abi__(build, owner=owner, persist=True)
                 contract.__finish_init(cache_ttl)
 
