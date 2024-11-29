@@ -478,22 +478,16 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             A Contract instance for the given address.
         """
         contract = cls.__new__(cls)
-        build, sources = await _get_deployment_from_db(address)
-        if build is None or sources is None:
-            if not CONFIG.active_network.get("explorer"):
-                raise ValueError(f"Unknown contract address: '{address}'")
-
-            # The contract does not exist in your local brownie deployments.db
+        build, _ = await _get_deployment_from_db(address)
+        if build:
+            contract.__init_from_abi__(build, owner=owner, persist=True)
+            contract.__finish_init(cache_ttl)
+        elif not CONFIG.active_network.get("explorer"):
+            raise ValueError(f"Unknown contract address: '{address}'")
+        else:
             try:
+                # The contract does not exist in your local brownie deployments.db
                 name, abi = await _resolve_proxy_async(address)
-                build = {
-                    "abi": abi,
-                    "address": address,
-                    "contractName": name,
-                    "type": "contract",
-                }
-                contract.__init_from_abi__(build, owner=owner, persist=True)
-                contract.__finish_init(cache_ttl)
             except (ContractNotFound, exceptions.ContractNotVerified) as e:
                 if isinstance(e, exceptions.ContractNotVerified):
                     _unverified.add(address)
@@ -511,6 +505,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         '`Contract("%s").verified` property will not be usable due to the contract having a `verified` method in its ABI.',
                         address,
                     )
+            else:
+                build = {"abi": abi, "address": address, "contractName": name, "type": "contract"}
+                contract.__init_from_abi__(build, owner=owner, persist=True)
+                contract.__finish_init(cache_ttl)
 
         # Cache manually since we aren't calling init
         cls._ChecksumAddressSingletonMeta__instances[address] = contract
