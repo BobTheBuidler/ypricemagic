@@ -1099,6 +1099,7 @@ def _get_explorer_api_key(url) -> Tuple[str, str]:
     return None
     
 
+@eth_retry.auto_retry
 async def _fetch_explorer_data(url, silent, params):
     api_key = _get_explorer_api_key(url)
     if api_key is not None:
