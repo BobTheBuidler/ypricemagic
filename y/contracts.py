@@ -22,6 +22,7 @@ import aiohttp
 import dank_mids
 import eth_retry
 from brownie import ZERO_ADDRESS, chain, web3
+from brownie._config import CONFIG
 from brownie.exceptions import CompilerError, ContractNotFound
 from brownie.network.contract import (
     ContractEvents,
