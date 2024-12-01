@@ -25,7 +25,11 @@ import dank_mids
 import eth_retry
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
-from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
+from brownie.exceptions import (
+    BrownieEnvironmentWarning,
+    CompilerError,
+    ContractNotFound,
+)
 from brownie.network.contract import (
     ContractEvents,
     _add_deployment,
