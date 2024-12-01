@@ -135,6 +135,12 @@
 <span class="sd">        &gt;&gt;&gt; tokens = await get_tokens(&quot;0x1b92b5242301ce4a8c73cc3ef0d6dee33a3a5b23&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(tokens)</span>
 <span class="sd">        (&#39;0x...&#39;, &#39;0x...&#39;, &#39;0x...&#39;)  # Addresses of SY, PT, and YT tokens</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        The function returns the result of the `readTokens` method from the Pendle LP contract, which provides the addresses of the underlying tokens.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`is_pendle_lp` for checking if a token is a Pendle LP token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">lp_token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">lp_token</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">lp_token</span><span class="o">.</span><span class="n">readTokens</span></div>
@@ -164,8 +170,10 @@
 <span class="sd">        1.234567  # The price of the Pendle LP token in USD</span>
 
 <span class="sd">    Note:</span>
-<span class="sd">        This function uses the Pendle Oracle contract to get the LP to asset rate and then</span>
-<span class="sd">        calculates the USD price based on the underlying asset&#39;s price.</span>
+<span class="sd">        This function retrieves the LP to asset rate using the Pendle Oracle contract and calculates the LP token price by multiplying the LP to asset rate by the asset&#39;s price in USD.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_tokens` for retrieving the tokens in a Pendle LP token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tokens</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>  <span class="c1"># force to string for cache key</span>
     <span class="c1"># NOTE: we might not need this, leave it commented out for now</span>

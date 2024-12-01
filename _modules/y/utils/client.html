@@ -95,13 +95,21 @@
 <span class="sd">    Get the Ethereum client type for the current connection.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A string representing the Ethereum client type.</span>
+<span class="sd">        A string representing the Ethereum client type, such as &#39;geth&#39;, &#39;erigon&#39;, or &#39;tg&#39;.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from y.utils.client import get_ethereum_client</span>
 <span class="sd">        &gt;&gt;&gt; client = get_ethereum_client()</span>
 <span class="sd">        &gt;&gt;&gt; print(client)</span>
 <span class="sd">        &#39;geth&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; # Example with a different client</span>
+<span class="sd">        &gt;&gt;&gt; client = get_ethereum_client()</span>
+<span class="sd">        &gt;&gt;&gt; print(client)</span>
+<span class="sd">        &#39;erigon&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_ethereum_client_async` for the asynchronous version of this function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="c1"># web3py &lt; 6.0</span>
@@ -121,13 +129,21 @@
 <span class="sd">    Asynchronously get the Ethereum client type for the current connection.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A string representing the Ethereum client type.</span>
+<span class="sd">        A string representing the Ethereum client type, such as &#39;geth&#39;, &#39;erigon&#39;, or &#39;tg&#39;.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from y.utils.client import get_ethereum_client_async</span>
 <span class="sd">        &gt;&gt;&gt; client = await get_ethereum_client_async()</span>
 <span class="sd">        &gt;&gt;&gt; print(client)</span>
 <span class="sd">        &#39;erigon&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; # Example with a different client</span>
+<span class="sd">        &gt;&gt;&gt; client = await get_ethereum_client_async()</span>
+<span class="sd">        &gt;&gt;&gt; print(client)</span>
+<span class="sd">        &#39;tg&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_ethereum_client` for the synchronous version of this function.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_get_ethereum_client</span><span class="p">(</span>
         <span class="k">await</span> <span class="n">dank_web3</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">coro_request</span><span class="p">(</span><span class="n">RPC</span><span class="o">.</span><span class="n">web3_clientVersion</span><span class="p">,</span> <span class="p">[])</span>
@@ -144,13 +160,18 @@
 <span class="sd">        client: A string containing the client version information.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A string representing the Ethereum client type.</span>
+<span class="sd">        A string representing the Ethereum client type, such as &#39;geth&#39;, &#39;erigon&#39;, or &#39;tg&#39;.</span>
 
-<span class="sd">    Example:</span>
+<span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; from y.utils.client import _get_ethereum_client</span>
 <span class="sd">        &gt;&gt;&gt; client_type = _get_ethereum_client(&quot;Geth/v1.10.23-stable/linux-amd64/go1.18.7&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(client_type)</span>
 <span class="sd">        &#39;geth&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; # Example with a different client version</span>
+<span class="sd">        &gt;&gt;&gt; client_type = _get_ethereum_client(&quot;Erigon/v2021.07.2/linux-amd64/go1.16.5&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(client_type)</span>
+<span class="sd">        &#39;erigon&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;client: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">client</span><span class="p">)</span>
     <span class="k">return</span> <span class="nb">next</span><span class="p">(</span>

@@ -79,9 +79,15 @@
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network">[docs]</a>
 <span class="k">class</span> <span class="nc">Network</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A lightweight enum that enables lookup of chainids for popular blockchain networks.</span>
+<span class="sd">    A lightweight enum that enables lookup of chain IDs for popular blockchain networks.</span>
 
 <span class="sd">    Each network is associated with its unique integer Chain ID.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; Network.Mainnet</span>
+<span class="sd">        &lt;Network.Mainnet: 1&gt;</span>
+<span class="sd">        &gt;&gt;&gt; Network.Mainnet.value</span>
+<span class="sd">        1</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># NOTE: If a particular network has changed names, do not remove</span>
@@ -140,6 +146,23 @@
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network.label">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">label</span><span class="p">(</span><span class="n">chain_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the label (abbreviation) for a given chain ID.</span>
+
+<span class="sd">        If no chain ID is provided, it defaults to the current active chain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chain_id: The chain ID of the network.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; Network.label(Network.Mainnet)</span>
+<span class="sd">            &#39;ETH&#39;</span>
+<span class="sd">            &gt;&gt;&gt; Network.label()</span>
+<span class="sd">            &#39;ETH&#39;  # Assuming the current active chain is Mainnet</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :meth:`Network.name` for getting the full name of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">chain_id</span><span class="p">:</span>
             <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
 
@@ -179,6 +202,23 @@
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network.name">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="n">chain_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the full name of a network for a given chain ID.</span>
+
+<span class="sd">        If no chain ID is provided, it defaults to the current active chain.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chain_id: The chain ID of the network.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; Network.name(Network.Mainnet)</span>
+<span class="sd">            &#39;Mainnet&#39;</span>
+<span class="sd">            &gt;&gt;&gt; Network.name()</span>
+<span class="sd">            &#39;Mainnet&#39;  # Assuming the current active chain is Mainnet</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :meth:`Network.label` for getting the abbreviation of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">chain_id</span><span class="p">:</span>
             <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
 
@@ -218,7 +258,20 @@
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network.printable">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">printable</span><span class="p">(</span><span class="n">chain_id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-        <span class="c1"># will always work to print a readable string that identifies the network, even if network not supported</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a printable string that identifies the network.</span>
+
+<span class="sd">        If the network is not supported, it returns a generic string with the chain ID.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            chain_id: The chain ID of the network.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; Network.printable(Network.Mainnet)</span>
+<span class="sd">            &#39;Mainnet&#39;</span>
+<span class="sd">            &gt;&gt;&gt; Network.printable(9999)</span>
+<span class="sd">            &#39;chain 9999&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
         <span class="k">return</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">chain_id</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;chain </span><span class="si">{</span><span class="n">chain_id</span><span class="si">}</span><span class="s2">&quot;</span></div>

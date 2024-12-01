@@ -117,9 +117,38 @@
 <div class="viewcode-block" id="Band">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band">[docs]</a>
 <span class="k">class</span> <span class="nc">Band</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A class to interact with the Band Protocol oracle on supported networks.</span>
+
+<span class="sd">    This class provides methods to check asset support and fetch prices using the Band Protocol oracle.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        UnsupportedNetwork: If the Band Protocol is not supported on the current network.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; band = Band(asynchronous=True)</span>
+<span class="sd">        &gt;&gt;&gt; &quot;0xaf319E5789945197e365E7f7fbFc56B130523B33&quot; in band</span>
+<span class="sd">        True</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`a_sync.ASyncGenericSingleton`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="Band.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the Band class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            UnsupportedNetwork: If the Band Protocol is not supported on the current network.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; band = Band(asynchronous=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;band is not supported on this network&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
@@ -129,6 +158,17 @@
 <div class="viewcode-block" id="Band.__contains__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.__contains__">[docs]</a>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if an asset is supported by the Band Protocol on the current network.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asset: The asset address or contract to check.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; band = Band(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; &quot;0xaf319E5789945197e365E7f7fbFc56B130523B33&quot; in band</span>
+<span class="sd">            True</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">addresses</span> <span class="ow">and</span> <span class="n">asset</span> <span class="ow">in</span> <span class="n">supported_assets</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span></div>
 
 
@@ -136,6 +176,13 @@
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.band.Band.oracle">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the Band Protocol oracle contract for the current network.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; band = Band(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; oracle = await band.oracle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">addresses</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">])</span></div>
 
 
@@ -146,6 +193,22 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the price of an asset in terms of USDC using the Band Protocol oracle.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asset: The asset address to get the price for.</span>
+<span class="sd">            block: The block number to query the price at. Defaults to the latest block.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The price of the asset in terms of USDC, or None if the price cannot be fetched.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; band = Band(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; price = await band.get_price(&quot;0xaf319E5789945197e365E7f7fbFc56B130523B33&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(price)</span>
+<span class="sd">            1.0</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">oracle</span><span class="p">,</span> <span class="n">asset_symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__oracle__</span><span class="p">,</span>
             <span class="n">ERC20</span><span class="p">(</span><span class="n">asset</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>

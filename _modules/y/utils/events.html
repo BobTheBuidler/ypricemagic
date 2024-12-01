@@ -75,7 +75,7 @@
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">partial</span>
 <span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">version</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">zip_longest</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
@@ -99,7 +99,6 @@
 <span class="kn">from</span> <span class="nn">a_sync.executor</span> <span class="kn">import</span> <span class="n">_AsyncExecutorMixin</span>
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">web3</span>
-<span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">_EventItem</span><span class="p">,</span>
     <span class="n">_add_deployment_topics</span><span class="p">,</span>
@@ -116,7 +115,7 @@
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y._db.common</span> <span class="kn">import</span> <span class="n">Filter</span><span class="p">,</span> <span class="n">_clean_addresses</span>
-<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">reraise_excs_with_extra_context</span>
 <span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">memory</span>
 <span class="kn">from</span> <span class="nn">y.utils.middleware</span> <span class="kn">import</span> <span class="n">BATCH_SIZE</span>
@@ -143,6 +142,20 @@
     <span class="c1"># NOTE: we want to ensure backward-compatability with LogReceipt</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Decode logs to events and enrich them with additional info.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        logs: An iterable of :class:`~web3.types.LogReceipt` or :class:`~evmspec.log.Log` objects.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An :class:`~brownie.network.event.EventDict` containing decoded events.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = [LogReceipt(...), LogReceipt(...)]</span>
+<span class="sd">        &gt;&gt;&gt; events = decode_logs(logs)</span>
+<span class="sd">        &gt;&gt;&gt; print(events)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`~brownie.network.event.EventDict`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">logs</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">EventDict</span><span class="p">()</span>
@@ -206,6 +219,9 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs as soon as possible.</span>
 
+<span class="sd">    This function fetches raw logs from the blockchain within the specified block range.</span>
+<span class="sd">    The logs are not decoded; use :func:`decode_logs` to decode them if needed.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the contract to fetch logs from.</span>
 <span class="sd">        topics: The event topics to filter logs by.</span>
@@ -214,7 +230,19 @@
 <span class="sd">        verbose: Verbosity level for logging.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of decoded event logs.</span>
+<span class="sd">        A list of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Synchronous usage:</span>
+<span class="sd">        &gt;&gt;&gt; logs = get_logs_asap(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100)</span>
+<span class="sd">        &gt;&gt;&gt; decoded_logs = decode_logs(logs)</span>
+
+<span class="sd">        Asynchronous usage:</span>
+<span class="sd">        &gt;&gt;&gt; logs = await get_logs_asap(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100, sync=False)</span>
+<span class="sd">        &gt;&gt;&gt; decoded_logs = decode_logs(logs)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`decode_logs`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">from_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
@@ -251,6 +279,10 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get logs as soon as possible in a generator.</span>
 
+<span class="sd">    This function fetches raw logs from the blockchain within the specified block range</span>
+<span class="sd">    and yields them as they are retrieved. The logs are not decoded; use :func:`decode_logs`</span>
+<span class="sd">    to decode them if needed.</span>
+
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the contract to fetch logs from.</span>
 <span class="sd">        topics: The event topics to filter logs by.</span>
@@ -262,7 +294,14 @@
 <span class="sd">        verbose: Verbosity level for logging.</span>
 
 <span class="sd">    Yields:</span>
-<span class="sd">        Lists of decoded event logs.</span>
+<span class="sd">        Lists of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; async for logs in get_logs_asap_generator(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100):</span>
+<span class="sd">        ...     decoded_logs = decode_logs(logs)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`decode_logs`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># NOTE: If you don&#39;t need the logs in order, you will get your logs faster if you set `chronological` to False.</span>
 
@@ -324,9 +363,20 @@
 
 <div class="viewcode-block" id="logs_to_balance_checkpoints">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.logs_to_balance_checkpoints">[docs]</a>
-<span class="k">def</span> <span class="nf">logs_to_balance_checkpoints</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="k">def</span> <span class="nf">logs_to_balance_checkpoints</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ChecksumAddress</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert Transfer logs to `{address: {from_block: balance}}` checkpoints.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        logs: An iterable of logs to convert.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary mapping addresses to balance checkpoints.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = [Log(...), Log(...)]</span>
+<span class="sd">        &gt;&gt;&gt; checkpoints = logs_to_balance_checkpoints(logs)</span>
+<span class="sd">        &gt;&gt;&gt; print(checkpoints)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">balances</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">()</span>
     <span class="n">checkpoints</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
@@ -350,6 +400,22 @@
 <div class="viewcode-block" id="checkpoints_to_weight">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.checkpoints_to_weight">[docs]</a>
 <span class="k">def</span> <span class="nf">checkpoints_to_weight</span><span class="p">(</span><span class="n">checkpoints</span><span class="p">,</span> <span class="n">start_block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">end_block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the weight of checkpoints between two blocks.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        checkpoints: A dictionary of checkpoints.</span>
+<span class="sd">        start_block: The starting block number.</span>
+<span class="sd">        end_block: The ending block number.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The calculated weight.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; checkpoints = {0: 100, 10: 200}</span>
+<span class="sd">        &gt;&gt;&gt; weight = checkpoints_to_weight(checkpoints, 0, 10)</span>
+<span class="sd">        &gt;&gt;&gt; print(weight)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="ow">in</span> <span class="n">zip_longest</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">checkpoints</span><span class="p">),</span> <span class="nb">list</span><span class="p">(</span><span class="n">checkpoints</span><span class="p">)[</span><span class="mi">1</span><span class="p">:]):</span>
         <span class="k">if</span> <span class="n">a</span> <span class="o">&lt;</span> <span class="n">start_block</span> <span class="ow">or</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">end_block</span><span class="p">:</span>
@@ -379,7 +445,11 @@
 <span class="sd">        end: The ending block to fetch logs to.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of decoded event logs.</span>
+<span class="sd">        A list of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = _get_logs(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100)</span>
+<span class="sd">        &gt;&gt;&gt; print(logs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">==</span> <span class="n">BATCH_SIZE</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">response</span> <span class="o">=</span> <span class="n">_get_logs_batch_cached</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
@@ -420,7 +490,11 @@
 <span class="sd">        end: The ending block to fetch logs to.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of decoded event logs.</span>
+<span class="sd">        A list of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = await _get_logs_async(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100)</span>
+<span class="sd">        &gt;&gt;&gt; print(logs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">get_logs_semaphore</span><span class="p">[</span><span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()][</span><span class="n">end</span><span class="p">]:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -440,7 +514,11 @@
 <span class="sd">        end: The ending block to fetch logs to.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of decoded event logs.</span>
+<span class="sd">        A list of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = await _get_logs_async_no_cache(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100)</span>
+<span class="sd">        &gt;&gt;&gt; print(logs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">address</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -502,7 +580,11 @@
 <span class="sd">        end: The ending block to fetch logs to.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of decoded event logs.</span>
+<span class="sd">        A list of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = _get_logs_no_cache(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100)</span>
+<span class="sd">        &gt;&gt;&gt; print(logs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;fetching logs </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
@@ -566,7 +648,11 @@
 <span class="sd">        end: The ending block to fetch logs to.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A list of decoded event logs.</span>
+<span class="sd">        A list of raw logs.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; logs = _get_logs_batch_cached(&quot;0x1234...&quot;, [&quot;0x5678...&quot;], 1000000, 1000100)</span>
+<span class="sd">        &gt;&gt;&gt; print(logs)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_get_logs_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
 
@@ -576,6 +662,8 @@
 <span class="k">class</span> <span class="nc">LogFilter</span><span class="p">(</span><span class="n">Filter</span><span class="p">[</span><span class="n">Log</span><span class="p">,</span> <span class="s2">&quot;LogCache&quot;</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A filter for fetching and processing event logs.</span>
+
+<span class="sd">    This class provides methods to fetch logs from the blockchain and process them.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;addresses&quot;</span><span class="p">,</span> <span class="s2">&quot;topics&quot;</span><span class="p">,</span> <span class="s2">&quot;from_block&quot;</span>
@@ -608,6 +696,11 @@
 <span class="sd">            executor: An executor for running tasks asynchronously.</span>
 <span class="sd">            is_reusable: Whether the filter is reusable.</span>
 <span class="sd">            verbose: Verbosity level for logging.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; log_filter = LogFilter(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; logs = log_filter.logs(1000100)</span>
+<span class="sd">            &gt;&gt;&gt; print(logs)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">addresses</span> <span class="o">=</span> <span class="n">_clean_addresses</span><span class="p">(</span><span class="n">addresses</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="n">topics</span>
@@ -649,7 +742,12 @@
 <span class="sd">            to_block: The ending block to fetch logs to.</span>
 
 <span class="sd">        Yields:</span>
-<span class="sd">            A decoded event log.</span>
+<span class="sd">            A raw log.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; log_filter = LogFilter(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; logs = log_filter.logs(1000100)</span>
+<span class="sd">            &gt;&gt;&gt; print(logs)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
@@ -672,10 +770,14 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A function for bulk inserting logs.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; log_filter = LogFilter(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; await log_filter.bulk_insert(logs)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">y._db.utils.logs</span> <span class="kn">import</span> <span class="n">bulk_insert</span>
 
-        <span class="k">return</span> <span class="n">bulk_insert</span>
+        <span class="k">return</span> <span class="n">partial</span><span class="p">(</span><span class="n">bulk_insert</span><span class="p">,</span> <span class="n">executor</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="p">)</span>
 
     <span class="nd">@async_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_from_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -684,6 +786,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The starting block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; log_filter = LogFilter(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; start_block = await log_filter._from_block</span>
+<span class="sd">            &gt;&gt;&gt; print(start_block)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
@@ -711,7 +818,12 @@
 <span class="sd">            range_end: The ending block of the range.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A list of decoded event logs.</span>
+<span class="sd">            A list of raw logs.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; log_filter = LogFilter(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; logs = await log_filter._fetch_range(1000000, 1000100)</span>
+<span class="sd">            &gt;&gt;&gt; print(logs)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tries</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
@@ -727,6 +839,10 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch logs indefinitely, starting from the specified block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; log_filter = LogFilter(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; await log_filter._fetch()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">from_block</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_from_block</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">(</span><span class="n">from_block</span><span class="p">)</span>
@@ -740,6 +856,8 @@
 <span class="k">class</span> <span class="nc">Events</span><span class="p">(</span><span class="n">LogFilter</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for fetching and processing events.</span>
+
+<span class="sd">    This class extends :class:`LogFilter` to provide additional functionality for handling events.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">obj_type</span> <span class="o">=</span> <span class="n">_EventItem</span>
@@ -755,18 +873,28 @@
 
 <span class="sd">        Yields:</span>
 <span class="sd">            A decoded event.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; events = Events(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; async for event in events.events(1000100):</span>
+<span class="sd">            ...     print(event)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extend the list of events with decoded logs.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            objs: A list of raw event logs.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; events = Events(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; await events._extend(logs)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">decode_logs</span><span class="p">(</span><span class="n">objs</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">logs</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">decode_logs</span><span class="p">,</span> <span class="n">logs</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -777,6 +905,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The block number.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; events = Events(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; block_number = events._get_block_for_obj(event)</span>
+<span class="sd">            &gt;&gt;&gt; print(block_number)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">block_number</span>
 
@@ -789,6 +922,8 @@
 <span class="k">class</span> <span class="nc">ProcessedEvents</span><span class="p">(</span><span class="n">Events</span><span class="p">,</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">]):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    A class for fetching, processing, and iterating over events.</span>
+
+<span class="sd">    This class extends :class:`Events` to provide additional functionality for processing events.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
@@ -805,6 +940,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The processed event.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; result = processed_events._process_event(event)</span>
+<span class="sd">            &gt;&gt;&gt; print(result)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="ProcessedEvents.objects">
@@ -818,6 +958,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An :class:`~a_sync.ASyncIterator` that yields all included events.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; async for event in processed_events.objects(1000100):</span>
+<span class="sd">            ...     print(event)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
 
@@ -828,15 +973,19 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            logs: A list of raw event logs.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; await processed_events._extend(logs)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># .items() keeps the input order but yields them as they&#39;re ready</span>
-        <span class="n">decoded</span> <span class="o">=</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
-        <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-            <span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">decoded</span><span class="p">]</span>
-        <span class="p">)</span>
-        <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="n">should_include</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_event</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">logs</span><span class="p">:</span>
+            <span class="n">decoded</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">decode_logs</span><span class="p">,</span> <span class="n">logs</span><span class="p">)</span>
+            <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                <span class="o">*</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">decoded</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="n">should_include</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_event</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -847,6 +996,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True if the event should be included, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; include = await processed_events.__include_event(event)</span>
+<span class="sd">            &gt;&gt;&gt; print(include)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># sourcery skip: assign-if-exp</span>
         <span class="n">include</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
@@ -861,7 +1015,7 @@
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_lowest_deploy_block</span><span class="p">(</span>
-    <span class="n">addresses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">],</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="n">addresses</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">],</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Block</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the lowest deployment block for a list of addresses.</span>
@@ -872,6 +1026,11 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The lowest deployment block.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; addresses = [&quot;0x1234...&quot;, &quot;0x5678...&quot;]</span>
+<span class="sd">        &gt;&gt;&gt; block = await _lowest_deploy_block(addresses, True)</span>
+<span class="sd">        &gt;&gt;&gt; print(block)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">contract_creation_block_async</span>
 

@@ -156,11 +156,25 @@
 <span class="k">class</span> <span class="nc">Gearbox</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
 <div class="viewcode-block" id="Gearbox.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.gearbox.Gearbox.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a Gearbox instance.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            UnsupportedNetwork: If the current network is not Ethereum Mainnet.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asynchronous: Whether to use asynchronous operations. Defaults to False.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; from y.prices.gearbox import Gearbox</span>
+<span class="sd">            &gt;&gt;&gt; gearbox = Gearbox(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; # This will raise an UnsupportedNetwork exception if not on Mainnet</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;gearbox not supported on this network&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_dtokens</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">DieselPool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_dtokens</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">DieselPool</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="Gearbox.registry">

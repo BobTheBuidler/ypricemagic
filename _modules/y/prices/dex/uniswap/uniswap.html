@@ -114,12 +114,29 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.uniswap.UniswapMultiplexer">[docs]</a>
 <span class="k">class</span> <span class="nc">UniswapMultiplexer</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances and/or forks.</span>
+<span class="sd">    A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances,</span>
+<span class="sd">    including Uniswap V1, V2, V3, and certain protocols with similar interfaces like Solidly and Velodrome.</span>
+
+<span class="sd">    This class allows for seamless interaction with various decentralized exchange protocols, enabling</span>
+<span class="sd">    price fetching and liquidity checks across different router implementations.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; multiplexer = UniswapMultiplexer(asynchronous=True)</span>
+<span class="sd">        &gt;&gt;&gt; price = await multiplexer.get_price(&quot;0xTokenAddress&quot;, block=12345678)</span>
+<span class="sd">        &gt;&gt;&gt; print(price)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`~y.prices.dex.uniswap.v1.UniswapV1`</span>
+<span class="sd">        - :class:`~y.prices.dex.uniswap.v2.UniswapRouterV2`</span>
+<span class="sd">        - :class:`~y.prices.dex.uniswap.v3.UniswapV3`</span>
+<span class="sd">        - :class:`~y.prices.dex.solidly.SolidlyRouter`</span>
+<span class="sd">        - :class:`~y.prices.dex.velodrome.VelodromeRouterV2`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UniswapMultiplexer.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v2_routers</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">UNISWAPS</span><span class="p">:</span>
@@ -153,7 +170,7 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.uniswap.UniswapMultiplexer.is_uniswap_pool">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">is_uniswap_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="n">token_address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
+        <span class="n">token_address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">decimals</span>
         <span class="k">except</span> <span class="n">NonStandardERC20</span><span class="p">:</span>
@@ -185,9 +202,23 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate a price based on Uniswap Router quote for selling one `token_in`.</span>
 <span class="sd">        Always finds the deepest swap path for `token_in`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_in: The address of the input token.</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            ignore_pools: A tuple of Pool objects to ignore when checking liquidity.</span>
+<span class="sd">            skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; multiplexer = UniswapMultiplexer(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; price = await multiplexer.get_price(&quot;0xTokenAddress&quot;, block=12345678)</span>
+<span class="sd">            &gt;&gt;&gt; print(price)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`~UniswapMultiplexer.routers_by_depth`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">router</span><span class="p">:</span> <span class="n">Uniswap</span>
-        <span class="n">token_in</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token_in</span><span class="p">)</span>
+        <span class="n">token_in</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token_in</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
         <span class="n">routers_by_depth</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">routers_by_depth</span><span class="p">(</span>
             <span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -235,8 +266,13 @@
 <span class="sd">        Note:</span>
 <span class="sd">            - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.</span>
 <span class="sd">            - Routers with zero liquidity are excluded from the result.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; multiplexer = UniswapMultiplexer(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; routers = await multiplexer.routers_by_depth(&quot;0xTokenAddress&quot;, block=12345678)</span>
+<span class="sd">            &gt;&gt;&gt; print(routers)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">token_in</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token_in</span><span class="p">)</span>
+        <span class="n">token_in</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token_in</span><span class="p">)</span>
         <span class="n">depth_to_router</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span>
                 <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -278,12 +314,14 @@
 <span class="sd">            block: The block number to query.</span>
 <span class="sd">            ignore_pools (optional): A tuple of Pool objects to ignore when checking liquidity.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            The maximum liquidity found for the token across all Uniswap instances.</span>
-
 <span class="sd">        Note:</span>
 <span class="sd">            - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.</span>
 <span class="sd">            - A semaphore is used to limit the number of concurrent checks to 100.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; multiplexer = UniswapMultiplexer(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; liquidity = await multiplexer.check_liquidity(&quot;0xTokenAddress&quot;, block=12345678)</span>
+<span class="sd">            &gt;&gt;&gt; print(liquidity)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>

@@ -70,8 +70,8 @@
              
   <h1>Source code for y.utils.logging</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">weakref</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">StreamHandler</span><span class="p">,</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">_lock</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -88,12 +88,31 @@
 
 <span class="n">yLazyLogger</span> <span class="o">=</span> <span class="n">LazyLoggerFactory</span><span class="p">(</span><span class="s2">&quot;YPRICEMAGIC&quot;</span><span class="p">)</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="enable_debug_logging">
+<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.enable_debug_logging">[docs]</a>
+<span class="k">def</span> <span class="nf">enable_debug_logging</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Enables ypricemagic&#39;s debugging mode. Very verbose.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        logger: The name of the logger to enable debugging for. Defaults to &quot;y&quot;.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; enable_debug_logging(&quot;y&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">StreamHandler</span><span class="p">())</span></div>
+
 
 
 <div class="viewcode-block" id="PriceLogger">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.PriceLogger">[docs]</a>
-<span class="k">class</span> <span class="nc">PriceLogger</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">PriceLogger</span><span class="p">(</span><span class="n">Logger</span><span class="p">):</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="n">address</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">block</span><span class="p">:</span> <span class="nb">int</span>
@@ -102,7 +121,11 @@
 
 <div class="viewcode-block" id="PriceLogger.close">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.PriceLogger.close">[docs]</a>
-    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span></div>
+    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># since we make a lot of these we don&#39;t want logging module to cache them</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;closing </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">_lock</span><span class="p">:</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">loggerDict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
 </div>
 
 
@@ -117,44 +140,70 @@
     <span class="n">extra</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
     <span class="n">start_task</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PriceLogger</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create or retrieve a `PriceLogger` instance for a given token address and block.</span>
+
+<span class="sd">    This function manages a cache of loggers to ensure they have the proper members for ypricemagic.</span>
+<span class="sd">    If a logger is enabled for DEBUG, it will start a debug task if specified.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token.</span>
+<span class="sd">        block: The block number.</span>
+<span class="sd">        symbol: An optional symbol for the token.</span>
+<span class="sd">        extra: An optional extra string to append to the logger name.</span>
+<span class="sd">        start_task: Whether to start a debug task. Defaults to False.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; logger = get_price_logger(&quot;0xTokenAddress&quot;, 123456)</span>
+<span class="sd">        &gt;&gt;&gt; logger.debug(&quot;This is a debug message.&quot;)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`enable_debug_logging`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
     <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;y.prices.</span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">label</span><span class="p">()</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">block</span><span class="si">}</span><span class="s2">&quot;</span>
     <span class="k">if</span> <span class="n">extra</span><span class="p">:</span>
         <span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&quot;</span>
+
     <span class="c1"># the built-in logging module caches loggers but we need to make sure they have the proper members for ypm</span>
     <span class="k">if</span> <span class="n">cached_logger</span> <span class="o">:=</span> <span class="n">_all_price_loggers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">cached_logger</span>
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">block</span> <span class="o">=</span> <span class="n">block</span>
-    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">level</span> <span class="o">!=</span> <span class="n">logger</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">level</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">start_task</span> <span class="ow">and</span> <span class="n">logger</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
-        <span class="c1"># will kill itself when this logger is garbage collected</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug_task</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-            <span class="n">coro</span><span class="o">=</span><span class="n">_debug_tsk</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">logger</span><span class="p">)),</span>
-            <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_debug_tsk(</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">logger</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
-            <span class="n">log_destroy_pending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+            <span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
         <span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">_close_logger</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">start_task</span><span class="p">:</span>
+            <span class="c1"># will kill itself when this logger is garbage collected</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug_task</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
+                <span class="n">coro</span><span class="o">=</span><span class="n">_debug_tsk</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">logger</span><span class="p">)),</span>
+                <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_debug_tsk(</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">logger</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
+                <span class="n">log_destroy_pending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">_noop</span>
+
+    <span class="n">logger</span><span class="o">.</span><span class="n">close</span> <span class="o">=</span> <span class="n">MethodType</span><span class="p">(</span><span class="n">PriceLogger</span><span class="o">.</span><span class="n">close</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
+
     <span class="n">_all_price_loggers</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">logger</span>
     <span class="k">return</span> <span class="n">logger</span></div>
 
 
 
-<span class="k">def</span> <span class="nf">_close_logger</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="n">PriceLogger</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="c1"># since we make a lot of these we don&#39;t want logging module to cache them</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;closing </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">logger</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">acquire</span><span class="p">()</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">loggerDict</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">logger</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">release</span><span class="p">()</span>
+<span class="k">def</span> <span class="nf">_noop</span><span class="p">(</span><span class="o">*</span><span class="n">_a</span><span class="p">,</span> <span class="o">**</span><span class="n">_k</span><span class="p">):</span> <span class="o">...</span>
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_debug_tsk</span><span class="p">(</span>
-    <span class="n">symbol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">logger_ref</span><span class="p">:</span> <span class="s2">&quot;weakref.ref[logging.Logger]&quot;</span>
+    <span class="n">symbol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">logger_ref</span><span class="p">:</span> <span class="s2">&quot;weakref.ref[Logger]&quot;</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints a log every 1 minute until the creating coro returns&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints a log every 1 minute until the creating coro returns.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">symbol</span><span class="p">:</span>
         <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;price still fetching for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">symbol</span>
     <span class="k">else</span><span class="p">:</span>
@@ -172,16 +221,6 @@
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="enable_debug_logging">
-<a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.enable_debug_logging">[docs]</a>
-<span class="k">def</span> <span class="nf">enable_debug_logging</span><span class="p">(</span><span class="n">logger</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;y&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">())</span></div>
-
-
-
 <span class="n">NETWORK_DESCRIPTOR_FOR_ISSUE_REQ</span> <span class="o">=</span> <span class="p">(</span>
     <span class="sa">f</span><span class="s2">&quot;name (</span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="si">}</span><span class="s2">)&quot;</span> <span class="k">if</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;chainid (</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">)&quot;</span>
 <span class="p">)</span>
@@ -190,9 +229,17 @@
 <span class="k">def</span> <span class="nf">_gh_issue_request</span><span class="p">(</span>
     <span class="n">issue_request_details</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span> <span class="n">_logger</span><span class="o">=</span><span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Log a request for a GitHub issue or pull request.</span>
 
-    <span class="k">if</span> <span class="n">_logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">_logger</span> <span class="o">=</span> <span class="n">logger</span>
+<span class="sd">    Args:</span>
+<span class="sd">        issue_request_details: The details of the issue request.</span>
+<span class="sd">        _logger: An optional logger to use. Defaults to the module logger.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; _gh_issue_request(&quot;This is an issue request.&quot;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_logger</span> <span class="o">=</span> <span class="n">_logger</span> <span class="ow">or</span> <span class="n">logger</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">issue_request_details</span><span class="p">)</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">_logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">issue_request_details</span><span class="p">)</span>

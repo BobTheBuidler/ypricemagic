@@ -127,13 +127,14 @@
 
 <div class="viewcode-block" id="GenericAmm.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.dex.html#y.prices.dex.genericamm.GenericAmm.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize the GenericAmm instance.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            asynchronous (optional): Whether methods will return coroutines by default. Defaults to False.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span></div>
 
 
@@ -162,7 +163,11 @@
 <span class="sd">            &gt;&gt;&gt; address = &quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span>
 <span class="sd">            &gt;&gt;&gt; price = await amm.get_price(address)</span>
 <span class="sd">            &gt;&gt;&gt; print(price)</span>
-<span class="sd">            1.0</span>
+<span class="sd">            0.5</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`get_tvl`</span>
+<span class="sd">            - :meth:`ERC20.total_supply_readable`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_tvl</span><span class="p">(</span>
@@ -199,6 +204,9 @@
 <span class="sd">            &gt;&gt;&gt; tokens = await amm.get_tokens(address)</span>
 <span class="sd">            &gt;&gt;&gt; print(tokens)</span>
 <span class="sd">            (ERC20(0x123...), ERC20(0x456...))</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`ERC20`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">_TOKEN_METHODS</span><span class="p">)</span>
         <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">)</span></div>
@@ -230,6 +238,9 @@
 <span class="sd">            &gt;&gt;&gt; tvl = await amm.get_tvl(address)</span>
 <span class="sd">            &gt;&gt;&gt; print(tvl)</span>
 <span class="sd">            1000000.0</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`get_price`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lp_token_contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">)</span>
         <span class="n">tokens</span><span class="p">,</span> <span class="n">reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>

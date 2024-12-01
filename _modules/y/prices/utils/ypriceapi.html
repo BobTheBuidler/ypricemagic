@@ -177,6 +177,17 @@
 <div class="viewcode-block" id="announce_beta">
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.ypriceapi.announce_beta">[docs]</a>
 <span class="k">def</span> <span class="nf">announce_beta</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Announce the beta version of ypriceAPI.</span>
+
+<span class="sd">    This function logs the beta announcement message, which includes</span>
+<span class="sd">    information about the benefits of using ypriceAPI and testimonials</span>
+<span class="sd">    from users.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; announce_beta()</span>
+<span class="sd">        ypriceAPI is now in beta!</span>
+<span class="sd">        ...</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">spam_your_logs_fn</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">info</span> <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span> <span class="k">else</span> <span class="nb">print</span>
     <span class="n">spam_your_logs_fn</span><span class="p">(</span><span class="n">beta_announcement</span><span class="p">)</span>
     <span class="k">global</span> <span class="n">should_use</span>
@@ -201,7 +212,7 @@
 <div class="viewcode-block" id="BadResponse">
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.ypriceapi.BadResponse">[docs]</a>
 <span class="k">class</span> <span class="nc">BadResponse</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="k">pass</span></div>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised for bad responses from ypriceAPI.&quot;&quot;&quot;</span></div>
 
 
 
@@ -209,6 +220,16 @@
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.ypriceapi.get_session">[docs]</a>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_session</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ClientSession</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get an aiohttp ClientSession for ypriceAPI.</span>
+
+<span class="sd">    This session is configured with the ypriceAPI URL, headers, and timeout.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        An aiohttp ClientSession object.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; session = await get_session()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">ClientSession</span><span class="p">(</span>
         <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;YPRICEAPI_URL&quot;</span><span class="p">,</span> <span class="s2">&quot;https://ypriceapi-beta.yearn.finance&quot;</span><span class="p">),</span>
         <span class="n">connector</span><span class="o">=</span><span class="n">TCPConnector</span><span class="p">(</span><span class="n">verify_ssl</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -222,6 +243,16 @@
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.ypriceapi.get_chains">[docs]</a>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="n">ONE_HOUR</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_chains</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the supported chains from ypriceAPI.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A dictionary mapping chain IDs to chain names.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; chains = await get_chains()</span>
+<span class="sd">        &gt;&gt;&gt; chains[1]</span>
+<span class="sd">        &#39;Ethereum Mainnet&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">session</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_session</span><span class="p">()</span>
     <span class="k">async</span> <span class="k">with</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/chains&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">response</span><span class="p">:</span>
         <span class="n">chains</span> <span class="o">=</span> <span class="k">await</span> <span class="n">read_response</span><span class="p">(</span><span class="n">response</span><span class="p">)</span> <span class="ow">or</span> <span class="p">{}</span>
@@ -233,6 +264,23 @@
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.ypriceapi.chain_supported">[docs]</a>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="n">ONE_HOUR</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">chain_supported</span><span class="p">(</span><span class="n">chainid</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a chain is supported by ypriceAPI.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        chainid: The chain ID to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the chain is supported, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await chain_supported(1)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; await chain_supported(9999)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :func:`get_chains` for retrieving the list of supported chains.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">chainid</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">get_chains</span><span class="p">():</span>
         <span class="k">return</span> <span class="kc">True</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;ypriceAPI does not support </span><span class="si">%s</span><span class="s2"> at this time.&quot;</span><span class="p">,</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">())</span>
@@ -243,7 +291,30 @@
 <div class="viewcode-block" id="get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.prices.utils.ypriceapi.get_price">[docs]</a>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the price of a token from ypriceAPI.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token.</span>
+<span class="sd">        block: The block number to query.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The price of the token in USD as an instance of :class:`UsdPrice`, or None if the price cannot be retrieved.</span>
+
+<span class="sd">    This function will return None if the authorization headers are not present or if the current time is less than the resume time.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; price = await get_price(&quot;0xTokenAddress&quot;, 12345678)</span>
+<span class="sd">        &gt;&gt;&gt; print(price)</span>
+<span class="sd">        $1234.56780000</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ClientConnectorSSLError: If there is an SSL error during the request.</span>
+<span class="sd">        asyncio.TimeoutError: If the request times out.</span>
+<span class="sd">        ClientError: If there is a client error during the request.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :class:`UsdPrice` for the price representation.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">AUTH_HEADERS_PRESENT</span><span class="p">:</span>
         <span class="n">announce_beta</span><span class="p">()</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -297,7 +368,23 @@
     <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Address</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Read and process the response from ypriceAPI.</span>
 
+<span class="sd">    Args:</span>
+<span class="sd">        response: The aiohttp ClientResponse object.</span>
+<span class="sd">        token: The token address (optional).</span>
+<span class="sd">        block: The block number (optional).</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The parsed response data, or None if the response is not valid.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        BadResponse: If the response content type is invalid.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; response = await session.get(&quot;/get_price/1/0xTokenAddress?block=12345678&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; data = await read_response(response)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># 200</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">==</span> <span class="n">HTTPStatus</span><span class="o">.</span><span class="n">OK</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -350,6 +437,19 @@
 
 
 <span class="k">def</span> <span class="nf">_get_err_reason</span><span class="p">(</span><span class="n">response</span><span class="p">:</span> <span class="n">ClientResponse</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the error reason from a ClientResponse.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        response: The aiohttp ClientResponse object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A string representing the error reason.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; reason = _get_err_reason(response)</span>
+<span class="sd">        &gt;&gt;&gt; print(reason)</span>
+<span class="sd">        [404 Not Found]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="si">}</span><span class="s2">]&quot;</span>
     <span class="n">ascii_encodable_reason</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">reason</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;ascii&quot;</span><span class="p">,</span> <span class="s2">&quot;backslashreplace&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span>
@@ -359,6 +459,14 @@
 
 
 <span class="k">def</span> <span class="nf">_set_resume_at</span><span class="p">(</span><span class="n">retry_after</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Set the resume time for ypriceAPI requests.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        retry_after: The time to wait before retrying, in seconds.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; _set_resume_at(60)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">global</span> <span class="n">resume_at</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Falling back to your node for </span><span class="si">%s</span><span class="s2"> minutes.&quot;</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">retry_after</span> <span class="o">/</span> <span class="mi">60</span><span class="p">))</span>
     <span class="n">resume_from_this_err_at</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">retry_after</span>

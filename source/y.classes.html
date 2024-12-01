@@ -122,7 +122,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.classes.common.ContractBase.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/classes/common.html#ContractBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.common.ContractBase.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/classes/common.html#ContractBase.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.common.ContractBase.__init__" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -154,7 +154,8 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ContractBase.__build_name__">
 <span class="sig-name descname"><span class="pre">__build_name__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.ContractBase.__build_name__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -165,7 +166,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -176,6 +178,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -207,6 +215,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The contract’s build name.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">build_name</span>
+<span class="go">&#39;MyContract&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -217,30 +231,62 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ContractBase.deploy_block">
 <span class="sig-name descname"><span class="pre">deploy_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.method.ASyncBoundMethod" title="(in ez-a-sync)"><span class="pre">ASyncBoundMethod</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="reference internal" href="../_modules/y/classes/common.html#ContractBase.deploy_block"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.common.ContractBase.deploy_block" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the block number when the contract was deployed.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>when_no_history_return_0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p>
+<dd class="field-odd"><p><strong>when_no_history_return_0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return 0 when no history is found instead of raising an exception.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The block number when the contract was deployed, or 0 if <cite>when_no_history_return_0</cite> is True and the deploy block cannot be determined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">deploy_block</span><span class="p">()</span>
+<span class="go">1234567</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">contract_creation_block_async()</span></code></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ContractBase.has_method">
 <span class="sig-name descname"><span class="pre">has_method</span></span><a class="reference internal" href="../_modules/y/classes/common.html#ContractBase.has_method"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.common.ContractBase.has_method" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Check if the contract has a specific method.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>return_response</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the method to check for.</p></li>
+<li><p><strong>return_response</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return the response of the method call instead of a boolean.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span><span class="s2">&quot;name()&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.classes.common.ContractBase.has_method" title="y.classes.common.ContractBase.has_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -295,7 +341,7 @@ owner: The owner class of the property.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ERC20.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.common.ERC20.__init__" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -327,7 +373,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.__build_name__">
 <span class="sig-name descname"><span class="pre">__build_name__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.ERC20.__build_name__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -338,7 +385,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -349,6 +397,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -364,7 +418,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.__decimals__">
 <span class="sig-name descname"><span class="pre">__decimals__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.ERC20.__decimals__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -375,7 +430,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -386,6 +442,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -406,7 +468,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.__scale__">
 <span class="sig-name descname"><span class="pre">__scale__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.ERC20.__scale__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -417,7 +480,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -428,6 +492,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -443,7 +513,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.__symbol__">
 <span class="sig-name descname"><span class="pre">__symbol__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.ERC20.__symbol__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -454,7 +525,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -465,6 +537,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -506,6 +584,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span><span class="s2">&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;</span><span class="p">)</span>
+<span class="go">500000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -533,6 +617,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The contract’s build name.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">build_name</span>
+<span class="go">&#39;MyContract&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -549,35 +639,73 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The number of decimal places for the token.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">decimals</span>
+<span class="go">18</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.deploy_block">
 <span class="sig-name descname"><span class="pre">deploy_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.method.ASyncBoundMethod" title="(in ez-a-sync)"><span class="pre">ASyncBoundMethod</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.ERC20.deploy_block" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the block number when the contract was deployed.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>when_no_history_return_0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p>
+<dd class="field-odd"><p><strong>when_no_history_return_0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return 0 when no history is found instead of raising an exception.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The block number when the contract was deployed, or 0 if <cite>when_no_history_return_0</cite> is True and the deploy block cannot be determined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">deploy_block</span><span class="p">()</span>
+<span class="go">1234567</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">contract_creation_block_async()</span></code></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.ERC20.has_method">
 <span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.classes.common.ERC20.has_method" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Check if the contract has a specific method.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>return_response</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the method to check for.</p></li>
+<li><p><strong>return_response</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return the response of the method call instead of a boolean.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span><span class="s2">&quot;name()&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.classes.common.ERC20.has_method" title="y.classes.common.ERC20.has_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -589,6 +717,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The token’s name.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;TokenName&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -614,6 +748,18 @@ owner: The owner class of the property.</p>
 <dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">price</span><span class="p">()</span>
+<span class="go">1.23</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -625,6 +771,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The scaling factor for the token.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">scale</span>
+<span class="go">1000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -636,6 +788,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The token’s symbol.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">symbol</span>
+<span class="go">&#39;TKN&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -653,6 +811,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">total_supply</span><span class="p">()</span>
+<span class="go">1000000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -670,6 +834,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">()</span>
+<span class="go">1000.0</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -707,6 +877,12 @@ arithmetic operations.</p>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">bool</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -727,6 +903,13 @@ arithmetic operations.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance1</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balance2</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balance1</span> <span class="o">==</span> <span class="n">balance2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -750,6 +933,13 @@ arithmetic operations.</p>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance1</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balance2</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">500000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balance1</span> <span class="o">&gt;=</span> <span class="n">balance2</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -771,6 +961,12 @@ arithmetic operations.</p>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span>
+<span class="go">1000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -808,6 +1004,12 @@ arithmetic operations.</p>
 <dd class="field-even"><p><a class="reference internal" href="#y.classes.common.WeiBalance" title="y.classes.common.WeiBalance"><em>WeiBalance</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">*</span> <span class="mi">2</span>
+<span class="go">&lt;WeiBalance token=&lt;ERC20 TKN &#39;0x1234567890abcdef1234567890abcdef12345678&#39;&gt; balance=2000000000000000000 block=None&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -835,6 +1037,12 @@ arithmetic operations.</p>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span>
+<span class="go">&#39;1000000000000000000&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -871,12 +1079,19 @@ arithmetic operations.</p>
 <dd class="field-even"><p><a class="reference internal" href="#y.classes.common.WeiBalance" title="y.classes.common.WeiBalance"><em>WeiBalance</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">/</span> <span class="mi">2</span>
+<span class="go">&lt;WeiBalance token=&lt;ERC20 TKN &#39;0x1234567890abcdef1234567890abcdef12345678&#39;&gt; balance=500000000000000000 block=None&gt;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.WeiBalance.__price__">
 <span class="sig-name descname"><span class="pre">__price__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.13)"><span class="pre">Decimal</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.WeiBalance.__price__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -887,7 +1102,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -898,6 +1114,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -913,7 +1135,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.WeiBalance.__readable__">
 <span class="sig-name descname"><span class="pre">__readable__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.13)"><span class="pre">Decimal</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.WeiBalance.__readable__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -924,7 +1147,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -935,6 +1159,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -950,7 +1180,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.common.WeiBalance.__value_usd__">
 <span class="sig-name descname"><span class="pre">__value_usd__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.13)"><span class="pre">Decimal</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.common.WeiBalance.__value_usd__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -961,7 +1192,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -972,6 +1204,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -1003,6 +1241,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The price of the token in USD.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">balance</span><span class="o">.</span><span class="n">price</span>
+<span class="go">Decimal(&#39;1.23&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1014,6 +1258,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The balance scaled to a decimal.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">balance</span><span class="o">.</span><span class="n">readable</span>
+<span class="go">Decimal(&#39;1.0&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1025,6 +1275,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The value of the balance in USD.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">balance</span> <span class="o">=</span> <span class="n">WeiBalance</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">,</span> <span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">balance</span><span class="o">.</span><span class="n">value_usd</span>
+<span class="go">Decimal(&#39;1.23&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>
@@ -1053,6 +1309,32 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.classes.singleton.</span></span><span class="sig-name descname"><span class="pre">ChecksumASyncSingletonMeta</span></span><a class="reference internal" href="../_modules/y/classes/singleton.html#ChecksumASyncSingletonMeta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync._meta.ASyncMeta" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncMeta</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generic" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
+<p>A metaclass for creating singleton instances with checksummed addresses and asynchronous capabilities.</p>
+<p>This metaclass extends <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync._meta.ASyncMeta" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncMeta</span></code></a> to ensure that only one instance of a class
+is created for each synchronous or asynchronous context, with the added functionality of checksumming
+Ethereum addresses using <a class="reference external" href="https://bobthebuidler.github.io/checksum_dict/source/checksum_dict.html#checksum_dict.ChecksumAddressDict" title="(in checksum_dict)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChecksumAddressDict</span></code></a>.</p>
+<p>The differentiation between synchronous and asynchronous contexts is achieved by using the
+<cite>__a_sync_instance_will_be_sync__</cite> method to determine the context during instance creation.
+Instances are stored in <cite>cls.__instances</cite>, which is a <cite>DefaultDict</cite> of <cite>ChecksumAddressDict</cite> keyed by the context
+(synchronous or asynchronous). This ensures that separate instances are created for each context.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance1</span> <span class="o">=</span> <span class="n">MySingleton</span><span class="p">(</span><span class="s1">&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance2</span> <span class="o">=</span> <span class="n">MySingleton</span><span class="p">(</span><span class="s1">&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">instance1</span> <span class="ow">is</span> <span class="n">instance2</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync._meta.ASyncMeta" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncMeta</span></code></a></p></li>
+<li><p><a class="reference external" href="https://bobthebuidler.github.io/checksum_dict/source/checksum_dict.html#checksum_dict.ChecksumAddressDict" title="(in checksum_dict)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChecksumAddressDict</span></code></a></p></li>
+</ul>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__base__">
 <span class="sig-name descname"><span class="pre">__base__</span></span><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__base__" title="Link to this definition"></a></dt>
@@ -1062,15 +1344,46 @@ owner: The owner class of the property.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__call__">
 <span class="sig-name descname"><span class="pre">__call__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/classes/singleton.html#ChecksumASyncSingletonMeta.__call__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__call__" title="Link to this definition"></a></dt>
-<dd><p>Call self as a function.</p>
+<dd><p>Create or retrieve a singleton instance for the given address.</p>
+<p>This method ensures that only one instance of a class is created for each address
+in a synchronous or asynchronous context. The address is checksummed to ensure consistency.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This will only work if you init your objects using a kwarg not a positional arg.
+TODO: Make it work with positional args.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>address</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a>) – The address for which to create or retrieve the singleton instance.</p></li>
+<li><p><strong>*args</strong> – Additional positional arguments for instance creation.</p></li>
+<li><p><strong>**kwargs</strong> – Additional keyword arguments for instance creation.</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><em>T</em></p>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#AssertionError" title="(in Python v3.13)"><strong>AssertionError</strong></a> – If the instance’s asynchronous state does not match the expected state.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><em>T</em></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MySingleton</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">ChecksumASyncSingletonMeta</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">address</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance1</span> <span class="o">=</span> <span class="n">MySingleton</span><span class="p">(</span><span class="s1">&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">instance2</span> <span class="o">=</span> <span class="n">MySingleton</span><span class="p">(</span><span class="s1">&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">assert</span> <span class="n">instance1</span> <span class="ow">is</span> <span class="n">instance2</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://bobthebuidler.github.io/checksum_dict/source/checksum_dict.html#checksum_dict.ChecksumAddressDict" title="(in checksum_dict)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChecksumAddressDict</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -1088,7 +1401,17 @@ owner: The owner class of the property.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bases</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/classes/singleton.html#ChecksumASyncSingletonMeta.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.classes.singleton.ChecksumASyncSingletonMeta.__init__" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Initialize the metaclass with a name, bases, and namespace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – The name of the class being created.</p></li>
+<li><p><strong>bases</strong> – A tuple of base classes.</p></li>
+<li><p><strong>namespace</strong> – A dictionary representing the class namespace.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.classes.singleton.ChecksumASyncSingletonMeta.__instancecheck__">
@@ -1250,7 +1573,7 @@ owner: The owner class of the property.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.classes.ERC20.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_deploy_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.ERC20.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.classes.ERC20.__init__" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1282,7 +1605,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.ERC20.__build_name__">
 <span class="sig-name descname"><span class="pre">__build_name__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.ERC20.__build_name__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1293,7 +1617,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1304,6 +1629,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -1319,7 +1650,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.ERC20.__decimals__">
 <span class="sig-name descname"><span class="pre">__decimals__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.ERC20.__decimals__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1330,7 +1662,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1341,6 +1674,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -1361,7 +1700,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.ERC20.__scale__">
 <span class="sig-name descname"><span class="pre">__scale__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.ERC20.__scale__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1372,7 +1712,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1383,6 +1724,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -1398,7 +1745,8 @@ owner: The owner class of the property.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.ERC20.__symbol__">
 <span class="sig-name descname"><span class="pre">__symbol__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.property.HiddenMethodDescriptor" title="(in ez-a-sync)"><span class="pre">HiddenMethodDescriptor</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.ERC20.__symbol__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously retrieves the property value.</p>
+<dd><p>Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1409,7 +1757,8 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <p>The original docstring for <code class="xref py py-meth docutils literal notranslate"><span class="pre">get()</span></code> is shown below:</p>
-<p>Asynchronously retrieves the property value.</p>
+<p>_ASyncPropertyDescriptorBase.get(self, instance: I, owner: Optional[Type[I]] = None) -&gt; T
+Asynchronously retrieves the property value.</p>
 <blockquote>
 <div><dl class="simple">
 <dt>Args:</dt><dd><p>instance: The instance from which the property is accessed.
@@ -1420,6 +1769,12 @@ owner: The owner class of the property.</p>
 </dl>
 </div></blockquote>
 <dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>_ASyncPropertyDescriptorBase.get(self, instance</p>
+</dd>
+<dt class="field-even">Type<span class="colon">:</span></dt>
+<dd class="field-even"><p>I, owner</p>
+</dd>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>instance</strong> (<a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync._typing.I" title="(in ez-a-sync)"><em>I</em></a>)</p></li>
@@ -1461,6 +1816,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span><span class="s2">&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;</span><span class="p">)</span>
+<span class="go">500000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1488,6 +1849,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The contract’s build name.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">build_name</span>
+<span class="go">&#39;MyContract&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -1504,35 +1871,73 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The number of decimal places for the token.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">decimals</span>
+<span class="go">18</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.ERC20.deploy_block">
 <span class="sig-name descname"><span class="pre">deploy_block</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.method.ASyncBoundMethod" title="(in ez-a-sync)"><span class="pre">ASyncBoundMethod</span></a><span class="p"><span class="pre">[</span></span><span class="pre">Self</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><span class="pre">Any</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.classes.ERC20.deploy_block" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Get the block number when the contract was deployed.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>when_no_history_return_0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p>
+<dd class="field-odd"><p><strong>when_no_history_return_0</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return 0 when no history is found instead of raising an exception.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The block number when the contract was deployed, or 0 if <cite>when_no_history_return_0</cite> is True and the deploy block cannot be determined.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">deploy_block</span><span class="p">()</span>
+<span class="go">1234567</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">contract_creation_block_async()</span></code></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.classes.ERC20.has_method">
 <span class="sig-name descname"><span class="pre">has_method</span></span><a class="headerlink" href="#y.classes.ERC20.has_method" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Check if the contract has a specific method.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>return_response</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the method to check for.</p></li>
+<li><p><strong>return_response</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return the response of the method call instead of a boolean.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">ContractBase</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span><span class="s2">&quot;name()&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.classes.ERC20.has_method" title="y.classes.ERC20.has_method"><code class="xref py py-func docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1544,6 +1949,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The token’s name.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;TokenName&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1569,6 +1980,18 @@ owner: The owner class of the property.</p>
 <dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">price</span><span class="p">()</span>
+<span class="go">1.23</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1580,6 +2003,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The scaling factor for the token.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">scale</span>
+<span class="go">1000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1591,6 +2020,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>The token’s symbol.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">symbol</span>
+<span class="go">&#39;TKN&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1608,6 +2043,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">total_supply</span><span class="p">()</span>
+<span class="go">1000000000000000000000</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -1625,6 +2066,12 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">ERC20</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">token</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">()</span>
+<span class="go">1000.0</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </dd></dl>

@@ -113,7 +113,27 @@ silent (optional): If True, suppress error logging. Default False.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.get_block_at_timestamp">
 <span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">get_block_at_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">timestamp</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/time.html#get_block_at_timestamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.get_block_at_timestamp" title="Link to this definition"></a></dt>
-<dd><p>Since <cite>get_block_at_timestamp</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
+<dd><blockquote>
+<div><p>Get the block number just before a specific timestamp.</p>
+<p>This function returns the block number at the given timestamp, which is the block number just before the specified timestamp.</p>
+<dl>
+<dt>Args:</dt><dd><p>timestamp: The timestamp to find the block for.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The block number just before the given timestamp.</p>
+</dd>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_block_at_timestamp</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">2023</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="go">12345678</span>
+</pre></div>
+</div>
+</dd>
+<dt>See Also:</dt><dd><ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">get_block_timestamp()</span></code></p></li>
+<li><p><a class="reference internal" href="source/y.html#y.get_block_timestamp_async" title="y.get_block_timestamp_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_block_timestamp_async()</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<p>Since <cite>get_block_at_timestamp</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>timestamp</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.13)"><em>datetime</em></a>)</p>
@@ -170,34 +190,28 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 </dd></dl>
 
 <p>There are some powerful tools for interacting with deployed contracts in the <cite>contracts</cite> module.</p>
-<dl class="py class" id="module-y.contracts">
+<dl class="py exception" id="module-y.contracts">
+<dt class="sig sig-object py" id="y.contracts.CompilerError">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">CompilerError</span></span><a class="reference internal" href="_modules/y/contracts.html#CompilerError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.CompilerError" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="y.contracts.CompilerError.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#CompilerError.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.CompilerError.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="y.contracts.Contract">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract</span></span><a class="reference internal" href="_modules/y/contracts.html#Contract"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract" title="Link to this definition"></a></dt>
-<dd><p>Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:</p>
-<blockquote>
-<div><ol class="arabic">
+<dd><p>A <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> object with several modifications for enhanced functionality.</p>
+<p>This class provides a modified contract object with additional features and optimizations:</p>
+<ol class="arabic simple">
 <li><dl class="simple">
 <dt>Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.</dt><dd><p>NOTE: You must set <cite>autofetch_sources=false</cite> in your project’s brownie-config.yaml for this to work correctly.</p>
 </dd>
 </dl>
 </li>
-<li><dl>
-<dt>To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls which are intelligently batched in the background by <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#module-dank_mids" title="(in dank_mids)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dank_mids</span></code></a> to reduce overhead.</dt><dd><dl>
-<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0xAddress&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-<span class="go">1000000000000000000</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">coro</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">coro</span>
-<span class="go">&lt;coroutine coroutine object at 0x12345678&gt;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span> <span class="o">==</span> <span class="k">await</span> <span class="n">coro</span>
-<span class="go">True</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</dd>
-</dl>
-</li>
+<li><p>To each contract method, a <cite>coroutine</cite> property has been defined which allows you to make asynchronous calls. This is enabled by inheriting from <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a>, which provides the <cite>coroutine</cite> method for each <code class="xref py py-class docutils literal notranslate"><span class="pre">ContractCall</span></code> object. These asynchronous calls are intelligently batched in the background by <a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#module-dank_mids" title="(in dank_mids)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dank_mids</span></code></a> to reduce overhead.</p></li>
 <li><dl class="simple">
 <dt>New methods:</dt><dd><ul class="simple">
 <li><p><a class="reference internal" href="source/y.html#y.contracts.has_method" title="y.contracts.has_method"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_method()</span></code></a></p></li>
@@ -223,7 +237,24 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 </dl>
 </li>
 </ol>
-</div></blockquote>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0xAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
+<span class="go">1000000000000000000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coro</span> <span class="o">=</span> <span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">coro</span>
+<span class="go">&lt;coroutine coroutine object at 0x12345678&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">methodName</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span> <span class="o">==</span> <span class="k">await</span> <span class="n">coro</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#dank_mids.Contract" title="(in dank_mids)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a></p></li>
+<li><p><a class="reference external" href="https://bobthebuidler.github.io/dank_mids/source/dank_mids.html#module-dank_mids" title="(in dank_mids)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">dank_mids</span></code></a></p></li>
+</ul>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.__eq__">
 <span class="sig-name descname"><span class="pre">__eq__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.contracts.Contract.__eq__" title="Link to this definition"></a></dt>
@@ -260,16 +291,40 @@ If a method object does not yet exist, it is created and cached.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialize the Contract instance.</p>
-<p>This method sets up lazy initialization for contract methods.</p>
+<dd><p>Initialize a <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>autofetch-sources: false</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
-<li><p><strong>owner</strong> (<em>AccountsType</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>require_success</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>cache_ttl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the contract.</p></li>
+<li><p><strong>owner</strong> (<em>optional</em>) – The owner of the contract. Default None.</p></li>
+<li><p><strong>require_success</strong> (<em>optional</em>) – If True, require successful contract verification. Default True.</p></li>
+<li><p><strong>cache_ttl</strong> (<em>optional</em>) – The time-to-live for the contract cache in seconds. Default set in <a class="reference internal" href="source/y.html#module-y.ENVIRONMENT_VARIABLES" title="y.ENVIRONMENT_VARIABLES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code></a>.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ContractNotFound</strong> – If the address is not a contract.</p></li>
+<li><p><a class="reference internal" href="source/y.html#y.exceptions.ContractNotVerified" title="y.exceptions.ContractNotVerified"><strong>exceptions.ContractNotVerified</strong></a> – If the contract is not verified and require_success is True.</p></li>
+</ul>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="y.contracts.Contract.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cache_ttl</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract.__post_init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.__post_init__" title="Link to this definition"></a></dt>
+<dd><p>Get rid of the contract call objects so we can materialize them on a JIT basis.</p>
+<p>This method sets up lazy initialization for contract methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>cache_ttl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>)</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
@@ -307,30 +362,42 @@ If a method object does not yet exist, it is created and cached.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>return_None_on_failure</strong> (<em>optional</em>) – If True, return None if the build name cannot be determined instead of raising an Exception. Default False.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> | None</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> | None</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">build_name</span><span class="p">()</span>
+<span class="go">&#39;Dai Stablecoin&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.contracts.Contract.coroutine">
-<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coroutine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract.coroutine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.coroutine" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<em class="property"><span class="pre">async</span><span class="w"> </span><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">coroutine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">require_success=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract.coroutine"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.coroutine" title="Link to this definition"></a></dt>
+<dd><p>Create a <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance asynchronously.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
-<li><p><strong>require_success</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
-<li><p><strong>cache_ttl</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>)</p></li>
+<li><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the contract.</p></li>
+<li><p><strong>owner</strong> (<em>optional</em>) – The owner of the contract. Default None.</p></li>
+<li><p><strong>persist</strong> (<em>optional</em>) – If True, persist the contract in brownie’s local contract database. Default True.</p></li>
+<li><p><strong>require_success</strong> (<em>optional</em>) – If True, require successful contract verification. Default True.</p></li>
+<li><p><strong>cache_ttl</strong> (<em>optional</em>) – The time-to-live for the contract cache in seconds. Default set in <a class="reference internal" href="source/y.html#module-y.ENVIRONMENT_VARIABLES" title="y.ENVIRONMENT_VARIABLES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code></a>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><em>Self</em></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">symbol</span><span class="p">()</span>
+<span class="go">&#39;DAI&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -358,8 +425,8 @@ If a method object does not yet exist, it is created and cached.</p>
 <dt class="sig sig-object py" id="y.contracts.Contract.from_abi">
 <em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">from_abi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">abi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persist=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cache_ttl=&lt;EnvironmentVariable[name=`YPRICEMAGIC_CONTRACT_CACHE_TTL`</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type=int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value=3600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">using_default=True]&gt;</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract.from_abi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract.from_abi" title="Link to this definition"></a></dt>
 <dd><blockquote>
-<div><p>Create a Contract instance from an ABI.</p>
-<dl class="simple">
+<div><p>Create a <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance from an ABI.</p>
+<dl>
 <dt>Args:</dt><dd><p>name: The name of the contract.
 address: The address of the contract.
 abi: The ABI of the contract.
@@ -367,7 +434,12 @@ owner (optional): The owner of the contract. Default None.
 persist (optional): If True, persist the contract in brownie’s local contract database. Default True.
 cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in <a class="reference internal" href="source/y.html#module-y.ENVIRONMENT_VARIABLES" title="y.ENVIRONMENT_VARIABLES"><code class="xref py py-mod docutils literal notranslate"><span class="pre">ENVIRONMENT_VARIABLES</span></code></a>.</p>
 </dd>
-<dt>Returns:</dt><dd><p>A Contract instance for the given ABI.</p>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">abi</span> <span class="o">=</span> <span class="p">[{</span><span class="s2">&quot;constant&quot;</span><span class="p">:</span><span class="kc">True</span><span class="p">,</span><span class="s2">&quot;inputs&quot;</span><span class="p">:[],</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;name&quot;</span><span class="p">,</span><span class="s2">&quot;outputs&quot;</span><span class="p">:[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;string&quot;</span><span class="p">}],</span><span class="s2">&quot;payable&quot;</span><span class="p">:</span><span class="kc">False</span><span class="p">,</span><span class="s2">&quot;stateMutability&quot;</span><span class="p">:</span><span class="s2">&quot;view&quot;</span><span class="p">,</span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="s2">&quot;function&quot;</span><span class="p">}]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;MyContract&quot;</span><span class="p">,</span> <span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">,</span> <span class="n">abi</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+<span class="go">&#39;Dai Stablecoin&#39;</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </div></blockquote>
@@ -447,13 +519,16 @@ as it automatically fetches the contract’s ABI from a block explorer.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>block</strong> (<em>optional</em>) – The block number at which to get the bytecode. Defaults to latest block.</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The bytecode of the contract at the specified block.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">get_code</span><span class="p">()</span>
+<span class="go">HexBytes(&#39;0x...&#39;)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -512,13 +587,16 @@ or try to find the latest available patch semver compiler version.</p>
 <li><p><strong>return_response</strong> (<em>optional</em>) – If True, return the response of the method call instead of a boolean. Default False.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a> | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span><span class="s2">&quot;name()&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -532,13 +610,16 @@ or try to find the latest available patch semver compiler version.</p>
 <li><p><strong>_func</strong> (<em>optional</em>) – The function to use for combining the results (either <a class="reference external" href="https://docs.python.org/3/library/functions.html#all" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">all()</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#any" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">any()</span></code></a>). Default <a class="reference external" href="https://docs.python.org/3/library/functions.html#all" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">all()</span></code></a>.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A boolean indicating whether the contract has all the specified methods.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">has_methods</span><span class="p">([</span><span class="s2">&quot;name()&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol()&quot;</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -780,36 +861,48 @@ function on new occurrence giving as parameter the event log receipt.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.contracts.Contract_erc20">
 <span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract_erc20</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract_erc20"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract_erc20" title="Link to this definition"></a></dt>
-<dd><p>Create a Contract instance for an ERC20 token.</p>
+<dd><p>Create a <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance for an ERC20 token.</p>
 <p>This function uses the standard ERC20 ABI instead of fetching the contract ABI from the block explorer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the ERC20 token.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Contract instance for the ERC20 token.</p>
+<dd class="field-even"><p>A <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance for the ERC20 token.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><em>Contract</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract_erc20</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+<span class="go">&#39;Dai Stablecoin&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.contracts.Contract_with_erc20_fallback">
 <span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">Contract_with_erc20_fallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/y/contracts.html#Contract_with_erc20_fallback"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.Contract_with_erc20_fallback" title="Link to this definition"></a></dt>
-<dd><p>Create a Contract instance for an address, falling back to an ERC20 token if the contract is not verified.</p>
+<dd><p>Create a <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance for an address, falling back to an ERC20 token if the contract is not verified.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the contract or ERC20 token.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A Contract instance for the contract address.</p>
+<dd class="field-even"><p>A <a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a> instance for the contract address.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="source/y.html#y.contracts.Contract" title="y.contracts.Contract"><em>Contract</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span> <span class="o">=</span> <span class="n">Contract_with_erc20_fallback</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract</span><span class="o">.</span><span class="n">symbol</span><span class="p">()</span>
+<span class="go">&#39;DAI&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py a_sync_function">
@@ -817,11 +910,14 @@ function on new occurrence giving as parameter the event log receipt.</p>
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.contracts.</span></span><span class="sig-name descname"><span class="pre">build_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_None_on_failure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="_modules/y/contracts.html#build_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.contracts.build_name" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get the build name of a contract.</p>
-<dl class="simple">
+<dl>
 <dt>Args:</dt><dd><p>address: The address of the contract.
 return_None_on_failure (optional): If True, return None if the build name cannot be determined instead of raising an Exception. Default False.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.</p>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">build_name</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="go">&#39;Dai Stablecoin&#39;</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </div></blockquote>
@@ -845,14 +941,18 @@ return_None_on_failure (optional): If True, return None if the build name cannot
 <dd><blockquote>
 <div><p>Determine the block when a contract was created using binary search.
 NOTE Requires access to historical state. Doesn’t account for CREATE2 or SELFDESTRUCT.</p>
-<dl class="simple">
+<dl>
 <dt>Args:</dt><dd><p>address: The address of the contract.
 when_no_history_return_0: If True, return 0 when no history is found instead of raising a <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeNotSynced</span></code> exception. Default False.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The block number at which the contract was created.</p>
-</dd>
 <dt>Raises:</dt><dd><p>exceptions.NodeNotSynced: If the node is not fully synced.
 ValueError: If the contract creation block cannot be determined.</p>
+</dd>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+<span class="go">1234567</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </div></blockquote>
@@ -876,12 +976,15 @@ ValueError: If the contract creation block cannot be determined.</p>
 <dd><blockquote>
 <div><p>Checks to see if a contract has a <cite>method</cite> view method with no inputs.
 <cite>return_response=True</cite> will return <cite>response</cite> in bytes if <cite>response</cite> else <cite>False</cite></p>
-<dl class="simple">
+<dl>
 <dt>Args:</dt><dd><p>address: The address of the contract.
 method: The name of the method to check for.
 return_response: If True, return the response of the method call instead of a boolean. Default False.</p>
 </dd>
-<dt>Returns:</dt><dd><p>A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</p>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">has_method</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">,</span> <span class="s2">&quot;name()&quot;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </div></blockquote>
@@ -906,12 +1009,15 @@ return_response: If True, return the response of the method call instead of a bo
 <dd><blockquote>
 <div><p>Checks to see if a contract has each view method (with no inputs) in <cite>methods</cite>.
 Pass <cite>at_least_one=True</cite> to only verify a contract has at least one of the methods.</p>
-<dl class="simple">
+<dl>
 <dt>Args:</dt><dd><p>address: The address of the contract.
 methods: A tuple of method names to check for.
 _func: The function to use for combining the results (either <a class="reference external" href="https://docs.python.org/3/library/functions.html#all" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">all()</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#any" title="(in Python v3.13)"><code class="xref py py-func docutils literal notranslate"><span class="pre">any()</span></code></a>).</p>
 </dd>
-<dt>Returns:</dt><dd><p>A boolean indicating whether the contract has all the specified methods.</p>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;name()&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol()&quot;</span><span class="p">))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </div></blockquote>
@@ -959,13 +1065,15 @@ _func: The function to use for combining the results (either <a class="reference
 <li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number at which to get the implementation address. Defaults to latest block.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The address of the implementation contract.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> | <a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a> | <a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a> | <a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a></p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a> | <a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a> | <a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a> | <a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">proxy_implementation</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<span class="go">&#39;0x1234567890abcdef1234567890abcdef12345678&#39;</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <p>To learn about the rest of ypricemagic’s capabilities, navigate the library structure below.</p>

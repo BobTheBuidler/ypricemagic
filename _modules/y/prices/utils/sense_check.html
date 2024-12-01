@@ -70,12 +70,14 @@
              
   <h1>Source code for y.prices.utils.sense_check</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module contains utils for sense checking prices returned from the library.</span>
+<span class="sd">This module contains utilities for sense checking prices returned from the library.</span>
 
 <span class="sd">A user will not need to use anything here.</span>
 
-<span class="sd">Developers can skip the sense check for additional tokens by adding them to the</span>
-<span class="sd">:obj:`ACCEPTABLE_HIGH_PRICES` mapping.</span>
+<span class="sd">Developers can skip the sense check for additional tokens by manually adding them to the</span>
+<span class="sd">:obj:`ACCEPTABLE_HIGH_PRICES` mapping in the source code. This involves directly editing</span>
+<span class="sd">the mapping to include the new token addresses under the appropriate network. Note that</span>
+<span class="sd">this requires modifying the source code, which may not be ideal for all users.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -284,6 +286,9 @@
 <span class="sd">        This function checks if the price is within acceptable ranges based on the token type and network.</span>
 <span class="sd">        It will not log for various special cases such as ETH-like tokens, BTC-like tokens, LP tokens,</span>
 <span class="sd">        and vault tokens where the underlying is exempt from the sense check.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :func:`_exit_sense_check` for details on tokens that are exempt from the sense check.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># if price is in &quot;normal&quot; range, exit sense check</span>
@@ -320,6 +325,19 @@
 <span class="sd">    For some token types, its normal to have a crazy high nominal price.</span>
 <span class="sd">    We can skip the sense check for those.</span>
 <span class="sd">    We can also skip wrapped versions of tokens in `ACCEPTABLE_HIGH_PRICES`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is exempt from the sense check, False otherwise.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; await _exit_sense_check(&quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :data:`ACCEPTABLE_HIGH_PRICES` for the list of tokens that are exempt from the sense check.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">bucket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">check_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

@@ -89,6 +89,25 @@
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.ellipsis.is_eps_rewards_pool">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_eps_rewards_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a given token address is an EPS rewards pool.</span>
+
+<span class="sd">    This function verifies if the specified token address has the methods</span>
+<span class="sd">    associated with an EPS rewards pool.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token address is an EPS rewards pool, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await is_eps_rewards_pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.contracts.has_methods`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span>
         <span class="n">token_address</span><span class="p">,</span>
         <span class="p">(</span>
@@ -110,6 +129,29 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the USD price of a token at a specific block.</span>
+
+<span class="sd">    This function calculates the price of a token in USD by determining the</span>
+<span class="sd">    total value locked (TVL) and dividing it by the total supply of the token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to get the price for.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The price of the token in USD.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        UsdPrice(1.23)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`y.classes.common.ERC20`</span>
+<span class="sd">        - :class:`y.classes.common.WeiBalance`</span>
+<span class="sd">        - :func:`y.utils.raw_calls.raw_call`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">minter</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
         <span class="n">token_address</span><span class="p">,</span> <span class="s2">&quot;minter()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span>

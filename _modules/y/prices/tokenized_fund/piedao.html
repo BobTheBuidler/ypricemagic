@@ -93,6 +93,19 @@
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.piedao.is_pie">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_pie</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a given token is a PieDAO token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is a PieDAO token, False otherwise.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; is_pie(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        True</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="s2">&quot;getCap()(uint)&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
 
@@ -105,6 +118,22 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the price of a PieDAO token in USD.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pie: The address of the PieDAO token.</span>
+<span class="sd">        block: The block number to query the price at. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: Whether to skip the cache when fetching the price. Defaults to the value of ENVS.SKIP_CACHE.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        123.45</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_tvl`</span>
+<span class="sd">        - :class:`ERC20`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">get_tvl</span><span class="p">(</span><span class="n">pie</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">),</span>
         <span class="n">ERC20</span><span class="p">(</span><span class="n">pie</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="p">),</span>
@@ -118,6 +147,23 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span>
     <span class="n">pie_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the list of tokens in a PieDAO token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pie_address: The address of the PieDAO token.</span>
+<span class="sd">        block: The block number to query the tokens at. Defaults to the latest block.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A list of :class:`ERC20` objects representing the tokens in the PieDAO token.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; get_tokens(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        [ERC20(&#39;0xTokenAddress1&#39;), ERC20(&#39;0xTokenAddress2&#39;)]</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function retrieves token addresses using a multicall and then creates :class:`ERC20` instances from those addresses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">ERC20</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">pie_address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;getTokens()(address[])&quot;</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
@@ -128,6 +174,20 @@
 <div class="viewcode-block" id="get_bpool">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.piedao.get_bpool">[docs]</a>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_bpool</span><span class="p">(</span><span class="n">pie_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the Balancer pool address for a PieDAO token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pie_address: The address of the PieDAO token.</span>
+<span class="sd">        block: The block number to query the pool at. Defaults to the latest block.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The address of the Balancer pool, or the PieDAO address if no pool is found.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; get_bpool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &#39;0xBpoolAddress&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">bpool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
             <span class="n">pie_address</span><span class="p">,</span> <span class="s2">&quot;getBPool()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -147,6 +207,23 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the total value locked (TVL) in a PieDAO token in USD.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        pie_address: The address of the PieDAO token.</span>
+<span class="sd">        block: The block number to query the TVL at. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: Whether to skip the cache when fetching the TVL. Defaults to the value of ENVS.SKIP_CACHE.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; get_tvl(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        1000000.00</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_value`</span>
+<span class="sd">        - :func:`get_bpool`</span>
+<span class="sd">        - :func:`get_tokens`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]</span>
     <span class="n">pool</span><span class="p">,</span> <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">get_bpool</span><span class="p">(</span><span class="n">pie_address</span><span class="p">,</span> <span class="n">block</span><span class="p">),</span> <span class="n">get_tokens</span><span class="p">(</span><span class="n">pie_address</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
@@ -162,6 +239,18 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balance</span><span class="p">(</span>
     <span class="n">bpool</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the balance of a token in a Balancer pool.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bpool: The address of the Balancer pool.</span>
+<span class="sd">        token: The :class:`ERC20` token to query.</span>
+<span class="sd">        block: The block number to query the balance at. Defaults to the latest block.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; get_balance(&quot;0xBpoolAddress&quot;, ERC20(&quot;0xTokenAddress&quot;))</span>
+<span class="sd">        1000.0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">balance</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">Call</span><span class="p">(</span><span class="n">token</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;balanceOf(address)(uint)&quot;</span><span class="p">,</span> <span class="n">bpool</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
         <span class="n">token</span><span class="o">.</span><span class="n">__scale__</span><span class="p">,</span>
@@ -178,6 +267,25 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the USD value of a token in a Balancer pool.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bpool: The address of the Balancer pool.</span>
+<span class="sd">        token: The :class:`ERC20` token to query.</span>
+<span class="sd">        block: The block number to query the value at. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: Whether to skip the cache when fetching the value. Defaults to the value of ENVS.SKIP_CACHE.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; get_value(&quot;0xBpoolAddress&quot;, ERC20(&quot;0xTokenAddress&quot;))</span>
+<span class="sd">        500.0</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This function calculates the value by multiplying the token balance in the pool by its price.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_balance`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">balance</span><span class="p">,</span> <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">get_balance</span><span class="p">(</span><span class="n">bpool</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">),</span>
         <span class="n">token</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>

@@ -91,9 +91,41 @@
 <div class="viewcode-block" id="wstEth">
 <a class="viewcode-back" href="../../../../source/y.prices.eth_derivs.html#y.prices.eth_derivs.wsteth.wstEth">[docs]</a>
 <span class="k">class</span> <span class="nc">wstEth</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class to interact with the wstETH token on Ethereum Mainnet.</span>
+
+<span class="sd">    This class provides methods to fetch the price of wstETH in USD, leveraging the `a_sync` library</span>
+<span class="sd">    to support both synchronous and asynchronous operations.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Initialize the class with asynchronous behavior:</span>
+
+<span class="sd">        &gt;&gt;&gt; wsteth = wstEth(asynchronous=True)</span>
+<span class="sd">        &gt;&gt;&gt; price = await wsteth.get_price(block=12345678)</span>
+
+<span class="sd">        Initialize the class with synchronous behavior:</span>
+
+<span class="sd">        &gt;&gt;&gt; wsteth_sync = wstEth(asynchronous=False)</span>
+<span class="sd">        &gt;&gt;&gt; price_sync = wsteth_sync.get_price(block=12345678)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`a_sync.ASyncGenericBase`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="wstEth.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.eth_derivs.html#y.prices.eth_derivs.wsteth.wstEth.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the wstEth class with optional asynchronous behavior.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asynchronous: A boolean indicating if the operations should be asynchronous.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            address: The address of the wstETH token on the Ethereum Mainnet, or None if not on Mainnet.</span>
+<span class="sd">            wrapped_for_curve: The address of the wrapped version of wstETH for Curve on the Ethereum Mainnet, or None if not on Mainnet.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">{</span>
@@ -111,6 +143,30 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetch the price of wstETH in USD.</span>
+
+<span class="sd">        This method retrieves the price of wstETH by calling the `stEthPerToken` method</span>
+<span class="sd">        on the wstETH contract using :func:`y.utils.raw_calls.raw_call` and fetching the current price</span>
+<span class="sd">        of WETH using :func:`y.prices.magic.get_price`.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number at which to fetch the price.</span>
+<span class="sd">            skip_cache: Whether to skip the cache when fetching the price.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Fetch the price asynchronously:</span>
+
+<span class="sd">            &gt;&gt;&gt; price = await wsteth.get_price(block=12345678)</span>
+
+<span class="sd">            Fetch the price synchronously:</span>
+
+<span class="sd">            &gt;&gt;&gt; price_sync = wsteth_sync.get_price(block=12345678)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :func:`y.utils.raw_calls.raw_call`</span>
+<span class="sd">            - :func:`y.prices.magic.get_price`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">share_price</span><span class="p">,</span> <span class="n">weth_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="n">raw_call</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;stEthPerToken()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -129,6 +185,29 @@
 <div class="viewcode-block" id="is_wsteth">
 <a class="viewcode-back" href="../../../../source/y.prices.eth_derivs.html#y.prices.eth_derivs.wsteth.is_wsteth">[docs]</a>
 <span class="k">def</span> <span class="nf">is_wsteth</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a given address is wstETH or its wrapped version for Curve on Ethereum Mainnet.</span>
+
+<span class="sd">    This function verifies the network ID to ensure it is operating on the Ethereum Mainnet</span>
+<span class="sd">    before performing the address comparison.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The address to check.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Check if an address is wstETH:</span>
+
+<span class="sd">        &gt;&gt;&gt; is_wsteth(&quot;0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        Check if an address is not wstETH:</span>
+
+<span class="sd">        &gt;&gt;&gt; is_wsteth(&quot;0x0000000000000000000000000000000000000000&quot;)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`wstEth`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span>
         <span class="n">wsteth</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
         <span class="n">wsteth</span><span class="o">.</span><span class="n">wrapped_for_curve</span><span class="p">,</span>

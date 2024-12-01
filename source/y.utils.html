@@ -104,14 +104,30 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="y.utils.cache.optional_async_diskcache">
 <span class="sig-prename descclassname"><span class="pre">y.utils.cache.</span></span><span class="sig-name descname"><span class="pre">optional_async_diskcache</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fn</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/cache.html#optional_async_diskcache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.cache.optional_async_diskcache" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Decorator to optionally apply disk caching to asynchronous functions.</p>
+<p>If <cite>toolcache</cite> is not installed, this decorator will return the function
+as is, without any caching applied.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.13)"><em>Awaitable</em></a><em>[</em><em>T</em><em>]</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><em>T</em><em>]</em>)</p>
+<dd class="field-odd"><p><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.13)"><em>Awaitable</em></a><em>[</em><em>T</em><em>]</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>~P</em><em>]</em><em>, </em><em>T</em><em>]</em>) – The function to be decorated.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a>[[~P], <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.13)"><em>Awaitable</em></a>[<em>T</em>]] | <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a>[[~P], <em>T</em>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<p>Using the decorator with an asynchronous function:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">def</span> <span class="nf">fetch_data</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="s2">&quot;data&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fetch_data</span> <span class="o">=</span> <span class="n">optional_async_diskcache</span><span class="p">(</span><span class="n">fetch_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">toolcache</span></code></p></li>
+</ul>
+</div>
 </dd></dl>
 
 </section>
@@ -159,18 +175,30 @@
 <dd><p>Get the Ethereum client type for the current connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A string representing the Ethereum client type.</p>
+<dd class="field-odd"><p>A string representing the Ethereum client type, such as ‘geth’, ‘erigon’, or ‘tg’.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.client</span> <span class="kn">import</span> <span class="n">get_ethereum_client</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">get_ethereum_client</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="go">&#39;geth&#39;</span>
 </pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Example with a different client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="n">get_ethereum_client</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="go">&#39;erigon&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.client.get_ethereum_client_async" title="y.utils.client.get_ethereum_client_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_ethereum_client_async()</span></code></a> for the asynchronous version of this function.</p></li>
+</ul>
 </div>
 </dd></dl>
 
@@ -180,18 +208,30 @@
 <dd><p>Asynchronously get the Ethereum client type for the current connection.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A string representing the Ethereum client type.</p>
+<dd class="field-odd"><p>A string representing the Ethereum client type, such as ‘geth’, ‘erigon’, or ‘tg’.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
 </dd>
 </dl>
-<p class="rubric">Example</p>
+<p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.client</span> <span class="kn">import</span> <span class="n">get_ethereum_client_async</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_ethereum_client_async</span><span class="p">()</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
 <span class="go">&#39;erigon&#39;</span>
 </pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Example with a different client</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">client</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_ethereum_client_async</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">client</span><span class="p">)</span>
+<span class="go">&#39;tg&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.client.get_ethereum_client" title="y.utils.client.get_ethereum_client"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_ethereum_client()</span></code></a> for the synchronous version of this function.</p></li>
+</ul>
 </div>
 </dd></dl>
 
@@ -207,8 +247,18 @@
 <dd><p>Bases: <a class="reference internal" href="#y.utils.events.LogFilter" title="y.utils.events.LogFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogFilter</span></code></a></p>
 <blockquote>
 <div><p>A class for fetching and processing events.</p>
+<p>This class extends <a class="reference internal" href="#y.utils.events.LogFilter" title="y.utils.events.LogFilter"><code class="xref py py-class docutils literal notranslate"><span class="pre">LogFilter</span></code></a> to provide additional functionality for handling events.</p>
 </div></blockquote>
-<p>When awaited, a list of all elements will be returned.</p>
+<p>When awaited, a list of all <a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Log</span></code></a> will be returned.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_object</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.obj_type">
 <span class="sig-name descname"><span class="pre">obj_type</span></span><a class="headerlink" href="#y.utils.events.Events.obj_type" title="Link to this definition"></a></dt>
@@ -217,8 +267,8 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__aiter__" title="Link to this definition"></a></dt>
-<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.Events.__aiter__" title="Link to this definition"></a></dt>
+<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -228,11 +278,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__await__">
-<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__await__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously iterate through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> and return all objects.</p>
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.Events.__await__" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously iterate through the ASyncIterable and return all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of the objects yielded by the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-odd"><p>A list of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.13)"><em>Generator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a>[<em>T</em>]]</p>
@@ -262,12 +312,25 @@
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.__iter__" title="Link to this definition"></a></dt>
-<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.Events.__iter__" title="Link to this definition"></a></dt>
+<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Synchronous iteration leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code>, which uses <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop.run_until_complete()</span></code> to fetch items.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ASyncIterator.__next__()</span></code> raises a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a> if the event loop is already running.</p>
+<p>If you encounter a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a>, you are likely working in an async codebase
+and should consider asynchronous iteration using <a class="reference internal" href="#y.utils.events.Events.__aiter__" title="y.utils.events.Events.__aiter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__aiter__()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__anext__()</span></code> instead.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><em>Iterator</em></a>[<em>T</em>]</p>
@@ -303,18 +366,24 @@
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">events</span><span class="p">(</span><span class="mi">1000100</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.filter">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.filter" title="Link to this definition"></a></dt>
-<dd><p>Filters the contents of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> based on a function.</p>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ViewFn</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncFilter[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.Events.filter" title="Link to this definition"></a></dt>
+<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable based on a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>T</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.13)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>T</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – A function that returns a boolean that indicates if an item should be included in the filtered result. Can be sync or async.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncFilter" title="(in ez-a-sync)"><em>ASyncFilter</em></a>[<em>T</em>]</p>
@@ -331,18 +400,24 @@
 <dd class="field-odd"><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The ending block to fetch logs to.</p>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p>A decoded event log.</p>
+<dd class="field-even"><p>A raw log.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><em>Log</em></a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.sort" title="Link to this definition"></a></dt>
-<dd><p>Sort the contents of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SortKey</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncSorter[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.Events.sort" title="Link to this definition"></a></dt>
+<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -351,7 +426,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the objects yielded from this <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>, but sorted.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this ASyncIterable, but sorted.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncSorter" title="(in ez-a-sync)"><em>ASyncSorter</em></a>[<em>T</em>]</p>
@@ -361,7 +436,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.Events.wrap">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.Events.wrap" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncIterable[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.Events.wrap" title="Link to this definition"></a></dt>
 <dd><p>Class method to wrap an AsyncIterable for backward compatibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -375,9 +450,8 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.__wrapped__">
-<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.Events.__wrapped__" title="Link to this definition"></a></dt>
-<dd><p>The wrapped async iterable object.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.13)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.Events.__wrapped__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.Events.addresses">
@@ -393,6 +467,11 @@
 <dd class="field-odd"><p>A function for bulk inserting logs.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -434,10 +513,10 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.Events.materialized">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materialized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.Events.materialized" title="Link to this definition"></a></dt>
-<dd><p>Synchronously iterate through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> and return all objects.</p>
+<dd><p>Synchronously iterate through the ASyncIterable and return all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of the objects yielded by the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-odd"><p>A list of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -465,12 +544,22 @@
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Filter</span></code>[<a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Log</span></code></a>, LogCache]</p>
 <blockquote>
 <div><p>A filter for fetching and processing event logs.</p>
+<p>This class provides methods to fetch logs from the blockchain and process them.</p>
 </div></blockquote>
-<p>When awaited, a list of all elements will be returned.</p>
+<p>When awaited, a list of all <a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Log</span></code></a> will be returned.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_object</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Log</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__aiter__" title="Link to this definition"></a></dt>
-<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.LogFilter.__aiter__" title="Link to this definition"></a></dt>
+<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -480,11 +569,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__await__">
-<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__await__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously iterate through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> and return all objects.</p>
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.LogFilter.__await__" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously iterate through the ASyncIterable and return all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of the objects yielded by the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-odd"><p>A list of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.13)"><em>Generator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a>[<em>T</em>]]</p>
@@ -514,12 +603,25 @@
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.__iter__" title="Link to this definition"></a></dt>
-<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.LogFilter.__iter__" title="Link to this definition"></a></dt>
+<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Synchronous iteration leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code>, which uses <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop.run_until_complete()</span></code> to fetch items.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ASyncIterator.__next__()</span></code> raises a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a> if the event loop is already running.</p>
+<p>If you encounter a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a>, you are likely working in an async codebase
+and should consider asynchronous iteration using <a class="reference internal" href="#y.utils.events.LogFilter.__aiter__" title="y.utils.events.LogFilter.__aiter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__aiter__()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__anext__()</span></code> instead.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><em>Iterator</em></a>[<em>T</em>]</p>
@@ -542,14 +644,14 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.filter">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.filter" title="Link to this definition"></a></dt>
-<dd><p>Filters the contents of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> based on a function.</p>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ViewFn</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncFilter[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.LogFilter.filter" title="Link to this definition"></a></dt>
+<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable based on a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>T</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.13)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>T</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – A function that returns a boolean that indicates if an item should be included in the filtered result. Can be sync or async.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncFilter" title="(in ez-a-sync)"><em>ASyncFilter</em></a>[<em>T</em>]</p>
@@ -566,18 +668,24 @@
 <dd class="field-odd"><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The ending block to fetch logs to.</p>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p>A decoded event log.</p>
+<dd class="field-even"><p>A raw log.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><em>Log</em></a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.sort" title="Link to this definition"></a></dt>
-<dd><p>Sort the contents of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SortKey</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncSorter[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.LogFilter.sort" title="Link to this definition"></a></dt>
+<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -586,7 +694,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the objects yielded from this <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>, but sorted.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this ASyncIterable, but sorted.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncSorter" title="(in ez-a-sync)"><em>ASyncSorter</em></a>[<em>T</em>]</p>
@@ -596,7 +704,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.wrap">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.LogFilter.wrap" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncIterable[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.LogFilter.wrap" title="Link to this definition"></a></dt>
 <dd><p>Class method to wrap an AsyncIterable for backward compatibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -610,9 +718,8 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.__wrapped__">
-<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.LogFilter.__wrapped__" title="Link to this definition"></a></dt>
-<dd><p>The wrapped async iterable object.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.13)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.LogFilter.__wrapped__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.addresses">
@@ -628,6 +735,11 @@
 <dd class="field-odd"><p>A function for bulk inserting logs.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -669,10 +781,10 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.LogFilter.materialized">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materialized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.LogFilter.materialized" title="Link to this definition"></a></dt>
-<dd><p>Synchronously iterate through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> and return all objects.</p>
+<dd><p>Synchronously iterate through the ASyncIterable and return all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of the objects yielded by the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-odd"><p>A list of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -700,8 +812,18 @@
 <dd><p>Bases: <a class="reference internal" href="#y.utils.events.Events" title="y.utils.events.Events"><code class="xref py py-class docutils literal notranslate"><span class="pre">Events</span></code></a>, <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterable" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code>]</p>
 <blockquote>
 <div><p>A class for fetching, processing, and iterating over events.</p>
+<p>This class extends <a class="reference internal" href="#y.utils.events.Events" title="y.utils.events.Events"><code class="xref py py-class docutils literal notranslate"><span class="pre">Events</span></code></a> to provide additional functionality for processing events.</p>
 </div></blockquote>
-<p>When awaited, a list of all elements will be returned.</p>
+<p>When awaited, a list of all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects will be returned.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_object</span> <span class="o">=</span> <span class="n">ProcessedEvents</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">all_contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_object</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.obj_type">
 <span class="sig-name descname"><span class="pre">obj_type</span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.obj_type" title="Link to this definition"></a></dt>
@@ -710,8 +832,8 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__aiter__" title="Link to this definition"></a></dt>
-<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__aiter__" title="Link to this definition"></a></dt>
+<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -721,11 +843,11 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__await__">
-<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__await__" title="Link to this definition"></a></dt>
-<dd><p>Asynchronously iterate through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> and return all objects.</p>
+<span class="sig-name descname"><span class="pre">__await__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__await__" title="Link to this definition"></a></dt>
+<dd><p>Asynchronously iterate through the ASyncIterable and return all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of the objects yielded by the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-odd"><p>A list of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Generator" title="(in Python v3.13)"><em>Generator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.13)"><em>Any</em></a>, <a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a>[<em>T</em>]]</p>
@@ -755,12 +877,25 @@
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__iter__" title="Link to this definition"></a></dt>
-<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.__iter__" title="Link to this definition"></a></dt>
+<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Synchronous iteration leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code>, which uses <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop.run_until_complete()</span></code> to fetch items.
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ASyncIterator.__next__()</span></code> raises a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a> if the event loop is already running.</p>
+<p>If you encounter a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a>, you are likely working in an async codebase
+and should consider asynchronous iteration using <a class="reference internal" href="#y.utils.events.ProcessedEvents.__aiter__" title="y.utils.events.ProcessedEvents.__aiter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__aiter__()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__anext__()</span></code> instead.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterator" title="(in Python v3.13)"><em>Iterator</em></a>[<em>T</em>]</p>
@@ -796,18 +931,24 @@
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="n">Events</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">events</span><span class="p">(</span><span class="mi">1000100</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.filter">
-<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">function</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.filter" title="Link to this definition"></a></dt>
-<dd><p>Filters the contents of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> based on a function.</p>
+<span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ViewFn</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncFilter[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.filter" title="Link to this definition"></a></dt>
+<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable based on a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>T</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Awaitable" title="(in Python v3.13)"><em>Awaitable</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a><em>[</em><em>[</em><em>T</em><em>]</em><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – A function that returns a boolean that indicates if an item should be included in the filtered result. Can be sync or async.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered objects from the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterable.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncFilter" title="(in ez-a-sync)"><em>ASyncFilter</em></a>[<em>T</em>]</p>
@@ -824,12 +965,18 @@
 <dd class="field-odd"><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The ending block to fetch logs to.</p>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p>A decoded event log.</p>
+<dd class="field-even"><p>A raw log.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><em>Log</em></a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">logs</span><span class="p">(</span><span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -847,12 +994,18 @@
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">processed_events</span> <span class="o">=</span> <span class="n">ProcessedEvents</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">processed_events</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="mi">1000100</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.sort">
-<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.sort" title="Link to this definition"></a></dt>
-<dd><p>Sort the contents of the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SortKey</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncSorter[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.sort" title="Link to this definition"></a></dt>
+<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -861,7 +1014,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the objects yielded from this <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>, but sorted.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this ASyncIterable, but sorted.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncSorter" title="(in ez-a-sync)"><em>ASyncSorter</em></a>[<em>T</em>]</p>
@@ -871,7 +1024,7 @@
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.wrap">
-<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wrapped</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.utils.events.ProcessedEvents.wrap" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">wrap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wrapped</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="s"><span class="pre">'ASyncIterable[T]'</span></span></span></span><a class="headerlink" href="#y.utils.events.ProcessedEvents.wrap" title="Link to this definition"></a></dt>
 <dd><p>Class method to wrap an AsyncIterable for backward compatibility.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -885,9 +1038,8 @@
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.__wrapped__">
-<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">AsyncIterable</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.__wrapped__" title="Link to this definition"></a></dt>
-<dd><p>The wrapped async iterable object.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">__wrapped__</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterable" title="(in Python v3.13)"><span class="pre">AsyncIterable</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.__wrapped__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.addresses">
@@ -903,6 +1055,11 @@
 <dd class="field-odd"><p>A function for bulk inserting logs.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">log_filter</span> <span class="o">=</span> <span class="n">LogFilter</span><span class="p">(</span><span class="n">addresses</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">],</span> <span class="n">topics</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">log_filter</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py property">
@@ -944,10 +1101,10 @@
 <dl class="py property">
 <dt class="sig sig-object py" id="y.utils.events.ProcessedEvents.materialized">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">materialized</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#y.utils.events.ProcessedEvents.materialized" title="Link to this definition"></a></dt>
-<dd><p>Synchronously iterate through the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code> and return all objects.</p>
+<dd><p>Synchronously iterate through the ASyncIterable and return all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>A list of the objects yielded by the <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code>.</p>
+<dd class="field-odd"><p>A list of the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterable.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -974,13 +1131,18 @@
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.utils.events.</span></span><span class="sig-name descname"><span class="pre">_get_logs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.ChecksumAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">topics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.BlockNumber</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">end</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.BlockNumber</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><span class="pre">evmspec.log.Log</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/y/utils/events.html#_get_logs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.events._get_logs" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get logs for a given address, topics, and block range.</p>
-<dl class="simple">
+<dl>
 <dt>Args:</dt><dd><p>address: The address of the contract to fetch logs from.
 topics: The event topics to filter logs by.
 start: The starting block to fetch logs from.
 end: The ending block to fetch logs to.</p>
 </dd>
-<dt>Returns:</dt><dd><p>A list of decoded event logs.</p>
+<dt>Returns:</dt><dd><p>A list of raw logs.</p>
+</dd>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="n">_get_logs</span><span class="p">(</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">],</span> <span class="mi">1000000</span><span class="p">,</span> <span class="mi">1000100</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd>
 </dl>
 </div></blockquote>
@@ -1003,17 +1165,28 @@ end: The ending block to fetch logs to.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.utils.events.checkpoints_to_weight">
 <span class="sig-prename descclassname"><span class="pre">y.utils.events.</span></span><span class="sig-name descname"><span class="pre">checkpoints_to_weight</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">checkpoints</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/events.html#checkpoints_to_weight"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.events.checkpoints_to_weight" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Calculate the weight of checkpoints between two blocks.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>start_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>)</p></li>
-<li><p><strong>end_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>)</p></li>
+<li><p><strong>checkpoints</strong> – A dictionary of checkpoints.</p></li>
+<li><p><strong>start_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>) – The starting block number.</p></li>
+<li><p><strong>end_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>) – The ending block number.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated weight.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)">float</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">checkpoints</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">weight</span> <span class="o">=</span> <span class="n">checkpoints_to_weight</span><span class="p">(</span><span class="n">checkpoints</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1022,12 +1195,27 @@ end: The ending block to fetch logs to.</p>
 <dd><p>Decode logs to events and enrich them with additional info.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><em>Iterable</em></a><em>[</em><em>LogReceipt</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><em>Iterable</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><em>Log</em></a><em>]</em>)</p>
+<dd class="field-odd"><p><strong>logs</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><em>Iterable</em></a><em>[</em><em>LogReceipt</em><em>] </em><em>| </em><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Iterable" title="(in Python v3.13)"><em>Iterable</em></a><em>[</em><a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><em>Log</em></a><em>]</em>) – An iterable of <code class="xref py py-class docutils literal notranslate"><span class="pre">LogReceipt</span></code> or <a class="reference external" href="https://bobthebuidler.github.io/evmspec/source/evmspec.html#evmspec.log.Log" title="(in evmspec)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Log</span></code></a> objects.</p>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event.EventDict" title="(in Brownie v1.20.3)"><em>EventDict</em></a></p>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>An <a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event.EventDict" title="(in Brownie v1.20.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventDict</span></code></a> containing decoded events.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event.EventDict" title="(in Brownie v1.20.3)"><em>EventDict</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="p">[</span><span class="n">LogReceipt</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">LogReceipt</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">events</span> <span class="o">=</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">events</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event.EventDict" title="(in Brownie v1.20.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">EventDict</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py a_sync_function">
@@ -1035,14 +1223,27 @@ end: The ending block to fetch logs to.</p>
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.utils.events.</span></span><span class="sig-name descname"><span class="pre">get_logs_asap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topics</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/y/utils/events.html#get_logs_asap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.events.get_logs_asap" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get logs as soon as possible.</p>
-<dl class="simple">
+<p>This function fetches raw logs from the blockchain within the specified block range.
+The logs are not decoded; use <a class="reference internal" href="#y.utils.events.decode_logs" title="y.utils.events.decode_logs"><code class="xref py py-func docutils literal notranslate"><span class="pre">decode_logs()</span></code></a> to decode them if needed.</p>
+<dl>
 <dt>Args:</dt><dd><p>address: The address of the contract to fetch logs from.
 topics: The event topics to filter logs by.
 from_block: The starting block to fetch logs from.
 to_block: The ending block to fetch logs to.
 verbose: Verbosity level for logging.</p>
 </dd>
-<dt>Returns:</dt><dd><p>A list of decoded event logs.</p>
+<dt>Returns:</dt><dd><p>A list of raw logs.</p>
+</dd>
+<dt>Examples:</dt><dd><p>Synchronous usage:
+&gt;&gt;&gt; logs = get_logs_asap(“0x1234…”, [“0x5678…”], 1000000, 1000100)
+&gt;&gt;&gt; decoded_logs = decode_logs(logs)</p>
+<p>Asynchronous usage:
+&gt;&gt;&gt; logs = await get_logs_asap(“0x1234…”, [“0x5678…”], 1000000, 1000100, sync=False)
+&gt;&gt;&gt; decoded_logs = decode_logs(logs)</p>
+</dd>
+<dt>See Also:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.events.decode_logs" title="y.utils.events.decode_logs"><code class="xref py py-func docutils literal notranslate"><span class="pre">decode_logs()</span></code></a></p></li>
+</ul>
 </dd>
 </dl>
 </div></blockquote>
@@ -1067,6 +1268,9 @@ verbose: Verbosity level for logging.</p>
 <dt class="sig sig-object py" id="y.utils.events.get_logs_asap_generator">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.utils.events.</span></span><span class="sig-name descname"><span class="pre">get_logs_asap_generator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">topics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chronological</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_forever</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">run_forever_interval</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/events.html#get_logs_asap_generator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.events.get_logs_asap_generator" title="Link to this definition"></a></dt>
 <dd><p>Get logs as soon as possible in a generator.</p>
+<p>This function fetches raw logs from the blockchain within the specified block range
+and yields them as they are retrieved. The logs are not decoded; use <a class="reference internal" href="#y.utils.events.decode_logs" title="y.utils.events.decode_logs"><code class="xref py py-func docutils literal notranslate"><span class="pre">decode_logs()</span></code></a>
+to decode them if needed.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -1081,12 +1285,23 @@ verbose: Verbosity level for logging.</p>
 </ul>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
-<dd class="field-even"><p>Lists of decoded event logs.</p>
+<dd class="field-even"><p>Lists of raw logs.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncGenerator" title="(in Python v3.13)"><em>AsyncGenerator</em></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a>[<em>LogReceipt</em>], None]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">async</span> <span class="k">for</span> <span class="n">logs</span> <span class="ow">in</span> <span class="n">get_logs_asap_generator</span><span class="p">(</span><span class="s2">&quot;0x1234...&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;0x5678...&quot;</span><span class="p">],</span> <span class="mi">1000000</span><span class="p">,</span> <span class="mi">1000100</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">decoded_logs</span> <span class="o">=</span> <span class="n">decode_logs</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.events.decode_logs" title="y.utils.events.decode_logs"><code class="xref py py-func docutils literal notranslate"><span class="pre">decode_logs()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1094,15 +1309,53 @@ verbose: Verbosity level for logging.</p>
 <span class="sig-prename descclassname"><span class="pre">y.utils.events.</span></span><span class="sig-name descname"><span class="pre">logs_to_balance_checkpoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/events.html#logs_to_balance_checkpoints"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.events.logs_to_balance_checkpoints" title="Link to this definition"></a></dt>
 <dd><p>Convert Transfer logs to <cite>{address: {from_block: balance}}</cite> checkpoints.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logs</strong> – An iterable of logs to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary mapping addresses to balance checkpoints.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.13)"><em>Dict</em></a>[<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.ChecksumAddress" title="(in eth-typing v5.0)"><em>ChecksumAddress</em></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)">int</a>]</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logs</span> <span class="o">=</span> <span class="p">[</span><span class="n">Log</span><span class="p">(</span><span class="o">...</span><span class="p">),</span> <span class="n">Log</span><span class="p">(</span><span class="o">...</span><span class="p">)]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">checkpoints</span> <span class="o">=</span> <span class="n">logs_to_balance_checkpoints</span><span class="p">(</span><span class="n">logs</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">checkpoints</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
 <section id="module-y.utils.fakes">
 <span id="y-utils-fakes-module"></span><h2>y.utils.fakes module<a class="headerlink" href="#module-y.utils.fakes" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="y.utils.fakes.FAKE_TOKENS">
+<span class="sig-prename descclassname"><span class="pre">y.utils.fakes.</span></span><span class="sig-name descname"><span class="pre">FAKE_TOKENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['0xB1D75F4Fb67c7e93f05890f5eEAC2F3884991FF9',</span> <span class="pre">'0xcD545222eBf01143c1188bF712ee5e89c4278Afa',</span> <span class="pre">'0x6B2751Cd339217B2CAeD3485fc7a92256681053F',</span> <span class="pre">'0x224e13dF4b4DbF41820ec848B19bB6f015F8bf7b',</span> <span class="pre">'0x719A75aa3Dc05DEF57Be2F3eC0f4098475631D1c']</span></em><a class="headerlink" href="#y.utils.fakes.FAKE_TOKENS" title="Link to this definition"></a></dt>
+<dd><p>FAKE_TOKENS is a dictionary that maps network identifiers to lists of fake token addresses.</p>
+<p>This dictionary is used to provide a set of fake token addresses for different blockchain networks.
+The keys are network identifiers from the <a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> enum, and the values are lists of
+fake token addresses represented as strings.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.fakes</span> <span class="kn">import</span> <span class="n">FAKE_TOKENS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">FAKE_TOKENS</span><span class="p">[</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">]</span>
+<span class="go">[&#39;0xB1D75F4Fb67c7e93f05890f5eEAC2F3884991FF9&#39;, &#39;0xcD545222eBf01143c1188bF712ee5e89c4278Afa&#39;, ...]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FAKE_TOKENS</span><span class="p">[</span><span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span><span class="p">]</span>
+<span class="go">[&#39;0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9&#39;, &#39;0x6E0aA9718C56Ef5d19ccf57955284C7CD95737be&#39;, ...]</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> for network ID definitions.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">brownie</span></code> for blockchain interaction.</p></li>
+</ul>
+</div>
+</dd></dl>
+
 </section>
 <section id="module-y.utils.gather">
 <span id="y-utils-gather-module"></span><h2>y.utils.gather module<a class="headerlink" href="#module-y.utils.gather" title="Link to this heading"></a></h2>
@@ -1391,33 +1644,52 @@ a true value, e.g.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.utils.logging.enable_debug_logging">
 <span class="sig-prename descclassname"><span class="pre">y.utils.logging.</span></span><span class="sig-name descname"><span class="pre">enable_debug_logging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logger</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'y'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/logging.html#enable_debug_logging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.logging.enable_debug_logging" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Enables ypricemagic’s debugging mode. Very verbose.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p>
+<dd class="field-odd"><p><strong>logger</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The name of the logger to enable debugging for. Defaults to “y”.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">enable_debug_logging</span><span class="p">(</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.utils.logging.get_price_logger">
 <span class="sig-prename descclassname"><span class="pre">y.utils.logging.</span></span><span class="sig-name descname"><span class="pre">get_price_logger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">symbol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extra</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_task</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/logging.html#get_price_logger"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.logging.get_price_logger" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Create or retrieve a <cite>PriceLogger</cite> instance for a given token address and block.</p>
+<p>This function manages a cache of loggers to ensure they have the proper members for ypricemagic.
+If a logger is enabled for DEBUG, it will start a debug task if specified.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>token_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>)</p></li>
-<li><p><strong>symbol</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>)</p></li>
-<li><p><strong>extra</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>)</p></li>
-<li><p><strong>start_task</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>)</p></li>
+<li><p><strong>token_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the token.</p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>) – The block number.</p></li>
+<li><p><strong>symbol</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><em>None</em>) – An optional symbol for the token.</p></li>
+<li><p><strong>extra</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – An optional extra string to append to the logger name.</p></li>
+<li><p><strong>start_task</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to start a debug task. Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="#y.utils.logging.PriceLogger" title="y.utils.logging.PriceLogger"><em>PriceLogger</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="s2">&quot;0xTokenAddress&quot;</span><span class="p">,</span> <span class="mi">123456</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;This is a debug message.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.logging.enable_debug_logging" title="y.utils.logging.enable_debug_logging"><code class="xref py py-func docutils literal notranslate"><span class="pre">enable_debug_logging()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 </section>
@@ -1441,6 +1713,19 @@ a true value, e.g.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Callable" title="(in Python v3.13)"><em>Callable</em></a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">web3</span> <span class="kn">import</span> <span class="n">Web3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w3</span> <span class="o">=</span> <span class="n">Web3</span><span class="p">(</span><span class="n">Web3</span><span class="o">.</span><span class="n">HTTPProvider</span><span class="p">(</span><span class="s1">&#39;http://localhost:8545&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">middleware</span> <span class="o">=</span> <span class="n">getcode_cache_middleware</span><span class="p">(</span><span class="n">w3</span><span class="o">.</span><span class="n">manager</span><span class="o">.</span><span class="n">request_blocking</span><span class="p">,</span> <span class="n">w3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">middleware</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.middleware.should_cache" title="y.utils.middleware.should_cache"><code class="xref py py-func docutils literal notranslate"><span class="pre">should_cache()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1448,7 +1733,18 @@ a true value, e.g.</p>
 <span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">setup_getcode_cache_middleware</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#setup_getcode_cache_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.setup_getcode_cache_middleware" title="Link to this definition"></a></dt>
 <dd><p>Set up the eth_getCode cache middleware for the current Web3 provider.</p>
 <p>This function modifies the Web3 provider to use a custom session with increased
-connection pool size and timeout, and adds the getcode cache middleware.</p>
+connection pool size and timeout, if the provider’s endpoint URI starts with “http” or “https”.
+If the provider is an IPCProvider, it does not modify the session.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">setup_getcode_cache_middleware</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.middleware.getcode_cache_middleware" title="y.utils.middleware.getcode_cache_middleware"><code class="xref py py-func docutils literal notranslate"><span class="pre">getcode_cache_middleware()</span></code></a></p></li>
+</ul>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
@@ -1460,6 +1756,16 @@ connection pool size and timeout, and adds the getcode cache middleware.</p>
 <dt class="sig sig-object py" id="y.utils.middleware.setup_geth_poa_middleware">
 <span class="sig-prename descclassname"><span class="pre">y.utils.middleware.</span></span><span class="sig-name descname"><span class="pre">setup_geth_poa_middleware</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/utils/middleware.html#setup_geth_poa_middleware"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.middleware.setup_geth_poa_middleware" title="Link to this definition"></a></dt>
 <dd><p>Set up the geth proof-of-authority middleware for the current Web3 provider.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">setup_geth_poa_middleware</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">web3.middleware.geth_poa.geth_poa_middleware()</span></code></p></li>
+</ul>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>None</p>
@@ -1485,6 +1791,15 @@ connection pool size and timeout, and adds the getcode cache middleware.</p>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">should_cache</span><span class="p">(</span><span class="s2">&quot;eth_getCode&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;0x1234&quot;</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">should_cache</span><span class="p">(</span><span class="s2">&quot;eth_getBalance&quot;</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;0x1234&quot;</span><span class="p">,</span> <span class="s2">&quot;latest&quot;</span><span class="p">])</span>
+<span class="go">False</span>
+</pre></div>
+</div>
 </dd></dl>
 
 </section>
@@ -1710,6 +2025,22 @@ EthAddress, brownie.Contract, or Contract.</p></li>
 <li><p>For other input types, the input is prepared and appended to the method selector.</p></li>
 </ul>
 </div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prepare_data</span><span class="p">(</span><span class="s2">&quot;transfer(address,uint256)&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;0xRecipientAddress&quot;</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="go">&#39;0xa9059cbb000000000000000000000000RecipientAddress00000000000000000000000000000000000003e8&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prepare_data</span><span class="p">(</span><span class="s2">&quot;decimals()&quot;</span><span class="p">)</span>
+<span class="go">&#39;0x313ce567&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">raw_call()</span></code></a> for making the contract call.</p></li>
+<li><p><a class="reference internal" href="#y.utils.raw_calls.prepare_input" title="y.utils.raw_calls.prepare_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_input()</span></code></a> for preparing individual inputs.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py function">
@@ -1742,14 +2073,61 @@ EthAddress, brownie.Contract, or Contract.</p>
 assumed to be addresses and are padded to 32 bytes.</p></li>
 </ul>
 </div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prepare_input</span><span class="p">(</span><span class="s2">&quot;0xRecipientAddress&quot;</span><span class="p">)</span>
+<span class="go">&#39;000000000000000000000000RecipientAddress&#39;</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">prepare_input</span><span class="p">(</span><span class="mi">1000</span><span class="p">)</span>
+<span class="go">&#39;00000000000000000000000000000000000000000000000000000000000003e8&#39;</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.raw_calls.prepare_data" title="y.utils.raw_calls.prepare_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_data()</span></code></a> for preparing the call data.</p></li>
+<li><p><a class="reference internal" href="#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">raw_call()</span></code></a> for making the contract call.</p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py a_sync_function">
 <dt class="sig sig-object py" id="y.utils.raw_calls.raw_call">
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.utils.raw_calls.</span></span><span class="sig-name descname"><span class="pre">raw_call</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">contract_address</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_None_on_failure</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/y/utils/raw_calls.html#raw_call"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.utils.raw_calls.raw_call" title="Link to this definition"></a></dt>
 <dd><blockquote>
-<div><p>call a contract with only address and method. Bypasses brownie Contract object formation to save time
-only works with 1 input, ie <cite>balanceOf(address)</cite> or <cite>getPoolInfo(uint256)</cite></p>
+<div><p>Call a contract with only address and method. Bypasses brownie Contract object formation to save time.</p>
+<p>This function allows for direct interaction with a contract by preparing and sending
+the call data without creating a full contract object. It supports various input types
+and can handle multiple inputs.</p>
+<dl>
+<dt>Args:</dt><dd><p>contract_address: The address of the contract.
+method: The method signature as a string (e.g., “transfer(address,uint256)”).
+block: The block number at which to make the call. Defaults to the latest block.
+inputs: The input data for the method. Can be None, bytes, int, str, Address,</p>
+<blockquote>
+<div><p>EthAddress, brownie.Contract, or Contract.</p>
+</div></blockquote>
+<p>output: The expected output type. Options are “address”, “int”, “str”.
+return_None_on_failure: If True, return None if the call fails. Default False.</p>
+</dd>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="s2">&quot;0xTokenAddress&quot;</span><span class="p">,</span> <span class="s2">&quot;balanceOf(address)&quot;</span><span class="p">,</span> <span class="n">inputs</span><span class="o">=</span><span class="s2">&quot;0xHolderAddress&quot;</span><span class="p">)</span>
+<span class="go">1000000000000000000</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span><span class="s2">&quot;0xTokenAddress&quot;</span><span class="p">,</span> <span class="s2">&quot;decimals()&quot;</span><span class="p">)</span>
+<span class="go">18</span>
+</pre></div>
+</div>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If the call fails and <cite>return_None_on_failure</cite> is False.
+TypeError: If an invalid output type is specified.</p>
+</dd>
+<dt>See Also:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#y.utils.raw_calls.prepare_data" title="y.utils.raw_calls.prepare_data"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_data()</span></code></a> for preparing the call data.</p></li>
+<li><p><a class="reference internal" href="#y.utils.raw_calls.prepare_input" title="y.utils.raw_calls.prepare_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">prepare_input()</span></code></a> for preparing individual inputs.</p></li>
+</ul>
+</dd>
+</dl>
 </div></blockquote>
 <p>Since <cite>raw_call</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
 <dl class="field-list simple">
@@ -1777,6 +2155,44 @@ only works with 1 input, ie <cite>balanceOf(address)</cite> or <cite>getPoolInfo
 </section>
 <section id="module-y.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.utils" title="Link to this heading"></a></h2>
+<p>This module provides utility functions for the ypricemagic library.</p>
+<p>The utilities include caching, attribute checking, and method gathering functionalities
+that are used throughout the library to enhance performance and ensure code reliability.</p>
+<dl class="simple">
+<dt>Imported Functions:</dt><dd><ul class="simple">
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.cache.a_sync_ttl_cache()</span></code>: Provides a caching mechanism with a time-to-live (TTL) feature.</p></li>
+<li><p><a class="reference internal" href="#y.utils.checks.hasall" title="y.utils.checks.hasall"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.checks.hasall()</span></code></a>: Checks if an object has all specified attributes.</p></li>
+<li><p><a class="reference internal" href="#y.utils.gather.gather_methods" title="y.utils.gather.gather_methods"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.gather.gather_methods()</span></code></a>: Gathers methods from a class or module.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Using the caching utility:
+&gt;&gt;&gt; from y.utils.cache import a_sync_ttl_cache
+&gt;&gt;&gt; &#64;a_sync_ttl_cache
+… def expensive_function(x):
+…     return x * x
+&gt;&gt;&gt; result = expensive_function(4)</p>
+<p>Checking for attributes:
+&gt;&gt;&gt; from y.utils.checks import hasall
+&gt;&gt;&gt; class MyClass:
+…     attr1 = 1
+…     attr2 = 2
+&gt;&gt;&gt; obj = MyClass()
+&gt;&gt;&gt; hasall(obj, [‘attr1’, ‘attr2’])
+True</p>
+<p>Gathering methods:
+&gt;&gt;&gt; from y.utils.gather import gather_methods
+&gt;&gt;&gt; methods = gather_methods(MyClass)
+&gt;&gt;&gt; print(methods)</p>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#module-y.utils.cache" title="y.utils.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.cache</span></code></a>: For caching utilities.</p></li>
+<li><p><a class="reference internal" href="#module-y.utils.checks" title="y.utils.checks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.checks</span></code></a>: For attribute checking utilities.</p></li>
+<li><p><a class="reference internal" href="#module-y.utils.gather" title="y.utils.gather"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.gather</span></code></a>: For method gathering utilities.</p></li>
+</ul>
+</div>
 </section>
 </section>
 

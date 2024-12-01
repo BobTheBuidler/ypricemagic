@@ -99,6 +99,24 @@
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.is_saddle_lp">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_saddle_lp</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine if a given token is a Saddle LP token.</span>
+
+<span class="sd">    This function checks if the token has specific methods that are characteristic of Saddle LP tokens.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is a Saddle LP token, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await is_saddle_lp(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_pool`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pool</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span>
         <span class="n">pool</span><span class="p">,</span>
@@ -112,7 +130,26 @@
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.get_pool">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="n">ENVS</span><span class="o">.</span><span class="n">CACHE_TTL</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Address</span><span class="p">:</span>
-    <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the pool address for a given Saddle LP token.</span>
+
+<span class="sd">    This function checks for specific token addresses on the Ethereum Mainnet and returns hardcoded pool addresses for those tokens.</span>
+<span class="sd">    If the token is not one of the known tokens, it attempts to find a pool by checking if the token has a `swap()` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to find the pool for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The address of the pool if found, otherwise None.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_pool(&quot;0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368&quot;)</span>
+<span class="sd">        &#39;0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`is_saddle_lp`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token_address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">token_address</span> <span class="o">==</span> <span class="s2">&quot;0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368&quot;</span>
@@ -135,6 +172,22 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
     <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the price of a Saddle LP token in USD.</span>
+
+<span class="sd">    This function calculates the price by dividing the total value locked (TVL) by the total supply of the token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to get the price for.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        UsdPrice(1.2345)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_tvl`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">get_tvl</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">ERC20</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="p">),</span>
@@ -151,16 +204,34 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the total value locked (TVL) in a Saddle LP token pool.</span>
+
+<span class="sd">    This function retrieves the pool and tokens concurrently, then uses multicall to get the balances.</span>
+<span class="sd">    It calculates the TVL by summing the value of each token in the pool.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to get the TVL for.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_tvl(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        UsdValue(123456.78)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_price`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tokens</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]</span>
-    <span class="n">pool</span><span class="p">,</span> <span class="n">tokens</span><span class="p">,</span> <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="n">pool</span><span class="p">,</span> <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">get_tokens</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-        <span class="n">multicall_same_func_same_contract_different_inputs</span><span class="p">(</span>
-            <span class="n">pool</span><span class="p">,</span>
-            <span class="s2">&quot;getTokenBalance(uint8)(uint)&quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">))],</span>
-            <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-        <span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">multicall_same_func_same_contract_different_inputs</span><span class="p">(</span>
+        <span class="n">pool</span><span class="p">,</span>
+        <span class="s2">&quot;getTokenBalance(uint8)(uint)&quot;</span><span class="p">,</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">))],</span>
+        <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">scales</span><span class="p">,</span> <span class="n">prices</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">ERC20</span><span class="o">.</span><span class="n">scale</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">tokens</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
@@ -181,6 +252,22 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tokens</span><span class="p">(</span>
     <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the list of tokens in a Saddle LP token pool.</span>
+
+<span class="sd">    This function retrieves the pool and then uses multicall to get the tokens in the pool.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to get the tokens for.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_tokens(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        [ERC20(&#39;0xToken1&#39;), ERC20(&#39;0xToken2&#39;)]</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_pool`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pool</span><span class="p">,</span> <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">multicall_same_func_same_contract_different_inputs</span><span class="p">(</span>

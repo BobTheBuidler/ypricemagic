@@ -134,7 +134,9 @@
 <li class="toctree-l2"><a class="reference internal" href="y.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#module-y.ENVIRONMENT_VARIABLES">y.ENVIRONMENT_VARIABLES module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">CACHE_TTL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.CHECKSUM_CACHE_MAXSIZE"><code class="docutils literal notranslate"><span class="pre">CHECKSUM_CACHE_MAXSIZE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.CONTRACT_CACHE_TTL"><code class="docutils literal notranslate"><span class="pre">CONTRACT_CACHE_TTL</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.CONTRACT_THREADS"><code class="docutils literal notranslate"><span class="pre">CONTRACT_THREADS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.DB_DATABASE"><code class="docutils literal notranslate"><span class="pre">DB_DATABASE</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.DB_HOST"><code class="docutils literal notranslate"><span class="pre">DB_HOST</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.ENVIRONMENT_VARIABLES.DB_PASSWORD"><code class="docutils literal notranslate"><span class="pre">DB_PASSWORD</span></code></a></li>
@@ -149,6 +151,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#module-y.constants">y.constants module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.constants.EEE_ADDRESS"><code class="docutils literal notranslate"><span class="pre">EEE_ADDRESS</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.constants.STABLECOINS"><code class="docutils literal notranslate"><span class="pre">STABLECOINS</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.constants.WRAPPED_GAS_COIN"><code class="docutils literal notranslate"><span class="pre">WRAPPED_GAS_COIN</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.constants.dai"><code class="docutils literal notranslate"><span class="pre">dai</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.constants.sushi"><code class="docutils literal notranslate"><span class="pre">sushi</span></code></a></li>
@@ -159,10 +162,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.CompilerError"><code class="docutils literal notranslate"><span class="pre">CompilerError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.CompilerError.__init__"><code class="docutils literal notranslate"><span class="pre">CompilerError.__init__()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__eq__"><code class="docutils literal notranslate"><span class="pre">Contract.__eq__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__getattribute__"><code class="docutils literal notranslate"><span class="pre">Contract.__getattribute__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__post_init__"><code class="docutils literal notranslate"><span class="pre">Contract.__post_init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__str__"><code class="docutils literal notranslate"><span class="pre">Contract.__str__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>
@@ -210,7 +218,9 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.convert.checksum"><code class="docutils literal notranslate"><span class="pre">checksum()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.convert.to_address"><code class="docutils literal notranslate"><span class="pre">to_address()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.convert.to_address_async"><code class="docutils literal notranslate"><span class="pre">to_address_async()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#module-y.datatypes">y.datatypes module</a><ul>
@@ -255,6 +265,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.datatypes.Address"><code class="docutils literal notranslate"><span class="pre">Address</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.datatypes.AddressOrContract"><code class="docutils literal notranslate"><span class="pre">AddressOrContract</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.datatypes.AnyAddressType"><code class="docutils literal notranslate"><span class="pre">AnyAddressType</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.datatypes.Block"><code class="docutils literal notranslate"><span class="pre">Block</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.datatypes.Pool"><code class="docutils literal notranslate"><span class="pre">Pool</span></code></a></li>
@@ -383,6 +394,7 @@
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.__eq__"><code class="docutils literal notranslate"><span class="pre">Contract.__eq__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.__getattribute__"><code class="docutils literal notranslate"><span class="pre">Contract.__getattribute__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.__post_init__"><code class="docutils literal notranslate"><span class="pre">Contract.__post_init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.__str__"><code class="docutils literal notranslate"><span class="pre">Contract.__str__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.html#y.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>

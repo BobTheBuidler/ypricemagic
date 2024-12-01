@@ -89,7 +89,7 @@
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span><span class="p">,</span> <span class="n">HiddenMethod</span>
+<span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync.method</span> <span class="kn">import</span> <span class="n">ASyncBoundMethod</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">web3</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">HexString</span>
@@ -152,6 +152,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">_deploy_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
@@ -181,16 +182,17 @@
 <div class="viewcode-block" id="ContractBase.__eq__">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.ContractBase.__eq__">[docs]</a>
     <span class="k">def</span> <span class="fm">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__o</span><span class="p">:</span> <span class="nb">object</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="p">(</span><span class="n">ContractBase</span><span class="p">,</span> <span class="n">Contract</span><span class="p">)):</span>
-            <span class="k">return</span> <span class="n">__o</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
         <span class="c1"># Skip checksumming if applicable, its computationally expensive</span>
-        <span class="c1"># NOTE: We assume a mixed-case address is checksummed. If it isn&#39;t, wtf are you doing?</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">__o</span> <span class="o">!=</span> <span class="n">__o</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">and</span> <span class="n">__o</span> <span class="o">!=</span> <span class="n">__o</span><span class="o">.</span><span class="n">upper</span><span class="p">():</span>
-            <span class="k">return</span> <span class="n">__o</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">__o</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span>
-        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
-            <span class="k">return</span> <span class="kc">False</span></div>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">__o</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">__o</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="p">(</span><span class="n">ContractBase</span><span class="p">,</span> <span class="n">Contract</span><span class="p">)):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">__o</span><span class="o">.</span><span class="n">address</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
 
 
     <span class="k">def</span> <span class="fm">__hash__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -220,6 +222,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The contract&#39;s build name.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; contract = ContractBase(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await contract.build_name</span>
+<span class="sd">            &#39;MyContract&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">build_name</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -230,6 +237,23 @@
 <a class="viewcode-back" href="../../../source/y.classes.html#y.ContractBase.deploy_block">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">deploy_block</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the block number when the contract was deployed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            when_no_history_return_0: If True, return 0 when no history is found instead of raising an exception.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The block number when the contract was deployed, or 0 if `when_no_history_return_0` is True and the deploy block cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; contract = ContractBase(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await contract.deploy_block()</span>
+<span class="sd">            1234567</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :func:`contract_creation_block_async`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_deploy_block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">when_no_history_return_0</span><span class="o">=</span><span class="n">when_no_history_return_0</span>
@@ -244,6 +268,24 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">has_method</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">return_response</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if the contract has a specific method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            method: The name of the method to check for.</span>
+<span class="sd">            return_response: If True, return the response of the method call instead of a boolean.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; contract = ContractBase(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await contract.has_method(&quot;name()&quot;)</span>
+<span class="sd">            True</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :func:`has_method`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">has_method</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="n">return_response</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span></div>
@@ -286,6 +328,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The token&#39;s symbol.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.symbol</span>
+<span class="sd">            &#39;TKN&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">EEE_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span>
@@ -315,6 +362,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The token&#39;s name.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.name</span>
+<span class="sd">            &#39;TokenName&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">EEE_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;Ethereum&quot;</span>
@@ -338,6 +390,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The number of decimal places for the token.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.decimals</span>
+<span class="sd">            18</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">EEE_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">18</span>
@@ -366,6 +423,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The scaling factor for the token.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.scale</span>
+<span class="sd">            1000000000000000000</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="mi">10</span> <span class="o">**</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__decimals__</span></div>
 
@@ -388,6 +450,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The total supply of the token.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.total_supply()</span>
+<span class="sd">            1000000000000000000000</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">_erc20</span><span class="o">.</span><span class="n">totalSupply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -403,6 +470,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The total supply of the token scaled to a decimal.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.total_supply_readable()</span>
+<span class="sd">            1000.0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total_supply</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">total_supply</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span>
@@ -424,6 +496,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The balance of the token held by `address` at block `block`.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.balance_of(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;)</span>
+<span class="sd">            500000000000000000000</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">raw_calls</span><span class="o">.</span><span class="n">balanceOf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -462,6 +539,14 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            yPriceMagicError: If return_None_on_failure is False and the price cannot be retrieved.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token.price()</span>
+<span class="sd">            1.23</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :func:`y.prices.magic.get_price`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">y.prices.magic</span> <span class="kn">import</span> <span class="n">get_price</span>
 
@@ -484,6 +569,11 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NonStandardERC20: If the symbol cannot be retrieved from the contract.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token._symbol()</span>
+<span class="sd">            &#39;TKN&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
@@ -508,6 +598,11 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NonStandardERC20: If the name cannot be retrieved from the contract.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await token._name()</span>
+<span class="sd">            &#39;TokenName&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;name()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;getName()(string)&quot;</span><span class="p">]</span>
@@ -531,6 +626,13 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            NonStandardERC20: Always raised with a custom error message.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; token = ERC20(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; token.__raise_exception(&quot;symbol&quot;)</span>
+<span class="sd">            Traceback (most recent call last):</span>
+<span class="sd">            ...</span>
+<span class="sd">            y.exceptions.NonStandardERC20: Unable to fetch `symbol` for 0x1234567890abcdef1234567890abcdef12345678 on Mainnet</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="n">NonStandardERC20</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>
@@ -588,6 +690,11 @@
 <span class="sd">            skip_cache: If True, skip using the local cache for price data.</span>
 <span class="sd">            ignore_pools: A tuple of pools to ignore when calculating the price.</span>
 <span class="sd">            asynchronous: True if this object will be used with its asynchronous API, False for its sync API.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(balance)</span>
+<span class="sd">            1000000000000000000</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">asynchronous</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
@@ -610,6 +717,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The balance in wei as a string.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; str(balance)</span>
+<span class="sd">            &#39;1000000000000000000&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balance</span><span class="p">)</span></div>
 
@@ -632,6 +744,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True if the balance is non-zero, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; bool(balance)</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">balance</span><span class="p">)</span></div>
 
@@ -647,6 +764,12 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True if the objects are equal, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance1 = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balance2 = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balance1 == balance2</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">__o</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">balance</span>
@@ -691,6 +814,12 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            TypeError: If the objects are not of the same type.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance1 = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balance2 = WeiBalance(500000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balance1 &gt;= balance2</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">__o</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">return</span> <span class="kc">True</span>
@@ -816,6 +945,11 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            TypeError: If the scalar value is not a number.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balance * 2</span>
+<span class="sd">            &lt;WeiBalance token=&lt;ERC20 TKN &#39;0x1234567890abcdef1234567890abcdef12345678&#39;&gt; balance=2000000000000000000 block=None&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -844,6 +978,11 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            TypeError: If the scalar value is not a number.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balance / 2</span>
+<span class="sd">            &lt;WeiBalance token=&lt;ERC20 TKN &#39;0x1234567890abcdef1234567890abcdef12345678&#39;&gt; balance=500000000000000000 block=None&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">__o</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
@@ -867,6 +1006,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The balance scaled to a decimal.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await balance.readable</span>
+<span class="sd">            Decimal(&#39;1.0&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -892,6 +1036,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The price of the token in USD.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await balance.price</span>
+<span class="sd">            Decimal(&#39;1.23&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">price</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">price</span><span class="p">(</span>
@@ -916,6 +1065,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The value of the balance in USD.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await balance.value_usd</span>
+<span class="sd">            Decimal(&#39;1.23&#39;)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">balance</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
@@ -928,12 +1082,16 @@
     <span class="n">__value_usd__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]</span>
 
     <span class="nd">@cached_property</span>
-    <span class="k">def</span> <span class="nf">_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the logger for the WeiBalance object.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The logger for the WeiBalance object.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; logger = balance._logger</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_price_logger</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -951,7 +1109,7 @@
         <span class="s2">&quot;__task&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_init_block</span> <span class="o">=</span> <span class="n">auto_retry</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_block_number</span><span class="p">)()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="kc">None</span>
@@ -964,6 +1122,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            A generator that yields `True` once the `_Loader` has loaded all relevant data thru the current block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _Loader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await loader</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">loaded</span><span class="o">.</span><span class="fm">__await__</span><span class="p">()</span>
 
@@ -981,10 +1144,15 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An awaitable that resolves to `True` once the `_Loader` has loaded all relevant data thru the current block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _Loader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await loader.loaded</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task</span>  <span class="c1"># ensure task is running and not errd</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">Event</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
 
     <span class="nd">@property</span>
@@ -997,6 +1165,10 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            Exception: If the _Loader has any exception, it is raised.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _Loader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; task = loader._task</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__exc</span><span class="p">:</span>
             <span class="c1"># create a new duplicate exc instead of building a massive traceback on the original</span>
@@ -1015,6 +1187,10 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            task: The completed task.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _Loader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; loader._done_callback(task)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">e</span> <span class="o">:=</span> <span class="n">task</span><span class="o">.</span><span class="n">exception</span><span class="p">():</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;exception while loading </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
@@ -1024,6 +1200,10 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Loads the loader and catches any exceptions.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _Loader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await loader.__load()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load</span><span class="p">()</span>
@@ -1043,7 +1223,8 @@
 <span class="sd">    and then continue loading data in the background.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractproperty</span>
+    <span class="nd">@property</span>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
     <span class="k">def</span> <span class="nf">_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Events&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The Events object associated with this _EventsLoader.</span>
@@ -1056,6 +1237,11 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            An awaitable that resolves to `True` once the `_Loader` has loaded all relevant data thru the current block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _EventsLoader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await loader.loaded</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_task</span>  <span class="c1"># ensure task is running and not err&#39;d</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -1067,6 +1253,10 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load the event data in the background.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; loader = _EventsLoader(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await loader._load()</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># TODO: extend this for constant loading</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_events</span><span class="o">.</span><span class="n">events</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_block</span><span class="p">):</span>

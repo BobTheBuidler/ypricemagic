@@ -69,16 +69,16 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.uniswap.v2_forks</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">This module contains data structures and utility functions for interacting with Uniswap V2 forks across various networks.</span>
+<span></span><span class="c1"># This module contains data structures and mappings for interacting with Uniswap V2 forks across various networks.</span>
 
+<span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Key components:</span>
-<span class="sd">- UNISWAPS: A dictionary mapping network names to dictionaries of Uniswap V2 fork protocols, including their factory and router addresses.</span>
-<span class="sd">- FACTORY_TO_ROUTER, ROUTER_TO_FACTORY: Mappings between factory and router addresses.</span>
-<span class="sd">- FACTORY_TO_PROTOCOL, ROUTER_TO_PROTOCOL: Mappings from addresses to protocol names.</span>
-<span class="sd">- SPECIAL_PATHS: A dictionary of special token paths for specific protocols and networks.</span>
+<span class="sd">- `UNISWAPS`: A dictionary mapping network names to dictionaries of Uniswap V2 fork protocols, including their factory and router addresses.</span>
+<span class="sd">- `FACTORY_TO_ROUTER`, `ROUTER_TO_FACTORY`: Mappings between factory and router addresses.</span>
+<span class="sd">- `FACTORY_TO_PROTOCOL`, `ROUTER_TO_PROTOCOL`: Mappings from addresses to protocol names.</span>
+<span class="sd">- `SPECIAL_PATHS`: A dictionary of special token paths for specific protocols and networks.</span>
 
-<span class="sd">The module also includes utility functions for working with these data structures.</span>
+<span class="sd">The module also includes a function for retrieving special token paths for a given protocol associated with a router address.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">logging</span>
@@ -506,16 +506,31 @@
 <span class="nd">@lru_cache</span>
 <span class="k">def</span> <span class="nf">special_paths</span><span class="p">(</span><span class="n">router_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Dict</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">Address</span><span class="p">]]]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Retrieves special token paths for a given router address.</span>
+<span class="sd">    Retrieves special token paths for a given protocol associated with a router address.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        router_address: The address of the router.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        A dictionary of special paths (token in -&gt; swap path) for the given router.</span>
+<span class="sd">        A dictionary of special paths (token in -&gt; swap path) for the protocol associated with the given router.</span>
 
 <span class="sd">    Note:</span>
 <span class="sd">        This function is cached using lru_cache to improve performance for repeated calls.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; special_paths(&quot;0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D&quot;)</span>
+<span class="sd">        {</span>
+<span class="sd">            &quot;0xEF69B5697f2Fb0345cC680210fD39b593a2f9684&quot;: [</span>
+<span class="sd">                &quot;0xEF69B5697f2Fb0345cC680210fD39b593a2f9684&quot;,</span>
+<span class="sd">                &quot;0x6B3595068778DD592e39A122f4f5a5cF09C90fE2&quot;,</span>
+<span class="sd">                &quot;0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2&quot;,</span>
+<span class="sd">                &quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;,</span>
+<span class="sd">            ],</span>
+<span class="sd">            ...</span>
+<span class="sd">        }</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :data:`SPECIAL_PATHS`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">protocol</span> <span class="o">=</span> <span class="n">ROUTER_TO_PROTOCOL</span><span class="p">[</span><span class="n">router_address</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">SPECIAL_PATHS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protocol</span><span class="p">,</span> <span class="p">{})</span></div>

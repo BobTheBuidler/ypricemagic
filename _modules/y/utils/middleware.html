@@ -111,6 +111,15 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The determined batch size for log fetching.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; batch_size = _get_batch_size()</span>
+<span class="sd">        &gt;&gt;&gt; print(batch_size)</span>
+<span class="sd">        2000</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :data:`provider_specific_batch_sizes`</span>
+<span class="sd">        - :data:`chain_specific_max_batch_sizes`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">batch_size</span> <span class="o">:=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">GETLOGS_BATCH_SIZE</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">batch_size</span>
@@ -135,6 +144,13 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        True if the method call should be cached, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; should_cache(&quot;eth_getCode&quot;, [&quot;0x1234&quot;, &quot;latest&quot;])</span>
+<span class="sd">        True</span>
+
+<span class="sd">        &gt;&gt;&gt; should_cache(&quot;eth_getBalance&quot;, [&quot;0x1234&quot;, &quot;latest&quot;])</span>
+<span class="sd">        False</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;eth_getCode&quot;</span> <span class="ow">and</span> <span class="n">params</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;latest&quot;</span></div>
 
@@ -152,6 +168,15 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        A middleware function that caches eth_getCode calls.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; from web3 import Web3</span>
+<span class="sd">        &gt;&gt;&gt; w3 = Web3(Web3.HTTPProvider(&#39;http://localhost:8545&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; middleware = getcode_cache_middleware(w3.manager.request_blocking, w3)</span>
+<span class="sd">        &gt;&gt;&gt; w3.middleware_onion.add(middleware)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`should_cache`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span>
@@ -176,7 +201,14 @@
 <span class="sd">    Set up the eth_getCode cache middleware for the current Web3 provider.</span>
 
 <span class="sd">    This function modifies the Web3 provider to use a custom session with increased</span>
-<span class="sd">    connection pool size and timeout, and adds the getcode cache middleware.</span>
+<span class="sd">    connection pool size and timeout, if the provider&#39;s endpoint URI starts with &quot;http&quot; or &quot;https&quot;.</span>
+<span class="sd">    If the provider is an IPCProvider, it does not modify the session.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; setup_getcode_cache_middleware()</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`getcode_cache_middleware`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># patch web3 provider with more connections and higher timeout</span>
     <span class="k">if</span> <span class="n">web3</span><span class="o">.</span><span class="n">provider</span><span class="p">:</span>
@@ -204,6 +236,12 @@
 <span class="k">def</span> <span class="nf">setup_geth_poa_middleware</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Set up the geth proof-of-authority middleware for the current Web3 provider.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; setup_geth_poa_middleware()</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`web3.middleware.geth_poa.geth_poa_middleware`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">web3</span><span class="o">.</span><span class="n">middleware_onion</span><span class="o">.</span><span class="n">inject</span><span class="p">(</span><span class="n">geth_poa_middleware</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>

@@ -112,8 +112,15 @@
 
 <span class="sd">    Returns:</span>
 <span class="sd">        True if the token is a Mooniswap pool, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; is_mooniswap_pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        &gt;&gt;&gt; is_mooniswap_pool(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;)</span>
+<span class="sd">        False</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="n">router</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="k">await</span> <span class="n">router</span><span class="o">.</span><span class="n">isPool</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span></div>
 
 
@@ -135,9 +142,19 @@
 <span class="sd">        skip_cache (optional): Whether to skip the cache. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The price of the pool token in USD.</span>
+<span class="sd">        The price of the pool token in USD as a :class:`~y.datatypes.UsdPrice`.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; get_pool_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        UsdPrice(&#39;1.2345&#39;)</span>
+
+<span class="sd">        &gt;&gt;&gt; get_pool_price(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;, block=12345678)</span>
+<span class="sd">        UsdPrice(&#39;0.9876&#39;)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.prices.magic.get_price`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;token0&quot;</span><span class="p">,</span> <span class="s2">&quot;token1&quot;</span><span class="p">])</span>
     <span class="n">bal0</span><span class="p">,</span> <span class="n">bal1</span><span class="p">,</span> <span class="n">price0</span><span class="p">,</span> <span class="n">price1</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="p">(</span>

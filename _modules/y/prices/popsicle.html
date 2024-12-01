@@ -146,8 +146,12 @@
 <span class="sd">        &gt;&gt;&gt; price = get_price(&quot;0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf&quot;, block=14_000_000)</span>
 <span class="sd">        &gt;&gt;&gt; print(f&quot;{price:.6f}&quot;)</span>
 <span class="sd">        1.234567  # The price of the Popsicle LP token in USD</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_tvl`</span>
+<span class="sd">        - :func:`get_balances`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">total_val</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tvl</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">total_val</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
@@ -166,6 +170,26 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdValue</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the total value locked (TVL) in a Popsicle Finance LP token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the Popsicle LP token.</span>
+<span class="sd">        block (optional): The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache (optional): Whether to skip the cache when fetching TVL. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The total value locked in the LP token in USD, or None if the TVL cannot be determined.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; tvl = get_tvl(&quot;0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf&quot;, block=14_000_000)</span>
+<span class="sd">        &gt;&gt;&gt; print(f&quot;{tvl:.2f}&quot;)</span>
+<span class="sd">        1234567.89  # The TVL of the Popsicle LP token in USD</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_price`</span>
+<span class="sd">        - :func:`get_balances`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">balances</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]</span>
     <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_balances</span><span class="p">(</span>
         <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">_async_balance_objects</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -183,9 +207,38 @@
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">_async_balance_objects</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the balances of the underlying tokens in a Popsicle Finance LP token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the Popsicle LP token.</span>
+<span class="sd">        block (optional): The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache (optional): Whether to skip the cache when fetching balances. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
+<span class="sd">        _async_balance_objects (optional): Whether to use asynchronous balance objects. Defaults to False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A tuple containing the balances of the two underlying tokens, or None if the balances cannot be determined.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; balances = get_balances(&quot;0xd2C5A739ebfE3E00CFa88A51749d367d7c496CCf&quot;, block=14_000_000)</span>
+<span class="sd">        &gt;&gt;&gt; if balances:</span>
+<span class="sd">        ...     balance0, balance1 = balances</span>
+<span class="sd">        ...     print(f&quot;Token0 Balance: {balance0.readable}, Token1 Balance: {balance1.readable}&quot;)</span>
+<span class="sd">        ... else:</span>
+<span class="sd">        ...     print(&quot;Balances could not be determined.&quot;)</span>
+<span class="sd">        Token0 Balance: 1000.0, Token1 Balance: 2000.0</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        If the contract probed has the correct method name but the method returns the wrong type for Popsicle,</span>
+<span class="sd">        an exception &quot;not enough values to unpack (expected 3, got 2)&quot; will be caught, and the function will return None.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_price`</span>
+<span class="sd">        - :func:`get_tvl`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="p">,</span> <span class="p">(</span><span class="n">balance0</span><span class="p">,</span> <span class="n">balance1</span><span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span>
-            <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">),</span> <span class="n">_RESERVES_METHODS</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
+            <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">),</span> <span class="n">_RESERVES_METHODS</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>

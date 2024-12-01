@@ -70,7 +70,7 @@
              
   <h1>Source code for dank_mids.brownie_patch.contract</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span> <span class="nn">brownie</span>
 <span class="kn">from</span> <span class="nn">brownie.network.contract</span> <span class="kn">import</span> <span class="p">(</span>
@@ -91,6 +91,7 @@
     <span class="n">_get_method_object</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">dank_mids.helpers._helpers</span> <span class="kn">import</span> <span class="n">DankWeb3</span>
+
 
 <span class="n">EventName</span> <span class="o">=</span> <span class="n">NewType</span><span class="p">(</span><span class="s2">&quot;EventName&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;A type representing the name of an event in a smart contract.</span>
@@ -236,7 +237,14 @@
 <span class="sd">        This method sets up lazy initialization for contract methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="c1"># get rid of the contract call objects, we can materialize them on a jit basis</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get rid of the contract call objects so we can materialize them on a JIT basis.</span>
+
+<span class="sd">        This method sets up lazy initialization for contract methods.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__method_names__</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;_name&quot;</span><span class="p">,</span> <span class="s2">&quot;_owner&quot;</span><span class="p">}:</span>
                 <span class="c1"># this is a property defined on _ContractBase and cannot be written to</span>
@@ -266,9 +274,9 @@
 
 
     <span class="nd">@functools</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">def</span> <span class="nf">__method_names__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">__method_names__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of method names defined in the contract ABI.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__get_method_object__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DankContractMethod</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -286,12 +294,15 @@
         <span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">web3</span>
 
         <span class="n">overloaded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__method_names__</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
-        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">]:</span>
-            <span class="k">if</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
+
+        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;function&quot;</span> <span class="ow">or</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">continue</span>
+
             <span class="n">full_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="n">sig</span> <span class="o">=</span> <span class="n">build_function_signature</span><span class="p">(</span><span class="n">abi</span><span class="p">)</span>
-            <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="n">natspec</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;natspec&quot;</span><span class="p">):</span>
                 <span class="n">natspec</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="s2">&quot;natspec&quot;</span><span class="p">][</span><span class="s2">&quot;methods&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">sig</span><span class="p">,</span> <span class="p">{})</span>
 
@@ -301,7 +312,9 @@
             <span class="c1"># special logic to handle function overloading</span>
             <span class="k">elif</span> <span class="n">overloaded</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="n">overloaded</span> <span class="o">=</span> <span class="n">DankOverloadedMethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">full_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">)</span>
+
             <span class="n">overloaded</span><span class="o">.</span><span class="n">_add_fn</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="n">overloaded</span>  <span class="c1"># type: ignore [return-value]</span>
 
 

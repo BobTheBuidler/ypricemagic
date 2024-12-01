@@ -90,8 +90,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create and return a :class:`Memory` object for caching values for the currently connected blockchain.</span>
 
-<span class="sd">    Returns:</span>
-<span class="sd">        A :class:`~Memory` object configured with the current chain&#39;s cache directory.</span>
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`joblib.Memory`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">Memory</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -114,6 +114,37 @@
     <span class="n">cache_base_path</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;./cache/</span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/&quot;</span>
 
     <span class="k">def</span> <span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorator to optionally apply disk caching to asynchronous functions.</span>
+
+<span class="sd">        If the user has `toolcache` installed, this decorator will apply disk caching</span>
+<span class="sd">        to the decorated asynchronous function. If `toolcache` is not installed, the</span>
+<span class="sd">        function will be returned as is, without any caching applied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fn: The function to be decorated. Must be asynchronous.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotImplementedError: If the function is synchronous.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Using the decorator with an asynchronous function when `toolcache` is installed:</span>
+
+<span class="sd">            &gt;&gt;&gt; @optional_async_diskcache</span>
+<span class="sd">            ... async def fetch_data():</span>
+<span class="sd">            ...     return &quot;data&quot;</span>
+
+<span class="sd">            This will cache the result of `fetch_data` in the specified cache directory.</span>
+
+<span class="sd">            If `toolcache` is not installed, the function will run without caching:</span>
+
+<span class="sd">            &gt;&gt;&gt; async def fetch_data():</span>
+<span class="sd">            ...     return &quot;data&quot;</span>
+<span class="sd">            &gt;&gt;&gt; fetch_data = optional_async_diskcache(fetch_data)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :mod:`toolcache`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">iscoroutinefunction</span><span class="p">(</span><span class="n">fn</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">fn</span><span class="si">}</span><span class="s2"> is sync&quot;</span><span class="p">)</span>
 
@@ -140,6 +171,25 @@
 <div class="viewcode-block" id="optional_async_diskcache">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.cache.optional_async_diskcache">[docs]</a>
     <span class="k">def</span> <span class="nf">optional_async_diskcache</span><span class="p">(</span><span class="n">fn</span><span class="p">:</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AnyFn</span><span class="p">[</span><span class="n">P</span><span class="p">,</span> <span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decorator to optionally apply disk caching to asynchronous functions.</span>
+
+<span class="sd">        If `toolcache` is not installed, this decorator will return the function</span>
+<span class="sd">        as is, without any caching applied.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            fn: The function to be decorated.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            Using the decorator with an asynchronous function:</span>
+
+<span class="sd">            &gt;&gt;&gt; async def fetch_data():</span>
+<span class="sd">            ...     return &quot;data&quot;</span>
+<span class="sd">            &gt;&gt;&gt; fetch_data = optional_async_diskcache(fetch_data)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :mod:`toolcache`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">fn</span></div>
 
 </pre></div>

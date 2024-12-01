@@ -104,6 +104,9 @@
 <span class="sd">        &gt;&gt;&gt; is_ib = is_ib_token(&quot;0x41c84c0e2EE0b740Cf0d31F63f3B6F627DC6b393&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(is_ib)</span>
 <span class="sd">        True</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.contracts.has_methods`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span>
         <span class="n">token</span><span class="p">,</span>
@@ -133,7 +136,7 @@
 <span class="sd">    Args:</span>
 <span class="sd">        token: The address of the Iron Bank token.</span>
 <span class="sd">        block (optional): The block number to query. Defaults to the latest block.</span>
-<span class="sd">        skip_cache (optional): Whether to skip the cache when fetching prices. Defaults to :obbj:`ENVS.SKIP_CACHE`.</span>
+<span class="sd">        skip_cache (optional): Whether to skip the cache when fetching prices. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The price of the Iron Bank token in USD.</span>
@@ -144,10 +147,15 @@
 <span class="sd">        1.234567  # The price of the Iron Bank token in USD</span>
 
 <span class="sd">    Note:</span>
-<span class="sd">        This function calculates the price by determining the share price of the Iron Bank token</span>
-<span class="sd">        relative to its underlying asset, and then multiplying by the price of the underlying asset.</span>
+<span class="sd">        This function calculates the price by retrieving the total balance and total supply of the Iron Bank token,</span>
+<span class="sd">        scaling them appropriately, and then calculating the share price. The share price is then multiplied by the</span>
+<span class="sd">        price of the underlying asset obtained from :func:`y.prices.magic.get_price`.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.convert.to_address_async`</span>
+<span class="sd">        - :func:`y.prices.magic.get_price`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">token</span><span class="p">,</span> <span class="n">total_bal</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span>
         <span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;totalToken&quot;</span><span class="p">,</span> <span class="s2">&quot;totalSupply&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
     <span class="p">)</span>

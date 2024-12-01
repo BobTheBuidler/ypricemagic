@@ -92,6 +92,22 @@
 <div class="viewcode-block" id="is_rkp3r">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.rkp3r.is_rkp3r">[docs]</a>
 <span class="k">def</span> <span class="nf">is_rkp3r</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the given address is the RKP3R token on the Ethereum Mainnet.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The address to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the address is RKP3R on Mainnet, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; is_rkp3r(&quot;0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">        &gt;&gt;&gt; is_rkp3r(&quot;0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44&quot;)</span>
+<span class="sd">        False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="n">address</span> <span class="o">==</span> <span class="n">RKP3R</span></div>
 
 
@@ -102,6 +118,27 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the price of the KP3R token and apply a discount to calculate the RKP3R token price.</span>
+
+<span class="sd">    This function retrieves the price of the KP3R token and applies a discount</span>
+<span class="sd">    specific to the RKP3R token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The address of the token.</span>
+<span class="sd">        block: The block number to query the price at.</span>
+<span class="sd">        skip_cache: Whether to skip the cache when retrieving the price.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The discounted price of the RKP3R token.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9&quot;)</span>
+<span class="sd">        Decimal(&#39;123.45&#39;)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.prices.magic.get_price`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">price</span><span class="p">,</span> <span class="n">discount</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">magic</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">KP3R</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">get_discount</span><span class="p">(</span><span class="n">block</span><span class="p">),</span>
@@ -113,6 +150,22 @@
 <div class="viewcode-block" id="get_discount">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.rkp3r.get_discount">[docs]</a>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_discount</span><span class="p">(</span><span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the discount for the RKP3R token from the contract.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        block: The block number to query the discount at.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The discount as a percentage.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_discount()</span>
+<span class="sd">        Decimal(&#39;5.0&#39;)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`y.contracts.Contract`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rkp3r</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">RKP3R</span><span class="p">)</span>
     <span class="n">discount</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="k">await</span> <span class="n">rkp3r</span><span class="o">.</span><span class="n">discount</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">))</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;discount: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">discount</span><span class="p">)</span>

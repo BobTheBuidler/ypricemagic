@@ -104,6 +104,9 @@
 <span class="k">class</span> <span class="nc">NoBlockFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Raised when no block is found for a specified timestamp because the timestamp is in the future.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        timestamp: The timestamp for which no block was found.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="NoBlockFound.__init__">
@@ -118,6 +121,23 @@
 <span class="nd">@yLazyLogger</span><span class="p">(</span><span class="n">logger</span><span class="p">)</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">get_block_timestamp</span><span class="p">(</span><span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the timestamp of a block by its height.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        height: The block height.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The timestamp of the block.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; get_block_timestamp(12345678)</span>
+<span class="sd">        1609459200</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_block_timestamp_async`</span>
+<span class="sd">        - :func:`last_block_on_date`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">y._db.utils.utils</span> <span class="k">as</span> <span class="nn">db</span>
 
     <span class="k">if</span> <span class="n">ts</span> <span class="o">:=</span> <span class="n">db</span><span class="o">.</span><span class="n">get_block_timestamp</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -137,6 +157,23 @@
 <span class="nd">@a_sync_ttl_cache</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_block_timestamp_async</span><span class="p">(</span><span class="n">height</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Asynchronously get the timestamp of a block by its height.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        height: The block height.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The timestamp of the block.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_block_timestamp_async(12345678)</span>
+<span class="sd">        1609459200</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_block_timestamp`</span>
+<span class="sd">        - :func:`get_block_at_timestamp`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">y._db.utils.utils</span> <span class="k">as</span> <span class="nn">db</span>
 
     <span class="k">if</span> <span class="n">ts</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_block_timestamp</span><span class="p">(</span><span class="n">height</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -158,10 +195,32 @@
 <span class="c1"># TODO: deprecate</span>
 <span class="nd">@memory</span><span class="o">.</span><span class="n">cache</span><span class="p">()</span>
 <span class="k">def</span> <span class="nf">last_block_on_date</span><span class="p">(</span><span class="n">date</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Returns the last block on a given `date`. You can pass either a `datetime.date` object or a date string formatted as &#39;YYYY-MM-DD&#39;.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns the last block on a given date. You can pass either a `datetime.date` object or a date string formatted as &#39;YYYY-MM-DD&#39;.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        This function is marked for deprecation and may be removed in future versions. It is recommended to use alternative methods for obtaining block information.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        date: The date for which to find the last block.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The block number of the last block on the given date.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: If a `datetime.datetime` object is passed instead of a `datetime.date`.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; last_block_on_date(&#39;2023-01-01&#39;)</span>
+<span class="sd">        12345678</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_block_timestamp`</span>
+<span class="sd">        - :func:`get_block_timestamp_async`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
-            <span class="s2">&quot;You can not pass in a `datetime.datetime` object. Please call date() on your input before passing it to this funciton.&quot;</span>
+            <span class="s2">&quot;You can not pass in a `datetime.datetime` object. Please call date() on your input before passing it to this function.&quot;</span>
         <span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">):</span>
         <span class="n">date</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">date</span><span class="p">()</span>
@@ -189,12 +248,31 @@
 <a class="viewcode-back" href="../../source/y.html#y.get_block_at_timestamp">[docs]</a>
 <span class="nd">@a_sync_ttl_cache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the block number just before a specific timestamp.</span>
+
+<span class="sd">    This function returns the block number at the given timestamp, which is the block number just before the specified timestamp.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        timestamp: The timestamp to find the block for.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The block number just before the given timestamp.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; await get_block_at_timestamp(datetime.datetime(2023, 1, 1))</span>
+<span class="sd">        12345678</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_block_timestamp`</span>
+<span class="sd">        - :func:`get_block_timestamp_async`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">import</span> <span class="nn">y._db.utils.utils</span> <span class="k">as</span> <span class="nn">db</span>
 
     <span class="k">if</span> <span class="n">block_at_timestamp</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">):</span>
         <span class="k">return</span> <span class="n">block_at_timestamp</span>
 
-    <span class="c1"># TODO: invert this and use this fn inside of closest_block_after_timestamp for backwards compatability before deprecating closest_block_after_timestamp</span>
+    <span class="c1"># TODO: invert this and use this fn inside of closest_block_after_timestamp for backwards compatibility before deprecating closest_block_after_timestamp</span>
     <span class="n">block_after_timestamp</span> <span class="o">=</span> <span class="k">await</span> <span class="n">closest_block_after_timestamp_async</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
     <span class="n">block_at_timestamp</span> <span class="o">=</span> <span class="n">block_after_timestamp</span> <span class="o">-</span> <span class="mi">1</span>
     <span class="n">db</span><span class="o">.</span><span class="n">set_block_at_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">block_at_timestamp</span><span class="p">)</span>
@@ -203,6 +281,24 @@
 
 
 <span class="k">def</span> <span class="nf">_parse_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnixTimestamp</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse a timestamp into a Unix timestamp.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        timestamp: The timestamp to parse.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The Unix timestamp.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        TypeError: If the input is not a valid timestamp type.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; _parse_timestamp(datetime.datetime(2023, 1, 1))</span>
+<span class="sd">        1672531200</span>
+<span class="sd">        &gt;&gt;&gt; _parse_timestamp(1672531200)</span>
+<span class="sd">        1672531200</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">):</span>
         <span class="n">timestamp</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">timestamp</span><span class="o">.</span><span class="n">timestamp</span><span class="p">())</span>
     <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
@@ -216,6 +312,27 @@
 <span class="k">def</span> <span class="nf">closest_block_after_timestamp</span><span class="p">(</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the closest block after a given timestamp.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        timestamp: The timestamp to find the closest block after.</span>
+<span class="sd">        wait_for_block_if_needed: Whether to wait for a block if needed.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The block number closest after the given timestamp.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NoBlockFound: If no block is found after the timestamp.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; closest_block_after_timestamp(1672531199)</span>
+<span class="sd">        12345678</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_block_at_timestamp`</span>
+<span class="sd">        - :func:`get_block_timestamp`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">timestamp</span> <span class="o">=</span> <span class="n">_parse_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -237,6 +354,27 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">closest_block_after_timestamp_async</span><span class="p">(</span>
     <span class="n">timestamp</span><span class="p">:</span> <span class="n">Timestamp</span><span class="p">,</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Asynchronously get the closest block after a given timestamp.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        timestamp: The timestamp to find the closest block after.</span>
+<span class="sd">        wait_for_block_if_needed: Whether to wait for a block if needed.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The block number closest after the given timestamp.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        NoBlockFound: If no block is found after the timestamp.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; await closest_block_after_timestamp_async(1672531199)</span>
+<span class="sd">        12345678</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_block_at_timestamp`</span>
+<span class="sd">        - :func:`get_block_timestamp_async`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">timestamp</span> <span class="o">=</span> <span class="n">_parse_timestamp</span><span class="p">(</span><span class="n">timestamp</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">wait_for_block_if_needed</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
@@ -284,6 +422,15 @@
 <span class="nd">@ttl_cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">def</span> <span class="nf">check_node</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if the Ethereum node is synced.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        y.exceptions.NodeNotSynced: If the node is not synced.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; check_node()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">GANACHE_FORK</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
@@ -300,6 +447,15 @@
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 <span class="nd">@eth_retry</span><span class="o">.</span><span class="n">auto_retry</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">check_node_async</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Asynchronously check if the Ethereum node is synced.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        y.exceptions.NodeNotSynced: If the node is not synced.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await check_node_async()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">GANACHE_FORK</span><span class="p">:</span>
         <span class="k">return</span>
     <span class="n">current_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>

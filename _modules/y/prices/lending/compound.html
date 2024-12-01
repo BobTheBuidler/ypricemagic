@@ -75,7 +75,7 @@
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span><span class="p">,</span> <span class="n">convert</span>
+<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">VirtualMachineError</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
@@ -144,8 +144,21 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">comptroller</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Comptroller&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a CToken instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address: The address of the CToken.</span>
+<span class="sd">            comptroller: An optional instance of :class:`~Comptroller` associated with this CToken.</span>
+<span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; ctoken = CToken(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; ctoken_with_comptroller = CToken(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;, comptroller=my_comptroller)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">troller</span> <span class="o">=</span> <span class="n">comptroller</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate_current</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;exchangeRateCurrent()(uint)&quot;</span><span class="p">)</span></div>
@@ -156,6 +169,17 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the price of the CToken in USD.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: Whether to skip using the cache while fetching price data.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; price = await ctoken.get_price()</span>
+<span class="sd">            &gt;&gt;&gt; price_at_block = await ctoken.get_price(block=12345678)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">troller</span><span class="p">:</span>
             <span class="c1"># We can use the protocol&#39;s oracle which will be quick (if it works)</span>
             <span class="n">underlying_per_ctoken</span><span class="p">,</span> <span class="n">underlying_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -178,6 +202,15 @@
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.underlying">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ERC20</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the underlying ERC20 token for this CToken.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An instance of :class:`~ERC20` representing the underlying token.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; underlying_token = await ctoken.underlying</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># sourcery skip: use-or-for-fallback</span>
         <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span>
             <span class="s2">&quot;underlying()(address)&quot;</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -193,6 +226,23 @@
 <div class="viewcode-block" id="CToken.underlying_per_ctoken">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.underlying_per_ctoken">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">underlying_per_ctoken</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the exchange rate of the CToken, adjusted for decimals.</span>
+
+<span class="sd">        This method calculates the amount of underlying tokens per CToken by</span>
+<span class="sd">        multiplying the exchange rate by a factor based on the difference in</span>
+<span class="sd">        decimals between the CToken and its underlying token.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; amount = await ctoken.underlying_per_ctoken()</span>
+<span class="sd">            &gt;&gt;&gt; amount_at_block = await ctoken.underlying_per_ctoken(block=12345678)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`exchange_rate`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">underlying</span><span class="p">:</span> <span class="n">ERC20</span>
         <span class="n">exchange_rate</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -206,6 +256,16 @@
 <div class="viewcode-block" id="CToken.exchange_rate">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.CToken.exchange_rate">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">exchange_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the current exchange rate of the CToken.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; rate = await ctoken.exchange_rate()</span>
+<span class="sd">            &gt;&gt;&gt; rate_at_block = await ctoken.exchange_rate(block=12345678)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">exchange_rate</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate_current</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -233,6 +293,17 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_underlying_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the price of the underlying token in USD.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: Whether to skip using the cache while fetching price data.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; price = await ctoken.get_underlying_price()</span>
+<span class="sd">            &gt;&gt;&gt; price_at_block = await ctoken.get_underlying_price(block=12345678)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">oracle</span><span class="p">:</span> <span class="n">Contract</span>
         <span class="n">underlying</span><span class="p">:</span> <span class="n">ERC20</span>
         <span class="c1"># always query the oracle in case it was changed</span>
@@ -270,8 +341,23 @@
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">address</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">*</span><span class="p">,</span>
         <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Comptroller instance.</span>
+
+<span class="sd">        You must provide either an address or a key. If both are provided, the key will be used to look up the address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address: The address of the Comptroller.</span>
+<span class="sd">            key: The key associated with the Comptroller in the TROLLERS dictionary.</span>
+<span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; comptroller = Comptroller(address=&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; comptroller_with_key = Comptroller(key=&quot;comp&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">assert</span> <span class="n">address</span> <span class="ow">or</span> <span class="n">key</span><span class="p">,</span> <span class="s2">&quot;Must provide either an address or a key&quot;</span>
         <span class="k">assert</span> <span class="ow">not</span> <span class="p">(</span>
             <span class="n">address</span> <span class="ow">and</span> <span class="n">key</span>
@@ -282,9 +368,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">key</span> <span class="o">=</span> <span class="p">[</span><span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">TROLLERS</span> <span class="k">if</span> <span class="n">address</span> <span class="o">==</span> <span class="n">TROLLERS</span><span class="p">[</span><span class="n">key</span><span class="p">]][</span><span class="mi">0</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span></div>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span></div>
 
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -294,6 +379,18 @@
 <div class="viewcode-block" id="Comptroller.__contains__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.__contains__">[docs]</a>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a token address is contained within the Comptroller&#39;s markets.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token to check.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the token address is in the Comptroller&#39;s markets, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; &quot;0x1234567890abcdef1234567890abcdef12345678&quot; in comptroller</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;self.asynchronous&#39; must be False to use Comptroller.__contains__&quot;</span>
@@ -305,6 +402,15 @@
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.markets">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">markets</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">CToken</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the markets associated with this Comptroller.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple of :class:`~CToken` instances representing the markets.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; markets = await comptroller.markets</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_method</span><span class="p">(</span>
             <span class="s2">&quot;getAllMarkets()(address[])&quot;</span><span class="p">,</span> <span class="n">return_response</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
@@ -324,6 +430,16 @@
 <div class="viewcode-block" id="Comptroller.oracle">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Comptroller.oracle">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">oracle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the oracle contract associated with this Comptroller.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; oracle = await comptroller.oracle()</span>
+<span class="sd">            &gt;&gt;&gt; oracle_at_block = await comptroller.oracle(block=12345678)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">oracle</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">oracle</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
@@ -342,7 +458,18 @@
 <span class="k">class</span> <span class="nc">Compound</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <div class="viewcode-block" id="Compound.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a Compound instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; compound = Compound()</span>
+<span class="sd">            &gt;&gt;&gt; compound_async = Compound(asynchronous=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">trollers</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">protocol</span><span class="p">:</span> <span class="n">Comptroller</span><span class="p">(</span><span class="n">troller</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
@@ -353,6 +480,18 @@
 <div class="viewcode-block" id="Compound.__contains__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.__contains__">[docs]</a>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a token address is a Compound market.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token to check.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the token address is a Compound market, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; &quot;0x1234567890abcdef1234567890abcdef12345678&quot; in compound</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
                 <span class="s2">&quot;&#39;self.asynchronous&#39; must be False and the event loop must not be running&quot;</span>
@@ -365,6 +504,18 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_troller</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Comptroller</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the Comptroller associated with a token address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An instance of :class:`~Comptroller` if found, None otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; troller = await compound.get_troller(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trollers</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">troller</span><span class="p">,</span> <span class="n">markets</span> <span class="ow">in</span> <span class="n">Comptroller</span><span class="o">.</span><span class="n">markets</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">trollers</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
@@ -377,6 +528,18 @@
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.compound.Compound.is_compound_market">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">is_compound_market</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a token address is a Compound market.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token to check.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the token address is a Compound market, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; is_market = await compound.is_compound_market(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_troller</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">return</span> <span class="kc">True</span>
 
@@ -399,6 +562,18 @@
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the price of a token in USD.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token.</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: Whether to skip using the cache while fetching price data.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; price = await compound.get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; price_at_block = await compound.get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;, block=12345678)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">troller</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_troller</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">CToken</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="n">comptroller</span><span class="o">=</span><span class="n">troller</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span>
@@ -408,6 +583,15 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__notify_if_unknown_comptroller</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">AddressOrContract</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Notify if a Comptroller is unknown to ypricemagic.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; await compound.__notify_if_unknown_comptroller(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">comptroller</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
             <span class="n">token_address</span><span class="p">,</span> <span class="s2">&quot;comptroller()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>

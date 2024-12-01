@@ -83,6 +83,7 @@
 <span class="kn">from</span> <span class="nn">eth_utils</span> <span class="kn">import</span> <span class="n">function_signature_to_4byte_selector</span> <span class="k">as</span> <span class="n">fourbyte</span>
 
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">proxy_implementation</span>
+<span class="kn">from</span> <span class="nn">y.convert</span> <span class="kn">import</span> <span class="n">to_address</span><span class="p">,</span> <span class="n">to_address_async</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">Block</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">CalldataPreparationError</span><span class="p">,</span>
@@ -426,15 +427,42 @@
     <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    call a contract with only address and method. Bypasses brownie Contract object formation to save time</span>
-<span class="sd">    only works with 1 input, ie `balanceOf(address)` or `getPoolInfo(uint256)`</span>
+<span class="sd">    Call a contract with only address and method. Bypasses brownie Contract object formation to save time.</span>
+
+<span class="sd">    This function allows for direct interaction with a contract by preparing and sending</span>
+<span class="sd">    the call data without creating a full contract object. It supports various input types</span>
+<span class="sd">    and can handle multiple inputs.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        contract_address: The address of the contract.</span>
+<span class="sd">        method: The method signature as a string (e.g., &quot;transfer(address,uint256)&quot;).</span>
+<span class="sd">        block: The block number at which to make the call. Defaults to the latest block.</span>
+<span class="sd">        inputs: The input data for the method. Can be None, bytes, int, str, Address,</span>
+<span class="sd">                EthAddress, brownie.Contract, or Contract.</span>
+<span class="sd">        output: The expected output type. Options are &quot;address&quot;, &quot;int&quot;, &quot;str&quot;.</span>
+<span class="sd">        return_None_on_failure: If True, return None if the call fails. Default False.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await raw_call(&quot;0xTokenAddress&quot;, &quot;balanceOf(address)&quot;, inputs=&quot;0xHolderAddress&quot;)</span>
+<span class="sd">        1000000000000000000</span>
+
+<span class="sd">        &gt;&gt;&gt; await raw_call(&quot;0xTokenAddress&quot;, &quot;decimals()&quot;)</span>
+<span class="sd">        18</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the call fails and `return_None_on_failure` is False.</span>
+<span class="sd">        TypeError: If an invalid output type is specified.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`prepare_data` for preparing the call data.</span>
+<span class="sd">        - :func:`prepare_input` for preparing individual inputs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">contract_address</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">str</span><span class="p">:</span>
         <span class="n">contract_address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">contract_address</span><span class="p">)</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">contract_address</span><span class="p">),</span>
+        <span class="s2">&quot;to&quot;</span><span class="p">:</span> <span class="k">await</span> <span class="n">to_address_async</span><span class="p">(</span><span class="n">contract_address</span><span class="p">),</span>
         <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">prepare_data</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="n">inputs</span><span class="p">),</span>
     <span class="p">}</span>
 
@@ -451,7 +479,7 @@
         <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;address&quot;</span> <span class="ow">and</span> <span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;0x&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">ZERO_ADDRESS</span>
         <span class="k">elif</span> <span class="n">output</span> <span class="o">==</span> <span class="s2">&quot;address&quot;</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()[</span><span class="o">-</span><span class="mi">40</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">to_address_async</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0x</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">hex</span><span class="p">()[</span><span class="o">-</span><span class="mi">40</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="s2">&quot;uint&quot;</span><span class="p">,</span> <span class="s2">&quot;uint256&quot;</span><span class="p">]:</span>
             <span class="k">return</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_int</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">output</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="s2">&quot;str&quot;</span><span class="p">]:</span>
@@ -499,6 +527,17 @@
 <span class="sd">        - The method signature is encoded to its 4-byte function selector.</span>
 <span class="sd">        - If inputs is None, only the method selector is returned.</span>
 <span class="sd">        - For other input types, the input is prepared and appended to the method selector.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; prepare_data(&quot;transfer(address,uint256)&quot;, inputs=(&quot;0xRecipientAddress&quot;, 1000))</span>
+<span class="sd">        &#39;0xa9059cbb000000000000000000000000RecipientAddress00000000000000000000000000000000000003e8&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; prepare_data(&quot;decimals()&quot;)</span>
+<span class="sd">        &#39;0x313ce567&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`raw_call` for making the contract call.</span>
+<span class="sd">        - :func:`prepare_input` for preparing individual inputs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">method</span> <span class="o">=</span> <span class="n">encode_hex</span><span class="p">(</span><span class="n">fourbyte</span><span class="p">(</span><span class="n">method</span><span class="p">))</span>
 
@@ -571,6 +610,17 @@
 <span class="sd">        - Integer input is converted to bytes and then to hexadecimal.</span>
 <span class="sd">        - String, Address, EthAddress, brownie.Contract, and Contract inputs are</span>
 <span class="sd">          assumed to be addresses and are padded to 32 bytes.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; prepare_input(&quot;0xRecipientAddress&quot;)</span>
+<span class="sd">        &#39;000000000000000000000000RecipientAddress&#39;</span>
+
+<span class="sd">        &gt;&gt;&gt; prepare_input(1000)</span>
+<span class="sd">        &#39;00000000000000000000000000000000000000000000000000000000000003e8&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`prepare_data` for preparing the call data.</span>
+<span class="sd">        - :func:`raw_call` for making the contract call.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">input_type</span> <span class="o">=</span> <span class="nb">type</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
@@ -582,7 +632,7 @@
 
     <span class="c1"># we can&#39;t process actual strings so we can assume that any string input is an address. regular strings will fail</span>
     <span class="k">if</span> <span class="n">input_type</span> <span class="ow">in</span> <span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Address</span><span class="p">,</span> <span class="n">EthAddress</span><span class="p">,</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;000000000000000000000000</span><span class="si">{</span><span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="nb">input</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;000000000000000000000000</span><span class="si">{</span><span class="n">to_address</span><span class="p">(</span><span class="nb">input</span><span class="p">)[</span><span class="mi">2</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span>
 
     <span class="k">raise</span> <span class="n">CalldataPreparationError</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;&quot;&quot;</span>

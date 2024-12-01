@@ -90,6 +90,27 @@
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.solidex.is_solidex_deposit">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_solidex_deposit</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine if a given token is a Solidex deposit token.</span>
+
+<span class="sd">    This function checks if the current network is Fantom and if the token contract</span>
+<span class="sd">    has a `pool` attribute. It also verifies that the token name starts with &quot;Solidex&quot;</span>
+<span class="sd">    and ends with &quot;Deposit&quot;.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is a Solidex deposit token, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await is_solidex_deposit(&quot;0xTokenAddress&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.contracts.Contract`</span>
+<span class="sd">        - :class:`y.classes.common.ERC20`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">False</span>
     <span class="k">try</span><span class="p">:</span>
@@ -111,6 +132,25 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the price of a given token.</span>
+
+<span class="sd">    This function first obtains the associated pool using the cached :func:`_get_pool` function</span>
+<span class="sd">    and then calls :func:`magic.get_price` on that pool to retrieve the price.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to get the price for.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0xTokenAddress&quot;)</span>
+<span class="sd">        123.45</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`_get_pool`</span>
+<span class="sd">        - :func:`y.prices.magic.get_price`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_pool</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>  <span class="c1"># force to string for cache key</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">magic</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -118,6 +158,22 @@
 
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_pool</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EthAddress</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieve the pool address from a token contract.</span>
+
+<span class="sd">    This function calls the `pool` method on the token contract to get the associated</span>
+<span class="sd">    pool address. The result is cached to improve performance on subsequent calls.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to get the pool for.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await _get_pool(&quot;0xTokenAddress&quot;)</span>
+<span class="sd">        &#39;0xPoolAddress&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.contracts.Contract`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">pool</span>
 </pre></div>

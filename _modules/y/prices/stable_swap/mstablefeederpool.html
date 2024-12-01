@@ -89,6 +89,26 @@
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.mstablefeederpool.is_mstable_feeder_pool">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_mstable_feeder_pool</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a given address is an mStable Feeder Pool.</span>
+
+<span class="sd">    This function verifies if the contract at the specified address implements</span>
+<span class="sd">    the methods required for an mStable Feeder Pool, specifically `getPrice()((uint256,uint256))`</span>
+<span class="sd">    and `mAsset()(address)`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        address: The address to check.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await is_mstable_feeder_pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the address is an mStable Feeder Pool, False otherwise.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.contracts.has_methods`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span>
         <span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;getPrice()((uint,uint))&quot;</span><span class="p">,</span> <span class="s2">&quot;mAsset()(address)&quot;</span><span class="p">),</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">)</span></div>
@@ -103,7 +123,30 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the price of an mStable Feeder Pool token in USD.</span>
+
+<span class="sd">    This function calculates the price of a given mStable Feeder Pool token by</span>
+<span class="sd">    fetching the price ratio and the underlying mAsset price, then combining</span>
+<span class="sd">    them to get the USD price.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The token address to get the price for.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        UsdPrice(1.23)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The price of the token in USD.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`y.datatypes.UsdPrice`</span>
+<span class="sd">        - :func:`y.prices.magic.get_price`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="n">ratio</span><span class="p">,</span> <span class="n">masset</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">contract</span><span class="o">.</span><span class="n">getPrice</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>

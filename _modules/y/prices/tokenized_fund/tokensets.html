@@ -91,6 +91,23 @@
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="nd">@optional_async_diskcache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_token_set</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a given token is a TokenSet.</span>
+
+<span class="sd">    A TokenSet is identified by the presence of specific methods in its contract.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is a TokenSet, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; is_token_set(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.contracts.has_methods`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="n">has_methods</span><span class="p">(</span>
@@ -118,6 +135,23 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the price of a TokenSet in USD.</span>
+
+<span class="sd">    This function retrieves the price of a TokenSet by creating an instance of the</span>
+<span class="sd">    :class:`TokenSet` class and calling its `get_price` method.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the TokenSet.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">        skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        UsdPrice(123.45)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`TokenSet`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">TokenSet</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
         <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span>
     <span class="p">)</span></div>
@@ -127,9 +161,25 @@
 <div class="viewcode-block" id="TokenSet">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet">[docs]</a>
 <span class="k">class</span> <span class="nc">TokenSet</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a TokenSet, a type of ERC20 token with additional functionality.</span>
+
+<span class="sd">    A TokenSet is a specialized ERC20 token that can contain multiple components,</span>
+<span class="sd">    each with its own balance. This class provides methods to interact with and</span>
+<span class="sd">    retrieve information about TokenSets.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="TokenSet.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a TokenSet instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            address: The address of the TokenSet.</span>
+<span class="sd">            asynchronous: If True, the instance will be used asynchronously.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; tokenset = TokenSet(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">get_total_component_real_units</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getTotalComponentRealUnits(address)(int256)&quot;</span>
@@ -140,6 +190,18 @@
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.tokensets.TokenSet.components">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">components</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the components of the TokenSet.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of :class:`ERC20` instances representing the components of the TokenSet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; tokenset = TokenSet(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; components = tokenset.components()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="n">components</span> <span class="o">=</span> <span class="k">await</span> <span class="n">contract</span><span class="o">.</span><span class="n">getComponents</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span>
@@ -152,6 +214,27 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">balances</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the balances of the components in the TokenSet.</span>
+
+<span class="sd">        This method retrieves the balances of the components in the TokenSet by first</span>
+<span class="sd">        checking if the contract has the `getUnits` method. If `getUnits` is available,</span>
+<span class="sd">        it is used to determine the balances. If not, and if the contract has the</span>
+<span class="sd">        `getTotalComponentRealUnits` method, it falls back to using that method.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: If True, skip using the cache while fetching balance data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of :class:`WeiBalance` instances representing the balances of the components.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; tokenset = TokenSet(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; balances = tokenset.balances()</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`WeiBalance`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contract</span><span class="p">,</span> <span class="n">components</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">components</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -179,6 +262,19 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of the TokenSet in USD.</span>
+
+<span class="sd">        This method calculates the price of the TokenSet by summing the USD values</span>
+<span class="sd">        of its components and dividing by the total supply.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: If True, skip using the cache while fetching price data.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; tokenset = TokenSet(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; price = tokenset.get_price()</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total_supply</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="p">)</span>

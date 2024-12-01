@@ -120,6 +120,25 @@
     <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the output value for a given token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_out: The output token address or contract.</span>
+<span class="sd">        total_outout: The total output amount.</span>
+<span class="sd">        scale: The scale factor.</span>
+<span class="sd">        block: The block number.</span>
+<span class="sd">        skip_cache: Whether to skip the cache.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The calculated output value.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await _calc_out_value(weth, 1000, 1.0, 12345678)</span>
+<span class="sd">        0.5</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.prices.magic.get_price`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">out_scale</span><span class="p">,</span> <span class="n">out_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">ERC20</span><span class="p">(</span><span class="n">token_out</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
         <span class="n">magic</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_out</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -130,12 +149,27 @@
 <div class="viewcode-block" id="BalancerV1Pool">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v1.BalancerV1Pool">[docs]</a>
 <span class="k">class</span> <span class="nc">BalancerV1Pool</span><span class="p">(</span><span class="n">BalancerPool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Balancer V1 Pool.&quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="BalancerV1Pool.tokens">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v1.BalancerV1Pool.tokens">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="c1"># @optional_async_diskcache</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">tokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the list of tokens in the pool.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of :class:`~y.classes.common.ERC20` tokens in the pool.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = BalancerV1Pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.tokens</span>
+<span class="sd">            [&lt;ERC20 TKN &#39;0x1234567890abcdef1234567890abcdef12345678&#39;&gt;, ...]</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.classes.common.ERC20`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
@@ -151,6 +185,23 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_tvl</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdValue</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the total value locked (TVL) in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query.</span>
+<span class="sd">            skip_cache: Whether to skip the cache.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The total value locked in the pool, or None if it cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = BalancerV1Pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.get_tvl()</span>
+<span class="sd">            123456.78</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.datatypes.UsdValue`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">token_balances</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_balances</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">good_balances</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">token</span><span class="p">:</span> <span class="n">balance</span>
@@ -187,6 +238,22 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v1.BalancerV1Pool.get_balances">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the balances of tokens in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A dictionary mapping :class:`~y.classes.common.ERC20` tokens to their balances.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = BalancerV1Pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.get_balances()</span>
+<span class="sd">            {&lt;ERC20 TKN &#39;0x1234567890abcdef1234567890abcdef12345678&#39;&gt;: Decimal(&#39;1000&#39;), ...}</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.classes.common.ERC20`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_balance</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__tokens__</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span> <span class="ow">or</span> <span class="s2">&quot;latest&quot;</span>
         <span class="p">)</span></div>
@@ -196,6 +263,20 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v1.BalancerV1Pool.get_balance">[docs]</a>
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_balance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the balance of a specific token in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token address.</span>
+<span class="sd">            block: The block number to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The balance of the token in the pool.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = BalancerV1Pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.get_balance(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;)</span>
+<span class="sd">            Decimal(&#39;1000&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">balance</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">),</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
@@ -208,6 +289,20 @@
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">10_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">10</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the liquidity of a specific token in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token address.</span>
+<span class="sd">            block: The block number to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The liquidity of the token in the pool.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = BalancerV1Pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.check_liquidity(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;)</span>
+<span class="sd">            1000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">deploy_block</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
@@ -229,6 +324,7 @@
 <div class="viewcode-block" id="BalancerV1">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v1.BalancerV1">[docs]</a>
 <span class="k">class</span> <span class="nc">BalancerV1</span><span class="p">(</span><span class="n">BalancerABC</span><span class="p">[</span><span class="n">BalancerV1Pool</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A Balancer V1 instance.&quot;&quot;&quot;</span>
 
     <span class="n">_pool_type</span> <span class="o">=</span> <span class="n">BalancerV1Pool</span>
 
@@ -240,7 +336,16 @@
 
 <div class="viewcode-block" id="BalancerV1.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.balancer.html#y.prices.dex.balancer.v1.BalancerV1.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize a BalancerV1 instance.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balancer = BalancerV1(asynchronous=True)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">exchange_proxy</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">EXCHANGE_PROXY</span><span class="p">)</span> <span class="k">if</span> <span class="n">EXCHANGE_PROXY</span> <span class="k">else</span> <span class="kc">None</span></div>
 
@@ -254,6 +359,24 @@
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of a token in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The token address or contract.</span>
+<span class="sd">            block: The block number to query.</span>
+<span class="sd">            skip_cache: Whether to skip the cache.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The price of the token in USD, or None if it cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balancer = BalancerV1(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; await balancer.get_token_price(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;)</span>
+<span class="sd">            1.23</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.datatypes.UsdPrice`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exchange_proxy</span><span class="p">,</span> <span class="kc">True</span>
         <span class="p">):</span>
@@ -278,7 +401,22 @@
         <span class="n">scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the liquidity of a token against another token in the pool.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            token_in: The input token address or contract.</span>
+<span class="sd">            token_out: The output token address or contract.</span>
+<span class="sd">            scale: The scale factor.</span>
+<span class="sd">            block: The block number to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The total output amount, or None if it cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balancer = BalancerV1(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; await balancer.check_liquidity_against(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            1000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">amount_in</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_in</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="n">scale</span>
         <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">VirtualMachineError</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">):</span>
             <span class="c1"># across various dep versions we get these various excs</span>
@@ -298,6 +436,21 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_some_output</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token_in</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">,</span> <span class="n">scale</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="n">EthAddress</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get some output for a given input token.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_in: The input token address or contract.</span>
+<span class="sd">            scale: The scale factor.</span>
+<span class="sd">            block: The block number to query.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple containing the output token address and the total output amount, or None if it cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balancer = BalancerV1(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; await balancer.get_some_output(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;)</span>
+<span class="sd">            (&#39;0x1234567890abcdef1234567890abcdef12345678&#39;, 1000)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">token_out</span> <span class="ow">in</span> <span class="n">TOKENOUTS_TO_TRY</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">output</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_liquidity_against</span><span class="p">(</span>
                 <span class="n">token_in</span><span class="p">,</span> <span class="n">token_out</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="n">scale</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -311,6 +464,21 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check the liquidity of a token in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token: The token address.</span>
+<span class="sd">            block: The block number to query.</span>
+<span class="sd">            ignore_pools: A tuple of pools to ignore.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The liquidity of the token in the pool.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; balancer = BalancerV1(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; await balancer.check_liquidity(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;, 12345678)</span>
+<span class="sd">            1000</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span><span class="n">pool</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools</span> <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_pools</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">(</span>

@@ -103,7 +103,28 @@
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.check_bucket">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">check_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-    <span class="n">token_address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Determine the category or &#39;bucket&#39; of a given token.</span>
+
+<span class="sd">    This function attempts to classify a token into a specific category based on its characteristics.</span>
+<span class="sd">    It first checks the database for a cached bucket using :func:`y._db.utils.token.get_bucket`.</span>
+<span class="sd">    If not found, it performs a series of checks that may involve string comparisons, calls to the blockchain,</span>
+<span class="sd">    and contract initializations. The determined bucket is then stored using :func:`db.set_bucket`.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The token address to classify.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; bucket = check_bucket(&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(bucket)</span>
+<span class="sd">        &#39;stable usd&#39;</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.convert.to_address_async`</span>
+<span class="sd">        - :func:`y.utils.logging.get_price_logger`</span>
+<span class="sd">        - :func:`_check_bucket_helper`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">token_address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;buckets&quot;</span><span class="p">)</span>
 
     <span class="kn">import</span> <span class="nn">y._db.utils.token</span> <span class="k">as</span> <span class="nn">db</span>
@@ -219,7 +240,23 @@
 
 
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_chainlink_and_band</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;We only really need band for a short period in the beginning of fantom&#39;s history, and then we will default to chainlink once available.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check if a token is supported by both Chainlink and Band oracles.</span>
+
+<span class="sd">    This function is primarily used for historical data on the Fantom network,</span>
+<span class="sd">    where Band was used before Chainlink became available.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token_address: The address of the token to check.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; is_supported = await _chainlink_and_band(&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(is_supported)</span>
+<span class="sd">        True</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`y.prices.chainlink.has_feed`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="p">(</span>
         <span class="n">chainlink</span>
         <span class="ow">and</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">has_feed</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
@@ -230,6 +267,22 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_check_bucket_helper</span><span class="p">(</span>
     <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">check</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Address</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]],</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function to check if a token belongs to a specific bucket.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bucket: The name of the bucket to check.</span>
+<span class="sd">        check: A callable that checks if the token belongs to the bucket.</span>
+<span class="sd">        address: The address of the token to check.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; result = await _check_bucket_helper(&quot;stable usd&quot;, lambda x: x in STABLECOINS, &quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(result)</span>
+<span class="sd">        (&#39;stable usd&#39;, True)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`check_bucket`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">result</span> <span class="o">=</span> <span class="k">await</span> <span class="n">check</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
     <span class="c1"># TODO: debug why we have to re-await sometimes when @optional_async_diskcache is used</span>

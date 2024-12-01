@@ -93,6 +93,23 @@
 <div class="viewcode-block" id="is_belt_lp">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.belt.is_belt_lp">[docs]</a>
 <span class="k">def</span> <span class="nf">is_belt_lp</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check if a token is a Belt LP token.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the token to check.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        True if the token is a Belt LP token, False otherwise.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; is_belt_lp(&quot;0x86aFa7ff694Ab8C985b79733745662760e454169&quot;)</span>
+<span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; is_belt_lp(&quot;0x0000000000000000000000000000000000000000&quot;)</span>
+<span class="sd">        False</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :data:`POOLS` for the list of recognized Belt LP tokens.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">POOLS</span></div>
 
@@ -102,7 +119,28 @@
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.belt.get_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-    <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the price of a Belt LP token in USD.</span>
+
+<span class="sd">    This function retrieves the virtual price of a Belt LP token from its associated pool</span>
+<span class="sd">    and converts it to a USD price.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        token: The address of the Belt LP token.</span>
+<span class="sd">        block: The block number at which to fetch the price. Defaults to the latest block.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyError: If the token is not found in the :data:`POOLS` dictionary.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x86aFa7ff694Ab8C985b79733745662760e454169&quot;)</span>
+<span class="sd">        UsdPrice(1.23456789)</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x9cb73F20164e399958261c289Eb5F9846f4D1404&quot;, block=12345678)</span>
+<span class="sd">        UsdPrice(1.23456789)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :func:`is_belt_lp` to check if a token is a Belt LP token.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">pool</span> <span class="o">=</span> <span class="n">POOLS</span><span class="p">[</span><span class="n">address</span><span class="p">]</span>
     <span class="n">virtual_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
         <span class="n">pool</span><span class="p">,</span> <span class="s2">&quot;get_virtual_price()&quot;</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>

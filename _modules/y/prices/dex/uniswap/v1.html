@@ -101,9 +101,24 @@
 
 <div class="viewcode-block" id="UniswapV1.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.UniswapV1.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the UniswapV1 class.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            asynchronous: If True, the class will operate in asynchronous mode.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            UnsupportedNetwork: If the current network is not Ethereum Mainnet.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; uniswap_v1 = UniswapV1()</span>
+<span class="sd">            &gt;&gt;&gt; uniswap_v1.factory</span>
+<span class="sd">            &#39;0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;UniswapV1 does not suppport chainid </span><span class="si">{</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span></div>
 
 
@@ -112,6 +127,24 @@
     <span class="nd">@stuck_coro_debugger</span>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_exchange</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Contract</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the exchange contract for a given token address.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token for which to find the exchange.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The exchange contract if it exists, otherwise None.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; uniswap_v1 = UniswapV1()</span>
+<span class="sd">            &gt;&gt;&gt; exchange = await uniswap_v1.get_exchange(&quot;0xTokenAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(exchange)</span>
+<span class="sd">            &lt;Contract &#39;0xExchangeAddress&#39;&gt;</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.contracts.Contract`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">)</span>
         <span class="n">exchange</span> <span class="o">=</span> <span class="k">await</span> <span class="n">factory</span><span class="o">.</span><span class="n">getExchange</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">exchange</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
@@ -129,6 +162,27 @@
         <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>  <span class="c1"># unused</span>
         <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>  <span class="c1"># unused</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the price of a token in USD.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token to get the price for.</span>
+<span class="sd">            block: The block number at which to get the price.</span>
+<span class="sd">            ignore_pools: Unused parameter.</span>
+<span class="sd">            skip_cache: Unused parameter.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The price of the token in USD, or None if the price cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; uniswap_v1 = UniswapV1()</span>
+<span class="sd">            &gt;&gt;&gt; price = await uniswap_v1.get_price(&quot;0xTokenAddress&quot;, 12345678)</span>
+<span class="sd">            &gt;&gt;&gt; print(price)</span>
+<span class="sd">            1.23</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.datatypes.UsdPrice`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">exchange</span><span class="p">,</span> <span class="n">usdc_exchange</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_exchange</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_exchange</span><span class="p">(</span><span class="n">usdc</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -162,6 +216,26 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check the liquidity of a token in its exchange.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token_address: The address of the token to check liquidity for.</span>
+<span class="sd">            block: The block number at which to check liquidity.</span>
+<span class="sd">            ignore_pools: A tuple of pools to ignore when checking liquidity.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The liquidity of the token in its exchange.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; uniswap_v1 = UniswapV1()</span>
+<span class="sd">            &gt;&gt;&gt; liquidity = await uniswap_v1.check_liquidity(&quot;0xTokenAddress&quot;, 12345678)</span>
+<span class="sd">            &gt;&gt;&gt; print(liquidity)</span>
+<span class="sd">            1000000</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :class:`~y.classes.common.ERC20`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
             <span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> ignoring </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
             <span class="bp">self</span><span class="p">,</span>

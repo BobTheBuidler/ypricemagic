@@ -71,7 +71,7 @@
   <h1>Source code for y.prices.lending.aave</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span><span class="p">,</span> <span class="n">abstractproperty</span>
+<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Awaitable</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
@@ -146,6 +146,14 @@
 <span class="k">class</span> <span class="nc">AaveMarketBase</span><span class="p">(</span><span class="n">ContractBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Base class for Aave markets.</span>
+
+<span class="sd">    This class provides common functionality for Aave markets, including methods</span>
+<span class="sd">    to check if a token is an aToken from the market and to retrieve reserve data.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :class:`AaveMarketV1`</span>
+<span class="sd">        - :class:`AaveMarketV2`</span>
+<span class="sd">        - :class:`AaveMarketV3`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="AaveMarketBase.__contains__">
@@ -154,11 +162,23 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if `token` is an aToken from this market.</span>
 
+<span class="sd">        This method is intended for synchronous use. If `self.asynchronous` is not `False`,</span>
+<span class="sd">        a `RuntimeError` will be raised.</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            atoken: The item to check.</span>
+<span class="sd">            token: The item to check.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True if the token is an aToken from the market, False otherwise.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            RuntimeError: If `self.asynchronous` is not `False`.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; market = AaveMarketV1(&quot;0xAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; token = &quot;0xTokenAddress&quot;</span>
+<span class="sd">            &gt;&gt;&gt; token in market</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">:</span>
             <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
@@ -174,13 +194,21 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if `token` is an aToken from this market.</span>
 
+<span class="sd">        This method is intended for asynchronous use.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            token: The item to check.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True if the token is an aToken from the market, False otherwise.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; market = AaveMarketV1(&quot;0xAddress&quot;, asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; token = &quot;0xTokenAddress&quot;</span>
+<span class="sd">            &gt;&gt;&gt; await market.contains(token)</span>
+<span class="sd">            True</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">contains</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__atokens__</span>
+        <span class="n">contains</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__atokens__</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> contains </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">contains</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">contains</span></div>
 
@@ -197,13 +225,22 @@
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getReserveData</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">reserve</span><span class="p">)</span></div>
 
 
-    <span class="nd">@abstractproperty</span>
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">atokens</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the aTokens of the market.</span>
 
+<span class="sd">        This is an abstract property and must be implemented by subclasses.</span>
+
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of aTokens as :class:`~ERC20` objects.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; market = AaveMarketV1(&quot;0xAddress&quot;, asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; atokens = await market.atokens</span>
+<span class="sd">            &gt;&gt;&gt; print(atokens)</span>
+<span class="sd">            [&lt;ERC20 &#39;0xTokenAddress1&#39;&gt;, &lt;ERC20 &#39;0xTokenAddress2&#39;&gt;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="n">__atokens__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]]</span>
@@ -215,18 +252,34 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the underlying asset of the given aToken address.</span>
 
+<span class="sd">        This is an abstract method and must be implemented by subclasses.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            atoken_address: The address of the aToken.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The underlying asset.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; market = AaveMarketV1(&quot;0xAddress&quot;, asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; underlying_asset = await market.underlying(&quot;0xATokenAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(underlying_asset)</span>
+<span class="sd">            &lt;ERC20 &#39;0xUnderlyingAssetAddress&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 
-    <span class="nd">@abstractproperty</span>
+    <span class="nd">@property</span>
+    <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_get_reserves_method</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The method that must be called to get the reserves list.</span>
+
+<span class="sd">        This is an abstract property and must be implemented by subclasses.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; market = AaveMarketV1(&quot;0xAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(market._get_reserves_method)</span>
+<span class="sd">            &#39;getReserves()(address[])&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span></div>
 
 
@@ -357,8 +410,9 @@
 <span class="k">class</span> <span class="nc">AaveRegistry</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
 <div class="viewcode-block" id="AaveRegistry.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.lending.html#y.prices.lending.aave.AaveRegistry.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span></div>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
 
 
 <div class="viewcode-block" id="AaveRegistry.pools">

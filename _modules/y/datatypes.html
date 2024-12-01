@@ -83,24 +83,56 @@
 <span class="n">Address</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">HexBytes</span><span class="p">,</span> <span class="n">AnyAddress</span><span class="p">,</span> <span class="n">EthAddress</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A union of types used to represent Ethereum addresses.</span>
+
+<span class="sd">Examples:</span>
+<span class="sd">    &gt;&gt;&gt; address_str = &quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span>
+<span class="sd">    &gt;&gt;&gt; address_hex = HexBytes(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; address_any = AnyAddress(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; address_eth = EthAddress(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">Block</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BlockNumber</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A union of types used to represent block numbers as integers.</span>
+
+<span class="sd">Examples:</span>
+<span class="sd">    &gt;&gt;&gt; block_int = 12345678</span>
+<span class="sd">    &gt;&gt;&gt; block_number = BlockNumber(12345678)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">AddressOrContract</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">A type alias representing either an Ethereum address or a contract object.</span>
+<span class="sd">This can be an :data:`Address`, a :class:`~brownie.network.contract.Contract`, or its subclasses such as</span>
+<span class="sd">:class:`~dank_mids.Contract` and :class:`~y.contracts.Contract`.</span>
+
+<span class="sd">Examples:</span>
+<span class="sd">    &gt;&gt;&gt; address = &quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span>
+<span class="sd">    &gt;&gt;&gt; contract = Contract.from_abi(&quot;MyContract&quot;, address, abi)</span>
+<span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">AnyAddressType</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="n">Address</span><span class="p">,</span> <span class="n">Contract</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A type alias representing any valid representation of an Ethereum address.</span>
-<span class="sd">This can be an Address, a :class:`~y.Contract`, or an integer.</span>
+<span class="sd">This can be an :data:`Address`, a :class:`~brownie.network.contract.Contract`, or an integer.</span>
+
+<span class="sd">Examples:</span>
+<span class="sd">    &gt;&gt;&gt; any_address_str = &quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span>
+<span class="sd">    &gt;&gt;&gt; any_address_contract = Contract.from_abi(&quot;MyContract&quot;, any_address_str, abi)</span>
+<span class="sd">    &gt;&gt;&gt; any_address_int = 12345678</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">Pool</span> <span class="o">=</span> <span class="n">Union</span><span class="p">[</span><span class="s2">&quot;UniswapV2Pool&quot;</span><span class="p">,</span> <span class="s2">&quot;CurvePool&quot;</span><span class="p">]</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">A union of types representing liquidity pools.</span>
+
+<span class="sd">Examples:</span>
+<span class="sd">    &gt;&gt;&gt; uniswap_pool = UniswapV2Pool(&quot;0xUniswapPoolAddress&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; curve_pool = CurvePool(&quot;0xCurvePoolAddress&quot;)</span>
+
+<span class="sd">See Also:</span>
+<span class="sd">    - :class:`~y.prices.dex.uniswap.v2.UniswapV2Pool`</span>
+<span class="sd">    - :class:`~y.prices.stable_swap.curve.CurvePool`</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 
@@ -109,6 +141,11 @@
 <span class="k">class</span> <span class="nc">UsdValue</span><span class="p">(</span><span class="nb">float</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a USD value with custom string representation.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; value = UsdValue(1234.5678)</span>
+<span class="sd">        &gt;&gt;&gt; str(value)</span>
+<span class="sd">        &#39;$1234.56780000&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UsdValue.__str__">
@@ -116,9 +153,7 @@
     <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Return a string representation of the USD value.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            A string formatted as a USD value with 8 decimal places.</span>
+<span class="sd">        The value is formatted as a USD value with 8 decimal places.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;$</span><span class="si">{</span><span class="bp">self</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
@@ -130,6 +165,11 @@
 <span class="k">class</span> <span class="nc">UsdPrice</span><span class="p">(</span><span class="n">UsdValue</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a USD price.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; price = UsdPrice(1234.5678)</span>
+<span class="sd">        &gt;&gt;&gt; str(price)</span>
+<span class="sd">        &#39;$1234.56780000&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 </pre></div>

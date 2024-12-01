@@ -252,7 +252,7 @@
 
 <div class="viewcode-block" id="AddressProvider.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProvider.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="n">AddressProviderEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -267,7 +267,8 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_factories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># factory events are quite useless, so we use a different method</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">,</span> <span class="p">())</span>
         <span class="c1"># TODO: remove this once curve adds to address provider</span>
         <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -298,7 +299,10 @@
             <span class="n">identifiers</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CryptoPool_Factory</span><span class="p">]</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Cryptopool_Factory</span><span class="p">]</span>
         <span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">,</span> <span class="p">()</span>
+                <span class="p">)</span>
             <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Factory</span><span class="p">,</span> <span class="n">identifiers</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">curve</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -320,7 +324,7 @@
 <div class="viewcode-block" id="Registry.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.Registry.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">curve</span><span class="p">:</span> <span class="s2">&quot;CurveRegistry&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">curve</span><span class="p">:</span> <span class="s2">&quot;CurveRegistry&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_events</span> <span class="o">=</span> <span class="n">RegistryEvents</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
@@ -363,17 +367,19 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pool_list</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_pools</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
             <span class="o">*</span><span class="p">[</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_load_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__load_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pool_list</span>
                 <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">]</span>
             <span class="p">]</span>
         <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">))</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">__load_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="c1"># for curve v5 pools, pool and lp token are separate</span>
         <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="s2">&quot;get_token&quot;</span><span class="p">):</span>
@@ -386,13 +392,37 @@
             <span class="p">)</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">lp_token</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="n">factory</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span></div>
+        <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">))</span></div>
 
 
 
 <div class="viewcode-block" id="CurvePool">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool">[docs]</a>
-<span class="k">class</span> <span class="nc">CurvePool</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>  <span class="c1"># this shouldn&#39;t be ERC20 but works for inheritance for now</span>
+<span class="k">class</span> <span class="nc">CurvePool</span><span class="p">(</span><span class="n">ERC20</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Curve pool.</span>
+
+<span class="sd">    This class provides methods to interact with Curve pools, including fetching</span>
+<span class="sd">    pool information, calculating token exchanges, and retrieving liquidity data.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        This class inherits from :class:`~y.classes.common.ERC20` for convenience,</span>
+<span class="sd">        but a Curve pool is not always an ERC20 token. This inheritance is used</span>
+<span class="sd">        to leverage existing functionality for token interactions.</span>
+
+<span class="sd">    Methods:</span>
+<span class="sd">        - :meth:`coins`: Fetches the coins in the pool.</span>
+<span class="sd">        - :meth:`get_dy`: Calculates the amount of output tokens for a given input amount, simulating a token exchange.</span>
+<span class="sd">        - :meth:`get_balances`: Retrieves the balances of tokens in the pool.</span>
+<span class="sd">        - :meth:`get_tvl`: Retrieves the total value locked in the pool.</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        &gt;&gt;&gt; pool = CurvePool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; await pool.coins</span>
+<span class="sd">        [&lt;ERC20 TKN1 &#39;0x...&#39;&gt;, &lt;ERC20 TKN2 &#39;0x...&#39;&gt;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
 <div class="viewcode-block" id="CurvePool.factory">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool.factory">[docs]</a>
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">aka</span><span class="o">.</span><span class="n">cached_property</span>
@@ -408,6 +438,14 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">coins</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">ERC20</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get coins of pool.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of :class:`~y.classes.common.ERC20` tokens representing the coins in the pool.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = CurvePool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.coins</span>
+<span class="sd">            [&lt;ERC20 TKN1 &#39;0x...&#39;&gt;, &lt;ERC20 TKN2 &#39;0x...&#39;&gt;]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
         <span class="k">if</span> <span class="n">factory</span><span class="p">:</span>
@@ -538,6 +576,18 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">WeiBalance</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get {token: balance} of liquidity in the pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: If True, skip using the cache while fetching balance data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of :class:`~y.classes.common.WeiBalance` objects representing the balances of tokens in the pool.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = CurvePool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.get_balances()</span>
+<span class="sd">            [&lt;WeiBalance token=&lt;ERC20 TKN1 &#39;0x...&#39;&gt; balance=1000000000000000000 block=None&gt;, ...]</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">coins</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coins__</span>
         <span class="k">try</span><span class="p">:</span>
@@ -591,6 +641,18 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdValue</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get total value in Curve pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: The block number to query. Defaults to the latest block.</span>
+<span class="sd">            skip_cache: If True, skip using the cache while fetching TVL data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The total value locked in the pool as a :class:`~y.datatypes.UsdValue`, or None if the TVL cannot be determined.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = CurvePool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; await pool.get_tvl()</span>
+<span class="sd">            UsdValue(1234567.89)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">WeiBalance</span><span class="o">.</span><span class="n">value_usd</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
@@ -625,7 +687,7 @@
 
 <div class="viewcode-block" id="CurveRegistry.__init__">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveRegistry.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="k">try</span><span class="p">:</span>
@@ -686,6 +748,17 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_factory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">AddressOrContract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get metapool factory that has spawned a pool.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            pool: The address or contract of the pool.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`~y.contracts.Contract` representing the factory.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; factory = await curve.get_factory(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(factory)</span>
+<span class="sd">            &lt;Contract &#39;0x...&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">factory</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span>
@@ -722,10 +795,21 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CurvePool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get Curve pool (swap) address by LP token address. Supports factory pools.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            token: The address of the LP token.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The :class:`~y.prices.stable_swap.curve.CurvePool` associated with the LP token.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; pool = await curve.get_pool(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(pool)</span>
+<span class="sd">            &lt;CurvePool &#39;0x...&#39;&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">load_all</span><span class="p">()</span>
 
-        <span class="n">token</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_to_pool</span> <span class="ow">and</span> <span class="n">token</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">CurvePool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">token</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 

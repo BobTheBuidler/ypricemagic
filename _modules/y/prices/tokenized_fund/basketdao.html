@@ -74,7 +74,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
+<span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
@@ -86,9 +86,9 @@
 <div class="viewcode-block" id="is_basketdao_index">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.basketdao.is_basketdao_index">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">is_basketdao_index</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">EthAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">is_basketdao_index</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if the given token is a BasketDAO token.</span>
+<span class="sd">    Check if the given token is a BasketDAO token by attempting to call the `getAssetsAndBalances` method.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the token to check.</span>
@@ -97,11 +97,19 @@
 <span class="sd">        True if the token is a BasketDAO token, False otherwise.</span>
 
 <span class="sd">    Example:</span>
-<span class="sd">        &gt;&gt;&gt; is_bd = is_basketdao(&quot;0x0ac58Df435D3dC9F6e079B2C5F358A4b7e861B69&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; is_bd = is_basketdao_index(&quot;0x0ac58Df435D3dC9F6e079B2C5F358A4b7e861B69&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(is_bd)</span>
 <span class="sd">        True</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ContractLogicError: If the contract logic fails during the call.</span>
+<span class="sd">        ValueError: If the call returns an unexpected value.</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`get_price` for fetching the price of a BasketDAO token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># Attempt to call the method and check if it returns a valid response</span>
         <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getAssetsAndBalances()(address[],uint[])&quot;</span><span class="p">))</span>
     <span class="k">except</span> <span class="p">(</span><span class="n">ContractLogicError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">False</span></div>
@@ -112,20 +120,17 @@
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.basketdao.get_price">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
-    <span class="n">address</span><span class="p">:</span> <span class="n">EthAddress</span><span class="p">,</span>
+    <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the price of a BasketDAO token in USD.</span>
+<span class="sd">    Get the price of a BasketDAO token in USD by calculating the total value of its assets.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the BasketDAO token.</span>
 <span class="sd">        block (optional): The block number to query. Defaults to None (latest).</span>
 <span class="sd">        skip_cache (optional): Whether to bypass the disk cache. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        The price of the BasketDAO token in USD.</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        PriceError: If unable to fetch the price.</span>
@@ -134,6 +139,9 @@
 <span class="sd">        &gt;&gt;&gt; price = get_price(&quot;0x0ac58Df435D3dC9F6e079B2C5F358A4b7e861B69&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(price)</span>
 <span class="sd">        1.05</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        - :func:`is_basketdao_index` for checking if a token is a BasketDAO token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">balances</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
         <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getAssetsAndBalances()(address[],uint[])&quot;</span><span class="p">,</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
