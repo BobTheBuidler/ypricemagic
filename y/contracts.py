@@ -1182,7 +1182,7 @@ async def _fetch_explorer_data(url, silent, params):
     async with aiohttp.ClientSession() as session:
         if not silent:
             print(
-                f"Fetching source of {color('bright blue')}{params["address"]}{color} "
+                f"Fetching source of {color('bright blue')}{params['address']}{color} "
                 f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
             )
 
