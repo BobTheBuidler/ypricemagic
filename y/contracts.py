@@ -29,6 +29,7 @@ from brownie.network.contract import (
     _add_deployment,
     _ContractBase,
     _DeployedContractBase,
+    _explorer_tokens,
     _fetch_from_explorer,
     _resolve_address,
     _unverified_addresses,
