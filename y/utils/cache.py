@@ -19,8 +19,8 @@ def _memory():
     """
     Create and return a :class:`Memory` object for caching values for the currently connected blockchain.
 
-    Returns:
-        A :class:`~Memory` object configured with the current chain's cache directory.
+    See Also:
+        - :class:`joblib.Memory`
     """
     return Memory(f"cache/{chain.id}", verbose=0)
 
@@ -43,6 +43,37 @@ try:
     cache_base_path = f"./cache/{chain.id}/"
 
     def optional_async_diskcache(fn: AnyFn[P, T]) -> AnyFn[P, T]:
+        """
+        Decorator to optionally apply disk caching to asynchronous functions.
+
+        If the user has `toolcache` installed, this decorator will apply disk caching
+        to the decorated asynchronous function. If `toolcache` is not installed, the
+        function will be returned as is, without any caching applied.
+
+        Args:
+            fn: The function to be decorated. Must be asynchronous.
+
+        Raises:
+            NotImplementedError: If the function is synchronous.
+
+        Examples:
+            Using the decorator with an asynchronous function when `toolcache` is installed:
+
+            >>> @optional_async_diskcache
+            ... async def fetch_data():
+            ...     return "data"
+
+            This will cache the result of `fetch_data` in the specified cache directory.
+
+            If `toolcache` is not installed, the function will run without caching:
+
+            >>> async def fetch_data():
+            ...     return "data"
+            >>> fetch_data = optional_async_diskcache(fetch_data)
+
+        See Also:
+            - :mod:`toolcache`
+        """
         if not iscoroutinefunction(fn):
             raise NotImplementedError(f"{fn} is sync")
 
@@ -67,4 +98,23 @@ except ImportError:
     """User doesn't have toolcache, this decorator will just return the undecorated function."""
 
     def optional_async_diskcache(fn: AnyFn[P, T]) -> AnyFn[P, T]:
+        """
+        Decorator to optionally apply disk caching to asynchronous functions.
+
+        If `toolcache` is not installed, this decorator will return the function
+        as is, without any caching applied.
+
+        Args:
+            fn: The function to be decorated.
+
+        Examples:
+            Using the decorator with an asynchronous function:
+
+            >>> async def fetch_data():
+            ...     return "data"
+            >>> fetch_data = optional_async_diskcache(fetch_data)
+
+        See Also:
+            - :mod:`toolcache`
+        """
         return fn

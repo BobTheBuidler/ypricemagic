@@ -36,6 +36,21 @@ addresses = {
 
 
 class Synthetix(a_sync.ASyncGenericSingleton):
+    """A class to interact with the Synthetix protocol.
+
+    This class provides methods to interact with the Synthetix protocol,
+    allowing users to get contract addresses, synths, and prices.
+
+    Raises:
+        UnsupportedNetwork: If the Synthetix protocol is not supported on the current network.
+
+    Examples:
+        >>> synthetix = Synthetix(asynchronous=True)
+        >>> address = await synthetix.get_address("ProxyERC20")
+        >>> print(address)
+        <Contract object at 0x...>
+    """
+
     def __init__(self, *, asynchronous: bool = False) -> None:
         if chain.id not in addresses:
             raise UnsupportedNetwork("synthetix is not supported on this network")
@@ -44,15 +59,39 @@ class Synthetix(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.property
     async def address_resolver(self) -> Contract:
+        """Get the address resolver contract.
+
+        Returns:
+            The address resolver contract.
+
+        Examples:
+            >>> resolver = await synthetix.address_resolver
+            >>> print(resolver)
+            <Contract object at 0x...>
+        """
         return await Contract.coroutine(addresses[chain.id])
 
     __address_resolver__: HiddenMethodDescriptor[Self, Contract]
 
     @a_sync.a_sync(ram_cache_maxsize=256)
     async def get_address(self, name: str, block: Block = None) -> Contract:
-        """
-        Get contract from Synthetix registry.
-        See also https://docs.synthetix.io/addresses/
+        """Get contract from Synthetix registry.
+
+        Args:
+            name: The name of the contract to retrieve.
+            block: The block number to query at. Defaults to the latest block.
+
+        Returns:
+            The contract associated with the given name. If the contract is a proxy, 
+            it returns the target contract if available, otherwise the proxy itself.
+
+        See Also:
+            - https://docs.synthetix.io/addresses/
+
+        Examples:
+            >>> contract = await synthetix.get_address("ProxyERC20")
+            >>> print(contract)
+            <Contract object at 0x...>
         """
         address_resolver = await self.__address_resolver__
         address = await address_resolver.getAddress.coroutine(
@@ -69,8 +108,15 @@ class Synthetix(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def synths(self) -> List[ChecksumAddress]:
-        """
-        Get target addresses of all synths.
+        """Get target addresses of all synths.
+
+        Returns:
+            A list of target addresses for all synths.
+
+        Examples:
+            >>> synths = await synthetix.synths
+            >>> print(synths)
+            ['0x...', '0x...', ...]
         """
         proxy_erc20 = await self.get_address("ProxyERC20", sync=False)
         synth_count = await proxy_erc20.availableSynthCount
@@ -83,7 +129,25 @@ class Synthetix(a_sync.ASyncGenericSingleton):
         return synths
 
     async def is_synth(self, token: AnyAddressType) -> bool:
-        """returns `True` if a `token` is a synth, `False` if not"""
+        """Check if a token is a synth.
+
+        Args:
+            token: The token address to check.
+
+        Returns:
+            `True` if the token is a synth, `False` if not.
+
+        Raises:
+            Exception: If an unexpected error occurs during the check.
+
+        Examples:
+            >>> is_synth = await synthetix.is_synth("0x...")
+            >>> print(is_synth)
+            True
+
+        See Also:
+            - :meth:`get_currency_key`
+        """
         token = await convert.to_address_async(token)
         try:
             if await synthetix.get_currency_key(token, sync=False):
@@ -102,6 +166,19 @@ class Synthetix(a_sync.ASyncGenericSingleton):
 
     @a_sync_ttl_cache
     async def get_currency_key(self, token: AnyAddressType) -> Optional[HexStr]:
+        """Get the currency key for a given token.
+
+        Args:
+            token: The token address to get the currency key for.
+
+        Returns:
+            The currency key as a hex string, or `None` if not found.
+
+        Examples:
+            >>> currency_key = await synthetix.get_currency_key("0x...")
+            >>> print(currency_key)
+            '0x...'
+        """
         target = (
             await Call(token, ["target()(address)"])
             if await has_method(token, "target()(address)", sync=False)
@@ -116,8 +193,25 @@ class Synthetix(a_sync.ASyncGenericSingleton):
     async def get_price(
         self, token: AnyAddressType, block: Optional[Block] = None
     ) -> Optional[UsdPrice]:
-        """
-        Get a price of a synth in dollars.
+        """Get the price of a synth in dollars.
+
+        Args:
+            token: The token address to get the price for.
+            block: The block number to query at. Defaults to the latest block.
+
+        Returns:
+            The price of the synth in USD, or `None` if the price is stale.
+
+        Raises:
+            Exception: If an unexpected error occurs during the price retrieval.
+
+        Examples:
+            >>> price = await synthetix.get_price("0x...")
+            >>> print(price)
+            1.23
+
+        See Also:
+            - :meth:`get_currency_key`
         """
         token = await convert.to_address_async(token)
         rates, key = await asyncio.gather(

@@ -69,6 +69,20 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
+
+    Args:
+        logs: An iterable of :class:`~web3.types.LogReceipt` or :class:`~evmspec.log.Log` objects.
+
+    Returns:
+        An :class:`~brownie.network.event.EventDict` containing decoded events.
+
+    Examples:
+        >>> logs = [LogReceipt(...), LogReceipt(...)]
+        >>> events = decode_logs(logs)
+        >>> print(events)
+
+    See Also:
+        - :class:`~brownie.network.event.EventDict`
     """
     if not logs:
         return EventDict()
@@ -129,6 +143,9 @@ async def get_logs_asap(
     """
     Get logs as soon as possible.
 
+    This function fetches raw logs from the blockchain within the specified block range.
+    The logs are not decoded; use :func:`decode_logs` to decode them if needed.
+
     Args:
         address: The address of the contract to fetch logs from.
         topics: The event topics to filter logs by.
@@ -137,7 +154,19 @@ async def get_logs_asap(
         verbose: Verbosity level for logging.
 
     Returns:
-        A list of decoded event logs.
+        A list of raw logs.
+
+    Examples:
+        Synchronous usage:
+        >>> logs = get_logs_asap("0x1234...", ["0x5678..."], 1000000, 1000100)
+        >>> decoded_logs = decode_logs(logs)
+
+        Asynchronous usage:
+        >>> logs = await get_logs_asap("0x1234...", ["0x5678..."], 1000000, 1000100, sync=False)
+        >>> decoded_logs = decode_logs(logs)
+
+    See Also:
+        - :func:`decode_logs`
     """
     if from_block is None:
         from y.contracts import contract_creation_block_async
@@ -171,6 +200,10 @@ async def get_logs_asap_generator(
     """
     Get logs as soon as possible in a generator.
 
+    This function fetches raw logs from the blockchain within the specified block range
+    and yields them as they are retrieved. The logs are not decoded; use :func:`decode_logs`
+    to decode them if needed.
+
     Args:
         address: The address of the contract to fetch logs from.
         topics: The event topics to filter logs by.
@@ -182,7 +215,14 @@ async def get_logs_asap_generator(
         verbose: Verbosity level for logging.
 
     Yields:
-        Lists of decoded event logs.
+        Lists of raw logs.
+
+    Examples:
+        >>> async for logs in get_logs_asap_generator("0x1234...", ["0x5678..."], 1000000, 1000100):
+        ...     decoded_logs = decode_logs(logs)
+
+    See Also:
+        - :func:`decode_logs`
     """
     # NOTE: If you don't need the logs in order, you will get your logs faster if you set `chronological` to False.
 
@@ -244,6 +284,17 @@ async def get_logs_asap_generator(
 def logs_to_balance_checkpoints(logs) -> Dict[ChecksumAddress, int]:
     """
     Convert Transfer logs to `{address: {from_block: balance}}` checkpoints.
+
+    Args:
+        logs: An iterable of logs to convert.
+
+    Returns:
+        A dictionary mapping addresses to balance checkpoints.
+
+    Examples:
+        >>> logs = [Log(...), Log(...)]
+        >>> checkpoints = logs_to_balance_checkpoints(logs)
+        >>> print(checkpoints)
     """
     balances = Counter()
     checkpoints = defaultdict(dict)
@@ -264,6 +315,22 @@ def logs_to_balance_checkpoints(logs) -> Dict[ChecksumAddress, int]:
 
 
 def checkpoints_to_weight(checkpoints, start_block: Block, end_block: Block) -> float:
+    """
+    Calculate the weight of checkpoints between two blocks.
+
+    Args:
+        checkpoints: A dictionary of checkpoints.
+        start_block: The starting block number.
+        end_block: The ending block number.
+
+    Returns:
+        The calculated weight.
+
+    Examples:
+        >>> checkpoints = {0: 100, 10: 200}
+        >>> weight = checkpoints_to_weight(checkpoints, 0, 10)
+        >>> print(weight)
+    """
     total = 0
     for a, b in zip_longest(list(checkpoints), list(checkpoints)[1:]):
         if a < start_block or a > end_block:
@@ -290,7 +357,11 @@ def _get_logs(
         end: The ending block to fetch logs to.
 
     Returns:
-        A list of decoded event logs.
+        A list of raw logs.
+
+    Examples:
+        >>> logs = _get_logs("0x1234...", ["0x5678..."], 1000000, 1000100)
+        >>> print(logs)
     """
     if end - start == BATCH_SIZE - 1:
         response = _get_logs_batch_cached(address, topics, start, end)
@@ -330,7 +401,11 @@ async def _get_logs_async(address, topics, start, end) -> List[Log]:
         end: The ending block to fetch logs to.
 
     Returns:
-        A list of decoded event logs.
+        A list of raw logs.
+
+    Examples:
+        >>> logs = await _get_logs_async("0x1234...", ["0x5678..."], 1000000, 1000100)
+        >>> print(logs)
     """
     async with get_logs_semaphore[asyncio.get_event_loop()][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
@@ -350,7 +425,11 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
         end: The ending block to fetch logs to.
 
     Returns:
-        A list of decoded event logs.
+        A list of raw logs.
+
+    Examples:
+        >>> logs = await _get_logs_async_no_cache("0x1234...", ["0x5678..."], 1000000, 1000100)
+        >>> print(logs)
     """
     try:
         if address is None:
@@ -412,7 +491,11 @@ def _get_logs_no_cache(
         end: The ending block to fetch logs to.
 
     Returns:
-        A list of decoded event logs.
+        A list of raw logs.
+
+    Examples:
+        >>> logs = _get_logs_no_cache("0x1234...", ["0x5678..."], 1000000, 1000100)
+        >>> print(logs)
     """
     logger.debug("fetching logs %s to %s", start, end)
     try:
@@ -476,7 +559,11 @@ def _get_logs_batch_cached(
         end: The ending block to fetch logs to.
 
     Returns:
-        A list of decoded event logs.
+        A list of raw logs.
+
+    Examples:
+        >>> logs = _get_logs_batch_cached("0x1234...", ["0x5678..."], 1000000, 1000100)
+        >>> print(logs)
     """
     return _get_logs_no_cache(address, topics, start, end)
 
@@ -484,6 +571,8 @@ def _get_logs_batch_cached(
 class LogFilter(Filter[Log, "LogCache"]):
     """
     A filter for fetching and processing event logs.
+
+    This class provides methods to fetch logs from the blockchain and process them.
     """
 
     __slots__ = "addresses", "topics", "from_block"
@@ -514,6 +603,11 @@ class LogFilter(Filter[Log, "LogCache"]):
             executor: An executor for running tasks asynchronously.
             is_reusable: Whether the filter is reusable.
             verbose: Verbosity level for logging.
+
+        Examples:
+            >>> log_filter = LogFilter(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> logs = log_filter.logs(1000100)
+            >>> print(logs)
         """
         self.addresses = _clean_addresses(addresses)
         self.topics = topics
@@ -552,7 +646,12 @@ class LogFilter(Filter[Log, "LogCache"]):
             to_block: The ending block to fetch logs to.
 
         Yields:
-            A decoded event log.
+            A raw log.
+
+        Examples:
+            >>> log_filter = LogFilter(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> logs = log_filter.logs(1000100)
+            >>> print(logs)
         """
         return self._objects_thru(block=to_block)
 
@@ -574,6 +673,10 @@ class LogFilter(Filter[Log, "LogCache"]):
 
         Returns:
             A function for bulk inserting logs.
+
+        Examples:
+            >>> log_filter = LogFilter(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> await log_filter.bulk_insert(logs)
         """
         from y._db.utils.logs import bulk_insert
 
@@ -586,6 +689,11 @@ class LogFilter(Filter[Log, "LogCache"]):
 
         Returns:
             The starting block.
+
+        Examples:
+            >>> log_filter = LogFilter(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> start_block = await log_filter._from_block
+            >>> print(start_block)
         """
         if self.from_block is None:
             from y.contracts import contract_creation_block_async
@@ -613,7 +721,12 @@ class LogFilter(Filter[Log, "LogCache"]):
             range_end: The ending block of the range.
 
         Returns:
-            A list of decoded event logs.
+            A list of raw logs.
+
+        Examples:
+            >>> log_filter = LogFilter(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> logs = await log_filter._fetch_range(1000000, 1000100)
+            >>> print(logs)
         """
         tries = 0
         while True:
@@ -629,6 +742,10 @@ class LogFilter(Filter[Log, "LogCache"]):
     async def _fetch(self) -> NoReturn:
         """
         Fetch logs indefinitely, starting from the specified block.
+
+        Examples:
+            >>> log_filter = LogFilter(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> await log_filter._fetch()
         """
         from_block = await self._from_block
         await self._loop(from_block)
@@ -639,6 +756,8 @@ class LogFilter(Filter[Log, "LogCache"]):
 class Events(LogFilter):
     """
     A class for fetching and processing events.
+
+    This class extends :class:`LogFilter` to provide additional functionality for handling events.
     """
 
     obj_type = _EventItem
@@ -652,6 +771,11 @@ class Events(LogFilter):
 
         Yields:
             A decoded event.
+
+        Examples:
+            >>> events = Events(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> async for event in events.events(1000100):
+            ...     print(event)
         """
         return self._objects_thru(block=to_block)
 
@@ -661,6 +785,10 @@ class Events(LogFilter):
 
         Args:
             objs: A list of raw event logs.
+
+        Examples:
+            >>> events = Events(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> await events._extend(logs)
         """
         if logs:
             return self._objects.extend(await self.executor.run(decode_logs, logs))
@@ -674,6 +802,11 @@ class Events(LogFilter):
 
         Returns:
             The block number.
+
+        Examples:
+            >>> events = Events(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> block_number = events._get_block_for_obj(event)
+            >>> print(block_number)
         """
         return obj.block_number
 
@@ -683,6 +816,8 @@ class Events(LogFilter):
 class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     """
     A class for fetching, processing, and iterating over events.
+
+    This class extends :class:`Events` to provide additional functionality for processing events.
     """
 
     def _include_event(self, event: _EventItem) -> Union[bool, Awaitable[bool]]:
@@ -699,6 +834,11 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
         Returns:
             The processed event.
+
+        Examples:
+            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> result = processed_events._process_event(event)
+            >>> print(result)
         """
 
     def objects(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
@@ -710,6 +850,11 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
         Returns:
             An :class:`~a_sync.ASyncIterator` that yields all included events.
+
+        Examples:
+            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> async for event in processed_events.objects(1000100):
+            ...     print(event)
         """
         return self._objects_thru(block=to_block)
 
@@ -719,6 +864,10 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
         Args:
             logs: A list of raw event logs.
+
+        Examples:
+            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> await processed_events._extend(logs)
         """
         if logs:
             decoded = await self.executor.run(decode_logs, logs)
@@ -738,6 +887,11 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
         Returns:
             True if the event should be included, False otherwise.
+
+        Examples:
+            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> include = await processed_events.__include_event(event)
+            >>> print(include)
         """
         # sourcery skip: assign-if-exp
         include = self._include_event(event)
@@ -762,6 +916,11 @@ async def _lowest_deploy_block(
 
     Returns:
         The lowest deployment block.
+
+    Examples:
+        >>> addresses = ["0x1234...", "0x5678..."]
+        >>> block = await _lowest_deploy_block(addresses, True)
+        >>> print(block)
     """
     from y.contracts import contract_creation_block_async
 

@@ -24,6 +24,21 @@ _get_get_token()
 
 @a_sync_read_db_session
 def get_deploy_block(address: str) -> Optional[int]:
+    """Retrieve the deployment block number for a given contract address.
+
+    This function first checks a cache for the deployment block number. If not found,
+    it fetches the information from the blockchain.
+
+    Args:
+        address: The contract address as a string.
+
+    Examples:
+        >>> deploy_block = get_deploy_block("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(deploy_block)
+
+    See Also:
+        - :func:`_set_deploy_block`
+    """
     if deploy_block := known_deploy_blocks().pop(address, None):
         logger.debug("%s deploy block from cache: %s", address, deploy_block)
         return deploy_block
@@ -35,6 +50,17 @@ def get_deploy_block(address: str) -> Optional[int]:
 
 
 async def _set_deploy_block(address: str, deploy_block: int) -> None:
+    """Asynchronously set the deployment block number for a contract address.
+
+    This function ensures the block is valid before setting it.
+
+    Args:
+        address: The contract address as a string.
+        deploy_block: The block number where the contract was deployed.
+
+    See Also:
+        - :func:`get_deploy_block`
+    """
     await ensure_block(deploy_block)
     return await __set_deploy_block(address, deploy_block)
 
@@ -46,6 +72,15 @@ set_deploy_block = a_sync.ProcessingQueue(
 
 @a_sync_write_db_session
 def __set_deploy_block(address: str, deploy_block: int) -> None:
+    """Set the deployment block number for a contract address in the database.
+
+    Args:
+        address: The contract address as a string.
+        deploy_block: The block number where the contract was deployed.
+
+    See Also:
+        - :func:`_set_deploy_block`
+    """
     from y._db.utils._ep import _get_get_token
 
     get_token = _get_get_token()
@@ -59,7 +94,17 @@ def __set_deploy_block(address: str, deploy_block: int) -> None:
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("deploy blocks")
 def known_deploy_blocks() -> Dict[Address, Block]:
-    """cache and return all known contract deploy blocks for this chain to minimize db reads"""
+    """Cache and return all known contract deploy blocks for this chain.
+
+    This function minimizes database reads by caching the result for one hour.
+
+    Examples:
+        >>> deploy_blocks = known_deploy_blocks()
+        >>> print(deploy_blocks)
+
+    See Also:
+        - :func:`get_deploy_block`
+    """
     return dict(
         select(
             (c.address, c.deploy_block.number)

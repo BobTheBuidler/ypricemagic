@@ -44,7 +44,35 @@ supported_assets = {
 
 
 class Band(a_sync.ASyncGenericSingleton):
+    """A class to interact with the Band Protocol oracle on supported networks.
+
+    This class provides methods to check asset support and fetch prices using the Band Protocol oracle.
+
+    Raises:
+        UnsupportedNetwork: If the Band Protocol is not supported on the current network.
+
+    Examples:
+        >>> band = Band(asynchronous=True)
+        >>> "0xaf319E5789945197e365E7f7fbFc56B130523B33" in band
+        True
+
+    See Also:
+        - :class:`a_sync.ASyncGenericSingleton`
+    """
+
     def __init__(self, *, asynchronous: bool = False) -> None:
+        """
+        Initialize the Band class.
+
+        Args:
+            asynchronous: Whether to use asynchronous operations.
+
+        Raises:
+            UnsupportedNetwork: If the Band Protocol is not supported on the current network.
+
+        Examples:
+            >>> band = Band(asynchronous=True)
+        """
         super().__init__()
         if chain.id not in addresses:
             raise UnsupportedNetwork("band is not supported on this network")
@@ -52,10 +80,28 @@ class Band(a_sync.ASyncGenericSingleton):
         super().__init__()
 
     def __contains__(self, asset: AddressOrContract) -> bool:
+        """
+        Check if an asset is supported by the Band Protocol on the current network.
+
+        Args:
+            asset: The asset address or contract to check.
+
+        Examples:
+            >>> band = Band(asynchronous=True)
+            >>> "0xaf319E5789945197e365E7f7fbFc56B130523B33" in band
+            True
+        """
         return chain.id in addresses and asset in supported_assets[chain.id]
 
     @a_sync.aka.property
     async def oracle(self) -> Contract:
+        """
+        Get the Band Protocol oracle contract for the current network.
+
+        Examples:
+            >>> band = Band(asynchronous=True)
+            >>> oracle = await band.oracle
+        """
         return await Contract.coroutine(addresses[chain.id])
 
     __oracle__: HiddenMethodDescriptor[Self, Contract]
@@ -63,6 +109,22 @@ class Band(a_sync.ASyncGenericSingleton):
     async def get_price(
         self, asset: Address, block: Optional[Block] = None
     ) -> Optional[float]:
+        """
+        Get the price of an asset in terms of USDC using the Band Protocol oracle.
+
+        Args:
+            asset: The asset address to get the price for.
+            block: The block number to query the price at. Defaults to the latest block.
+
+        Returns:
+            The price of the asset in terms of USDC, or None if the price cannot be fetched.
+
+        Examples:
+            >>> band = Band(asynchronous=True)
+            >>> price = await band.get_price("0xaf319E5789945197e365E7f7fbFc56B130523B33")
+            >>> print(price)
+            1.0
+        """
         oracle, asset_symbol = await asyncio.gather(
             self.__oracle__,
             ERC20(asset, asynchronous=True).symbol,

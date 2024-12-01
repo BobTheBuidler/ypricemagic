@@ -24,7 +24,37 @@ T = TypeVar("T")
 
 def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     """
-    Decorates a call-making function. If the call reverts, returns `None`. Raises any other exceptions.
+    Decorates a call-making function. If the call reverts, it attempts to continue
+    by calling the standalone function :func:`continue_if_call_reverted` from the
+    `y.exceptions` module. Raises any other exceptions.
+
+    This decorator is useful for functions interacting with smart contracts where
+    a call might revert due to various reasons. It ensures that the function does not
+    fail completely on a revert, but instead handles it gracefully.
+
+    Note:
+        The decorated function will return `None` if the call reverts and
+        :func:`continue_if_call_reverted` does not raise an exception.
+
+    Args:
+        func: The function to be decorated.
+
+    Returns:
+        The wrapped function with revert handling.
+
+    Examples:
+        >>> @continue_on_revert
+        ... def fetch_data():
+        ...     # some logic that might revert
+        ...     pass
+
+        >>> @continue_on_revert
+        ... async def fetch_data_async():
+        ...     # some async logic that might revert
+        ...     pass
+
+    See Also:
+        - :func:`continue_if_call_reverted`
     """
     from y.exceptions import continue_if_call_reverted
 

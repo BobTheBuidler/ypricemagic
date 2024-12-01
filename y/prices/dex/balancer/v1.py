@@ -49,6 +49,25 @@ async def _calc_out_value(
     block: int,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> float:
+    """Calculate the output value for a given token.
+
+    Args:
+        token_out: The output token address or contract.
+        total_outout: The total output amount.
+        scale: The scale factor.
+        block: The block number.
+        skip_cache: Whether to skip the cache.
+
+    Returns:
+        The calculated output value.
+
+    Examples:
+        >>> await _calc_out_value(weth, 1000, 1.0, 12345678)
+        0.5
+
+    See Also:
+        - :func:`y.prices.magic.get_price`
+    """
     out_scale, out_price = await asyncio.gather(
         ERC20(token_out, asynchronous=True).scale,
         magic.get_price(token_out, block, skip_cache=skip_cache, sync=False),
@@ -57,10 +76,25 @@ async def _calc_out_value(
 
 
 class BalancerV1Pool(BalancerPool):
+    """A Balancer V1 Pool."""
+
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     # @optional_async_diskcache
     async def tokens(self) -> List[ERC20]:
+        """Get the list of tokens in the pool.
+
+        Returns:
+            A list of :class:`~y.classes.common.ERC20` tokens in the pool.
+
+        Examples:
+            >>> pool = BalancerV1Pool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.tokens
+            [<ERC20 TKN '0x1234567890abcdef1234567890abcdef12345678'>, ...]
+
+        See Also:
+            - :class:`~y.classes.common.ERC20`
+        """
         contract = await Contract.coroutine(self.address)
         return [
             ERC20(token, asynchronous=self.asynchronous)
@@ -73,6 +107,23 @@ class BalancerV1Pool(BalancerPool):
     async def get_tvl(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Optional[UsdValue]:
+        """Get the total value locked (TVL) in the pool.
+
+        Args:
+            block: The block number to query.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            The total value locked in the pool, or None if it cannot be determined.
+
+        Examples:
+            >>> pool = BalancerV1Pool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.get_tvl()
+            123456.78
+
+        See Also:
+            - :class:`~y.datatypes.UsdValue`
+        """
         token_balances = await self.get_balances(block=block, sync=False)
         good_balances = {
             token: balance
@@ -106,12 +157,42 @@ class BalancerV1Pool(BalancerPool):
 
     @stuck_coro_debugger
     async def get_balances(self, block: Optional[Block] = None) -> Dict[ERC20, Decimal]:
+        """Get the balances of tokens in the pool.
+
+        Args:
+            block: The block number to query.
+
+        Returns:
+            A dictionary mapping :class:`~y.classes.common.ERC20` tokens to their balances.
+
+        Examples:
+            >>> pool = BalancerV1Pool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.get_balances()
+            {<ERC20 TKN '0x1234567890abcdef1234567890abcdef12345678'>: Decimal('1000'), ...}
+
+        See Also:
+            - :class:`~y.classes.common.ERC20`
+        """
         return await a_sync.map(
             self.get_balance, self.__tokens__, block=block or "latest"
         )
 
     @stuck_coro_debugger
     async def get_balance(self, token: AnyAddressType, block: Block) -> Decimal:
+        """Get the balance of a specific token in the pool.
+
+        Args:
+            token: The token address.
+            block: The block number to query.
+
+        Returns:
+            The balance of the token in the pool.
+
+        Examples:
+            >>> pool = BalancerV1Pool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.get_balance("0xabcdefabcdefabcdefabcdefabcdefabcdef")
+            Decimal('1000')
+        """
         balance, scale = await asyncio.gather(
             self.check_liquidity(str(token), block, sync=False),
             ERC20(token, asynchronous=True).scale,
@@ -121,6 +202,20 @@ class BalancerV1Pool(BalancerPool):
     @stuck_coro_debugger
     @a_sync.a_sync(ram_cache_maxsize=10_000, ram_cache_ttl=10 * 60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
+        """Check the liquidity of a specific token in the pool.
+
+        Args:
+            token: The token address.
+            block: The block number to query.
+
+        Returns:
+            The liquidity of the token in the pool.
+
+        Examples:
+            >>> pool = BalancerV1Pool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.check_liquidity("0xabcdefabcdefabcdefabcdefabcdefabcdef")
+            1000
+        """
         if block < await self.deploy_block(sync=False):
             return 0
         contract = await Contract.coroutine(self.address)
@@ -138,6 +233,7 @@ class BalancerV1Pool(BalancerPool):
 
 
 class BalancerV1(BalancerABC[BalancerV1Pool]):
+    """A Balancer V1 instance."""
 
     _pool_type = BalancerV1Pool
 
@@ -148,6 +244,14 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
     )
 
     def __init__(self, *, asynchronous: bool = False) -> None:
+        """Initialize a BalancerV1 instance.
+
+        Args:
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> balancer = BalancerV1(asynchronous=True)
+        """
         super().__init__()
         self.asynchronous = asynchronous
         self.exchange_proxy = Contract(EXCHANGE_PROXY) if EXCHANGE_PROXY else None
@@ -159,6 +263,24 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
+        """Get the price of a token in the pool.
+
+        Args:
+            token_address: The token address or contract.
+            block: The block number to query.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            The price of the token in USD, or None if it cannot be determined.
+
+        Examples:
+            >>> balancer = BalancerV1(asynchronous=True)
+            >>> await balancer.get_token_price("0xabcdefabcdefabcdefabcdefabcdefabcdef")
+            1.23
+
+        See Also:
+            - :class:`~y.datatypes.UsdPrice`
+        """
         if block is not None and block < await contract_creation_block_async(
             self.exchange_proxy, True
         ):
@@ -180,7 +302,22 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
         scale: int = 1,
         block: Optional[Block] = None,
     ) -> Optional[int]:
+        """Check the liquidity of a token against another token in the pool.
 
+        Args:
+            token_in: The input token address or contract.
+            token_out: The output token address or contract.
+            scale: The scale factor.
+            block: The block number to query.
+
+        Returns:
+            The total output amount, or None if it cannot be determined.
+
+        Examples:
+            >>> balancer = BalancerV1(asynchronous=True)
+            >>> await balancer.check_liquidity_against("0xabcdefabcdefabcdefabcdefabcdefabcdef", "0x1234567890abcdef1234567890abcdef12345678")
+            1000
+        """
         amount_in = await ERC20(token_in, asynchronous=True).scale * scale
         with suppress(ValueError, VirtualMachineError, ContractLogicError):
             # across various dep versions we get these various excs
@@ -197,6 +334,21 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
     async def get_some_output(
         self, token_in: AddressOrContract, scale: int = 1, block: Optional[Block] = None
     ) -> Optional[Tuple[EthAddress, int]]:
+        """Get some output for a given input token.
+
+        Args:
+            token_in: The input token address or contract.
+            scale: The scale factor.
+            block: The block number to query.
+
+        Returns:
+            A tuple containing the output token address and the total output amount, or None if it cannot be determined.
+
+        Examples:
+            >>> balancer = BalancerV1(asynchronous=True)
+            >>> await balancer.get_some_output("0xabcdefabcdefabcdefabcdefabcdefabcdef")
+            ('0x1234567890abcdef1234567890abcdef12345678', 1000)
+        """
         for token_out in TOKENOUTS_TO_TRY:
             if output := await self.check_liquidity_against(
                 token_in, token_out, block=block, scale=scale, sync=False
@@ -207,6 +359,21 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
     async def check_liquidity(
         self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...] = ()
     ) -> int:
+        """Check the liquidity of a token in the pool.
+
+        Args:
+            token: The token address.
+            block: The block number to query.
+            ignore_pools: A tuple of pools to ignore.
+
+        Returns:
+            The liquidity of the token in the pool.
+
+        Examples:
+            >>> balancer = BalancerV1(asynchronous=True)
+            >>> await balancer.check_liquidity("0xabcdefabcdefabcdefabcdefabcdefabcdef", 12345678)
+            1000
+        """
         pools = []
         pools = [pool for pool in pools if pool not in ignore_pools]
         return (

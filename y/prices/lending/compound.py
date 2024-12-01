@@ -72,6 +72,18 @@ class CToken(ERC20):
         *,
         asynchronous: bool = False,
     ) -> None:
+        """
+        Initialize a CToken instance.
+
+        Args:
+            address: The address of the CToken.
+            comptroller: An optional instance of :class:`~Comptroller` associated with this CToken.
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> ctoken = CToken("0x1234567890abcdef1234567890abcdef12345678")
+            >>> ctoken_with_comptroller = CToken("0x1234567890abcdef1234567890abcdef12345678", comptroller=my_comptroller)
+        """
         self.troller = comptroller
         super().__init__(address, asynchronous=asynchronous)
         self.exchange_rate_current = Call(self.address, "exchangeRateCurrent()(uint)")
@@ -79,6 +91,17 @@ class CToken(ERC20):
     async def get_price(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> UsdPrice:
+        """
+        Get the price of the CToken in USD.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip using the cache while fetching price data.
+
+        Examples:
+            >>> price = await ctoken.get_price()
+            >>> price_at_block = await ctoken.get_price(block=12345678)
+        """
         if self.troller:
             # We can use the protocol's oracle which will be quick (if it works)
             underlying_per_ctoken, underlying_price = await asyncio.gather(
@@ -98,6 +121,15 @@ class CToken(ERC20):
 
     @a_sync.aka.cached_property
     async def underlying(self) -> ERC20:
+        """
+        Get the underlying ERC20 token for this CToken.
+
+        Returns:
+            An instance of :class:`~ERC20` representing the underlying token.
+
+        Examples:
+            >>> underlying_token = await ctoken.underlying
+        """
         # sourcery skip: use-or-for-fallback
         underlying = await self.has_method(
             "underlying()(address)", return_response=True, sync=False
@@ -110,6 +142,23 @@ class CToken(ERC20):
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
 
     async def underlying_per_ctoken(self, block: Optional[Block] = None) -> float:
+        """
+        Get the exchange rate of the CToken, adjusted for decimals.
+
+        This method calculates the amount of underlying tokens per CToken by
+        multiplying the exchange rate by a factor based on the difference in
+        decimals between the CToken and its underlying token.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+
+        Examples:
+            >>> amount = await ctoken.underlying_per_ctoken()
+            >>> amount_at_block = await ctoken.underlying_per_ctoken(block=12345678)
+
+        See Also:
+            - :meth:`exchange_rate`
+        """
         underlying: ERC20
         exchange_rate, decimals, underlying = await asyncio.gather(
             self.exchange_rate(block=block, sync=False),
@@ -120,6 +169,16 @@ class CToken(ERC20):
 
     # yLazyLogger(logger)
     async def exchange_rate(self, block: Optional[Block] = None) -> float:
+        """
+        Get the current exchange rate of the CToken.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+
+        Examples:
+            >>> rate = await ctoken.exchange_rate()
+            >>> rate_at_block = await ctoken.exchange_rate(block=12345678)
+        """
         try:
             exchange_rate = await self.exchange_rate_current.coroutine(block_id=block)
         except Exception as e:
@@ -144,6 +203,17 @@ class CToken(ERC20):
     async def get_underlying_price(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Optional[float]:
+        """
+        Get the price of the underlying token in USD.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip using the cache while fetching price data.
+
+        Examples:
+            >>> price = await ctoken.get_underlying_price()
+            >>> price_at_block = await ctoken.get_underlying_price(block=12345678)
+        """
         oracle: Contract
         underlying: ERC20
         # always query the oracle in case it was changed
@@ -178,6 +248,20 @@ class Comptroller(ContractBase):
         *,
         asynchronous: bool = False,
     ) -> None:
+        """
+        Initialize a Comptroller instance.
+
+        You must provide either an address or a key. If both are provided, the key will be used to look up the address.
+
+        Args:
+            address: The address of the Comptroller.
+            key: The key associated with the Comptroller in the TROLLERS dictionary.
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> comptroller = Comptroller(address="0x1234567890abcdef1234567890abcdef12345678")
+            >>> comptroller_with_key = Comptroller(key="comp")
+        """
         assert address or key, "Must provide either an address or a key"
         assert not (
             address and key
@@ -196,6 +280,18 @@ class Comptroller(ContractBase):
 
     # yLazyLogger(logger)
     def __contains__(self, token_address: AnyAddressType) -> bool:
+        """
+        Check if a token address is contained within the Comptroller's markets.
+
+        Args:
+            token_address: The address of the token to check.
+
+        Returns:
+            True if the token address is in the Comptroller's markets, False otherwise.
+
+        Examples:
+            >>> "0x1234567890abcdef1234567890abcdef12345678" in comptroller
+        """
         if self.asynchronous:
             raise RuntimeError(
                 "'self.asynchronous' must be False to use Comptroller.__contains__"
@@ -204,6 +300,15 @@ class Comptroller(ContractBase):
 
     @a_sync.aka.cached_property
     async def markets(self) -> Tuple[CToken]:
+        """
+        Get the markets associated with this Comptroller.
+
+        Returns:
+            A tuple of :class:`~CToken` instances representing the markets.
+
+        Examples:
+            >>> markets = await comptroller.markets
+        """
         response = await self.has_method(
             "getAllMarkets()(address[])", return_response=True, sync=False
         )
@@ -220,6 +325,16 @@ class Comptroller(ContractBase):
     __markets__ = HiddenMethodDescriptor[Self, Tuple[CToken]]
 
     async def oracle(self, block: Optional[Block] = None) -> Contract:
+        """
+        Get the oracle contract associated with this Comptroller.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+
+        Examples:
+            >>> oracle = await comptroller.oracle()
+            >>> oracle_at_block = await comptroller.oracle(block=12345678)
+        """
         contract = await Contract.coroutine(self.address)
         try:
             oracle = await contract.oracle.coroutine(block_identifier=block)
@@ -233,6 +348,16 @@ class Comptroller(ContractBase):
 
 class Compound(a_sync.ASyncGenericSingleton):
     def __init__(self, *, asynchronous: bool = False) -> None:
+        """
+        Initialize a Compound instance.
+
+        Args:
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> compound = Compound()
+            >>> compound_async = Compound(asynchronous=True)
+        """
         super().__init__()
         self.asynchronous = asynchronous
         self.trollers = {
@@ -241,6 +366,18 @@ class Compound(a_sync.ASyncGenericSingleton):
         }
 
     def __contains__(self, token_address: AddressOrContract) -> bool:
+        """
+        Check if a token address is a Compound market.
+
+        Args:
+            token_address: The address of the token to check.
+
+        Returns:
+            True if the token address is a Compound market, False otherwise.
+
+        Examples:
+            >>> "0x1234567890abcdef1234567890abcdef12345678" in compound
+        """
         if self.asynchronous:
             raise RuntimeError(
                 "'self.asynchronous' must be False and the event loop must not be running"
@@ -250,6 +387,18 @@ class Compound(a_sync.ASyncGenericSingleton):
     async def get_troller(
         self, token_address: AddressOrContract
     ) -> Optional[Comptroller]:
+        """
+        Get the Comptroller associated with a token address.
+
+        Args:
+            token_address: The address of the token.
+
+        Returns:
+            An instance of :class:`~Comptroller` if found, None otherwise.
+
+        Examples:
+            >>> troller = await compound.get_troller("0x1234567890abcdef1234567890abcdef12345678")
+        """
         if self.trollers:
             async for troller, markets in Comptroller.markets.map(
                 self.trollers.values()
@@ -259,6 +408,18 @@ class Compound(a_sync.ASyncGenericSingleton):
 
     @a_sync.a_sync(ram_cache_ttl=5 * 60)
     async def is_compound_market(self, token_address: AddressOrContract) -> bool:
+        """
+        Check if a token address is a Compound market.
+
+        Args:
+            token_address: The address of the token to check.
+
+        Returns:
+            True if the token address is a Compound market, False otherwise.
+
+        Examples:
+            >>> is_market = await compound.is_compound_market("0x1234567890abcdef1234567890abcdef12345678")
+        """
         if await self.get_troller(token_address, sync=False):
             return True
 
@@ -278,6 +439,18 @@ class Compound(a_sync.ASyncGenericSingleton):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
+        """
+        Get the price of a token in USD.
+
+        Args:
+            token_address: The address of the token.
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip using the cache while fetching price data.
+
+        Examples:
+            >>> price = await compound.get_price("0x1234567890abcdef1234567890abcdef12345678")
+            >>> price_at_block = await compound.get_price("0x1234567890abcdef1234567890abcdef12345678", block=12345678)
+        """
         troller = await self.get_troller(token_address)
         return await CToken(
             token_address, comptroller=troller, asynchronous=True
@@ -286,6 +459,15 @@ class Compound(a_sync.ASyncGenericSingleton):
     async def __notify_if_unknown_comptroller(
         self, token_address: AddressOrContract
     ) -> None:
+        """
+        Notify if a Comptroller is unknown to ypricemagic.
+
+        Args:
+            token_address: The address of the token.
+
+        Examples:
+            >>> await compound.__notify_if_unknown_comptroller("0x1234567890abcdef1234567890abcdef12345678")
+        """
         comptroller = await raw_call(
             token_address, "comptroller()", output="address", sync=False
         )

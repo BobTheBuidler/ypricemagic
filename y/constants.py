@@ -261,9 +261,18 @@ elif chain.id == Network.Base:
     """Wrapped Ether (WETH) contract on Base."""
 
     usdc = Contract("0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA")  # usdbc
+    """USD Coin (USDC) contract on Base."""
+
     usdt = Contract("0x4A3A6Dd60A34bB2Aba60D73B4C88315E9CeB6A3D")
-    # temp placeholder, this is just some junk token. shouldnt impact results but we want wbtc when its avail
+    """Tether USD (USDT) contract on Base."""
+
     wbtc = Contract("0x77852193BD608A518dd7b7C2f891A1d02ceeB4d4")
+    """
+    Wrapped Bitcoin (WBTC) contract on Base.
+
+    Note:
+        This is a temporary placeholder and may not represent the actual WBTC contract on Base.
+    """
 
 else:
     weth, dai, wbtc, usdc, usdt = None, None, None, None, None
@@ -337,7 +346,18 @@ STABLECOINS = {
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913": "usdc",
     },
 }.get(chain.id, {})
+"""
+A dictionary mapping network IDs to stablecoin contract addresses and their corresponding symbols.
 
+Each network has a set of stablecoin addresses with their associated symbols. This allows for easy lookup of stablecoin contracts on different networks. If the current `chain.id` is not recognized, it defaults to an empty dictionary.
+
+Example:
+    >>> STABLECOINS.get(Network.Mainnet, {}).get("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
+    'usdc'
+
+See Also:
+    - :class:`~y.networks.Network` for network ID definitions.
+"""
 
 WRAPPED_GAS_COIN = {
     Network.Mainnet: "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
@@ -354,5 +374,13 @@ WRAPPED_GAS_COIN = {
 }.get(chain.id)
 """
 The address of the wrapped version of the native token on the active network.
+
 For example, on Ethereum Mainnet, `WRAPPED_GAS_COIN` == the WETH address. On Fantom, it is equal to the WFTM address. And so on.
+
+Example:
+    >>> WRAPPED_GAS_COIN
+    '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2'  # On Ethereum Mainnet
+
+See Also:
+    - :class:`~y.networks.Network` for network ID definitions.
 """

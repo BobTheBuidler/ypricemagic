@@ -41,6 +41,15 @@ POPSICLES = {
 
 
 def test_non_popsicle():
+    """Test that a non-Popsicle LP token is not incorrectly identified as a Popsicle LP.
+
+    This test checks that the `WRAPPED_GAS_COIN` is not recognized as a Popsicle LP token
+    and that attempting to get its price raises a `TypeError`.
+
+    See Also:
+        - :func:`popsicle.is_popsicle_lp`
+        - :func:`popsicle.get_price`
+    """
     assert not popsicle.is_popsicle_lp(
         WRAPPED_GAS_COIN
     ), "Token incorrectly recognized as Popsicle LP."
@@ -51,6 +60,19 @@ def test_non_popsicle():
 @pytest.mark.asyncio_cooperative
 @pytest.mark.parametrize("token", POPSICLES)
 async def test_popsicle_get_price(token):
+    """Test fetching the price of Popsicle LP tokens.
+
+    This test verifies that each token in the `POPSICLES` list is correctly identified
+    as a Popsicle LP and that its price can be fetched for various blocks.
+
+    Args:
+        token: The Popsicle LP token address to test.
+
+    See Also:
+        - :func:`popsicle.is_popsicle_lp`
+        - :func:`popsicle.get_price`
+        - :func:`blocks_for_contract`
+    """
     assert await popsicle.is_popsicle_lp(
         token, sync=False
     ), "Popsicle LP not recognized."

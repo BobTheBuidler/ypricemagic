@@ -30,6 +30,27 @@ logger = logging.getLogger(__name__)
 
 @a_sync.a_sync(default="sync", cache_type="memory")
 async def check_bucket(token: AnyAddressType) -> str:
+    """
+    Determine the category or 'bucket' of a given token.
+
+    This function attempts to classify a token into a specific category based on its characteristics.
+    It first checks the database for a cached bucket using :func:`y._db.utils.token.get_bucket`.
+    If not found, it performs a series of checks that may involve string comparisons, calls to the blockchain,
+    and contract initializations. The determined bucket is then stored using :func:`db.set_bucket`.
+
+    Args:
+        token: The token address to classify.
+
+    Examples:
+        >>> bucket = check_bucket("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(bucket)
+        'stable usd'
+
+    See Also:
+        - :func:`y.convert.to_address_async`
+        - :func:`y.utils.logging.get_price_logger`
+        - :func:`_check_bucket_helper`
+    """
     token_address = await convert.to_address_async(token)
     logger = get_price_logger(token_address, block=None, extra="buckets")
 
@@ -145,7 +166,23 @@ calls_only = {
 
 
 async def _chainlink_and_band(token_address) -> bool:
-    """We only really need band for a short period in the beginning of fantom's history, and then we will default to chainlink once available."""
+    """
+    Check if a token is supported by both Chainlink and Band oracles.
+
+    This function is primarily used for historical data on the Fantom network,
+    where Band was used before Chainlink became available.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Examples:
+        >>> is_supported = await _chainlink_and_band("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(is_supported)
+        True
+
+    See Also:
+        - :func:`y.prices.chainlink.has_feed`
+    """
     return (
         chainlink
         and await chainlink.has_feed(token_address, sync=False)
@@ -156,6 +193,22 @@ async def _chainlink_and_band(token_address) -> bool:
 async def _check_bucket_helper(
     bucket: str, check: Callable[[Address], Awaitable[bool]], address: Address
 ) -> Tuple[str, bool]:
+    """
+    Helper function to check if a token belongs to a specific bucket.
+
+    Args:
+        bucket: The name of the bucket to check.
+        check: A callable that checks if the token belongs to the bucket.
+        address: The address of the token to check.
+
+    Examples:
+        >>> result = await _check_bucket_helper("stable usd", lambda x: x in STABLECOINS, "0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(result)
+        ('stable usd', True)
+
+    See Also:
+        - :func:`check_bucket`
+    """
     result = await check(address, sync=False)
 
     # TODO: debug why we have to re-await sometimes when @optional_async_diskcache is used

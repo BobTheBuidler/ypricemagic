@@ -107,7 +107,12 @@ supported_chains = pytest.mark.skipif(
 @mainnet_only
 def test_adai():
     """
-    Simple test for a known underlying
+    Simple test for a known underlying.
+    
+    This test verifies that the underlying asset of a known aToken (aDAI) is correctly identified as DAI.
+    
+    See Also:
+        - :func:`AaveRegistry.underlying`
     """
     assert AaveRegistry(asynchronous=False).underlying(aDAI) == DAI
     assert await_awaitable(AaveRegistry(asynchronous=True).underlying(aDAI)) == DAI
@@ -115,6 +120,14 @@ def test_adai():
 
 @supported_chains
 def test_AaveRegistry():
+    """
+    Test the AaveRegistry for pool and aToken availability.
+    
+    This test checks that the AaveRegistry can fetch pools and that the `ATOKENS` constant is set up correctly.
+    
+    See Also:
+        - :class:`AaveRegistry`
+    """
     aave = AaveRegistry()
     assert aave.pools, f"Cannot fetch Aave pools on {Network.printable()}"
     assert (
@@ -128,12 +141,19 @@ def test_AaveRegistry():
 @pytest.mark.asyncio_cooperative
 async def test_atokens_async(token):
     """
-    This tests the following functions:
-    - aave.__contains__
-    - aave.is_atoken
-    - aave.pool_for_token
-    - aave.underlying
-    - aave.get_price
+    Test various functions related to aTokens asynchronously.
+    
+    This test verifies the following functions:
+    - :meth:`AaveRegistry.is_atoken`
+    - :meth:`AaveRegistry.pool_for_atoken`
+    - :meth:`AaveRegistry.underlying`
+    - :meth:`AaveRegistry.get_price`
+    
+    Args:
+        token: The aToken address to test.
+    
+    See Also:
+        - :class:`AaveRegistry`
     """
     aave = AaveRegistry(asynchronous=True)
     with pytest.raises(RuntimeError):
@@ -148,6 +168,15 @@ async def test_atokens_async(token):
 
 @pytest.mark.asyncio_cooperative
 async def test_wrapped_atoken_v2():
+    """
+    Test for wrapped aToken v2 pricing.
+    
+    This test checks if a wrapped aToken v2 is correctly identified and priced.
+    
+    See Also:
+        - :meth:`AaveRegistry.is_wrapped_atoken_v2`
+        - :meth:`AaveRegistry.get_price_wrapped_v2`
+    """
     wrapped_ausdt = "0xf8Fd466F12e236f4c96F7Cce6c79EAdB819abF58"
     aave: AaveRegistry = AaveRegistry(asynchronous=True)
     assert await aave.is_wrapped_atoken_v2(wrapped_ausdt)
@@ -156,6 +185,15 @@ async def test_wrapped_atoken_v2():
 
 @pytest.mark.asyncio_cooperative
 async def test_wrapped_atoken_v3():
+    """
+    Test for wrapped aToken v3 pricing.
+    
+    This test checks if a wrapped aToken v3 is correctly identified and priced.
+    
+    See Also:
+        - :meth:`AaveRegistry.is_wrapped_atoken_v3`
+        - :meth:`AaveRegistry.get_price_wrapped_v3`
+    """
     wrapped_ausdc = "0x57d20c946A7A3812a7225B881CdcD8431D23431C"
     aave: AaveRegistry = AaveRegistry(asynchronous=True)
     assert await aave.is_wrapped_atoken_v3(wrapped_ausdc)

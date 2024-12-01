@@ -226,6 +226,21 @@ class Feed:
     # @a_sync.future
     @stuck_coro_debugger
     async def get_price(self, block: int) -> Optional[UsdPrice]:
+        """Get the price of the asset at a specific block.
+
+        If the feed is stale, it returns None.
+
+        Args:
+            block: The block number to get the price for.
+
+        Examples:
+            >>> feed = Feed("0xAddress", "0xAsset")
+            >>> price = await feed.get_price(12345678)
+            >>> print(price)
+
+        Returns:
+            The price of the asset in USD, or None if the feed is stale.
+        """
         if self._stale_thru_block and self._stale_thru_block > block:
             logger.debug("%s is stale, must fetch price from elsewhere", self)
             return None
@@ -285,6 +300,17 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
 
 class Chainlink(a_sync.ASyncGenericBase):
     def __init__(self, *, asynchronous: bool = True) -> None:
+        """Initialize the Chainlink class.
+
+        Args:
+            asynchronous: Whether to use asynchronous operations.
+
+        Raises:
+            UnsupportedNetwork: If Chainlink is not supported on the current network.
+
+        Examples:
+            >>> chainlink = Chainlink(asynchronous=True)
+        """
         super().__init__()
         self.asynchronous = asynchronous
         self._feeds = [
@@ -305,6 +331,18 @@ class Chainlink(a_sync.ASyncGenericBase):
             self._feeds_from_events = None
 
     async def _feeds_thru_block(self, block: int) -> AsyncIterator[Feed]:
+        """Yield feeds up to a specific block.
+
+        Args:
+            block: The block number to yield feeds up to.
+
+        Yields:
+            Feeds available up to the specified block.
+
+        Examples:
+            >>> async for feed in chainlink._feeds_thru_block(12345678):
+            ...     print(feed)
+        """
         for feed in self._feeds:
             yield feed
         if self._feeds_from_events:
@@ -313,12 +351,36 @@ class Chainlink(a_sync.ASyncGenericBase):
 
     @a_sync_ttl_cache
     async def get_feed(self, asset: Address) -> Optional[Feed]:
+        """Get the feed for a specific asset.
+
+        Args:
+            asset: The address of the asset.
+
+        Examples:
+            >>> feed = await chainlink.get_feed("0xAsset")
+            >>> print(feed)
+
+        Returns:
+            The feed for the specified asset, or None if not found.
+        """
         asset = await convert.to_address_async(asset)
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
             if asset == feed.asset:
                 return feed
 
     async def has_feed(self, asset: AnyAddressType) -> bool:
+        """Check if a feed exists for a specific asset.
+
+        Args:
+            asset: The address of the asset.
+
+        Examples:
+            >>> has_feed = await chainlink.has_feed("0xAsset")
+            >>> print(has_feed)
+
+        Returns:
+            True if a feed exists for the specified asset, False otherwise.
+        """
         # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
         asset = convert.to_address(asset)
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
@@ -330,7 +392,25 @@ class Chainlink(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     async def get_price(
         self, asset: AnyAddressType, block: Optional[Block] = None
-    ) -> UsdPrice:
+    ) -> Optional[UsdPrice]:
+        """Get the price of an asset at a specific block.
+
+        If the block is not specified, it uses the latest block.
+
+        Args:
+            asset: The address of the asset.
+            block: The block number to get the price for.
+
+        Examples:
+            >>> price = await chainlink.get_price("0xAsset", 12345678)
+            >>> print(price)
+
+        Returns:
+            The price of the asset in USD, or None if the price cannot be fetched.
+
+        See Also:
+            - :meth:`get_feed`
+        """
         if block is None:
             block = await dank_mids.eth.block_number
         logger.debug("getting price for %s at %s", asset, block)

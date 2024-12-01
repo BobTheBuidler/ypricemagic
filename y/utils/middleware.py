@@ -40,6 +40,15 @@ def _get_batch_size() -> int:
 
     Returns:
         The determined batch size for log fetching.
+
+    Examples:
+        >>> batch_size = _get_batch_size()
+        >>> print(batch_size)
+        2000
+
+    See Also:
+        - :data:`provider_specific_batch_sizes`
+        - :data:`chain_specific_max_batch_sizes`
     """
     if batch_size := ENVS.GETLOGS_BATCH_SIZE:
         return batch_size
@@ -62,6 +71,13 @@ def should_cache(method: str, params: Any) -> bool:
 
     Returns:
         True if the method call should be cached, False otherwise.
+
+    Examples:
+        >>> should_cache("eth_getCode", ["0x1234", "latest"])
+        True
+
+        >>> should_cache("eth_getBalance", ["0x1234", "latest"])
+        False
     """
     return method == "eth_getCode" and params[1] == "latest"
 
@@ -76,6 +92,15 @@ def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
 
     Returns:
         A middleware function that caches eth_getCode calls.
+
+    Examples:
+        >>> from web3 import Web3
+        >>> w3 = Web3(Web3.HTTPProvider('http://localhost:8545'))
+        >>> middleware = getcode_cache_middleware(w3.manager.request_blocking, w3)
+        >>> w3.middleware_onion.add(middleware)
+
+    See Also:
+        - :func:`should_cache`
     """
 
     @memory.cache
@@ -97,7 +122,14 @@ def setup_getcode_cache_middleware() -> None:
     Set up the eth_getCode cache middleware for the current Web3 provider.
 
     This function modifies the Web3 provider to use a custom session with increased
-    connection pool size and timeout, and adds the getcode cache middleware.
+    connection pool size and timeout, if the provider's endpoint URI starts with "http" or "https".
+    If the provider is an IPCProvider, it does not modify the session.
+
+    Examples:
+        >>> setup_getcode_cache_middleware()
+
+    See Also:
+        - :func:`getcode_cache_middleware`
     """
     # patch web3 provider with more connections and higher timeout
     if web3.provider:
@@ -122,6 +154,12 @@ def setup_getcode_cache_middleware() -> None:
 def setup_geth_poa_middleware() -> None:
     """
     Set up the geth proof-of-authority middleware for the current Web3 provider.
+
+    Examples:
+        >>> setup_geth_poa_middleware()
+
+    See Also:
+        - :func:`web3.middleware.geth_poa.geth_poa_middleware`
     """
     try:
         web3.middleware_onion.inject(geth_poa_middleware, layer=0)

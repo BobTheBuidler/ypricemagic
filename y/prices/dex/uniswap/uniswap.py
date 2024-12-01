@@ -41,7 +41,23 @@ Uniswap = Union[UniswapV1, UniswapRouterV2, UniswapV3]
 
 class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
     """
-    A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances and/or forks.
+    A multiplexer for Uniswap routers that provides aggregated functionality across multiple Uniswap instances,
+    including Uniswap V1, V2, V3, and certain protocols with similar interfaces like Solidly and Velodrome.
+
+    This class allows for seamless interaction with various decentralized exchange protocols, enabling
+    price fetching and liquidity checks across different router implementations.
+
+    Examples:
+        >>> multiplexer = UniswapMultiplexer(asynchronous=True)
+        >>> price = await multiplexer.get_price("0xTokenAddress", block=12345678)
+        >>> print(price)
+
+    See Also:
+        - :class:`~y.prices.dex.uniswap.v1.UniswapV1`
+        - :class:`~y.prices.dex.uniswap.v2.UniswapRouterV2`
+        - :class:`~y.prices.dex.uniswap.v3.UniswapV3`
+        - :class:`~y.prices.dex.solidly.SolidlyRouter`
+        - :class:`~y.prices.dex.velodrome.VelodromeRouterV2`
     """
 
     def __init__(self, *, asynchronous: bool = False) -> None:
@@ -105,6 +121,20 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         """
         Calculate a price based on Uniswap Router quote for selling one `token_in`.
         Always finds the deepest swap path for `token_in`.
+
+        Args:
+            token_in: The address of the input token.
+            block: The block number to query. Defaults to the latest block.
+            ignore_pools: A tuple of Pool objects to ignore when checking liquidity.
+            skip_cache: If True, skip using the cache while fetching price data.
+
+        Examples:
+            >>> multiplexer = UniswapMultiplexer(asynchronous=True)
+            >>> price = await multiplexer.get_price("0xTokenAddress", block=12345678)
+            >>> print(price)
+
+        See Also:
+            - :meth:`~UniswapMultiplexer.routers_by_depth`
         """
         router: Uniswap
         token_in = await convert.to_address_async(token_in)
@@ -152,6 +182,11 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         Note:
             - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
             - Routers with zero liquidity are excluded from the result.
+
+        Examples:
+            >>> multiplexer = UniswapMultiplexer(asynchronous=True)
+            >>> routers = await multiplexer.routers_by_depth("0xTokenAddress", block=12345678)
+            >>> print(routers)
         """
         token_in = await convert.to_address_async(token_in)
         depth_to_router = dict(
@@ -192,12 +227,14 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             block: The block number to query.
             ignore_pools (optional): A tuple of Pool objects to ignore when checking liquidity.
 
-        Returns:
-            The maximum liquidity found for the token across all Uniswap instances.
-
         Note:
             - The method uses asyncio.gather to check liquidity across all Uniswap instances concurrently.
             - A semaphore is used to limit the number of concurrent checks to 100.
+
+        Examples:
+            >>> multiplexer = UniswapMultiplexer(asynchronous=True)
+            >>> liquidity = await multiplexer.check_liquidity("0xTokenAddress", block=12345678)
+            >>> print(liquidity)
         """
         return max(
             await asyncio.gather(

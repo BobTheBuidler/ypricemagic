@@ -69,7 +69,21 @@ except ContractNotVerified:
 
 class UniswapV2Pool(ERC20):
     """
-    Represents a Uniswap V2 liquidity pool.
+    Represents a liquidity pool from Uniswap V2 or its forks.
+
+    This class provides methods to interact with and retrieve information
+    about a Uniswap V2 or fork liquidity pool, such as token reserves,
+    total value locked (TVL), and price calculations.
+
+    Examples:
+        >>> pool = UniswapV2Pool("0xAddress")
+        >>> reserves = await pool.reserves()
+        >>> price = await pool.get_price()
+        >>> tvl = await pool.tvl()
+
+    See Also:
+        - :class:`~y.classes.common.ERC20`
+        - :class:`~y.prices.dex.uniswap.v2_forks`
     """
 
     # default stored as class var to keep instance dicts smaller
@@ -157,6 +171,25 @@ class UniswapV2Pool(ERC20):
     async def get_price(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Optional[UsdPrice]:
+        """
+        Calculate the price of the pool's liquidity token in USD.
+
+        This method calculates the price of the pool's liquidity token by dividing
+        the total value locked (TVL) by the total supply of the liquidity token.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: If True, skip using the cache while fetching price data.
+
+        Examples:
+            >>> pool = UniswapV2Pool("0xAddress")
+            >>> price = await pool.get_price()
+            >>> print(price)
+
+        See Also:
+            - :meth:`tvl`
+            - :meth:`total_supply_readable`
+        """
         tvl = await self.tvl(block=block, skip_cache=skip_cache, sync=False)
         if tvl is not None:
             return UsdPrice(
@@ -218,6 +251,25 @@ class UniswapV2Pool(ERC20):
     async def tvl(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Optional[Decimal]:
+        """
+        Calculate the total value locked (TVL) in the pool in USD.
+
+        This method calculates the TVL by summing the USD value of the reserves
+        of the two tokens in the pool.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: If True, skip using the cache while fetching price data.
+
+        Examples:
+            >>> pool = UniswapV2Pool("0xAddress")
+            >>> tvl = await pool.tvl()
+            >>> print(tvl)
+
+        See Also:
+            - :meth:`reserves`
+            - :meth:`get_price`
+        """
         # start these tasks now
         price_tasks: a_sync.TaskMapping[ERC20, UsdPrice]
         price_tasks = ERC20.price.map(
@@ -268,6 +320,11 @@ class UniswapV2Pool(ERC20):
 
         Raises:
             TokenNotFound: If the token is not one of the two tokens in the liquidity pool.
+
+        Examples:
+            >>> pool = UniswapV2Pool("0xAddress")
+            >>> liquidity = await pool.check_liquidity("0xTokenAddress", 12345678)
+            >>> print(liquidity)
         """
         if debug_logs := logger.isEnabledFor(DEBUG):
             logger._log(
@@ -302,6 +359,11 @@ class UniswapV2Pool(ERC20):
 
         Returns:
             True if the contract is a valid Uniswap V2 pool, False otherwise.
+
+        Examples:
+            >>> pool = UniswapV2Pool("0xAddress")
+            >>> is_valid = await pool.is_uniswap_pool()
+            >>> print(is_valid)
         """
         try:
             return all(

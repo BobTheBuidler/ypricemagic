@@ -104,6 +104,17 @@ for testimonial in _testimonials:
 
 
 def announce_beta() -> None:
+    """Announce the beta version of ypriceAPI.
+
+    This function logs the beta announcement message, which includes
+    information about the benefits of using ypriceAPI and testimonials
+    from users.
+
+    Examples:
+        >>> announce_beta()
+        ypriceAPI is now in beta!
+        ...
+    """
     spam_your_logs_fn = logger.info if logger.isEnabledFor(logging.INFO) else print
     spam_your_logs_fn(beta_announcement)
     global should_use
@@ -125,11 +136,21 @@ if OLD_AUTH is not None:
 
 
 class BadResponse(Exception):
-    pass
+    """Exception raised for bad responses from ypriceAPI."""
 
 
 @alru_cache(maxsize=1)
 async def get_session() -> ClientSession:
+    """Get an aiohttp ClientSession for ypriceAPI.
+
+    This session is configured with the ypriceAPI URL, headers, and timeout.
+
+    Returns:
+        An aiohttp ClientSession object.
+
+    Examples:
+        >>> session = await get_session()
+    """
     return ClientSession(
         os.environ.get("YPRICEAPI_URL", "https://ypriceapi-beta.yearn.finance"),
         connector=TCPConnector(verify_ssl=False),
@@ -140,6 +161,16 @@ async def get_session() -> ClientSession:
 
 @alru_cache(ttl=ONE_HOUR)
 async def get_chains() -> Dict[int, str]:
+    """Get the supported chains from ypriceAPI.
+
+    Returns:
+        A dictionary mapping chain IDs to chain names.
+
+    Examples:
+        >>> chains = await get_chains()
+        >>> chains[1]
+        'Ethereum Mainnet'
+    """
     session = await get_session()
     async with session.get("/chains") as response:
         chains = await read_response(response) or {}
@@ -148,6 +179,23 @@ async def get_chains() -> Dict[int, str]:
 
 @alru_cache(ttl=ONE_HOUR)
 async def chain_supported(chainid: int) -> bool:
+    """Check if a chain is supported by ypriceAPI.
+
+    Args:
+        chainid: The chain ID to check.
+
+    Returns:
+        True if the chain is supported, False otherwise.
+
+    Examples:
+        >>> await chain_supported(1)
+        True
+        >>> await chain_supported(9999)
+        False
+
+    See Also:
+        :func:`get_chains` for retrieving the list of supported chains.
+    """
     if chainid in await get_chains():
         return True
     logger.info("ypriceAPI does not support %s at this time.", Network.name())
@@ -155,7 +203,30 @@ async def chain_supported(chainid: int) -> bool:
 
 
 async def get_price(token: Address, block: Optional[Block]) -> Optional[UsdPrice]:
+    """Get the price of a token from ypriceAPI.
 
+    Args:
+        token: The address of the token.
+        block: The block number to query.
+
+    Returns:
+        The price of the token in USD as an instance of :class:`UsdPrice`, or None if the price cannot be retrieved.
+
+    This function will return None if the authorization headers are not present or if the current time is less than the resume time.
+
+    Examples:
+        >>> price = await get_price("0xTokenAddress", 12345678)
+        >>> print(price)
+        $1234.56780000
+
+    Raises:
+        ClientConnectorSSLError: If there is an SSL error during the request.
+        asyncio.TimeoutError: If the request times out.
+        ClientError: If there is a client error during the request.
+
+    See Also:
+        :class:`UsdPrice` for the price representation.
+    """
     if not AUTH_HEADERS_PRESENT:
         announce_beta()
         return None
@@ -206,7 +277,23 @@ async def read_response(
     token: Optional[Address] = None,
     block: Optional[Block] = None,
 ) -> Optional[Any]:
+    """Read and process the response from ypriceAPI.
 
+    Args:
+        response: The aiohttp ClientResponse object.
+        token: The token address (optional).
+        block: The block number (optional).
+
+    Returns:
+        The parsed response data, or None if the response is not valid.
+
+    Raises:
+        BadResponse: If the response content type is invalid.
+
+    Examples:
+        >>> response = await session.get("/get_price/1/0xTokenAddress?block=12345678")
+        >>> data = await read_response(response)
+    """
     # 200
     if response.status == HTTPStatus.OK:
         try:
@@ -258,6 +345,19 @@ async def read_response(
 
 
 def _get_err_reason(response: ClientResponse) -> str:
+    """Get the error reason from a ClientResponse.
+
+    Args:
+        response: The aiohttp ClientResponse object.
+
+    Returns:
+        A string representing the error reason.
+
+    Examples:
+        >>> reason = _get_err_reason(response)
+        >>> print(reason)
+        [404 Not Found]
+    """
     if response.reason is None:
         return f"[{response.status}]"
     ascii_encodable_reason = response.reason.encode("ascii", "backslashreplace").decode(
@@ -267,6 +367,14 @@ def _get_err_reason(response: ClientResponse) -> str:
 
 
 def _set_resume_at(retry_after: float) -> None:
+    """Set the resume time for ypriceAPI requests.
+
+    Args:
+        retry_after: The time to wait before retrying, in seconds.
+
+    Examples:
+        >>> _set_resume_at(60)
+    """
     global resume_at
     logger.info("Falling back to your node for %s minutes.", int(retry_after / 60))
     resume_from_this_err_at = time() + retry_after

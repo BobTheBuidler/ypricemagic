@@ -23,6 +23,12 @@ logger = getLogger(__name__)
 def enable_debug_logging(logger: str = "y") -> None:
     """
     Enables ypricemagic's debugging mode. Very verbose.
+
+    Args:
+        logger: The name of the logger to enable debugging for. Defaults to "y".
+
+    Example:
+        >>> enable_debug_logging("y")
     """
     logger = getLogger(logger)
     logger.setLevel(DEBUG)
@@ -52,6 +58,26 @@ def get_price_logger(
     extra: str = "",
     start_task: bool = False,
 ) -> PriceLogger:
+    """
+    Create or retrieve a `PriceLogger` instance for a given token address and block.
+
+    This function manages a cache of loggers to ensure they have the proper members for ypricemagic.
+    If a logger is enabled for DEBUG, it will start a debug task if specified.
+
+    Args:
+        token_address: The address of the token.
+        block: The block number.
+        symbol: An optional symbol for the token.
+        extra: An optional extra string to append to the logger name.
+        start_task: Whether to start a debug task. Defaults to False.
+
+    Example:
+        >>> logger = get_price_logger("0xTokenAddress", 123456)
+        >>> logger.debug("This is a debug message.")
+
+    See Also:
+        - :func:`enable_debug_logging`
+    """
     address = str(token_address)
     name = f"y.prices.{Network.label()}.{address}.{block}"
     if extra:
@@ -94,7 +120,7 @@ def _noop(*_a, **_k): ...
 async def _debug_tsk(
     symbol: Optional[str], logger_ref: "weakref.ref[Logger]"
 ) -> NoReturn:
-    """Prints a log every 1 minute until the creating coro returns"""
+    """Prints a log every 1 minute until the creating coro returns."""
     if symbol:
         args = "price still fetching for %s", symbol
     else:
@@ -120,7 +146,16 @@ NETWORK_DESCRIPTOR_FOR_ISSUE_REQ = (
 def _gh_issue_request(
     issue_request_details: Union[str, List[str]], _logger=None
 ) -> None:
+    """
+    Log a request for a GitHub issue or pull request.
 
+    Args:
+        issue_request_details: The details of the issue request.
+        _logger: An optional logger to use. Defaults to the module logger.
+
+    Example:
+        >>> _gh_issue_request("This is an issue request.")
+    """
     _logger = _logger or logger
 
     if type(issue_request_details) == str:

@@ -339,8 +339,35 @@ async def raw_call(
     return_None_on_failure: bool = False,
 ) -> Optional[Any]:
     """
-    call a contract with only address and method. Bypasses brownie Contract object formation to save time
-    only works with 1 input, ie `balanceOf(address)` or `getPoolInfo(uint256)`
+    Call a contract with only address and method. Bypasses brownie Contract object formation to save time.
+
+    This function allows for direct interaction with a contract by preparing and sending
+    the call data without creating a full contract object. It supports various input types
+    and can handle multiple inputs.
+
+    Args:
+        contract_address: The address of the contract.
+        method: The method signature as a string (e.g., "transfer(address,uint256)").
+        block: The block number at which to make the call. Defaults to the latest block.
+        inputs: The input data for the method. Can be None, bytes, int, str, Address,
+                EthAddress, brownie.Contract, or Contract.
+        output: The expected output type. Options are "address", "int", "str".
+        return_None_on_failure: If True, return None if the call fails. Default False.
+
+    Examples:
+        >>> await raw_call("0xTokenAddress", "balanceOf(address)", inputs="0xHolderAddress")
+        1000000000000000000
+
+        >>> await raw_call("0xTokenAddress", "decimals()")
+        18
+
+    Raises:
+        ValueError: If the call fails and `return_None_on_failure` is False.
+        TypeError: If an invalid output type is specified.
+
+    See Also:
+        - :func:`prepare_data` for preparing the call data.
+        - :func:`prepare_input` for preparing individual inputs.
     """
 
     if type(contract_address) != str:
@@ -409,6 +436,17 @@ def prepare_data(
         - The method signature is encoded to its 4-byte function selector.
         - If inputs is None, only the method selector is returned.
         - For other input types, the input is prepared and appended to the method selector.
+
+    Examples:
+        >>> prepare_data("transfer(address,uint256)", inputs=("0xRecipientAddress", 1000))
+        '0xa9059cbb000000000000000000000000RecipientAddress00000000000000000000000000000000000003e8'
+
+        >>> prepare_data("decimals()")
+        '0x313ce567'
+
+    See Also:
+        - :func:`raw_call` for making the contract call.
+        - :func:`prepare_input` for preparing individual inputs.
     """
     method = encode_hex(fourbyte(method))
 
@@ -478,6 +516,17 @@ def prepare_input(
         - Integer input is converted to bytes and then to hexadecimal.
         - String, Address, EthAddress, brownie.Contract, and Contract inputs are
           assumed to be addresses and are padded to 32 bytes.
+
+    Examples:
+        >>> prepare_input("0xRecipientAddress")
+        '000000000000000000000000RecipientAddress'
+
+        >>> prepare_input(1000)
+        '00000000000000000000000000000000000000000000000000000000000003e8'
+
+    See Also:
+        - :func:`prepare_data` for preparing the call data.
+        - :func:`raw_call` for making the contract call.
     """
     input_type = type(input)
 

@@ -64,6 +64,19 @@ class DieselPool(ContractBase):
 
 class Gearbox(a_sync.ASyncGenericBase):
     def __init__(self, *, asynchronous: bool = False):
+        """Initialize a Gearbox instance.
+
+        Raises:
+            UnsupportedNetwork: If the current network is not Ethereum Mainnet.
+
+        Args:
+            asynchronous: Whether to use asynchronous operations. Defaults to False.
+
+        Example:
+            >>> from y.prices.gearbox import Gearbox
+            >>> gearbox = Gearbox(asynchronous=True)
+            >>> # This will raise an UnsupportedNetwork exception if not on Mainnet
+        """
         if chain.id != Network.Mainnet:
             raise UnsupportedNetwork("gearbox not supported on this network")
         self.asynchronous = asynchronous
