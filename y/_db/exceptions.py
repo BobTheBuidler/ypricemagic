@@ -14,6 +14,7 @@ class CacheNotPopulatedError(Exception):
     Example:
         >>> raise CacheNotPopulatedError("Cache is empty, cannot proceed.")
     """
+
     pass
 
 
@@ -30,6 +31,7 @@ class yDBError(Exception):
     Example:
         >>> raise yDBError("An error occurred with the ypricemagic database.")
     """
+
     provider = ENVS.DB_PROVIDER
     location = SQLITE_PATH if provider == "sqlite" else connection_settings
 
@@ -49,6 +51,7 @@ class NewDatabaseSchemaError(yDBError):
     See Also:
         - :class:`yDBError` for the base class of database-related exceptions.
     """
+
     msg = f"\n\nA more performant ydb schema has been pushed to prod, you must delete your ypricemagic database at {yDBError.location}"
 
     def __init__(self) -> None:
@@ -98,4 +101,5 @@ class EEEError(ValueError):
     Example:
         >>> raise EEEError("Invalid operation with the EEE address.")
     """
+
     pass

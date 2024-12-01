@@ -40,7 +40,7 @@ def test_erc20_sync(token):
         AssertionError: If any of the assertions fail.
 
     Note:
-        This test will be skipped for the old sUSD token with the address 
+        This test will be skipped for the old sUSD token with the address
         `0x57Ab1E02fEE23774580C119740129eAC7081e9D3`.
 
     See Also:
@@ -86,7 +86,7 @@ async def test_erc20_async(token):
         AssertionError: If any of the assertions fail.
 
     Note:
-        This test will be skipped for the old sUSD token with the address 
+        This test will be skipped for the old sUSD token with the address
         `0x57Ab1E02fEE23774580C119740129eAC7081e9D3`.
 
     See Also:
@@ -137,7 +137,7 @@ async def test_erc20_at_block(token, block):
         NoProxyImplementation: If the token is a problematic proxy.
 
     Note:
-        This test will be skipped for the old sUSD token with the address 
+        This test will be skipped for the old sUSD token with the address
         `0x57Ab1E02fEE23774580C119740129eAC7081e9D3` after its migration block.
         It will also be skipped for proxy contracts with implementation not set.
 

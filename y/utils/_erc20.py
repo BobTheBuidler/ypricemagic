@@ -18,6 +18,7 @@ SUPPORTED_INPUT_TYPES = str, Address, EthAddress, brownie.Contract, Contract
 # These helpers can be used to fetch values for one or more tokens at once.
 # NOTE You shoulnd't use these, they will likely be deleted soon for a cleaner alternative.
 
+
 @a_sync.a_sync(default="sync")
 async def decimals(
     contract_address_or_addresses: Union[
@@ -41,12 +42,12 @@ async def decimals(
 
     Examples:
         Fetch decimals for a single token:
-        
+
         >>> decimals("0x6B175474E89094C44Da98b954EedeAC495271d0F")
         18
 
         Fetch decimals for multiple tokens:
-        
+
         >>> decimals(["0x6B175474E89094C44Da98b954EedeAC495271d0F", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"])
         [18, 6]
 
@@ -63,6 +64,7 @@ async def decimals(
         return_None_on_failure=return_None_on_failure,
         sync=False,
     )
+
 
 @a_sync.a_sync(default="sync")
 async def totalSupply(
@@ -87,12 +89,12 @@ async def totalSupply(
 
     Examples:
         Fetch total supply for a single token:
-        
+
         >>> totalSupply("0x6B175474E89094C44Da98b954EedeAC495271d0F")
         1000000000000000000000000
 
         Fetch total supply for multiple tokens:
-        
+
         >>> totalSupply(["0x6B175474E89094C44Da98b954EedeAC495271d0F", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"])
         [1000000000000000000000000, 500000000000000000000000]
 
@@ -109,6 +111,7 @@ async def totalSupply(
         return_None_on_failure=return_None_on_failure,
         sync=False,
     )
+
 
 @a_sync.a_sync(default="sync")
 async def totalSupplyReadable(
@@ -133,12 +136,12 @@ async def totalSupplyReadable(
 
     Examples:
         Fetch human-readable total supply for a single token:
-        
+
         >>> totalSupplyReadable("0x6B175474E89094C44Da98b954EedeAC495271d0F")
         1000000.0
 
         Fetch human-readable total supply for multiple tokens:
-        
+
         >>> totalSupplyReadable(["0x6B175474E89094C44Da98b954EedeAC495271d0F", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"])
         [1000000.0, 500000.0]
 
@@ -169,6 +172,7 @@ async def totalSupplyReadable(
         supply / 10**decimal for supply, decimal in zip(token_supplys, token_decimals)
     ]
 
+
 def _choose_appropriate_fn(input: Any, singlecall_fn: Callable, multicall_fn: Callable):
     """
     Choose the appropriate function based on the input type.
@@ -186,12 +190,12 @@ def _choose_appropriate_fn(input: Any, singlecall_fn: Callable, multicall_fn: Ca
 
     Examples:
         Choose function for a single address:
-        
+
         >>> _choose_appropriate_fn("0x6B175474E89094C44Da98b954EedeAC495271d0F", single_fn, multi_fn)
         <function single_fn>
 
         Choose function for multiple addresses:
-        
+
         >>> _choose_appropriate_fn(["0x6B175474E89094C44Da98b954EedeAC495271d0F", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"], single_fn, multi_fn)
         <function multi_fn>
     """
@@ -200,6 +204,7 @@ def _choose_appropriate_fn(input: Any, singlecall_fn: Callable, multicall_fn: Ca
         return singlecall_fn
     elif input_type == "multi":
         return multicall_fn
+
 
 def _input_type(input: Any) -> str:
     """
@@ -215,12 +220,12 @@ def _input_type(input: Any) -> str:
 
     Examples:
         Determine input type for a single address:
-        
+
         >>> _input_type("0x6B175474E89094C44Da98b954EedeAC495271d0F")
         'single'
 
         Determine input type for multiple addresses:
-        
+
         >>> _input_type(["0x6B175474E89094C44Da98b954EedeAC495271d0F", "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"])
         'multi'
     """
@@ -231,6 +236,7 @@ def _input_type(input: Any) -> str:
     else:
         _check_if_supported(input)
         return "single"
+
 
 def _check_if_supported(input: Any) -> bool:
     """
@@ -249,12 +255,12 @@ def _check_if_supported(input: Any) -> bool:
 
     Examples:
         Check if a valid address is supported:
-        
+
         >>> _check_if_supported("0x6B175474E89094C44Da98b954EedeAC495271d0F")
         True
 
         Check if an invalid input type raises an error:
-        
+
         >>> _check_if_supported(123)
         Traceback (most recent call last):
         ...

@@ -14,7 +14,7 @@ def test_contract_singleton():
     This test verifies that different representations of the same contract address
     are treated as equal instances of `ContractBase`. The `ChecksumASyncSingletonMeta`
     metaclass, which is the metaclass for `ContractBase`, ensures that only one instance
-    of `ContractBase` exists for each unique contract address, regardless of how the 
+    of `ContractBase` exists for each unique contract address, regardless of how the
     address is formatted or represented.
 
     The test uses the `WRAPPED_GAS_COIN` constant as the contract address and creates

@@ -16,10 +16,10 @@ utilities is used, allowing for extended functionality if `eth_portfolio` is ins
 def _get_get_block():
     """Retrieve the `get_block` function from the appropriate module.
 
-    This function first ensures that the chain object for the connected chain 
-    has been inserted into the database. It then attempts to import the 
-    `get_block` function from `eth_portfolio._db.utils` if the `eth_portfolio` 
-    module is installed. If the module is not installed, it falls back to 
+    This function first ensures that the chain object for the connected chain
+    has been inserted into the database. It then attempts to import the
+    `get_block` function from `eth_portfolio._db.utils` if the `eth_portfolio`
+    module is installed. If the module is not installed, it falls back to
     importing `get_block` from `y._db.utils`.
 
     Examples:
@@ -43,13 +43,13 @@ def _get_get_block():
 def _get_get_token():
     """Retrieve the `get_token` function from the appropriate module.
 
-    This function first ensures that the chain object for the connected chain 
-    has been inserted into the database. It then attempts to import the 
-    `get_token` function from `eth_portfolio._db.utils` if the `eth_portfolio` 
-    module is installed. If the module is not installed, it falls back to 
+    This function first ensures that the chain object for the connected chain
+    has been inserted into the database. It then attempts to import the
+    `get_token` function from `eth_portfolio._db.utils` if the `eth_portfolio`
+    module is installed. If the module is not installed, it falls back to
     importing `get_token` from `y._db.utils.token`.
 
-    Additionally, it forces imports to run in the main thread to ensure 
+    Additionally, it forces imports to run in the main thread to ensure
     compatibility.
 
     Examples:

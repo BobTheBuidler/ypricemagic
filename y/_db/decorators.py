@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 ydb_read_threads = a_sync.PruningThreadPoolExecutor(12)
 ydb_write_threads = a_sync.PruningThreadPoolExecutor(12)
 
+
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
     """Retries a database operation if it encounters specific exceptions related to database locks.
 
@@ -47,6 +48,7 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
         - :func:`pony.orm.commit`
         - :func:`pony.orm.db_session`
     """
+
     @wraps(callable)
     def retry_locked_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _T:
         sleep = 0.05
@@ -73,6 +75,7 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
                     raise
 
     return retry_locked_wrap
+
 
 a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
     lambda fn: a_sync.a_sync(default="async", executor=ydb_read_threads)(
@@ -158,6 +161,7 @@ See Also:
 
 _result_count_logger = logging.getLogger(f"{__name__}.result_count")
 
+
 def log_result_count(
     name: str, arg_names: Iterable[str] = []
 ) -> Callable[[Callable[_P, _T]], Callable[_P, _T]]:
@@ -181,6 +185,7 @@ def log_result_count(
     See Also:
         - :mod:`logging`
     """
+
     def result_count_deco(fn: Callable[_P, _T]) -> Callable[_P, _T]:
         @wraps(fn)
         def result_count_wrap(*args: _P.args, **kwargs: _P.kwargs) -> _T:

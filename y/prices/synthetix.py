@@ -82,7 +82,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             block: The block number to query at. Defaults to the latest block.
 
         Returns:
-            The contract associated with the given name. If the contract is a proxy, 
+            The contract associated with the given name. If the contract is a proxy,
             it returns the target contract if available, otherwise the proxy itself.
 
         See Also:

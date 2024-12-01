@@ -17,6 +17,7 @@ from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
+
 @a_sync.a_sync(default="sync", cache_type="memory")
 async def is_pie(token: AnyAddressType) -> bool:
     """
@@ -33,6 +34,7 @@ async def is_pie(token: AnyAddressType) -> bool:
         True
     """
     return await has_method(token, "getCap()(uint)", sync=False)
+
 
 @a_sync.a_sync(default="sync")
 async def get_price(
@@ -62,6 +64,7 @@ async def get_price(
     )
     return UsdPrice(tvl / total_supply)
 
+
 async def get_tokens(
     pie_address: Address, block: Optional[Block] = None
 ) -> List[ERC20]:
@@ -87,6 +90,7 @@ async def get_tokens(
         for t in await Call(pie_address, ["getTokens()(address[])"], block_id=block)
     ]
 
+
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
     """
     Get the Balancer pool address for a PieDAO token.
@@ -111,6 +115,7 @@ async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Addr
         if not call_reverted(e):
             raise
         return pie_address
+
 
 async def get_tvl(
     pie_address: Address,
@@ -142,6 +147,7 @@ async def get_tvl(
         get_value, tokens, bpool=pool, block=block, skip_cache=skip_cache
     ).sum(pop=True, sync=False)
 
+
 async def get_balance(
     bpool: Address, token: ERC20, block: Optional[Block] = None
 ) -> Decimal:
@@ -162,6 +168,7 @@ async def get_balance(
         token.__scale__,
     )
     return Decimal(balance) / scale
+
 
 async def get_value(
     bpool: Address,

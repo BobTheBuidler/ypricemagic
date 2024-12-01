@@ -76,6 +76,7 @@ class SolidlyPool(UniswapV2Pool):
     See Also:
         - :class:`~y.prices.dex.uniswap.v2.UniswapV2Pool`
     """
+
     pass
 
 

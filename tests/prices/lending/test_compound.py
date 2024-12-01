@@ -33,6 +33,7 @@ def test_compound_pricing_sync(token):
         assert price, "Failed to fetch price."
         print(f"                price = {price}")
 
+
 @pytest.mark.parametrize("token", CTOKENS)
 async def test_compound_pricing_async(token):
     """
