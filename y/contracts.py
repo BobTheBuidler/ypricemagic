@@ -1,6 +1,8 @@
 import asyncio
 import logging
+import os
 import threading
+import warnings
 from collections import defaultdict
 from functools import lru_cache
 from typing import (
@@ -22,8 +24,8 @@ import aiohttp
 import dank_mids
 import eth_retry
 from brownie import ZERO_ADDRESS, chain, web3
-from brownie._config import CONFIG
-from brownie.exceptions import CompilerError, ContractNotFound
+from brownie._config import CONFIG, REQUEST_HEADERS
+from brownie.exceptions import BrownieEnvironmentWarning, CompilerError, ContractNotFound
 from brownie.network.contract import (
     ContractEvents,
     _add_deployment,
@@ -204,7 +206,7 @@ creation_block_semaphore = a_sync.ThreadsafeSemaphore(10)
 @eth_retry.auto_retry
 async def contract_creation_block_async(
     address: AnyAddressType, when_no_history_return_0: bool = False
-) -> int:
+) -> int:  # sourcery skip: merge-duplicate-blocks, remove-redundant-if
     """
     Determine the block when a contract was created using binary search.
     NOTE Requires access to historical state. Doesn't account for CREATE2 or SELFDESTRUCT.
@@ -1153,7 +1155,7 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
 
 
 @lru_cache(maxsize=None)
-def _get_explorer_api_key(url) -> Tuple[str, str]:
+def _get_explorer_api_key(url, silent) -> Tuple[str, str]:
     explorer, env_key = next(
         ((k, v) for k, v in _explorer_tokens.items() if k in url), (None, None)
     )
@@ -1173,18 +1175,18 @@ def _get_explorer_api_key(url) -> Tuple[str, str]:
 
 @eth_retry.auto_retry
 async def _fetch_explorer_data(url, silent, params):
-    api_key = _get_explorer_api_key(url)
+    api_key = _get_explorer_api_key(url, silent)
     if api_key is not None:
         params["apiKey"] = api_key
 
     async with aiohttp.ClientSession() as session:
         if not silent:
             print(
-                f"Fetching source of {color('bright blue')}{address}{color} "
+                f"Fetching source of {color('bright blue')}{params["address"]}{color} "
                 f"from {color('bright blue')}{urlparse(url).netloc}{color}..."
             )
 
-        async with session.get(url, params=params, headers=request_headers) as response:
+        async with session.get(url, params=params, headers=REQUEST_HEADERS) as response:
             # Check the status code of the response
             if response.status != 200:
                 raise ConnectionError(
