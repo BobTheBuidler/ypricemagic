@@ -263,11 +263,12 @@
                 <span class="c1"># start the task now, we can await it later</span>
                 <span class="n">tasks</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span>
 
-        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-                    <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> contains </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">))</span>
-                <span class="k">yield</span> <span class="n">pool</span></div>
+        <span class="k">if</span> <span class="n">tasks</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">tokens</span> <span class="ow">in</span> <span class="n">tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> contains </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">))</span>
+                    <span class="k">yield</span> <span class="n">pool</span></div>
 
 
 <div class="viewcode-block" id="BalancerV2Vault.get_pool_tokens">
