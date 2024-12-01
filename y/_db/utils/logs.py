@@ -39,6 +39,28 @@ LOG_COLS = [
 
 
 async def _prepare_log(log: Log) -> tuple:
+    """
+    Prepare a log for insertion into the database.
+
+    This function gathers database IDs for the transaction hash, address, and topics
+    of a given log. It then encodes the log as JSON using the `enc_hook` for special types.
+
+    Args:
+        log: The log entry to prepare.
+
+    Returns:
+        A tuple containing the prepared log parameters.
+
+    Examples:
+        >>> log = Log(transactionHash=HexBytes('0x1234'), address='0x...', topics=['0x...'], blockNumber=123, logIndex=0)
+        >>> prepared_log = await _prepare_log(log)
+        >>> print(prepared_log)
+
+    See Also:
+        - :func:`get_hash_dbid`
+        - :func:`get_topic_dbid`
+        - :func:`enc_hook`
+    """
     transaction_dbid, address_dbid, topic_dbids = await asyncio.gather(
         get_hash_dbid(log.transactionHash.hex()),
         get_hash_dbid(log.address),

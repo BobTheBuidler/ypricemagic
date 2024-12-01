@@ -13,11 +13,14 @@ class Wrapper(ERC20):
     """
     An abstract base class representing an ERC20 token that holds balances of (an)other ERC20 token(s).
 
-    This class extends the ERC20 class to represent wrapper tokens, which are tokens that derive their value
+    This class extends the :class:`~y.classes.common.ERC20` class to represent wrapper tokens, which are tokens that derive their value
     from holding other tokens. The specific implementation details are left to the subclasses.
 
     Note:
         This class is currently a placeholder and does not implement any additional methods.
+
+    See Also:
+        - :class:`~y.classes.common.ERC20`
     """
 
     # TODO: implement
@@ -29,6 +32,19 @@ class LiquidityPool(Wrapper):
 
     This class extends the :class:`~Wrapper` class to represent liquidity pools, which are special types of wrapper
     tokens that allow for token swaps. It provides methods for getting the total value locked (TVL) and pool price.
+
+    Examples:
+        >>> class MyLiquidityPool(LiquidityPool):
+        ...     async def get_tvl(self, block=None, skip_cache=False):
+        ...         return UsdValue(1000000)
+        ...
+        >>> pool = MyLiquidityPool("0xAddress")
+        >>> price = await pool.get_pool_price()
+        >>> print(price)
+        1000000.0
+
+    See Also:
+        - :class:`~Wrapper`
     """
 
     # TODO: implement this elsewhere outside of just balancer
@@ -48,7 +64,20 @@ class LiquidityPool(Wrapper):
             skip_cache: If True, bypasses ypricemagic's local caching mechanisms and forces a fresh calculation.
 
         Returns:
-            The price of a single liquidity pool token as a UsdPrice object.
+            The price of a single liquidity pool token as a :class:`~y.datatypes.UsdPrice` object.
+
+        Examples:
+            >>> class MyLiquidityPool(LiquidityPool):
+            ...     async def get_tvl(self, block=None, skip_cache=False):
+            ...         return UsdValue(1000000)
+            ...
+            >>> pool = MyLiquidityPool("0xAddress")
+            >>> price = await pool.get_pool_price()
+            >>> print(price)
+            1000000.0
+
+        See Also:
+            - :meth:`get_tvl`
         """
         tvl, total_supply = await asyncio.gather(
             self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
@@ -71,8 +100,18 @@ class LiquidityPool(Wrapper):
             skip_cache: If True, bypasses ypricemagic's local caching mechanisms and forces a fresh calculation.
 
         Returns:
-            The Total Value Locked (TVL) in the pool as a UsdValue object.
+            The Total Value Locked (TVL) in the pool as a :class:`~y.datatypes.UsdValue` object.
 
         Note:
             The specific implementation of this method will depend on the type of liquidity pool.
+
+        Examples:
+            >>> class MyLiquidityPool(LiquidityPool):
+            ...     async def get_tvl(self, block=None, skip_cache=False):
+            ...         return UsdValue(1000000)
+            ...
+            >>> pool = MyLiquidityPool("0xAddress")
+            >>> tvl = await pool.get_tvl()
+            >>> print(tvl)
+            1000000.0
         """

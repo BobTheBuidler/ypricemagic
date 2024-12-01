@@ -39,6 +39,13 @@ async def is_mooniswap_pool(token: AnyAddressType) -> bool:
 
     Returns:
         True if the token is a Mooniswap pool, False otherwise.
+
+    Examples:
+        >>> is_mooniswap_pool("0x1234567890abcdef1234567890abcdef12345678")
+        True
+
+        >>> is_mooniswap_pool("0xabcdefabcdefabcdefabcdefabcdefabcdef")
+        False
     """
     address = await convert.to_address_async(token)
     return False if router is None else await router.isPool.coroutine(address)
@@ -59,7 +66,17 @@ async def get_pool_price(
         skip_cache (optional): Whether to skip the cache. Defaults to :obj:`ENVS.SKIP_CACHE`.
 
     Returns:
-        The price of the pool token in USD.
+        The price of the pool token in USD as a :class:`~y.datatypes.UsdPrice`.
+
+    Examples:
+        >>> get_pool_price("0x1234567890abcdef1234567890abcdef12345678")
+        UsdPrice('1.2345')
+
+        >>> get_pool_price("0xabcdefabcdefabcdefabcdefabcdefabcdef", block=12345678)
+        UsdPrice('0.9876')
+
+    See Also:
+        - :func:`y.prices.magic.get_price`
     """
     address = await convert.to_address_async(token)
     token0, token1 = await gather_methods(address, ["token0", "token1"])

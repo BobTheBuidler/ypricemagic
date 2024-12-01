@@ -31,6 +31,9 @@ async def is_ib_token(token: AnyAddressType) -> bool:
         >>> is_ib = is_ib_token("0x41c84c0e2EE0b740Cf0d31F63f3B6F627DC6b393")
         >>> print(is_ib)
         True
+
+    See Also:
+        - :func:`y.contracts.has_methods`
     """
     return await has_methods(
         token,
@@ -57,7 +60,7 @@ async def get_price(
     Args:
         token: The address of the Iron Bank token.
         block (optional): The block number to query. Defaults to the latest block.
-        skip_cache (optional): Whether to skip the cache when fetching prices. Defaults to :obbj:`ENVS.SKIP_CACHE`.
+        skip_cache (optional): Whether to skip the cache when fetching prices. Defaults to :obj:`ENVS.SKIP_CACHE`.
 
     Returns:
         The price of the Iron Bank token in USD.
@@ -68,8 +71,13 @@ async def get_price(
         1.234567  # The price of the Iron Bank token in USD
 
     Note:
-        This function calculates the price by determining the share price of the Iron Bank token
-        relative to its underlying asset, and then multiplying by the price of the underlying asset.
+        This function calculates the price by retrieving the total balance and total supply of the Iron Bank token,
+        scaling them appropriately, and then calculating the share price. The share price is then multiplied by the
+        price of the underlying asset obtained from :func:`y.prices.magic.get_price`.
+
+    See Also:
+        - :func:`y.convert.to_address_async`
+        - :func:`y.prices.magic.get_price`
     """
     address = await convert.to_address_async(token)
     token, total_bal, total_supply = await gather_methods(

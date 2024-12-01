@@ -18,6 +18,18 @@ logger = logging.getLogger(__name__)
 
 
 def is_creth(token: AnyAddressType) -> bool:
+    """Check if a token is crETH.
+
+    Args:
+        token: The token address to check.
+
+    Returns:
+        True if the token is crETH on the Ethereum Mainnet, False otherwise.
+
+    Example:
+        >>> is_creth("0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd")
+        True
+    """
     address = convert.to_address(token)
     return (
         chain.id == Network.Mainnet
@@ -31,6 +43,26 @@ async def get_price_creth(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
+    """Get the price of crETH in USD.
+
+    This function retrieves the accumulated balance and total supply of crETH,
+    divides the total balance by the total supply to calculate the value per token,
+    and then multiplies this value by the current WETH price to determine the price
+    of crETH in USD.
+
+    Args:
+        token: The crETH token address.
+        block: The block number to query. Defaults to the latest block.
+        skip_cache: If True, skip using the cache while fetching price data.
+
+    Examples:
+        >>> await get_price_creth("0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd")
+        1234.56
+
+    See Also:
+        - :func:`y.prices.magic.get_price`
+        - :class:`y.classes.common.ERC20`
+    """
     address = await convert.to_address_async(token)
     total_balance, total_supply, weth_price = await asyncio.gather(
         raw_call(address, "accumulated()", output="int", block=block, sync=False),

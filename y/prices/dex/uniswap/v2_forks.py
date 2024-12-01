@@ -1,13 +1,13 @@
+# This module contains data structures and mappings for interacting with Uniswap V2 forks across various networks.
+
 """
-This module contains data structures and utility functions for interacting with Uniswap V2 forks across various networks.
-
 Key components:
-- UNISWAPS: A dictionary mapping network names to dictionaries of Uniswap V2 fork protocols, including their factory and router addresses.
-- FACTORY_TO_ROUTER, ROUTER_TO_FACTORY: Mappings between factory and router addresses.
-- FACTORY_TO_PROTOCOL, ROUTER_TO_PROTOCOL: Mappings from addresses to protocol names.
-- SPECIAL_PATHS: A dictionary of special token paths for specific protocols and networks.
+- `UNISWAPS`: A dictionary mapping network names to dictionaries of Uniswap V2 fork protocols, including their factory and router addresses.
+- `FACTORY_TO_ROUTER`, `ROUTER_TO_FACTORY`: Mappings between factory and router addresses.
+- `FACTORY_TO_PROTOCOL`, `ROUTER_TO_PROTOCOL`: Mappings from addresses to protocol names.
+- `SPECIAL_PATHS`: A dictionary of special token paths for specific protocols and networks.
 
-The module also includes utility functions for working with these data structures.
+The module also includes a function for retrieving special token paths for a given protocol associated with a router address.
 """
 
 import logging
@@ -433,16 +433,31 @@ SPECIAL_PATHS = {
 @lru_cache
 def special_paths(router_address: str) -> Dict[str, Dict[Address, List[Address]]]:
     """
-    Retrieves special token paths for a given router address.
+    Retrieves special token paths for a given protocol associated with a router address.
 
     Args:
         router_address: The address of the router.
 
     Returns:
-        A dictionary of special paths (token in -> swap path) for the given router.
+        A dictionary of special paths (token in -> swap path) for the protocol associated with the given router.
 
     Note:
         This function is cached using lru_cache to improve performance for repeated calls.
+
+    Examples:
+        >>> special_paths("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D")
+        {
+            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": [
+                "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684",
+                "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
+                "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+                "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
+            ],
+            ...
+        }
+
+    See Also:
+        - :data:`SPECIAL_PATHS`
     """
     protocol = ROUTER_TO_PROTOCOL[router_address]
     return SPECIAL_PATHS.get(protocol, {})

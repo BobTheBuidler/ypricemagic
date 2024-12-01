@@ -1,10 +1,12 @@
 """
-This module contains utils for sense checking prices returned from the library.
+This module contains utilities for sense checking prices returned from the library.
 
 A user will not need to use anything here.
 
-Developers can skip the sense check for additional tokens by adding them to the
-:obj:`ACCEPTABLE_HIGH_PRICES` mapping.
+Developers can skip the sense check for additional tokens by manually adding them to the
+:obj:`ACCEPTABLE_HIGH_PRICES` mapping in the source code. This involves directly editing
+the mapping to include the new token addresses under the appropriate network. Note that
+this requires modifying the source code, which may not be ideal for all users.
 """
 
 import logging
@@ -211,6 +213,9 @@ async def sense_check(token_address: str, block: Optional[int], price: float):
         This function checks if the price is within acceptable ranges based on the token type and network.
         It will not log for various special cases such as ETH-like tokens, BTC-like tokens, LP tokens,
         and vault tokens where the underlying is exempt from the sense check.
+
+    See Also:
+        :func:`_exit_sense_check` for details on tokens that are exempt from the sense check.
     """
 
     # if price is in "normal" range, exit sense check
@@ -246,6 +251,19 @@ async def _exit_sense_check(token_address: str) -> bool:
     For some token types, its normal to have a crazy high nominal price.
     We can skip the sense check for those.
     We can also skip wrapped versions of tokens in `ACCEPTABLE_HIGH_PRICES`.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Returns:
+        True if the token is exempt from the sense check, False otherwise.
+
+    Example:
+        >>> await _exit_sense_check("0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48")
+        False
+
+    See Also:
+        :data:`ACCEPTABLE_HIGH_PRICES` for the list of tokens that are exempt from the sense check.
     """
 
     bucket = await check_bucket(token_address, sync=False)

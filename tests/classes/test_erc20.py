@@ -27,6 +27,26 @@ TOKENS_BY_BLOCK = [
 
 @pytest.mark.parametrize("token", TOKENS)
 def test_erc20_sync(token):
+    """
+    Test the synchronous functionality of the :class:`~y.classes.common.ERC20` class.
+
+    This test checks various properties and methods of the :class:`~y.classes.common.ERC20` class for a given token,
+    including interactions with the :class:`~y.contracts.Contract` class to fetch the contract for the token.
+
+    Args:
+        token: The address of the token to test.
+
+    Raises:
+        AssertionError: If any of the assertions fail.
+
+    Note:
+        This test will be skipped for the old sUSD token with the address 
+        `0x57Ab1E02fEE23774580C119740129eAC7081e9D3`.
+
+    See Also:
+        - :class:`~y.classes.common.ERC20`
+        - :class:`~y.contracts.Contract`
+    """
     token = ERC20(token)
 
     if token.address == OLD_SUSD:
@@ -53,6 +73,27 @@ def test_erc20_sync(token):
 @pytest.mark.parametrize("token", TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_erc20_async(token):
+    """
+    Test the asynchronous functionality of the :class:`~y.classes.common.ERC20` class.
+
+    This test checks various properties and methods of the :class:`~y.classes.common.ERC20` class for a given token asynchronously,
+    including interactions with the :class:`~y.contracts.Contract` class to fetch the contract for the token.
+
+    Args:
+        token: The address of the token to test.
+
+    Raises:
+        AssertionError: If any of the assertions fail.
+
+    Note:
+        This test will be skipped for the old sUSD token with the address 
+        `0x57Ab1E02fEE23774580C119740129eAC7081e9D3`.
+
+    See Also:
+        - :class:`~y.classes.common.ERC20`
+        - :class:`~y.contracts.Contract`
+        - :mod:`dank_mids` for asynchronous operations
+    """
     token = ERC20(token, asynchronous=True)
 
     if token.address == OLD_SUSD:
@@ -81,6 +122,30 @@ async def test_erc20_async(token):
 @pytest.mark.parametrize("token,block", TOKENS_BY_BLOCK)
 @pytest.mark.asyncio_cooperative
 async def test_erc20_at_block(token, block):
+    """
+    Test the :class:`~y.classes.common.ERC20` class at specific blocks.
+
+    This test checks the total supply and price of the :class:`~y.classes.common.ERC20` token at specific blocks asynchronously,
+    including interactions with the :class:`~y.contracts.Contract` class to fetch the contract for the token.
+
+    Args:
+        token: The address of the token to test.
+        block: The block number to test at.
+
+    Raises:
+        AssertionError: If any of the assertions fail.
+        NoProxyImplementation: If the token is a problematic proxy.
+
+    Note:
+        This test will be skipped for the old sUSD token with the address 
+        `0x57Ab1E02fEE23774580C119740129eAC7081e9D3` after its migration block.
+        It will also be skipped for proxy contracts with implementation not set.
+
+    See Also:
+        - :class:`~y.classes.common.ERC20`
+        - :class:`~y.contracts.Contract`
+        - :mod:`dank_mids` for asynchronous operations
+    """
     token = ERC20(token, asynchronous=True)
 
     if token.address == OLD_SUSD and block >= 13222927:

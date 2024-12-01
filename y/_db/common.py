@@ -54,14 +54,23 @@ def enc_hook(obj: Any) -> bytes:
     Args:
         obj: The object to encode.
 
-    Returns:
-        The encoded object as bytes.
-
     Raises:
         NotImplementedError: If the object type is not supported for encoding.
 
     Note:
-        Currently supports encoding of AttributeDict and HexBytes objects.
+        Currently supports encoding of :class:`int`, :class:`Address`, :class:`HexBytes32`, :class:`HexBytes`, and :class:`AttributeDict` objects.
+
+    Examples:
+        >>> from web3.datastructures import AttributeDict
+        >>> enc_hook(AttributeDict({'key': 'value'}))
+        {'key': 'value'}
+
+        >>> from hexbytes import HexBytes
+        >>> enc_hook(HexBytes('0x1234'))
+        '1234'
+
+    See Also:
+        - :func:`dec_hook`
     """
     typ = type(obj)
     # sometimes we get a recursion error from the instance checks, this helps us debug that case.
@@ -89,14 +98,19 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
         typ: The type to decode into.
         obj: The object to decode.
 
-    Returns:
-        The decoded object of type T.
-
     Raises:
         ValueError: If the type is not supported for decoding.
 
     Note:
-        Currently only supports decoding of HexBytes objects.
+        Currently only supports decoding of :class:`HexBytes` objects.
+
+    Examples:
+        >>> from hexbytes import HexBytes
+        >>> dec_hook(HexBytes, b'1234')
+        HexBytes('0x1234')
+
+    See Also:
+        - :func:`enc_hook`
     """
     if typ is HexBytes:
         return typ(obj)
@@ -226,7 +240,8 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         self._objects: List[T] = []
         self._pruned = 0
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def cache(self) -> C: ...
 
     @property
@@ -235,7 +250,8 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
             self._executor = default_filter_threads
         return self._executor
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def insert_to_db(self) -> Callable[[T], None]: ...
 
     # abc.abstractproperty

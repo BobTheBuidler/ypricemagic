@@ -6,9 +6,15 @@ from brownie import chain
 
 class Network(IntEnum):
     """
-    A lightweight enum that enables lookup of chainids for popular blockchain networks.
+    A lightweight enum that enables lookup of chain IDs for popular blockchain networks.
 
     Each network is associated with its unique integer Chain ID.
+
+    Examples:
+        >>> Network.Mainnet
+        <Network.Mainnet: 1>
+        >>> Network.Mainnet.value
+        1
     """
 
     # NOTE: If a particular network has changed names, do not remove
@@ -65,6 +71,23 @@ class Network(IntEnum):
 
     @staticmethod
     def label(chain_id: Optional[int] = None) -> str:
+        """
+        Get the label (abbreviation) for a given chain ID.
+
+        If no chain ID is provided, it defaults to the current active chain.
+
+        Args:
+            chain_id: The chain ID of the network.
+
+        Examples:
+            >>> Network.label(Network.Mainnet)
+            'ETH'
+            >>> Network.label()
+            'ETH'  # Assuming the current active chain is Mainnet
+
+        See Also:
+            :meth:`Network.name` for getting the full name of the network.
+        """
         if not chain_id:
             chain_id = chain.id
 
@@ -101,6 +124,23 @@ class Network(IntEnum):
 
     @staticmethod
     def name(chain_id: Optional[int] = None) -> str:
+        """
+        Get the full name of a network for a given chain ID.
+
+        If no chain ID is provided, it defaults to the current active chain.
+
+        Args:
+            chain_id: The chain ID of the network.
+
+        Examples:
+            >>> Network.name(Network.Mainnet)
+            'Mainnet'
+            >>> Network.name()
+            'Mainnet'  # Assuming the current active chain is Mainnet
+
+        See Also:
+            :meth:`Network.label` for getting the abbreviation of the network.
+        """
         if not chain_id:
             chain_id = chain.id
 
@@ -137,7 +177,20 @@ class Network(IntEnum):
 
     @staticmethod
     def printable(chain_id: Optional[int] = None) -> str:
-        # will always work to print a readable string that identifies the network, even if network not supported
+        """
+        Get a printable string that identifies the network.
+
+        If the network is not supported, it returns a generic string with the chain ID.
+
+        Args:
+            chain_id: The chain ID of the network.
+
+        Examples:
+            >>> Network.printable(Network.Mainnet)
+            'Mainnet'
+            >>> Network.printable(9999)
+            'chain 9999'
+        """
         if chain_id is None:
             chain_id = chain.id
         return Network.name(chain_id) or f"chain {chain_id}"

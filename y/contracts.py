@@ -69,7 +69,7 @@ FORCE_IMPLEMENTATION = {
 
 def Contract_erc20(address: AnyAddressType) -> "Contract":
     """
-    Create a Contract instance for an ERC20 token.
+    Create a :class:`~Contract` instance for an ERC20 token.
 
     This function uses the standard ERC20 ABI instead of fetching the contract ABI from the block explorer.
 
@@ -77,7 +77,12 @@ def Contract_erc20(address: AnyAddressType) -> "Contract":
         address: The address of the ERC20 token.
 
     Returns:
-        A Contract instance for the ERC20 token.
+        A :class:`~Contract` instance for the ERC20 token.
+
+    Example:
+        >>> contract = Contract_erc20("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> contract.name()
+        'Dai Stablecoin'
     """
     address = convert.to_address(address)
     return Contract.from_abi("ERC20", address, ERC20ABI)
@@ -85,13 +90,18 @@ def Contract_erc20(address: AnyAddressType) -> "Contract":
 
 def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
     """
-    Create a Contract instance for an address, falling back to an ERC20 token if the contract is not verified.
+    Create a :class:`~Contract` instance for an address, falling back to an ERC20 token if the contract is not verified.
 
     Args:
         address: The address of the contract or ERC20 token.
 
     Returns:
-        A Contract instance for the contract address.
+        A :class:`~Contract` instance for the contract address.
+
+    Example:
+        >>> contract = Contract_with_erc20_fallback("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> contract.symbol()
+        'DAI'
     """
     if isinstance(address, Contract):
         return address
@@ -116,12 +126,14 @@ def contract_creation_block(
         address: The address of the contract.
         when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.
 
-    Returns:
-        The block number at which the contract was created.
-
     Raises:
         exceptions.NodeNotSynced: If the node is not fully synced.
         ValueError: If the contract creation block cannot be determined.
+
+    Example:
+        >>> block = contract_creation_block("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(block)
+        1234567
     """
     address = convert.to_address(address)
     logger.debug("contract creation block %s", address)
@@ -199,12 +211,14 @@ async def contract_creation_block_async(
         address: The address of the contract.
         when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.
 
-    Returns:
-        The block number at which the contract was created.
-
     Raises:
         exceptions.NodeNotSynced: If the node is not fully synced.
         ValueError: If the contract creation block cannot be determined.
+
+    Example:
+        >>> block = await contract_creation_block_async("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(block)
+        1234567
     """
     from y._db.utils import contract as db
 
@@ -281,37 +295,44 @@ class CompilerError(Exception):
 
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
-    Though it may look complicated, a ypricemagic Contract object is simply a brownie Contract object with a few modifications:
+    A :class:`~dank_mids.Contract` object with several modifications for enhanced functionality.
 
-        1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
-            NOTE: You must set `autofetch_sources=false` in your project's brownie-config.yaml for this to work correctly.
+    This class provides a modified contract object with additional features and optimizations:
 
-        2. To each contract method, a `coroutine` property has been defined which allows you to make asynchronous calls which are intelligently batched in the background by :mod:`dank_mids` to reduce overhead.
-            Example:
-                >>> contract = Contract("0xAddress")
-                >>> contract.methodName(*args, block_identifier=12345678)
-                1000000000000000000
-                >>> coro = contract.methodName.coroutine(*args, block_identifier=12345678)
-                >>> coro
-                <coroutine coroutine object at 0x12345678>
-                >>> contract.methodName(*args, block_identifier=12345678) == await coro
-                True
+    1. Contracts will not be compiled. This allows you to more quickly fetch contracts from the block explorer and prevents you from having to download and install compilers.
+        NOTE: You must set `autofetch_sources=false` in your project's brownie-config.yaml for this to work correctly.
 
-        3. New methods:
-            - :meth:`~has_method`
-            - :meth:`~has_methods`
-            - :meth:`~build_name`
-            - :meth:`~get_code`
+    2. To each contract method, a `coroutine` property has been defined which allows you to make asynchronous calls. This is enabled by inheriting from :class:`~dank_mids.Contract`, which provides the `coroutine` method for each :class:`~dank_mids.ContractCall` object. These asynchronous calls are intelligently batched in the background by :mod:`dank_mids` to reduce overhead.
 
-        4. A few attributes were removed in order to minimize the size of a Contract object in memory:
-            - :attr:`~ast`
-            - :attr:`~bytecode`
-            - :attr:`~coverageMap`
-            - :attr:`~deployedBytecode`
-            - :attr:`~deployedSourceMap`
-            - :attr:`~natspec`
-            - :attr:`~opcodes`
-            - :attr:`~pcMap`
+    3. New methods:
+        - :meth:`~has_method`
+        - :meth:`~has_methods`
+        - :meth:`~build_name`
+        - :meth:`~get_code`
+
+    4. A few attributes were removed in order to minimize the size of a Contract object in memory:
+        - :attr:`~ast`
+        - :attr:`~bytecode`
+        - :attr:`~coverageMap`
+        - :attr:`~deployedBytecode`
+        - :attr:`~deployedSourceMap`
+        - :attr:`~natspec`
+        - :attr:`~opcodes`
+        - :attr:`~pcMap`
+
+    Examples:
+        >>> contract = Contract("0xAddress")
+        >>> contract.methodName(*args, block_identifier=12345678)
+        1000000000000000000
+        >>> coro = contract.methodName.coroutine(*args, block_identifier=12345678)
+        >>> coro
+        <coroutine coroutine object at 0x12345678>
+        >>> contract.methodName(*args, block_identifier=12345678) == await coro
+        True
+
+    See Also:
+        - :class:`~dank_mids.Contract`
+        - :mod:`dank_mids`
     """
 
     # the default state for Contract objects
@@ -336,10 +357,21 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> None:
         """
+        Initialize a :class:`~Contract` instance.
+
         Note:
             autofetch-sources: false
-        """
 
+        Args:
+            address: The address of the contract.
+            owner (optional): The owner of the contract. Default None.
+            require_success (optional): If True, require successful contract verification. Default True.
+            cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in :mod:`~y.ENVIRONMENT_VARIABLES`.
+
+        Raises:
+            ContractNotFound: If the address is not a contract.
+            exceptions.ContractNotVerified: If the contract is not verified and require_success is True.
+        """
         address = str(address)
         if address.lower() in [
             "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
@@ -410,7 +442,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
         """
-        Create a Contract instance from an ABI.
+        Create a :class:`~Contract` instance from an ABI.
 
         Args:
             name: The name of the contract.
@@ -420,8 +452,11 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             persist (optional): If True, persist the contract in brownie's local contract database. Default True.
             cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in :mod:`~y.ENVIRONMENT_VARIABLES`.
 
-        Returns:
-            A Contract instance for the given ABI.
+        Example:
+            >>> abi = [{"constant":True,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":False,"stateMutability":"view","type":"function"}]
+            >>> contract = Contract.from_abi("MyContract", "0x6B175474E89094C44Da98b954EedeAC495271d0F", abi)
+            >>> contract.name()
+            'Dai Stablecoin'
         """
         self = cls.__new__(cls)
         build = {
@@ -444,7 +479,21 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         require_success: bool = True,
         cache_ttl: Optional[int] = ENVS.CONTRACT_CACHE_TTL,  # units: seconds
     ) -> Self:
+        """
+        Create a :class:`~Contract` instance asynchronously.
 
+        Args:
+            address: The address of the contract.
+            owner (optional): The owner of the contract. Default None.
+            persist (optional): If True, persist the contract in brownie's local contract database. Default True.
+            require_success (optional): If True, require successful contract verification. Default True.
+            cache_ttl (optional): The time-to-live for the contract cache in seconds. Default set in :mod:`~y.ENVIRONMENT_VARIABLES`.
+
+        Example:
+            >>> contract = await Contract.coroutine("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+            >>> contract.symbol()
+            'DAI'
+        """
         address = str(address)
         if contract := cls.get_instance(address):
             return contract
@@ -547,15 +596,20 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
         """
-        Initialize a Contract instance from an ABI.
+        Initialize a :class:`~Contract` instance from an ABI.
 
         Args:
             build: The build information for the contract.
             owner (optional): The owner of the contract. Default None.
             persist (optional): If True, persist the contract in the local database. Default True.
 
-        Returns:
-            The initialized Contract instance.
+        Example:
+            >>> abi = [{"constant":True,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":False,"stateMutability":"view","type":"function"}]
+            >>> build = {"abi": abi, "address": "0x6B175474E89094C44Da98b954EedeAC495271d0F", "contractName": "MyContract", "type": "contract"}
+            >>> contract = Contract.__new__(Contract)
+            >>> contract.__init_from_abi__(build)
+            >>> contract.name()
+            'Dai Stablecoin'
         """
         _ContractBase.__init__(self, None, build, {})  # type: ignore
         _DeployedContractBase.__init__(self, build["address"], owner, None)
@@ -579,8 +633,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             method: The name of the method to check for.
             return_response (optional): If True, return the response of the method call instead of a boolean. Default False.
 
-        Returns:
-            A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.
+        Example:
+            >>> contract = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+            >>> contract.has_method("name()")
+            True
         """
         return has_method(
             self.address, method, return_response=return_response, sync=False
@@ -596,8 +652,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             methods: A list of method names to check for.
             _func (optional): The function to use for combining the results (either :func:`all` or :func:`any`). Default :func:`all`.
 
-        Returns:
-            A boolean indicating whether the contract has all the specified methods.
+        Example:
+            >>> contract = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+            >>> await contract.has_methods(["name()", "symbol()"])
+            True
         """
         return await has_methods(self.address, methods, _func, sync=False)
 
@@ -608,8 +666,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         Args:
             return_None_on_failure (optional): If True, return None if the build name cannot be determined instead of raising an Exception. Default False.
 
-        Returns:
-            The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.
+        Example:
+            >>> contract = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+            >>> await contract.build_name()
+            'Dai Stablecoin'
         """
         return await build_name(
             self.address, return_None_on_failure=return_None_on_failure, sync=False
@@ -622,8 +682,10 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         Args:
             block (optional): The block number at which to get the bytecode. Defaults to latest block.
 
-        Returns:
-            The bytecode of the contract at the specified block.
+        Example:
+            >>> contract = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+            >>> await contract.get_code()
+            HexBytes('0x...')
         """
         return await get_code(self.address, block=block)
 
@@ -670,8 +732,9 @@ def is_contract(address: AnyAddressType) -> bool:
     Args:
         address: The address to check.
 
-    Returns:
-        True if the address is a contract, False otherwise.
+    Example:
+        >>> is_contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        True
     """
     address = convert.to_address(address)
     return web3.eth.get_code(address) not in ["0x", b""]
@@ -690,8 +753,9 @@ async def has_method(
         method: The name of the method to check for.
         return_response: If True, return the response of the method call instead of a boolean. Default False.
 
-    Returns:
-        A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.
+    Example:
+        >>> await has_method("0x6B175474E89094C44Da98b954EedeAC495271d0F", "name()")
+        True
     """
     address = await convert.to_address_async(address)
     try:
@@ -723,8 +787,9 @@ async def has_methods(
         methods: A tuple of method names to check for.
         _func: The function to use for combining the results (either :func:`all` or :func:`any`).
 
-    Returns:
-        A boolean indicating whether the contract has all the specified methods.
+    Example:
+        >>> await has_methods("0x6B175474E89094C44Da98b954EedeAC495271d0F", ("name()", "symbol()"))
+        True
     """
     assert _func in [all, any], "`_func` must be either `any` or `all`"
 
@@ -796,8 +861,9 @@ async def build_name(
         address: The address of the contract.
         return_None_on_failure (optional): If True, return None if the build name cannot be determined instead of raising an Exception. Default False.
 
-    Returns:
-        The build name of the contract, or None if the build name cannot be determined and return_None_on_failure is True.
+    Example:
+        >>> await build_name("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        'Dai Stablecoin'
     """
     try:
         contract = await Contract.coroutine(address)
@@ -818,8 +884,9 @@ async def proxy_implementation(
         address: The address of the proxy contract.
         block: The block number at which to get the implementation address. Defaults to latest block.
 
-    Returns:
-        The address of the implementation contract.
+    Example:
+        >>> await proxy_implementation("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        '0x1234567890abcdef1234567890abcdef12345678'
     """
     return await probe(
         address, ["implementation()(address)", "target()(address)"], block
@@ -839,8 +906,10 @@ def _squeeze(contract: Contract) -> Contract:
     Args:
         contract: The contract object to squeeze.
 
-    Returns:
-        The squeezed contract object.
+    Example:
+        >>> contract = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> _squeeze(contract)
+        <Contract object>
     """
     for k in [
         "ast",
@@ -870,6 +939,11 @@ def _extract_abi_data(address: Address):
 
     Raises:
         Various exceptions based on the API response and contract status.
+
+    Example:
+        >>> name, abi, implementation = _extract_abi_data("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(name)
+        'Dai Stablecoin'
     """
     try:
         data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
@@ -922,6 +996,11 @@ def _resolve_proxy(address) -> Tuple[str, List]:
 
     Returns:
         A tuple containing the contract name and ABI.
+
+    Example:
+        >>> name, abi = _resolve_proxy("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(name)
+        'Dai Stablecoin'
     """
     address = convert.to_address(address)
     name, abi, implementation = _extract_abi_data(address)
@@ -988,6 +1067,11 @@ async def _extract_abi_data_async(address: Address):
 
     Raises:
         Various exceptions based on the API response and contract status.
+
+    Example:
+        >>> name, abi, implementation = await _extract_abi_data_async("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(name)
+        'Dai Stablecoin'
     """
     try:
         response = await _fetch_from_explorer_async(address, "getsourcecode", False)
@@ -1120,6 +1204,11 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
 
     Returns:
         A tuple containing the contract name and ABI.
+
+    Example:
+        >>> name, abi = await _resolve_proxy_async("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> print(name)
+        'Dai Stablecoin'
     """
     address = convert.to_address(address)
     name, abi, implementation = await _extract_abi_data_async(address)
@@ -1183,6 +1272,10 @@ def _setup_events(contract: Contract) -> None:
 
     Args:
         contract: The contract object to set up events for.
+
+    Example:
+        >>> contract = Contract("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> _setup_events(contract)
     """
     if not hasattr(contract, "events"):
         contract.events = ContractEvents(contract)

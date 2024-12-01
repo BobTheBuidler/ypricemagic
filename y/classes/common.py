@@ -135,6 +135,11 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 
         Returns:
             The contract's build name.
+
+        Examples:
+            >>> contract = ContractBase("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await contract.build_name
+            'MyContract'
         """
         return await build_name(self.address, sync=False)
 
@@ -142,6 +147,23 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
 
     @stuck_coro_debugger
     async def deploy_block(self, when_no_history_return_0: bool = False) -> int:
+        """
+        Get the block number when the contract was deployed.
+
+        Args:
+            when_no_history_return_0: If True, return 0 when no history is found instead of raising an exception.
+
+        Returns:
+            The block number when the contract was deployed, or 0 if `when_no_history_return_0` is True and the deploy block cannot be determined.
+
+        Examples:
+            >>> contract = ContractBase("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await contract.deploy_block()
+            1234567
+
+        See Also:
+            - :func:`contract_creation_block_async`
+        """
         if self._deploy_block is None:
             self._deploy_block = await contract_creation_block_async(
                 self.address, when_no_history_return_0=when_no_history_return_0
@@ -153,6 +175,24 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
     async def has_method(
         self, method: str, return_response: bool = False
     ) -> Union[bool, Any]:
+        """
+        Check if the contract has a specific method.
+
+        Args:
+            method: The name of the method to check for.
+            return_response: If True, return the response of the method call instead of a boolean.
+
+        Returns:
+            A boolean indicating whether the contract has the method, or the response of the method call if return_response is True.
+
+        Examples:
+            >>> contract = ContractBase("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await contract.has_method("name()")
+            True
+
+        See Also:
+            - :func:`has_method`
+        """
         return await has_method(
             self.address, method, return_response=return_response, sync=False
         )
@@ -189,6 +229,11 @@ class ERC20(ContractBase):
 
         Returns:
             The token's symbol.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.symbol
+            'TKN'
         """
         if self.address == EEE_ADDRESS:
             return {
@@ -215,6 +260,11 @@ class ERC20(ContractBase):
 
         Returns:
             The token's name.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.name
+            'TokenName'
         """
         if self.address == EEE_ADDRESS:
             return "Ethereum"
@@ -235,6 +285,11 @@ class ERC20(ContractBase):
 
         Returns:
             The number of decimal places for the token.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.decimals
+            18
         """
         if self.address == EEE_ADDRESS:
             return 18
@@ -257,6 +312,11 @@ class ERC20(ContractBase):
 
         Returns:
             The scaling factor for the token.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.scale
+            1000000000000000000
         """
         return 10 ** await self.__decimals__
 
@@ -273,6 +333,11 @@ class ERC20(ContractBase):
 
         Returns:
             The total supply of the token.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.total_supply()
+            1000000000000000000000
         """
         return await _erc20.totalSupply(self.address, block=block, sync=False)
 
@@ -285,6 +350,11 @@ class ERC20(ContractBase):
 
         Returns:
             The total supply of the token scaled to a decimal.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.total_supply_readable()
+            1000.0
         """
         total_supply, scale = await asyncio.gather(
             self.total_supply(block=block, sync=False), self.__scale__
@@ -303,6 +373,11 @@ class ERC20(ContractBase):
 
         Returns:
             The balance of the token held by `address` at block `block`.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.balance_of("0xabcdefabcdefabcdefabcdefabcdefabcdef")
+            500000000000000000000
         """
         return await raw_calls.balanceOf(self.address, address, block=block, sync=False)
 
@@ -335,6 +410,14 @@ class ERC20(ContractBase):
 
         Raises:
             yPriceMagicError: If return_None_on_failure is False and the price cannot be retrieved.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token.price()
+            1.23
+
+        See Also:
+            - :func:`y.prices.magic.get_price`
         """
         from y.prices.magic import get_price
 
@@ -356,6 +439,11 @@ class ERC20(ContractBase):
 
         Raises:
             NonStandardERC20: If the symbol cannot be retrieved from the contract.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token._symbol()
+            'TKN'
         """
         symbol = await probe(
             self.address,
@@ -380,6 +468,11 @@ class ERC20(ContractBase):
 
         Raises:
             NonStandardERC20: If the name cannot be retrieved from the contract.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await token._name()
+            'TokenName'
         """
         name = await probe(
             self.address, ["name()(string)", "NAME()(string)", "getName()(string)"]
@@ -403,6 +496,13 @@ class ERC20(ContractBase):
 
         Raises:
             NonStandardERC20: Always raised with a custom error message.
+
+        Examples:
+            >>> token = ERC20("0x1234567890abcdef1234567890abcdef12345678")
+            >>> token.__raise_exception("symbol")
+            Traceback (most recent call last):
+            ...
+            y.exceptions.NonStandardERC20: Unable to fetch `symbol` for 0x1234567890abcdef1234567890abcdef12345678 on Mainnet
         """
         raise NonStandardERC20(
             f"""
@@ -455,6 +555,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
             skip_cache: If True, skip using the local cache for price data.
             ignore_pools: A tuple of pools to ignore when calculating the price.
             asynchronous: True if this object will be used with its asynchronous API, False for its sync API.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> print(balance)
+            1000000000000000000
         """
         if asynchronous != self.asynchronous:
             self.asynchronous = asynchronous
@@ -474,6 +579,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             The balance in wei as a string.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> str(balance)
+            '1000000000000000000'
         """
         return str(self.balance)
 
@@ -493,6 +603,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             True if the balance is non-zero, False otherwise.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> bool(balance)
+            True
         """
         return bool(self.balance)
 
@@ -505,6 +620,12 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             True if the objects are equal, False otherwise.
+
+        Examples:
+            >>> balance1 = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> balance2 = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> balance1 == balance2
+            True
         """
         if isinstance(__o, int):
             return __o == self.balance
@@ -543,6 +664,12 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Raises:
             TypeError: If the objects are not of the same type.
+
+        Examples:
+            >>> balance1 = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> balance2 = WeiBalance(500000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> balance1 >= balance2
+            True
         """
         if __o < self:
             return True
@@ -656,6 +783,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Raises:
             TypeError: If the scalar value is not a number.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> balance * 2
+            <WeiBalance token=<ERC20 TKN '0x1234567890abcdef1234567890abcdef12345678'> balance=2000000000000000000 block=None>
         """
         if not isinstance(__o, (int, float, Decimal)):
             raise TypeError(
@@ -681,6 +813,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Raises:
             TypeError: If the scalar value is not a number.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> balance / 2
+            <WeiBalance token=<ERC20 TKN '0x1234567890abcdef1234567890abcdef12345678'> balance=500000000000000000 block=None>
         """
         if not isinstance(__o, (int, float, Decimal)):
             raise TypeError(
@@ -701,6 +838,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             The balance scaled to a decimal.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> await balance.readable
+            Decimal('1.0')
         """
         if self.balance == 0:
             return 0
@@ -723,6 +865,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             The price of the token in USD.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> await balance.price
+            Decimal('1.23')
         """
         price = Decimal(
             await self.token.price(
@@ -744,6 +891,11 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             The value of the balance in USD.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> await balance.value_usd
+            Decimal('1.23')
         """
         if self.balance == 0:
             return 0
@@ -761,6 +913,10 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
         Returns:
             The logger for the WeiBalance object.
+
+        Examples:
+            >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
+            >>> logger = balance._logger
         """
         return logging.get_price_logger(
             self.token.address, self.block, extra=self.__class__.__name__
@@ -790,6 +946,11 @@ class _Loader(ContractBase):
 
         Returns:
             A generator that yields `True` once the `_Loader` has loaded all relevant data thru the current block.
+
+        Examples:
+            >>> loader = _Loader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await loader
+            True
         """
         return self.loaded.__await__()
 
@@ -807,6 +968,11 @@ class _Loader(ContractBase):
 
         Returns:
             An awaitable that resolves to `True` once the `_Loader` has loaded all relevant data thru the current block.
+
+        Examples:
+            >>> loader = _Loader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await loader.loaded
+            True
         """
         self._task  # ensure task is running and not errd
         if self._loaded is None:
@@ -823,6 +989,10 @@ class _Loader(ContractBase):
 
         Raises:
             Exception: If the _Loader has any exception, it is raised.
+
+        Examples:
+            >>> loader = _Loader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> task = loader._task
         """
         if self.__exc:
             # create a new duplicate exc instead of building a massive traceback on the original
@@ -841,6 +1011,10 @@ class _Loader(ContractBase):
 
         Args:
             task: The completed task.
+
+        Examples:
+            >>> loader = _Loader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> loader._done_callback(task)
         """
         if e := task.exception():
             logger.error("exception while loading %s: %s", self, e)
@@ -850,6 +1024,10 @@ class _Loader(ContractBase):
     async def __load(self) -> NoReturn:
         """
         Loads the loader and catches any exceptions.
+
+        Examples:
+            >>> loader = _Loader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await loader.__load()
         """
         try:
             await self._load()
@@ -869,7 +1047,8 @@ class _EventsLoader(_Loader):
     and then continue loading data in the background.
     """
 
-    @abc.abstractproperty
+    @property
+    @abc.abstractmethod
     def _events(self) -> "Events":
         """
         The Events object associated with this _EventsLoader.
@@ -882,6 +1061,11 @@ class _EventsLoader(_Loader):
 
         Returns:
             An awaitable that resolves to `True` once the `_Loader` has loaded all relevant data thru the current block.
+
+        Examples:
+            >>> loader = _EventsLoader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await loader.loaded
+            True
         """
         self._task  # ensure task is running and not err'd
         if self._loaded is None:
@@ -893,6 +1077,10 @@ class _EventsLoader(_Loader):
     async def _load(self) -> NoReturn:
         """
         Load the event data in the background.
+
+        Examples:
+            >>> loader = _EventsLoader("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await loader._load()
         """
         # TODO: extend this for constant loading
         async for _ in self._events.events(self._init_block):

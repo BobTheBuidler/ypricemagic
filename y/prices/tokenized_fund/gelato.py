@@ -15,14 +15,28 @@ from y.utils.raw_calls import raw_call
 
 logger = logging.getLogger(__name__)
 
-
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
 @optional_async_diskcache
 async def is_gelato_pool(token_address: AnyAddressType) -> bool:
+    """
+    Check if a given token address is a Gelato pool.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Returns:
+        True if the token is a Gelato pool, False otherwise.
+
+    Example:
+        >>> is_gelato_pool("0x1234567890abcdef1234567890abcdef12345678")
+        True
+
+    See Also:
+        - :func:`y.contracts.has_methods`
+    """
     return await has_methods(
         token_address, ("gelatoBalance0()(uint)", "gelatoBalance1()(uint)"), sync=False
     )
-
 
 @a_sync.a_sync(default="sync")
 async def get_price(
@@ -30,6 +44,26 @@ async def get_price(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
+    """
+    Calculate the price of a Gelato pool token in USD.
+
+    This function calculates the price of a Gelato pool token by retrieving the balances,
+    scales, and prices of the pool's underlying assets (token0 and token1), calculating
+    their total value, and dividing by the total supply of the pool token.
+
+    Args:
+        token: The address of the token to price.
+        block: The block number at which to get the price. Defaults to None.
+        skip_cache: Whether to skip the cache. Defaults to ENVS.SKIP_CACHE.
+
+    Example:
+        >>> get_price("0x1234567890abcdef1234567890abcdef12345678")
+        123.45
+
+    See Also:
+        - :func:`y.prices.magic.get_price`
+        - :class:`y.classes.common.ERC20`
+    """
     address = await convert.to_address_async(token)
 
     token0, token1 = await asyncio.gather(

@@ -31,9 +31,21 @@ logger = logging.getLogger(__name__)
 
 
 class _AsyncEntityMixin:
-    # TODO: implement this
-    pass
-    """
+    """Mixin class intended for future asynchronous operations.
+
+    This class is currently not implemented. It is designed to provide
+    asynchronous capabilities to database entities in the future.
+
+    TODO: Implement asynchronous methods for database operations.
+
+    Examples:
+        Intended usage once implemented:
+        >>> class MyEntity(DbEntity, _AsyncEntityMixin):
+        ...     pass
+
+    See Also:
+        - :mod:`a_sync` for asynchronous programming utilities.
+
     @classmethod
     @a_sync('async')
     def get(cls: E, *args, **kwargs) -> E:
@@ -46,6 +58,8 @@ class _AsyncEntityMixin:
 
 
 class Chain(DbEntity, _AsyncEntityMixin):
+    """Represents a blockchain chain entity in the database."""
+
     id = PrimaryKey(int)
 
     if TYPE_CHECKING:
@@ -62,6 +76,8 @@ class Chain(DbEntity, _AsyncEntityMixin):
 
 
 class Block(DbEntity, _AsyncEntityMixin):
+    """Represents a block entity in the database."""
+
     chain = Required(Chain, reverse="blocks")
     number = Required(int)
     PrimaryKey(chain, number)
@@ -84,6 +100,8 @@ class Block(DbEntity, _AsyncEntityMixin):
 
 
 class Address(DbEntity, _AsyncEntityMixin):
+    """Represents an address entity in the database."""
+
     chain = Required(Chain, lazy=True, reverse="addresses")
     address = Required(str, 42, lazy=True)
     PrimaryKey(chain, address)
@@ -97,6 +115,8 @@ class Address(DbEntity, _AsyncEntityMixin):
 
 
 class Contract(Address):
+    """Represents a contract entity in the database."""
+
     deployer = Optional(
         Address, reverse="contracts_deployed", lazy=True, cascade_delete=False
     )
@@ -106,6 +126,8 @@ class Contract(Address):
 
 
 class Token(Contract):
+    """Represents a token entity in the database."""
+
     symbol = Optional(str, lazy=True)
     name = Optional(str, lazy=True)
     decimals = Optional(int, lazy=True)
@@ -119,6 +141,8 @@ class Token(Contract):
 
 
 class Price(DbEntity):
+    """Represents a price entity in the database."""
+
     block = Required(Block, index=True, lazy=True)
     token = Required(Token, index=True, lazy=True)
     PrimaryKey(block, token)
@@ -126,6 +150,8 @@ class Price(DbEntity):
 
 
 class TraceCacheInfo(DbEntity):
+    """Represents trace cache information in the database."""
+
     chain = Required(Chain, index=True)
     to_addresses = Required(bytes, index=True)
     from_addresses = Required(bytes, index=True)
@@ -135,6 +161,8 @@ class TraceCacheInfo(DbEntity):
 
 
 class LogCacheInfo(DbEntity):
+    """Represents log cache information in the database."""
+
     chain = Required(Chain, index=True)
     address = Required(str, 42, index=True)
     topics = Required(bytes)
@@ -144,7 +172,11 @@ class LogCacheInfo(DbEntity):
 
 
 class LogTopic(DbEntity):
-    "Just makes the :ref:`Log` db smaller."
+    """Represents a log topic entity in the database.
+
+    Just makes the :ref:`Log` db smaller.
+    """
+
     dbid = PrimaryKey(int, size=64, auto=True)
     topic = Required(str, 64, unique=True, lazy=True)
 
@@ -162,7 +194,11 @@ class LogTopic(DbEntity):
 
 
 class Hashes(DbEntity):
-    "Just makes :ref:`Log` pk and indexes smaller."
+    """Represents a hash entity in the database.
+
+    Just makes :ref:`Log` pk and indexes smaller.
+    """
+
     dbid = PrimaryKey(int, size=64, auto=True)
     hash = Required(str, 64, unique=True)
 
@@ -176,6 +212,8 @@ class Hashes(DbEntity):
 
 
 class Log(DbEntity):
+    """Represents a log entity in the database."""
+
     block = Required(Block, index=True, lazy=True)
     tx = Required(Hashes, lazy=True)
     log_index = Required(int, size=16, lazy=True)
@@ -201,6 +239,8 @@ class Log(DbEntity):
 
 
 class Trace(DbEntity):
+    """Represents a trace entity in the database."""
+
     id = PrimaryKey(int, auto=True)
     block = Required(Block, index=True, lazy=True)
     hash = Required(str, 64, index=True, lazy=True)
@@ -210,6 +250,8 @@ class Trace(DbEntity):
 
 
 class BlockAtTimestamp(DbEntity):
+    """Represents a block at a specific timestamp in the database."""
+
     chainid = Required(int)
     timestamp = Required(datetime)
     PrimaryKey(chainid, timestamp)
@@ -220,6 +262,24 @@ class BlockAtTimestamp(DbEntity):
 @db_session
 @retry_locked
 def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
+    """Inserts a new entity into the database with retry logic.
+
+    This function attempts to insert a new entity of the specified type into the database.
+    It includes retry logic to handle specific database exceptions.
+
+    Args:
+        type: The type of the entity to insert.
+        **kwargs: The attributes of the entity to insert.
+
+    Examples:
+        >>> new_block = insert(Block, chain=chain_instance, number=123456)
+        >>> new_token = insert(Token, symbol="ETH", name="Ethereum")
+
+    See Also:
+        - :func:`pony.orm.commit`
+        - :func:`pony.orm.db_session`
+        - :func:`retry_locked`
+    """
     try:
         while True:
             try:

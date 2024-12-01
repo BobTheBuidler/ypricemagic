@@ -17,6 +17,22 @@ MAPPING = {
 
 
 def is_convex_lp(token_address: ChecksumAddress) -> bool:
+    """
+    Check if a given token address is a Convex LP token.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Returns:
+        True if the token is a Convex LP token, False otherwise.
+
+    Examples:
+        >>> is_convex_lp("0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C")
+        True
+
+        >>> is_convex_lp("0x0000000000000000000000000000000000000000")
+        False
+    """
     return token_address in MAPPING
 
 
@@ -26,6 +42,26 @@ async def get_price(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
+    """
+    Get the price of a Convex LP token in USD.
+
+    This function retrieves the price of the underlying token mapped to the given Convex LP token address.
+
+    Args:
+        token_address: The address of the Convex LP token.
+        block: The block number at which to fetch the price. Defaults to the latest block.
+        skip_cache: Whether to skip the cache when fetching the price. Defaults to the value of ENVS.SKIP_CACHE.
+
+    Returns:
+        The price of the token in USD.
+
+    Examples:
+        >>> await get_price("0x30D9410ED1D5DA1F6C8391af5338C93ab8d4035C")
+        1.23456789
+
+    See Also:
+        - :func:`y.prices.magic.get_price` for more details on how the price is fetched.
+    """
     return await magic.get_price(
         MAPPING[token_address], block, skip_cache=skip_cache, sync=False
     )

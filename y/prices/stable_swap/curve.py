@@ -281,7 +281,30 @@ class Factory(_Loader):
             logger._log(logging.DEBUG, "loaded %s pool %s", (self, pool))
 
 
-class CurvePool(ERC20):  # this shouldn't be ERC20 but works for inheritance for now
+class CurvePool(ERC20):
+    """
+    Represents a Curve pool.
+
+    This class provides methods to interact with Curve pools, including fetching
+    pool information, calculating token exchanges, and retrieving liquidity data.
+
+    Note:
+        This class inherits from :class:`~y.classes.common.ERC20` for convenience,
+        but a Curve pool is not always an ERC20 token. This inheritance is used
+        to leverage existing functionality for token interactions.
+
+    Methods:
+        - :meth:`coins`: Fetches the coins in the pool.
+        - :meth:`get_dy`: Calculates the amount of output tokens for a given input amount, simulating a token exchange.
+        - :meth:`get_balances`: Retrieves the balances of tokens in the pool.
+        - :meth:`get_tvl`: Retrieves the total value locked in the pool.
+
+    Examples:
+        >>> pool = CurvePool("0x1234567890abcdef1234567890abcdef12345678")
+        >>> await pool.coins
+        [<ERC20 TKN1 '0x...'>, <ERC20 TKN2 '0x...'>]
+    """
+
     @a_sync.aka.cached_property
     async def factory(self) -> Contract:
         return await curve.get_factory(self, sync=False)
@@ -292,6 +315,14 @@ class CurvePool(ERC20):  # this shouldn't be ERC20 but works for inheritance for
     async def coins(self) -> List[ERC20]:
         """
         Get coins of pool.
+
+        Returns:
+            A list of :class:`~y.classes.common.ERC20` tokens representing the coins in the pool.
+
+        Examples:
+            >>> pool = CurvePool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.coins
+            [<ERC20 TKN1 '0x...'>, <ERC20 TKN2 '0x...'>]
         """
         factory = await self.__factory__
         if factory:
@@ -404,6 +435,18 @@ class CurvePool(ERC20):  # this shouldn't be ERC20 but works for inheritance for
     ) -> List[WeiBalance]:
         """
         Get {token: balance} of liquidity in the pool.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: If True, skip using the cache while fetching balance data.
+
+        Returns:
+            A list of :class:`~y.classes.common.WeiBalance` objects representing the balances of tokens in the pool.
+
+        Examples:
+            >>> pool = CurvePool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.get_balances()
+            [<WeiBalance token=<ERC20 TKN1 '0x...'> balance=1000000000000000000 block=None>, ...]
         """
         coins = await self.__coins__
         try:
@@ -454,6 +497,18 @@ class CurvePool(ERC20):  # this shouldn't be ERC20 but works for inheritance for
     ) -> Optional[UsdValue]:
         """
         Get total value in Curve pool.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: If True, skip using the cache while fetching TVL data.
+
+        Returns:
+            The total value locked in the pool as a :class:`~y.datatypes.UsdValue`, or None if the TVL cannot be determined.
+
+        Examples:
+            >>> pool = CurvePool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> await pool.get_tvl()
+            UsdValue(1234567.89)
         """
         try:
             price = await WeiBalance.value_usd.sum(
@@ -531,6 +586,17 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     async def get_factory(self, pool: AddressOrContract) -> Contract:
         """
         Get metapool factory that has spawned a pool.
+
+        Args:
+            pool: The address or contract of the pool.
+
+        Returns:
+            The :class:`~y.contracts.Contract` representing the factory.
+
+        Examples:
+            >>> factory = await curve.get_factory("0x1234567890abcdef1234567890abcdef12345678")
+            >>> print(factory)
+            <Contract '0x...'>
         """
         try:
             factory = next(
@@ -561,6 +627,17 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     async def get_pool(self, token: AnyAddressType) -> CurvePool:
         """
         Get Curve pool (swap) address by LP token address. Supports factory pools.
+
+        Args:
+            token: The address of the LP token.
+
+        Returns:
+            The :class:`~y.prices.stable_swap.curve.CurvePool` associated with the LP token.
+
+        Examples:
+            >>> pool = await curve.get_pool("0x1234567890abcdef1234567890abcdef12345678")
+            >>> print(pool)
+            <CurvePool '0x...'>
         """
         await self.load_all()
 

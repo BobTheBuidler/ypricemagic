@@ -59,6 +59,12 @@ async def get_tokens(lp_token: Address) -> Tuple[str, str, str]:
         >>> tokens = await get_tokens("0x1b92b5242301ce4a8c73cc3ef0d6dee33a3a5b23")
         >>> print(tokens)
         ('0x...', '0x...', '0x...')  # Addresses of SY, PT, and YT tokens
+
+    Note:
+        The function returns the result of the `readTokens` method from the Pendle LP contract, which provides the addresses of the underlying tokens.
+
+    See Also:
+        - :func:`is_pendle_lp` for checking if a token is a Pendle LP token.
     """
     lp_token = await Contract.coroutine(lp_token)
     return await lp_token.readTokens
@@ -85,8 +91,10 @@ async def get_lp_price(
         1.234567  # The price of the Pendle LP token in USD
 
     Note:
-        This function uses the Pendle Oracle contract to get the LP to asset rate and then
-        calculates the USD price based on the underlying asset's price.
+        This function retrieves the LP to asset rate using the Pendle Oracle contract and calculates the LP token price by multiplying the LP to asset rate by the asset's price in USD.
+
+    See Also:
+        - :func:`get_tokens` for retrieving the tokens in a Pendle LP token.
     """
     tokens = await get_tokens(str(token))  # force to string for cache key
     # NOTE: we might not need this, leave it commented out for now

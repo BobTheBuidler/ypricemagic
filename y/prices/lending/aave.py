@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from abc import abstractmethod, abstractproperty
+from abc import abstractmethod
 from decimal import Decimal
 from typing import Awaitable, List, Optional, Union
 
@@ -73,17 +73,37 @@ v3_pools = {
 class AaveMarketBase(ContractBase):
     """
     Base class for Aave markets.
+
+    This class provides common functionality for Aave markets, including methods
+    to check if a token is an aToken from the market and to retrieve reserve data.
+
+    See Also:
+        - :class:`AaveMarketV1`
+        - :class:`AaveMarketV2`
+        - :class:`AaveMarketV3`
     """
 
     def __contains__(self, token: object) -> bool:
         """
         Check if `token` is an aToken from this market.
 
+        This method is intended for synchronous use. If `self.asynchronous` is not `False`,
+        a `RuntimeError` will be raised.
+
         Args:
-            atoken: The item to check.
+            token: The item to check.
 
         Returns:
             True if the token is an aToken from the market, False otherwise.
+
+        Raises:
+            RuntimeError: If `self.asynchronous` is not `False`.
+
+        Example:
+            >>> market = AaveMarketV1("0xAddress")
+            >>> token = "0xTokenAddress"
+            >>> token in market
+            True
         """
         if not self.asynchronous:
             cls = self.__class__.__name__
@@ -96,11 +116,19 @@ class AaveMarketBase(ContractBase):
         """
         Check if `token` is an aToken from this market.
 
+        This method is intended for asynchronous use.
+
         Args:
             token: The item to check.
 
         Returns:
             True if the token is an aToken from the market, False otherwise.
+
+        Example:
+            >>> market = AaveMarketV1("0xAddress", asynchronous=True)
+            >>> token = "0xTokenAddress"
+            >>> await market.contains(token)
+            True
         """
         contains = await convert.to_address_async(token) in await self.__atokens__
         logger.debug("%s contains %s: %s", self, token, contains)
@@ -112,13 +140,22 @@ class AaveMarketBase(ContractBase):
     async def get_reserve_data(self, reserve: AnyAddressType) -> tuple:
         return await self.contract.getReserveData.coroutine(reserve)
 
-    @abstractproperty
+    @property
+    @abstractmethod
     async def atokens(self) -> Awaitable[List[ERC20]]:
         """
         Get the aTokens of the market.
 
+        This is an abstract property and must be implemented by subclasses.
+
         Returns:
             A list of aTokens as :class:`~ERC20` objects.
+
+        Example:
+            >>> market = AaveMarketV1("0xAddress", asynchronous=True)
+            >>> atokens = await market.atokens
+            >>> print(atokens)
+            [<ERC20 '0xTokenAddress1'>, <ERC20 '0xTokenAddress2'>]
         """
 
     __atokens__: HiddenMethodDescriptor[Self, List[ERC20]]
@@ -128,17 +165,33 @@ class AaveMarketBase(ContractBase):
         """
         Get the underlying asset of the given aToken address.
 
+        This is an abstract method and must be implemented by subclasses.
+
         Args:
             atoken_address: The address of the aToken.
 
         Returns:
             The underlying asset.
+
+        Example:
+            >>> market = AaveMarketV1("0xAddress", asynchronous=True)
+            >>> underlying_asset = await market.underlying("0xATokenAddress")
+            >>> print(underlying_asset)
+            <ERC20 '0xUnderlyingAssetAddress'>
         """
 
-    @abstractproperty
+    @property
+    @abstractmethod
     def _get_reserves_method(self) -> str:
         """
         The method that must be called to get the reserves list.
+
+        This is an abstract property and must be implemented by subclasses.
+
+        Example:
+            >>> market = AaveMarketV1("0xAddress")
+            >>> print(market._get_reserves_method)
+            'getReserves()(address[])'
         """
 
 

@@ -25,6 +25,30 @@ logger = logging.getLogger(__name__)
 
 @a_sync_read_db_session
 def get_token(address: str) -> Token:
+    """Retrieve or insert a token entity for a given address.
+
+    This function attempts to retrieve a token entity from the database
+    for the specified address. If the address corresponds to the EEE address,
+    an `EEEError` is raised. If the address is not found, a new token entity
+    is inserted into the database.
+
+    Args:
+        address: The address of the token to retrieve or insert.
+
+    Raises:
+        EEEError: If the address is the EEE address.
+
+    Returns:
+        The token entity associated with the given address.
+
+    Examples:
+        >>> token = get_token("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(token)
+
+    See Also:
+        - :class:`~y._db.entities.Token`
+        - :func:`~y.convert.to_address`
+    """
     address = convert.to_address(address)
     if address == constants.EEE_ADDRESS:
         raise EEEError(f"cannot create token entity for {constants.EEE_ADDRESS}")
@@ -41,13 +65,35 @@ def get_token(address: str) -> Token:
 
 @a_sync.a_sync(default="sync", ram_cache_maxsize=None)
 def ensure_token(address: AnyAddressType) -> None:
+    """Ensure a token entity exists for a given address.
+
+    This function ensures that a token entity exists in the database for the
+    specified address. If the token is not already known, it is retrieved
+    and inserted into the database.
+
+    Args:
+        address: The address of the token to ensure.
+
+    Examples:
+        >>> ensure_token("0x1234567890abcdef1234567890abcdef12345678")
+    """
     return _ensure_token(str(address))  # force to string for cache key
 
 
 @lru_cache(maxsize=None)
 @db_session
 def _ensure_token(address: str) -> None:
-    """We can't wrap a `_Wrapped` object with `a_sync` so we have this helper fn"""
+    """Helper function to ensure a token entity exists.
+
+    This function is a helper to `ensure_token` and cannot be wrapped with
+    `a_sync` directly. It checks if the token is known and retrieves it if not.
+
+    Args:
+        address: The address of the token to ensure.
+
+    See Also:
+        - :func:`ensure_token`
+    """
     if address not in known_tokens():
         get_token = _get_get_token()
         get_token(address, sync=True)
@@ -55,6 +101,21 @@ def _ensure_token(address: str) -> None:
 
 @a_sync_read_db_session
 def get_bucket(address: str) -> Optional[str]:
+    """Retrieve the bucket for a given token address.
+
+    This function retrieves the bucket associated with a token address from
+    the database. If the bucket is not known, it is retrieved and stored.
+
+    Args:
+        address: The address of the token to retrieve the bucket for.
+
+    Returns:
+        The bucket associated with the token address, if available.
+
+    Examples:
+        >>> bucket = get_bucket("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(bucket)
+    """
     if address == constants.EEE_ADDRESS:
         return
     if (bucket := known_buckets().pop(address, None)) is None:
@@ -67,6 +128,18 @@ def get_bucket(address: str) -> Optional[str]:
 
 @a_sync_write_db_session
 def _set_bucket(address: str, bucket: str) -> None:
+    """Set the bucket for a given token address.
+
+    This function updates the bucket associated with a token address in the
+    database.
+
+    Args:
+        address: The address of the token to set the bucket for.
+        bucket: The bucket to associate with the token address.
+
+    Examples:
+        >>> _set_bucket("0x1234567890abcdef1234567890abcdef12345678", "bucket_name")
+    """
     if address == constants.EEE_ADDRESS:
         return
     get_token = _get_get_token()
@@ -79,6 +152,21 @@ set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=10, return_data=Fal
 
 @a_sync_read_db_session
 def get_symbol(address: str) -> Optional[str]:
+    """Retrieve the symbol for a given token address.
+
+    This function retrieves the symbol associated with a token address from
+    the database. If the symbol is not known, it is retrieved and stored.
+
+    Args:
+        address: The address of the token to retrieve the symbol for.
+
+    Returns:
+        The symbol associated with the token address, if available.
+
+    Examples:
+        >>> symbol = get_symbol("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(symbol)
+    """
     if (symbol := known_symbols().pop(address, None)) is None:
         get_token = _get_get_token()
         symbol = get_token(address, sync=True).symbol
@@ -88,6 +176,22 @@ def get_symbol(address: str) -> Optional[str]:
 
 
 def set_symbol(address: str, symbol: str):
+    """Set the symbol for a given token address.
+
+    This function updates the symbol associated with a token address in the
+    database.
+
+    Args:
+        address: The address of the token to set the symbol for.
+        symbol: The symbol to associate with the token address.
+
+    Raises:
+        ValueError: If `symbol` is not provided.
+        TypeError: If `symbol` is not a string.
+
+    Examples:
+        >>> set_symbol("0x1234567890abcdef1234567890abcdef12345678", "SYM")
+    """
     if not symbol:
         raise ValueError("`symbol` is required")
     if not isinstance(symbol, str):
@@ -101,6 +205,21 @@ def set_symbol(address: str, symbol: str):
 
 @a_sync_read_db_session
 def get_name(address: str) -> Optional[str]:
+    """Retrieve the name for a given token address.
+
+    This function retrieves the name associated with a token address from
+    the database. If the name is not known, it is retrieved and stored.
+
+    Args:
+        address: The address of the token to retrieve the name for.
+
+    Returns:
+        The name associated with the token address, if available.
+
+    Examples:
+        >>> name = get_name("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(name)
+    """
     if (name := known_names().pop(address, None)) is None:
         get_token = _get_get_token()
         name = get_token(address, sync=True).name
@@ -110,6 +229,22 @@ def get_name(address: str) -> Optional[str]:
 
 
 def set_name(address: str, name: str) -> None:
+    """Set the name for a given token address.
+
+    This function updates the name associated with a token address in the
+    database.
+
+    Args:
+        address: The address of the token to set the name for.
+        name: The name to associate with the token address.
+
+    Raises:
+        ValueError: If `name` is not provided.
+        TypeError: If `name` is not a string.
+
+    Examples:
+        >>> set_name("0x1234567890abcdef1234567890abcdef12345678", "Token Name")
+    """
     if not name:
         raise ValueError("`name` is required")
     if not isinstance(name, str):
@@ -122,6 +257,24 @@ def set_name(address: str, name: str) -> None:
 
 
 async def get_decimals(address: str) -> int:
+    """Retrieve the decimals for a given token address.
+
+    This function retrieves the decimals associated with a token address from
+    the database. If the decimals are not known, they are retrieved and stored.
+
+    Args:
+        address: The address of the token to retrieve the decimals for.
+
+    Returns:
+        The decimals associated with the token address.
+
+    Raises:
+        ValueError: If the decimals value is greater than the maximum allowed.
+
+    Examples:
+        >>> decimals = await get_decimals("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(decimals)
+    """
     d = await _get_token_decimals(address)
     if d is None:
         d = await _erc20.decimals(address, sync=False)
@@ -142,6 +295,18 @@ async def get_decimals(address: str) -> int:
 
 @a_sync_write_db_session
 def set_decimals(address: str, decimals: int) -> None:
+    """Set the decimals for a given token address.
+
+    This function updates the decimals associated with a token address in the
+    database.
+
+    Args:
+        address: The address of the token to set the decimals for.
+        decimals: The decimals to associate with the token address.
+
+    Examples:
+        >>> set_decimals("0x1234567890abcdef1234567890abcdef12345678", 18)
+    """
     get_token = _get_get_token()
     get_token(address, sync=True).decimals = decimals
     logger.debug("updated %s decimals in ydb: %s", address, decimals)
@@ -149,6 +314,18 @@ def set_decimals(address: str, decimals: int) -> None:
 
 @a_sync_write_db_session
 def _set_symbol(address: str, symbol: str) -> None:
+    """Set the symbol for a given token address.
+
+    This function updates the symbol associated with a token address in the
+    database.
+
+    Args:
+        address: The address of the token to set the symbol for.
+        symbol: The symbol to associate with the token address.
+
+    Examples:
+        >>> _set_symbol("0x1234567890abcdef1234567890abcdef12345678", "SYM")
+    """
     get_token = _get_get_token()
     get_token(address, sync=True).symbol = symbol
     logger.debug("updated %s symbol in ydb: %s", address, symbol)
@@ -156,6 +333,18 @@ def _set_symbol(address: str, symbol: str) -> None:
 
 @a_sync_write_db_session
 def _set_name(address: str, name: str) -> None:
+    """Set the name for a given token address.
+
+    This function updates the name associated with a token address in the
+    database.
+
+    Args:
+        address: The address of the token to set the name for.
+        name: The name to associate with the token address.
+
+    Examples:
+        >>> _set_name("0x1234567890abcdef1234567890abcdef12345678", "Token Name")
+    """
     get_token = _get_get_token()
     get_token(address, sync=True).name = name
     logger.debug("updated %s name in ydb: %s", address, name)
@@ -163,6 +352,21 @@ def _set_name(address: str, name: str) -> None:
 
 @a_sync_read_db_session
 def _get_token_decimals(address: str) -> Optional[int]:
+    """Retrieve the decimals for a given token address.
+
+    This function retrieves the decimals associated with a token address from
+    the database. If the decimals are not known, they are retrieved and stored.
+
+    Args:
+        address: The address of the token to retrieve the decimals for.
+
+    Returns:
+        The decimals associated with the token address, if available.
+
+    Examples:
+        >>> decimals = _get_token_decimals("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(decimals)
+    """
     if (decimals := known_decimals().pop(address, None)) is None:
         get_token = _get_get_token()
         decimals = get_token(address, sync=True).decimals
@@ -178,14 +382,36 @@ def _get_token_decimals(address: str) -> Optional[int]:
 @db_session
 @log_result_count("tokens")
 def known_tokens() -> Set[str]:
-    """cache and return all known Tokens for this chain to minimize db reads"""
+    """Cache and return all known tokens for this chain.
+
+    This function caches and returns all known tokens for the current chain
+    to minimize database reads.
+
+    Returns:
+        A set of known token addresses for the current chain.
+
+    Examples:
+        >>> tokens = known_tokens()
+        >>> print(tokens)
+    """
     return set(select(t.address for t in Token if t.chain.id == chain.id))
 
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("buckets")
 def known_buckets() -> Dict[str, str]:
-    """cache and return all known token buckets for this chain to minimize db reads"""
+    """Cache and return all known token buckets for this chain.
+
+    This function caches and returns all known token buckets for the current
+    chain to minimize database reads.
+
+    Returns:
+        A dictionary mapping token addresses to their buckets for the current chain.
+
+    Examples:
+        >>> buckets = known_buckets()
+        >>> print(buckets)
+    """
     return dict(
         select(
             (t.address, t.bucket) for t in Token if t.chain.id == chain.id and t.bucket
@@ -196,7 +422,18 @@ def known_buckets() -> Dict[str, str]:
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("token decimals")
 def known_decimals() -> Dict[Address, int]:
-    """cache and return all known token decimals for this chain to minimize db reads"""
+    """Cache and return all known token decimals for this chain.
+
+    This function caches and returns all known token decimals for the current
+    chain to minimize database reads.
+
+    Returns:
+        A dictionary mapping token addresses to their decimals for the current chain.
+
+    Examples:
+        >>> decimals = known_decimals()
+        >>> print(decimals)
+    """
     return dict(
         select(
             (t.address, t.decimals)
@@ -209,7 +446,18 @@ def known_decimals() -> Dict[Address, int]:
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("token symbols")
 def known_symbols() -> Dict[Address, str]:
-    """cache and return all known token symbols for this chain to minimize db reads"""
+    """Cache and return all known token symbols for this chain.
+
+    This function caches and returns all known token symbols for the current
+    chain to minimize database reads.
+
+    Returns:
+        A dictionary mapping token addresses to their symbols for the current chain.
+
+    Examples:
+        >>> symbols = known_symbols()
+        >>> print(symbols)
+    """
     return dict(
         select(
             (t.address, t.symbol) for t in Token if t.chain.id == chain.id and t.symbol
@@ -220,7 +468,18 @@ def known_symbols() -> Dict[Address, str]:
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
 @log_result_count("token names")
 def known_names() -> Dict[Address, str]:
-    """cache and return all known token names for this chain to minimize db reads"""
+    """Cache and return all known token names for this chain.
+
+    This function caches and returns all known token names for the current
+    chain to minimize database reads.
+
+    Returns:
+        A dictionary mapping token addresses to their names for the current chain.
+
+    Examples:
+        >>> names = known_names()
+        >>> print(names)
+    """
     return dict(
         select((t.address, t.name) for t in Token if t.chain.id == chain.id and t.name)
     )

@@ -82,7 +82,11 @@ class GenericAmm(a_sync.ASyncGenericBase):
             >>> address = "0x6B175474E89094C44Da98b954EedeAC495271d0F"
             >>> price = await amm.get_price(address)
             >>> print(price)
-            1.0
+            0.5
+
+        See Also:
+            - :meth:`get_tvl`
+            - :meth:`ERC20.total_supply_readable`
         """
         tvl, total_supply = await asyncio.gather(
             self.get_tvl(
@@ -116,6 +120,9 @@ class GenericAmm(a_sync.ASyncGenericBase):
             >>> tokens = await amm.get_tokens(address)
             >>> print(tokens)
             (ERC20(0x123...), ERC20(0x456...))
+
+        See Also:
+            - :class:`ERC20`
         """
         tokens = await gather_methods(lp_token_address, _TOKEN_METHODS)
         return tuple(ERC20(token, asynchronous=self.asynchronous) for token in tokens)
@@ -144,6 +151,9 @@ class GenericAmm(a_sync.ASyncGenericBase):
             >>> tvl = await amm.get_tvl(address)
             >>> print(tvl)
             1000000.0
+
+        See Also:
+            - :meth:`get_price`
         """
         lp_token_contract = await Contract.coroutine(lp_token_address)
         tokens, reserves = await asyncio.gather(

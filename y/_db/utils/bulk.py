@@ -26,19 +26,23 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
     Execute a SQL statement with retry logic for locked databases.
 
     This function attempts to execute the given SQL statement and commit the changes.
-    If the database is locked, the operation will be retried based on the @:class:`retry_locked` decorator.
+    If the database is locked, the operation will be retried based on the :func:`~y._db.decorators.retry_locked` decorator.
 
     Args:
         sql: The SQL statement to execute.
-        db: The database to execute the statement on. Defaults to entities.db.
+        db: The database to execute the statement on. Defaults to :attr:`~y._db.entities.db`.
 
     Raises:
         SQLError: If there's an error executing the SQL statement, except for "database is locked" errors.
 
     Note:
-        - The function logs the SQL statement at debug level before execution.
+        - The function logs the message "EXECUTING SQL" and the SQL statement at debug level before execution.
         - If a "database is locked" error occurs, it's re-raised to trigger the retry mechanism.
-        - For all other DatabaseErrors, it logs a warning and raises a SQLError with the original error and SQL statement.
+        - For all other :class:`~pony.orm.core.DatabaseError`, it logs a warning and raises a :class:`SQLError` with the original error and SQL statement.
+
+    Examples:
+        >>> execute("INSERT INTO my_table (column1, column2) VALUES ('value1', 'value2')")
+        >>> execute("DELETE FROM my_table WHERE column1 = 'value1'")
     """
     try:
         logger.debug("EXECUTING SQL")
@@ -63,18 +67,30 @@ def stringify_column_value(value: Any, provider: str) -> str:
         value: The value to stringify. Can be None, bytes, str, int, Decimal, or datetime.
         provider: The database provider. Currently supports 'postgres' and 'sqlite'.
 
-    Returns:
-        A string representation of the value suitable for SQL insertion.
-
     Raises:
         NotImplementedError: If the value type is not supported or if an unsupported provider is specified for bytes.
 
     Note:
         - None values are converted to 'null'.
-        - Bytes are handled differently for 'postgres' (converted to bytea) and 'sqlite' (converted to hex).
+        - Bytes are handled differently for 'postgres' (converted to bytea using `f"'{value.decode()}'::bytea"`) and 'sqlite' (converted to hex).
         - Strings are wrapped in single quotes.
         - Integers and Decimals are converted to their string representation.
         - Datetimes are converted to UTC and formatted as ISO8601 strings.
+
+    Examples:
+        >>> stringify_column_value(None, 'sqlite')
+        'null'
+        >>> stringify_column_value(b'\\x01\\x02', 'postgres')
+        "'\\x0102'::bytea"
+        >>> stringify_column_value('text', 'sqlite')
+        "'text'"
+        >>> stringify_column_value(123, 'postgres')
+        '123'
+        >>> stringify_column_value(datetime(2023, 1, 1, 12, 0, 0), 'sqlite')
+        "'2023-01-01T12:00:00+00:00'"
+
+    See Also:
+        - :func:`build_row`
     """
     if value is None:
         return "null"
@@ -111,6 +127,13 @@ def build_row(row: Iterable[Any], provider: str) -> str:
 
     Note:
         This function uses :func:`stringify_column_value` internally to convert each value.
+
+    Examples:
+        >>> build_row([None, b'\\x01\\x02', 'text', 123], 'sqlite')
+        "(null,X'0102','text',123)"
+
+    See Also:
+        - :func:`stringify_column_value`
     """
     return f"({','.join(stringify_column_value(col, provider) for col in row)})"
 
@@ -133,7 +156,7 @@ def insert(
         entity_type: The database entity type to insert into.
         columns: An iterable of column names.
         items: An iterable of iterables, where each inner iterable represents a row of data to insert.
-        db: The database to perform the insertion on. Defaults to entities.db.
+        db: The database to perform the insertion on. Defaults to :attr:`~y._db.entities.db`.
 
     Raises:
         NotImplementedError: If an unsupported database provider is used.
@@ -141,6 +164,13 @@ def insert(
     Note:
         - For SQLite, it uses 'INSERT OR IGNORE' syntax.
         - For PostgreSQL, it uses 'INSERT ... ON CONFLICT DO NOTHING' syntax.
+
+    Examples:
+        >>> insert(MyEntity, ['column1', 'column2'], [['value1', 'value2'], ['value3', 'value4']])
+        >>> insert(MyEntity, ['column1', 'column2'], [['value1', 'value2']], db=my_db)
+
+    See Also:
+        - :func:`execute`
     """
     entity_name = entity_type.__name__.lower()
     data = ",".join(build_row(i, db.provider_name) for i in items)

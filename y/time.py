@@ -31,6 +31,9 @@ logger = logging.getLogger(__name__)
 class NoBlockFound(Exception):
     """
     Raised when no block is found for a specified timestamp because the timestamp is in the future.
+
+    Args:
+        timestamp: The timestamp for which no block was found.
     """
 
     def __init__(self, timestamp: Timestamp):
@@ -41,6 +44,23 @@ class NoBlockFound(Exception):
 @yLazyLogger(logger)
 @eth_retry.auto_retry
 def get_block_timestamp(height: int) -> int:
+    """
+    Get the timestamp of a block by its height.
+
+    Args:
+        height: The block height.
+
+    Returns:
+        The timestamp of the block.
+
+    Examples:
+        >>> get_block_timestamp(12345678)
+        1609459200
+
+    See Also:
+        - :func:`get_block_timestamp_async`
+        - :func:`last_block_on_date`
+    """
     import y._db.utils.utils as db
 
     if ts := db.get_block_timestamp(height, sync=True):
@@ -58,6 +78,23 @@ def get_block_timestamp(height: int) -> int:
 @a_sync_ttl_cache
 @eth_retry.auto_retry
 async def get_block_timestamp_async(height: int) -> int:
+    """
+    Asynchronously get the timestamp of a block by its height.
+
+    Args:
+        height: The block height.
+
+    Returns:
+        The timestamp of the block.
+
+    Examples:
+        >>> await get_block_timestamp_async(12345678)
+        1609459200
+
+    See Also:
+        - :func:`get_block_timestamp`
+        - :func:`get_block_at_timestamp`
+    """
     import y._db.utils.utils as db
 
     if ts := await db.get_block_timestamp(height, sync=False):
@@ -78,10 +115,32 @@ async def get_block_timestamp_async(height: int) -> int:
 # TODO: deprecate
 @memory.cache()
 def last_block_on_date(date: Union[str, datetime.date]) -> int:
-    """Returns the last block on a given `date`. You can pass either a `datetime.date` object or a date string formatted as 'YYYY-MM-DD'."""
+    """
+    Returns the last block on a given date. You can pass either a `datetime.date` object or a date string formatted as 'YYYY-MM-DD'.
+
+    .. warning::
+        This function is marked for deprecation and may be removed in future versions. It is recommended to use alternative methods for obtaining block information.
+
+    Args:
+        date: The date for which to find the last block.
+
+    Returns:
+        The block number of the last block on the given date.
+
+    Raises:
+        TypeError: If a `datetime.datetime` object is passed instead of a `datetime.date`.
+
+    Example:
+        >>> last_block_on_date('2023-01-01')
+        12345678
+
+    See Also:
+        - :func:`get_block_timestamp`
+        - :func:`get_block_timestamp_async`
+    """
     if isinstance(date, datetime.datetime):
         raise TypeError(
-            "You can not pass in a `datetime.datetime` object. Please call date() on your input before passing it to this funciton."
+            "You can not pass in a `datetime.datetime` object. Please call date() on your input before passing it to this function."
         )
     if not isinstance(date, datetime.date):
         date = datetime.datetime.strptime(date, "%Y-%m-%d").date()
@@ -107,12 +166,31 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
 
 @a_sync_ttl_cache
 async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
+    """
+    Get the block number just before a specific timestamp.
+
+    This function returns the block number at the given timestamp, which is the block number just before the specified timestamp.
+
+    Args:
+        timestamp: The timestamp to find the block for.
+
+    Returns:
+        The block number just before the given timestamp.
+
+    Example:
+        >>> await get_block_at_timestamp(datetime.datetime(2023, 1, 1))
+        12345678
+
+    See Also:
+        - :func:`get_block_timestamp`
+        - :func:`get_block_timestamp_async`
+    """
     import y._db.utils.utils as db
 
     if block_at_timestamp := await db.get_block_at_timestamp(timestamp):
         return block_at_timestamp
 
-    # TODO: invert this and use this fn inside of closest_block_after_timestamp for backwards compatability before deprecating closest_block_after_timestamp
+    # TODO: invert this and use this fn inside of closest_block_after_timestamp for backwards compatibility before deprecating closest_block_after_timestamp
     block_after_timestamp = await closest_block_after_timestamp_async(timestamp)
     block_at_timestamp = block_after_timestamp - 1
     db.set_block_at_timestamp(timestamp, block_at_timestamp)
@@ -120,6 +198,24 @@ async def get_block_at_timestamp(timestamp: datetime.datetime) -> int:
 
 
 def _parse_timestamp(timestamp: Timestamp) -> UnixTimestamp:
+    """
+    Parse a timestamp into a Unix timestamp.
+
+    Args:
+        timestamp: The timestamp to parse.
+
+    Returns:
+        The Unix timestamp.
+
+    Raises:
+        TypeError: If the input is not a valid timestamp type.
+
+    Examples:
+        >>> _parse_timestamp(datetime.datetime(2023, 1, 1))
+        1672531200
+        >>> _parse_timestamp(1672531200)
+        1672531200
+    """
     if isinstance(timestamp, datetime.datetime):
         timestamp = int(timestamp.timestamp())
     elif not isinstance(timestamp, int):
@@ -131,6 +227,27 @@ def _parse_timestamp(timestamp: Timestamp) -> UnixTimestamp:
 def closest_block_after_timestamp(
     timestamp: Timestamp, wait_for_block_if_needed: bool = False
 ) -> int:
+    """
+    Get the closest block after a given timestamp.
+
+    Args:
+        timestamp: The timestamp to find the closest block after.
+        wait_for_block_if_needed: Whether to wait for a block if needed.
+
+    Returns:
+        The block number closest after the given timestamp.
+
+    Raises:
+        NoBlockFound: If no block is found after the timestamp.
+
+    Example:
+        >>> closest_block_after_timestamp(1672531199)
+        12345678
+
+    See Also:
+        - :func:`get_block_at_timestamp`
+        - :func:`get_block_timestamp`
+    """
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
         try:
@@ -149,6 +266,27 @@ def closest_block_after_timestamp(
 async def closest_block_after_timestamp_async(
     timestamp: Timestamp, wait_for_block_if_needed: bool = False
 ) -> int:
+    """
+    Asynchronously get the closest block after a given timestamp.
+
+    Args:
+        timestamp: The timestamp to find the closest block after.
+        wait_for_block_if_needed: Whether to wait for a block if needed.
+
+    Returns:
+        The block number closest after the given timestamp.
+
+    Raises:
+        NoBlockFound: If no block is found after the timestamp.
+
+    Example:
+        >>> await closest_block_after_timestamp_async(1672531199)
+        12345678
+
+    See Also:
+        - :func:`get_block_at_timestamp`
+        - :func:`get_block_timestamp_async`
+    """
     timestamp = _parse_timestamp(timestamp)
     while wait_for_block_if_needed:
         try:
@@ -193,6 +331,15 @@ def _closest_block_after_timestamp_cached(timestamp: int) -> int:
 @ttl_cache(ttl=300)
 @eth_retry.auto_retry
 def check_node() -> None:
+    """
+    Check if the Ethereum node is synced.
+
+    Raises:
+        y.exceptions.NodeNotSynced: If the node is not synced.
+
+    Examples:
+        >>> check_node()
+    """
     if GANACHE_FORK:
         return
     current_time = time.time()
@@ -206,6 +353,15 @@ def check_node() -> None:
 @alru_cache(ttl=300)
 @eth_retry.auto_retry
 async def check_node_async() -> None:
+    """
+    Asynchronously check if the Ethereum node is synced.
+
+    Raises:
+        y.exceptions.NodeNotSynced: If the node is not synced.
+
+    Examples:
+        >>> await check_node_async()
+    """
     if GANACHE_FORK:
         return
     current_time = time.time()

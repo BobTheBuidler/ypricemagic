@@ -84,6 +84,16 @@ class PoolSpecialization(IntEnum):
 
     @staticmethod
     def with_immutable_tokens() -> List["PoolSpecialization"]:
+        """
+        Get a list of pool specializations with immutable tokens.
+
+        Returns:
+            A list of :class:`~PoolSpecialization` enums representing pools with immutable tokens.
+
+        Examples:
+            >>> PoolSpecialization.with_immutable_tokens()
+            [<PoolSpecialization.ComposableStablePool: 0>, <PoolSpecialization.WeightedPool: 1>, <PoolSpecialization.WeightedPool2Tokens: 2>, <PoolSpecialization.CronV1Pool: -1>]
+        """
         return [
             PoolSpecialization.ComposableStablePool,
             PoolSpecialization.WeightedPool,
@@ -94,6 +104,16 @@ class PoolSpecialization(IntEnum):
 
 class BalancerV2Vault(ContractBase):
     def __init__(self, address: AnyAddressType, *, asynchronous: bool = False) -> None:
+        """
+        Initialize a BalancerV2Vault instance.
+
+        Args:
+            address: The address of the Balancer V2 Vault.
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> vault = BalancerV2Vault("0xBA12222222228d8Ba445958a75a0704d566BF2C8")
+        """
         super().__init__(address, asynchronous=asynchronous)
         self._events = BalancerEvents(
             self,
@@ -110,6 +130,19 @@ class BalancerV2Vault(ContractBase):
     async def pools(
         self, block: Optional[Block] = None
     ) -> AsyncIterator["BalancerV2Pool"]:
+        """
+        Asynchronously iterate over Balancer V2 pools.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+
+        Yields:
+            Instances of :class:`~BalancerV2Pool`.
+
+        Examples:
+            >>> async for pool in vault.pools():
+            ...     print(pool)
+        """
         async for pool in self._events.events(to_block=block):
             yield pool
 
@@ -117,6 +150,20 @@ class BalancerV2Vault(ContractBase):
     async def pools_for_token(
         self, token: Address, block: Optional[Block] = None
     ) -> AsyncIterator["BalancerV2Pool"]:
+        """
+        Asynchronously iterate over Balancer V2 pools containing a specific token.
+
+        Args:
+            token: The address of the token to search for.
+            block: The block number to query. Defaults to the latest block.
+
+        Yields:
+            Instances of :class:`~BalancerV2Pool` containing the specified token.
+
+        Examples:
+            >>> async for pool in vault.pools_for_token("0xTokenAddress"):
+            ...     print(pool)
+        """
         tasks = a_sync.map(BalancerV2Pool.tokens, block=block)
         debug_logs = logger.isEnabledFor(DEBUG)
         async for pool in self.pools(block=block):
@@ -138,6 +185,19 @@ class BalancerV2Vault(ContractBase):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def get_pool_tokens(self, pool_id: HexBytes, block: Optional[Block] = None):
+        """
+        Get the tokens and balances for a specific pool.
+
+        Args:
+            pool_id: The ID of the pool.
+            block: The block number to query. Defaults to the latest block.
+
+        Returns:
+            A tuple containing the tokens and their balances.
+
+        Examples:
+            >>> tokens, balances = await vault.get_pool_tokens(pool_id)
+        """
         contract = await contracts.Contract.coroutine(self.address)
         return await contract.getPoolTokens.coroutine(pool_id, block_identifier=block)
 
@@ -146,6 +206,19 @@ class BalancerV2Vault(ContractBase):
     async def get_pool_info(
         self, poolids: Tuple[HexBytes, ...], block: Optional[Block] = None
     ) -> List[Tuple]:
+        """
+        Get information for multiple pools.
+
+        Args:
+            poolids: A tuple of pool IDs.
+            block: The block number to query. Defaults to the latest block.
+
+        Returns:
+            A list of tuples containing pool information.
+
+        Examples:
+            >>> pool_info = await vault.get_pool_info((pool_id1, pool_id2))
+        """
         contract = await contracts.Contract.coroutine(self.address)
         return await contract.getPoolTokens.map(poolids, block_identifier=block)
 
@@ -154,6 +227,19 @@ class BalancerV2Vault(ContractBase):
     async def deepest_pool_for(
         self, token_address: Address, block: Optional[Block] = None
     ) -> "BalancerV2Pool":
+        """
+        Find the deepest pool for a specific token.
+
+        Args:
+            token_address: The address of the token.
+            block: The block number to query. Defaults to the latest block.
+
+        Returns:
+            The :class:`~BalancerV2Pool` with the deepest liquidity for the specified token.
+
+        Examples:
+            >>> deepest_pool = await vault.deepest_pool_for("0xTokenAddress")
+        """
         balance_tasks: a_sync.TaskMapping[BalancerV2Pool, Optional[WeiBalance]]
 
         logger = get_price_logger(token_address, block, extra="balancer.v2")
@@ -177,12 +263,34 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
     def __init__(
         self, vault: BalancerV2Vault, *args, asynchronous: bool = False, **kwargs
     ):
+        """
+        Initialize a BalancerEvents instance.
+
+        Args:
+            vault: The associated :class:`~BalancerV2Vault`.
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> events = BalancerEvents(vault)
+        """
         super().__init__(*args, **kwargs)
         self.vault = vault
         self.asynchronous = asynchronous
         self.__tasks = []
 
     def _include_event(self, event: _EventItem) -> Awaitable[bool]:
+        """
+        Determine whether to include a specific event.
+
+        Args:
+            event: The event to evaluate.
+
+        Returns:
+            A boolean indicating whether to include the event.
+
+        Examples:
+            >>> include = await events._include_event(event)
+        """
         if event["poolAddress"] in MESSED_UP_POOLS:
             return False
         # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
@@ -191,6 +299,18 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         return self.executor.run(contracts.is_contract, event["poolAddress"])
 
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
+        """
+        Process a specific event and return the associated Balancer V2 pool.
+
+        Args:
+            event: The event to process.
+
+        Returns:
+            The associated :class:`~BalancerV2Pool`.
+
+        Examples:
+            >>> pool = events._process_event(event)
+        """
         try:
             specialization = PoolSpecialization(event["specialization"])
         except ValueError:
@@ -210,9 +330,30 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         return pool
 
     def _get_block_for_obj(self, pool: "BalancerV2Pool") -> int:
+        """
+        Get the block number for a specific pool.
+
+        Args:
+            pool: The :class:`~BalancerV2Pool` to evaluate.
+
+        Returns:
+            The block number.
+
+        Examples:
+            >>> block_number = events._get_block_for_obj(pool)
+        """
         return pool._deploy_block
 
     def _task_done_callback(self, t: asyncio.Task):
+        """
+        Callback function for when a task is completed.
+
+        Args:
+            t: The completed task.
+
+        Examples:
+            >>> events._task_done_callback(task)
+        """
         self.__tasks.remove(t)
         if not t.cancelled():
             # get the exc so it doesn't log, it will come up later
@@ -239,6 +380,20 @@ class BalancerV2Pool(BalancerPool):
         asynchronous: bool = False,
         _deploy_block: Optional[Block] = None,
     ):
+        """
+        Initialize a BalancerV2Pool instance.
+
+        Args:
+            address: The address of the pool.
+            id: The ID of the pool.
+            specialization: The specialization of the pool.
+            vault: The associated :class:`~BalancerV2Vault`.
+            asynchronous: Whether to use asynchronous operations.
+            _deploy_block: The block number when the pool was deployed.
+
+        Examples:
+            >>> pool = BalancerV2Pool("0xPoolAddress")
+        """
         super().__init__(
             address, asynchronous=asynchronous, _deploy_block=_deploy_block
         )
@@ -251,6 +406,15 @@ class BalancerV2Pool(BalancerPool):
 
     @a_sync.aka.cached_property
     async def id(self) -> PoolId:
+        """
+        Get the ID of the pool.
+
+        Returns:
+            The pool ID.
+
+        Examples:
+            >>> pool_id = await pool.id
+        """
         return await Call(self.address, ["getPoolId()(bytes32)"])
 
     __id__: HiddenMethodDescriptor[Self, PoolId]
@@ -258,6 +422,15 @@ class BalancerV2Pool(BalancerPool):
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def vault(self) -> Optional[BalancerV2Vault]:
+        """
+        Get the associated Balancer V2 Vault.
+
+        Returns:
+            The associated :class:`~BalancerV2Vault`, or None if not found.
+
+        Examples:
+            >>> vault = await pool.vault
+        """
         with suppress(ContractLogicError):
             vault = await Call(self.address, ["getVault()(address)"])
             if vault == ZERO_ADDRESS:
@@ -276,6 +449,15 @@ class BalancerV2Pool(BalancerPool):
     @a_sync.aka.cached_property
     @stuck_coro_debugger
     async def pool_type(self) -> Union[PoolSpecialization, int]:
+        """
+        Get the type of the pool.
+
+        Returns:
+            The pool type as a :class:`~PoolSpecialization` or an integer.
+
+        Examples:
+            >>> pool_type = await pool.pool_type
+        """
         vault = await self.__vault__
         if vault is None:
             raise ValueError(f"{self} has no vault") from None
@@ -307,6 +489,19 @@ class BalancerV2Pool(BalancerPool):
     async def get_tvl(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Optional[UsdValue]:
+        """
+        Get the total value locked (TVL) in the pool in USD.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            The TVL in USD, or None if it cannot be determined.
+
+        Examples:
+            >>> tvl = await pool.get_tvl()
+        """
         if balances := await self.get_balances(
             block=block, skip_cache=skip_cache, sync=False
         ):
@@ -319,6 +514,19 @@ class BalancerV2Pool(BalancerPool):
     async def get_balances(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Dict[ERC20, WeiBalance]:
+        """
+        Get the balances of tokens in the pool.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            A dictionary mapping :class:`~ERC20` tokens to their :class:`~WeiBalance` in the pool.
+
+        Examples:
+            >>> balances = await pool.get_balances()
+        """
         vault = await self.__vault__
         if vault is None:
             return {}
@@ -340,6 +548,20 @@ class BalancerV2Pool(BalancerPool):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[WeiBalance]:
+        """
+        Get the balance of a specific token in the pool.
+
+        Args:
+            token_address: The address of the token.
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            The :class:`~WeiBalance` of the specified token in the pool, or None if not found.
+
+        Examples:
+            >>> balance = await pool.get_balance("0xTokenAddress")
+        """
         if info := await self.get_balances(block=block, sync=False):
             try:
                 return info[token_address]
@@ -353,6 +575,20 @@ class BalancerV2Pool(BalancerPool):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
+        """
+        Get the price of a specific token in the pool in USD.
+
+        Args:
+            token_address: The address of the token.
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            The price of the specified token in USD, or None if it cannot be determined.
+
+        Examples:
+            >>> price = await pool.get_token_price("0xTokenAddress")
+        """
         get_balances_coro = self.get_balances(
             block=block, skip_cache=skip_cache, sync=False
         )
@@ -398,6 +634,19 @@ class BalancerV2Pool(BalancerPool):
     async def tokens(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Tuple[ERC20, ...]:
+        """
+        Get the tokens in the pool.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            A tuple of :class:`~ERC20` tokens in the pool.
+
+        Examples:
+            >>> tokens = await pool.tokens()
+        """
         if self._tokens:
             return self._tokens
         tokens = tuple(
@@ -412,6 +661,18 @@ class BalancerV2Pool(BalancerPool):
     @a_sync_ttl_cache
     @stuck_coro_debugger
     async def weights(self, block: Optional[Block] = None) -> List[int]:
+        """
+        Get the weights of tokens in the pool.
+
+        Args:
+            block: The block number to query. Defaults to the latest block.
+
+        Returns:
+            A list of weights for the tokens in the pool.
+
+        Examples:
+            >>> weights = await pool.weights()
+        """
         contract = await Contract.coroutine(self.address)
         try:
             return await contract.getNormalizedWeights.coroutine(block_identifier=block)
@@ -434,6 +695,15 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
     )
 
     def __init__(self, *, asynchronous: bool = False) -> None:
+        """
+        Initialize a BalancerV2 instance.
+
+        Args:
+            asynchronous: Whether to use asynchronous operations.
+
+        Examples:
+            >>> balancer = BalancerV2(asynchronous=True)
+        """
         super().__init__()
         self.asynchronous = asynchronous
         self.vaults = [
@@ -448,6 +718,20 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> UsdPrice:
+        """
+        Get the price of a specific token in USD.
+
+        Args:
+            token_address: The address of the token.
+            block: The block number to query. Defaults to the latest block.
+            skip_cache: Whether to skip the cache.
+
+        Returns:
+            The price of the specified token in USD.
+
+        Examples:
+            >>> price = await balancer.get_token_price("0xTokenAddress")
+        """
         if deepest_pool := await self.deepest_pool_for(
             token_address, block=block, sync=False
         ):
@@ -461,6 +745,19 @@ class BalancerV2(BalancerABC[BalancerV2Pool]):
     async def deepest_pool_for(
         self, token_address: Address, block: Optional[Block] = None
     ) -> Optional[BalancerV2Pool]:
+        """
+        Find the deepest pool for a specific token.
+
+        Args:
+            token_address: The address of the token.
+            block: The block number to query. Defaults to the latest block.
+
+        Returns:
+            The :class:`~BalancerV2Pool` with the deepest liquidity for the specified token, or None if not found.
+
+        Examples:
+            >>> deepest_pool = await balancer.deepest_pool_for("0xTokenAddress")
+        """
         kwargs = {"token_address": token_address, "block": block}
         deepest_pools = BalancerV2Vault.deepest_pool_for.map(self.vaults, **kwargs)
         if deepest_pools := {

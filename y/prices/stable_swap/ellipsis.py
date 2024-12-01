@@ -16,6 +16,25 @@ logger = logging.getLogger(__name__)
 
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
 async def is_eps_rewards_pool(token_address: AnyAddressType) -> bool:
+    """
+    Check if a given token address is an EPS rewards pool.
+
+    This function verifies if the specified token address has the methods
+    associated with an EPS rewards pool.
+
+    Args:
+        token_address: The address of the token to check.
+
+    Returns:
+        True if the token address is an EPS rewards pool, False otherwise.
+
+    Examples:
+        >>> await is_eps_rewards_pool("0x1234567890abcdef1234567890abcdef12345678")
+        True
+
+    See Also:
+        - :func:`y.contracts.has_methods`
+    """
     return await has_methods(
         token_address,
         (
@@ -34,6 +53,29 @@ async def get_price(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
+    """
+    Get the USD price of a token at a specific block.
+
+    This function calculates the price of a token in USD by determining the
+    total value locked (TVL) and dividing it by the total supply of the token.
+
+    Args:
+        token_address: The address of the token to get the price for.
+        block: The block number to query. Defaults to the latest block.
+        skip_cache: If True, skip using the cache while fetching price data.
+
+    Returns:
+        The price of the token in USD.
+
+    Examples:
+        >>> await get_price("0x1234567890abcdef1234567890abcdef12345678")
+        UsdPrice(1.23)
+
+    See Also:
+        - :class:`y.classes.common.ERC20`
+        - :class:`y.classes.common.WeiBalance`
+        - :func:`y.utils.raw_calls.raw_call`
+    """
     minter = await raw_call(
         token_address, "minter()", output="address", block=block, sync=False
     )
