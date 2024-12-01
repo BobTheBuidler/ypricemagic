@@ -101,9 +101,12 @@ class VelodromeRouterV2(SolidlyRouterBase):
         See Also:
             - :class:`SolidlyRouterBase`
         """
+
         super().__init__(*args, **kwargs)
+
         self.default_factory = default_factory[chain.id]
         """The default factory address for the current network."""
+
         self._all_pools = Call(self.factory, ["allPools(uint256)(address)"])
         """A prepared call for fetching all pools from the factory."""
 
