@@ -176,11 +176,12 @@ class BalancerV2Vault(ContractBase):
                 # start the task now, we can await it later
                 tasks[pool]
 
-        async for pool, tokens in tasks.map(pop=True):
-            if token in tokens:
-                if debug_logs:
-                    logger._log(DEBUG, "%s contains %s", (pool, token))
-                yield pool
+        if tasks:
+            async for pool, tokens in tasks.map(pop=True):
+                if token in tokens:
+                    if debug_logs:
+                        logger._log(DEBUG, "%s contains %s", (pool, token))
+                    yield pool
 
     @a_sync_ttl_cache
     @stuck_coro_debugger
