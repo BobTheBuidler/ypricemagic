@@ -1147,9 +1147,8 @@ async def _fetch_from_explorer_async(address: str, action: str, silent: bool) ->
     ):
         address = _resolve_address(code[120:160])
 
-    return await _fetch_explorer_data(
-        url, silent=silent, module="contract", action=action, address=address
-    )
+    params = {"module": "contract", "action": action, "address": address}
+    return await _fetch_explorer_data(url, silent=silent, params=params)
 
 
 @lru_cache(maxsize=None)
