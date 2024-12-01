@@ -19,7 +19,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
     The differentiation between synchronous and asynchronous contexts is achieved by using the
     `__a_sync_instance_will_be_sync__` method to determine the context during instance creation.
-    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict` keyed by the context 
+    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict` keyed by the context
     (synchronous or asynchronous). This ensures that separate instances are created for each context.
 
     Examples:
@@ -46,7 +46,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
             bases: A tuple of base classes.
             namespace: A dictionary representing the class namespace.
         """
-        
+
         super().__init__(name, bases, namespace)
 
         cls.__instances: DefaultDict[bool, ChecksumAddressDict[T]] = defaultdict(

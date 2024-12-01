@@ -422,7 +422,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     yield obj
                     yielded += 1
                 done_thru = self._get_block_for_obj(obj)
-                
+
             else:
                 checkpoint_block = None
                 for _block in self._checkpoints:

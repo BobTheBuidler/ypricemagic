@@ -147,7 +147,7 @@ async def get_balances(
         Token0 Balance: 1000.0, Token1 Balance: 2000.0
 
     Note:
-        If the contract probed has the correct method name but the method returns the wrong type for Popsicle, 
+        If the contract probed has the correct method name but the method returns the wrong type for Popsicle,
         an exception "not enough values to unpack (expected 3, got 2)" will be caught, and the function will return None.
 
     See Also:
