@@ -421,19 +421,22 @@ class Filter(_DiskCachedMixin[T, C]):
                 for obj in self._objects:
                     yield obj
                     yielded += 1
+                done_thru = self._get_block_for_obj(obj)
+                
             else:
+                checkpoint_block = None
                 for _block in self._checkpoints:
                     if _block <= block:
                         checkpoint_block = _block
                     else:
                         break
 
-                checkpoint_index = self._checkpoints[checkpoint_block]
-                for obj in self._objects[:checkpoint_index]:
-                    yield obj
-                    yielded += 1
-
-            done_thru = self._get_block_for_obj(obj)
+                if checkpoint_block:
+                    checkpoint_index = self._checkpoints[checkpoint_block]
+                    for obj in self._objects[:checkpoint_index]:
+                        yield obj
+                        yielded += 1
+                    done_thru = self._get_block_for_obj(obj)
 
         while True:
             if block is None or done_thru < block:
