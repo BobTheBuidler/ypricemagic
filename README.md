@@ -1,5 +1,7 @@
 ## Summary
-Use this tool to extract historical on-chain price data from an archive node. ypricemagic is built using the [ez-a-sync framework](https://github.com/BobTheBuidler/ez-a-sync) so it will work seamlessly with both sync and async Python codebases.
+Use this tool to extract historical on-chain price data from an archive node.
+
+ypricemagic is built to work seamlessly with both sync and async Python codebases using the [ez-a-sync framework](https://github.com/BobTheBuidler/ez-a-sync).
 
 ## Installation
 ypricemagic is published on [PyPI](https://pypi.org/). Simply install it just as you would any other library.
