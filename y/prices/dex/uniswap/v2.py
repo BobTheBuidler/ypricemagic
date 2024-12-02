@@ -428,11 +428,14 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
 def _log_factory_helper_failure(
     e: Exception, token_address, block, _ignore_pools
 ) -> str:
-    stre = f"{e}"
+    stre = f"{e}".lower()
     if "timeout" in stre:
         msg = "timeout"
     elif "out of gas" in stre:
         msg = "out of gas"
+    elif "invalid request" in stre:
+        # TODO: debug where these come from
+        msg "invalid request"
     elif isinstance(e, Revert):
         # TODO: debug me!
         msg = "reverted"
