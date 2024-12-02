@@ -61,7 +61,7 @@
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-contents">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -1328,8 +1328,34 @@ to decode them if needed.</p>
 </dd></dl>
 
 </section>
-<section id="y-utils-fakes-module">
-<h2>y.utils.fakes module<a class="headerlink" href="#y-utils-fakes-module" title="Link to this heading"></a></h2>
+<section id="module-y.utils.fakes">
+<span id="y-utils-fakes-module"></span><h2>y.utils.fakes module<a class="headerlink" href="#module-y.utils.fakes" title="Link to this heading"></a></h2>
+<dl class="py data">
+<dt class="sig sig-object py" id="y.utils.fakes.FAKE_TOKENS">
+<span class="sig-prename descclassname"><span class="pre">y.utils.fakes.</span></span><span class="sig-name descname"><span class="pre">FAKE_TOKENS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['0xB1D75F4Fb67c7e93f05890f5eEAC2F3884991FF9',</span> <span class="pre">'0xcD545222eBf01143c1188bF712ee5e89c4278Afa',</span> <span class="pre">'0x6B2751Cd339217B2CAeD3485fc7a92256681053F',</span> <span class="pre">'0x224e13dF4b4DbF41820ec848B19bB6f015F8bf7b',</span> <span class="pre">'0x719A75aa3Dc05DEF57Be2F3eC0f4098475631D1c']</span></em><a class="headerlink" href="#y.utils.fakes.FAKE_TOKENS" title="Link to this definition"></a></dt>
+<dd><p>FAKE_TOKENS is a dictionary that maps network identifiers to lists of fake token addresses.</p>
+<p>This dictionary is used to provide a set of fake token addresses for different blockchain networks.
+The keys are network identifiers from the <a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> enum, and the values are lists of
+fake token addresses represented as strings.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.fakes</span> <span class="kn">import</span> <span class="n">FAKE_TOKENS</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">FAKE_TOKENS</span><span class="p">[</span><span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">]</span>
+<span class="go">[&#39;0xB1D75F4Fb67c7e93f05890f5eEAC2F3884991FF9&#39;, &#39;0xcD545222eBf01143c1188bF712ee5e89c4278Afa&#39;, ...]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">FAKE_TOKENS</span><span class="p">[</span><span class="n">Network</span><span class="o">.</span><span class="n">Fantom</span><span class="p">]</span>
+<span class="go">[&#39;0x1B27A9dE6a775F98aaA5B90B62a4e2A0B84DbDd9&#39;, &#39;0x6E0aA9718C56Ef5d19ccf57955284C7CD95737be&#39;, ...]</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> for network ID definitions.</p></li>
+<li><p><code class="xref py py-mod docutils literal notranslate"><span class="pre">brownie</span></code> for blockchain interaction.</p></li>
+</ul>
+</div>
+</dd></dl>
+
 </section>
 <section id="module-y.utils.gather">
 <span id="y-utils-gather-module"></span><h2>y.utils.gather module<a class="headerlink" href="#module-y.utils.gather" title="Link to this heading"></a></h2>
