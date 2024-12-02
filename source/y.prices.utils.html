@@ -62,7 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -101,92 +101,11 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils.buckets">
-<span id="y-prices-utils-buckets-module"></span><h2>y.prices.utils.buckets module<a class="headerlink" href="#module-y.prices.utils.buckets" title="Link to this heading"></a></h2>
-<dl class="py a_sync_function">
-<dt class="sig sig-object py" id="y.prices.utils.buckets.check_bucket">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.buckets.</span></span><span class="sig-name descname"><span class="pre">check_bucket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/y/prices/utils/buckets.html#check_bucket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.buckets.check_bucket" title="Link to this definition"></a></dt>
-<dd><blockquote>
-<div><p>Determine the category or ‘bucket’ of a given token.</p>
-<p>This function attempts to classify a token into a specific category based on its characteristics.
-It first checks the database for a cached bucket using <code class="xref py py-func docutils literal notranslate"><span class="pre">y._db.utils.token.get_bucket()</span></code>.
-If not found, it performs a series of checks that may involve string comparisons, calls to the blockchain,
-and contract initializations. The determined bucket is then stored using <code class="xref py py-func docutils literal notranslate"><span class="pre">db.set_bucket()</span></code>.</p>
-<dl>
-<dt>Args:</dt><dd><p>token: The token address to classify.</p>
-</dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-<span class="go">&#39;stable usd&#39;</span>
-</pre></div>
-</div>
-</dd>
-<dt>See Also:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="y.html#y.convert.to_address_async" title="y.convert.to_address_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.convert.to_address_async()</span></code></a></p></li>
-<li><p><a class="reference internal" href="y.utils.html#y.utils.logging.get_price_logger" title="y.utils.logging.get_price_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.logging.get_price_logger()</span></code></a></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">_check_bucket_helper()</span></code></p></li>
-</ul>
-</dd>
-</dl>
-</div></blockquote>
-<p>Since <cite>check_bucket</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionSyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionSyncDefault</span></code></a>, you can optionally pass <cite>sync=False</cite> or <cite>asynchronous=True</cite> to force it to return a coroutine. Without either kwarg, it will run synchronously.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p>
-</dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)">str</a></p>
-</dd>
-</dl>
-</dd></dl>
-
+<section id="y-prices-utils-buckets-module">
+<h2>y.prices.utils.buckets module<a class="headerlink" href="#y-prices-utils-buckets-module" title="Link to this heading"></a></h2>
 </section>
-<section id="module-y.prices.utils.sense_check">
-<span id="y-prices-utils-sense-check-module"></span><h2>y.prices.utils.sense_check module<a class="headerlink" href="#module-y.prices.utils.sense_check" title="Link to this heading"></a></h2>
-<p>This module contains utilities for sense checking prices returned from the library.</p>
-<p>A user will not need to use anything here.</p>
-<p>Developers can skip the sense check for additional tokens by manually adding them to the
-<a class="reference internal" href="#y.prices.utils.sense_check.ACCEPTABLE_HIGH_PRICES" title="y.prices.utils.sense_check.ACCEPTABLE_HIGH_PRICES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">ACCEPTABLE_HIGH_PRICES</span></code></a> mapping in the source code. This involves directly editing
-the mapping to include the new token addresses under the appropriate network. Note that
-this requires modifying the source code, which may not be ideal for all users.</p>
-<dl class="py function">
-<dt class="sig sig-object py" id="y.prices.utils.sense_check.sense_check">
-<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.sense_check.</span></span><span class="sig-name descname"><span class="pre">sense_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">price</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/utils/sense_check.html#sense_check"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.sense_check.sense_check" title="Link to this definition"></a></dt>
-<dd><p>Performs a sense check on the given token price and logs a warning if it is unexpectedly high.</p>
-<p>This is just to help catch potential bugs before they cause issues.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>token_address</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The address of the token.</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><em>None</em>) – The optional block number to use for the error message.</p></li>
-<li><p><strong>price</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.13)"><em>float</em></a>) – The price to check.</p></li>
-</ul>
-</dd>
-</dl>
-<p class="rubric">Example</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">sense_check</span><span class="p">(</span><span class="s2">&quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;</span><span class="p">,</span> <span class="mi">14_000_000</span><span class="p">,</span> <span class="mf">123450000.00</span><span class="p">)</span>
-<span class="go">unusually high price ($123450000.00) returned for USDC &quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot; on Mainnet block 14000000. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding.</span>
-</pre></div>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This function checks if the price is within acceptable ranges based on the token type and network.
-It will not log for various special cases such as ETH-like tokens, BTC-like tokens, LP tokens,
-and vault tokens where the underlying is exempt from the sense check.</p>
-</div>
-<div class="admonition seealso">
-<p class="admonition-title">See also</p>
-<p><code class="xref py py-func docutils literal notranslate"><span class="pre">_exit_sense_check()</span></code> for details on tokens that are exempt from the sense check.</p>
-</div>
-</dd></dl>
-
-<dl class="py data">
-<dt class="sig sig-object py" id="y.prices.utils.sense_check.ACCEPTABLE_HIGH_PRICES">
-<span class="sig-prename descclassname"><span class="pre">y.prices.utils.sense_check.</span></span><span class="sig-name descname"><span class="pre">ACCEPTABLE_HIGH_PRICES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE',</span> <span class="pre">'0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0',</span> <span class="pre">'0xA3D87FffcE63B53E0d54fAa1cc983B7eB0b74A9c',</span> <span class="pre">'0xaA17A236F2bAdc98DDc0Cf999AbB47D47Fc0A6Cf',</span> <span class="pre">'0x53a901d48795C58f485cBB38df08FA96a24669D5',</span> <span class="pre">'0xC4C319E2D4d66CcA4464C0c2B32c9Bd23ebe784e',</span> <span class="pre">'0x06325440D014e39736583c165C2963BA99fAf14E',</span> <span class="pre">'0x5e74C9036fb86BD7eCdcb084a0673EFc32eA31cb',</span> <span class="pre">'0xae78736Cd615f374D3085123A210448E74Fc6393',</span> <span class="pre">'0xE95A203B1a91a908F9B9CE46459d101078c2c3cb',</span> <span class="pre">'0xae7ab96520DE3A18E5e111B5EaAb095312D7fE84',</span> <span class="pre">'0x9559Aaa82d9649C7A7b220E7c461d2E74c9a3593',</span> <span class="pre">'0x836A808d4828586A69364065A1e064609F5078c7',</span> <span class="pre">'0xc3D088842DcF02C13699F936BB83DFBBc6f721Ab',</span> <span class="pre">'0xC1330aCBbcE97cb9695B7ee161c0F95B875a8b0F',</span> <span class="pre">'0x5E8422345238F34275888049021821E8E08CAa1f',</span> <span class="pre">'0x856c4Efb76C1D1AE02e20CEB03A2A6a08b0b8dC3',</span> <span class="pre">'0xE72B141DF173b999AE7c1aDcbF60Cc9833Ce56a8',</span> <span class="pre">'0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5',</span> <span class="pre">'0x0100546F2cD4C9D97f798fFC9755E47865FF7Ee6',</span> <span class="pre">'0xBe9895146f7AF43049ca1c1AE358B0541Ea49704',</span> <span class="pre">'0x7C07F7aBe10CE8e33DC6C5aD68FE033085256A84',</span> <span class="pre">'0xA35b1B31Ce002FBF2058D22F30f95D405200A15b',</span> <span class="pre">'0x64351fC9810aDAd17A690E4e1717Df5e7e085160',</span> <span class="pre">'0x821A278dFff762c76410264303F25bF42e195C0C',</span> <span class="pre">'0xa2E3356610840701BDf5611a53974510Ae27E2e1',</span> <span class="pre">'0x1BED97CBC3c24A4fb5C069C6E311a967386131f7',</span> <span class="pre">'0x3A65cbaebBFecbeA5D0CB523ab56fDbda7fF9aAA',</span> <span class="pre">'0x6951bDC4734b9f7F3E1B74afeBC670c736A0EDB6',</span> <span class="pre">'0xf1C9acDc66974dFB6dEcB12aA385b9cD01190E38',</span> <span class="pre">'0xCd5fE23C85820F7B72D0926FC9b05b43E359b7ee',</span> <span class="pre">'0x04C154b66CB340F3Ae24111CC767e0184Ed00Cc6',</span> <span class="pre">'0x005F893EcD7bF9667195642f7649DA8163e23658',</span> <span class="pre">'0xc2e660C62F72c2ad35AcE6DB78a616215E2F2222',</span> <span class="pre">'0xA1290d69c65A6Fe4DF752f95823fae25cB99e5A7',</span> <span class="pre">'0x09db87A538BD693E9d08544577d5cCfAA6373A48',</span> <span class="pre">'0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D',</span> <span class="pre">'0xfE18be6b3Bd88A2D2A7f928d00292E7a9963CfC6',</span> <span class="pre">'0x49849C98ae39Fff122806C06791Fa73784FB3675',</span> <span class="pre">'0x075b1bb99792c9E1041bA13afEf80C91a1e70fB3',</span> <span class="pre">'0xb19059ebb43466C323583928285a49f558E572Fd',</span> <span class="pre">'0x64eda51d3Ad40D56b9dFc5554E06F94e1Dd786Fd',</span> <span class="pre">'0xDE5331AC4B3630f94853Ff322B66407e0D6331E8',</span> <span class="pre">'0x410e3E86ef427e30B9235497143881f717d93c2A',</span> <span class="pre">'0x2fE94ea3d5d4a175184081439753DE15AeF9d614',</span> <span class="pre">'0x0327112423F3A68efdF1fcF402F6c5CB9f7C33fd',</span> <span class="pre">'0x3212b29E33587A00FB1C83346f5dBFA69A458923',</span> <span class="pre">'0x5228a22e72ccC52d415EcFd199F99D0665E7733b',</span> <span class="pre">'0xFbdCA68601f835b27790D98bbb8eC7f05FDEaA9B',</span> <span class="pre">'0x0316EB71485b0Ab14103307bf65a021042c6d380',</span> <span class="pre">'0x9BE89D2a4cd102D8Fecc6BF9dA793be995C22541',</span> <span class="pre">'0x8064d9Ae6cDf087b1bcd5BDf3531bD5d8C537a68',</span> <span class="pre">'0x8dAEBADE922dF735c38C80C7eBD708Af50815fAa',</span> <span class="pre">'0x8751D4196027d4e6DA63716fA7786B5174F04C15',</span> <span class="pre">'0x66eFF5221ca926636224650Fd3B9c497FF828F7D',</span> <span class="pre">'0x18084fbA666a33d37592fA2633fD49a74DD93a88',</span> <span class="pre">'0x661c70333AA1850CcDBAe82776Bb436A0fCfeEfB',</span> <span class="pre">'0xcbB7C0000aB88B473b1f5aFd9ef808440eed33Bf',</span> <span class="pre">'0x45804880De22913dAFE09f4980848ECE6EcbAf78',</span> <span class="pre">'0x4922a015c4407F87432B179bb209e125432E4a2A',</span> <span class="pre">'0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',</span> <span class="pre">'0xFf71841EeFca78a64421db28060855036765c248',</span> <span class="pre">'0xa3f152837492340dAAf201F4dFeC6cD73A8a9760',</span> <span class="pre">'0x41252E8691e964f7DE35156B68493bAb6797a275',</span> <span class="pre">'0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44',</span> <span class="pre">'0xD5525D397898e5502075Ea5E830d8914f6F0affe',</span> <span class="pre">'0x9f8F72aA9304c8B593d555F12eF6589cC3A579A2',</span> <span class="pre">'0x3A283D9c08E8b55966afb64C515f5143cf907611',</span> <span class="pre">'0x23B608675a2B2fB1890d3ABBd85c5775c51691d5',</span> <span class="pre">'0xcA3d75aC011BF5aD07a98d02f18225F9bD9A6BDF',</span> <span class="pre">'0xc4AD29ba4B3c580e6D59105FFf484999997675Ff',</span> <span class="pre">'0xd075e95423C5c4BA1E122CaE0f4CdFA19b82881b',</span> <span class="pre">'0xe9F84dE264E91529aF07Fa2C746e934397810334',</span> <span class="pre">'0xa1d0E215a23d7030842FC67cE582a6aFa3CCaB83',</span> <span class="pre">'0x0fe629d1E84E171f8fF0C1Ded2Cc2221Caa48a3f',</span> <span class="pre">'0x5F0E628B693018f639D10e4A4F59BD4d8B2B6B44',</span> <span class="pre">'0xdBdb4d16EdA451D0503b854CF79D55697F90c8DF',</span> <span class="pre">'0x3aaDA3e213aBf8529606924d8D1c55CbDc70Bf74',</span> <span class="pre">'0x892A6f9dF0147e5f079b0993F486F9acA3c87881',</span> <span class="pre">'0x0ab87046fBb341D058F17CBC4c1133F25a20a52f',</span> <span class="pre">'0x97983236bE88107Cc8998733Ef73D8d969c52E37',</span> <span class="pre">'0x68749665FF8D2d112Fa859AA293F07A622782F38',</span> <span class="pre">'0xf5f5B97624542D72A9E06f04804Bf81baA15e2B4',</span> <span class="pre">'0x7F86Bf177Dd4F3494b841a37e810A34dD56c829B',</span> <span class="pre">'0x2889302a794dA87fBF1D6Db415C1492194663D13',</span> <span class="pre">'0xBfAb6FA95E0091ed66058ad493189D2cB29385E6',</span> <span class="pre">'0x641927E970222B10b2E8CDBC96b1B4F427316f16',</span> <span class="pre">'0x9cea2eD9e47059260C97d697f82b8A14EfA61EA5',</span> <span class="pre">'0x269616D549D7e8Eaa82DFb17028d0B212D11232A',</span> <span class="pre">'0x69BbE2FA02b4D90A944fF328663667DC32786385',</span> <span class="pre">'0xD70240Dd62F4ea9a6A2416e0073D72139489d2AA',</span> <span class="pre">'0x114f1388fAB456c4bA31B1850b244Eedcd024136',</span> <span class="pre">'0xEA47B64e1BFCCb773A0420247C0aa0a3C1D2E5C5',</span> <span class="pre">'0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',</span> <span class="pre">'0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599']</span></em><a class="headerlink" href="#y.prices.utils.sense_check.ACCEPTABLE_HIGH_PRICES" title="Link to this definition"></a></dt>
-<dd><p>List of tokens addresses for which high prices are acceptable.
-Nothing will be logged for tokens in this list.</p>
-</dd></dl>
-
+<section id="y-prices-utils-sense-check-module">
+<h2>y.prices.utils.sense_check module<a class="headerlink" href="#y-prices-utils-sense-check-module" title="Link to this heading"></a></h2>
 </section>
 <section id="module-y.prices.utils.ypriceapi">
 <span id="y-prices-utils-ypriceapi-module"></span><h2>y.prices.utils.ypriceapi module<a class="headerlink" href="#module-y.prices.utils.ypriceapi" title="Link to this heading"></a></h2>
@@ -368,8 +287,8 @@ from users.</p>
 </dd></dl>
 
 </section>
-<section id="module-y.prices.utils">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.prices.utils" title="Link to this heading"></a></h2>
+<section id="module-contents">
+<h2>Module contents<a class="headerlink" href="#module-contents" title="Link to this heading"></a></h2>
 </section>
 </section>
 

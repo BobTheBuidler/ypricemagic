@@ -62,7 +62,7 @@
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.exceptions">y.exceptions module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.networks">y.networks module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#module-y.time">y.time module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="y.html#module-y">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#module-contents">Module contents</a></li>
 </ul>
 </li>
 </ul>
@@ -470,7 +470,7 @@ skip_cache: Whether to skip the cache.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.2)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.0)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a>) – The token address.</p></li>
 <li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.0)"><em>BlockNumber</em></a>) – The block number to query.</p></li>
-<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – A tuple of pools to ignore.</p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><em>UniswapV2Pool</em><em> | </em><em>CurvePool</em><em>, </em><em>...</em><em>]</em>) – A tuple of pools to ignore.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1282,7 +1282,7 @@ by the total supply of the pool tokens.</p>
 <li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
 <li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return None instead of raising a <a class="reference internal" href="y.html#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a> on failure.</p></li>
 <li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, skip using the cache while fetching price data.</p></li>
-<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><em>UniswapV2Pool</em><em> | </em><em>CurvePool</em><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -1304,7 +1304,7 @@ by the total supply of the pool tokens.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></p></li>
 </ul>
 </div>
 </dd></dl>
@@ -2613,7 +2613,7 @@ by the total supply of the pool tokens.</p>
 <li><p><strong>block</strong> (<em>optional</em>) – The block number to query. Defaults to latest block.</p></li>
 <li><p><strong>return_None_on_failure</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, return None instead of raising a <a class="reference internal" href="y.html#y.exceptions.yPriceMagicError" title="y.exceptions.yPriceMagicError"><code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code></a> on failure.</p></li>
 <li><p><strong>skip_cache</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – If True, skip using the cache while fetching price data.</p></li>
-<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><a class="reference internal" href="y.prices.dex.uniswap.html#y.prices.dex.uniswap.v2.UniswapV2Pool" title="y.prices.dex.uniswap.v2.UniswapV2Pool"><em>UniswapV2Pool</em></a><em> | </em><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurvePool" title="y.prices.stable_swap.curve.CurvePool"><em>CurvePool</em></a><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
+<li><p><strong>ignore_pools</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Tuple" title="(in Python v3.13)"><em>Tuple</em></a><em>[</em><em>UniswapV2Pool</em><em> | </em><em>CurvePool</em><em>, </em><em>...</em><em>]</em>) – An optional tuple of pools to ignore when calculating the price.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -2635,7 +2635,7 @@ by the total supply of the pool tokens.</p>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
+<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></p></li>
 </ul>
 </div>
 </dd></dl>
