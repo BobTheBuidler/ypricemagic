@@ -2,8 +2,6 @@
 Use this tool to extract historical on-chain price data from an archive node. ypricemagic will work with both sync and async python codebases.
 
 ## Installation
-
-##### To install:
 ypricemagic is published on [pypi](https://pypi.org/). Simply install it just as you would any other library.
 ```
 pip install ypricemagic
@@ -16,10 +14,10 @@ If you have a PyYaml Issue with 3.4.1 not installing due to an issue with cython
 pip install wheel
 pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
 ```
-then try again
-`
+then try again:
+```
 pip install ypricemagic
-`
+```
 
 ## Network Configuration
 ypricemagic utilizes the Brownie framework for Ethereum smart contract interactions. As such, it's essential that users configure a Brownie network to use their chosen RPC. Ensure you have access to an Ethereum node (e.g., through Infura or Alchemy) and add the provided API endpoint to your Brownie network configuration.
