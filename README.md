@@ -1,14 +1,13 @@
 ## Summary
-Use this tool to extract historical on-chain price data from an archive node. ypricemagic will work with both sync and async python codebases.
+Use this tool to extract historical on-chain price data from an archive node.
+
+ypricemagic is built to work seamlessly with both sync and async Python codebases using the [ez-a-sync framework](https://github.com/BobTheBuidler/ez-a-sync).
 
 ## Installation
-
-##### To install:
-ypricemagic is published on [pypi](https://pypi.org/). Simply install it just as you would any other library.
+ypricemagic is published on [PyPI](https://pypi.org/). Simply install it just as you would any other library.
 ```
 pip install ypricemagic
 ```
-
 
 ##### Known Issues:
 Make sure you are using Python >= 3.8 and < 3.11  
@@ -17,10 +16,15 @@ If you have a PyYaml Issue with 3.4.1 not installing due to an issue with cython
 pip install wheel
 pip install --no-build-isolation "Cython<3" "pyyaml==5.4.1"
 ```
-then try again
-`
+then try again:
+```
 pip install ypricemagic
-`
+```
+
+## Network Configuration
+ypricemagic utilizes the Brownie framework for Ethereum smart contract interactions. As such, it's essential that users configure a Brownie network to use their chosen RPC. Ensure you have access to an Ethereum node (e.g., through Infura or Alchemy) and add the provided API endpoint to your Brownie network configuration.
+
+Refer to the [Brownie documentation on network management](https://eth-brownie.readthedocs.io/en/stable/network-management.html) for detailed guidance on setting up your networks. This setup is critical, as without it, ypricemagic will not be able to communicate with your RPC. 
 
 ## Usage
 
@@ -39,7 +43,7 @@ prices = get_prices(tokens, block)
 
 You can also use ypricemagic asynchronously:
 ```python
-price = await get_price(token,block, sync=False)
+price = await get_price(token, block, sync=False)
 
 # OR
 
