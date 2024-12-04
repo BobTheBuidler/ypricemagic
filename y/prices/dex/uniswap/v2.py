@@ -3,7 +3,7 @@ from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
 from logging import DEBUG, getLogger
-from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
+from typing import AsyncIterator, Dict, List, Optional, Set, Tuple
 
 import a_sync
 import a_sync.exceptions
@@ -427,7 +427,7 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
 
 def _log_factory_helper_failure(
     e: Exception, token_address, block, _ignore_pools
-) -> str:
+) -> None:
     stre = f"{e}".lower()
     if "timeout" in stre:
         msg = "timeout"
@@ -469,6 +469,7 @@ class UniswapRouterV2(ContractBase):
         self.get_amounts_out = Call(
             self.address, "getAmountsOut(uint,address[])(uint[])"
         ).coroutine
+        self._skip_factory_helper: Set[Address] = set()
 
         # we need the factory contract object cached in brownie so we can decode logs properly
         if not ContractBase(self.factory, asynchronous=self.asynchronous)._is_cached:
@@ -661,16 +662,26 @@ class UniswapRouterV2(ContractBase):
     async def get_pools_for(
         self, token_in: Address, block: Optional[Block] = None
     ) -> Dict[UniswapV2Pool, Address]:
-        if not self._supports_uniswap_helper:
+        if (
+            self._supports_factory_helper is False
+            or token_in in self._skip_factory_helper
+        ):
             return await self.all_pools_for(token_in, sync=False)
         try:
             pools: List[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
                 self.factory, token_in, block_identifier=block
             )
         except Exception as e:
-            if call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e):
-                return await self.all_pools_for(token_in, sync=False)
-            raise
+            okay_errs = "out of gas", "timeout"
+            stre = str(e).lower()
+            if "invalid request" in str(e):
+                # TODO: debug where this invalid request is coming from
+                self._skip_factory_helper.add(token_in)
+            elif call_reverted(e) or any(err in stre for err in okay_errs):
+                pass
+            else:
+                raise
+            return await self.all_pools_for(token_in, sync=False)
 
         pool_to_token_out = {}
         for p in pools:
@@ -733,7 +744,7 @@ class UniswapRouterV2(ContractBase):
         token_address = await convert.to_address_async(token_address)
         if token_address == WRAPPED_GAS_COIN or token_address in STABLECOINS:
             return await self.deepest_stable_pool(token_address, block, sync=False)
-        if self._supports_uniswap_helper and (
+        if self._supports_factory_helper and (
             block is None
             or block >= await contract_creation_block_async(FACTORY_HELPER)
         ):
@@ -747,9 +758,9 @@ class UniswapRouterV2(ContractBase):
                     else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
                 )
             except (Revert, ValueError) as e:
-                msg = _log_factory_helper_failure(
-                    e, token_address, block, _ignore_pools
-                )
+                if "invalid request" in str(e):
+                    self._skip_factory_helper.add(token_address)
+                _log_factory_helper_failure(e, token_address, block, _ignore_pools)
 
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
         logger.debug(
@@ -790,7 +801,7 @@ class UniswapRouterV2(ContractBase):
         ]:
             del token_out_tasks
 
-            if self._supports_uniswap_helper and (
+            if self._supports_factory_helper and (
                 block is None
                 or block
                 >= await contract_creation_block_async(
@@ -884,7 +895,7 @@ class UniswapRouterV2(ContractBase):
             if debug_logs:
                 logger._log(DEBUG, "block %s is before %s deploy block")
             return 0
-        if self._supports_uniswap_helper and (
+        if self._supports_factory_helper and (
             block is None
             or block >= await contract_creation_block_async(FACTORY_HELPER)
         ):
@@ -933,7 +944,7 @@ class UniswapRouterV2(ContractBase):
             return deepest
 
     @cached_property
-    def _supports_uniswap_helper(self) -> bool:
+    def _supports_factory_helper(self) -> bool:
         """returns True if our uniswap helper contract is supported, False if not"""
         return (
             chain.id != Network.Mainnet
