@@ -16,6 +16,7 @@ from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
 from multicall import Call
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -436,7 +437,7 @@ def _log_factory_helper_failure(
     elif "invalid request" in stre:
         # TODO: debug where these come from
         msg = "invalid request"
-    elif isinstance(e, Revert):
+    elif isinstance(e, (Revert, ContractLogicError)):
         # TODO: debug me!
         msg = "reverted"
     else:
@@ -674,7 +675,7 @@ class UniswapRouterV2(ContractBase):
         except Exception as e:
             okay_errs = "out of gas", "timeout"
             stre = str(e).lower()
-            if "invalid request" in str(e):
+            if "invalid request" in stre:
                 # TODO: debug where this invalid request is coming from
                 self._skip_factory_helper.add(token_in)
             elif call_reverted(e) or any(err in stre for err in okay_errs):
@@ -757,7 +758,7 @@ class UniswapRouterV2(ContractBase):
                     if deepest_pool == brownie.ZERO_ADDRESS
                     else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
                 )
-            except (Revert, ValueError) as e:
+            except (Revert, ValueError, ContractLogicError) as e:
                 if "invalid request" in str(e):
                     self._skip_factory_helper.add(token_address)
                 _log_factory_helper_failure(e, token_address, block, _ignore_pools)
@@ -910,7 +911,7 @@ class UniswapRouterV2(ContractBase):
                         (self, token, block, liquidity),
                     )
                 return liquidity
-            except (Revert, ValueError) as e:
+            except (Revert, ValueError, ContractLogicError) as e:
                 _log_factory_helper_failure(e, token, block, ignore_pools)
 
         pools = self.pools_for_token(token, block=block, _ignore_pools=ignore_pools)
