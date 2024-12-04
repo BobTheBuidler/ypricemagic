@@ -43,7 +43,10 @@ def get_deploy_block(address: str) -> Optional[int]:
         logger.debug("%s deploy block from cache: %s", address, deploy_block)
         return deploy_block
     get_token = _get_get_token()
-    if deploy_block := get_token(address, sync=True).deploy_block:
+    token = get_token(address, sync=True)
+    if token is None:
+        raise ValueError(f"get_token('{address}', sync=True) returned 'None'")
+    if deploy_block := token.deploy_block:
         logger.debug("%s deploy block from cache: %s", address, deploy_block.number)
         return deploy_block.number
     logger.debug("%s deploy block not cached, fetching from chain", address)
