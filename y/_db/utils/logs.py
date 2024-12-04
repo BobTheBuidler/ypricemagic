@@ -7,9 +7,9 @@ from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
 from brownie import chain
 from brownie.network.event import _EventItem
-from eth_typing import ChecksumAddress, HexStr
+from eth_typing import HexStr
 from evmspec.data import Address, HexBytes32, uint
-from evmspec.log import Topic
+from evmspec.structs.log import Topic
 from hexbytes import HexBytes
 from msgspec import json, ValidationError
 from pony.orm import commit, db_session, select

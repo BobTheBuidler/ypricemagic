@@ -4,9 +4,9 @@ import evmspec
 
 
 @final
-class Log(evmspec.log.Log, frozen=True, kw_only=True, array_like=True):
+class Log(evmspec.Log, frozen=True, kw_only=True, array_like=True):
     """
-    Extends :class:`~evmspec.log.Log` with additional configuration for immutability,
+    Extends :class:`evmspec.Log` with additional configuration for immutability,
     keyword-only arguments, and array-like encoding behavior using :class:`msgspec.Struct`.
 
     This class is designed to behave like a tuple specifically during `msgspec.json`
@@ -29,6 +29,6 @@ class Log(evmspec.log.Log, frozen=True, kw_only=True, array_like=True):
         >>> print(log_tuple)
 
     See Also:
-        - :class:`~evmspec.log.Log` for the base class implementation.
+        - :class:`evmspec.Log` for the base class implementation.
         - :class:`msgspec.Struct` for details on the `array_like` feature.
     """

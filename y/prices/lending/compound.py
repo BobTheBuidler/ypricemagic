@@ -228,7 +228,9 @@ class CToken(ERC20):
         if isinstance(price, Exception):
             # TODO debug why this occurs and refactor. only found on arbitrum cream
             try:
-                price = await ENVS.CONTRACT_THREADS.run(oracle.getUnderlyingPrice, self.address, block_identifier=block)
+                price = await ENVS.CONTRACT_THREADS.run(
+                    oracle.getUnderlyingPrice, self.address, block_identifier=block
+                )
             except VirtualMachineError as e:
                 if str(e) in {
                     "revert: grace period not over",
