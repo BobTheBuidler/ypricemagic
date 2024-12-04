@@ -13,7 +13,7 @@ import web3._utils as web3_utils
 import web3.main as web3_main
 import web3.middleware as web3_middleware
 from brownie.convert.datatypes import HexBytes
-from checksum_dict import to_checksum_address
+from cchecksum import to_checksum_address
 from eth_typing import ChecksumAddress, HexAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
