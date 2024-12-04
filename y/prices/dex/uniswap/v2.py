@@ -675,7 +675,7 @@ class UniswapRouterV2(ContractBase):
         except Exception as e:
             okay_errs = "out of gas", "timeout"
             stre = str(e).lower()
-            if "invalid request" in str(e):
+            if "invalid request" in stre:
                 # TODO: debug where this invalid request is coming from
                 self._skip_factory_helper.add(token_in)
             elif call_reverted(e) or any(err in stre for err in okay_errs):
