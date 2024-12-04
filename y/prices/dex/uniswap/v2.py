@@ -674,7 +674,9 @@ class UniswapRouterV2(ContractBase):
             if "invalid request" in str(e):
                 # TODO: debug where this invalid request is coming from
                 self._skip_factory_helper.add(token_in)
-            elif not (call_reverted(e) or any(err in stre for err in okay_errs)):
+            elif call_reverted(e) or any(err in stre for err in okay_errs):
+                pass
+            else:
                 raise
             return await self.all_pools_for(token_in, sync=False)
 
