@@ -7,7 +7,7 @@ import checksum_dict._key
 import dank_mids.brownie_patch.call
 import eth_event.main
 import eth_utils
-import evmspec.data
+import evmspec.data._main
 import multicall.call
 import web3._utils as web3_utils
 import web3.main as web3_main
@@ -245,7 +245,7 @@ def _monkey_patch_dependencies():
     eth_utils.address.to_checksum_address = to_address
 
     # this monkey patches evmspec's Address decode hook with our lru cache
-    evmspec.data.to_checksum_address = to_address
+    evmspec.data._main.to_checksum_address = to_address
 
     # this monkey patches multicall.Call.target checksumming with our lru cache
     multicall.call.to_checksum_address = to_address

@@ -36,7 +36,7 @@ from brownie.network.event import (
     EventDict,
 )
 from eth_typing import ChecksumAddress
-from evmspec.log import Log
+from evmspec import Log
 from msgspec.structs import force_setattr
 from toolz import groupby
 from web3.middleware.filter import block_ranges
@@ -71,7 +71,7 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
     Decode logs to events and enrich them with additional info.
 
     Args:
-        logs: An iterable of :class:`~web3.types.LogReceipt` or :class:`~evmspec.log.Log` objects.
+        logs: An iterable of :class:`~web3.types.LogReceipt` or :class:`~evmspec.Log` objects.
 
     Returns:
         An :class:`~brownie.network.event.EventDict` containing decoded events.
