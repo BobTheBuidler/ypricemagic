@@ -662,7 +662,10 @@ class UniswapRouterV2(ContractBase):
     async def get_pools_for(
         self, token_in: Address, block: Optional[Block] = None
     ) -> Dict[UniswapV2Pool, Address]:
-        if self._supports_factory_helper is False or token_in in self._skip_factory_helper:
+        if (
+            self._supports_factory_helper is False
+            or token_in in self._skip_factory_helper
+        ):
             return await self.all_pools_for(token_in, sync=False)
         try:
             pools: List[HexAddress] = await FACTORY_HELPER.getPairsFor.coroutine(
