@@ -758,7 +758,7 @@ class UniswapRouterV2(ContractBase):
                     if deepest_pool == brownie.ZERO_ADDRESS
                     else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
                 )
-            except (Revert, ValueError) as e:
+            except (Revert, ValueError, ContractLogicError) as e:
                 if "invalid request" in str(e):
                     self._skip_factory_helper.add(token_address)
                 _log_factory_helper_failure(e, token_address, block, _ignore_pools)
