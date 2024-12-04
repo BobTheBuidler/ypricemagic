@@ -427,7 +427,7 @@ class PoolsFromEvents(ProcessedEvents[UniswapV2Pool]):
 
 def _log_factory_helper_failure(
     e: Exception, token_address, block, _ignore_pools
-) -> str:
+) -> None:
     stre = f"{e}".lower()
     if "timeout" in stre:
         msg = "timeout"
@@ -755,9 +755,9 @@ class UniswapRouterV2(ContractBase):
                     else UniswapV2Pool(deepest_pool, asynchronous=self.asynchronous)
                 )
             except (Revert, ValueError) as e:
-                msg = _log_factory_helper_failure(
-                    e, token_address, block, _ignore_pools
-                )
+                if "invalid request" in str(e):
+                    self._skip_factory_helper.add(token_address)
+                _log_factory_helper_failure(e, token_address, block, _ignore_pools)
 
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
         logger.debug(
