@@ -668,7 +668,10 @@ class UniswapRouterV2(ContractBase):
                 self.factory, token_in, block_identifier=block
             )
         except Exception as e:
-            if call_reverted(e) or "out of gas" in str(e) or "timeout" in str(e):
+            okay_errs = ("out of gas", "timeout", "invalid request")
+            # TODO: debug where this invalid request is coming from
+            stre = str(e).lower()
+            if call_reverted(e) or any(err in stre for err in okay_errs):
                 return await self.all_pools_for(token_in, sync=False)
             raise
 
