@@ -296,7 +296,11 @@ class ERC20(ContractBase):
             return 18
         import y._db.utils.token as db
 
-        return await db.get_decimals(self.address)
+        try:
+            return await db.get_decimals(self.address)
+        except ContractLogicError:
+            # we've failed to fetch
+            self.__raise_exception("decimals")
 
     @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
