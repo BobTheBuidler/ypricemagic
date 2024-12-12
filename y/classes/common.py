@@ -25,6 +25,7 @@ from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
 from eth_retry import auto_retry
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -302,7 +303,11 @@ class ERC20(ContractBase):
         """used to fetch decimals at specific block"""
         if self.address == EEE_ADDRESS:
             return 18
-        return await _erc20.decimals(self.address, block=block, sync=False)
+        try:
+            return await _erc20.decimals(self.address, block=block, sync=False)
+        except ContractLogicError:
+            # we've failed to fetch
+            self.__raise_exception("decimals")
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
