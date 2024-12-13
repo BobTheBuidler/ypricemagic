@@ -305,6 +305,7 @@ class ERC20(ContractBase):
             if str(e).endswith(
                 "of attr Token.decimals is greater than the maximum allowed value 2147483647"
             ):
+                return await self._decimals(sync=False)
                 self.__raise_exception("decimals")
             raise
 
