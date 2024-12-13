@@ -96,6 +96,7 @@
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotFound</span>
 <span class="kn">from</span> <span class="nn">eth_retry</span> <span class="kn">import</span> <span class="n">auto_retry</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
+<span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
@@ -400,7 +401,18 @@
             <span class="k">return</span> <span class="mi">18</span>
         <span class="kn">import</span> <span class="nn">y._db.utils.token</span> <span class="k">as</span> <span class="nn">db</span>
 
-        <span class="k">return</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_decimals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">db</span><span class="o">.</span><span class="n">get_decimals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+            <span class="c1"># we&#39;ve failed to fetch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__raise_exception</span><span class="p">(</span><span class="s2">&quot;decimals&quot;</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span>
+                <span class="s2">&quot;of attr Token.decimals is greater than the maximum allowed value 2147483647&quot;</span>
+            <span class="p">):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_decimals</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__raise_exception</span><span class="p">(</span><span class="s2">&quot;decimals&quot;</span><span class="p">)</span>
+            <span class="k">raise</span></div>
 
 
 <div class="viewcode-block" id="ERC20._decimals">
@@ -410,7 +422,11 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;used to fetch decimals at specific block&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="n">EEE_ADDRESS</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">18</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">_erc20</span><span class="o">.</span><span class="n">decimals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">_erc20</span><span class="o">.</span><span class="n">decimals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+            <span class="c1"># we&#39;ve failed to fetch</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__raise_exception</span><span class="p">(</span><span class="s2">&quot;decimals&quot;</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ERC20.scale">
