@@ -25,6 +25,7 @@ from brownie.convert.datatypes import HexString
 from brownie.exceptions import ContractNotFound
 from eth_retry import auto_retry
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -295,14 +296,29 @@ class ERC20(ContractBase):
             return 18
         import y._db.utils.token as db
 
-        return await db.get_decimals(self.address)
+        try:
+            return await db.get_decimals(self.address)
+        except ContractLogicError:
+            # we've failed to fetch
+            self.__raise_exception("decimals")
+        except ValueError as e:
+            if str(e).endswith(
+                "of attr Token.decimals is greater than the maximum allowed value 2147483647"
+            ):
+                return await self._decimals(sync=False)
+                self.__raise_exception("decimals")
+            raise
 
     @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
     async def _decimals(self, block: Optional[Block] = None) -> int:
         """used to fetch decimals at specific block"""
         if self.address == EEE_ADDRESS:
             return 18
-        return await _erc20.decimals(self.address, block=block, sync=False)
+        try:
+            return await _erc20.decimals(self.address, block=block, sync=False)
+        except ContractLogicError:
+            # we've failed to fetch
+            self.__raise_exception("decimals")
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
