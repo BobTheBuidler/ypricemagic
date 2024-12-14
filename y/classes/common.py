@@ -306,7 +306,6 @@ class ERC20(ContractBase):
                 "of attr Token.decimals is greater than the maximum allowed value 2147483647"
             ):
                 return await self._decimals(sync=False)
-                self.__raise_exception("decimals")
             raise
 
     @a_sync.a_sync  # Override the leading underscore so a_sync lib doesn't bypass this fn
