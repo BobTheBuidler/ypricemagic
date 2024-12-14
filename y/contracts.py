@@ -1063,6 +1063,7 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     return name, abi
 
 
+@alru_cache(ttl=300)  # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
 async def _extract_abi_data_async(address: Address):
     """
     Extract ABI data for a contract from the blockchain explorer.
