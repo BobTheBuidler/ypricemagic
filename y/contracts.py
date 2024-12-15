@@ -937,7 +937,7 @@ def _squeeze(contract: Contract) -> Contract:
 
 
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
-@ttl_cache(maxsize=1000, ttl=60*60)
+@ttl_cache(maxsize=1000, ttl=60 * 60)
 @eth_retry.auto_retry
 def _extract_abi_data(address: Address):
     """
