@@ -23,6 +23,7 @@ import a_sync
 import aiohttp
 import dank_mids
 import eth_retry
+from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
 from brownie.exceptions import (
