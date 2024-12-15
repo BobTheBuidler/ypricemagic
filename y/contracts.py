@@ -44,6 +44,7 @@ from brownie.network.contract import (
 from brownie.network.state import _get_deployment
 from brownie.typing import AccountsType
 from brownie.utils import color
+from cachetools.func import ttl_cache
 from checksum_dict import ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
 from msgspec.json import decode
@@ -935,6 +936,8 @@ def _squeeze(contract: Contract) -> Contract:
     return contract
 
 
+# we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
+@ttl_cache(maxsize=1000, ttl=60*60)
 @eth_retry.auto_retry
 def _extract_abi_data(address: Address):
     """
@@ -1064,9 +1067,8 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     return name, abi
 
 
-@alru_cache(
-    ttl=300
-)  # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
+# we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
+@alru_cache(maxsize=1000, ttl=300)
 async def _extract_abi_data_async(address: Address):
     """
     Extract ABI data for a contract from the blockchain explorer.
