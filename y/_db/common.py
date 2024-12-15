@@ -603,13 +603,15 @@ class Filter(_DiskCachedMixin[T, C]):
     def _insert_chunk(
         self, objs: List[T], from_block: int, done_thru: int, debug_logs: bool
     ) -> None:
-
+        
         if prev_task := self._db_task:
-            depth = prev_task._depth + 1
-            if prev_task.done() and (e := prev_task.exception()):
-                raise e
-        else:
-            depth = 0
+            if prev_task.done():
+                if e := prev_task.exception():
+                    raise e
+                prev_task = None
+
+        depth = self._depth
+        self._depth += 1
 
         insert_coro = self.__insert_chunk(
             objs, from_block, done_thru, prev_task, depth, debug_logs
@@ -655,7 +657,7 @@ class Filter(_DiskCachedMixin[T, C]):
     ) -> None:
         if prev_chunk_task:
             await prev_chunk_task
-            del prev_chunk_task
+        del prev_chunk_task
 
         if objs:
             await self.bulk_insert(objs)
