@@ -10,7 +10,7 @@ pip install ypricemagic
 ```
 
 ##### Known Issues:
-Make sure you are using Python >= 3.8 and < 3.11  
+Make sure you are using Python >= 3.8 and < 3.12
 If you have a PyYaml Issue with 3.4.1 not installing due to an issue with cython, try the following:  
 ```
 pip install wheel
