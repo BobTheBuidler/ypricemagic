@@ -645,7 +645,6 @@ class Filter(_DiskCachedMixin[T, C]):
         if self._task.done() and (e := self._task.exception()):
             raise e.with_traceback(e.__traceback__)
 
-    @stuck_coro_debugger
     async def __insert_chunk(
         self,
         objs: List[T],
