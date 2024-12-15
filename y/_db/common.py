@@ -603,16 +603,20 @@ class Filter(_DiskCachedMixin[T, C]):
     def _insert_chunk(
         self, objs: List[T], from_block: int, done_thru: int, debug_logs: bool
     ) -> None:
-        if (
-            (prev_task := self._db_task)
-            and prev_task.done()
-            and (e := prev_task.exception())
-        ):
-            raise e
-        depth = prev_task._depth + 1 if prev_task else 0
+
+        if prev_task := self._db_task:
+            if prev_task.done():
+                if e := prev_task.exception():
+                    raise e
+                prev_task = None
+
+        depth = self._depth
+        self._depth += 1
+
         insert_coro = self.__insert_chunk(
             objs, from_block, done_thru, prev_task, depth, debug_logs
         )
+
         if debug_logs:
             logger._log(
                 logging.DEBUG,
@@ -627,7 +631,6 @@ class Filter(_DiskCachedMixin[T, C]):
             task = asyncio.create_task(insert_coro)
 
         task._depth = depth
-        task._prev_task = prev_task
         self._db_task = task
 
     def _ensure_task(self) -> None:
@@ -642,7 +645,6 @@ class Filter(_DiskCachedMixin[T, C]):
         if self._task.done() and (e := self._task.exception()):
             raise e.with_traceback(e.__traceback__)
 
-    @stuck_coro_debugger
     async def __insert_chunk(
         self,
         objs: List[T],
@@ -654,8 +656,12 @@ class Filter(_DiskCachedMixin[T, C]):
     ) -> None:
         if prev_chunk_task:
             await prev_chunk_task
+        del prev_chunk_task
+
         if objs:
             await self.bulk_insert(objs)
+        del objs
+
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
             logger._log(
