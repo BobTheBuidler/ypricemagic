@@ -606,16 +606,15 @@ class Filter(_DiskCachedMixin[T, C]):
 
         if prev_task := self._db_task:
             depth = prev_task._depth + 1
-            if prev_task.done():
-                if e := prev_task.exception():
-                    raise e
-                prev_task = None
+            if prev_task.done() and (e := prev_task.exception()):
+                raise e
         else:
             depth = 0
 
         insert_coro = self.__insert_chunk(
             objs, from_block, done_thru, prev_task, depth, debug_logs
         )
+        
         if debug_logs:
             logger._log(
                 logging.DEBUG,
@@ -657,8 +656,11 @@ class Filter(_DiskCachedMixin[T, C]):
         if prev_chunk_task:
             await prev_chunk_task
             del prev_chunk_task
+            
         if objs:
             await self.bulk_insert(objs)
+        del objs
+        
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
             logger._log(
