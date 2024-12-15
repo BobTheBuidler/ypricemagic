@@ -603,7 +603,7 @@ class Filter(_DiskCachedMixin[T, C]):
     def _insert_chunk(
         self, objs: List[T], from_block: int, done_thru: int, debug_logs: bool
     ) -> None:
-        
+
         if prev_task := self._db_task:
             if prev_task.done():
                 if e := prev_task.exception():
