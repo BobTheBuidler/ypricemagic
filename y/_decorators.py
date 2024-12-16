@@ -119,7 +119,7 @@ def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[
 def stuck_coro_debugger(fn):
     logger = getLogger("y.stuck?")
     _logger_is_enabled_for = logger.isEnabledFor
-    
+
     if isasyncgenfunction(fn):
 
         @wraps(fn)
@@ -130,7 +130,7 @@ def stuck_coro_debugger(fn):
                 async for thing in fn(*args, **kwargs):
                     yield thing
                 return
-                
+
             task = create_task(
                 coro=_stuck_debug_task(logger, fn, args, kwargs),
                 name="_stuck_debug_task",
@@ -177,6 +177,12 @@ async def _stuck_debug_task(
         log(
             DEBUG,
             "%s.%s still executing after %sm with args %s kwargs %s",
-            (module, name, round((time() - start)/60, 2), formatted_args, formatted_kwargs),
+            (
+                module,
+                name,
+                round((time() - start) / 60, 2),
+                formatted_args,
+                formatted_kwargs,
+            ),
         )
         await sleep(300)
