@@ -88,7 +88,9 @@ async def get_tokens(
     See Also:
         - :class:`ERC20`
     """
-    token_addresses = await Call(pie_address, ["getTokens()(address[])"], block_id=block)
+    token_addresses = await Call(
+        pie_address, ["getTokens()(address[])"], block_id=block
+    )
     return [ERC20(t) for t in token_addresses]
 
 
