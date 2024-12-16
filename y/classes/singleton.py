@@ -105,13 +105,15 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
                     instance = super().__call__(address, *args, **kwargs)
                     cls.__instances[is_sync][address] = instance
             cls.__delete_address_lock(address, is_sync)
-        assert (
-            instance.asynchronous is not is_sync
-        ), f"You must initialize your objects with 'asynchronous' specified as a kwarg, not a positional arg. {instance} {kwargs} {is_sync} {instance.asynchronous} {args} {kwargs}"
+        if instance.asynchronous is is_sync:
+            raise RuntimeError(
+                "You must initialize your objects with 'asynchronous' specified as a kwarg, not a positional arg. "
+                + f"{instance} {kwargs} {is_sync} {instance.asynchronous} {args} {kwargs}"
+            )
         return instance
 
     def __get_address_lock(
-        cls, address: AnyAddressOrContract, is_sync: bool
+        self, address: AnyAddressOrContract, is_sync: bool
     ) -> threading.Lock:
         """
         Acquire a lock for the given address to ensure thread safety.
@@ -130,12 +132,12 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
             >>> meta = ChecksumASyncSingletonMeta('MySingleton', (), {})
             >>> lock = meta._ChecksumASyncSingletonMeta__get_address_lock('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', True)
         """
-        with cls.__locks_lock:
-            return cls.__locks[is_sync][address]
+        with self.__locks_lock:
+            return self.__locks[is_sync][address]
 
     def __delete_address_lock(
-        cls, address: AnyAddressOrContract, is_sync: bool
-    ) -> None:
+        self, address: AnyAddressOrContract, is_sync: bool
+    ) -> None:  # sourcery skip: use-contextlib-suppress
         """
         Delete the lock for an address once the instance is created.
 
@@ -150,8 +152,8 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
             >>> meta = ChecksumASyncSingletonMeta('MySingleton', (), {})
             >>> meta._ChecksumASyncSingletonMeta__delete_address_lock('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', True)
         """
-        with cls.__locks_lock:
+        with self.__locks_lock:
             try:
-                del cls.__locks[is_sync][address]
+                del self.__locks[is_sync][address]
             except KeyError:
                 pass

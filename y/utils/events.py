@@ -445,7 +445,7 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
         # This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited
         if str(e) != "a bytes-like object is required, not 'NoneType'":
             raise
-        await asyncio.sleep(0.5)
+        await sleep(0.5)
         # remove this logger before merging to master
         logger.info("eth_getLogs call failed, retrying...")
         return await _get_logs_async_no_cache(address, topics, start, end)
