@@ -183,14 +183,16 @@
                     <span class="n">instance</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__call__</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
                     <span class="bp">cls</span><span class="o">.</span><span class="n">__instances</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span> <span class="o">=</span> <span class="n">instance</span>
             <span class="bp">cls</span><span class="o">.</span><span class="n">__delete_address_lock</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">)</span>
-        <span class="k">assert</span> <span class="p">(</span>
-            <span class="n">instance</span><span class="o">.</span><span class="n">asynchronous</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">is_sync</span>
-        <span class="p">),</span> <span class="sa">f</span><span class="s2">&quot;You must initialize your objects with &#39;asynchronous&#39; specified as a kwarg, not a positional arg. </span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">is_sync</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">asynchronous</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="n">instance</span><span class="o">.</span><span class="n">asynchronous</span> <span class="ow">is</span> <span class="n">is_sync</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;You must initialize your objects with &#39;asynchronous&#39; specified as a kwarg, not a positional arg. &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">instance</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">is_sync</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">instance</span><span class="o">.</span><span class="n">asynchronous</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">args</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">kwargs</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">instance</span></div>
 
 
     <span class="k">def</span> <span class="nf">__get_address_lock</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressOrContract</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">:</span> <span class="nb">bool</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressOrContract</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Acquire a lock for the given address to ensure thread safety.</span>
@@ -209,12 +211,12 @@
 <span class="sd">            &gt;&gt;&gt; meta = ChecksumASyncSingletonMeta(&#39;MySingleton&#39;, (), {})</span>
 <span class="sd">            &gt;&gt;&gt; lock = meta._ChecksumASyncSingletonMeta__get_address_lock(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__locks_lock</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__locks</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locks_lock</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locks</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span>
 
     <span class="k">def</span> <span class="nf">__delete_address_lock</span><span class="p">(</span>
-        <span class="bp">cls</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressOrContract</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">:</span> <span class="nb">bool</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressOrContract</span><span class="p">,</span> <span class="n">is_sync</span><span class="p">:</span> <span class="nb">bool</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># sourcery skip: use-contextlib-suppress</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Delete the lock for an address once the instance is created.</span>
 
@@ -229,9 +231,9 @@
 <span class="sd">            &gt;&gt;&gt; meta = ChecksumASyncSingletonMeta(&#39;MySingleton&#39;, (), {})</span>
 <span class="sd">            &gt;&gt;&gt; meta._ChecksumASyncSingletonMeta__delete_address_lock(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, True)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">with</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__locks_lock</span><span class="p">:</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locks_lock</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">del</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__locks</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span>
+                <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">__locks</span><span class="p">[</span><span class="n">is_sync</span><span class="p">][</span><span class="n">address</span><span class="p">]</span>
             <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
                 <span class="k">pass</span></div>
 
