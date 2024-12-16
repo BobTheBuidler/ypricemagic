@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from asyncio import as_completed, gather, get_event_loop, sleep
 from collections import Counter, defaultdict
-from functools import cached_property, partial
+from functools import cached_property, wraps
 from importlib.metadata import version
 from inspect import isawaitable
 from itertools import zip_longest
@@ -623,17 +623,21 @@ class LogFilter(Filter[Log, "LogCache"]):
 
     @property
     def cache(self) -> "LogCache":
-        if self._cache is None:
+        cache = self._cache
+        if cache is None:
             from y._db.utils.logs import LogCache
 
-            self._cache = LogCache(self.addresses, self.topics)
-        return self._cache
+            cache = LogCache(self.addresses, self.topics)
+            self._cache = cache
+        return cache
 
     @property
     def semaphore(self) -> dank_mids.BlockSemaphore:
-        if self._semaphore is None:
-            self._semaphore = get_logs_semaphore[get_event_loop()]
-        return self._semaphore
+        semaphore = self._semaphore
+        if semaphore is None:
+            semaphore = get_logs_semaphore[get_event_loop()]
+            self._semaphore = semaphore
+        return semaphore
 
     def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
         """
@@ -677,7 +681,13 @@ class LogFilter(Filter[Log, "LogCache"]):
         """
         from y._db.utils.logs import bulk_insert
 
-        return partial(bulk_insert, executor=self.executor)
+        executor = self.executor
+        
+        @wraps(bulk_insert)
+        async def bulk_insert_wrapped(*args, **kwargs) -> None:
+            return await bulk_insert(*args, **kwargs, executor=executor)
+            
+        return bulk_insert_wrapped
 
     @async_property
     async def _from_block(self) -> int:
