@@ -447,7 +447,7 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
             raise
         await asyncio.sleep(0.5)
         # remove this logger before merging to master
-        logger.info("call failed, trying again")
+        logger.info("eth_getLogs call failed, retrying...")
         return await _get_logs_async_no_cache(address, topics, start, end)
     except Exception as e:
         errs = [
