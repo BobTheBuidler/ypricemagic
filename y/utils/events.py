@@ -428,24 +428,27 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
         >>> logs = await _get_logs_async_no_cache("0x1234...", ["0x5678..."], 1000000, 1000100)
         >>> print(logs)
     """
+    args = {"fromBlock": start, "toBlock": end}
+    if address is None:
+        args["topics"] = topics
+
+    elif topics is None:
+        args["address"] = address
+
+    else:
+        args["address"] = address
+        args["topics"] = topics
+
     try:
-        if address is None:
-            return await dank_mids.eth.get_logs(
-                {"topics": topics, "fromBlock": start, "toBlock": end}
-            )
-        elif topics is None:
-            return await dank_mids.eth.get_logs(
-                {"address": address, "fromBlock": start, "toBlock": end}
-            )
-        else:
-            return await dank_mids.eth.get_logs(
-                {
-                    "address": address,
-                    "topics": topics,
-                    "fromBlock": start,
-                    "toBlock": end,
-                }
-            )
+        return await dank_mids.eth.get_logs(args)
+    except TypeError as e:
+        # This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited
+        if str(e) != "a bytes-like object is required, not 'NoneType'":
+            raise
+        await asyncio.sleep(0.5)
+        # remove this logger before merging to master
+        logger.info("eth_getLogs call failed, retrying...")
+        return await _get_logs_async_no_cache(address, topics, start, end)
     except Exception as e:
         errs = [
             "Service Unavailable for url:",
