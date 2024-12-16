@@ -431,15 +431,15 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
     args = {"fromBlock": start, "toBlock": end}
     if address is None:
         args["topics"] = topics
-        
+
     elif topics is None:
         args["address"] = address
-        
+
     else:
         args["address"] = address
         args["topics"] = topics
-        
-    try:  
+
+    try:
         return await dank_mids.eth.get_logs(args)
     except TypeError as e:
         # This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited
