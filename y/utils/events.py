@@ -181,7 +181,9 @@ async def get_logs_asap(
     if verbose > 0:
         logger.info("fetching %d batches", len(ranges))
 
-    batches = await gather(*(_get_logs_async(address, topics, start, end) for start, end in ranges))
+    batches = await gather(
+        *(_get_logs_async(address, topics, start, end) for start, end in ranges)
+    )
     return [log for batch in batches for log in batch]
 
 
@@ -873,7 +875,9 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
 
-            should_include = await gather(*(self.__include_event(event) for event in decoded))
+            should_include = await gather(
+                *(self.__include_event(event) for event in decoded)
+            )
 
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
