@@ -379,11 +379,8 @@ get_logs_semaphore = defaultdict(
     lambda: dank_mids.BlockSemaphore(
         ENVS.GETLOGS_DOP,
         # We need to do this in case users use the sync api in a multithread context
-        name="y.get_logs" + (
-            ""
-            if current_thread() == main_thread()
-            else f".{current_thread()}"
-        ),
+        name="y.get_logs"
+        + ("" if current_thread() == main_thread() else f".{current_thread()}"),
     )
 )
 
@@ -874,14 +871,14 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         if logs:
             decoded = await self.executor.run(decode_logs, logs)
-            
+
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
-            
+
             should_include = await gather(
                 *[self.__include_event(event) for event in decoded]
             )
-            
+
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
 
