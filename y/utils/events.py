@@ -1,12 +1,12 @@
-import abc
-import asyncio
-import inspect
-import logging
-import threading
+from abc import abstractmethod
+from asyncio import as_completed, gather, get_event_loop, sleep
 from collections import Counter, defaultdict
 from functools import cached_property, partial
 from importlib.metadata import version
+from inspect import isawaitable
 from itertools import zip_longest
+from logging import getLogger
+from threading import current_thread, main_thread
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -55,7 +55,7 @@ if TYPE_CHECKING:
 
 T = TypeVar("T")
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 # not really sure why this breaks things
 ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split(".")) >= (
@@ -181,7 +181,7 @@ async def get_logs_asap(
     if verbose > 0:
         logger.info("fetching %d batches", len(ranges))
 
-    batches = await asyncio.gather(
+    batches = await gather(
         *[_get_logs_async(address, topics, start, end) for start, end in ranges]
     )
     return [log for batch in batches for log in batch]
@@ -265,17 +265,17 @@ async def get_logs_asap_generator(
                     yield done.pop(i)
                     yielded += 1
         else:
-            for logs in asyncio.as_completed(coros, timeout=None):
+            for logs in as_completed(coros, timeout=None):
                 yield await logs
         if not run_forever:
             return
 
-        await asyncio.sleep(run_forever_interval)
+        await sleep(run_forever_interval)
 
         # Find start and end block for next loop
         current_block = await dank_mids.eth.block_number
         while current_block <= to_block:
-            await asyncio.sleep(run_forever_interval)
+            await sleep(run_forever_interval)
             current_block = await dank_mids.eth.block_number
         from_block = to_block + 1 if to_block + 1 <= current_block else current_block
         to_block = current_block
@@ -379,10 +379,10 @@ get_logs_semaphore = defaultdict(
     lambda: dank_mids.BlockSemaphore(
         ENVS.GETLOGS_DOP,
         # We need to do this in case users use the sync api in a multithread context
-        name=(
-            "y.get_logs" + ""
-            if threading.current_thread() == threading.main_thread()
-            else f".{threading.current_thread()}"
+        name="y.get_logs" + (
+            ""
+            if current_thread() == main_thread()
+            else f".{current_thread()}"
         ),
     )
 )
@@ -407,7 +407,7 @@ async def _get_logs_async(address, topics, start, end) -> List[Log]:
         >>> logs = await _get_logs_async("0x1234...", ["0x5678..."], 1000000, 1000100)
         >>> print(logs)
     """
-    async with get_logs_semaphore[asyncio.get_event_loop()][end]:
+    async with get_logs_semaphore[get_event_loop()][end]:
         return await _get_logs(address, topics, start, end, asynchronous=True)
 
 
@@ -635,7 +635,7 @@ class LogFilter(Filter[Log, "LogCache"]):
     @property
     def semaphore(self) -> dank_mids.BlockSemaphore:
         if self._semaphore is None:
-            self._semaphore = get_logs_semaphore[asyncio.get_event_loop()]
+            self._semaphore = get_logs_semaphore[get_event_loop()]
         return self._semaphore
 
     def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
@@ -791,7 +791,10 @@ class Events(LogFilter):
             >>> await events._extend(logs)
         """
         if logs:
-            return self._objects.extend(await self.executor.run(decode_logs, logs))
+            decoded = await self.executor.run(decode_logs, logs)
+            # let the event loop run once since the previous and next lines are potentially blocking
+            await sleep(0)
+            self._objects.extend(decoded)
 
     def _get_block_for_obj(self, obj: _EventItem) -> int:
         """
@@ -824,7 +827,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """Override this to exclude specific events from processing and collection."""
         return True
 
-    @abc.abstractmethod
+    @abstractmethod
     def _process_event(self, event: _EventItem) -> T:
         """
         Process a given event and return the result.
@@ -871,12 +874,26 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         """
         if logs:
             decoded = await self.executor.run(decode_logs, logs)
-            should_include = await asyncio.gather(
+            
+            # let the event loop run once since the previous and next blocks are potentially blocking
+            await sleep(0)
+            
+            should_include = await gather(
                 *[self.__include_event(event) for event in decoded]
             )
+            
+            # let the event loop run once since the previous and next blocks are potentially blocking
+            await sleep(0)
+
+            append_processed_event = self._objects.append
+            done = 0
             for event, include in zip(decoded, should_include):
                 if include:
-                    self._objects.append(self._process_event(event))
+                    append_processed_event(self._process_event(event))
+                done += 1
+                if done % 100 == 0:
+                    # Let the event loop run once in case we've been blocking for too long
+                    await sleep(0)
 
     async def __include_event(self, event: _EventItem) -> bool:
         """
@@ -897,7 +914,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
         include = self._include_event(event)
         if isinstance(include, bool):
             return include
-        if inspect.isawaitable(include):
+        if isawaitable(include):
             return bool(await include)
         return bool(include)
 
