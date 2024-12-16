@@ -275,8 +275,8 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
         logs = tuple(self._get_query(from_block, to_block))
         try:
             return json.decode(
-                b"[" + b",".join(log.raw for log in logs) + b"]", 
-                type=List[Log], 
+                b"[" + b",".join(log.raw for log in logs) + b"]",
+                type=List[Log],
                 dec_hook=_decode_hook,
             )
         except ValidationError:
