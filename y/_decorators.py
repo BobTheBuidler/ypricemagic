@@ -1,8 +1,8 @@
-import asyncio
-import functools
-import inspect
-import logging
-import time
+from asyncio import create_task, iscoroutinefunction, sleep
+from functools import wraps
+from inspect import isasyncgenfunction
+from logging import DEBUG, Logger, getLogger
+from time import time
 from typing import (
     AsyncIterator,
     Awaitable,
@@ -58,9 +58,9 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     """
     from y.exceptions import continue_if_call_reverted
 
-    if asyncio.iscoroutinefunction(func):
+    if iscoroutinefunction(func):
 
-        @functools.wraps(func)
+        @wraps(func)
         async def continue_on_revert_wrap(
             *args: P.args, **kwargs: P.kwargs
         ) -> Union[T, None]:
@@ -71,7 +71,7 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
 
     elif callable(func):
 
-        @functools.wraps(func)
+        @wraps(func)
         def continue_on_revert_wrap(
             *args: P.args, **kwargs: P.kwargs
         ) -> Union[T, None]:
@@ -86,6 +86,11 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
 
 
 B = TypeVar("B", bound=ASyncGenericBase)
+
+
+stuck_coro_logger = getLogger("y.stuck?")
+__stuck_coro_logger_is_enabled_for = stuck_coro_logger.isEnabledFor
+__stuck_coro_logger_log = stuck_coro_logger._log
 
 
 @overload
@@ -117,61 +122,71 @@ def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[
 
 
 def stuck_coro_debugger(fn):
-    logger = logging.getLogger("y.stuck?")
-    if inspect.isasyncgenfunction(fn):
+    if isasyncgenfunction(fn):
 
-        @functools.wraps(fn)
+        @wraps(fn)
         async def stuck_async_gen_wrap(
             *args: P.args, **kwargs: P.kwargs
         ) -> AsyncIterator[T]:
-            if not logger.isEnabledFor(logging.DEBUG):
-                async for thing in fn(*args, **kwargs):
+            aiterator = fn(*args, **kwargs)
+
+            if not __stuck_coro_logger_is_enabled_for(DEBUG):
+                async for thing in aiterator:
                     yield thing
-            t = asyncio.create_task(
-                coro=_stuck_debug_task(logger, fn, args, kwargs),
+                return
+
+            task = create_task(
+                coro=_stuck_debug_task(fn, args, kwargs),
                 name="_stuck_debug_task",
             )
             try:
-                async for thing in fn(*args, **kwargs):
+                async for thing in aiterator:
                     yield thing
-                t.cancel()
-                return
-            except Exception as e:
-                t.cancel()
-                raise
+            finally:
+                task.cancel()
 
         return stuck_async_gen_wrap
     else:
 
-        @functools.wraps(fn)
+        @wraps(fn)
         async def stuck_coro_wrap(*args: P.args, **kwargs: P.kwargs) -> T:
-            if not logger.isEnabledFor(logging.DEBUG):
+            if not __stuck_coro_logger_is_enabled_for(DEBUG):
                 return await fn(*args, **kwargs)
-            t = asyncio.create_task(
-                coro=_stuck_debug_task(logger, fn, args, kwargs),
+
+            task = create_task(
+                coro=_stuck_debug_task(fn, args, kwargs),
                 name="_stuck_debug_task",
             )
             try:
                 retval = await fn(*args, **kwargs)
-                t.cancel()
-            except Exception as e:
-                t.cancel()
-                raise
+            finally:
+                task.cancel()
             return retval
 
         return stuck_coro_wrap
 
 
 async def _stuck_debug_task(
-    logger: logging.Logger, fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+    fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs
 ) -> NoReturn:
-    start = time.time()
+    # sleep early so fast-running coros can exit early
+    await sleep(300)
+
+    start = time() - 300
+    module = fn.__module__
+    name = fn.__name__
+    formatted_args = tuple(str(arg) for arg in args)
+    formatted_kwargs = dict((k, str(v)) for k, v in kwargs.items())
     while True:
-        await asyncio.sleep(300)
-        logger._log(
-            logging.DEBUG,
-            f"{fn.__module__}.{fn.__name__} still executing after {round((time.time() - start)/60, 2)}m with"
-            + f" args {tuple(str(arg) for arg in args)}"
-            + f" kwargs {dict((k, str(v)) for k, v in kwargs.items())}",
-            (),
+        __stuck_coro_logger_log(
+            DEBUG,
+            "%s.%s still executing after %sm with args %s kwargs %s",
+            (
+                module,
+                name,
+                round((time() - start) / 60, 2),
+                formatted_args,
+                formatted_kwargs,
+            ),
         )
+        await sleep(300)
