@@ -92,6 +92,7 @@ stuck_coro_logger = getLogger("y.stuck?")
 __stuck_coro_logger_is_enabled_for = stuck_coro_logger.isEnabledFor
 __stuck_coro_logger_log = stuck_coro_logger._log
 
+
 @overload
 def stuck_coro_debugger(
     fn: Callable[Concatenate[B, P], AsyncIterator[T]]
@@ -162,7 +163,9 @@ def stuck_coro_debugger(fn):
         return stuck_coro_wrap
 
 
-async def _stuck_debug_task(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> NoReturn:
+async def _stuck_debug_task(
+    fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs
+) -> NoReturn:
     # sleep early so fast-running coros can exit early
     await sleep(300)
 
