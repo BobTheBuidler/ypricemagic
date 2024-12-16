@@ -339,6 +339,7 @@ class Filter(_DiskCachedMixin[T, C]):
     _sleep_fut = None
     _sleep_time = 60
     _task = None
+    _depth = 0
     _semaphore = None
     _verbose = False
     __slots__ = (
