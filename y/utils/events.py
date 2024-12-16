@@ -682,11 +682,11 @@ class LogFilter(Filter[Log, "LogCache"]):
         from y._db.utils.logs import bulk_insert
 
         executor = self.executor
-        
+
         @wraps(bulk_insert)
         async def bulk_insert_wrapped(*args, **kwargs) -> None:
             return await bulk_insert(*args, **kwargs, executor=executor)
-            
+
         return bulk_insert_wrapped
 
     @async_property
