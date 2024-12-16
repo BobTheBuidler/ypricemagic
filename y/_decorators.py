@@ -128,8 +128,10 @@ def stuck_coro_debugger(fn):
         async def stuck_async_gen_wrap(
             *args: P.args, **kwargs: P.kwargs
         ) -> AsyncIterator[T]:
+            aiterator = fn(*args, **kwargs)
+        
             if not __stuck_coro_logger_is_enabled_for(DEBUG):
-                async for thing in fn(*args, **kwargs):
+                async for thing in aiterator:
                     yield thing
                 return
 
@@ -138,7 +140,7 @@ def stuck_coro_debugger(fn):
                 name="_stuck_debug_task",
             )
             try:
-                async for thing in fn(*args, **kwargs):
+                async for thing in aiterator:
                     yield thing
             finally:
                 task.cancel()
@@ -150,6 +152,7 @@ def stuck_coro_debugger(fn):
         async def stuck_coro_wrap(*args: P.args, **kwargs: P.kwargs) -> T:
             if not __stuck_coro_logger_is_enabled_for(DEBUG):
                 return await fn(*args, **kwargs)
+                
             task = create_task(
                 coro=_stuck_debug_task(fn, args, kwargs),
                 name="_stuck_debug_task",
