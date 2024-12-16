@@ -88,6 +88,10 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
 B = TypeVar("B", bound=ASyncGenericBase)
 
 
+stuck_coro_logger = getLogger("y.stuck?")
+__stuck_coro_logger_is_enabled_for = stuck_coro_logger.isEnabledFor
+__stuck_coro_logger_log = stuck_coro_logger._log
+
 @overload
 def stuck_coro_debugger(
     fn: Callable[Concatenate[B, P], AsyncIterator[T]]
@@ -117,22 +121,19 @@ def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[
 
 
 def stuck_coro_debugger(fn):
-    logger = getLogger("y.stuck?")
-    _logger_is_enabled_for = logger.isEnabledFor
-
     if isasyncgenfunction(fn):
 
         @wraps(fn)
         async def stuck_async_gen_wrap(
             *args: P.args, **kwargs: P.kwargs
         ) -> AsyncIterator[T]:
-            if not _logger_is_enabled_for(DEBUG):
+            if not __stuck_coro_logger_is_enabled_for(DEBUG):
                 async for thing in fn(*args, **kwargs):
                     yield thing
                 return
 
             task = create_task(
-                coro=_stuck_debug_task(logger, fn, args, kwargs),
+                coro=_stuck_debug_task(fn, args, kwargs),
                 name="_stuck_debug_task",
             )
             try:
@@ -146,10 +147,10 @@ def stuck_coro_debugger(fn):
 
         @wraps(fn)
         async def stuck_coro_wrap(*args: P.args, **kwargs: P.kwargs) -> T:
-            if not _logger_is_enabled_for(DEBUG):
+            if not __stuck_coro_logger_is_enabled_for(DEBUG):
                 return await fn(*args, **kwargs)
             task = create_task(
-                coro=_stuck_debug_task(logger, fn, args, kwargs),
+                coro=_stuck_debug_task(fn, args, kwargs),
                 name="_stuck_debug_task",
             )
             try:
@@ -161,9 +162,7 @@ def stuck_coro_debugger(fn):
         return stuck_coro_wrap
 
 
-async def _stuck_debug_task(
-    logger: Logger, fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-) -> NoReturn:
+async def _stuck_debug_task(fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs) -> NoReturn:
     # sleep early so fast-running coros can exit early
     await sleep(300)
 
@@ -172,9 +171,8 @@ async def _stuck_debug_task(
     name = fn.__name__
     formatted_args = tuple(str(arg) for arg in args)
     formatted_kwargs = dict((k, str(v)) for k, v in kwargs.items())
-    log = logger._log
     while True:
-        log(
+        __stuck_coro_logger_log(
             DEBUG,
             "%s.%s still executing after %sm with args %s kwargs %s",
             (
