@@ -1,7 +1,6 @@
-import asyncio
-import logging
-from contextlib import suppress
+from asyncio import gather
 from decimal import Decimal
+from logging import getLogger
 from typing import Optional, Tuple
 
 import a_sync
@@ -28,7 +27,7 @@ from y.utils.cache import optional_async_diskcache
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 # NOTE: Yearn and Yearn-inspired
 
@@ -80,7 +79,7 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
 
     # Yearn-like contracts can use these formats
     result = any(
-        await asyncio.gather(
+        await gather(
             has_methods(
                 token,
                 (
@@ -101,8 +100,11 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
     # pricePerShare can revert if totalSupply == 0, which would cause `has_methods` to return `False`,
     # but it might still be a vault. This section will correct `result` for problematic vaults.
     if not result:
-        with suppress(ContractNotVerified, MessedUpBrownieContract):
+        try:
             contract = await Contract.coroutine(token)
+        except (ContractNotVerified, MessedUpBrownieContract):
+            pass
+        else:
             result = any(
                 [
                     hasattr(contract, "pricePerShare"),
@@ -112,7 +114,6 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
                     hasattr(contract, "convertToAssets"),
                 ]
             )
-
     return result
 
 
@@ -337,7 +338,7 @@ class YearnInspiredVault(ERC20):
         """
         logger = get_price_logger(self.address, block=None, extra="yearn")
         underlying: ERC20
-        share_price, underlying = await asyncio.gather(
+        share_price, underlying = await gather(
             self.share_price(block=block, sync=False), self.__underlying__
         )
         if share_price is None:
