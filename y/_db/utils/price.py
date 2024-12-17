@@ -1,6 +1,5 @@
 import logging
 import threading
-from contextlib import suppress
 from decimal import Decimal, InvalidOperation
 from typing import Dict, Optional
 
@@ -80,9 +79,7 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     await ensure_token(str(address), sync=False)  # force to string for cache key
-    with suppress(
-        InvalidOperation
-    ):  # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
+    try:
         await insert(
             type=Price,
             block=(chain.id, block),
@@ -91,7 +88,9 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
             sync=False,
         )
         logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
-
+    except InvalidOperation:
+        # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
+        pass
 
 set_price = a_sync.ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
