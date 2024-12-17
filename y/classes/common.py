@@ -1,6 +1,5 @@
-import abc
-import asyncio
-from contextlib import suppress
+from abc import abstractmethod
+from asyncio import Task, create_task, ensure_future, gather, get_event_loop
 from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
@@ -211,16 +210,17 @@ class ERC20(ContractBase):
 
     def __repr__(self) -> str:
         cls = type(self).__name__
-        with suppress(AttributeError):
+        try:
             if ERC20.symbol.has_cache_value(self):
                 symbol = ERC20.symbol.get_cache_value(self)
                 return f"<{cls} {symbol} '{self.address}'>"
-            elif not asyncio.get_event_loop().is_running() and not self.asynchronous:
+            elif not get_event_loop().is_running() and not self.asynchronous:
                 try:
                     return f"<{cls} {self.__symbol__(sync=True)} '{self.address}'>"
                 except NonStandardERC20:
                     return f"<{cls} SYMBOL_INVALID '{self.address}'>"
-        return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
+        except AttributeError:
+            return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
@@ -371,7 +371,7 @@ class ERC20(ContractBase):
             >>> await token.total_supply_readable()
             1000.0
         """
-        total_supply, scale = await asyncio.gather(
+        total_supply, scale = await gather(
             self.total_supply(block=block, sync=False), self.__scale__
         )
         return total_supply / scale
@@ -399,7 +399,7 @@ class ERC20(ContractBase):
     async def balance_of_readable(
         self, address: AnyAddressType, block: Optional[Block] = None
     ) -> float:
-        balance, scale = await asyncio.gather(
+        balance, scale = await gather(
             self.balance_of(address, block=block, asynchronous=True), self.__scale__
         )
         return balance / scale
@@ -914,7 +914,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         """
         if self.balance == 0:
             return 0
-        balance, price = await asyncio.gather(self.__readable__, self.__price__)
+        balance, price = await gather(self.__readable__, self.__price__)
         value = balance * price
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value
@@ -969,7 +969,7 @@ class _Loader(ContractBase):
         """
         return self.loaded.__await__()
 
-    @abc.abstractmethod
+    @abstractmethod
     async def _load(self) -> NoReturn:
         """
         `self._load` is the coro that will run in the daemon task associated with this _Loader.
@@ -995,7 +995,7 @@ class _Loader(ContractBase):
         return self._loaded.wait()
 
     @property
-    def _task(self) -> "asyncio.Task[NoReturn]":
+    def _task(self) -> "Task[NoReturn]":
         """
         The task that runs `self._load()` for this `_Loader`.
 
@@ -1014,13 +1014,13 @@ class _Loader(ContractBase):
             raise type(self.__exc)(*self.__exc.args).with_traceback(self.__tb)
         if self.__task is None:
             logger.debug("creating loader task for %s", self)
-            self.__task = asyncio.create_task(
+            self.__task = create_task(
                 coro=self.__load(), name=f"{self}.__load()"
             )
             self.__task.add_done_callback(self._done_callback)
         return self.__task
 
-    def _done_callback(self, task: "asyncio.Task[Any]") -> None:
+    def _done_callback(self, task: "Task[Any]") -> None:
         """
         Called on `self._task` when it completes, if applicable.
 
@@ -1063,7 +1063,7 @@ class _EventsLoader(_Loader):
     """
 
     @property
-    @abc.abstractmethod
+    @abstractmethod
     def _events(self) -> "Events":
         """
         The Events object associated with this _EventsLoader.
@@ -1084,9 +1084,7 @@ class _EventsLoader(_Loader):
         """
         self._task  # ensure task is running and not err'd
         if self._loaded is None:
-            self._loaded = asyncio.ensure_future(
-                self._events._lock.wait_for(self._init_block)
-            )
+            self._loaded = ensure_future(self._events._lock.wait_for(self._init_block))
         return self._loaded
 
     async def _load(self) -> NoReturn:
