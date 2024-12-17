@@ -69,10 +69,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.yearn</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
+<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">getLogger</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
@@ -99,7 +98,7 @@
 <span class="kn">from</span> <span class="nn">y.utils.logging</span> <span class="kn">import</span> <span class="n">get_price_logger</span>
 <span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">raw_call</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># NOTE: Yearn and Yearn-inspired</span>
 
@@ -153,7 +152,7 @@
 
     <span class="c1"># Yearn-like contracts can use these formats</span>
     <span class="n">result</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
             <span class="n">has_methods</span><span class="p">(</span>
                 <span class="n">token</span><span class="p">,</span>
                 <span class="p">(</span>
@@ -174,8 +173,11 @@
     <span class="c1"># pricePerShare can revert if totalSupply == 0, which would cause `has_methods` to return `False`,</span>
     <span class="c1"># but it might still be a vault. This section will correct `result` for problematic vaults.</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">result</span><span class="p">:</span>
-        <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">,</span> <span class="n">MessedUpBrownieContract</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
             <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotVerified</span><span class="p">,</span> <span class="n">MessedUpBrownieContract</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">else</span><span class="p">:</span>
             <span class="n">result</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
                 <span class="p">[</span>
                     <span class="nb">hasattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="s2">&quot;pricePerShare&quot;</span><span class="p">),</span>
@@ -185,7 +187,6 @@
                     <span class="nb">hasattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="s2">&quot;convertToAssets&quot;</span><span class="p">),</span>
                 <span class="p">]</span>
             <span class="p">)</span>
-
     <span class="k">return</span> <span class="n">result</span></div>
 
 
@@ -424,7 +425,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;yearn&quot;</span><span class="p">)</span>
         <span class="n">underlying</span><span class="p">:</span> <span class="n">ERC20</span>
-        <span class="n">share_price</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="n">share_price</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">share_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">share_price</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
