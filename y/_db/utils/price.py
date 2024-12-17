@@ -3,7 +3,7 @@ import threading
 from decimal import Decimal, InvalidOperation
 from typing import Dict, Optional
 
-import a_sync
+from a_sync import ProcessingQueue
 from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import select
@@ -17,6 +17,7 @@ from y.datatypes import Address
 
 
 logger = logging.getLogger(__name__)
+_logger_debug = logger.debug
 
 
 @a_sync_read_db_session
@@ -44,12 +45,12 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
     if address == constants.EEE_ADDRESS:
         address = constants.WRAPPED_GAS_COIN
     if price := known_prices_at_block(block).pop(address, None):
-        logger.debug("found %s block %s price %s in ydb", address, block, price)
+        _logger_debug("found %s block %s price %s in ydb", address, block, price)
         return price
     if (price := Price.get(token=(chain.id, address), block=(chain.id, block))) and (
         price := price.price
     ):
-        logger.debug("found %s block %s price %s in ydb", address, block, price)
+        _logger_debug("found %s block %s price %s in ydb", address, block, price)
         return price
 
 
@@ -87,12 +88,12 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
             price=Decimal(price),
             sync=False,
         )
-        logger.debug("inserted %s block %s price to ydb: %s", address, block, price)
+        _logger_debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass
 
-set_price = a_sync.ProcessingQueue(_set_price, num_workers=50, return_data=False)
+set_price = ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
 
 @cached(TTLCache(maxsize=1_000, ttl=5 * 60), lock=threading.Lock())
