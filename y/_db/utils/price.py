@@ -93,6 +93,7 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass
 
+
 set_price = ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
 
