@@ -220,7 +220,8 @@ class ERC20(ContractBase):
                 except NonStandardERC20:
                     return f"<{cls} SYMBOL_INVALID '{self.address}'>"
         except AttributeError:
-            return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
+            pass
+        return f"<{cls} SYMBOL_NOT_LOADED '{self.address}'>"
 
     @a_sync.aka.cached_property
     @stuck_coro_debugger
