@@ -1014,9 +1014,7 @@ class _Loader(ContractBase):
             raise type(self.__exc)(*self.__exc.args).with_traceback(self.__tb)
         if self.__task is None:
             logger.debug("creating loader task for %s", self)
-            self.__task = create_task(
-                coro=self.__load(), name=f"{self}.__load()"
-            )
+            self.__task = create_task(coro=self.__load(), name=f"{self}.__load()")
             self.__task.add_done_callback(self._done_callback)
         return self.__task
 
