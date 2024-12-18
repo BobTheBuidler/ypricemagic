@@ -1,7 +1,7 @@
-import abc
-import asyncio
-import logging
+from abc import ABCMeta, abstractmethod
+from asyncio import Task, create_task, get_event_loop, sleep
 from functools import lru_cache
+from logging import DEBUG, getLogger
 from typing import (
     Any,
     AsyncIterator,
@@ -40,7 +40,7 @@ T = TypeVar("T")
 S = TypeVar("S")
 M = TypeVar("M")
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 default_filter_threads = a_sync.PruningThreadPoolExecutor(4)
 """
 The thread pool executor used for all :class:`Filter` objects without one provided, with a maximum of 4 threads.
@@ -118,7 +118,7 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
 
 
 class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
-    @abc.abstractmethod
+    @abstractmethod
     def _set_metadata(self, from_block: int, done_thru: int) -> None:
         """
         Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
@@ -128,7 +128,7 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
             done_thru: The ending block number.
         """
 
-    @abc.abstractmethod
+    @abstractmethod
     def _is_cached_thru(self, from_block: int) -> int:
         """
         Returns max cached block for this cache or 0 if not cached.
@@ -140,7 +140,7 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
             The maximum cached block number.
         """
 
-    @abc.abstractmethod
+    @abstractmethod
     def _select(self, from_block: int, to_block: int) -> List[S]:
         """
         Selects all cached objects from block `from_block` to block `to_block`.
@@ -226,7 +226,7 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
 C = TypeVar("C", bound=DiskCache)
 
 
-class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABCMeta):
+class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
     __slots__ = "is_reusable", "_cache", "_executor", "_objects", "_pruned"
 
     def __init__(
@@ -241,7 +241,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         self._pruned = 0
 
     @property
-    @abc.abstractmethod
+    @abstractmethod
     def cache(self) -> C: ...
 
     @property
@@ -251,7 +251,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=abc.ABC
         return self._executor
 
     @property
-    @abc.abstractmethod
+    @abstractmethod
     def insert_to_db(self) -> Callable[[T], None]: ...
 
     # abc.abstractproperty
@@ -369,7 +369,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._chunk_size = chunk_size
         if chunks_per_batch != self._chunks_per_batch:
             self._chunks_per_batch = chunks_per_batch
-        self._lock = a_sync.CounterLock()
+        self._lock = a_sync.CounterLock(name=str(self))
         if semaphore != self._semaphore:
             self._semaphore = semaphore
         if sleep_time != self._sleep_time:
@@ -386,7 +386,7 @@ class Filter(_DiskCachedMixin[T, C]):
         if self._task and not self._task.done():
             self._task.cancel()
 
-    @abc.abstractmethod
+    @abstractmethod
     async def _fetch_range(self, from_block: int, to_block: int) -> List[T]: ...
 
     @property
@@ -414,7 +414,7 @@ class Filter(_DiskCachedMixin[T, C]):
     @a_sync.ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
-        debug_logs = logger.isEnabledFor(logging.DEBUG)
+        debug_logs = logger.isEnabledFor(DEBUG)
         yielded = 0
         done_thru = 0
         if self.is_reusable and self._objects:
@@ -463,17 +463,17 @@ class Filter(_DiskCachedMixin[T, C]):
             done_thru = self._lock.value
             if debug_logs:
                 logger._log(
-                    logging.DEBUG,
+                    DEBUG,
                     "%s lock value %s to_block %s",
                     (self, done_thru, block),
                 )
             if block is None:
-                await asyncio.sleep(self._sleep_time)
+                await sleep(self._sleep_time)
 
     @async_property
     async def _sleep(self) -> None:
         if self._sleep_fut is None or self._sleep_fut.done():
-            self._sleep_fut = asyncio.get_event_loop().create_future()
+            self._sleep_fut = get_event_loop().create_future()
         await self._sleep_fut
 
     def _wakeup(self) -> None:
@@ -506,7 +506,7 @@ class Filter(_DiskCachedMixin[T, C]):
         if debug_logs:
             async with self.semaphore[range_end]:
                 logger._log(
-                    logging.DEBUG,
+                    DEBUG,
                     "fetching %s block %s to %s",
                     (self, range_start, range_end),
                 )
@@ -530,8 +530,8 @@ class Filter(_DiskCachedMixin[T, C]):
     ) -> None:
         SLEEP_TIME = 1
 
-        if debug_logs := logger.isEnabledFor(logging.DEBUG):
-            logger._log(logging.DEBUG, "loading new objects for %s", (self,))
+        if debug_logs := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "loading new objects for %s", (self,))
 
         start = (
             v + 1 if (v := self._lock.value) else start_from_block or self.from_block
@@ -546,23 +546,23 @@ class Filter(_DiskCachedMixin[T, C]):
         elif debug_logs:
             while start > (end := await dank_mids.eth.block_number):
                 logger._log(
-                    logging.DEBUG,
+                    DEBUG,
                     "%s start %s is greater than end %s, sleeping...",
                     (self, start, end),
                 )
-                await asyncio.sleep(SLEEP_TIME)
+                await sleep(SLEEP_TIME)
 
         else:
             while start > (end := await dank_mids.eth.block_number):
-                await asyncio.sleep(SLEEP_TIME)
+                await sleep(SLEEP_TIME)
 
         await self._load_range(start, end)
 
     @stuck_coro_debugger
     async def _load_range(self, from_block: int, to_block: int) -> None:
-        if debug_logs := logger.isEnabledFor(logging.DEBUG):
+        if debug_logs := logger.isEnabledFor(DEBUG):
             logger._log(
-                logging.DEBUG, "loading block range %s to %s", (from_block, to_block)
+                DEBUG, "loading block range %s to %s", (from_block, to_block)
             )
         chunks_yielded = 0
         done = {}
@@ -589,7 +589,7 @@ class Filter(_DiskCachedMixin[T, C]):
             if next_chunk_loaded:
                 await self._set_lock(end)
                 if debug_logs:
-                    logger._log(logging.DEBUG, "%s loaded thru block %s", (self, end))
+                    logger._log(DEBUG, "%s loaded thru block %s", (self, end))
 
     @stuck_coro_debugger
     async def _set_lock(self, block: int) -> None:
@@ -620,16 +620,16 @@ class Filter(_DiskCachedMixin[T, C]):
 
         if debug_logs:
             logger._log(
-                logging.DEBUG,
+                DEBUG,
                 "%s queuing next db insert chunk %s thru block %s",
                 (self, depth, done_thru),
             )
-            task = asyncio.create_task(
+            task = create_task(
                 coro=insert_coro,
                 name=f"_insert_chunk from {from_block} to {done_thru}",
             )
         else:
-            task = asyncio.create_task(insert_coro)
+            task = create_task(insert_coro)
 
         task._depth = depth
         self._db_task = task
@@ -637,7 +637,7 @@ class Filter(_DiskCachedMixin[T, C]):
     def _ensure_task(self) -> None:
         if self._task is None:
             logger.debug("creating task for %s", self)
-            self._task = asyncio.create_task(
+            self._task = create_task(
                 coro=self.__fetch(), name=f"{self}.__fetch"
             )
             # NOTE: The task does not return and will be cancelled when this object is
@@ -651,7 +651,7 @@ class Filter(_DiskCachedMixin[T, C]):
         objs: List[T],
         from_block: int,
         done_thru: int,
-        prev_chunk_task: Optional[asyncio.Task],
+        prev_chunk_task: Optional[Task],
         depth: int,
         debug_logs: bool,
     ) -> None:
@@ -666,7 +666,7 @@ class Filter(_DiskCachedMixin[T, C]):
         await self.executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
             logger._log(
-                logging.DEBUG,
+                DEBUG,
                 "%s chunk %s thru block %s is now in db",
                 (self, depth, done_thru),
             )
