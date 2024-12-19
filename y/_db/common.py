@@ -20,8 +20,7 @@ from typing import (
 import a_sync
 import dank_mids
 import eth_retry
-from a_sync import ASyncIterable, ASyncIterator, CounterLock
-from a_sync.executor import PruningThreadPoolExecutor, _AsyncExecutorMixin
+from a_sync import ASyncIterable, ASyncIterator, AsyncThreadPoolExecutor, CounterLock, PruningThreadPoolExecutor
 from async_property import async_property
 from brownie import ZERO_ADDRESS
 from dank_mids import BlockSemaphore, eth
@@ -234,7 +233,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 
     def __init__(
         self,
-        executor: Optional[_AsyncExecutorMixin] = None,
+        executor: Optional[AsyncThreadPoolExecutor] = None,
         is_reusable: bool = True,
     ):
         self.is_reusable = is_reusable
@@ -248,10 +247,14 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
     def cache(self) -> C: ...
 
     @property
-    def executor(self) -> _AsyncExecutorMixin:
+    def executor(self) -> AsyncThreadPoolExecutor:
         if self._executor is None:
-            self._executor = default_filter_threads
+            self._executor = AsyncThreadPoolExecutor(1)
         return self._executor
+    
+    def __del__(self) -> None:
+        if self._executor:
+            self._executor.shutdown()
 
     @property
     @abstractmethod
@@ -329,7 +332,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         return None
 
 
-_E = TypeVar("_E", bound=_AsyncExecutorMixin)
+_E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
 _MAX_LONG_LONG = 9223372036854775807
 
 _metadata_executor = PruningThreadPoolExecutor(4, thread_name_prefix="ypricemagic Filter metadata")
@@ -365,7 +368,7 @@ class Filter(_DiskCachedMixin[T, C]):
         chunks_per_batch: Optional[int] = None,
         sleep_time: int = 60,
         semaphore: Optional[BlockSemaphore] = None,
-        executor: Optional[_AsyncExecutorMixin] = None,
+        executor: Optional[AsyncThreadPoolExecutor] = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
