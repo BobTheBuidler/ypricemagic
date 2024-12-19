@@ -1,7 +1,7 @@
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3
 checksum_dict>=1.4.2,<3
-dank_mids>=4.20.109
+dank_mids>=4.20.112
 eth-brownie>=1.19.3,<1.21
 eth_retry>=0.2
 evmspec>=0.1.0
