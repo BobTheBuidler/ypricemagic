@@ -23,7 +23,7 @@ _logger_debug = logger.debug
 _trace_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [trace]")
 
 
-@a_sync(default="async", executor=_trace_executor)
+@a_sync.a_sync(default="async", executor=_trace_executor)
 @db_session_retry_locked
 def insert_trace(trace: FilterTrace) -> None:
     """Insert a trace into the database.
