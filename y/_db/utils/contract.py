@@ -2,13 +2,13 @@ import logging
 import threading
 from typing import Dict, Optional
 
-import a_sync
+from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
 from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import select
 from y._db.decorators import (
-    a_sync_read_db_session,
     a_sync_write_db_session,
+    db_session_retry_locked,
     log_result_count,
 )
 from y._db.entities import Contract
@@ -18,11 +18,15 @@ from y.datatypes import Address, Block
 
 
 logger = logging.getLogger(__name__)
+_logger_debug = logger.debug
 
 _get_get_token()
 
+_deploy_block_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [deploy block]")
 
-@a_sync_read_db_session
+
+@a_sync(default="async", executor=_deploy_block_executor)
+@db_session_retry_locked
 def get_deploy_block(address: str) -> Optional[int]:
     """Retrieve the deployment block number for a given contract address.
 
@@ -40,41 +44,39 @@ def get_deploy_block(address: str) -> Optional[int]:
         - :func:`_set_deploy_block`
     """
     if deploy_block := known_deploy_blocks().pop(address, None):
-        logger.debug("%s deploy block from cache: %s", address, deploy_block)
+        _logger_debug("%s deploy block from cache: %s", address, deploy_block)
         return deploy_block
     get_token = _get_get_token()
     token = get_token(address, sync=True)
     if token is None:
         raise ValueError(f"get_token('{address}', sync=True) returned 'None'")
     if deploy_block := token.deploy_block:
-        logger.debug("%s deploy block from cache: %s", address, deploy_block.number)
+        _logger_debug("%s deploy block from cache: %s", address, deploy_block.number)
         return deploy_block.number
-    logger.debug("%s deploy block not cached, fetching from chain", address)
+    _logger_debug("%s deploy block not cached, fetching from chain", address)
 
 
-async def _set_deploy_block(address: str, deploy_block: int) -> None:
-    """Asynchronously set the deployment block number for a contract address.
-
-    This function ensures the block is valid before setting it.
+@a_sync(default="async", executor=_deploy_block_executor)
+@db_session_retry_locked
+def _set_deploy_block(address: str, deploy_block: int) -> None:
+    """Set the deployment block number for a contract address in the database.
 
     Args:
         address: The contract address as a string.
         deploy_block: The block number where the contract was deployed.
 
     See Also:
-        - :func:`get_deploy_block`
+        - :func:`set_deploy_block`
     """
-    await ensure_block(deploy_block)
-    return await __set_deploy_block(address, deploy_block)
+    from y._db.utils._ep import _get_get_token
+
+    ensure_block(deploy_block, sync=True)
+    get_token = _get_get_token()
+    get_token(address, sync=True).deploy_block = (chain.id, deploy_block)
+    _logger_debug("deploy block cached for %s: %s", address, deploy_block)
 
 
-set_deploy_block = a_sync.ProcessingQueue(
-    _set_deploy_block, num_workers=10, return_data=False
-)
-
-
-@a_sync_write_db_session
-def __set_deploy_block(address: str, deploy_block: int) -> None:
+def set_deploy_block(address: str, deploy_block: int) -> None:
     """Set the deployment block number for a contract address in the database.
 
     Args:
@@ -84,12 +86,10 @@ def __set_deploy_block(address: str, deploy_block: int) -> None:
     See Also:
         - :func:`_set_deploy_block`
     """
-    from y._db.utils._ep import _get_get_token
 
-    get_token = _get_get_token()
-    get_token(address, sync=True).deploy_block = (chain.id, deploy_block)
-    logger.debug("deploy block cached for %s: %s", address, deploy_block)
-
+set_deploy_block = ProcessingQueue(
+    _set_deploy_block, num_workers=10, return_data=False
+)
 
 # startup caches
 

@@ -4,11 +4,17 @@ from decimal import Decimal
 from typing import Any, Iterable
 from pony.orm import Database, DatabaseError, commit
 
+from a_sync import PruningThreadPoolExecutor, a_sync
+
 from y._db import entities
-from y._db.decorators import a_sync_write_db_session, retry_locked
+from y._db.decorators import db_session_retry_locked, retry_locked
 
 
 logger = logging.getLogger(__name__)
+_logger_debug = logger.debug
+
+
+_bulk_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [bulk]")
 
 
 class SQLError(ValueError):
@@ -45,8 +51,8 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
         >>> execute("DELETE FROM my_table WHERE column1 = 'value1'")
     """
     try:
-        logger.debug("EXECUTING SQL")
-        logger.debug(sql)
+        _logger_debug("EXECUTING SQL")
+        _logger_debug(sql)
         db.execute(sql)
         commit()
     except DatabaseError as e:
@@ -138,7 +144,8 @@ def build_row(row: Iterable[Any], provider: str) -> str:
     return f"({','.join(stringify_column_value(col, provider) for col in row)})"
 
 
-@a_sync_write_db_session
+@a_sync(default="async", executor=_bulk_executor)
+@db_session_retry_locked
 def insert(
     entity_type: entities.db.Entity,
     columns: Iterable[str],
@@ -186,4 +193,4 @@ def insert(
         )
     else:
         raise NotImplementedError(db.provider_name)
-    logger.debug("inserted %s %ss to ydb", len(items), entity_name)
+    _logger_debug("inserted %s %ss to ydb", len(items), entity_name)

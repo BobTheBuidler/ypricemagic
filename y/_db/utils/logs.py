@@ -3,6 +3,7 @@ import itertools
 import logging
 from typing import List, Optional
 
+from a_sync import PruningThreadPoolExecutor, a_sync
 from a_sync.executor import _AsyncExecutorMixin
 from async_lru import alru_cache
 from brownie import chain
@@ -16,8 +17,9 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
 from y import convert
-from y._db import decorators, entities
+from y._db import entities
 from y._db.common import DiskCache, default_filter_threads, enc_hook
+from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
 from y._db.log import Log
 from y._db.utils import bulk
 from y._db.utils._ep import _get_get_block
@@ -36,6 +38,9 @@ LOG_COLS = [
     "topic3",
     "raw",
 ]
+
+_topic_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [topic]")
+_hash_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [hash]")
 
 
 async def _prepare_log(log: Log) -> tuple:
@@ -129,7 +134,8 @@ async def bulk_insert(
     )
 
 
-@decorators.a_sync_write_db_session_cached
+@a_sync(default="async", executor=_topic_executor, ram_cache_maxsize=None)
+@db_session_cached
 def get_topic_dbid(topic: Topic) -> int:
     topic = _remove_0x_prefix(topic.strip())
     entity = entities.LogTopic.get(topic=topic)
@@ -143,7 +149,8 @@ async def get_hash_dbid(txhash: HexStr) -> int:
     return await _get_hash_dbid(txhash)
 
 
-@decorators.a_sync_write_db_session
+@a_sync(default="async", executor=_hash_executor)
+@db_session_retry_locked
 def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
         hexstr = convert.to_address(hexstr)
@@ -165,7 +172,7 @@ def get_decoded(log: Log) -> Optional[_EventItem]:
 
 
 @db_session
-@decorators.retry_locked
+@retry_locked
 def set_decoded(log: Log, decoded: _EventItem) -> None:
     entities.Log[
         chain.id, log.block_number, log.transaction_hash, log.log_index

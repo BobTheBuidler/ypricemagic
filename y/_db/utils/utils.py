@@ -1,22 +1,27 @@
-import logging
 from datetime import datetime, timezone
 from dateutil import parser
 from functools import lru_cache
+from logging import getLogger
 from typing import Dict, Optional, Set
 
-import a_sync
+from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
 from pony.orm import commit, select
 from brownie import chain
 
 from y._db.decorators import (
     a_sync_read_db_session,
-    a_sync_write_db_session,
-    a_sync_write_db_session_cached,
+    db_session_cached,
+    db_session_retry_locked,
     log_result_count,
 )
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
+_logger_debug = logger.debug
+
+
+_block_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [block]")
+_timestamp_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [timestamp]")
 
 
 @a_sync_read_db_session
@@ -82,7 +87,12 @@ def get_block(number: int) -> Block:
     )
 
 
-@a_sync_write_db_session_cached
+@a_sync(
+    default="async", 
+    executor=_block_executor, 
+    ram_cache_maxsize=None,
+)
+@db_session_cached
 def ensure_block(number: int) -> None:
     """Ensure that a block is known in the database.
 
@@ -134,7 +144,7 @@ def get_block_timestamp(number: int) -> Optional[int]:
         if isinstance(ts, str):
             ts = parser.parse(ts)
         unix = ts.timestamp()
-        logger.debug(
+        _logger_debug(
             "got Block[%s, %s].timestamp from cache: %s, %s", chain.id, number, unix, ts
         )
         return unix
@@ -160,15 +170,16 @@ def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
         - :class:`BlockAtTimestamp`
     """
     if block := known_blocks_for_timestamps().pop(timestamp, None):
-        logger.debug("found block %s for %s in ydb", block, timestamp)
+        _logger_debug("found block %s for %s in ydb", block, timestamp)
         return block
     elif entity := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):
         block = entity.block
-        logger.debug("found block %s for %s in ydb", block, timestamp)
+        _logger_debug("found block %s for %s in ydb", block, timestamp)
         return block
 
 
-@a_sync_write_db_session
+@a_sync(default="async", executor=_timestamp_executor)
+@db_session_retry_locked
 def _set_block_timestamp(block: int, timestamp: int) -> None:
     """Set the timestamp for a specific block in the database.
 
@@ -188,15 +199,31 @@ def _set_block_timestamp(block: int, timestamp: int) -> None:
     block = get_block(block, sync=True)
     timestamp = datetime.fromtimestamp(timestamp, tz=timezone.utc)
     block.timestamp = timestamp
-    logger.debug("cached %s.timestamp %s", block, timestamp)
+    _logger_debug("cached %s.timestamp %s", block, timestamp)
 
 
-set_block_timestamp = a_sync.ProcessingQueue(
+
+def set_block_timestamp(block: int, timestamp: int) -> None:
+    """Set the timestamp for a specific block in the database.
+
+    Args:
+        block: The block number to set the timestamp for.
+        timestamp: The timestamp to set for the block.
+
+    Examples:
+        >>> _set_block_timestamp(123456, 1609459200)
+
+    See Also:
+        - :func:`get_block`
+    """
+
+set_block_timestamp = ProcessingQueue(
     _set_block_timestamp, num_workers=10, return_data=False
 )
 
 
-@a_sync_write_db_session
+@a_sync(default="async", executor=_timestamp_executor)
+@db_session_retry_locked
 def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     """Insert a block number for a specific timestamp in the database.
 
@@ -211,10 +238,10 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
         - :class:`BlockAtTimestamp`
     """
     insert(BlockAtTimestamp, chainid=chain.id, timestamp=timestamp, block=block)
-    logger.debug("inserted block %s for %s", block, timestamp)
+    _logger_debug("inserted block %s for %s", block, timestamp)
 
 
-set_block_at_timestamp = a_sync.ProcessingQueue(
+set_block_at_timestamp = ProcessingQueue(
     _set_block_at_timestamp, num_workers=10, return_data=False
 )
 

@@ -4,6 +4,7 @@ from functools import lru_cache
 from typing import Dict, Optional, Set
 
 import a_sync
+from a_sync import PruningThreadPoolExecutor
 from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import commit, db_session, select
@@ -11,7 +12,7 @@ from pony.orm import commit, db_session, select
 from y import constants, convert
 from y._db.decorators import (
     a_sync_read_db_session,
-    a_sync_write_db_session,
+    db_session_retry_locked,
     log_result_count,
 )
 from y._db.entities import Address, Token, insert
@@ -21,9 +22,14 @@ from y.datatypes import AnyAddressType
 from y.utils import _erc20
 
 logger = logging.getLogger(__name__)
+_logger_debug = logger.debug
 
 
-@a_sync_read_db_session
+_token_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [token]")
+
+
+@a_sync.a_sync(default="async", executor=_token_executor)
+@db_session_retry_locked
 def get_token(address: str) -> Token:
     """Retrieve or insert a token entity for a given address.
 
@@ -122,11 +128,12 @@ def get_bucket(address: str) -> Optional[str]:
         get_token = _get_get_token()
         bucket = get_token(address, sync=True).bucket
     if bucket:
-        logger.debug("found %s bucket %s in ydb", address, bucket)
+        _logger_debug("found %s bucket %s in ydb", address, bucket)
     return bucket
 
 
-@a_sync_write_db_session
+@a_sync.a_sync(default="async", executor=_token_executor)
+@db_session_retry_locked
 def _set_bucket(address: str, bucket: str) -> None:
     """Set the bucket for a given token address.
 
@@ -144,7 +151,7 @@ def _set_bucket(address: str, bucket: str) -> None:
         return
     get_token = _get_get_token()
     get_token(address, sync=True).bucket = bucket
-    logger.debug("updated %s bucket in ydb: %s", address, bucket)
+    _logger_debug("updated %s bucket in ydb: %s", address, bucket)
 
 
 set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=10, return_data=False)
@@ -171,7 +178,7 @@ def get_symbol(address: str) -> Optional[str]:
         get_token = _get_get_token()
         symbol = get_token(address, sync=True).symbol
     if symbol:
-        logger.debug("found %s symbol %s in ydb", address, symbol)
+        _logger_debug("found %s symbol %s in ydb", address, symbol)
     return symbol
 
 
@@ -224,7 +231,7 @@ def get_name(address: str) -> Optional[str]:
         get_token = _get_get_token()
         name = get_token(address, sync=True).name
     if name:
-        logger.debug("found %s name %s in ydb", address, name)
+        _logger_debug("found %s name %s in ydb", address, name)
     return name
 
 
@@ -293,7 +300,8 @@ async def get_decimals(address: str) -> int:
     return d
 
 
-@a_sync_write_db_session
+@a_sync.a_sync(default="async", executor=_token_executor)
+@db_session_retry_locked
 def set_decimals(address: str, decimals: int) -> None:
     """Set the decimals for a given token address.
 
@@ -309,10 +317,11 @@ def set_decimals(address: str, decimals: int) -> None:
     """
     get_token = _get_get_token()
     get_token(address, sync=True).decimals = decimals
-    logger.debug("updated %s decimals in ydb: %s", address, decimals)
+    _logger_debug("updated %s decimals in ydb: %s", address, decimals)
 
 
-@a_sync_write_db_session
+@a_sync.a_sync(default="async", executor=_token_executor)
+@db_session_retry_locked
 def _set_symbol(address: str, symbol: str) -> None:
     """Set the symbol for a given token address.
 
@@ -328,10 +337,11 @@ def _set_symbol(address: str, symbol: str) -> None:
     """
     get_token = _get_get_token()
     get_token(address, sync=True).symbol = symbol
-    logger.debug("updated %s symbol in ydb: %s", address, symbol)
+    _logger_debug("updated %s symbol in ydb: %s", address, symbol)
 
 
-@a_sync_write_db_session
+@a_sync.a_sync(default="async", executor=_token_executor)
+@db_session_retry_locked
 def _set_name(address: str, name: str) -> None:
     """Set the name for a given token address.
 
@@ -347,7 +357,7 @@ def _set_name(address: str, name: str) -> None:
     """
     get_token = _get_get_token()
     get_token(address, sync=True).name = name
-    logger.debug("updated %s name in ydb: %s", address, name)
+    _logger_debug("updated %s name in ydb: %s", address, name)
 
 
 @a_sync_read_db_session
@@ -371,7 +381,7 @@ def _get_token_decimals(address: str) -> Optional[int]:
         get_token = _get_get_token()
         decimals = get_token(address, sync=True).decimals
     if decimals:
-        logger.debug("found %s decimals %s in ydb", address, decimals)
+        _logger_debug("found %s decimals %s in ydb", address, decimals)
         return decimals
 
 
