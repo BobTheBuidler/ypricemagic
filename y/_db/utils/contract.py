@@ -6,11 +6,7 @@ from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
 from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import select
-from y._db.decorators import (
-    a_sync_write_db_session,
-    db_session_retry_locked,
-    log_result_count,
-)
+from y._db.decorators import db_session_retry_locked, log_result_count
 from y._db.entities import Contract
 from y._db.utils._ep import _get_get_token
 from y._db.utils.utils import ensure_block

@@ -117,7 +117,7 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
     raise ValueError(f"{typ} is not a valid type for decoding")
 
 
-class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
+class DiskCache(Generic[S, M], metaclass=ABCMeta):
     @abstractmethod
     def _set_metadata(self, from_block: int, done_thru: int) -> None:
         """
@@ -201,6 +201,8 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
         """
         return self._is_cached_thru(from_block)
 
+    @db_session
+    @retry_locked
     def check_and_select(self, from_block: int, to_block: int) -> List[S]:
         """
         Selects all cached objects within a specified block range.
@@ -217,8 +219,7 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
         """
         if self.is_cached_thru(from_block) >= to_block:
             return self.select(from_block, to_block)
-        else:
-            raise CacheNotPopulatedError(self, from_block, to_block)
+        raise CacheNotPopulatedError(self, from_block, to_block)
 
     __slots__ = []
 
