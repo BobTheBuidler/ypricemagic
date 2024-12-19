@@ -6,19 +6,24 @@ import a_sync
 import dank_mids
 import msgspec.json
 import pony.orm
-from a_sync.executor import _AsyncExecutorMixin
+from a_sync import AsyncThreadPoolExecutor, PruningThreadPoolExecutor
 from evmspec import FilterTrace
 
-from y._db.common import DiskCache, Filter, _clean_addresses, default_filter_threads
-from y._db.decorators import a_sync_write_db_session
+from y._db.common import DiskCache, Filter, _clean_addresses
+from y._db.decorators import db_session_retry_locked
 from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils._ep import _get_get_block
 from y.utils.middleware import BATCH_SIZE
 
 logger = logging.getLogger(__name__)
+_logger_debug = logger.debug
 
 
-@a_sync_write_db_session
+_trace_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [trace]")
+
+
+@a_sync.a_sync(default="async", executor=_trace_executor)
+@db_session_retry_locked
 def insert_trace(trace: FilterTrace) -> None:
     """Insert a trace into the database.
 
@@ -249,7 +254,7 @@ class TraceCache(DiskCache[dict, TraceCacheInfo]):
 
         if should_commit:
             pony.orm.commit()
-            logger.debug(
+            _logger_debug(
                 "cached %s %s thru %s",
                 self.from_addresses,
                 self.to_addresses,
@@ -281,7 +286,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
         semaphore: Optional[dank_mids.BlockSemaphore] = None,
-        executor: _AsyncExecutorMixin = default_filter_threads,
+        executor: Optional[AsyncThreadPoolExecutor] = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):

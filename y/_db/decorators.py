@@ -4,7 +4,7 @@ from functools import lru_cache, wraps
 from typing import Callable, Iterable, TypeVar
 from typing_extensions import ParamSpec
 
-import a_sync
+from a_sync import PruningThreadPoolExecutor, a_sync
 from a_sync.a_sync import ASyncFunction
 from brownie import chain
 from pony.orm import (
@@ -21,8 +21,8 @@ _P = ParamSpec("_P")
 
 logger = logging.getLogger(__name__)
 
-ydb_read_threads = a_sync.PruningThreadPoolExecutor(12)
-ydb_write_threads = a_sync.PruningThreadPoolExecutor(12)
+ydb_read_threads = PruningThreadPoolExecutor(12)
+ydb_write_threads = PruningThreadPoolExecutor(12)
 
 
 def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
@@ -77,10 +77,10 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
     return retry_locked_wrap
 
 
+db_session_retry_locked = lambda func: retry_locked(db_session(retry_locked(func)))
+
 a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
-    lambda fn: a_sync.a_sync(default="async", executor=ydb_read_threads)(
-        retry_locked(db_session(retry_locked(fn)))
-    )
+    lambda fn: a_sync(default="async", executor=ydb_read_threads)(db_session_retry_locked(fn))
 )
 """Decorator for asynchronous read database sessions with retry logic.
 
@@ -104,60 +104,9 @@ See Also:
     - :func:`pony.orm.db_session`
 """
 
-a_sync_write_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
-    lambda fn: a_sync.a_sync(default="async", executor=ydb_write_threads)(
-        retry_locked(db_session(retry_locked(fn)))
-    )
-)
-"""Decorator for asynchronous write database sessions with retry logic.
 
-This decorator wraps a function with an asynchronous database session for write operations,
-applying retry logic for handling database locks.
+db_session_cached = lambda func: retry_locked(lru_cache(maxsize=None)(db_session(retry_locked(func))))
 
-Args:
-    fn: The function to be wrapped.
-
-Returns:
-    An asynchronous function with write database session management and retry logic.
-
-Examples:
-    >>> @a_sync_write_db_session
-    ... async def write_data():
-    ...     # perform write operations
-    ...     pass
-
-See Also:
-    - :func:`retry_locked`
-    - :func:`pony.orm.db_session`
-"""
-
-a_sync_write_db_session_cached: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
-    lambda fn: a_sync.a_sync(
-        default="async", executor=ydb_write_threads, ram_cache_maxsize=None
-    )(retry_locked(lru_cache(maxsize=None)(db_session(retry_locked(fn)))))
-)
-"""Decorator for cached asynchronous write database sessions with retry logic.
-
-This decorator wraps a function with an asynchronous database session for write operations,
-applying retry logic for handling database locks and caching the results.
-
-Args:
-    fn: The function to be wrapped.
-
-Returns:
-    An asynchronous function with cached write database session management and retry logic.
-
-Examples:
-    >>> @a_sync_write_db_session_cached
-    ... async def cached_write_data():
-    ...     # perform write operations
-    ...     pass
-
-See Also:
-    - :func:`retry_locked`
-    - :func:`pony.orm.db_session`
-    - :func:`functools.lru_cache`
-"""
 
 _result_count_logger = logging.getLogger(f"{__name__}.result_count")
 

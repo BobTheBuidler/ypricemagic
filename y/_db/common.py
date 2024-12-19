@@ -20,9 +20,10 @@ from typing import (
 import a_sync
 import dank_mids
 import eth_retry
-from a_sync.executor import _AsyncExecutorMixin
+from a_sync import ASyncIterable, ASyncIterator, AsyncThreadPoolExecutor, CounterLock, PruningThreadPoolExecutor
 from async_property import async_property
 from brownie import ZERO_ADDRESS
+from dank_mids import BlockSemaphore, eth
 from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
@@ -41,7 +42,7 @@ S = TypeVar("S")
 M = TypeVar("M")
 
 logger = getLogger(__name__)
-default_filter_threads = a_sync.PruningThreadPoolExecutor(4)
+default_filter_threads = PruningThreadPoolExecutor(4)
 """
 The thread pool executor used for all :class:`Filter` objects without one provided, with a maximum of 4 threads.
 """
@@ -117,7 +118,7 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
     raise ValueError(f"{typ} is not a valid type for decoding")
 
 
-class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
+class DiskCache(Generic[S, M], metaclass=ABCMeta):
     @abstractmethod
     def _set_metadata(self, from_block: int, done_thru: int) -> None:
         """
@@ -201,6 +202,8 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
         """
         return self._is_cached_thru(from_block)
 
+    @db_session
+    @retry_locked
     def check_and_select(self, from_block: int, to_block: int) -> List[S]:
         """
         Selects all cached objects within a specified block range.
@@ -217,8 +220,7 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
         """
         if self.is_cached_thru(from_block) >= to_block:
             return self.select(from_block, to_block)
-        else:
-            raise CacheNotPopulatedError(self, from_block, to_block)
+        raise CacheNotPopulatedError(self, from_block, to_block)
 
     __slots__ = []
 
@@ -226,12 +228,12 @@ class DiskCache(Generic[S, M], metaclass=abc.ABCMeta):
 C = TypeVar("C", bound=DiskCache)
 
 
-class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
+class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
     __slots__ = "is_reusable", "_cache", "_executor", "_objects", "_pruned"
 
     def __init__(
         self,
-        executor: Optional[_AsyncExecutorMixin] = None,
+        executor: Optional[AsyncThreadPoolExecutor] = None,
         is_reusable: bool = True,
     ):
         self.is_reusable = is_reusable
@@ -245,10 +247,14 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=ABCMeta
     def cache(self) -> C: ...
 
     @property
-    def executor(self) -> _AsyncExecutorMixin:
+    def executor(self) -> AsyncThreadPoolExecutor:
         if self._executor is None:
-            self._executor = default_filter_threads
+            self._executor = AsyncThreadPoolExecutor(1)
         return self._executor
+    
+    def __del__(self) -> None:
+        if self._executor:
+            self._executor.shutdown()
 
     @property
     @abstractmethod
@@ -285,7 +291,7 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=ABCMeta
             The maximum block number loaded from cache.
         """
         logger.debug("checking to see if %s is cached in local db", self)
-        if cached_thru := await self.executor.run(
+        if cached_thru := await _metadata_executor.run(
             self.cache.is_cached_thru, from_block
         ):
             logger.info(
@@ -326,8 +332,10 @@ class _DiskCachedMixin(a_sync.ASyncIterable[T], Generic[T, C], metaclass=ABCMeta
         return None
 
 
-_E = TypeVar("_E", bound=_AsyncExecutorMixin)
+_E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
 _MAX_LONG_LONG = 9223372036854775807
+
+_metadata_executor = PruningThreadPoolExecutor(4, thread_name_prefix="ypricemagic Filter metadata")
 
 
 class Filter(_DiskCachedMixin[T, C]):
@@ -359,8 +367,8 @@ class Filter(_DiskCachedMixin[T, C]):
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
         sleep_time: int = 60,
-        semaphore: Optional[dank_mids.BlockSemaphore] = None,
-        executor: Optional[_AsyncExecutorMixin] = None,
+        semaphore: Optional[BlockSemaphore] = None,
+        executor: Optional[AsyncThreadPoolExecutor] = None,
         is_reusable: bool = True,
         verbose: bool = False,
     ):
@@ -369,7 +377,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._chunk_size = chunk_size
         if chunks_per_batch != self._chunks_per_batch:
             self._chunks_per_batch = chunks_per_batch
-        self._lock = a_sync.CounterLock(name=str(self))
+        self._lock = CounterLock(name=str(self))
         if semaphore != self._semaphore:
             self._semaphore = semaphore
         if sleep_time != self._sleep_time:
@@ -390,9 +398,9 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _fetch_range(self, from_block: int, to_block: int) -> List[T]: ...
 
     @property
-    def semaphore(self) -> dank_mids.BlockSemaphore:
+    def semaphore(self) -> BlockSemaphore:
         if self._semaphore is None:
-            self._semaphore = dank_mids.BlockSemaphore(self._chunks_per_batch)
+            self._semaphore = BlockSemaphore(self._chunks_per_batch)
         return self._semaphore
 
     @property
@@ -411,7 +419,7 @@ class Filter(_DiskCachedMixin[T, C]):
         """
         return obj.blockNumber
 
-    @a_sync.ASyncIterator.wrap
+    @ASyncIterator.wrap
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         debug_logs = logger.isEnabledFor(DEBUG)
@@ -663,7 +671,7 @@ class Filter(_DiskCachedMixin[T, C]):
             await self.bulk_insert(objs)
         del objs
 
-        await self.executor.run(self.cache.set_metadata, from_block, done_thru)
+        await _metadata_executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
             logger._log(
                 DEBUG,
