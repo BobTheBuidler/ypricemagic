@@ -26,7 +26,7 @@ from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
 
-LOG_COLS = [
+LOG_COLS = (
     "block_chain",
     "block_number",
     "tx",
@@ -37,7 +37,10 @@ LOG_COLS = [
     "topic2",
     "topic3",
     "raw",
-]
+)
+
+BLOCK_COLS = "chain", "number"
+BLOCK_COLS_EXTENDED = "chain", "number", "classtype"
 
 _topic_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [topic]")
 _hash_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [hash]")
@@ -96,40 +99,43 @@ async def bulk_insert(
     if not logs:
         return
 
-    block_cols = ["chain", "number"]
+    chainid = chain.id
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
-        # TODO: refactor this ugly shit out
-        block_cols.append("classtype")
-        blocks = [
-            (chain.id, block, "BlockExtended")
+        blocks = tuple(
+            (chainid, block, "BlockExtended")
             for block in {log.blockNumber for log in logs}
-        ]
+        )
+        await executor.run(bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks, sync=True)
     else:
-        blocks = [(chain.id, block) for block in {log.blockNumber for log in logs}]
-    await executor.run(bulk.insert, entities.Block, block_cols, blocks, sync=True)
+        blocks = tuple((chainid, block) for block in {log.blockNumber for log in logs})
+        await executor.run(bulk.insert, entities.Block, BLOCK_COLS, blocks, sync=True)
+    del blocks
 
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
     addresses = {log.address for log in logs}
-    hashes = [
-        [_remove_0x_prefix(hash)] for hash in itertools.chain(txhashes, addresses)
-    ]
+    hashes = tuple(
+        (_remove_0x_prefix(hash), ) for hash in itertools.chain(txhashes, addresses)
+    )
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
+    del txhashes, addresses, hashes
 
     topics = {*itertools.chain(*(log.topics for log in logs))}
+
     await executor.run(
         bulk.insert,
         entities.LogTopic,
-        ["topic"],
-        [[_remove_0x_prefix(topic.strip())] for topic in topics],
+        ("topic",),
+        tuple((_remove_0x_prefix(topic.strip()),) for topic in topics),
         sync=True,
     )
+    del topics
 
     await executor.run(
         bulk.insert,
         entities.Log,
         LOG_COLS,
-        await asyncio.gather(*[_prepare_log(log) for log in logs]),
+        await asyncio.gather(*(_prepare_log(log) for log in logs)),
         sync=True,
     )
 
