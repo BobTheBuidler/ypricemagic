@@ -428,7 +428,7 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
         >>> logs = await _get_logs_async_no_cache("0x1234...", ["0x5678..."], 1000000, 1000100)
         >>> print(logs)
     """
-    args = {"fromBlock": start, "toBlock": end}
+    args = {"fromBlock": hex(start), "toBlock": hex(end)}
     if address is None:
         args["topics"] = topics
 
