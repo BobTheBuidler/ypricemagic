@@ -1,10 +1,10 @@
-import asyncio
 import itertools
 import logging
+from asyncio import gather
 from typing import List, Optional
 
 from a_sync import PruningThreadPoolExecutor, a_sync
-from a_sync.executor import _AsyncExecutorMixin
+from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie import chain
 from brownie.network.event import _EventItem
@@ -69,10 +69,10 @@ async def _prepare_log(log: Log) -> tuple:
         - :func:`get_topic_dbid`
         - :func:`enc_hook`
     """
-    transaction_dbid, address_dbid, topic_dbids = await asyncio.gather(
+    transaction_dbid, address_dbid, topic_dbids = await gather(
         get_hash_dbid(log.transactionHash.hex()),
         get_hash_dbid(log.address),
-        asyncio.gather(*[get_topic_dbid(topic) for topic in log.topics]),
+        gather(*[get_topic_dbid(topic) for topic in log.topics]),
     )
     topics = {
         f"topic{i}": topic_dbid
@@ -94,22 +94,21 @@ _check_using_extended_db = lambda: "eth_portfolio" in _get_get_block().__module_
 
 
 async def bulk_insert(
-    logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads
+    logs: List[Log], executor: AsyncExecutor = default_filter_threads
 ) -> None:
     if not logs:
         return
 
     chainid = chain.id
+    submit = executor.submit
+    
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
-        blocks = tuple(
-            (chainid, block, "BlockExtended")
-            for block in {log.blockNumber for log in logs}
-        )
-        await executor.run(bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks, sync=True)
+        blocks = tuple((chainid, block, "BlockExtended") for block in {log.blockNumber for log in logs})
+        blocks_fut = submit(bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks)
     else:
         blocks = tuple((chainid, block) for block in {log.blockNumber for log in logs})
-        await executor.run(bulk.insert, entities.Block, BLOCK_COLS, blocks, sync=True)
+        blocks_fut = submit(bulk.insert, entities.Block, BLOCK_COLS, blocks)
     del blocks
 
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
@@ -117,25 +116,25 @@ async def bulk_insert(
     hashes = tuple(
         (_remove_0x_prefix(hash), ) for hash in itertools.chain(txhashes, addresses)
     )
-    await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
+    hashes_fut = submit(bulk.insert, entities.Hashes, ["hash"], hashes)
     del txhashes, addresses, hashes
 
-    topics = {*itertools.chain(*(log.topics for log in logs))}
-
-    await executor.run(
+    topics = set(itertools.chain(*(log.topics for log in logs))})
+    topics_fut = submit(
         bulk.insert,
         entities.LogTopic,
         ("topic",),
         tuple((_remove_0x_prefix(topic.strip()),) for topic in topics),
-        sync=True,
     )
     del topics
+
+    await gather(block_fut, hashes_fut, topics_fut)
 
     await executor.run(
         bulk.insert,
         entities.Log,
         LOG_COLS,
-        await asyncio.gather(*(_prepare_log(log) for log in logs)),
+        await gather(*(_prepare_log(log) for log in logs)),
         sync=True,
     )
 
