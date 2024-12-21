@@ -106,7 +106,9 @@ async def bulk_insert(
             (chainid, block, "BlockExtended")
             for block in {log.blockNumber for log in logs}
         )
-        await executor.run(bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks, sync=True)
+        await executor.run(
+            bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks, sync=True
+        )
     else:
         blocks = tuple((chainid, block) for block in {log.blockNumber for log in logs})
         await executor.run(bulk.insert, entities.Block, BLOCK_COLS, blocks, sync=True)
@@ -115,7 +117,7 @@ async def bulk_insert(
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
     addresses = {log.address for log in logs}
     hashes = tuple(
-        (_remove_0x_prefix(hash), ) for hash in itertools.chain(txhashes, addresses)
+        (_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses)
     )
     await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
     del txhashes, addresses, hashes
