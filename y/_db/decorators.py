@@ -80,7 +80,9 @@ def retry_locked(callable: Callable[_P, _T]) -> Callable[_P, _T]:
 db_session_retry_locked = lambda func: retry_locked(db_session(retry_locked(func)))
 
 a_sync_read_db_session: Callable[[Callable[_P, _T]], ASyncFunction[_P, _T]] = (
-    lambda fn: a_sync(default="async", executor=ydb_read_threads)(db_session_retry_locked(fn))
+    lambda fn: a_sync(default="async", executor=ydb_read_threads)(
+        db_session_retry_locked(fn)
+    )
 )
 """Decorator for asynchronous read database sessions with retry logic.
 
@@ -105,7 +107,9 @@ See Also:
 """
 
 
-db_session_cached = lambda func: retry_locked(lru_cache(maxsize=None)(db_session(retry_locked(func))))
+db_session_cached = lambda func: retry_locked(
+    lru_cache(maxsize=None)(db_session(retry_locked(func)))
+)
 
 
 _result_count_logger = logging.getLogger(f"{__name__}.result_count")

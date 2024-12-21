@@ -1,10 +1,10 @@
-import asyncio
 import itertools
 import logging
+from asyncio import gather
 from typing import List, Optional
 
 from a_sync import PruningThreadPoolExecutor, a_sync
-from a_sync.executor import _AsyncExecutorMixin
+from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie import chain
 from brownie.network.event import _EventItem
@@ -20,8 +20,10 @@ from y import convert
 from y._db import entities
 from y._db.common import DiskCache, default_filter_threads, enc_hook
 from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
+from y._db.entities import Block, Hashes, LogCacheInfo, LogTopic
+from y._db.entities import Log as DbLog
 from y._db.log import Log
-from y._db.utils import bulk
+from y._db.utils.bulk import insert as _bulk_insert
 from y._db.utils._ep import _get_get_block
 
 logger = logging.getLogger(__name__)
@@ -39,11 +41,16 @@ LOG_COLS = (
     "raw",
 )
 
-BLOCK_COLS = "chain", "number"
-BLOCK_COLS_EXTENDED = "chain", "number", "classtype"
+_BLOCK_COLS = "chain", "number"
+_BLOCK_COLS_EXTENDED = "chain", "number", "classtype"
+_CHAINID = chain.id
 
 _topic_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [topic]")
 _hash_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [hash]")
+
+_get_log_cache_info = LogCacheInfo.get
+_get_log_topic = LogTopic.get
+_get_hash = Hashes.get
 
 
 async def _prepare_log(log: Log) -> tuple:
@@ -69,17 +76,17 @@ async def _prepare_log(log: Log) -> tuple:
         - :func:`get_topic_dbid`
         - :func:`enc_hook`
     """
-    transaction_dbid, address_dbid, topic_dbids = await asyncio.gather(
+    transaction_dbid, address_dbid, topic_dbids = await gather(
         get_hash_dbid(log.transactionHash.hex()),
         get_hash_dbid(log.address),
-        asyncio.gather(*[get_topic_dbid(topic) for topic in log.topics]),
+        gather(*[get_topic_dbid(topic) for topic in log.topics]),
     )
     topics = {
         f"topic{i}": topic_dbid
         for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)
     }
     params = {
-        "block_chain": chain.id,
+        "block_chain": _CHAINID,
         "block_number": log.blockNumber,
         "transaction": transaction_dbid,
         "log_index": log.logIndex,
@@ -94,48 +101,49 @@ _check_using_extended_db = lambda: "eth_portfolio" in _get_get_block().__module_
 
 
 async def bulk_insert(
-    logs: List[Log], executor: _AsyncExecutorMixin = default_filter_threads
+    logs: List[Log], executor: AsyncExecutor = default_filter_threads
 ) -> None:
     if not logs:
         return
 
-    chainid = chain.id
+    submit = executor.submit
+
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
         blocks = tuple(
-            (chainid, block, "BlockExtended")
+            (_CHAINID, block, "BlockExtended")
             for block in {log.blockNumber for log in logs}
         )
-        await executor.run(bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks, sync=True)
+        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks)
     else:
-        blocks = tuple((chainid, block) for block in {log.blockNumber for log in logs})
-        await executor.run(bulk.insert, entities.Block, BLOCK_COLS, blocks, sync=True)
+        blocks = tuple((_CHAINID, block) for block in {log.blockNumber for log in logs})
+        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks)
     del blocks
 
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
     addresses = {log.address for log in logs}
     hashes = tuple(
-        (_remove_0x_prefix(hash), ) for hash in itertools.chain(txhashes, addresses)
+        (_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses)
     )
-    await executor.run(bulk.insert, entities.Hashes, ["hash"], hashes, sync=True)
+    hashes_fut = submit(_bulk_insert, Hashes, ["hash"], hashes)
     del txhashes, addresses, hashes
 
-    topics = {*itertools.chain(*(log.topics for log in logs))}
-
-    await executor.run(
-        bulk.insert,
-        entities.LogTopic,
+    topics = set(itertools.chain(*(log.topics for log in logs)))
+    topics_fut = submit(
+        _bulk_insert,
+        LogTopic,
         ("topic",),
         tuple((_remove_0x_prefix(topic.strip()),) for topic in topics),
-        sync=True,
     )
     del topics
 
+    await gather(block_fut, hashes_fut, topics_fut)
+
     await executor.run(
-        bulk.insert,
-        entities.Log,
+        _bulk_insert,
+        DbLog,
         LOG_COLS,
-        await asyncio.gather(*(_prepare_log(log) for log in logs)),
+        await gather(*(_prepare_log(log) for log in logs)),
         sync=True,
     )
 
@@ -144,9 +152,9 @@ async def bulk_insert(
 @db_session_cached
 def get_topic_dbid(topic: Topic) -> int:
     topic = _remove_0x_prefix(topic.strip())
-    entity = entities.LogTopic.get(topic=topic)
+    entity = _get_log_topic(topic=topic)
     if entity is None:
-        entity = entities.LogTopic(topic=topic)
+        entity = LogTopic(topic=topic)
     return entity.dbid
 
 
@@ -161,16 +169,16 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
     if len(hexstr) == 42:
         hexstr = convert.to_address(hexstr)
     string = _remove_0x_prefix(hexstr)
-    entity = entities.Hashes.get(hash=string)
+    entity = _get_hash(hash=string)
     if entity is None:
-        entity = entities.Hashes(hash=string)
+        entity = Hashes(hash=string)
     return entity.dbid
 
 
 def get_decoded(log: Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
-    if decoded := entities.Log[
-        chain.id, log.block_number, log.transaction_hash, log.log_index
+    if decoded := DbLog[
+        _CHAINID, log.block_number, log.transaction_hash, log.log_index
     ].decoded:
         return _EventItem(
             decoded["name"], decoded["address"], decoded["event_data"], decoded["pos"]
@@ -180,15 +188,15 @@ def get_decoded(log: Log) -> Optional[_EventItem]:
 @db_session
 @retry_locked
 def set_decoded(log: Log, decoded: _EventItem) -> None:
-    entities.Log[
-        chain.id, log.block_number, log.transaction_hash, log.log_index
-    ].decoded = decoded
+    DbLog[_CHAINID, log.block_number, log.transaction_hash, log.log_index].decoded = (
+        decoded
+    )
 
 
 page_size = 100
 
 
-class LogCache(DiskCache[Log, entities.LogCacheInfo]):
+class LogCache(DiskCache[Log, LogCacheInfo]):
     __slots__ = "addresses", "topics"
 
     def __init__(self, addresses, topics):
@@ -218,7 +226,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
     def topic3(self) -> str:
         return self.topics[3] if self.topics and len(self.topics) > 3 else None
 
-    def load_metadata(self) -> Optional["entities.LogCacheInfo"]:
+    def load_metadata(self) -> Optional[LogCacheInfo]:
         """Loads the cache metadata from the db."""
         if self.addresses:
             raise NotImplementedError(self.addresses)
@@ -228,7 +236,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
         chain = db.get_chain(sync=True)
         # If we cached all of this topic0 with no filtering for all addresses
         if self.topic0 and (
-            info := entities.LogCacheInfo.get(
+            info := _get_log_cache_info(
                 chain=chain,
                 address="None",
                 topics=json.encode([self.topic0]),
@@ -237,7 +245,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
             return info
         # If we cached these specific topics for all addresses
         elif self.topics and (
-            info := entities.LogCacheInfo.get(
+            info := _get_log_cache_info(
                 chain=chain,
                 address="None",
                 topics=json.encode(self.topics),
@@ -250,15 +258,15 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
 
         if self.addresses:
             chain = db.get_chain(sync=True)
-            infos: List[entities.LogCacheInfo]
+            infos: List[LogCacheInfo]
             if isinstance(self.addresses, str):
                 infos = [
                     # If we cached all logs for this address...
-                    entities.LogCacheInfo.get(
+                    _get_log_cache_info(
                         chain=chain, address=self.addresses, topics=json.encode(None)
                     )
                     # ... or we cached all logs for these specific topics for this address
-                    or entities.LogCacheInfo.get(
+                    or _get_log_cache_info(
                         chain=chain,
                         address=self.addresses,
                         topics=json.encode(self.topics),
@@ -267,11 +275,11 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    entities.LogCacheInfo.get(
+                    _get_log_cache_info(
                         chain=chain, address=addr, topics=json.encode(None)
                     )
                     # ... or we cached all logs for these specific topics for this address
-                    or entities.LogCacheInfo.get(
+                    or _get_log_cache_info(
                         chain=chain, address=addr, topics=json.encode(self.topics)
                     )
                     for addr in self.addresses
@@ -306,7 +314,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
 
         generator = (
             log
-            for log in entities.Log
+            for log in DbLog
             if log.block.chain == db.get_chain(sync=True)
             and log.block.number >= from_block
             and log.block.number <= to_block
@@ -336,7 +344,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
             if isinstance(addresses, str):
                 addresses = [addresses]
             for address in addresses:
-                if e := entities.LogCacheInfo.get(
+                if e := _get_log_cache_info(
                     chain=chain, address=address, topics=encoded_topics
                 ):
                     if from_block < e.cached_from:
@@ -346,7 +354,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
                         e.cached_thru = done_thru
                         should_commit = True
                 else:
-                    entities.LogCacheInfo(
+                    LogCacheInfo(
                         chain=chain,
                         address=address,
                         topics=encoded_topics,
@@ -354,7 +362,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
                         cached_thru=done_thru,
                     )
                     should_commit = True
-        elif info := entities.LogCacheInfo.get(
+        elif info := _get_log_cache_info(
             chain=chain,
             address="None",
             topics=encoded_topics,
@@ -366,7 +374,7 @@ class LogCache(DiskCache[Log, entities.LogCacheInfo]):
                 info.cached_thru = done_thru
                 should_commit = True
         else:
-            entities.LogCacheInfo(
+            LogCacheInfo(
                 chain=chain,
                 address="None",
                 topics=encoded_topics,

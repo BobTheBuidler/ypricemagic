@@ -21,7 +21,9 @@ _logger_debug = logger.debug
 
 
 _block_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [block]")
-_timestamp_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [timestamp]")
+_timestamp_executor = PruningThreadPoolExecutor(
+    10, "ypricemagic db executor [timestamp]"
+)
 
 
 @a_sync_read_db_session
@@ -88,8 +90,8 @@ def get_block(number: int) -> Block:
 
 
 @a_sync(
-    default="async", 
-    executor=_block_executor, 
+    default="async",
+    executor=_block_executor,
     ram_cache_maxsize=None,
 )
 @db_session_cached
@@ -202,7 +204,6 @@ def _set_block_timestamp(block: int, timestamp: int) -> None:
     _logger_debug("cached %s.timestamp %s", block, timestamp)
 
 
-
 def set_block_timestamp(block: int, timestamp: int) -> None:
     """Set the timestamp for a specific block in the database.
 
@@ -216,6 +217,7 @@ def set_block_timestamp(block: int, timestamp: int) -> None:
     See Also:
         - :func:`get_block`
     """
+
 
 set_block_timestamp = ProcessingQueue(
     _set_block_timestamp, num_workers=10, return_data=False

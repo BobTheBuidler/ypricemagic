@@ -18,7 +18,9 @@ _logger_debug = logger.debug
 
 _get_get_token()
 
-_deploy_block_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [deploy block]")
+_deploy_block_executor = PruningThreadPoolExecutor(
+    10, "ypricemagic db executor [deploy block]"
+)
 
 
 @a_sync(default="async", executor=_deploy_block_executor)
@@ -83,9 +85,8 @@ def set_deploy_block(address: str, deploy_block: int) -> None:
         - :func:`_set_deploy_block`
     """
 
-set_deploy_block = ProcessingQueue(
-    _set_deploy_block, num_workers=10, return_data=False
-)
+
+set_deploy_block = ProcessingQueue(_set_deploy_block, num_workers=10, return_data=False)
 
 # startup caches
 
