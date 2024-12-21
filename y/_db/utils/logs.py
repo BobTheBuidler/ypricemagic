@@ -188,9 +188,9 @@ def get_decoded(log: Log) -> Optional[_EventItem]:
 @db_session
 @retry_locked
 def set_decoded(log: Log, decoded: _EventItem) -> None:
-    DbLog[
-        _CHAINID, log.block_number, log.transaction_hash, log.log_index
-    ].decoded = decoded
+    DbLog[_CHAINID, log.block_number, log.transaction_hash, log.log_index].decoded = (
+        decoded
+    )
 
 
 page_size = 100
