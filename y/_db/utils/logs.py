@@ -101,10 +101,13 @@ async def bulk_insert(
 
     chainid = chain.id
     submit = executor.submit
-    
+
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
-        blocks = tuple((chainid, block, "BlockExtended") for block in {log.blockNumber for log in logs})
+        blocks = tuple(
+            (chainid, block, "BlockExtended")
+            for block in {log.blockNumber for log in logs}
+        )
         blocks_fut = submit(bulk.insert, entities.Block, BLOCK_COLS_EXTENDED, blocks)
     else:
         blocks = tuple((chainid, block) for block in {log.blockNumber for log in logs})
@@ -114,7 +117,7 @@ async def bulk_insert(
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
     addresses = {log.address for log in logs}
     hashes = tuple(
-        (_remove_0x_prefix(hash), ) for hash in itertools.chain(txhashes, addresses)
+        (_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses)
     )
     hashes_fut = submit(bulk.insert, entities.Hashes, ["hash"], hashes)
     del txhashes, addresses, hashes

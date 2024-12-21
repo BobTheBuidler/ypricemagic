@@ -20,7 +20,13 @@ from typing import (
 import a_sync
 import dank_mids
 import eth_retry
-from a_sync import ASyncIterable, ASyncIterator, AsyncThreadPoolExecutor, CounterLock, PruningThreadPoolExecutor
+from a_sync import (
+    ASyncIterable,
+    ASyncIterator,
+    AsyncThreadPoolExecutor,
+    CounterLock,
+    PruningThreadPoolExecutor,
+)
 from async_property import async_property
 from brownie import ZERO_ADDRESS
 from dank_mids import BlockSemaphore, eth
@@ -251,7 +257,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         if self._executor is None:
             self._executor = AsyncThreadPoolExecutor(1)
         return self._executor
-    
+
     def __del__(self) -> None:
         if self._executor:
             self._executor.shutdown()
@@ -335,7 +341,9 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 _E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
 _MAX_LONG_LONG = 9223372036854775807
 
-_metadata_executor = PruningThreadPoolExecutor(4, thread_name_prefix="ypricemagic Filter metadata")
+_metadata_executor = PruningThreadPoolExecutor(
+    4, thread_name_prefix="ypricemagic Filter metadata"
+)
 
 
 class Filter(_DiskCachedMixin[T, C]):
@@ -569,9 +577,7 @@ class Filter(_DiskCachedMixin[T, C]):
     @stuck_coro_debugger
     async def _load_range(self, from_block: int, to_block: int) -> None:
         if debug_logs := logger.isEnabledFor(DEBUG):
-            logger._log(
-                DEBUG, "loading block range %s to %s", (from_block, to_block)
-            )
+            logger._log(DEBUG, "loading block range %s to %s", (from_block, to_block))
         chunks_yielded = 0
         done = {}
         coros = [
@@ -645,9 +651,7 @@ class Filter(_DiskCachedMixin[T, C]):
     def _ensure_task(self) -> None:
         if self._task is None:
             logger.debug("creating task for %s", self)
-            self._task = create_task(
-                coro=self.__fetch(), name=f"{self}.__fetch"
-            )
+            self._task = create_task(coro=self.__fetch(), name=f"{self}.__fetch")
             # NOTE: The task does not return and will be cancelled when this object is
             # garbage collected so there is no need to log the "destroy pending task" message.
             self._task._log_destroy_pending = False
