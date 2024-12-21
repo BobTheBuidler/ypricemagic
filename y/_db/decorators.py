@@ -6,6 +6,7 @@ from typing_extensions import ParamSpec
 
 from a_sync import PruningThreadPoolExecutor, a_sync
 from a_sync.a_sync import ASyncFunction
+from brownie import chain
 from pony.orm import (
     CommitException,
     OperationalError,
@@ -14,8 +15,6 @@ from pony.orm import (
     commit,
     db_session,
 )
-
-from y.constants import CHAINID
 
 
 _T = TypeVar("_T")
@@ -115,7 +114,7 @@ db_session_cached = lambda func: retry_locked(
 
 
 _result_count_logger = logging.getLogger(f"{__name__}.result_count")
-_CHAIN_INFO = "chain", CHAINID
+_CHAIN_INFO = "chain", chain.id
 
 def log_result_count(
     name: str, arg_names: Iterable[str] = []
