@@ -10,7 +10,6 @@ import a_sync.exceptions
 import brownie
 import dank_mids
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import chain
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
@@ -22,7 +21,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import continue_on_revert, stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
+from y.constants import CHAINID, STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (
     Address,
@@ -60,7 +59,7 @@ Reserves = Tuple[int, int, int]
 
 factory_helper_address = {
     # put special case addresses here
-}.get(chain.id, "0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9")
+}.get(CHAINID, "0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9")
 
 try:
     FACTORY_HELPER = Contract(factory_helper_address)
@@ -502,7 +501,7 @@ class UniswapRouterV2(ContractBase):
 
         token_in, token_out, path = str(token_in), str(token_out), None
 
-        if chain.id == Network.BinanceSmartChain and token_out == usdc.address:
+        if CHAINID == Network.BinanceSmartChain and token_out == usdc.address:
             busd = await Contract.coroutine(
                 "0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56"
             )
@@ -704,7 +703,7 @@ class UniswapRouterV2(ContractBase):
         pools: Dict[UniswapV2Pool, Address]
 
         if (
-            chain.id == Network.Mainnet
+            CHAINID == Network.Mainnet
             and token_address == WRAPPED_GAS_COIN
             and self.label == "uniswap v2"
         ):
@@ -948,7 +947,7 @@ class UniswapRouterV2(ContractBase):
     def _supports_factory_helper(self) -> bool:
         """returns True if our uniswap helper contract is supported, False if not"""
         return (
-            chain.id != Network.Mainnet
+            CHAINID != Network.Mainnet
             and FACTORY_HELPER
             and self.label
             and self.label not in {"zipswap"}
@@ -978,7 +977,7 @@ class UniswapRouterV2(ContractBase):
         elif str(token_in) in self.special_paths and str(token_out) in STABLECOINS:
             path = self.special_paths[str(token_in)]
 
-        elif chain.id == Network.BinanceSmartChain:
+        elif CHAINID == Network.BinanceSmartChain:
             from y.constants import cake, wbnb
 
             if WRAPPED_GAS_COIN in (token_in, token_out):

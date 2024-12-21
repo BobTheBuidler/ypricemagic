@@ -3,13 +3,13 @@ import threading
 from typing import Dict, Optional
 
 from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
-from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import select
 from y._db.decorators import db_session_retry_locked, log_result_count
 from y._db.entities import Contract
 from y._db.utils._ep import _get_get_token
 from y._db.utils.utils import ensure_block
+from y.constants import CHAINID
 from y.datatypes import Address, Block
 
 
@@ -70,7 +70,7 @@ def _set_deploy_block(address: str, deploy_block: int) -> None:
 
     ensure_block(deploy_block, sync=True)
     get_token = _get_get_token()
-    get_token(address, sync=True).deploy_block = (chain.id, deploy_block)
+    get_token(address, sync=True).deploy_block = (CHAINID, deploy_block)
     _logger_debug("deploy block cached for %s: %s", address, deploy_block)
 
 
@@ -109,6 +109,6 @@ def known_deploy_blocks() -> Dict[Address, Block]:
         select(
             (c.address, c.deploy_block.number)
             for c in Contract
-            if c.chain.id == chain.id and c.deploy_block.number
+            if c.chain.id == CHAINID and c.deploy_block.number
         )
     )

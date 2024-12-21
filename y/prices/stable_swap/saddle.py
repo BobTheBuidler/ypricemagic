@@ -3,11 +3,11 @@ import logging
 from typing import List, Optional
 
 import a_sync
-from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
+from y.constants import CHAINID
 from y.contracts import has_method, has_methods
 from y.datatypes import (
     Address,
@@ -74,7 +74,7 @@ async def get_pool(token_address: AnyAddressType) -> Address:
         - :func:`is_saddle_lp`
     """
     token_address = await convert.to_address_async(token_address)
-    if chain.id == Network.Mainnet:
+    if CHAINID == Network.Mainnet:
         if (
             token_address == "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368"
         ):  # saddle aleth doesn't have swap() function

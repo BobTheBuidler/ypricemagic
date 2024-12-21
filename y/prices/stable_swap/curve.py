@@ -1,7 +1,6 @@
 import asyncio
 import logging
 from collections import defaultdict
-from decimal import Decimal
 from enum import IntEnum
 from functools import cached_property
 from typing import Dict, List, Optional, Tuple, TypeVar
@@ -9,7 +8,7 @@ from typing import Dict, List, Optional, Tuple, TypeVar
 import a_sync
 import brownie
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import ZERO_ADDRESS, chain
+from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.exceptions import ContractNotFound, EventLookupError
 from brownie.network.event import _EventItem
@@ -19,6 +18,7 @@ from web3.exceptions import ContractLogicError
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20, WeiBalance, _EventsLoader, _Loader
+from y.constants import CHAINID
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (
     Address,
@@ -55,7 +55,7 @@ DED_POOLS = {
     Network.Mainnet: {
         "0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511": "0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d",
     },
-}.get(chain.id, {})
+}.get(CHAINID, {})
 "The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually."
 
 
@@ -173,7 +173,7 @@ class AddressProvider(_CurveEventsLoader):
         if debug_logs := logger.isEnabledFor(logging.DEBUG):
             logger._log(logging.DEBUG, "loading pools from metapool factories", ())
         # TODO: remove this once curve adds to address provider
-        if chain.id == Network.Mainnet:
+        if CHAINID == Network.Mainnet:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
                 "0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf"
             ]
@@ -242,7 +242,7 @@ class Factory(_Loader):
             # lets load the contract async and then we can use the sync property more conveniently
             await Contract.coroutine(self.address)
         except ContractNotVerified:
-            if chain.id == Network.xDai:
+            if CHAINID == Network.xDai:
                 Contract.from_abi("Vyper_contract", self.address, CURVE_REGISTRY_ABI)
             else:
                 # This happens sometimes, not sure why as the contract is verified.
@@ -545,7 +545,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         except (ContractNotFound, ContractNotVerified) as e:
             raise UnsupportedNetwork("curve is not supported on this network") from e
         except MessedUpBrownieContract as e:
-            if chain.id == Network.Cronos:
+            if CHAINID == Network.Cronos:
                 raise UnsupportedNetwork(
                     "curve is not supported on this network"
                 ) from e

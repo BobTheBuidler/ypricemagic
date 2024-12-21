@@ -171,10 +171,10 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         """
         try:
             with db_session:
-                return self._set_metadata(from_block, done_thru)
+                self._set_metadata(from_block, done_thru)
         except TransactionIntegrityError as e:
             logger.debug("%s got exc %s when setting cache metadata", self, e)
-            return self.set_metadata(from_block, done_thru)
+            self.set_metadata(from_block, done_thru)
         except OptimisticCheckError as e:
             # Don't need to update in this case
             logger.debug("%s got exc %s when setting cache metadata", self, e)

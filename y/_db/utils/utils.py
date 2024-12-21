@@ -6,7 +6,6 @@ from typing import Dict, Optional, Set
 
 from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
 from pony.orm import commit, select
-from brownie import chain
 
 from y._db.decorators import (
     a_sync_read_db_session,
@@ -15,6 +14,8 @@ from y._db.decorators import (
     log_result_count,
 )
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
+from y.constants import CHAINID
+
 
 logger = getLogger(__name__)
 _logger_debug = logger.debug
@@ -43,7 +44,7 @@ def get_chain() -> Chain:
         - :class:`Chain`
         - :func:`insert`
     """
-    return Chain.get(id=chain.id) or insert(type=Chain, id=chain.id) or Chain[chain.id]
+    return Chain.get(id=CHAINID) or insert(type=Chain, id=CHAINID) or Chain[CHAINID]
 
 
 @lru_cache
@@ -82,9 +83,9 @@ def get_block(number: int) -> Block:
         - :class:`Block`
         - :func:`insert`
     """
-    if block := Block.get(chain=chain.id, number=number):
+    if block := Block.get(chain=CHAINID, number=number):
         return block
-    return insert(type=Block, chain=chain.id, number=number) or get_block(
+    return insert(type=Block, chain=CHAINID, number=number) or get_block(
         number, sync=True
     )
 
@@ -147,7 +148,7 @@ def get_block_timestamp(number: int) -> Optional[int]:
             ts = parser.parse(ts)
         unix = ts.timestamp()
         _logger_debug(
-            "got Block[%s, %s].timestamp from cache: %s, %s", chain.id, number, unix, ts
+            f"got Block[{CHAINID}, %s].timestamp from cache: %s, %s", number, unix, ts
         )
         return unix
 
@@ -174,7 +175,7 @@ def get_block_at_timestamp(timestamp: datetime) -> Optional[int]:
     if block := known_blocks_for_timestamps().pop(timestamp, None):
         _logger_debug("found block %s for %s in ydb", block, timestamp)
         return block
-    elif entity := BlockAtTimestamp.get(chainid=chain.id, timestamp=timestamp):
+    elif entity := BlockAtTimestamp.get(chainid=CHAINID, timestamp=timestamp):
         block = entity.block
         _logger_debug("found block %s for %s in ydb", block, timestamp)
         return block
@@ -239,7 +240,7 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     See Also:
         - :class:`BlockAtTimestamp`
     """
-    insert(BlockAtTimestamp, chainid=chain.id, timestamp=timestamp, block=block)
+    insert(BlockAtTimestamp, chainid=CHAINID, timestamp=timestamp, block=block)
     _logger_debug("inserted block %s for %s", block, timestamp)
 
 
@@ -265,7 +266,7 @@ def known_blocks() -> Set[int]:
     See Also:
         - :class:`Block`
     """
-    return set(select(b.number for b in Block if b.chain.id == chain.id))
+    return set(select(b.number for b in Block if b.chain.id == CHAINID))
 
 
 @lru_cache(maxsize=1)
@@ -284,7 +285,7 @@ def known_block_timestamps() -> Dict[int, datetime]:
         - :class:`Block`
     """
     query = select(
-        (b.number, b.timestamp) for b in Block if b.chain.id == chain.id and b.timestamp
+        (b.number, b.timestamp) for b in Block if b.chain.id == CHAINID and b.timestamp
     )
     page_size = 100_000
     timestamps = {}
@@ -311,6 +312,6 @@ def known_blocks_for_timestamps() -> Dict[datetime, int]:
     """
     return dict(
         select(
-            (x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == chain.id
+            (x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == CHAINID
         )
     )

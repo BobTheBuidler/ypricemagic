@@ -55,6 +55,7 @@ from web3.exceptions import ContractLogicError
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert, exceptions
 from y._decorators import stuck_coro_debugger
+from y.constants import CHAINID
 from y.datatypes import Address, AnyAddressType, Block
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
@@ -74,7 +75,7 @@ FORCE_IMPLEMENTATION = {
         "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48": "0xa2327a938Febf5FEC13baCFb16Ae10EcBc4cbDCF",  # USDC as of 2022-08-10
         "0x3d1E5Cf16077F349e999d6b21A4f646e83Cd90c5": "0xf51fC5ae556F5B8c6dCf50f70167B81ceb02a2b2",  # dETH as of 2024-02-15
     },
-}.get(chain.id, {})
+}.get(CHAINID, {})
 
 
 def Contract_erc20(address: AnyAddressType) -> "Contract":
@@ -961,7 +962,7 @@ def _extract_abi_data(address: Address):
         data = _fetch_from_explorer(address, "getsourcecode", False)["result"][0]
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
-            if chain.id == Network.xDai:
+            if CHAINID == Network.xDai:
                 raise ValueError("Rate limited by Blockscout. Please try again.") from e
             if web3.eth.get_code(address):
                 raise exceptions.ContractNotVerified(address) from e
@@ -1091,7 +1092,7 @@ async def _extract_abi_data_async(address: Address):
         response = await _fetch_from_explorer_async(address, "getsourcecode", False)
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
-            if chain.id == Network.xDai:
+            if CHAINID == Network.xDai:
                 raise ValueError("Rate limited by Blockscout. Please try again.") from e
             if await dank_mids.eth.get_code(address):
                 raise exceptions.ContractNotVerified(address) from e

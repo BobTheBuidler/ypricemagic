@@ -15,6 +15,7 @@ try:
 except ImportError:
     from dank_mids._config import GANACHE_FORK
 
+from y.constants import CHAINID
 from y.exceptions import NodeNotSynced
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache, memory
@@ -66,7 +67,7 @@ def get_block_timestamp(height: int) -> int:
     if ts := db.get_block_timestamp(height, sync=True):
         return ts
     client = get_ethereum_client()
-    if client in ["tg", "erigon"] and chain.id not in [Network.Polygon]:
+    if client in ("tg", "erigon") and CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
         header = web3.manager.request_blocking(f"{client}_getHeaderByNumber", [height])
         ts = int(header.timestamp, 16)
@@ -100,7 +101,7 @@ async def get_block_timestamp_async(height: int) -> int:
     if ts := await db.get_block_timestamp(height, sync=False):
         return ts
     client = await get_ethereum_client_async()
-    if client in ["tg", "erigon"] and chain.id not in [Network.Polygon]:
+    if client in ("tg", "erigon") and CHAINID not in (Network.Polygon,):
         # NOTE: polygon erigon does not support this method
         header = await dank_mids.web3.manager.coro_request(
             f"{client}_getHeaderByNumber", [height]

@@ -1,13 +1,17 @@
-import os
 from typing import Optional
 
-import a_sync
 from brownie import Contract as _Contract
 from brownie import chain
 
 from y.contracts import Contract
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
+
+
+CHAINID = chain.id
+"""
+The chainid for the connected rpc.
+"""
 
 EEE_ADDRESS = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE"
 """
@@ -19,7 +23,7 @@ sushi: Optional[Contract] = None
 A placeholder for the Sushi token contract, which may be set depending on the network.
 """
 
-if chain.id == Network.Mainnet:
+if CHAINID == Network.Mainnet:
     weth = Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
     """Wrapped Ether (WETH) contract on Ethereum Mainnet."""
 
@@ -38,7 +42,7 @@ if chain.id == Network.Mainnet:
     sushi = Contract("0x6B3595068778DD592e39A122f4f5a5cF09C90fE2")
     """SushiToken (SUSHI) contract on Ethereum Mainnet."""
 
-elif chain.id == Network.BinanceSmartChain:
+elif CHAINID == Network.BinanceSmartChain:
     weth = Contract("0x2170Ed0880ac9A755fd29B2688956BD959F933F8")
     """Wrapped Ether (WETH) contract on Binance Smart Chain."""
 
@@ -60,7 +64,7 @@ elif chain.id == Network.BinanceSmartChain:
     cake = Contract("0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82")
     """PancakeSwap Token (CAKE) contract on Binance Smart Chain."""
 
-elif chain.id == Network.xDai:
+elif CHAINID == Network.xDai:
     weth = Contract("0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1")
     """Wrapped Ether (WETH) contract on xDai Chain."""
 
@@ -76,7 +80,7 @@ elif chain.id == Network.xDai:
     usdt = Contract("0x4ECaBa5870353805a9F068101A40E0f32ed605C6")
     """Tether USD (USDT) contract on xDai Chain."""
 
-elif chain.id == Network.Polygon:
+elif CHAINID == Network.Polygon:
     weth = Contract("0x7ceb23fd6bc0add59e62ac25578270cff1b9f619")
     """Wrapped Ether (WETH) contract on Polygon."""
 
@@ -95,7 +99,7 @@ elif chain.id == Network.Polygon:
     wmatic = Contract("0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270")
     """Wrapped Matic (WMATIC) contract on Polygon."""
 
-elif chain.id == Network.Fantom:
+elif CHAINID == Network.Fantom:
     weth = Contract("0x74b23882a30290451A17c44f4F05243b6b58C76d")
     """Wrapped Ether (WETH) contract on Fantom."""
 
@@ -114,7 +118,7 @@ elif chain.id == Network.Fantom:
     wftm = Contract("0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83")
     """Wrapped Fantom (WFTM) contract on Fantom."""
 
-elif chain.id == Network.Arbitrum:
+elif CHAINID == Network.Arbitrum:
     weth = Contract("0x82aF49447D8a07e3bd95BD0d56f35241523fBab1")
     """Wrapped Ether (WETH) contract on Arbitrum."""
     # NOTE: for some reason wbtc unverified on arbi
@@ -133,7 +137,7 @@ elif chain.id == Network.Arbitrum:
     usdt = Contract("0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9")
     """Tether USD (USDT) contract on Arbitrum."""
 
-elif chain.id == Network.Avalanche:
+elif CHAINID == Network.Avalanche:
     weth = Contract("0x49D5c2BdFfac6CE2BFdB6640F4F80f226bc10bAB")  # weth.e
     """Wrapped Ether (WETH.e) contract on Avalanche."""
 
@@ -149,7 +153,7 @@ elif chain.id == Network.Avalanche:
     usdt = Contract("0x9702230A8Ea53601f5cD2dc00fDBc13d4dF4A8c7")
     """Tether USD (USDT) contract on Avalanche."""
 
-elif chain.id == Network.Moonriver:
+elif CHAINID == Network.Moonriver:
     weth = Contract("0x639A647fbe20b6c8ac19E48E2de44ea792c62c5C")
     """Wrapped Ether (WETH) contract on Moonriver."""
 
@@ -165,7 +169,7 @@ elif chain.id == Network.Moonriver:
     usdt = Contract("0xB44a9B6905aF7c801311e8F4E76932ee959c663C")
     """Tether USD (USDT) contract on Moonriver."""
 
-elif chain.id == Network.Heco:
+elif CHAINID == Network.Heco:
     weth = Contract("0x64FF637fB478863B7468bc97D30a5bF3A428a1fD")
     """Wrapped Ether (WETH) contract on HECO Chain."""
 
@@ -181,7 +185,7 @@ elif chain.id == Network.Heco:
     usdt = Contract("0xa71EdC38d189767582C38A3145b5873052c3e47a")
     """Tether USD (USDT) contract on HECO Chain."""
 
-elif chain.id == Network.Harmony:
+elif CHAINID == Network.Harmony:
     weth = Contract("0x6983D1E6DEf3690C4d616b13597A09e6193EA013")
     """Wrapped Ether (WETH) contract on Harmony."""
 
@@ -197,7 +201,7 @@ elif chain.id == Network.Harmony:
     usdt = Contract("0x3C2B8Be99c50593081EAA2A724F0B8285F5aba8f")
     """Tether USD (USDT) contract on Harmony."""
 
-elif chain.id == Network.Aurora:
+elif CHAINID == Network.Aurora:
     weth = Contract("0xC9BdeEd33CD01541e1eeD10f90519d2C06Fe3feB")
     """Wrapped Ether (WETH) contract on Aurora."""
 
@@ -221,7 +225,7 @@ elif chain.id == Network.Aurora:
     )
     """Tether USD (USDT) contract on Aurora."""
 
-elif chain.id == Network.Cronos:
+elif CHAINID == Network.Cronos:
     weth = Contract("0xe44Fd7fCb2b1581822D0c862B68222998a0c299a")
     """Wrapped Ether (WETH) contract on Cronos."""
 
@@ -237,7 +241,7 @@ elif chain.id == Network.Cronos:
     usdt = Contract("0x66e428c3f67a68878562e79A0234c1F83c208770")
     """Tether USD (USDT) contract on Cronos."""
 
-elif chain.id == Network.Optimism:
+elif CHAINID == Network.Optimism:
     weth = Contract("0x4200000000000000000000000000000000000006")
     """Wrapped Ether (WETH) contract on Optimism."""
 
@@ -253,7 +257,7 @@ elif chain.id == Network.Optimism:
     usdt = Contract("0x94b008aA00579c1307B0EF2c499aD98a8ce58e58")
     """Tether USD (USDT) contract on Optimism."""
 
-elif chain.id == Network.Base:
+elif CHAINID == Network.Base:
     dai = Contract("0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb")
     """Dai Stablecoin (DAI) contract on Base."""
 
@@ -345,7 +349,7 @@ STABLECOINS = {
         "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA": "usdbc",
         "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913": "usdc",
     },
-}.get(chain.id, {})
+}.get(CHAINID, {})
 """
 A dictionary mapping network IDs to stablecoin contract addresses and their corresponding symbols.
 
@@ -371,7 +375,7 @@ WRAPPED_GAS_COIN = {
     Network.Cronos: "0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23",
     Network.Optimism: "0x4200000000000000000000000000000000000006",
     Network.Base: "0x4200000000000000000000000000000000000006",
-}.get(chain.id)
+}.get(CHAINID)
 """
 The address of the wrapped version of the native token on the active network.
 

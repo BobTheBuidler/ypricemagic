@@ -22,10 +22,10 @@ from aiohttp.client_exceptions import (
     ContentTypeError,
 )
 from async_lru import alru_cache
-from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
+from y.constants import CHAINID
 from y.datatypes import Address, Block
 from y.networks import Network
 
@@ -243,11 +243,11 @@ async def get_price(token: Address, block: Optional[Block]) -> Optional[UsdPrice
             tries = 0
             while True:
                 try:
-                    if not await chain_supported(chain.id):
+                    if not await chain_supported(CHAINID):
                         return None
                     session = await get_session()
                     async with session.get(
-                        f"/get_price/{chain.id}/{token}?block={block}"
+                        f"/get_price/{CHAINID}/{token}?block={block}"
                     ) as response:
                         return (
                             UsdPrice(price)

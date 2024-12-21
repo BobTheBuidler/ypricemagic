@@ -5,7 +5,7 @@ import a_sync
 import dank_mids
 from y import time
 from async_lru import alru_cache
-from brownie import ZERO_ADDRESS, chain
+from brownie import ZERO_ADDRESS
 from brownie.network.event import _EventItem
 from multicall import Call
 from web3.exceptions import ContractLogicError
@@ -14,6 +14,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
+from y.constants import CHAINID
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork
@@ -35,7 +36,7 @@ registries = {
 }
 
 # These are feeds we specify anually in addition to the ones fetched from the registry.
-# After selecting for `chain.id`, `FEEDS` will return a dict {token_in: feed_address}
+# After selecting for `CHAINID`, `FEEDS` will return a dict {token_in: feed_address}
 FEEDS = {
     Network.Mainnet: {
         "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599": "0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c",  # wbtc -> BTC
@@ -174,7 +175,7 @@ FEEDS = {
         "0x4200000000000000000000000000000000000006": "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",  # weth -> ETH
         "0x50c5725949A6F0c72E6C4a641F24049A917DB0Cb": "0x591e79239a7d679378eC8c847e5038150364C78F",  # dai -> DAI
     },
-}.get(chain.id, {})
+}.get(CHAINID, {})
 
 ONE_DAY = 24 * 60 * 60
 
@@ -317,8 +318,8 @@ class Chainlink(a_sync.ASyncGenericBase):
             Feed(feed, asset, asynchronous=self.asynchronous)
             for asset, feed in FEEDS.items()
         ]
-        if chain.id in registries:
-            self.registry = Contract(registries[chain.id])
+        if CHAINID in registries:
+            self.registry = Contract(registries[CHAINID])
             self._feeds_from_events = FeedsFromEvents(
                 addresses=str(self.registry),
                 topics=[self.registry.topics["FeedConfirmed"]],

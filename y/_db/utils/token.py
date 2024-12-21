@@ -5,7 +5,6 @@ from typing import Dict, Optional, Set
 
 import a_sync
 from a_sync import PruningThreadPoolExecutor
-from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import commit, db_session, select
 
@@ -18,6 +17,7 @@ from y._db.decorators import (
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token
+from y.constants import CHAINID
 from y.datatypes import AnyAddressType
 from y.utils import _erc20
 
@@ -59,13 +59,13 @@ def get_token(address: str) -> Token:
     if address == constants.EEE_ADDRESS:
         raise EEEError(f"cannot create token entity for {constants.EEE_ADDRESS}")
     while True:
-        if entity := Address.get(chain=chain.id, address=address):
+        if entity := Address.get(chain=CHAINID, address=address):
             if isinstance(entity, Token):
                 return entity
             entity.delete()
             commit()
-        return insert(type=Token, chain=chain.id, address=address) or Token.get(
-            chain=chain.id, address=address
+        return insert(type=Token, chain=CHAINID, address=address) or Token.get(
+            chain=CHAINID, address=address
         )
 
 
@@ -404,7 +404,7 @@ def known_tokens() -> Set[str]:
         >>> tokens = known_tokens()
         >>> print(tokens)
     """
-    return set(select(t.address for t in Token if t.chain.id == chain.id))
+    return set(select(t.address for t in Token if t.chain.id == CHAINID))
 
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
@@ -424,7 +424,7 @@ def known_buckets() -> Dict[str, str]:
     """
     return dict(
         select(
-            (t.address, t.bucket) for t in Token if t.chain.id == chain.id and t.bucket
+            (t.address, t.bucket) for t in Token if t.chain.id == CHAINID and t.bucket
         )
     )
 
@@ -448,7 +448,7 @@ def known_decimals() -> Dict[Address, int]:
         select(
             (t.address, t.decimals)
             for t in Token
-            if t.chain.id == chain.id and t.decimals
+            if t.chain.id == CHAINID and t.decimals
         )
     )
 
@@ -470,7 +470,7 @@ def known_symbols() -> Dict[Address, str]:
     """
     return dict(
         select(
-            (t.address, t.symbol) for t in Token if t.chain.id == chain.id and t.symbol
+            (t.address, t.symbol) for t in Token if t.chain.id == CHAINID and t.symbol
         )
     )
 
@@ -491,5 +491,5 @@ def known_names() -> Dict[Address, str]:
         >>> print(names)
     """
     return dict(
-        select((t.address, t.name) for t in Token if t.chain.id == chain.id and t.name)
+        select((t.address, t.name) for t in Token if t.chain.id == CHAINID and t.name)
     )

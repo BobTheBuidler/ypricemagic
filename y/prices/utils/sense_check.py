@@ -13,10 +13,9 @@ import logging
 from typing import Optional
 
 import a_sync
-from brownie import chain
 
 from y.classes.common import ERC20
-from y.constants import wbtc, weth
+from y.constants import CHAINID, wbtc, weth
 from y.contracts import Contract
 from y.exceptions import NonStandardERC20
 from y.networks import Network
@@ -187,7 +186,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b",  # tbtc
         "0xcb327b99ff831bf8223cced12b1338ff3aa322ff",  # bsdETH
     ],
-}.get(chain.id, []) + acceptable_all_chains
+}.get(CHAINID, []) + acceptable_all_chains
 """
 List of tokens addresses for which high prices are acceptable.
 Nothing will be logged for tokens in this list.
@@ -233,7 +232,7 @@ async def sense_check(token_address: str, block: Optional[int], price: float):
 
     # proceed with sense check
     price_readable = round(price, 4)
-    network = Network.name(chain.id)
+    network = Network.name(CHAINID)
     try:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         logger.warning(
