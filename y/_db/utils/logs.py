@@ -119,7 +119,7 @@ async def bulk_insert(
     hashes_fut = submit(bulk.insert, entities.Hashes, ["hash"], hashes)
     del txhashes, addresses, hashes
 
-    topics = set(itertools.chain(*(log.topics for log in logs))})
+    topics = set(itertools.chain(*(log.topics for log in logs)))
     topics_fut = submit(
         bulk.insert,
         entities.LogTopic,
