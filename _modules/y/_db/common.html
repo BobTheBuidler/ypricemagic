@@ -91,7 +91,13 @@
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">import</span> <span class="nn">eth_retry</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">ASyncIterable</span><span class="p">,</span> <span class="n">ASyncIterator</span><span class="p">,</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">,</span> <span class="n">CounterLock</span><span class="p">,</span> <span class="n">PruningThreadPoolExecutor</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ASyncIterable</span><span class="p">,</span>
+    <span class="n">ASyncIterator</span><span class="p">,</span>
+    <span class="n">AsyncThreadPoolExecutor</span><span class="p">,</span>
+    <span class="n">CounterLock</span><span class="p">,</span>
+    <span class="n">PruningThreadPoolExecutor</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">BlockSemaphore</span><span class="p">,</span> <span class="n">eth</span>
@@ -322,7 +328,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span>
-    
+
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
@@ -406,7 +412,9 @@
 <span class="n">_E</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_E&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">AsyncThreadPoolExecutor</span><span class="p">)</span>
 <span class="n">_MAX_LONG_LONG</span> <span class="o">=</span> <span class="mi">9223372036854775807</span>
 
-<span class="n">_metadata_executor</span> <span class="o">=</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="n">thread_name_prefix</span><span class="o">=</span><span class="s2">&quot;ypricemagic Filter metadata&quot;</span><span class="p">)</span>
+<span class="n">_metadata_executor</span> <span class="o">=</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">(</span>
+    <span class="mi">4</span><span class="p">,</span> <span class="n">thread_name_prefix</span><span class="o">=</span><span class="s2">&quot;ypricemagic Filter metadata&quot;</span>
+<span class="p">)</span>
 
 
 <span class="k">class</span> <span class="nc">Filter</span><span class="p">(</span><span class="n">_DiskCachedMixin</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">]):</span>
@@ -640,9 +648,7 @@
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading block range </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">)</span>
-            <span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading block range </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">))</span>
         <span class="n">chunks_yielded</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="n">done</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">coros</span> <span class="o">=</span> <span class="p">[</span>
@@ -716,9 +722,7 @@
     <span class="k">def</span> <span class="nf">_ensure_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;creating task for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">create_task</span><span class="p">(</span>
-                <span class="n">coro</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fetch</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.__fetch&quot;</span>
-            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fetch</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.__fetch&quot;</span><span class="p">)</span>
             <span class="c1"># NOTE: The task does not return and will be cancelled when this object is</span>
             <span class="c1"># garbage collected so there is no need to log the &quot;destroy pending task&quot; message.</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">_log_destroy_pending</span> <span class="o">=</span> <span class="kc">False</span>
