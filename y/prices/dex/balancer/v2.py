@@ -417,7 +417,7 @@ class BalancerV2Pool(BalancerPool):
         Examples:
             >>> pool_id = await pool.id
         """
-        return await Call(self.address, ["getPoolId()(bytes32)"])
+        return await Call(self.address, "getPoolId()(bytes32)")
 
     __id__: HiddenMethodDescriptor[Self, PoolId]
 
@@ -434,7 +434,7 @@ class BalancerV2Pool(BalancerPool):
             >>> vault = await pool.vault
         """
         with suppress(ContractLogicError):
-            vault = await Call(self.address, ["getVault()(address)"])
+            vault = await Call(self.address, "getVault()(address)")
             if vault == ZERO_ADDRESS:
                 return None
             elif vault:

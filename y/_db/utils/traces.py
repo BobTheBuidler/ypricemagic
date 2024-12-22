@@ -387,7 +387,7 @@ class TraceFilter(Filter[dict, TraceCache]):
 
 
 trace_is_from = lambda addresses, trace: any(
-    "from" in x and x["from"] in addresses for x in [trace, trace.values()]
+    "from" in x and x["from"] in addresses for x in (trace, trace.values())
 )
 """Check if a trace is from any of the specified addresses.
 
@@ -405,7 +405,7 @@ Examples:
 """
 
 trace_is_to = lambda addresses, trace: any(
-    "to" in x and x["to"] in addresses for x in [trace, trace.values()]
+    "to" in x and x["to"] in addresses for x in (trace, trace.values())
 )
 """Check if a trace is to any of the specified addresses.
 

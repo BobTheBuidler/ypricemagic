@@ -109,7 +109,7 @@ async def multicall_decimals(
     addresses = [str(address) for address in addresses]
     try:
         calls = a_sync.map(
-            Call, addresses, function=["decimals()(uint256)"], block_id=block
+            Call, addresses, function="decimals()(uint256)", block_id=block
         )
         return [decimals async for address, decimals in calls]
     except (CannotHandleRequest, InsufficientDataBytes):

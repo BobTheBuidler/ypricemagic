@@ -205,7 +205,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
 
     def __repr__(self) -> str:
         string = f"{type(self).__name__}(addresses={self.addresses}"
-        for topic in ["topic0", "topic1", "topic2", "topic3"]:
+        for topic in ("topic0", "topic1", "topic2", "topic3"):
             if value := getattr(self, topic):
                 string += f", {topic}={value}"
         return f"{string})"

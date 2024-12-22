@@ -79,7 +79,7 @@ async def get_pool_price(
         - :func:`y.prices.magic.get_price`
     """
     address = await convert.to_address_async(token)
-    token0, token1 = await gather_methods(address, ["token0", "token1"])
+    token0, token1 = await gather_methods(address, ("token0", "token1"))
     bal0, bal1, price0, price1, total_supply = await asyncio.gather(
         (
             dank_mids.eth.get_balance(address, block_identifier=block)

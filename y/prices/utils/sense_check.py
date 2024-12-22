@@ -267,7 +267,7 @@ async def _exit_sense_check(token_address: str) -> bool:
 
     bucket = await check_bucket(token_address, sync=False)
 
-    if bucket in ["uni or uni-like lp", "balancer pool"]:
+    if bucket in ("uni or uni-like lp", "balancer pool"):
         return True
 
     elif bucket == "curve lp":

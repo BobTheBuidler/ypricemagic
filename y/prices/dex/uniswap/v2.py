@@ -147,7 +147,7 @@ class UniswapV2Pool(ERC20):
     @a_sync.aka.cached_property
     async def token0(self) -> ERC20:
         try:
-            if token0 := await Call(self.address, ["token0()(address)"]):
+            if token0 := await Call(self.address, "token0()(address)"):
                 return ERC20(token0, asynchronous=self.asynchronous)
         except ValueError as e:
             continue_if_call_reverted(e)
@@ -158,7 +158,7 @@ class UniswapV2Pool(ERC20):
     @a_sync.aka.cached_property
     async def token1(self) -> ERC20:
         try:
-            if token1 := await Call(self.address, ["token1()(address)"]):
+            if token1 := await Call(self.address, "token1()(address)"):
                 return ERC20(token1, asynchronous=self.asynchronous)
         except ValueError as e:
             continue_if_call_reverted(e)

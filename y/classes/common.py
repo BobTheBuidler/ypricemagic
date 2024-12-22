@@ -463,11 +463,11 @@ class ERC20(ContractBase):
         """
         symbol = await probe(
             self.address,
-            ["symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"],
+            ("symbol()(string)", "SYMBOL()(string)", "getSymbol()(string)"),
         )
         if symbol is None:
             # Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let's try this.
-            symbol = await probe(self.address, ["symbol()(bytes32)"])
+            symbol = await probe(self.address, ("symbol()(bytes32)",))
             if symbol:
                 symbol = hex_to_string(symbol)
         if symbol:
@@ -491,11 +491,11 @@ class ERC20(ContractBase):
             'TokenName'
         """
         name = await probe(
-            self.address, ["name()(string)", "NAME()(string)", "getName()(string)"]
+            self.address, ("name()(string)", "NAME()(string)", "getName()(string)")
         )
         if name is None:
             # Sometimes the above will fail if the name method returns bytes32, as with MKR. Let's try this.
-            name = await probe(self.address, ["name()(bytes32)"])
+            name = await probe(self.address, ("name()(bytes32)",))
             if name:
                 name = hex_to_string(name)
         if name:

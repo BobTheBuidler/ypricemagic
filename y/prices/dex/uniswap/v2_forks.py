@@ -349,81 +349,81 @@ ROUTER_TO_PROTOCOL = {UNISWAPS[name]["router"]: name for name in UNISWAPS}
 SPECIAL_PATHS = {
     Network.Mainnet: {
         "sushiswap": {
-            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": [
+            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": (
                 "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684",
                 "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
                 weth,
                 usdc,
-            ],
-            "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e": [
+            ),
+            "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e": (
                 "0xbf2179859fc6D5BEE9Bf9158632Dc51678a4100e",
                 "0xC28E27870558cF22ADD83540d2126da2e4b464c2",
                 weth,
                 usdc,
-            ],
-            "0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2": [
+            ),
+            "0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2": (
                 "0x3166C570935a7D8554c8f4eA792ff965D2EFe1f2",
                 "0x4954Db6391F4feB5468b6B943D4935353596aEC9",
                 usdc,
-            ],
-            "0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6": [
+            ),
+            "0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6": (
                 "0xE6279E1c65DD41b30bA3760DCaC3CD8bbb4420D6",
                 "0x87F5F9eBE40786D49D35E1B5997b07cCAA8ADbFF",
                 weth,
                 usdc,
-            ],
-            "0x4954Db6391F4feB5468b6B943D4935353596aEC9": [
+            ),
+            "0x4954Db6391F4feB5468b6B943D4935353596aEC9": (
                 "0x4954Db6391F4feB5468b6B943D4935353596aEC9",
                 usdc,
-            ],
-            "0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0": [
+            ),
+            "0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0": (
                 "0x1E18821E69B9FAA8e6e75DFFe54E7E25754beDa0",
                 "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684",
                 "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
                 weth,
                 usdc,
-            ],
-            "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d": [
+            ),
+            "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d": (
                 "0xfC1E690f61EFd961294b3e1Ce3313fBD8aa4f85d",
                 "0xba100000625a3754423978a60c9317c58a424e3D",
                 weth,
                 usdc,
-            ],
-            "0xBA50933C268F567BDC86E1aC131BE072C6B0b71a": [
+            ),
+            "0xBA50933C268F567BDC86E1aC131BE072C6B0b71a": (
                 "0xBA50933C268F567BDC86E1aC131BE072C6B0b71a",
                 weth,
                 usdc,
-            ],
-            "0x6102407f07029892eB5Ff02164ADFaFb85f4d222": [
+            ),
+            "0x6102407f07029892eB5Ff02164ADFaFb85f4d222": (
                 "0x6102407f07029892eB5Ff02164ADFaFb85f4d222",
                 usdt,
-            ],
-            "0x85034b3b2e292493D029443455Cc62ab669573B3": [
+            ),
+            "0x85034b3b2e292493D029443455Cc62ab669573B3": (
                 "0x85034b3b2e292493D029443455Cc62ab669573B3",
                 "0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984",
                 weth,
                 usdc,
-            ],
-            "0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8": [
+            ),
+            "0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8": (
                 "0xb220D53F7D0f52897Bcf25E47c4c3DC0bac344F8",
                 usdc,
-            ],
-            "0x383518188C0C6d7730D91b2c03a03C837814a899": [
+            ),
+            "0x383518188C0C6d7730D91b2c03a03C837814a899": (
                 "0x383518188C0C6d7730D91b2c03a03C837814a899",
                 dai,
-            ],
-            "0xafcE9B78D409bF74980CACF610AFB851BF02F257": [
+            ),
+            "0xafcE9B78D409bF74980CACF610AFB851BF02F257": (
                 "0xafcE9B78D409bF74980CACF610AFB851BF02F257",
                 wbtc,
                 weth,
                 usdc,
-            ],
-            "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7": [
+            ),
+            "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7": (
                 "0x62B9c7356A2Dc64a1969e19C23e4f579F9810Aa7",
                 "0xD533a949740bb3306d119CC777fa900bA034cd52",
                 weth,
                 usdc,
-            ],
+            ),
         },
     },
 }.get(chain.id, {})
@@ -447,12 +447,12 @@ def special_paths(router_address: str) -> Dict[str, Dict[Address, List[Address]]
     Examples:
         >>> special_paths("0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D")
         {
-            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": [
+            "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684": (
                 "0xEF69B5697f2Fb0345cC680210fD39b593a2f9684",
                 "0x6B3595068778DD592e39A122f4f5a5cF09C90fE2",
                 "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
                 "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48",
-            ],
+            ),
             ...
         }
 
