@@ -311,7 +311,5 @@ def known_blocks_for_timestamps() -> Dict[datetime, int]:
         - :class:`BlockAtTimestamp`
     """
     return dict(
-        select(
-            (x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == CHAINID
-        )
+        select((x.timestamp, x.block) for x in BlockAtTimestamp if x.chainid == CHAINID)
     )
