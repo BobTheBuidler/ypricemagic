@@ -113,10 +113,10 @@ async def bulk_insert(
             (CHAINID, block, "BlockExtended")
             for block in {log.blockNumber for log in logs}
         )
-        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks)
+        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks, sync=True)
     else:
         blocks = tuple((CHAINID, block) for block in {log.blockNumber for log in logs})
-        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks)
+        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks, sync=True)
     del blocks
 
     txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
@@ -124,7 +124,7 @@ async def bulk_insert(
     hashes = tuple(
         (_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses)
     )
-    hashes_fut = submit(_bulk_insert, Hashes, ["hash"], hashes)
+    hashes_fut = submit(_bulk_insert, Hashes, ("hash",), hashes, sync=True)
     del txhashes, addresses, hashes
 
     topics = set(itertools.chain(*(log.topics for log in logs)))
@@ -133,6 +133,7 @@ async def bulk_insert(
         LogTopic,
         ("topic",),
         tuple((_remove_0x_prefix(topic.strip()),) for topic in topics),
+        sync=True,
     )
     del topics
 
