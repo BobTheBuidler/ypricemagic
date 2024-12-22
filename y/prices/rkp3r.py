@@ -4,9 +4,9 @@ from decimal import Decimal
 from typing import Optional
 
 import a_sync
-from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y.constants import CHAINID
 from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.networks import Network
@@ -35,7 +35,7 @@ def is_rkp3r(address: Address) -> bool:
         >>> is_rkp3r("0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44")
         False
     """
-    return chain.id == Network.Mainnet and address == RKP3R
+    return CHAINID == Network.Mainnet and address == RKP3R
 
 
 @a_sync.a_sync(default="sync")

@@ -4,7 +4,6 @@ from decimal import Decimal, InvalidOperation
 from typing import Dict, Optional
 
 from a_sync import ProcessingQueue
-from brownie import chain
 from cachetools import TTLCache, cached
 from pony.orm import select
 
@@ -13,6 +12,7 @@ from y._db.decorators import a_sync_read_db_session, log_result_count, retry_loc
 from y._db.entities import Price, insert
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
+from y.constants import CHAINID
 from y.datatypes import Address
 
 
@@ -47,7 +47,7 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
     if price := known_prices_at_block(block).pop(address, None):
         _logger_debug("found %s block %s price %s in ydb", address, block, price)
         return price
-    if (price := Price.get(token=(chain.id, address), block=(chain.id, block))) and (
+    if (price := Price.get(token=(CHAINID, address), block=(CHAINID, block))) and (
         price := price.price
     ):
         _logger_debug("found %s block %s price %s in ydb", address, block, price)
@@ -83,8 +83,8 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
     try:
         await insert(
             type=Price,
-            block=(chain.id, block),
-            token=(chain.id, address),
+            block=(CHAINID, block),
+            token=(CHAINID, address),
             price=Decimal(price),
             sync=False,
         )
@@ -126,6 +126,6 @@ def known_prices_at_block(number: int) -> Dict[Address, Decimal]:
         select(
             (p.token.address, p.price)
             for p in Price
-            if p.block.chain.id == chain.id and p.block.number == number
+            if p.block.CHAINID == CHAINID and p.block.number == number
         )
     )

@@ -9,7 +9,6 @@ from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
 import a_sync
 import eth_retry
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import chain
 from brownie.network.event import _EventItem
 from eth_typing import ChecksumAddress
 from typing_extensions import Self
@@ -17,7 +16,7 @@ from typing_extensions import Self
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase
-from y.constants import usdc, weth
+from y.constants import CHAINID, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
@@ -262,9 +261,9 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         """
         super().__init__()
         self.asynchronous = asynchronous
-        if chain.id not in addresses:
+        if CHAINID not in addresses:
             raise UnsupportedNetwork("Uniswap V3 is not supported on this network")
-        self.fee_tiers = addresses[chain.id]["fee_tiers"]
+        self.fee_tiers = addresses[CHAINID]["fee_tiers"]
         self.loading = False
         self._pools = {}
 
@@ -283,7 +282,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             >>> "0xAssetAddress" in uniswap_v3
             True
         """
-        return chain.id in addresses
+        return CHAINID in addresses
 
     @cached_property
     def loaded(self) -> a_sync.Event:
@@ -311,7 +310,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             >>> uniswap_v3 = UniswapV3(...)
             >>> factory_contract = await uniswap_v3.factory
         """
-        return await Contract.coroutine(addresses[chain.id]["factory"])
+        return await Contract.coroutine(addresses[CHAINID]["factory"])
 
     __factory__: HiddenMethodDescriptor[Self, Contract]
 
@@ -327,7 +326,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             >>> uniswap_v3 = UniswapV3(...)
             >>> quoter_contract = await uniswap_v3.quoter
         """
-        quoter = addresses[chain.id]["quoter"]
+        quoter = addresses[CHAINID]["quoter"]
         try:
             return await Contract.coroutine(quoter)
         except ContractNotVerified:
@@ -456,7 +455,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         """
         logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if (
-            chain.id == Network.Mainnet
+            CHAINID == Network.Mainnet
             and token == "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D"
         ):
             # LQTY, TODO refactor this somehow

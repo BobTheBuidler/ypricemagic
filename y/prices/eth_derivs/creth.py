@@ -8,7 +8,7 @@ from brownie import chain
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
-from y.constants import weth
+from y.constants import CHAINID, weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
@@ -32,7 +32,7 @@ def is_creth(token: AnyAddressType) -> bool:
     """
     address = convert.to_address(token)
     return (
-        chain.id == Network.Mainnet
+        CHAINID == Network.Mainnet
         and address == "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd"
     )
 

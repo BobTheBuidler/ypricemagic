@@ -3,12 +3,12 @@ from typing import Optional
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import chain
 from brownie.exceptions import VirtualMachineError
 from typing_extensions import Self
 
 from y import Contract
 from y.classes.common import ERC20
+from y.constants import CHAINID
 from y.datatypes import Address, AddressOrContract, Block
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
@@ -74,7 +74,7 @@ class Band(a_sync.ASyncGenericSingleton):
             >>> band = Band(asynchronous=True)
         """
         super().__init__()
-        if chain.id not in addresses:
+        if CHAINID not in addresses:
             raise UnsupportedNetwork("band is not supported on this network")
         self.asynchronous = asynchronous
         super().__init__()
@@ -91,7 +91,7 @@ class Band(a_sync.ASyncGenericSingleton):
             >>> "0xaf319E5789945197e365E7f7fbFc56B130523B33" in band
             True
         """
-        return chain.id in addresses and asset in supported_assets[chain.id]
+        return CHAINID in addresses and asset in supported_assets[CHAINID]
 
     @a_sync.aka.property
     async def oracle(self) -> Contract:
@@ -102,7 +102,7 @@ class Band(a_sync.ASyncGenericSingleton):
             >>> band = Band(asynchronous=True)
             >>> oracle = await band.oracle
         """
-        return await Contract.coroutine(addresses[chain.id])
+        return await Contract.coroutine(addresses[CHAINID])
 
     __oracle__: HiddenMethodDescriptor[Self, Contract]
 

@@ -19,7 +19,7 @@ from typing import (
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import ZERO_ADDRESS, chain
+from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
 from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
 from brownie.network.event import _EventItem
@@ -32,6 +32,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, contracts
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
+from y.constants import CHAINID
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import ContractNotVerified, TokenNotFound
@@ -58,14 +59,14 @@ BALANCER_V2_VAULTS = {
     Network.Base: [
         "0xBA12222222228d8Ba445958a75a0704d566BF2C8",
     ],
-}.get(chain.id, [])
+}.get(CHAINID, [])
 
 MESSED_UP_POOLS = {
     Network.Mainnet: [
         # NOTE: this was the first ever balancer "pool" and isn't actually a pool
         "0xF3799CBAe9c028c1A590F4463dFF039b8F4986BE",
     ],
-}.get(chain.id, [])
+}.get(CHAINID, [])
 
 T = TypeVar("T")
 
@@ -439,7 +440,7 @@ class BalancerV2Pool(BalancerPool):
             elif vault:
                 return BalancerV2Vault(vault, asynchronous=True)
         # in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both
-        if chain.id == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+        if CHAINID == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
             # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi?
             return BalancerV2Vault(
                 "0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True
@@ -464,7 +465,7 @@ class BalancerV2Pool(BalancerPool):
             raise ValueError(f"{self} has no vault") from None
         elif poolid := await self.__id__:
             _, specialization = await vault.contract.getPool.coroutine(poolid)
-        elif chain.id == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+        elif CHAINID == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
             # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi?
             return PoolSpecialization.CronV1Pool
         else:

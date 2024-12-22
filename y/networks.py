@@ -4,6 +4,8 @@ from typing import Optional
 from brownie import chain
 
 
+_CHAINID = chain.id
+
 class Network(IntEnum):
     """
     A lightweight enum that enables lookup of chain IDs for popular blockchain networks.
@@ -89,7 +91,7 @@ class Network(IntEnum):
             :meth:`Network.name` for getting the full name of the network.
         """
         if not chain_id:
-            chain_id = chain.id
+            chain_id = _CHAINID
 
         if chain_id == Network.Mainnet:
             return "ETH"
@@ -142,7 +144,7 @@ class Network(IntEnum):
             :meth:`Network.label` for getting the abbreviation of the network.
         """
         if not chain_id:
-            chain_id = chain.id
+            chain_id = _CHAINID
 
         if chain_id == Network.Mainnet:
             return "Mainnet"
@@ -192,5 +194,5 @@ class Network(IntEnum):
             'chain 9999'
         """
         if chain_id is None:
-            chain_id = chain.id
+            chain_id = _CHAINID
         return Network.name(chain_id) or f"chain {chain_id}"

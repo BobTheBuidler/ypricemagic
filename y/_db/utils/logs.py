@@ -6,7 +6,6 @@ from typing import List, Optional
 from a_sync import PruningThreadPoolExecutor, a_sync
 from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
-from brownie import chain
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
 from evmspec.data import Address, HexBytes32, uint
@@ -25,6 +24,7 @@ from y._db.entities import Log as DbLog
 from y._db.log import Log
 from y._db.utils.bulk import insert as _bulk_insert
 from y._db.utils._ep import _get_get_block
+from y.constants import CHAINID
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +43,6 @@ LOG_COLS = (
 
 _BLOCK_COLS = "chain", "number"
 _BLOCK_COLS_EXTENDED = "chain", "number", "classtype"
-_CHAINID = chain.id
 
 _topic_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [topic]")
 _hash_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [hash]")
@@ -86,7 +85,7 @@ async def _prepare_log(log: Log) -> tuple:
         for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)
     }
     params = {
-        "block_chain": _CHAINID,
+        "block_chain": CHAINID,
         "block_number": log.blockNumber,
         "transaction": transaction_dbid,
         "log_index": log.logIndex,
@@ -111,12 +110,12 @@ async def bulk_insert(
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
         blocks = tuple(
-            (_CHAINID, block, "BlockExtended")
+            (CHAINID, block, "BlockExtended")
             for block in {log.blockNumber for log in logs}
         )
         blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks)
     else:
-        blocks = tuple((_CHAINID, block) for block in {log.blockNumber for log in logs})
+        blocks = tuple((CHAINID, block) for block in {log.blockNumber for log in logs})
         blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks)
     del blocks
 
@@ -137,7 +136,7 @@ async def bulk_insert(
     )
     del topics
 
-    await gather(block_fut, hashes_fut, topics_fut)
+    await gather(blocks_fut, hashes_fut, topics_fut)
 
     await executor.run(
         _bulk_insert,
@@ -178,7 +177,7 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
 def get_decoded(log: Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
     if decoded := DbLog[
-        _CHAINID, log.block_number, log.transaction_hash, log.log_index
+        CHAINID, log.block_number, log.transaction_hash, log.log_index
     ].decoded:
         return _EventItem(
             decoded["name"], decoded["address"], decoded["event_data"], decoded["pos"]
@@ -188,7 +187,7 @@ def get_decoded(log: Log) -> Optional[_EventItem]:
 @db_session
 @retry_locked
 def set_decoded(log: Log, decoded: _EventItem) -> None:
-    DbLog[_CHAINID, log.block_number, log.transaction_hash, log.log_index].decoded = (
+    DbLog[CHAINID, log.block_number, log.transaction_hash, log.log_index].decoded = (
         decoded
     )
 

@@ -4,11 +4,10 @@ from decimal import Decimal
 from typing import Optional
 
 import a_sync
-from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
-from y.constants import weth
+from y.constants import CHAINID, weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
@@ -55,10 +54,10 @@ class wstEth(a_sync.ASyncGenericBase):
         try:
             self.address = {
                 Network.Mainnet: "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0"
-            }[chain.id]
+            }[CHAINID]
             self.wrapped_for_curve = {
                 Network.Mainnet: "0xb82CFa4325568748506dC7cF267857Ff1e3b8d39"
-            }[chain.id]
+            }[CHAINID]
         except KeyError:
             self.address = None
 
@@ -126,7 +125,7 @@ def is_wsteth(address: AnyAddressType) -> bool:
     See Also:
         - :class:`wstEth`
     """
-    return chain.id == Network.Mainnet and convert.to_address(address) in [
+    return CHAINID == Network.Mainnet and convert.to_address(address) in [
         wsteth.address,
         wsteth.wrapped_for_curve,
     ]

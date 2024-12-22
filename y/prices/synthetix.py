@@ -4,12 +4,12 @@ from typing import Callable, List, Optional
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import chain
 from eth_typing import ChecksumAddress, HexStr
 from multicall import Call
 from typing_extensions import Self
 
 from y import convert
+from y.constants import CHAINID
 from y.contracts import Contract, has_method
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.exceptions import UnsupportedNetwork, call_reverted
@@ -52,7 +52,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
     """
 
     def __init__(self, *, asynchronous: bool = False) -> None:
-        if chain.id not in addresses:
+        if CHAINID not in addresses:
             raise UnsupportedNetwork("synthetix is not supported on this network")
         self.asynchronous = asynchronous
         super().__init__()
@@ -69,7 +69,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             >>> print(resolver)
             <Contract object at 0x...>
         """
-        return await Contract.coroutine(addresses[chain.id])
+        return await Contract.coroutine(addresses[CHAINID])
 
     __address_resolver__: HiddenMethodDescriptor[Self, Contract]
 
@@ -231,4 +231,4 @@ class Synthetix(a_sync.ASyncGenericSingleton):
                 raise
 
 
-synthetix = Synthetix(asynchronous=True) if chain.id in addresses else set()
+synthetix = Synthetix(asynchronous=True) if CHAINID in addresses else set()

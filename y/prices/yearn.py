@@ -5,7 +5,6 @@ from typing import Optional, Tuple
 
 import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
-from brownie import chain
 from multicall.call import Call
 from typing_extensions import Self
 
@@ -13,7 +12,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
-from y.constants import weth
+from y.constants import CHAINID, weth
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
@@ -62,7 +61,7 @@ force_false = {
         "0x8751D4196027d4e6DA63716fA7786B5174F04C15",  # wibBTC
         "0xF0a93d4994B3d98Fb5e3A2F90dBc2d69073Cb86b",  # PWRD
     ],
-}.get(chain.id, [])
+}.get(CHAINID, [])
 
 
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=30 * 60)
@@ -72,7 +71,7 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
     # wibbtc returns True here even though it doesn't meet the criteria.
     # TODO figure out a better fix. For now I need a fix asap so this works.
     if (
-        chain.id == Network.Mainnet
+        CHAINID == Network.Mainnet
         and str(token) == "0x8751D4196027d4e6DA63716fA7786B5174F04C15"
     ):
         return False
@@ -175,7 +174,7 @@ class YearnInspiredVault(ERC20):
             "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"  # USDC address
         """
         # special cases
-        if chain.id == Network.Arbitrum:
+        if CHAINID == Network.Arbitrum:
             if self.address == "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7":
                 return ERC20(
                     await raw_call(
@@ -184,7 +183,7 @@ class YearnInspiredVault(ERC20):
                     asynchronous=self.asynchronous,
                 )
         elif (
-            chain.id == Network.Mainnet
+            CHAINID == Network.Mainnet
             and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48"
         ):
             # ynETH yield nest has no method for underlying

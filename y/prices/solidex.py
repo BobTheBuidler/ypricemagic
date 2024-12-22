@@ -2,11 +2,11 @@ from typing import Optional
 
 import a_sync
 from async_lru import alru_cache
-from brownie import chain
 from brownie.convert.datatypes import EthAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20
+from y.constants import CHAINID
 from y.contracts import Contract
 from y.datatypes import AnyAddressType
 from y.networks import Network
@@ -38,7 +38,7 @@ async def is_solidex_deposit(token: AnyAddressType) -> bool:
         - :func:`y.contracts.Contract`
         - :class:`y.classes.common.ERC20`
     """
-    if chain.id != Network.Fantom:
+    if CHAINID != Network.Fantom:
         return False
     try:
         contract = await Contract.coroutine(token)
