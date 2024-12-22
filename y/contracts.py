@@ -1089,34 +1089,34 @@ async def _extract_abi_data_async(address: Address):
         >>> print(name)
         'Dai Stablecoin'
     """
-    try:
-
-        response = await _fetch_from_explorer_async(address, "getsourcecode", False)
-    except ConnectionError as e:
-        if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
-            if _CHAINID == Network.xDai:
-                raise ValueError("Rate limited by Blockscout. Please try again.") from e
-            if await dank_mids.eth.get_code(address):
-                raise ContractNotVerified(address) from e
-            else:
-                raise ContractNotFound(address) from e
-        raise
-    except ValueError as e:
-        if (
-            str(e).startswith("Failed to retrieve data from API")
-            and "invalid api key" in str(e).lower()
-        ):
-            raise InvalidAPIKeyError from e
-        if contract_not_verified(e):
-            raise ContractNotVerified(
-                f"{address} on {Network.printable()}"
-            ) from e
-        elif "Unknown contract address:" in str(e):
-            if await dank_mids.eth.get_code(address) not in ("0x", b""):
-                raise ContractNotVerified(str(e)) from e
-            raise ContractNotFound(str(e)) from e
-        else:
+    async with _block_explorer_api_limiter:
+        try:
+            response = await _fetch_from_explorer_async(address, "getsourcecode", False)
+        except ConnectionError as e:
+            if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
+                if _CHAINID == Network.xDai:
+                    raise ValueError("Rate limited by Blockscout. Please try again.") from e
+                if await dank_mids.eth.get_code(address):
+                    raise ContractNotVerified(address) from e
+                else:
+                    raise ContractNotFound(address) from e
             raise
+        except ValueError as e:
+            if (
+                str(e).startswith("Failed to retrieve data from API")
+                and "invalid api key" in str(e).lower()
+            ):
+                raise InvalidAPIKeyError from e
+            if contract_not_verified(e):
+                raise ContractNotVerified(
+                    f"{address} on {Network.printable()}"
+                ) from e
+            elif "Unknown contract address:" in str(e):
+                if await dank_mids.eth.get_code(address) not in ("0x", b""):
+                    raise ContractNotVerified(str(e)) from e
+                raise ContractNotFound(str(e)) from e
+            else:
+                raise
 
     data = response["result"][0]
     is_verified = bool(data.get("SourceCode"))
