@@ -126,6 +126,6 @@ def known_prices_at_block(number: int) -> Dict[Address, Decimal]:
         select(
             (p.token.address, p.price)
             for p in Price
-            if p.block.CHAINID == CHAINID and p.block.number == number
+            if p.block.chain.id == CHAINID and p.block.number == number
         )
     )
