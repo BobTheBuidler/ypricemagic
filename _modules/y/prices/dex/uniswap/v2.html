@@ -81,7 +81,6 @@
 <span class="kn">import</span> <span class="nn">brownie</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
 <span class="kn">from</span> <span class="nn">dank_mids.exceptions</span> <span class="kn">import</span> <span class="n">Revert</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">HexAddress</span>
@@ -93,7 +92,7 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">continue_on_revert</span><span class="p">,</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span><span class="p">,</span> <span class="n">WeiBalance</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">STABLECOINS</span><span class="p">,</span> <span class="n">WRAPPED_GAS_COIN</span><span class="p">,</span> <span class="n">sushi</span><span class="p">,</span> <span class="n">usdc</span><span class="p">,</span> <span class="n">weth</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">STABLECOINS</span><span class="p">,</span> <span class="n">WRAPPED_GAS_COIN</span><span class="p">,</span> <span class="n">sushi</span><span class="p">,</span> <span class="n">usdc</span><span class="p">,</span> <span class="n">weth</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Address</span><span class="p">,</span>
@@ -131,7 +130,7 @@
 
 <span class="n">factory_helper_address</span> <span class="o">=</span> <span class="p">{</span>
     <span class="c1"># put special case addresses here</span>
-<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="s2">&quot;0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9&quot;</span><span class="p">)</span>
+<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="s2">&quot;0xE57Bfd650A7771E401d56d4b2CA22d9f8f51D3D9&quot;</span><span class="p">)</span>
 
 <span class="k">try</span><span class="p">:</span>
     <span class="n">FACTORY_HELPER</span> <span class="o">=</span> <span class="n">Contract</span><span class="p">(</span><span class="n">factory_helper_address</span><span class="p">)</span>
@@ -628,7 +627,7 @@
 
         <span class="n">token_in</span><span class="p">,</span> <span class="n">token_out</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">token_in</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">token_out</span><span class="p">),</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">BinanceSmartChain</span> <span class="ow">and</span> <span class="n">token_out</span> <span class="o">==</span> <span class="n">usdc</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">BinanceSmartChain</span> <span class="ow">and</span> <span class="n">token_out</span> <span class="o">==</span> <span class="n">usdc</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
             <span class="n">busd</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
                 <span class="s2">&quot;0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56&quot;</span>
             <span class="p">)</span>
@@ -845,7 +844,7 @@
         <span class="n">pools</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">UniswapV2Pool</span><span class="p">,</span> <span class="n">Address</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="p">(</span>
-            <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
+            <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
             <span class="ow">and</span> <span class="n">token_address</span> <span class="o">==</span> <span class="n">WRAPPED_GAS_COIN</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;uniswap v2&quot;</span>
         <span class="p">):</span>
@@ -1105,7 +1104,7 @@
     <span class="k">def</span> <span class="nf">_supports_factory_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;returns True if our uniswap helper contract is supported, False if not&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
+            <span class="n">CHAINID</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
             <span class="ow">and</span> <span class="n">FACTORY_HELPER</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span>
             <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;zipswap&quot;</span><span class="p">}</span>
@@ -1135,7 +1134,7 @@
         <span class="k">elif</span> <span class="nb">str</span><span class="p">(</span><span class="n">token_in</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_paths</span> <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">token_out</span><span class="p">)</span> <span class="ow">in</span> <span class="n">STABLECOINS</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">special_paths</span><span class="p">[</span><span class="nb">str</span><span class="p">(</span><span class="n">token_in</span><span class="p">)]</span>
 
-        <span class="k">elif</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">BinanceSmartChain</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">BinanceSmartChain</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">cake</span><span class="p">,</span> <span class="n">wbnb</span>
 
             <span class="k">if</span> <span class="n">WRAPPED_GAS_COIN</span> <span class="ow">in</span> <span class="p">(</span><span class="n">token_in</span><span class="p">,</span> <span class="n">token_out</span><span class="p">):</span>

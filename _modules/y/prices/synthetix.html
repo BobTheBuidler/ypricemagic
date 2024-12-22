@@ -75,12 +75,12 @@
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexStr</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_method</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">UnsupportedNetwork</span><span class="p">,</span> <span class="n">call_reverted</span>
@@ -127,7 +127,7 @@
 <div class="viewcode-block" id="Synthetix.__init__">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.synthetix.Synthetix.__init__">[docs]</a>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;synthetix is not supported on this network&quot;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span></div>
@@ -147,7 +147,7 @@
 <span class="sd">            &gt;&gt;&gt; print(resolver)</span>
 <span class="sd">            &lt;Contract object at 0x...&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">addresses</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">])</span></div>
 
 
     <span class="n">__address_resolver__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
@@ -326,7 +326,7 @@
 
 
 
-<span class="n">synthetix</span> <span class="o">=</span> <span class="n">Synthetix</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="ow">in</span> <span class="n">addresses</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
+<span class="n">synthetix</span> <span class="o">=</span> <span class="n">Synthetix</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">in</span> <span class="n">addresses</span> <span class="k">else</span> <span class="nb">set</span><span class="p">()</span>
 </pre></div>
 
            </div>

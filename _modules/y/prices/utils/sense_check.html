@@ -84,10 +84,9 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">wbtc</span><span class="p">,</span> <span class="n">weth</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">wbtc</span><span class="p">,</span> <span class="n">weth</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">NonStandardERC20</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
@@ -258,7 +257,7 @@
         <span class="s2">&quot;0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b&quot;</span><span class="p">,</span>  <span class="c1"># tbtc</span>
         <span class="s2">&quot;0xcb327b99ff831bf8223cced12b1338ff3aa322ff&quot;</span><span class="p">,</span>  <span class="c1"># bsdETH</span>
     <span class="p">],</span>
-<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">acceptable_all_chains</span>
+<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">[])</span> <span class="o">+</span> <span class="n">acceptable_all_chains</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">List of tokens addresses for which high prices are acceptable.</span>
 <span class="sd">Nothing will be logged for tokens in this list.</span>
@@ -306,7 +305,7 @@
 
     <span class="c1"># proceed with sense check</span>
     <span class="n">price_readable</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">price</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="n">network</span> <span class="o">=</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="n">network</span> <span class="o">=</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>

@@ -75,6 +75,8 @@
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 
 
+<span class="n">_CHAINID</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
+
 <div class="viewcode-block" id="Network">
 <a class="viewcode-back" href="../../source/y.html#y.networks.Network">[docs]</a>
 <span class="k">class</span> <span class="nc">Network</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
@@ -164,7 +166,7 @@
 <span class="sd">            :meth:`Network.name` for getting the full name of the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">chain_id</span><span class="p">:</span>
-            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">_CHAINID</span>
 
         <span class="k">if</span> <span class="n">chain_id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;ETH&quot;</span>
@@ -220,7 +222,7 @@
 <span class="sd">            :meth:`Network.label` for getting the abbreviation of the network.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">chain_id</span><span class="p">:</span>
-            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">_CHAINID</span>
 
         <span class="k">if</span> <span class="n">chain_id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;Mainnet&quot;</span>
@@ -273,7 +275,7 @@
 <span class="sd">            &#39;chain 9999&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
+            <span class="n">chain_id</span> <span class="o">=</span> <span class="n">_CHAINID</span>
         <span class="k">return</span> <span class="n">Network</span><span class="o">.</span><span class="n">name</span><span class="p">(</span><span class="n">chain_id</span><span class="p">)</span> <span class="ow">or</span> <span class="sa">f</span><span class="s2">&quot;chain </span><span class="si">{</span><span class="n">chain_id</span><span class="si">}</span><span class="s2">&quot;</span></div>
 </div>
 

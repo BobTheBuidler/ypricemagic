@@ -75,11 +75,10 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">weth</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">weth</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">magic</span>
@@ -130,10 +129,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="s2">&quot;0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0&quot;</span>
-            <span class="p">}[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="p">}[</span><span class="n">CHAINID</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">wrapped_for_curve</span> <span class="o">=</span> <span class="p">{</span>
                 <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="s2">&quot;0xb82CFa4325568748506dC7cF267857Ff1e3b8d39&quot;</span>
-            <span class="p">}[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
+            <span class="p">}[</span><span class="n">CHAINID</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span> <span class="o">=</span> <span class="kc">None</span></div>
 
@@ -208,7 +207,7 @@
 <span class="sd">    See Also:</span>
 <span class="sd">        - :class:`wstEth`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="k">return</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">in</span> <span class="p">[</span>
         <span class="n">wsteth</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
         <span class="n">wsteth</span><span class="o">.</span><span class="n">wrapped_for_curve</span><span class="p">,</span>
     <span class="p">]</span></div>

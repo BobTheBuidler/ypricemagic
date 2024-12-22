@@ -72,7 +72,6 @@
 <span></span><span class="kn">import</span> <span class="nn">asyncio</span>
 <span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
@@ -80,7 +79,7 @@
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">brownie</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">EventLookupError</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
@@ -90,6 +89,7 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">WeiBalance</span><span class="p">,</span> <span class="n">_EventsLoader</span><span class="p">,</span> <span class="n">_Loader</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">contract_creation_block_async</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Address</span><span class="p">,</span>
@@ -126,7 +126,7 @@
     <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">{</span>
         <span class="s2">&quot;0x8301AE4fc9c624d1D396cbDAa1ed877821D7C511&quot;</span><span class="p">:</span> <span class="s2">&quot;0xEd4064f376cB8d68F770FB1Ff088a3d0F3FF5c4d&quot;</span><span class="p">,</span>
     <span class="p">},</span>
-<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">{})</span>
+<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">{})</span>
 <span class="s2">&quot;The on chain registry no longer returns the lp token address for these dead pools, so we need to provide it manually.&quot;</span>
 
 
@@ -270,7 +270,7 @@
         <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">,</span> <span class="p">())</span>
         <span class="c1"># TODO: remove this once curve adds to address provider</span>
-        <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf&quot;</span>
             <span class="p">]</span>
@@ -356,7 +356,7 @@
             <span class="c1"># lets load the contract async and then we can use the sync property more conveniently</span>
             <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
                 <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;Vyper_contract&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">CURVE_REGISTRY_ABI</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># This happens sometimes, not sure why as the contract is verified.</span>
@@ -698,7 +698,7 @@
         <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;curve is not supported on this network&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">except</span> <span class="n">MessedUpBrownieContract</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Cronos</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Cronos</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span>
                     <span class="s2">&quot;curve is not supported on this network&quot;</span>
                 <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
