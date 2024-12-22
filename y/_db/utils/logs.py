@@ -113,7 +113,9 @@ async def bulk_insert(
             (CHAINID, block, "BlockExtended")
             for block in {log.blockNumber for log in logs}
         )
-        blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks, sync=True)
+        blocks_fut = submit(
+            _bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks, sync=True
+        )
     else:
         blocks = tuple((CHAINID, block) for block in {log.blockNumber for log in logs})
         blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks, sync=True)

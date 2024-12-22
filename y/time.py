@@ -29,6 +29,7 @@ logger = logging.getLogger(__name__)
 
 _CHAINID = chain.id
 
+
 class NoBlockFound(Exception):
     """
     Raised when no block is found for a specified timestamp because the timestamp is in the future.
