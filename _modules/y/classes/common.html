@@ -593,11 +593,11 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
-            <span class="p">[</span><span class="s2">&quot;symbol()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;SYMBOL()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;getSymbol()(string)&quot;</span><span class="p">],</span>
+            <span class="p">(</span><span class="s2">&quot;symbol()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;SYMBOL()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;getSymbol()(string)&quot;</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">symbol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Sometimes the above will fail if the symbol method returns bytes32, as with MKR. Let&#39;s try this.</span>
-            <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;symbol()(bytes32)&quot;</span><span class="p">])</span>
+            <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;symbol()(bytes32)&quot;</span><span class="p">,))</span>
             <span class="k">if</span> <span class="n">symbol</span><span class="p">:</span>
                 <span class="n">symbol</span> <span class="o">=</span> <span class="n">hex_to_string</span><span class="p">(</span><span class="n">symbol</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">symbol</span><span class="p">:</span>
@@ -621,11 +621,11 @@
 <span class="sd">            &#39;TokenName&#39;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;name()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;getName()(string)&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;name()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;NAME()(string)&quot;</span><span class="p">,</span> <span class="s2">&quot;getName()(string)&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Sometimes the above will fail if the name method returns bytes32, as with MKR. Let&#39;s try this.</span>
-            <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;name()(bytes32)&quot;</span><span class="p">])</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;name()(bytes32)&quot;</span><span class="p">,))</span>
             <span class="k">if</span> <span class="n">name</span><span class="p">:</span>
                 <span class="n">name</span> <span class="o">=</span> <span class="n">hex_to_string</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">name</span><span class="p">:</span>

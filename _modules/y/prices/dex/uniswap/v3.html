@@ -682,7 +682,7 @@
 <span class="sd">        &gt;&gt;&gt; path = [&quot;0xToken0Address&quot;, 3000, &quot;0xToken1Address&quot;]</span>
 <span class="sd">        &gt;&gt;&gt; encoded_path = _encode_path(path)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">type</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cycle</span><span class="p">([</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;uint24&quot;</span><span class="p">]))]</span>
+    <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="nb">type</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="nb">type</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">cycle</span><span class="p">((</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="s2">&quot;uint24&quot;</span><span class="p">)))]</span>
     <span class="k">return</span> <span class="n">encode_packed</span><span class="p">(</span><span class="n">types</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
 
 

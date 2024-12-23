@@ -101,7 +101,7 @@
 
 <span class="c1"># NOTE: Yearn and Yearn-inspired</span>
 
-<span class="n">underlying_methods</span> <span class="o">=</span> <span class="p">[</span>
+<span class="n">underlying_methods</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;token()(address)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;underlying()(address)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;native()(address)&quot;</span><span class="p">,</span>
@@ -111,28 +111,28 @@
     <span class="s2">&quot;wmatic()(address)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;wbnb()(address)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;based()(address)&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">List of methods which might be used to get the underlying asset of a vault.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="n">share_price_methods</span> <span class="o">=</span> <span class="p">[</span>
+<span class="n">share_price_methods</span> <span class="o">=</span> <span class="p">(</span>
     <span class="s2">&quot;pricePerShare()(uint)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;getPricePerShare()(uint)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;getPricePerFullShare()(uint)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;getSharesToUnderlying()(uint)&quot;</span><span class="p">,</span>
     <span class="s2">&quot;exchangeRate()(uint)&quot;</span><span class="p">,</span>
-<span class="p">]</span>
+<span class="p">)</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">List of methods which might be used to get the share price of a vault.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="n">force_false</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">[</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">(</span>
         <span class="s2">&quot;0x8751D4196027d4e6DA63716fA7786B5174F04C15&quot;</span><span class="p">,</span>  <span class="c1"># wibBTC</span>
         <span class="s2">&quot;0xF0a93d4994B3d98Fb5e3A2F90dBc2d69073Cb86b&quot;</span><span class="p">,</span>  <span class="c1"># PWRD</span>
-    <span class="p">],</span>
-<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">[])</span>
+    <span class="p">),</span>
+<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">())</span>
 
 
 <div class="viewcode-block" id="is_yearn_vault">
@@ -347,7 +347,7 @@
             <span class="c1"># this is for element vaults and other &#39;scaled&#39; share price functions. probe fails because method requires input</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
-                <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;convertToAssets&quot;</span><span class="p">,</span> <span class="s2">&quot;getSharesToUnderlying&quot;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;convertToAssets&quot;</span><span class="p">,</span> <span class="s2">&quot;getSharesToUnderlying&quot;</span><span class="p">):</span>
                     <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
                         <span class="n">contract_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
                         <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span>

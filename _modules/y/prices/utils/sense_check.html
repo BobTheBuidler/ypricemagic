@@ -341,7 +341,7 @@
 
     <span class="n">bucket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">check_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;uni or uni-like lp&quot;</span><span class="p">,</span> <span class="s2">&quot;balancer pool&quot;</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">bucket</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;uni or uni-like lp&quot;</span><span class="p">,</span> <span class="s2">&quot;balancer pool&quot;</span><span class="p">):</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="k">elif</span> <span class="n">bucket</span> <span class="o">==</span> <span class="s2">&quot;curve lp&quot;</span><span class="p">:</span>

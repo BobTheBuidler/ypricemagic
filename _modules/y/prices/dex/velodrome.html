@@ -191,7 +191,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">default_factory</span> <span class="o">=</span> <span class="n">default_factory</span><span class="p">[</span><span class="n">chain</span><span class="o">.</span><span class="n">id</span><span class="p">]</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;The default factory address for the current network.&quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_all_pools</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;allPools(uint256)(address)&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_all_pools</span> <span class="o">=</span> <span class="n">Call</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="p">,</span> <span class="s2">&quot;allPools(uint256)(address)&quot;</span><span class="p">)</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;A prepared call for fetching all pools from the factory.&quot;&quot;&quot;</span></div>
 
 
@@ -499,13 +499,14 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">pool_address</span> <span class="ow">in</span> <span class="n">__pools</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">True</span>
-    <span class="k">if</span> <span class="n">result</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">]:</span>
-        <span class="n">__pools</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">result</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="n">__pools_append</span><span class="p">(</span><span class="n">pool_address</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span></div>
 
 
 
 <span class="n">__pools</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">__pools_append</span> <span class="o">=</span> <span class="n">__pools</span><span class="o">.</span><span class="n">append</span>
 </pre></div>
 
            </div>
