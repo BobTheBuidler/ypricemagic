@@ -81,7 +81,7 @@ async def get_price(
     """
     address = await convert.to_address_async(token)
     token, total_bal, total_supply = await gather_methods(
-        address, ["token", "totalToken", "totalSupply"], block=block
+        address, ("token", "totalToken", "totalSupply"), block=block
     )
     token_scale, pool_scale = await asyncio.gather(
         ERC20(token, asynchronous=True).scale, ERC20(address, asynchronous=True).scale

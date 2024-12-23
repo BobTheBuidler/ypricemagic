@@ -107,7 +107,7 @@ class VelodromeRouterV2(SolidlyRouterBase):
         self.default_factory = default_factory[chain.id]
         """The default factory address for the current network."""
 
-        self._all_pools = Call(self.factory, ["allPools(uint256)(address)"])
+        self._all_pools = Call(self.factory, "allPools(uint256)(address)")
         """A prepared call for fetching all pools from the factory."""
 
     @stuck_coro_debugger
@@ -399,9 +399,10 @@ async def is_contract(pool_address: Address) -> bool:
     """
     if pool_address in __pools:
         return True
-    if result := await dank_mids.eth.get_code(pool_address) not in ["0x", b""]:
-        __pools.append(pool_address)
+    if result := await dank_mids.eth.get_code(pool_address) not in ("0x", b""):
+        __pools_append(pool_address)
     return result
 
 
 __pools = []
+__pools_append = __pools.append

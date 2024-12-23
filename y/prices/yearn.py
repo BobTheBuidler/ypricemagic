@@ -30,7 +30,7 @@ logger = getLogger(__name__)
 
 # NOTE: Yearn and Yearn-inspired
 
-underlying_methods = [
+underlying_methods = (
     "token()(address)",
     "underlying()(address)",
     "native()(address)",
@@ -40,28 +40,28 @@ underlying_methods = [
     "wmatic()(address)",
     "wbnb()(address)",
     "based()(address)",
-]
+)
 """
 List of methods which might be used to get the underlying asset of a vault.
 """
 
-share_price_methods = [
+share_price_methods = (
     "pricePerShare()(uint)",
     "getPricePerShare()(uint)",
     "getPricePerFullShare()(uint)",
     "getSharesToUnderlying()(uint)",
     "exchangeRate()(uint)",
-]
+)
 """
 List of methods which might be used to get the share price of a vault.
 """
 
 force_false = {
-    Network.Mainnet: [
+    Network.Mainnet: (
         "0x8751D4196027d4e6DA63716fA7786B5174F04C15",  # wibBTC
         "0xF0a93d4994B3d98Fb5e3A2F90dBc2d69073Cb86b",  # PWRD
-    ],
-}.get(CHAINID, [])
+    ),
+}.get(CHAINID, ())
 
 
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=30 * 60)
@@ -263,7 +263,7 @@ class YearnInspiredVault(ERC20):
             # this is for element vaults and other 'scaled' share price functions. probe fails because method requires input
             try:
                 contract = await Contract.coroutine(self.address)
-                for method in ["convertToAssets", "getSharesToUnderlying"]:
+                for method in ("convertToAssets", "getSharesToUnderlying"):
                     if hasattr(contract, method):
                         contract_call = getattr(contract, method)
                         scale = await self.__scale__

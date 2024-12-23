@@ -180,12 +180,12 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             '0x...'
         """
         target = (
-            await Call(token, ["target()(address)"])
+            await Call(token, "target()(address)")
             if await has_method(token, "target()(address)", sync=False)
             else token
         )
         return (
-            await Call(target, ["currencyKey()(bytes32)"])
+            await Call(target, "currencyKey()(bytes32)")
             if await has_method(token, "currencyKey()(bytes32)", sync=False)
             else None
         )

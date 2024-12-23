@@ -87,7 +87,7 @@ async def get_tokens(
     """
     return [
         ERC20(t)
-        for t in await Call(pie_address, ["getTokens()(address[])"], block_id=block)
+        for t in await Call(pie_address, "getTokens()(address[])", block_id=block)
     ]
 
 
@@ -164,7 +164,7 @@ async def get_balance(
         1000.0
     """
     balance, scale = await asyncio.gather(
-        Call(token.address, ["balanceOf(address)(uint)", bpool], block_id=block),
+        Call(token.address, ("balanceOf(address)(uint)", bpool), block_id=block),
         token.__scale__,
     )
     return Decimal(balance) / scale

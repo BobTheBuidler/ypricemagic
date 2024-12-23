@@ -566,7 +566,7 @@ def _encode_path(path) -> bytes:
         >>> path = ["0xToken0Address", 3000, "0xToken1Address"]
         >>> encoded_path = _encode_path(path)
     """
-    types = [type for _, type in zip(path, cycle(["address", "uint24"]))]
+    types = [type for _, type in zip(path, cycle(("address", "uint24")))]
     return encode_packed(types, path)
 
 

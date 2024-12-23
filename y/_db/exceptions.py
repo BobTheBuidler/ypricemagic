@@ -84,7 +84,7 @@ class NewDatabaseSchemaError(yDBError):
             click.prompt(
                 self.msg + "\n\nWould you like to delete your db now?",
                 default="no",
-                type=click.Choice(["yes", "no"], case_sensitive=False),
+                type=click.Choice(("yes", "no"), case_sensitive=False),
                 confirmation_prompt=True,
                 show_default=False,
             )

@@ -217,7 +217,7 @@ class Feed:
 
     # @a_sync.future
     async def decimals(self) -> int:
-        return await Call(self.address, ["decimals()(uint)"], [])
+        return await Call(self.address, "decimals()(uint)")
 
     # @a_sync.future(cache_type='memory')
     @alru_cache(maxsize=None)
