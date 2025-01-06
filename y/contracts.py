@@ -1,19 +1,18 @@
-import asyncio
 import logging
 import os
 import threading
 import warnings
+from asyncio import Lock, TimerHandle, gather, get_running_loop
 from collections import defaultdict
 from functools import lru_cache
 from typing import (
     Any,
     Callable,
     Dict,
+    Iterable,
     List,
     Literal,
-    NewType,
     Optional,
-    Set,
     Tuple,
     Union,
 )
@@ -23,6 +22,7 @@ import a_sync
 import aiohttp
 import dank_mids
 import eth_retry
+from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
 from brownie._config import CONFIG, REQUEST_HEADERS
@@ -53,9 +53,10 @@ from typing_extensions import Self
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y import convert, exceptions
+from y import convert
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
+from y.exceptions import ContractNotVerified, InvalidAPIKeyError, NodeNotSynced, call_reverted, contract_not_verified
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 from y.time import check_node, check_node_async
@@ -68,7 +69,7 @@ logger = logging.getLogger(__name__)
 _CHAINID = chain.id
 
 _brownie_deployments_db_lock = threading.Lock()
-_contract_locks = defaultdict(asyncio.Lock)
+_contract_locks = defaultdict(Lock)
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -120,7 +121,7 @@ def Contract_with_erc20_fallback(address: AnyAddressType) -> "Contract":
     address = convert.to_address(address)
     try:
         return Contract(address)
-    except exceptions.ContractNotVerified:
+    except ContractNotVerified:
         return Contract_erc20(address)
 
 
@@ -136,10 +137,10 @@ def contract_creation_block(
 
     Args:
         address: The address of the contract.
-        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.
+        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~NodeNotSynced` exception. Default False.
 
     Raises:
-        exceptions.NodeNotSynced: If the node is not fully synced.
+        NodeNotSynced: If the node is not fully synced.
         ValueError: If the contract creation block cannot be determined.
 
     Example:
@@ -152,7 +153,7 @@ def contract_creation_block(
     height = chain.height
 
     if height == 0:
-        raise exceptions.NodeNotSynced(_NOT_SYNCED)
+        raise NodeNotSynced(_NOT_SYNCED)
 
     check_node()
 
@@ -221,10 +222,10 @@ async def contract_creation_block_async(
 
     Args:
         address: The address of the contract.
-        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.
+        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~NodeNotSynced` exception. Default False.
 
     Raises:
-        exceptions.NodeNotSynced: If the node is not fully synced.
+        NodeNotSynced: If the node is not fully synced.
         ValueError: If the contract creation block cannot be determined.
 
     Example:
@@ -242,7 +243,7 @@ async def contract_creation_block_async(
     height = await dank_mids.eth.block_number
 
     if height == 0:
-        raise exceptions.NodeNotSynced(_NOT_SYNCED)
+        raise NodeNotSynced(_NOT_SYNCED)
 
     await check_node_async()
 
@@ -358,7 +359,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     Provides a convenient way to query contract events with minimal code.
     """
 
-    _ttl_cache_popper: Union[Literal["disabled"], int, asyncio.TimerHandle]
+    _ttl_cache_popper: Union[Literal["disabled"], int, TimerHandle]
 
     @eth_retry.auto_retry
     def __init__(
@@ -382,7 +383,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
 
         Raises:
             ContractNotFound: If the address is not a contract.
-            exceptions.ContractNotVerified: If the contract is not verified and require_success is True.
+            ContractNotVerified: If the contract is not verified and require_success is True.
         """
         address = str(address)
         if address.lower() in [
@@ -391,7 +392,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
         ]:
             raise ContractNotFound(f"{address} is not a contract.")
         if require_success and address in _unverified_addresses:
-            raise exceptions.ContractNotVerified(address)
+            raise ContractNotVerified(address)
 
         try:
             # Try to fetch the contract from the local sqlite db.
@@ -425,13 +426,13 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             }
             self.__init_from_abi__(build, owner=owner, persist=True)
             self.__post_init__(cache_ttl)
-        except (ContractNotFound, exceptions.ContractNotVerified) as e:
-            if isinstance(e, exceptions.ContractNotVerified):
+        except (ContractNotFound, ContractNotVerified) as e:
+            if isinstance(e, ContractNotVerified):
                 _unverified_addresses.add(address)
             if require_success:
                 raise
             try:
-                if isinstance(e, exceptions.ContractNotVerified):
+                if isinstance(e, ContractNotVerified):
                     self.verified = False
                     self._build = {"contractName": "Non-Verified Contract"}
                 else:
@@ -537,8 +538,8 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             try:
                 # The contract does not exist in your local brownie deployments.db
                 name, abi = await _resolve_proxy_async(address)
-            except (ContractNotFound, exceptions.ContractNotVerified) as e:
-                if not_verified := isinstance(e, exceptions.ContractNotVerified):
+            except (ContractNotFound, ContractNotVerified) as e:
+                if not_verified := isinstance(e, ContractNotVerified):
                     _unverified_addresses.add(address)
                 if require_success:
                     raise
@@ -581,20 +582,20 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             pass
 
         elif cache_ttl is None:
-            if isinstance(contract._ttl_cache_popper, asyncio.TimerHandle):
+            if isinstance(contract._ttl_cache_popper, TimerHandle):
                 contract._ttl_cache_popper.cancel()
             contract._ttl_cache_popper = "disabled"
 
         elif isinstance(contract._ttl_cache_popper, int):
             cache_ttl = max(contract._ttl_cache_popper, cache_ttl)
-            contract._ttl_cache_popper = asyncio.get_running_loop().call_later(
+            contract._ttl_cache_popper = get_running_loop().call_later(
                 cache_ttl,
                 cls.delete_instance,
                 contract.address,
             )
 
         elif (
-            loop := asyncio.get_running_loop()
+            loop := get_running_loop()
         ).time() + cache_ttl > contract._ttl_cache_popper.when():
             contract._ttl_cache_popper.cancel()
             contract._ttl_cache_popper = loop.call_later(
@@ -707,7 +708,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             return
 
         try:
-            loop = asyncio.get_running_loop()
+            loop = get_running_loop()
         except RuntimeError:
             # If the event loop isn't running yet we can just specify the cache_ttl for later use
             self._ttl_cache_popper = cache_ttl
@@ -749,7 +750,7 @@ def is_contract(address: AnyAddressType) -> bool:
         True
     """
     address = convert.to_address(address)
-    return web3.eth.get_code(address) not in ["0x", b""]
+    return web3.eth.get_code(address) not in ("0x", b"")
 
 
 @a_sync.a_sync(default="sync", cache_type="memory")
@@ -776,7 +777,7 @@ async def has_method(
     except Exception as e:
         if (
             isinstance(e, ContractLogicError)
-            or exceptions.call_reverted(e)
+            or call_reverted(e)
             or "invalid jump destination" in str(e)
         ):
             return False
@@ -787,7 +788,7 @@ async def has_method(
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60)
 async def has_methods(
     address: AnyAddressType,
-    methods: Tuple[str],
+    methods: Iterable[str],
     _func: Callable = all,  # Union[any, all]
 ) -> bool:
     """
@@ -811,7 +812,7 @@ async def has_methods(
             [result is not None for result in await gather_methods(address, methods)]
         )
     except Exception as e:
-        if not isinstance(e, ContractLogicError) and not exceptions.call_reverted(e):
+        if not isinstance(e, ContractLogicError) and not call_reverted(e):
             raise  # and not out_of_gas(e): raise
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
@@ -820,7 +821,7 @@ async def has_methods(
             False
             if _func == all
             else any(
-                await asyncio.gather(
+                await gather(
                     *[has_method(address, method, sync=False) for method in methods]
                 )
             )
@@ -831,7 +832,7 @@ async def has_methods(
 @stuck_coro_debugger
 async def probe(
     address: AnyAddressType,
-    methods: List[str],
+    methods: Iterable[str],
     block: Optional[Block] = None,
     return_method: bool = False,
 ) -> Any:
@@ -880,7 +881,7 @@ async def build_name(
     try:
         contract = await Contract.coroutine(address)
         return contract.__dict__["_build"]["contractName"]
-    except exceptions.ContractNotVerified:
+    except ContractNotVerified:
         if not return_None_on_failure:
             raise
         return None
@@ -901,7 +902,7 @@ async def proxy_implementation(
         '0x1234567890abcdef1234567890abcdef12345678'
     """
     return await probe(
-        address, ["implementation()(address)", "target()(address)"], block
+        address, ("implementation()(address)", "target()(address)"), block
     )
 
 
@@ -966,7 +967,7 @@ def _extract_abi_data(address: Address):
             if _CHAINID == Network.xDai:
                 raise ValueError("Rate limited by Blockscout. Please try again.") from e
             if web3.eth.get_code(address):
-                raise exceptions.ContractNotVerified(address) from e
+                raise ContractNotVerified(address) from e
             else:
                 raise ContractNotFound(address) from e
         raise
@@ -975,24 +976,21 @@ def _extract_abi_data(address: Address):
             str(e).startswith("Failed to retrieve data from API")
             and "invalid api key" in str(e).lower()
         ):
-            raise exceptions.InvalidAPIKeyError from e
-        if exceptions.contract_not_verified(e):
-            raise exceptions.ContractNotVerified(
+            raise InvalidAPIKeyError from e
+        if contract_not_verified(e):
+            raise ContractNotVerified(
                 f"{address} on {Network.printable()}"
             ) from e
         elif "Unknown contract address:" in str(e):
-            exc_type = (
-                exceptions.ContractNotVerified
-                if is_contract(address)
-                else ContractNotFound
-            )
-            raise exc_type(str(e)) from e
+            if is_contract(address):
+                raise ContractNotVerified(str(e)) from e
+            raise ContractNotFound(str(e)) from e
         else:
             raise
 
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
-        raise exceptions.ContractNotVerified(
+        raise ContractNotVerified(
             f"Contract source code not verified: {address}"
         ) from None
     name = data["ContractName"]
@@ -1069,6 +1067,8 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     return name, abi
 
 
+_block_explorer_api_limiter = AsyncLimiter(5, 1)
+
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
 @alru_cache(maxsize=1000, ttl=300)
 async def _extract_abi_data_async(address: Address):
@@ -1090,13 +1090,14 @@ async def _extract_abi_data_async(address: Address):
         'Dai Stablecoin'
     """
     try:
+
         response = await _fetch_from_explorer_async(address, "getsourcecode", False)
     except ConnectionError as e:
         if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if _CHAINID == Network.xDai:
                 raise ValueError("Rate limited by Blockscout. Please try again.") from e
             if await dank_mids.eth.get_code(address):
-                raise exceptions.ContractNotVerified(address) from e
+                raise ContractNotVerified(address) from e
             else:
                 raise ContractNotFound(address) from e
         raise
@@ -1105,25 +1106,22 @@ async def _extract_abi_data_async(address: Address):
             str(e).startswith("Failed to retrieve data from API")
             and "invalid api key" in str(e).lower()
         ):
-            raise exceptions.InvalidAPIKeyError from e
-        if exceptions.contract_not_verified(e):
-            raise exceptions.ContractNotVerified(
+            raise InvalidAPIKeyError from e
+        if contract_not_verified(e):
+            raise ContractNotVerified(
                 f"{address} on {Network.printable()}"
             ) from e
         elif "Unknown contract address:" in str(e):
-            exc_type = (
-                exceptions.ContractNotVerified
-                if await dank_mids.eth.get_code(address) not in ["0x", b""]
-                else ContractNotFound
-            )
-            raise exc_type(str(e)) from e
+            if await dank_mids.eth.get_code(address) not in ("0x", b""):
+                raise ContractNotVerified(str(e)) from e
+            raise ContractNotFound(str(e)) from e
         else:
             raise
 
     data = response["result"][0]
     is_verified = bool(data.get("SourceCode"))
     if not is_verified:
-        raise exceptions.ContractNotVerified(
+        raise ContractNotVerified(
             f"Contract source code not verified: {address}"
         ) from None
     name = data["ContractName"]
@@ -1210,6 +1208,9 @@ async def _fetch_explorer_data(url, silent, params):
             return data
 
 
+_get_storage_at = dank_mids.eth.get_storage_at
+
+
 async def _resolve_proxy_async(address) -> Tuple[str, List]:
     """
     Resolve the implementation address for a proxy contract.
@@ -1241,11 +1242,9 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
 
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
     # always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822
-    implementation_eip1967, implementation_eip1822 = await asyncio.gather(
-        dank_mids.eth.get_storage_at(
-            address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1
-        ),
-        dank_mids.eth.get_storage_at(address, web3.keccak(text="PROXIABLE")),
+    implementation_eip1967, implementation_eip1822 = await gather(
+        _get_storage_at(address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1),
+        _get_storage_at(address, web3.keccak(text="PROXIABLE")),
     )
 
     # Just leave this code where it is for a helpful debugger as needed.
