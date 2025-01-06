@@ -34,39 +34,19 @@ v2_pools = {
         "0x7937D4799803FbBe595ed57278Bc4cA21f3bFfCB",  # aave amm
         "0xcE744a9BAf573167B2CF138114BA32ed7De274Fa",  # umee
     ),
-    Network.Polygon: (
-        "0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf",  # aave
-    ),
-    Network.Avalanche: (
-        "0x70BbE4A294878a14CB3CDD9315f5EB490e346163",  # blizz
-    ),
+    Network.Polygon: ("0x8dFf5E27EA6b7AC08EbFdf9eB090F32ee9a30fcf",),  # aave
+    Network.Avalanche: ("0x70BbE4A294878a14CB3CDD9315f5EB490e346163",),  # blizz
 }.get(chain.id, [])
 
 v3_pools = {
-    Network.Mainnet: (
-        "0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",  # aave v3
-    ),
-    Network.Optimism: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
-    Network.Arbitrum: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
-    Network.Harmony: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
-    Network.Arbitrum: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
-    Network.Fantom: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
-    Network.Avalanche: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
-    Network.Polygon: (
-        "0x794a61358D6845594F94dc1DB02A252b5b4814aD",  # aave v3
-    ),
+    Network.Mainnet: ("0x87870Bca3F3fD6335C3F4ce8392D69350B4fA4E2",),  # aave v3
+    Network.Optimism: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
+    Network.Arbitrum: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
+    Network.Harmony: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
+    Network.Arbitrum: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
+    Network.Fantom: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
+    Network.Avalanche: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
+    Network.Polygon: ("0x794a61358D6845594F94dc1DB02A252b5b4814aD",),  # aave v3
 }.get(chain.id, ())
 
 

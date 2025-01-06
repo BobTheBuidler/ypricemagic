@@ -56,7 +56,13 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
-from y.exceptions import ContractNotVerified, InvalidAPIKeyError, NodeNotSynced, call_reverted, contract_not_verified
+from y.exceptions import (
+    ContractNotVerified,
+    InvalidAPIKeyError,
+    NodeNotSynced,
+    call_reverted,
+    contract_not_verified,
+)
 from y.interfaces.ERC20 import ERC20ABI
 from y.networks import Network
 from y.time import check_node, check_node_async
@@ -978,9 +984,7 @@ def _extract_abi_data(address: Address):
         ):
             raise InvalidAPIKeyError from e
         if contract_not_verified(e):
-            raise ContractNotVerified(
-                f"{address} on {Network.printable()}"
-            ) from e
+            raise ContractNotVerified(f"{address} on {Network.printable()}") from e
         elif "Unknown contract address:" in str(e):
             if is_contract(address):
                 raise ContractNotVerified(str(e)) from e
@@ -1069,6 +1073,7 @@ def _resolve_proxy(address) -> Tuple[str, List]:
 
 _block_explorer_api_limiter = AsyncLimiter(5, 1)
 
+
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
 @alru_cache(maxsize=1000, ttl=300)
 async def _extract_abi_data_async(address: Address):
@@ -1093,9 +1098,13 @@ async def _extract_abi_data_async(address: Address):
         try:
             response = await _fetch_from_explorer_async(address, "getsourcecode", False)
         except ConnectionError as e:
-            if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
+            if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(
+                e
+            ):
                 if _CHAINID == Network.xDai:
-                    raise ValueError("Rate limited by Blockscout. Please try again.") from e
+                    raise ValueError(
+                        "Rate limited by Blockscout. Please try again."
+                    ) from e
                 if await dank_mids.eth.get_code(address):
                     raise ContractNotVerified(address) from e
                 else:
@@ -1108,9 +1117,7 @@ async def _extract_abi_data_async(address: Address):
             ):
                 raise InvalidAPIKeyError from e
             if contract_not_verified(e):
-                raise ContractNotVerified(
-                    f"{address} on {Network.printable()}"
-                ) from e
+                raise ContractNotVerified(f"{address} on {Network.printable()}") from e
             elif "Unknown contract address:" in str(e):
                 if await dank_mids.eth.get_code(address) not in ("0x", b""):
                     raise ContractNotVerified(str(e)) from e
@@ -1243,7 +1250,9 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
     # always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822
     implementation_eip1967, implementation_eip1822 = await gather(
-        _get_storage_at(address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1),
+        _get_storage_at(
+            address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1
+        ),
         _get_storage_at(address, web3.keccak(text="PROXIABLE")),
     )
 
