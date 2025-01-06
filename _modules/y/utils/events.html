@@ -530,14 +530,6 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_logs</span><span class="p">(</span><span class="n">args</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">TypeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="c1"># This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited</span>
-        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;a bytes-like object is required, not &#39;NoneType&#39;&quot;</span><span class="p">:</span>
-            <span class="k">raise</span>
-        <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
-        <span class="c1"># remove this logger before merging to master</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;eth_getLogs call failed, retrying...&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">_get_logs_async_no_cache</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="n">errs</span> <span class="o">=</span> <span class="p">[</span>
             <span class="s2">&quot;Service Unavailable for url:&quot;</span><span class="p">,</span>
@@ -546,6 +538,9 @@
             <span class="s2">&quot;request timed out&quot;</span><span class="p">,</span>
             <span class="s2">&quot;parse error&quot;</span><span class="p">,</span>
             <span class="s2">&quot;method handler crashed&quot;</span><span class="p">,</span>
+            <span class="c1"># TypeError</span>
+            <span class="c1"># This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited</span>
+            <span class="s2">&quot;a bytes-like object is required, not &#39;NoneType&#39;&quot;</span><span class="p">,</span>
         <span class="p">]</span>
         <span class="k">if</span> <span class="nb">all</span><span class="p">(</span><span class="n">err</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">):</span>
             <span class="k">raise</span>
