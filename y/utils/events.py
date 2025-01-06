@@ -441,14 +441,6 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
 
     try:
         return await dank_mids.eth.get_logs(args)
-    except TypeError as e:
-        # This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited
-        if str(e) != "a bytes-like object is required, not 'NoneType'":
-            raise
-        await sleep(0.5)
-        # remove this logger before merging to master
-        logger.info("eth_getLogs call failed, retrying...")
-        return await _get_logs_async_no_cache(address, topics, start, end)
     except Exception as e:
         errs = [
             "Service Unavailable for url:",
@@ -457,6 +449,9 @@ async def _get_logs_async_no_cache(address, topics, start, end) -> List[Log]:
             "request timed out",
             "parse error",
             "method handler crashed",
+            # TypeError
+            # This is some intermittent error I need to debug in dank_mids, I think it occurs when we get rate limited
+            "a bytes-like object is required, not 'NoneType'",
         ]
         if all(err not in str(e) for err in errs):
             raise
