@@ -42,7 +42,7 @@ UNISWAPS = {
     Network.BinanceSmartChain: {
         "uniswap v2": {
             "factory": "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
-            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+            "router": "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
         },
         "pancakeswapv2": {
             "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
@@ -236,7 +236,7 @@ UNISWAPS = {
     Network.Avalanche: {
         "uniswap v2": {
             "factory": "0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C",
-            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+            "router": "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
         },
         "pangolin": {
             "factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88",
@@ -274,7 +274,7 @@ UNISWAPS = {
     Network.Arbitrum: {
         "uniswap v2": {
             "factory": "0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9",
-            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+            "router": "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
         },
         "sushiswap": {
             "factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
