@@ -343,7 +343,7 @@ UNISWAPS = {
     Network.Base: {
         "uniswap v2": {
             "factory": "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
-            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+            "router": "0x4752ba5DBc23f44D87826276BF6Fd6b1C372aD24",
         },
         "sushiswap": {
             "factory": "0x71524B4f93c58fcbF659783284E38825f0622859",
