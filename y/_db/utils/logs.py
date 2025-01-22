@@ -295,14 +295,16 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
 
     def _select(self, from_block: int, to_block: int) -> List[Log]:
         logger.warning("executing select query for %s", self)
+        logs = tuple(self._get_query(from_block, to_block))
         try:
-            return [
-                json.decode(log.raw, type=Log, dec_hook=_decode_hook)
-                for log in self._get_query(from_block, to_block)
-            ]
+            return json.decode(
+                b"[" + b",".join(log.raw for log in logs) + b"]", 
+                type=List[Log], 
+                dec_hook=_decode_hook,
+            )
         except ValidationError:
             results = []
-            for log in self._get_query(from_block, to_block):
+            for log in logs:
                 try:
                     results.append(
                         json.decode(log.raw, type=Log, dec_hook=_decode_hook)
