@@ -1071,7 +1071,7 @@ def _resolve_proxy(address) -> Tuple[str, List]:
     return name, abi
 
 
-_block_explorer_api_limiter = AsyncLimiter(5, 1)
+_block_explorer_api_limiter = AsyncLimiter(1, 0.2)
 
 
 # we loosely cache this so we don't have to repeatedly fetch abis for commonly used proxy implementations
