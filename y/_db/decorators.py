@@ -116,6 +116,7 @@ db_session_cached = lambda func: retry_locked(
 _result_count_logger = logging.getLogger(f"{__name__}.result_count")
 _CHAIN_INFO = "chain", chain.id
 
+
 def log_result_count(
     name: str, arg_names: Iterable[str] = []
 ) -> Callable[[Callable[_P, _T]], Callable[_P, _T]]:

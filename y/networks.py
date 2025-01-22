@@ -6,6 +6,7 @@ from brownie import chain
 
 _CHAINID = chain.id
 
+
 class Network(IntEnum):
     """
     A lightweight enum that enables lookup of chain IDs for popular blockchain networks.
