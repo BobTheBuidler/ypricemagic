@@ -88,7 +88,9 @@ async def get_tokens(
     See Also:
         - :class:`ERC20`
     """
-    return list(map(ERC20, await Call(pie_address, "getTokens()(address[])", block_id=block)))
+    return list(
+        map(ERC20, await Call(pie_address, "getTokens()(address[])", block_id=block))
+    )
 
 
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
