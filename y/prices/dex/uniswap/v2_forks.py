@@ -40,6 +40,10 @@ UNISWAPS = {
         # "kyber":            {"factory": "0x833e4083B7ae46CeA85695c4f7ed25CDAd8886dE", "router": "0x1c87257f5e8609940bc751a07bb085bb7f8cdbe6"}
     },
     Network.BinanceSmartChain: {
+        "uniswap v2": {
+            "factory": "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
+            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+        },
         "pancakeswapv2": {
             "factory": "0xcA143Ce32Fe78f1f7019d7d551a6402fC5350c73",
             "router": "0x10ED43C718714eb63d5aA57B78B54704E256024E",
@@ -122,6 +126,10 @@ UNISWAPS = {
         },
     },
     Network.Polygon: {
+        "uniswap v2": {
+            "factory": "0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C",
+            "router": "0xedf6066a2b290C185783862C7F4776A2C8077AD1",
+        },
         "quickswap": {
             "factory": "0x5757371414417b8C6CAad45bAeF941aBc7d3Ab32",
             "router": "0xa5E0829CaCEd8fFDD4De3c43696c57F7D7A678ff",
@@ -226,6 +234,10 @@ UNISWAPS = {
         },
     },
     Network.Avalanche: {
+        "uniswap v2": {
+            "factory": "0x9e5A52f57b3038F1B8EeE45F28b3C1967e22799C",
+            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+        },
         "pangolin": {
             "factory": "0xefa94DE7a4656D787667C749f7E1223D71E9FD88",
             "router": "0xE54Ca86531e17Ef3616d22Ca28b0D458b6C89106",
@@ -260,6 +272,10 @@ UNISWAPS = {
         },
     },
     Network.Arbitrum: {
+        "uniswap v2": {
+            "factory": "0xf1D7CC64Fb4452F05c498126312eBE29f30Fbcf9",
+            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+        },
         "sushiswap": {
             "factory": "0xc35DADB65012eC5796536bD9864eD8773aBc74C4",
             "router": "0x1b02dA8Cb0d097eB8D57A175b88c7D8b47997506",
@@ -300,6 +316,10 @@ UNISWAPS = {
         },
     },
     Network.Optimism: {
+        "uniswap v2": {
+            "factory": "0x0c3c1c532F1e39EdF36BE9Fe0bE1410313E074Bf",
+            "router": "0x4A7b5Da61326A6379179b40d00F57E5bbDC962c2",
+        },
         "zipswap": {
             "factory": "0x8BCeDD62DD46F1A76F8A1633d4f5B76e0CDa521E",
             "router": "0xE6Df0BB08e5A97b40B21950a0A51b94c4DbA0Ff6",
@@ -321,6 +341,10 @@ UNISWAPS = {
         },
     },
     Network.Base: {
+        "uniswap v2": {
+            "factory": "0x8909Dc15e40173Ff4699343b6eB8132c65e18eC6",
+            "router": "0x4752ba5dbc23f44d87826276bf6fd6b1c372ad24",
+        },
         "sushiswap": {
             "factory": "0x71524B4f93c58fcbF659783284E38825f0622859",
             "router": "0x6BDED42c6DA8FBf0d2bA55B2fa120C5e0c8D7891",
