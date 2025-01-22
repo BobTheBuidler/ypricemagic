@@ -69,22 +69,21 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.contracts</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Lock</span><span class="p">,</span> <span class="n">TimerHandle</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">get_running_loop</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
+    <span class="n">Iterable</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Literal</span><span class="p">,</span>
-    <span class="n">NewType</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
-    <span class="n">Set</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">Union</span><span class="p">,</span>
 <span class="p">)</span>
@@ -94,6 +93,7 @@
 <span class="kn">import</span> <span class="nn">aiohttp</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">import</span> <span class="nn">eth_retry</span>
+<span class="kn">from</span> <span class="nn">aiolimiter</span> <span class="kn">import</span> <span class="n">AsyncLimiter</span>
 <span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">web3</span>
 <span class="kn">from</span> <span class="nn">brownie._config</span> <span class="kn">import</span> <span class="n">CONFIG</span><span class="p">,</span> <span class="n">REQUEST_HEADERS</span>
@@ -124,9 +124,16 @@
 <span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
-<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span><span class="p">,</span> <span class="n">exceptions</span>
+<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
+<span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">ContractNotVerified</span><span class="p">,</span>
+    <span class="n">InvalidAPIKeyError</span><span class="p">,</span>
+    <span class="n">NodeNotSynced</span><span class="p">,</span>
+    <span class="n">call_reverted</span><span class="p">,</span>
+    <span class="n">contract_not_verified</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">y.interfaces.ERC20</span> <span class="kn">import</span> <span class="n">ERC20ABI</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.time</span> <span class="kn">import</span> <span class="n">check_node</span><span class="p">,</span> <span class="n">check_node_async</span>
@@ -139,7 +146,7 @@
 <span class="n">_CHAINID</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span>
 
 <span class="n">_brownie_deployments_db_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
-<span class="n">_contract_locks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">)</span>
+<span class="n">_contract_locks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">Lock</span><span class="p">)</span>
 
 <span class="c1"># These tokens have trouble when resolving the implementation via the chain.</span>
 <span class="n">FORCE_IMPLEMENTATION</span> <span class="o">=</span> <span class="p">{</span>
@@ -196,7 +203,7 @@
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">:</span>
+    <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">Contract_erc20</span><span class="p">(</span><span class="n">address</span><span class="p">)</span></div>
 
 
@@ -213,10 +220,10 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the contract.</span>
-<span class="sd">        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.</span>
+<span class="sd">        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~NodeNotSynced` exception. Default False.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        exceptions.NodeNotSynced: If the node is not fully synced.</span>
+<span class="sd">        NodeNotSynced: If the node is not fully synced.</span>
 <span class="sd">        ValueError: If the contract creation block cannot be determined.</span>
 
 <span class="sd">    Example:</span>
@@ -229,7 +236,7 @@
     <span class="n">height</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">height</span>
 
     <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NodeNotSynced</span><span class="p">(</span><span class="n">_NOT_SYNCED</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NodeNotSynced</span><span class="p">(</span><span class="n">_NOT_SYNCED</span><span class="p">)</span>
 
     <span class="n">check_node</span><span class="p">()</span>
 
@@ -300,10 +307,10 @@
 
 <span class="sd">    Args:</span>
 <span class="sd">        address: The address of the contract.</span>
-<span class="sd">        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~exceptions.NodeNotSynced` exception. Default False.</span>
+<span class="sd">        when_no_history_return_0: If True, return 0 when no history is found instead of raising a :class:`~NodeNotSynced` exception. Default False.</span>
 
 <span class="sd">    Raises:</span>
-<span class="sd">        exceptions.NodeNotSynced: If the node is not fully synced.</span>
+<span class="sd">        NodeNotSynced: If the node is not fully synced.</span>
 <span class="sd">        ValueError: If the contract creation block cannot be determined.</span>
 
 <span class="sd">    Example:</span>
@@ -321,7 +328,7 @@
     <span class="n">height</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
 
     <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">NodeNotSynced</span><span class="p">(</span><span class="n">_NOT_SYNCED</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="n">NodeNotSynced</span><span class="p">(</span><span class="n">_NOT_SYNCED</span><span class="p">)</span>
 
     <span class="k">await</span> <span class="n">check_node_async</span><span class="p">()</span>
 
@@ -452,7 +459,7 @@
 <span class="sd">    Provides a convenient way to query contract events with minimal code.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">_ttl_cache_popper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimerHandle</span><span class="p">]</span>
+    <span class="n">_ttl_cache_popper</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;disabled&quot;</span><span class="p">],</span> <span class="nb">int</span><span class="p">,</span> <span class="n">TimerHandle</span><span class="p">]</span>
 
 <div class="viewcode-block" id="Contract.__init__">
 <a class="viewcode-back" href="../../source/y.html#y.contracts.Contract.__init__">[docs]</a>
@@ -478,7 +485,7 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            ContractNotFound: If the address is not a contract.</span>
-<span class="sd">            exceptions.ContractNotVerified: If the contract is not verified and require_success is True.</span>
+<span class="sd">            ContractNotVerified: If the contract is not verified and require_success is True.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">address</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">address</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">[</span>
@@ -487,7 +494,7 @@
         <span class="p">]:</span>
             <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not a contract.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">require_success</span> <span class="ow">and</span> <span class="n">address</span> <span class="ow">in</span> <span class="n">_unverified_addresses</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># Try to fetch the contract from the local sqlite db.</span>
@@ -521,13 +528,13 @@
             <span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__init_from_abi__</span><span class="p">(</span><span class="n">build</span><span class="p">,</span> <span class="n">owner</span><span class="o">=</span><span class="n">owner</span><span class="p">,</span> <span class="n">persist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">(</span><span class="n">cache_ttl</span><span class="p">)</span>
-        <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">):</span>
+        <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">):</span>
                 <span class="n">_unverified_addresses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">require_success</span><span class="p">:</span>
                 <span class="k">raise</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">):</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">):</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">verified</span> <span class="o">=</span> <span class="kc">False</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_build</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;contractName&quot;</span><span class="p">:</span> <span class="s2">&quot;Non-Verified Contract&quot;</span><span class="p">}</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -639,8 +646,8 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="c1"># The contract does not exist in your local brownie deployments.db</span>
                 <span class="n">name</span><span class="p">,</span> <span class="n">abi</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_resolve_proxy_async</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-            <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                <span class="k">if</span> <span class="n">not_verified</span> <span class="o">:=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">):</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">ContractNotFound</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">not_verified</span> <span class="o">:=</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractNotVerified</span><span class="p">):</span>
                     <span class="n">_unverified_addresses</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">require_success</span><span class="p">:</span>
                     <span class="k">raise</span>
@@ -683,20 +690,20 @@
             <span class="k">pass</span>
 
         <span class="k">elif</span> <span class="n">cache_ttl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">TimerHandle</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="n">TimerHandle</span><span class="p">):</span>
                 <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="s2">&quot;disabled&quot;</span>
 
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
             <span class="n">cache_ttl</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="p">,</span> <span class="n">cache_ttl</span><span class="p">)</span>
-            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
+            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">get_running_loop</span><span class="p">()</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
                 <span class="n">cache_ttl</span><span class="p">,</span>
                 <span class="bp">cls</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">,</span>
                 <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">loop</span> <span class="o">:=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+            <span class="n">loop</span> <span class="o">:=</span> <span class="n">get_running_loop</span><span class="p">()</span>
         <span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">cache_ttl</span> <span class="o">&gt;</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">when</span><span class="p">():</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
@@ -822,7 +829,7 @@
             <span class="k">return</span>
 
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_running_loop</span><span class="p">()</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">get_running_loop</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">RuntimeError</span><span class="p">:</span>
             <span class="c1"># If the event loop isn&#39;t running yet we can just specify the cache_ttl for later use</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">cache_ttl</span>
@@ -868,7 +875,7 @@
 <span class="sd">        True</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="has_method">
@@ -897,7 +904,7 @@
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="k">if</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="ow">or</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="ow">or</span> <span class="s2">&quot;invalid jump destination&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
@@ -911,7 +918,7 @@
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">15</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">has_methods</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
-    <span class="n">methods</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">methods</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">_func</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="nb">all</span><span class="p">,</span>  <span class="c1"># Union[any, all]</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -935,7 +942,7 @@
             <span class="p">[</span><span class="n">result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)]</span>
         <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
             <span class="k">raise</span>  <span class="c1"># and not out_of_gas(e): raise</span>
         <span class="c1"># Out of gas error implies one or more method is state-changing.</span>
         <span class="c1"># If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs</span>
@@ -944,7 +951,7 @@
             <span class="kc">False</span>
             <span class="k">if</span> <span class="n">_func</span> <span class="o">==</span> <span class="nb">all</span>
             <span class="k">else</span> <span class="nb">any</span><span class="p">(</span>
-                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
                     <span class="o">*</span><span class="p">[</span><span class="n">has_method</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="p">)</span>
@@ -958,7 +965,7 @@
 <span class="nd">@stuck_coro_debugger</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">probe</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
-    <span class="n">methods</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+    <span class="n">methods</span><span class="p">:</span> <span class="n">Iterable</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">return_method</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
@@ -1010,7 +1017,7 @@
     <span class="k">try</span><span class="p">:</span>
         <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">contract</span><span class="o">.</span><span class="vm">__dict__</span><span class="p">[</span><span class="s2">&quot;_build&quot;</span><span class="p">][</span><span class="s2">&quot;contractName&quot;</span><span class="p">]</span>
-    <span class="k">except</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">:</span>
+    <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">return_None_on_failure</span><span class="p">:</span>
             <span class="k">raise</span>
         <span class="k">return</span> <span class="kc">None</span></div>
@@ -1034,7 +1041,7 @@
 <span class="sd">        &#39;0x1234567890abcdef1234567890abcdef12345678&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">probe</span><span class="p">(</span>
-        <span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;implementation()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;target()(address)&quot;</span><span class="p">],</span> <span class="n">block</span>
+        <span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;implementation()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;target()(address)&quot;</span><span class="p">),</span> <span class="n">block</span>
     <span class="p">)</span></div>
 
 
@@ -1100,7 +1107,7 @@
             <span class="k">if</span> <span class="n">_CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rate limited by Blockscout. Please try again.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">if</span> <span class="n">web3</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">raise</span>
@@ -1109,24 +1116,19 @@
             <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve data from API&quot;</span><span class="p">)</span>
             <span class="ow">and</span> <span class="s2">&quot;invalid api key&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
         <span class="p">):</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidAPIKeyError</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">if</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">contract_not_verified</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">raise</span> <span class="n">InvalidAPIKeyError</span> <span class="kn">from</span> <span class="nn">e</span>
+        <span class="k">if</span> <span class="n">contract_not_verified</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">elif</span> <span class="s2">&quot;Unknown contract address:&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="n">exc_type</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span>
-                <span class="k">if</span> <span class="n">is_contract</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
-                <span class="k">else</span> <span class="n">ContractNotFound</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="n">exc_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">if</span> <span class="n">is_contract</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span>
 
     <span class="n">is_verified</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SourceCode&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_verified</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span>
+        <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Contract source code not verified: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ContractName&quot;</span><span class="p">]</span>
@@ -1203,6 +1205,9 @@
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">abi</span>
 
 
+<span class="n">_block_explorer_api_limiter</span> <span class="o">=</span> <span class="n">AsyncLimiter</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">)</span>
+
+
 <span class="c1"># we loosely cache this so we don&#39;t have to repeatedly fetch abis for commonly used proxy implementations</span>
 <span class="nd">@alru_cache</span><span class="p">(</span><span class="n">maxsize</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">ttl</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_extract_abi_data_async</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">Address</span><span class="p">):</span>
@@ -1223,41 +1228,41 @@
 <span class="sd">        &gt;&gt;&gt; print(name)</span>
 <span class="sd">        &#39;Dai Stablecoin&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_fetch_from_explorer_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getsourcecode&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-    <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;{&quot;message&quot;:&quot;Something went wrong.&quot;,&quot;result&quot;:null,&quot;status&quot;:&quot;0&quot;}&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">_CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rate limited by Blockscout. Please try again.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-            <span class="k">if</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
-                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">raise</span>
-    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve data from API&quot;</span><span class="p">)</span>
-            <span class="ow">and</span> <span class="s2">&quot;invalid api key&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
-        <span class="p">):</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">InvalidAPIKeyError</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">if</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">contract_not_verified</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">elif</span> <span class="s2">&quot;Unknown contract address:&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
-            <span class="n">exc_type</span> <span class="o">=</span> <span class="p">(</span>
-                <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span>
-                <span class="k">if</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">]</span>
-                <span class="k">else</span> <span class="n">ContractNotFound</span>
-            <span class="p">)</span>
-            <span class="k">raise</span> <span class="n">exc_type</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
-        <span class="k">else</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">with</span> <span class="n">_block_explorer_api_limiter</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_fetch_from_explorer_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getsourcecode&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;{&quot;message&quot;:&quot;Something went wrong.&quot;,&quot;result&quot;:null,&quot;status&quot;:&quot;0&quot;}&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span>
+                <span class="n">e</span>
+            <span class="p">):</span>
+                <span class="k">if</span> <span class="n">_CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="s2">&quot;Rate limited by Blockscout. Please try again.&quot;</span>
+                    <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">if</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">raise</span>
+        <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;Failed to retrieve data from API&quot;</span><span class="p">)</span>
+                <span class="ow">and</span> <span class="s2">&quot;invalid api key&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidAPIKeyError</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">if</span> <span class="n">contract_not_verified</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> on </span><span class="si">{</span><span class="n">Network</span><span class="o">.</span><span class="n">printable</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">elif</span> <span class="s2">&quot;Unknown contract address:&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+                <span class="k">if</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;0x&quot;</span><span class="p">,</span> <span class="sa">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span> <span class="kn">from</span> <span class="nn">e</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span>
 
     <span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="p">[</span><span class="s2">&quot;result&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">is_verified</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;SourceCode&quot;</span><span class="p">))</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">is_verified</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ContractNotVerified</span><span class="p">(</span>
+        <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Contract source code not verified: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ContractName&quot;</span><span class="p">]</span>
@@ -1344,6 +1349,9 @@
             <span class="k">return</span> <span class="n">data</span>
 
 
+<span class="n">_get_storage_at</span> <span class="o">=</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_storage_at</span>
+
+
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_resolve_proxy_async</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Resolve the implementation address for a proxy contract.</span>
@@ -1375,11 +1383,11 @@
 
     <span class="c1"># always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967</span>
     <span class="c1"># always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822</span>
-    <span class="n">implementation_eip1967</span><span class="p">,</span> <span class="n">implementation_eip1822</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_storage_at</span><span class="p">(</span>
+    <span class="n">implementation_eip1967</span><span class="p">,</span> <span class="n">implementation_eip1822</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+        <span class="n">_get_storage_at</span><span class="p">(</span>
             <span class="n">address</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;eip1967.proxy.implementation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">),</span>
-        <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_storage_at</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;PROXIABLE&quot;</span><span class="p">)),</span>
+        <span class="n">_get_storage_at</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;PROXIABLE&quot;</span><span class="p">)),</span>
     <span class="p">)</span>
 
     <span class="c1"># Just leave this code where it is for a helpful debugger as needed.</span>
