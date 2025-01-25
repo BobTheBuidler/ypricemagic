@@ -946,6 +946,8 @@ class UniswapRouterV2(ContractBase):
     @cached_property
     def _supports_factory_helper(self) -> bool:
         """returns True if our uniswap helper contract is supported, False if not"""
+        if CHAINID == Network.Base and self.label == "uniswap v2":
+            return False
         return (
             CHAINID != Network.Mainnet
             and FACTORY_HELPER
