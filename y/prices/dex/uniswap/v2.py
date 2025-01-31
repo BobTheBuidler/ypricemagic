@@ -946,14 +946,15 @@ class UniswapRouterV2(ContractBase):
     @cached_property
     def _supports_factory_helper(self) -> bool:
         """returns True if our uniswap helper contract is supported, False if not"""
-        if CHAINID in (Network.Base, Network.Arbitrum) and self.label == "uniswap v2":
+        if CHAINID in (
+            Network.Mainnet,  # Too many pools for the helper
+            Network.Arbitrum,  # Arbi nodes timeout often while using helper
+        ):
             return False
-        return (
-            CHAINID != Network.Mainnet
-            and FACTORY_HELPER
-            and self.label
-            and self.label not in {"zipswap"}
-        )
+        if CHAINID == Network.Base and self.label == "uniswap v2":
+            # Way too many pools
+            return False
+        return FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
     def _smol_brain_path_selector(
         self,
