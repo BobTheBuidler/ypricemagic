@@ -1103,14 +1103,15 @@
     <span class="nd">@cached_property</span>
     <span class="k">def</span> <span class="nf">_supports_factory_helper</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;returns True if our uniswap helper contract is supported, False if not&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">in</span> <span class="p">(</span><span class="n">Network</span><span class="o">.</span><span class="n">Base</span><span class="p">,</span> <span class="n">Network</span><span class="o">.</span><span class="n">Arbitrum</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;uniswap v2&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">in</span> <span class="p">(</span>
+            <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">,</span>  <span class="c1"># Too many pools for the helper</span>
+            <span class="n">Network</span><span class="o">.</span><span class="n">Arbitrum</span><span class="p">,</span>  <span class="c1"># Arbi nodes timeout often while using helper</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="n">CHAINID</span> <span class="o">!=</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
-            <span class="ow">and</span> <span class="n">FACTORY_HELPER</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span>
-            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;zipswap&quot;</span><span class="p">}</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Base</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;uniswap v2&quot;</span><span class="p">:</span>
+            <span class="c1"># Way too many pools</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">FACTORY_HELPER</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;zipswap&quot;</span><span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">_smol_brain_path_selector</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
