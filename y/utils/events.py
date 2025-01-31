@@ -96,12 +96,14 @@ def decode_logs(
 
     from y.contracts import Contract
 
-    for log in logs:
+    for log in logs.copy():
         if log.address not in _deployment_topics:
             try:
                 _add_deployment_topics(log.address, Contract(log.address).abi)
             except ContractNotVerified:
-                if log.address not in ignore_not_verified:
+                if log.address in ignore_not_verified:
+                    logs = [_log for _log in logs if _log.address != log.address]
+                else:
                     raise
 
     # for some reason < 1.2.4 can decode them just fine but >= cannot
