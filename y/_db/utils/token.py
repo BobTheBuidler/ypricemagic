@@ -87,7 +87,7 @@ def ensure_token(address: AnyAddressType) -> None:
 
 
 @lru_cache(maxsize=None)
-@db_session
+@db_session_retry_locked
 def _ensure_token(address: str) -> None:
     """Helper function to ensure a token entity exists.
 
@@ -389,7 +389,7 @@ def _get_token_decimals(address: str) -> Optional[int]:
 
 
 @cached(TTLCache(maxsize=1, ttl=60 * 60), lock=threading.Lock())
-@db_session
+@db_session_retry_locked
 @log_result_count("tokens")
 def known_tokens() -> Set[str]:
     """Cache and return all known tokens for this chain.
