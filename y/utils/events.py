@@ -100,7 +100,7 @@ def decode_logs(
         if address not in _deployment_topics:
             try:
                 _add_deployment_topics(address, Contract(address).abi)
-            except ContractNotVerified:
+            except (ContractNotVerified, KeyError):
                 if address in ignore_not_verified:
                     logs = [log for log in logs if log.address != address]
                 else:
