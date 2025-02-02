@@ -99,12 +99,16 @@ def decode_logs(
     for address in {log.address for log in logs}:
         if address not in _deployment_topics:
             try:
-                _add_deployment_topics(address, Contract(address).abi)
+                contract = Contract(address)
+                _add_deployment_topics(address, contract.abi)
             except (ContractNotVerified, KeyError):
                 if address in ignore_not_verified:
                     logs = [log for log in logs if log.address != address]
                 else:
                     raise
+    
+    if not logs:
+        return EventDict()
 
     # for some reason < 1.2.4 can decode them just fine but >= cannot
     special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], Log)
