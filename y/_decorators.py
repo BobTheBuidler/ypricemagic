@@ -95,25 +95,25 @@ __stuck_coro_logger_log = stuck_coro_logger._log
 
 @overload
 def stuck_coro_debugger(
-    fn: Callable[Concatenate[B, P], AsyncIterator[T]]
+    fn: Callable[Concatenate[B, P], AsyncIterator[T]],
 ) -> ASyncGeneratorFunction[P, T]: ...
 
 
 @overload
 def stuck_coro_debugger(
-    fn: Callable[Concatenate[B, P], Awaitable[T]]
+    fn: Callable[Concatenate[B, P], Awaitable[T]],
 ) -> ASyncBoundMethod[B, P, T]: ...
 
 
 @overload
 def stuck_coro_debugger(
-    fn: Callable[Concatenate[B, P], T]
+    fn: Callable[Concatenate[B, P], T],
 ) -> ASyncBoundMethod[B, P, T]: ...
 
 
 @overload
 def stuck_coro_debugger(
-    fn: Callable[P, AsyncIterator[T]]
+    fn: Callable[P, AsyncIterator[T]],
 ) -> Callable[P, AsyncIterator[T]]: ...
 
 
