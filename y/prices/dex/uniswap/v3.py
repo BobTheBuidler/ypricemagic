@@ -66,6 +66,14 @@ addresses = {
 }
 
 forked_deployments = {
+    Network.Optimism: [
+        {
+            # Velodrome slipstream
+            "factory": "0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F",
+            "quoter": "0x89D8218ed5fF1e46d8dcd33fb0bbeE3be1621466",
+            "fee_tiers": [3000, 500, 10_000, 100],
+        }
+    ]
     Network.Base: [
         {
             # Aerodrome slipstream
