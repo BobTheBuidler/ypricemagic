@@ -56,24 +56,23 @@ share_price_methods = (
 List of methods which might be used to get the share price of a vault.
 """
 
+# wibbtc returns True here even though it doesn't meet the criteria.
+# TODO figure out a better fix. For now I need a fix asap so this works.
+# NOTE turns out I never fixed it and there are more now. Womp.
 force_false = {
     Network.Mainnet: (
         "0x8751D4196027d4e6DA63716fA7786B5174F04C15",  # wibBTC
         "0xF0a93d4994B3d98Fb5e3A2F90dBc2d69073Cb86b",  # PWRD
+        "0x35Ec69A77B79c255e5d47D5A3BdbEFEfE342630c",  # ynLSDe
     ),
-}.get(CHAINID, ())
+}
 
 
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=30 * 60)
 @stuck_coro_debugger
 @optional_async_diskcache
 async def is_yearn_vault(token: AnyAddressType) -> bool:
-    # wibbtc returns True here even though it doesn't meet the criteria.
-    # TODO figure out a better fix. For now I need a fix asap so this works.
-    if (
-        CHAINID == Network.Mainnet
-        and str(token) == "0x8751D4196027d4e6DA63716fA7786B5174F04C15"
-    ):
+    if str(token) in force_false.get(CHAINID, ()):
         return False
 
     # Yearn-like contracts can use these formats
