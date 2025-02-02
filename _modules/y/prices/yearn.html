@@ -127,12 +127,16 @@
 <span class="sd">List of methods which might be used to get the share price of a vault.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="c1"># wibbtc returns True here even though it doesn&#39;t meet the criteria.</span>
+<span class="c1"># TODO figure out a better fix. For now I need a fix asap so this works.</span>
+<span class="c1"># NOTE turns out I never fixed it and there are more now. Womp.</span>
 <span class="n">force_false</span> <span class="o">=</span> <span class="p">{</span>
     <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span> <span class="p">(</span>
         <span class="s2">&quot;0x8751D4196027d4e6DA63716fA7786B5174F04C15&quot;</span><span class="p">,</span>  <span class="c1"># wibBTC</span>
         <span class="s2">&quot;0xF0a93d4994B3d98Fb5e3A2F90dBc2d69073Cb86b&quot;</span><span class="p">,</span>  <span class="c1"># PWRD</span>
+        <span class="s2">&quot;0x35Ec69A77B79c255e5d47D5A3BdbEFEfE342630c&quot;</span><span class="p">,</span>  <span class="c1"># ynLSDe</span>
     <span class="p">),</span>
-<span class="p">}</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">())</span>
+<span class="p">}</span>
 
 
 <div class="viewcode-block" id="is_yearn_vault">
@@ -141,12 +145,7 @@
 <span class="nd">@stuck_coro_debugger</span>
 <span class="nd">@optional_async_diskcache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_yearn_vault</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="c1"># wibbtc returns True here even though it doesn&#39;t meet the criteria.</span>
-    <span class="c1"># TODO figure out a better fix. For now I need a fix asap so this works.</span>
-    <span class="k">if</span> <span class="p">(</span>
-        <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
-        <span class="ow">and</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;0x8751D4196027d4e6DA63716fA7786B5174F04C15&quot;</span>
-    <span class="p">):</span>
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="ow">in</span> <span class="n">force_false</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">()):</span>
         <span class="k">return</span> <span class="kc">False</span>
 
     <span class="c1"># Yearn-like contracts can use these formats</span>
