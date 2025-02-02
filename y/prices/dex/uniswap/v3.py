@@ -10,9 +10,10 @@ import a_sync
 import eth_retry
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
-from eth_typing import ChecksumAddress
+from eth_typing import ChecksumAddress, HexAddress
 from typing_extensions import Self
 
+from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase
@@ -62,6 +63,17 @@ addresses = {
         "quoter": "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",  # quoter v2
         "fee_tiers": [3000, 500, 10_000, 100],
     },
+}
+
+forked_deployments = {
+    Network.Base: [
+        {
+            # Aerodrome slipstream
+            "factory": "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A",
+            "quoter": "0x254cF9E1E6e233aa1AC962CB9B05b2cfeAaE15b0",
+            "fee_tiers": [3000, 500, 10_000, 100]
+        },
+    ],
 }
 
 FEE_DENOMINATOR = 1_000_000
@@ -243,10 +255,16 @@ class UniswapV3Pool(ContractBase):
         raise TokenNotFound(token_in, self)
 
 
-class UniswapV3(a_sync.ASyncGenericSingleton):
+class UniswapV3(a_sync.ASyncGenericBase):
     """Represents the Uniswap V3 protocol."""
 
-    def __init__(self, asynchronous: bool = True) -> None:
+    def __init__(
+        self, 
+        factory: HexAddress, 
+        quoter: HexAddress, 
+        fee_tiers: List[int], 
+        asynchronous: bool = True,
+    ) -> None:
         """
         Initialize a UniswapV3 instance.
 
@@ -261,12 +279,15 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
         """
         super().__init__()
         self.asynchronous = asynchronous
-        if CHAINID not in addresses:
-            raise UnsupportedNetwork("Uniswap V3 is not supported on this network")
-        self.fee_tiers = addresses[CHAINID]["fee_tiers"]
+        self._factory = convert.to_address(factory)
+        self._quoter = convert.to_address(quoter)
+        self.fee_tiers = fee_tiers
         self.loading = False
         self._pools = {}
 
+    def __repr__(self) -> str:
+        return f"<{type(self).__name__} factory={self._factory} quoter={self._quoter}>"
+    
     def __contains__(self, asset) -> bool:
         """
         Check if an asset is part of the Uniswap V3 protocol.
@@ -310,7 +331,7 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             >>> uniswap_v3 = UniswapV3(...)
             >>> factory_contract = await uniswap_v3.factory
         """
-        return await Contract.coroutine(addresses[CHAINID]["factory"])
+        return await Contract.coroutine(self._factory)
 
     __factory__: HiddenMethodDescriptor[Self, Contract]
 
@@ -326,11 +347,10 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             >>> uniswap_v3 = UniswapV3(...)
             >>> quoter_contract = await uniswap_v3.quoter
         """
-        quoter = addresses[CHAINID]["quoter"]
         try:
-            return await Contract.coroutine(quoter)
+            return await Contract.coroutine(self._quoter)
         except ContractNotVerified:
-            return Contract.from_abi("Quoter", quoter, UNIV3_QUOTER_ABI)
+            return Contract.from_abi("Quoter", self._quoter, UNIV3_QUOTER_ABI)
 
     __quoter__: HiddenMethodDescriptor[Self, Contract]
 
@@ -348,6 +368,8 @@ class UniswapV3(a_sync.ASyncGenericSingleton):
             >>> pools = await uniswap_v3.pools
         """
         factory = await self.__factory__
+        if factory.address == "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A":
+            return SlipstreamPools(factory, asynchronous=self.asynchronous)
         return UniV3Pools(factory, asynchronous=self.asynchronous)
 
     __pools__: HiddenMethodDescriptor[Self, "UniV3Pools"]
@@ -651,8 +673,32 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         """
         return obj._deploy_block
 
+class SlipstreamPools(UniV3Pools):
+    def _process_event(self, event: _EventItem) -> UniswapV3Pool:
+        token0, token1, tick_spacing, pool = event.values()
+        return UniswapV3Pool(
+            pool,
+            token0,
+            token1,
+            # NOTE: fee arg is not actually used in the current implementation, so we can use 0 here
+            0,  # TODO: implement fee maths properly
+            tick_spacing,
+            event.block_number,
+            asynchronous=self.asynchronous,
+        )
 
-try:
-    uniswap_v3 = UniswapV3(asynchronous=True)
-except UnsupportedNetwork:
+
+if CHAINID in addresses:
+    uniswap_v3 = UniswapV3(
+        addresses[CHAINID]["factory"],
+        addresses[CHAINID]["quoter"],
+        addresses[CHAINID]["fee_tiers"],
+        asynchronous=True,
+    )
+else:
     uniswap_v3 = None
+
+forks = [
+    UniswapV3(fork["factory"], fork["quoter"], fork["fee_tiers"], asynchronous=True)
+    for fork in forked_deployments.get(CHAINID, [])
+]
