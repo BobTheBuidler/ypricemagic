@@ -11,3 +11,4 @@ joblib>=1.0.1
 multicall>=0.8.2
 pony
 pony-stubs
+python-dateutil
