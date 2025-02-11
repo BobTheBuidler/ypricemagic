@@ -493,7 +493,7 @@ def prepare_input(
         Union[
             str, Address, EthAddress, brownie.Contract, Contract
         ],  # for address input
-    ]
+    ],
 ) -> str:
     """
     Prepare input data for a raw contract call by encoding it to a hexadecimal string.
