@@ -66,7 +66,10 @@ ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split(".")) >= 
 )
 
 
-def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]], ignore_not_verified: List[Address] = []) -> EventDict:
+def decode_logs(
+    logs: Union[Iterable[LogReceipt], Iterable[Log]],
+    ignore_not_verified: List[Address] = [],
+) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
