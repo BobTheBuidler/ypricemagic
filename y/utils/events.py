@@ -96,13 +96,13 @@ def decode_logs(
 
     from y.contracts import Contract
 
-    for log in logs.copy():
-        if log.address not in _deployment_topics:
+    for address in {log.address for log in logs}:
+        if address not in _deployment_topics:
             try:
-                _add_deployment_topics(log.address, Contract(log.address).abi)
+                _add_deployment_topics(address, Contract(address).abi)
             except ContractNotVerified:
-                if log.address in ignore_not_verified:
-                    logs = [_log for _log in logs if _log.address != log.address]
+                if address in ignore_not_verified:
+                    logs = [log for log in logs if log.address != address]
                 else:
                     raise
 
