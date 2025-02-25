@@ -6,6 +6,7 @@ from pony.orm import Database, DatabaseError, commit
 
 from a_sync import PruningThreadPoolExecutor, a_sync
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db import entities
 from y._db.decorators import db_session_retry_locked, retry_locked
 
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
 
 
-_bulk_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [bulk]")
+_bulk_executor = PruningThreadPoolExecutor(3 if ENVS.DB_PROVIDER == "sqlite" else 10, "ypricemagic db executor [bulk]")
 
 
 class SQLError(ValueError):
