@@ -264,7 +264,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
                 symbol = await ERC20(token, asynchronous=True).symbol
                 _fail_appropriately(cache_logger, symbol, fail_to_None, silent)
                 return
-            
+
             cache_logger.debug("disk cache -> %s", price)
             return price
         price = await get_price(
@@ -341,6 +341,7 @@ async def _get_price(
             await utils.sense_check(token, block, price)
         else:
             from y._db.utils import price as db
+
             await db.set_price(token, block, -1)
             _fail_appropriately(logger, symbol, fail_to_None, silent)
         logger.debug("%s price: %s", symbol, price)

@@ -681,6 +681,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         """
         return obj._deploy_block
 
+
 class SlipstreamPools(UniV3Pools):
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         token0, token1, tick_spacing, pool = event.values()
