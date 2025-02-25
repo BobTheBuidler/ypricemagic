@@ -15,7 +15,9 @@ logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
 
 
-_bulk_executor = PruningThreadPoolExecutor(3 if ENVS.DB_PROVIDER == "sqlite" else 10, "ypricemagic db executor [bulk]")
+_bulk_executor = PruningThreadPoolExecutor(
+    3 if ENVS.DB_PROVIDER == "sqlite" else 10, "ypricemagic db executor [bulk]"
+)
 
 
 class SQLError(ValueError):

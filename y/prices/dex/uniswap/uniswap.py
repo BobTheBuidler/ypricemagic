@@ -102,7 +102,9 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         if self.v3_forks:
             self.uniswaps.extend(self.v3_forks)
 
-        self.v2_factories = [v2_forks.UNISWAPS[name]["factory"] for name in v2_forks.UNISWAPS]
+        self.v2_factories = [
+            v2_forks.UNISWAPS[name]["factory"] for name in v2_forks.UNISWAPS
+        ]
         self._uid_lock = threading.Lock()
 
     @stuck_coro_debugger
