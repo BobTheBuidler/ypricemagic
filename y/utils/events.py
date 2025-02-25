@@ -43,9 +43,10 @@ from web3.middleware.filter import block_ranges
 from web3.types import LogReceipt
 
 from y import ENVIRONMENT_VARIABLES as ENVS
+from y import convert
 from y._db.common import Filter, _clean_addresses
 from y.datatypes import Address, AnyAddressType, Block
-from y.exceptions import reraise_excs_with_extra_context
+from y.exceptions import ContractNotVerified, reraise_excs_with_extra_context
 from y.utils.cache import memory
 from y.utils.middleware import BATCH_SIZE
 
@@ -65,7 +66,7 @@ ETH_EVENT_GTE_1_2_4 = tuple(int(i) for i in version("eth-event").split(".")) >= 
 )
 
 
-def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
+def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]], ignore_not_verified: List[Address] = []) -> EventDict:
     # NOTE: we want to ensure backward-compatability with LogReceipt
     """
     Decode logs to events and enrich them with additional info.
@@ -88,12 +89,17 @@ def decode_logs(logs: Union[Iterable[LogReceipt], Iterable[Log]]) -> EventDict:
         return EventDict()
 
     logs = list(logs)
+    ignore_not_verified = list(map(convert.to_address, ignore_not_verified))
 
     from y.contracts import Contract
 
     for log in logs:
         if log.address not in _deployment_topics:
-            _add_deployment_topics(log.address, Contract(log.address).abi)
+            try:
+                _add_deployment_topics(log.address, Contract(log.address).abi)
+            except ContractNotVerified:
+                if log.address not in ignore_not_verified:
+                    raise
 
     # for some reason < 1.2.4 can decode them just fine but >= cannot
     special_treatment = ETH_EVENT_GTE_1_2_4 and logs and isinstance(logs[0], Log)
