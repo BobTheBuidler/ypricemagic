@@ -108,7 +108,7 @@ def decode_logs(
                     if isinstance(e, KeyError):
                         e.args = *e.args, address
                     raise
-    
+
     if not logs:
         return EventDict()
 
