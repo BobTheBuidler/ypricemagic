@@ -16,8 +16,7 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
-from y.prices.dex.uniswap import v3
-from y.prices.dex.uniswap import v2_forks
+from y.prices.dex.uniswap import v2_forks, v3
 from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import NotAUniswapV2Pool, UniswapRouterV2, UniswapV2Pool
 from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
