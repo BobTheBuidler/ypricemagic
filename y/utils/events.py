@@ -101,10 +101,12 @@ def decode_logs(
             try:
                 contract = Contract(address)
                 _add_deployment_topics(address, contract.abi)
-            except (ContractNotVerified, KeyError):
+            except (ContractNotVerified, KeyError) as e:
                 if address in ignore_not_verified:
                     logs = [log for log in logs if log.address != address]
                 else:
+                    if isinstance(e, KeyError):
+                        e.args = *e.args, address
                     raise
     
     if not logs:
