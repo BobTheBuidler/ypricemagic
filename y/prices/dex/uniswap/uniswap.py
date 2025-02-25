@@ -16,6 +16,7 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
+from y.prices.dex.uniswap import v3
 from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import NotAUniswapV2Pool, UniswapRouterV2, UniswapV2Pool
 from y.prices.dex.uniswap.v2_forks import UNISWAPS
@@ -78,7 +79,10 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             if chain.id == Network.Mainnet
             else None
         )
-        self.v3 = UniswapV3(asynchronous=self.asynchronous) if uniswap_v3 else None
+        self.v3 = UniswapV3(uniswap_v3._factory, uniswap_v3._quoter, uniswap_v3.fee_tiers, asynchronous=self.asynchronous) if uniswap_v3 else None
+        # NOTE: this only works with an async UniswapMultiplexer
+        # TODO: fix that if it causes issues for somebody. For us its fine.
+        self.v3_forks = v3.forks
 
         self.uniswaps: List[Uniswap] = []
         if self.v1:
@@ -86,6 +90,8 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         self.uniswaps.extend(self.v2_routers.values())
         if self.v3:
             self.uniswaps.append(self.v3)
+        if self.v3_forks:
+            self.uniswaps.extend(self.v3_forks)
 
         self.v2_factories = [UNISWAPS[name]["factory"] for name in UNISWAPS]
         self._uid_lock = threading.Lock()
