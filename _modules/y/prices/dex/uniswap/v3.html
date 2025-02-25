@@ -81,9 +81,10 @@
 <span class="kn">import</span> <span class="nn">eth_retry</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
-<span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span>
+<span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span><span class="p">,</span> <span class="n">HexAddress</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
 
+<span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span>
@@ -133,6 +134,25 @@
         <span class="s2">&quot;quoter&quot;</span><span class="p">:</span> <span class="s2">&quot;0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a&quot;</span><span class="p">,</span>  <span class="c1"># quoter v2</span>
         <span class="s2">&quot;fee_tiers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
     <span class="p">},</span>
+<span class="p">}</span>
+
+<span class="n">forked_deployments</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="c1"># Velodrome slipstream</span>
+            <span class="s2">&quot;factory&quot;</span><span class="p">:</span> <span class="s2">&quot;0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;quoter&quot;</span><span class="p">:</span> <span class="s2">&quot;0x89D8218ed5fF1e46d8dcd33fb0bbeE3be1621466&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fee_tiers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">Network</span><span class="o">.</span><span class="n">Base</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span>
+            <span class="c1"># Aerodrome slipstream</span>
+            <span class="s2">&quot;factory&quot;</span><span class="p">:</span> <span class="s2">&quot;0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;quoter&quot;</span><span class="p">:</span> <span class="s2">&quot;0x254cF9E1E6e233aa1AC962CB9B05b2cfeAaE15b0&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;fee_tiers&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10_000</span><span class="p">,</span> <span class="mi">100</span><span class="p">]</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
 <span class="p">}</span>
 
 <span class="n">FEE_DENOMINATOR</span> <span class="o">=</span> <span class="mi">1_000_000</span>
@@ -334,12 +354,18 @@
 
 <div class="viewcode-block" id="UniswapV3">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.UniswapV3">[docs]</a>
-<span class="k">class</span> <span class="nc">UniswapV3</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericSingleton</span><span class="p">):</span>
+<span class="k">class</span> <span class="nc">UniswapV3</span><span class="p">(</span><span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncGenericBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents the Uniswap V3 protocol.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="UniswapV3.__init__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.UniswapV3.__init__">[docs]</a>
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">factory</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span> 
+        <span class="n">quoter</span><span class="p">:</span> <span class="n">HexAddress</span><span class="p">,</span> 
+        <span class="n">fee_tiers</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span> 
+        <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Initialize a UniswapV3 instance.</span>
 
@@ -354,13 +380,16 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
-        <span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UnsupportedNetwork</span><span class="p">(</span><span class="s2">&quot;Uniswap V3 is not supported on this network&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fee_tiers</span> <span class="o">=</span> <span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">][</span><span class="s2">&quot;fee_tiers&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_factory</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quoter</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">quoter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fee_tiers</span> <span class="o">=</span> <span class="n">fee_tiers</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loading</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pools</span> <span class="o">=</span> <span class="p">{}</span></div>
 
 
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> factory=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="si">}</span><span class="s2"> quoter=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_quoter</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+    
 <div class="viewcode-block" id="UniswapV3.__contains__">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.UniswapV3.__contains__">[docs]</a>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
@@ -409,7 +438,7 @@
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; factory_contract = await uniswap_v3.factory</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">][</span><span class="s2">&quot;factory&quot;</span><span class="p">])</span></div>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="p">)</span></div>
 
 
     <span class="n">__factory__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
@@ -428,11 +457,10 @@
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; quoter_contract = await uniswap_v3.quoter</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">quoter</span> <span class="o">=</span> <span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">][</span><span class="s2">&quot;quoter&quot;</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">quoter</span><span class="p">)</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_quoter</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;Quoter&quot;</span><span class="p">,</span> <span class="n">quoter</span><span class="p">,</span> <span class="n">UNIV3_QUOTER_ABI</span><span class="p">)</span></div>
+            <span class="k">return</span> <span class="n">Contract</span><span class="o">.</span><span class="n">from_abi</span><span class="p">(</span><span class="s2">&quot;Quoter&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quoter</span><span class="p">,</span> <span class="n">UNIV3_QUOTER_ABI</span><span class="p">)</span></div>
 
 
     <span class="n">__quoter__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Contract</span><span class="p">]</span>
@@ -453,6 +481,8 @@
 <span class="sd">            &gt;&gt;&gt; pools = await uniswap_v3.pools</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
+        <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="s2">&quot;0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">SlipstreamPools</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">UniV3Pools</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
 
@@ -773,11 +803,38 @@
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">_deploy_block</span></div>
 
 
+<div class="viewcode-block" id="SlipstreamPools">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.SlipstreamPools">[docs]</a>
+<span class="k">class</span> <span class="nc">SlipstreamPools</span><span class="p">(</span><span class="n">UniV3Pools</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_process_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UniswapV3Pool</span><span class="p">:</span>
+        <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="p">,</span> <span class="n">tick_spacing</span><span class="p">,</span> <span class="n">pool</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">UniswapV3Pool</span><span class="p">(</span>
+            <span class="n">pool</span><span class="p">,</span>
+            <span class="n">token0</span><span class="p">,</span>
+            <span class="n">token1</span><span class="p">,</span>
+            <span class="c1"># NOTE: fee arg is not actually used in the current implementation, so we can use 0 here</span>
+            <span class="mi">0</span><span class="p">,</span>  <span class="c1"># TODO: implement fee maths properly</span>
+            <span class="n">tick_spacing</span><span class="p">,</span>
+            <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">,</span>
+            <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">,</span>
+        <span class="p">)</span></div>
 
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">uniswap_v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="k">except</span> <span class="n">UnsupportedNetwork</span><span class="p">:</span>
+
+
+<span class="k">if</span> <span class="n">CHAINID</span> <span class="ow">in</span> <span class="n">addresses</span><span class="p">:</span>
+    <span class="n">uniswap_v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span>
+        <span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">][</span><span class="s2">&quot;factory&quot;</span><span class="p">],</span>
+        <span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">][</span><span class="s2">&quot;quoter&quot;</span><span class="p">],</span>
+        <span class="n">addresses</span><span class="p">[</span><span class="n">CHAINID</span><span class="p">][</span><span class="s2">&quot;fee_tiers&quot;</span><span class="p">],</span>
+        <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
     <span class="n">uniswap_v3</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">forks</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">UniswapV3</span><span class="p">(</span><span class="n">fork</span><span class="p">[</span><span class="s2">&quot;factory&quot;</span><span class="p">],</span> <span class="n">fork</span><span class="p">[</span><span class="s2">&quot;quoter&quot;</span><span class="p">],</span> <span class="n">fork</span><span class="p">[</span><span class="s2">&quot;fee_tiers&quot;</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">fork</span> <span class="ow">in</span> <span class="n">forked_deployments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">[])</span>
+<span class="p">]</span>
 </pre></div>
 
            </div>

@@ -87,6 +87,7 @@
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">NonStandardERC20</span><span class="p">,</span> <span class="n">contract_not_verified</span>
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.solidly</span> <span class="kn">import</span> <span class="n">SolidlyRouter</span>
+<span class="kn">from</span> <span class="nn">y.prices.dex.uniswap</span> <span class="kn">import</span> <span class="n">v3</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v1</span> <span class="kn">import</span> <span class="n">UniswapV1</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2</span> <span class="kn">import</span> <span class="n">NotAUniswapV2Pool</span><span class="p">,</span> <span class="n">UniswapRouterV2</span><span class="p">,</span> <span class="n">UniswapV2Pool</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v2_forks</span> <span class="kn">import</span> <span class="n">UNISWAPS</span>
@@ -153,7 +154,10 @@
             <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
             <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">if</span> <span class="n">uniswap_v3</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="n">uniswap_v3</span><span class="o">.</span><span class="n">_factory</span><span class="p">,</span> <span class="n">uniswap_v3</span><span class="o">.</span><span class="n">_quoter</span><span class="p">,</span> <span class="n">uniswap_v3</span><span class="o">.</span><span class="n">fee_tiers</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">if</span> <span class="n">uniswap_v3</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="c1"># NOTE: this only works with an async UniswapMultiplexer</span>
+        <span class="c1"># TODO: fix that if it causes issues for somebody. For us its fine.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v3_forks</span> <span class="o">=</span> <span class="n">v3</span><span class="o">.</span><span class="n">forks</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Uniswap</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span><span class="p">:</span>
@@ -161,6 +165,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v2_routers</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v3</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v3</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">v3_forks</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">v3_forks</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">v2_factories</span> <span class="o">=</span> <span class="p">[</span><span class="n">UNISWAPS</span><span class="p">[</span><span class="n">name</span><span class="p">][</span><span class="s2">&quot;factory&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">UNISWAPS</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_uid_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span></div>
