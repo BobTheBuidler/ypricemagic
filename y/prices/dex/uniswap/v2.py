@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import gather, sleep
 from contextlib import suppress
 from decimal import Decimal
 from functools import cached_property
@@ -140,7 +140,7 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
-        return await asyncio.gather(self.__token0__, self.__token1__)
+        return await gather(self.__token0__, self.__token1__)
 
     __tokens__: HiddenMethodDescriptor[Self, Tuple[ERC20, ERC20]]
 
@@ -367,7 +367,7 @@ class UniswapV2Pool(ERC20):
         """
         try:
             return all(
-                await asyncio.gather(
+                await gather(
                     self.reserves(block=block, sync=False),
                     self.total_supply(block, sync=False),
                 )
@@ -538,7 +538,7 @@ class UniswapRouterV2(ContractBase):
                 logger._log(DEBUG, "deepest pool: %s", (deepest_pool,))
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
-            quote, out_scale = await asyncio.gather(
+            quote, out_scale = await gather(
                 self.get_quote(amount_in, path, block=block, sync=False),
                 ERC20(path[-1], asynchronous=True).scale,
             )
@@ -569,7 +569,7 @@ class UniswapRouterV2(ContractBase):
         fees = 0.997 ** (len(path) - 1)
         if debug_logs:
             logger._log(DEBUG, "router: %s     path: %s", (self.label, path))
-        quote, out_scale = await asyncio.gather(
+        quote, out_scale = await gather(
             self.get_quote(amount_in, path, block=block, sync=False),
             ERC20(path[-1], asynchronous=True).scale,
         )
@@ -655,7 +655,7 @@ class UniswapRouterV2(ContractBase):
             elif token_in == await pool.__token1__:
                 pool_to_token_out[pool] = await pool.__token0__
             if not i % 10_000:
-                await asyncio.sleep(0)
+                await sleep(0)
         return pool_to_token_out
 
     @stuck_coro_debugger
