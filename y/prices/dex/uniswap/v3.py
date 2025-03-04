@@ -79,7 +79,7 @@ forked_deployments = {
             # Aerodrome slipstream
             "factory": "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A",
             "quoter": "0x254cF9E1E6e233aa1AC962CB9B05b2cfeAaE15b0",
-            "fee_tiers": [3000, 500, 10_000, 100]
+            "fee_tiers": [3000, 500, 10_000, 100],
         },
     ],
 }
@@ -267,10 +267,10 @@ class UniswapV3(a_sync.ASyncGenericBase):
     """Represents the Uniswap V3 protocol."""
 
     def __init__(
-        self, 
-        factory: HexAddress, 
-        quoter: HexAddress, 
-        fee_tiers: List[int], 
+        self,
+        factory: HexAddress,
+        quoter: HexAddress,
+        fee_tiers: List[int],
         asynchronous: bool = True,
     ) -> None:
         """
@@ -295,7 +295,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     def __repr__(self) -> str:
         return f"<{type(self).__name__} factory={self._factory} quoter={self._quoter}>"
-    
+
     def __contains__(self, asset) -> bool:
         """
         Check if an asset is part of the Uniswap V3 protocol.
@@ -680,6 +680,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
             >>> block_number = pools._get_block_for_obj(pool)
         """
         return obj._deploy_block
+
 
 class SlipstreamPools(UniV3Pools):
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
