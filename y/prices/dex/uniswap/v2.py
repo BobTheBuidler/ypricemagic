@@ -654,7 +654,7 @@ class UniswapRouterV2(ContractBase):
                 pool_to_token_out[pool] = await pool.__token1__
             elif token_in == await pool.__token1__:
                 pool_to_token_out[pool] = await pool.__token0__
-            if not i % 10_000:
+            if not i % 1_000:
                 await sleep(0)
         return pool_to_token_out
 
