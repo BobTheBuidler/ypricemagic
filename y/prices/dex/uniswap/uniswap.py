@@ -37,7 +37,7 @@ _special_routers = {
     "ramses": SolidlyRouter,
 }
 
-Uniswap = Union[UniswapV1, UniswapRouterV2, UniswapV3]
+Uniswap = Union[UniswapV1, UniswapRouterV2, UniswapV3] 
 
 
 class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
