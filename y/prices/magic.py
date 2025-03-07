@@ -341,7 +341,7 @@ async def _get_price(
             await utils.sense_check(token, block, price)
         else:
             from y._db.utils import price as db
-            await db.set_price(token, block, -1)
+            db.set_price(token, block, -1)
             _fail_appropriately(logger, symbol, fail_to_None, silent)
         logger.debug("%s price: %s", symbol, price)
         if price:  # checks for the erroneous 0 value we see once in a while
