@@ -262,7 +262,8 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         if not skip_cache and (price := await db.get_price(token, block)):
             if price == -1:  # TODO make this less ugly
                 symbol = await ERC20(token, asynchronous=True).symbol
-                _fail_appropriately(cache_logger, symbol, fail_to_None, silent)
+                logger = get_price_logger(token, block, symbol=symbol, extra="cache")
+                _fail_appropriately(logger, symbol, fail_to_None, silent)
                 return
             
             cache_logger.debug("disk cache -> %s", price)
