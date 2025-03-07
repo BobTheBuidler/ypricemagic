@@ -715,8 +715,10 @@ class UniswapRouterV2(ContractBase):
         else:
             pools = await self.get_pools_for(token_address, block=block, sync=False)
 
-        for pool in _ignore_pools:
-            pools.pop(pool, None)
+        if _ignore_pools:
+            pools = pools.copy()
+            for pool in _ignore_pools:
+                pools.pop(pool, None)
 
         if not pools:
             return
