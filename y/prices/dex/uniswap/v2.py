@@ -721,7 +721,13 @@ class UniswapRouterV2(ContractBase):
             usdc_pool = UniswapV2Pool(
                 "0x88A43bbDF9D098eEC7bCEda4e2494615dfD9bB9C", asynchronous=True
             )
-            pools = {usdc_pool: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"}
+            usdbc_pool = UniswapV2Pool(
+                "0xe902EF54E437967c8b37D30E80ff887955c90DB6", asynchronous=True
+            )
+            pools = {
+                usdc_pool: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+                usdbc_pool: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
+            }
         else:
             pools = await self.get_pools_for(token_address, block=block, sync=False)
 
