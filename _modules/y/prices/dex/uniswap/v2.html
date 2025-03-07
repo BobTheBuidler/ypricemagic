@@ -853,6 +853,22 @@
                 <span class="s2">&quot;0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span>
             <span class="p">)</span>
             <span class="n">pools</span> <span class="o">=</span> <span class="p">{</span><span class="n">usdc_pool</span><span class="p">:</span> <span class="s2">&quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;</span><span class="p">}</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Base</span>
+            <span class="ow">and</span> <span class="n">token_address</span> <span class="o">==</span> <span class="n">WRAPPED_GAS_COIN</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span> <span class="o">==</span> <span class="s2">&quot;uniswap v2&quot;</span>
+        <span class="p">):</span>
+            <span class="c1"># This will run out of gas if we use the helper so we bypass it with a known liquid pool</span>
+            <span class="n">usdc_pool</span> <span class="o">=</span> <span class="n">UniswapV2Pool</span><span class="p">(</span>
+                <span class="s2">&quot;0x88A43bbDF9D098eEC7bCEda4e2494615dfD9bB9C&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">usdbc_pool</span> <span class="o">=</span> <span class="n">UniswapV2Pool</span><span class="p">(</span>
+                <span class="s2">&quot;0xe902EF54E437967c8b37D30E80ff887955c90DB6&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+            <span class="n">pools</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">usdc_pool</span><span class="p">:</span> <span class="s2">&quot;0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913&quot;</span><span class="p">,</span>
+                <span class="n">usdbc_pool</span><span class="p">:</span> <span class="s2">&quot;0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">pools</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_pools_for</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
