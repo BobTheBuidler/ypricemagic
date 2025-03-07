@@ -712,6 +712,16 @@ class UniswapRouterV2(ContractBase):
                 "0xB4e16d0168e52d35CaCD2c6185b44281Ec28C9Dc", asynchronous=True
             )
             pools = {usdc_pool: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"}
+        elif (
+            CHAINID == Network.Base
+            and token_address == WRAPPED_GAS_COIN
+            and self.label == "uniswap v2"
+        ):
+            # This will run out of gas if we use the helper so we bypass it with a known liquid pool
+            usdc_pool = UniswapV2Pool(
+                "0x88A43bbDF9D098eEC7bCEda4e2494615dfD9bB9C", asynchronous=True
+            )
+            pools = {usdc_pool: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913"}
         else:
             pools = await self.get_pools_for(token_address, block=block, sync=False)
 
