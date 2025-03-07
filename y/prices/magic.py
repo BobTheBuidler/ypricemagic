@@ -260,6 +260,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         from y._db.utils import price as db
 
         if not skip_cache and (price := await db.get_price(token, block)):
+            # TODO add ypm version check to `if` clause
             if price == -1:  # TODO make this less ugly
                 symbol = await ERC20(token, asynchronous=True).symbol
                 logger = get_price_logger(token, block, symbol=symbol, extra="cache")
