@@ -156,7 +156,7 @@ class UniswapV3Pool(ContractBase):
         if cache_value is None:
             if not cache_for_token:
                 self.__contains_cache__[token] = {}
-            cache_value = token in (self.token0, self.token1)
+            cache_value = token in (self.token0.address, self.token1.address)
             self.__contains_cache__[token][self.address] = cache_value
         return cache_value
 
