@@ -23,6 +23,7 @@ from y.utils.multicall import multicall_same_func_same_contract_different_inputs
 
 logger = logging.getLogger(__name__)
 
+_GET_TOKEN_INPUTS = tuple(range(8))
 
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
@@ -148,7 +149,7 @@ async def get_tvl(
     balances = await multicall_same_func_same_contract_different_inputs(
         pool,
         "getTokenBalance(uint8)(uint)",
-        inputs=[*range(len(tokens))],
+        inputs=range(len(tokens)),
         sync=False,
     )
     scales, prices = await a_sync.gather(
@@ -188,7 +189,7 @@ async def get_tokens(
         multicall_same_func_same_contract_different_inputs(
             pool,
             "getToken(uint8)(address)",
-            inputs=[*range(8)],
+            inputs=_GET_TOKEN_INPUTS,
             block=block,
             return_None_on_failure=True,
             sync=False,
