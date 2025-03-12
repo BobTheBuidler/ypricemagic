@@ -452,6 +452,7 @@ class Filter(_DiskCachedMixin[T, C]):
                         yielded += 1
                     done_thru = self._get_block_for_obj(obj)
         else:
+
             def prune():
                 # prune any objects we're about to yield
                 # `to_yield` contains all existing objs so we can simply overwrite with an empty list
