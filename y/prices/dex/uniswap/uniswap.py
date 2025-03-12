@@ -207,12 +207,12 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         depth_to_router = dict(
             zip(
                 await asyncio.gather(
-                    *[
+                    *(
                         uniswap.check_liquidity(
                             token_in, block, ignore_pools=ignore_pools, sync=False
                         )
                         for uniswap in self.uniswaps
-                    ]
+                    )
                 ),
                 self.uniswaps,
             )
@@ -253,12 +253,12 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         """
         return max(
             await asyncio.gather(
-                *[
+                *(
                     uniswap.check_liquidity(
                         token, block, ignore_pools=ignore_pools, sync=False
                     )
                     for uniswap in self.uniswaps
-                ]
+                )
             )
         )
 

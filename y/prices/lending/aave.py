@@ -332,10 +332,10 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         logger = get_price_logger(atoken_address, block=None, extra="aave")
         is_atoken = any(
             await asyncio.gather(
-                *[
+                *(
                     pool.contains(atoken_address, sync=False)
                     for pool in await self.__pools__
-                ]
+                )
             )
         )
         logger.debug("is_atoken: %s", is_atoken)
@@ -400,9 +400,8 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         )
         try:
             underlying, price_per_share = await asyncio.gather(
-                contract.ATOKEN.coroutine(
-                    block_identifier=block
-                ),  # NOTE: We can probably cache this without breaking anything
+                # NOTE: We can probably cache this without breaking anything
+                contract.ATOKEN.coroutine(block_identifier=block),
                 getattr(contract, method).coroutine(scale, block_identifier=block),
             )
         except ContractLogicError:

@@ -84,10 +84,10 @@ async def _gather_methods_brownie(
 
     contract = await Contract.coroutine(address)
     return await asyncio.gather(
-        *[
+        *(
             getattr(contract, method).coroutine(block_identifier=block)
             for method in methods
-        ],
+        ),
         return_exceptions=return_exceptions,
     )
 
@@ -122,6 +122,6 @@ async def _gather_methods_raw(
         ('Dai Stablecoin', 'DAI', 18)
     """
     return await asyncio.gather(
-        *[Call(address, [method], block_id=block) for method in methods],
+        *(Call(address, [method], block_id=block) for method in methods),
         return_exceptions=return_exceptions,
     )

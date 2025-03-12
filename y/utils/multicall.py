@@ -63,10 +63,10 @@ async def multicall_same_func_no_input(
 
     addresses = [await convert.to_address_async(address) for address in addresses]
     results = await asyncio.gather(
-        *[
+        *(
             Call(address, [method], [[address, apply_func]], block_id=block)
             for address in addresses
-        ]
+        )
     )
     return [v for call in results for v in call.values()]
 
@@ -84,10 +84,10 @@ async def multicall_same_func_same_contract_different_inputs(
     assert inputs
     address = await convert.to_address_async(address)
     results = await asyncio.gather(
-        *[
+        *(
             Call(address, [method, input], [[input, apply_func]], block_id=block)
             for input in inputs
-        ],
+        ),
         return_exceptions=return_None_on_failure,
     )
     if return_None_on_failure:
@@ -106,7 +106,7 @@ async def multicall_decimals(
     return_None_on_failure: bool = True,
 ) -> List[int]:
 
-    addresses = [str(address) for address in addresses]
+    addresses = tuple(map(str, addresses))
     try:
         calls = a_sync.map(
             Call, addresses, function="decimals()(uint256)", block_id=block

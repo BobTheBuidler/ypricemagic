@@ -828,7 +828,7 @@ async def has_methods(
             if _func == all
             else any(
                 await gather(
-                    *[has_method(address, method, sync=False) for method in methods]
+                    *(has_method(address, method, sync=False) for method in methods)
                 )
             )
         )
