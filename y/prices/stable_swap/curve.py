@@ -254,11 +254,11 @@ class Factory(_Loader):
         pool_list = await self.read_pools(sync=False)
         debug_logs = logger.isEnabledFor(logging.DEBUG)
         await asyncio.gather(
-            *[
+            *(
                 self.__load_pool(pool, debug_logs)
                 for pool in pool_list
                 if pool not in curve.factories[self.address]
-            ]
+            )
         )
         self._loaded.set()
         if debug_logs:

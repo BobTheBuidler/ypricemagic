@@ -364,7 +364,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         except NotImplementedError:
             tasks = a_sync.map(self._trace_block, range(from_block, to_block))
             results = {block: traces async for block, traces in tasks.map()}
-            return list(chain(*[results[i] for i in range(from_block, to_block)]))
+            return list(chain(*(results[i] for i in range(from_block, to_block))))
 
     async def _trace_block(self, block: int) -> List[dict]:
         """Trace a specific block for transactions.
