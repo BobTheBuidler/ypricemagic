@@ -463,9 +463,9 @@ class Filter(_DiskCachedMixin[T, C]):
                 except TypeError:
                     raise self._exc.with_traceback(self._tb) from None
             if to_yield := self._objects[yielded - self._pruned :]:
-                # prune any objects we're about to yield
                 if not self.is_reusable:
-                    # `to_yield` contains all existing objs
+                    # prune any objects we're about to yield
+                    # `to_yield` contains all existing objs so we can simply overwrite with an empty list
                     self._objects = []
                     self._pruned += len(to_yield)
                 for obj in to_yield:
