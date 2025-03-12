@@ -374,7 +374,6 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
             >>> await balancer.check_liquidity("0xabcdefabcdefabcdefabcdefabcdefabcdef", 12345678)
             1000
         """
-        pools = []
         pools = [pool for pool in pools if pool not in ignore_pools]
         return (
             await BalancerV1Pool.check_liquidity.max(

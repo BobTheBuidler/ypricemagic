@@ -1,3 +1,4 @@
+import itertools
 from typing import Iterable, List, Tuple
 
 import numpy as np
@@ -76,7 +77,7 @@ def mutate_address(address: Address) -> Tuple[str, str, str, EthAddress]:
 
 
 def mutate_addresses(addresses: Iterable[Address]):
-    return [mutation for address in addresses for mutation in mutate_address(address)]
+    return list(itertools.chain(map(mutate_address, addresses)))
 
 
 def mutate_contract(
@@ -91,7 +92,7 @@ def mutate_contract(
 
 
 def mutate_contracts(addresses: Iterable[Address]):
-    return [mutation for address in addresses for mutation in mutate_contract(address)]
+    return list(itertools.chain(map(mutate_contract, addresses)))
 
 
 def mutate_token(
@@ -107,7 +108,7 @@ def mutate_token(
 
 
 def mutate_tokens(addresses: Iterable[Address]):
-    return [mutation for address in addresses for mutation in mutate_token(address)]
+    return list(itertools.chain(map(mutate_token, addresses)))
 
 
 @pytest.fixture

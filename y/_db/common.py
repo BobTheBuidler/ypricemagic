@@ -701,5 +701,5 @@ def _clean_addresses(addresses) -> Union[str, List[str]]:
     elif hasattr(addresses, "__iter__"):
         if ZERO_ADDRESS in addresses:
             raise ValueError("Cannot make a LogFilter for the zero address")
-        return [convert.to_address(address) for address in addresses]
+        return list(map(convert.to_address, addresses))
     return convert.to_address(addresses)

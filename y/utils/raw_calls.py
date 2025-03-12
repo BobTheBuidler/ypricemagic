@@ -474,12 +474,12 @@ def prepare_data(
     """
     elif type(inputs) in (Set,List,Tuple):
         # this doesn't work right now
-        inputs = str(concat([method,*[prepare_input(_) for _ in inputs]]))
+        inputs = str(concat([method,*map(prepare_input, inputs)]))
         logger.warning(inputs)
         return encode_hex(inputs)
     elif type(inputs) == Dict:
         # this doesn't work right now
-        inputs = str(concat([method,*[prepare_input(_) for _ in inputs.values()]]))
+        inputs = str(concat([method,*map(prepare_input, inputs.values())]))
         logger.warning(inputs)
         return encode_hex(inputs)
     """
