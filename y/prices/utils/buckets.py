@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import as_completed, ensure_future, iscoroutine
 from typing import Awaitable, Callable, Tuple
 
 import a_sync
@@ -72,10 +72,10 @@ async def check_bucket(token: AnyAddressType) -> str:
 
     # check these first, these just require calls
     futs = [
-        asyncio.ensure_future(_check_bucket_helper(bucket, check, token_address))
+        ensure_future(_check_bucket_helper(bucket, check, token_address))
         for bucket, check in calls_only.items()
     ]
-    for fut in asyncio.as_completed(futs):
+    for fut in as_completed(futs):
         try:
             bucket, is_member = await fut
         except TypeError:
@@ -213,11 +213,11 @@ async def _check_bucket_helper(
 
     # TODO: debug why we have to re-await sometimes when @optional_async_diskcache is used
     if not isinstance(result, bool):
-        if not asyncio.iscoroutine(result):
+        if not iscoroutine(result):
             raise TypeError(f"{bucket} result must be boolean. You passed {result}")
         result = await result
     if not isinstance(result, bool):
-        # if not asyncio.iscoroutine(result):
+        # if not iscoroutine(result):
         raise TypeError(f"{bucket} result must be boolean. You passed {result}")
         # result = await result
     return bucket, result

@@ -1,5 +1,5 @@
 import abc
-import asyncio
+from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
@@ -79,7 +79,7 @@ class LiquidityPool(Wrapper):
         See Also:
             - :meth:`get_tvl`
         """
-        tvl, total_supply = await asyncio.gather(
+        tvl, total_supply = await gather(
             self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
             self.total_supply_readable(block=block, sync=False),
         )

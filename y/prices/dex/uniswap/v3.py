@@ -1,6 +1,6 @@
-import asyncio
 import logging
 import math
+from asyncio import gather
 from collections import defaultdict
 from functools import cached_property, lru_cache
 from itertools import cycle
@@ -443,7 +443,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         logger.debug("paths: %s", paths)
 
         amount_in = await ERC20(token, asynchronous=True).scale
-        results = await asyncio.gather(
+        results = await gather(
             *(self._quote_exact_input(path, amount_in, block) for path in paths),
             return_exceptions=True,
         )

@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import gather
 from typing import Optional
 
 import a_sync
@@ -125,7 +125,7 @@ class Band(a_sync.ASyncGenericSingleton):
             >>> print(price)
             1.0
         """
-        oracle, asset_symbol = await asyncio.gather(
+        oracle, asset_symbol = await gather(
             self.__oracle__,
             ERC20(asset, asynchronous=True).symbol,
         )

@@ -1,8 +1,8 @@
-import asyncio
-import weakref
+from asyncio import Task, sleep
 from logging import DEBUG, Logger, StreamHandler, getLogger, _lock
 from types import MethodType
 from typing import List, NoReturn, Optional, Tuple, TypeVar, Union
+from weakref import WeakValueDictionary, ref as weak_ref
 
 import a_sync
 from brownie import chain
@@ -41,7 +41,7 @@ class PriceLogger(Logger):
     address: str
     block: int
     key: Tuple[AnyAddressType, Block, Optional[str], str]
-    debug_task: Optional["asyncio.Task[None]"]
+    debug_task: Optional["Task[None]"]
 
     def close(self) -> None:
         # since we make a lot of these we don't want logging module to cache them
@@ -100,7 +100,7 @@ def get_price_logger(
         if start_task:
             # will kill itself when this logger is garbage collected
             logger.debug_task = a_sync.create_task(
-                coro=_debug_tsk(symbol, weakref.ref(logger)),
+                coro=_debug_tsk(symbol, weak_ref(logger)),
                 name=f"_debug_tsk({symbol}, {logger})",
                 log_destroy_pending=False,
             )
@@ -118,7 +118,7 @@ def _noop(*_a, **_k): ...
 
 
 async def _debug_tsk(
-    symbol: Optional[str], logger_ref: "weakref.ref[Logger]"
+    symbol: Optional[str], logger_ref: "weak_ref[Logger]"
 ) -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns."""
     if symbol:
@@ -126,16 +126,14 @@ async def _debug_tsk(
     else:
         args = ("still fetching...",)
     while True:
-        await asyncio.sleep(60)
+        await sleep(60)
         logger = logger_ref()
         if logger is None:
             return
         logger.debug(*args)
 
 
-_all_price_loggers: "weakref.WeakValueDictionary[str, PriceLogger]" = (
-    weakref.WeakValueDictionary()
-)
+_all_price_loggers: "WeakValueDictionary[str, PriceLogger]" = WeakValueDictionary()
 
 
 NETWORK_DESCRIPTOR_FOR_ISSUE_REQ = (

@@ -2,7 +2,7 @@
 Utility functions for gathering method results asynchronously.
 """
 
-import asyncio
+from asyncio import gather
 from typing import Any, Iterable, Optional, Tuple
 
 from multicall import Call
@@ -83,7 +83,7 @@ async def _gather_methods_brownie(
     from y import Contract
 
     contract = await Contract.coroutine(address)
-    return await asyncio.gather(
+    return await gather(
         *(
             getattr(contract, method).coroutine(block_identifier=block)
             for method in methods
@@ -121,7 +121,7 @@ async def _gather_methods_raw(
         >>> print(results)
         ('Dai Stablecoin', 'DAI', 18)
     """
-    return await asyncio.gather(
+    return await gather(
         *(Call(address, [method], block_id=block) for method in methods),
         return_exceptions=return_exceptions,
     )

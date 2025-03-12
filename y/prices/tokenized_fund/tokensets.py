@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from decimal import Decimal
 from typing import List, Optional
 
@@ -36,7 +36,7 @@ async def is_token_set(token: AnyAddressType) -> bool:
         - :func:`y.contracts.has_methods`
     """
     return any(
-        await asyncio.gather(
+        await gather(
             has_methods(
                 token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False
             ),
@@ -148,7 +148,7 @@ class TokenSet(ERC20):
         See Also:
             - :class:`WeiBalance`
         """
-        contract, components = await asyncio.gather(
+        contract, components = await gather(
             Contract.coroutine(self.address),
             self.components(block=block, sync=False),
         )

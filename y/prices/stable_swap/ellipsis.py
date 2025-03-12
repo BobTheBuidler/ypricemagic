@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from decimal import Decimal
 from typing import List, Optional
 
@@ -84,7 +84,7 @@ async def get_price(
     i, balances = 0, []
     while True:
         try:
-            coin, balance = await asyncio.gather(
+            coin, balance = await gather(
                 minter.coins.coroutine(i, block_identifier=block),
                 minter.balances.coroutine(i, block_identifier=block),
             )
@@ -93,7 +93,7 @@ async def get_price(
             i += 1
         except:
             break
-    tvl, total_supply = await asyncio.gather(
+    tvl, total_supply = await gather(
         WeiBalance.value_usd.sum(balances, sync=False),
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )

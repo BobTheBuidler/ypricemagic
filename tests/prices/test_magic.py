@@ -1,4 +1,4 @@
-import asyncio
+# sourcery skip: dont-import-test-modules
 from typing import List
 
 import a_sync

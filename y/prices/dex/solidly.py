@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import gather
 from typing import List, Optional, Tuple
 
 from y._decorators import continue_on_revert, stuck_coro_debugger
@@ -180,14 +180,14 @@ class SolidlyRouter(SolidlyRouterBase):
         for i in range(len(path) - 1):
             input_token, output_token = path[i], path[i + 1]
             # Try for a stable pool first and use that if available
-            stable_pool, unstable_pool = await asyncio.gather(
+            stable_pool, unstable_pool = await gather(
                 self.get_pool(input_token, output_token, True, block, sync=False),
                 self.get_pool(input_token, output_token, False, block, sync=False),
             )
 
             if stable_pool and unstable_pool:
                 # We have to find out which of these pools is deepest
-                stable_reserves, unstable_reserves = await asyncio.gather(
+                stable_reserves, unstable_reserves = await gather(
                     stable_pool.reserves(block=block, sync=False),
                     unstable_pool.reserves(block=block, sync=False),
                 )

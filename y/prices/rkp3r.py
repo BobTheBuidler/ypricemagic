@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
@@ -63,7 +63,7 @@ async def get_price(
     See Also:
         - :func:`y.prices.magic.get_price`
     """
-    price, discount = await asyncio.gather(
+    price, discount = await gather(
         magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False),
         get_discount(block),
     )

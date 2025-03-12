@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from typing import Optional, Tuple
 
 import a_sync
@@ -104,7 +104,7 @@ class CToken(ERC20):
         """
         if self.troller:
             # We can use the protocol's oracle which will be quick (if it works)
-            underlying_per_ctoken, underlying_price = await asyncio.gather(
+            underlying_per_ctoken, underlying_price = await gather(
                 self.underlying_per_ctoken(block=block, asynchronous=True),
                 self.get_underlying_price(block=block, asynchronous=True),
             )
@@ -113,7 +113,7 @@ class CToken(ERC20):
 
         # Or we can just price the underlying token ourselves
         underlying = await self.__underlying__
-        underlying_per_ctoken, underlying_price = await asyncio.gather(
+        underlying_per_ctoken, underlying_price = await gather(
             self.underlying_per_ctoken(block=block, asynchronous=True),
             underlying.price(block=block, skip_cache=skip_cache, asynchronous=True),
         )
@@ -160,7 +160,7 @@ class CToken(ERC20):
             - :meth:`exchange_rate`
         """
         underlying: ERC20
-        exchange_rate, decimals, underlying = await asyncio.gather(
+        exchange_rate, decimals, underlying = await gather(
             self.exchange_rate(block=block, sync=False),
             self.__decimals__,
             self.__underlying__,
@@ -217,10 +217,10 @@ class CToken(ERC20):
         oracle: Contract
         underlying: ERC20
         # always query the oracle in case it was changed
-        oracle, underlying = await asyncio.gather(
+        oracle, underlying = await gather(
             self.troller.oracle(block, asynchronous=True), self.__underlying__
         )
-        price, underlying_decimals = await asyncio.gather(
+        price, underlying_decimals = await gather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
             underlying.__decimals__,
             return_exceptions=True,

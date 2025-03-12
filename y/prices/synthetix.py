@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from typing import Callable, List, Optional
 
 import a_sync
@@ -214,7 +214,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             - :meth:`get_currency_key`
         """
         token = await convert.to_address_async(token)
-        rates, key = await asyncio.gather(
+        rates, key = await gather(
             self.get_address("ExchangeRates", block=block, sync=False),
             self.get_currency_key(token, sync=False),
         )

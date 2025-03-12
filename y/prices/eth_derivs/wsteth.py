@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
@@ -88,7 +88,7 @@ class wstEth(a_sync.ASyncGenericBase):
             - :func:`y.utils.raw_calls.raw_call`
             - :func:`y.prices.magic.get_price`
         """
-        share_price, weth_price = await asyncio.gather(
+        share_price, weth_price = await gather(
             raw_call(
                 self.address, "stEthPerToken()", output="int", block=block, sync=False
             ),

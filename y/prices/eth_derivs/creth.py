@@ -1,9 +1,8 @@
-import asyncio
 import logging
+from asyncio import gather
 from typing import Optional
 
 import a_sync
-from brownie import chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -64,7 +63,7 @@ async def get_price_creth(
         - :class:`y.classes.common.ERC20`
     """
     address = await convert.to_address_async(token)
-    total_balance, total_supply, weth_price = await asyncio.gather(
+    total_balance, total_supply, weth_price = await gather(
         raw_call(address, "accumulated()", output="int", block=block, sync=False),
         ERC20(address, asynchronous=True).total_supply(block),
         magic.get_price(weth, block, skip_cache=skip_cache, sync=False),

@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from typing import List, Optional
 
 import a_sync
@@ -110,7 +110,7 @@ async def get_price(
     See Also:
         - :func:`get_tvl`
     """
-    tvl, total_supply = await asyncio.gather(
+    tvl, total_supply = await gather(
         get_tvl(token_address, block, sync=False),
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )
@@ -142,7 +142,7 @@ async def get_tvl(
         - :func:`get_price`
     """
     tokens: List[ERC20]
-    pool, tokens = await asyncio.gather(
+    pool, tokens = await gather(
         get_pool(token_address, sync=False),
         get_tokens(token_address, block, sync=False),
     )
@@ -184,7 +184,7 @@ async def get_tokens(
     See Also:
         - :func:`get_pool`
     """
-    pool, response = await asyncio.gather(
+    pool, response = await gather(
         get_pool(token_address, sync=False),
         multicall_same_func_same_contract_different_inputs(
             pool,

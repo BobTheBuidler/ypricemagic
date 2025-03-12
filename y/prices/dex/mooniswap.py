@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
@@ -80,7 +80,7 @@ async def get_pool_price(
     """
     address = await convert.to_address_async(token)
     token0, token1 = await gather_methods(address, ("token0", "token1"))
-    bal0, bal1, price0, price1, total_supply = await asyncio.gather(
+    bal0, bal1, price0, price1, total_supply = await gather(
         (
             dank_mids.eth.get_balance(address, block_identifier=block)
             if token0 == ZERO_ADDRESS

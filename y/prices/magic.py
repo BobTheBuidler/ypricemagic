@@ -1,6 +1,6 @@
-import asyncio
 import functools
 import logging
+from asyncio import gather
 from typing import (
     Callable,
     Dict,
@@ -597,7 +597,7 @@ async def _get_price_from_dexes(
     # dexes_by_depth = dict(
     #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
     # )
-    liquidity = await asyncio.gather(
+    liquidity = await gather(
         *(
             dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False)
             for dex in dexes
