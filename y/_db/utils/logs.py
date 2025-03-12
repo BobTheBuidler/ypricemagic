@@ -78,7 +78,7 @@ async def _prepare_log(log: Log) -> tuple:
     transaction_dbid, address_dbid, topic_dbids = await gather(
         get_hash_dbid(log.transactionHash.hex()),
         get_hash_dbid(log.address),
-        gather(*[get_topic_dbid(topic) for topic in log.topics]),
+        gather(*map(get_topic_dbid, log.topics)),
     )
     topics = {
         f"topic{i}": topic_dbid
@@ -145,7 +145,7 @@ async def bulk_insert(
         _bulk_insert,
         DbLog,
         LOG_COLS,
-        await gather(*(_prepare_log(log) for log in logs)),
+        await gather(*map(_prepare_log, logs)),
         sync=True,
     )
 

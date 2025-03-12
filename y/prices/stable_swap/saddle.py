@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 _GET_TOKEN_INPUTS = tuple(range(8))
 
+
 @a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     """
