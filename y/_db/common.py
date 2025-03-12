@@ -452,8 +452,9 @@ class Filter(_DiskCachedMixin[T, C]):
                             yielded += 1
                         done_thru = self._get_block_for_obj(obj)
         else:
+
             def prune(ct: int):
-                self._objects = self._objects[ct :]
+                self._objects = self._objects[ct:]
                 self._pruned += ct
 
             to_prune = 0
