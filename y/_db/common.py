@@ -429,12 +429,13 @@ class Filter(_DiskCachedMixin[T, C]):
         debug_logs = logger.isEnabledFor(DEBUG)
         yielded = 0
         done_thru = 0
-        if self.is_reusable and self._objects:
-            if block is None:
-                for obj in self._objects:
-                    yield obj
-                    yielded += 1
-                done_thru = self._get_block_for_obj(obj)
+        if self.is_reusable:
+            if self._objects:
+                if block is None:
+                    for obj in self._objects:
+                        yield obj
+                        yielded += 1
+                    done_thru = self._get_block_for_obj(obj)
 
             else:
                 checkpoint_block = None
@@ -450,6 +451,12 @@ class Filter(_DiskCachedMixin[T, C]):
                         yield obj
                         yielded += 1
                     done_thru = self._get_block_for_obj(obj)
+        else:
+            def prune():
+                # prune any objects we're about to yield
+                # `to_yield` contains all existing objs so we can simply overwrite with an empty list
+                self._objects = self._objects[yielded - self._pruned :]
+                self._pruned = yielded
 
         while True:
             if block is None or done_thru < block:
@@ -463,16 +470,15 @@ class Filter(_DiskCachedMixin[T, C]):
                 except TypeError:
                     raise self._exc.with_traceback(self._tb) from None
             if to_yield := self._objects[yielded - self._pruned :]:
-                if not self.is_reusable:
-                    # prune any objects we're about to yield
-                    # `to_yield` contains all existing objs so we can simply overwrite with an empty list
-                    self._objects = []
-                    self._pruned += len(to_yield)
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
+                        if not self.is_reusable:
+                            prune()
                         return
                     yield obj
                     yielded += 1
+                if not self.is_reusable:
+                    prune()
             elif block and done_thru >= block:
                 return
             done_thru = self._lock.value
