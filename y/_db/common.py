@@ -452,12 +452,11 @@ class Filter(_DiskCachedMixin[T, C]):
                             yielded += 1
                         done_thru = self._get_block_for_obj(obj)
         else:
+            def prune(ct: int):
+                self._objects = self._objects[ct :]
+                self._pruned += ct
 
-            def prune():
-                # prune any objects we're about to yield
-                # `to_yield` contains all existing objs so we can simply overwrite with an empty list
-                self._objects = self._objects[yielded - self._pruned :]
-                self._pruned = yielded
+            to_prune = 0
 
         while True:
             if block is None or done_thru < block:
@@ -474,12 +473,13 @@ class Filter(_DiskCachedMixin[T, C]):
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
                         if not self.is_reusable:
-                            prune()
+                            prune(to_prune)
                         return
                     yield obj
                     yielded += 1
                 if not self.is_reusable:
-                    prune()
+                    prune(to_prune)
+                    to_prune = 0
             elif block and done_thru >= block:
                 return
             done_thru = self._lock.value
