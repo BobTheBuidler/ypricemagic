@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from typing import Optional
 
 import a_sync
@@ -68,7 +68,7 @@ async def get_price(
     """
     address = await convert.to_address_async(token)
 
-    token0, token1 = await asyncio.gather(
+    token0, token1 = await gather(
         raw_call(address, "token0()", block=block, output="address", sync=False),
         raw_call(address, "token1()", block=block, output="address", sync=False),
     )
@@ -81,7 +81,7 @@ async def get_price(
         price0,
         price1,
         total_supply,
-    ) = await asyncio.gather(
+    ) = await gather(
         raw_call(address, "gelatoBalance0()", block=block, output="int", sync=False),
         raw_call(address, "gelatoBalance1()", block=block, output="int", sync=False),
         ERC20(token0, asynchronous=True).scale,

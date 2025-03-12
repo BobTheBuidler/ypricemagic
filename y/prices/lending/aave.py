@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from abc import abstractmethod
 from decimal import Decimal
 from typing import Awaitable, List, Optional, Union
@@ -273,7 +273,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
 
     @a_sync.aka.cached_property
     async def pools(self) -> List[AaveMarket]:
-        v1, v2, v3 = await asyncio.gather(
+        v1, v2, v3 = await gather(
             self.__pools_v1__,
             self.__pools_v2__,
             self.__pools_v3__,
@@ -331,7 +331,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     async def is_atoken(self, atoken_address: AnyAddressType) -> bool:
         logger = get_price_logger(atoken_address, block=None, extra="aave")
         is_atoken = any(
-            await asyncio.gather(
+            await gather(
                 *(
                     pool.contains(atoken_address, sync=False)
                     for pool in await self.__pools__
@@ -394,12 +394,12 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
-        contract, scale = await asyncio.gather(
+        contract, scale = await gather(
             Contract.coroutine(atoken_address),
             ERC20(atoken_address, asynchronous=True).scale,
         )
         try:
-            underlying, price_per_share = await asyncio.gather(
+            underlying, price_per_share = await gather(
                 # NOTE: We can probably cache this without breaking anything
                 contract.ATOKEN.coroutine(block_identifier=block),
                 getattr(contract, method).coroutine(scale, block_identifier=block),

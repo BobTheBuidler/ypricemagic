@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import gather
 from decimal import Decimal
 from typing import Tuple
 
@@ -98,7 +98,7 @@ async def get_lp_price(
     """
     tokens = await get_tokens(str(token))  # force to string for cache key
     # NOTE: we might not need this, leave it commented out for now
-    # names = await asyncio.gather(*(ERC20(t, asynchronous=True).name for t in tokens))
+    # names = await gather(*(ERC20(t, asynchronous=True).name for t in tokens))
     # if any("DAI" in name for name in names):
     #    use_asset = True
     #    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)
@@ -109,7 +109,7 @@ async def get_lp_price(
     #    use_asset = False
     #    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)
     sy_token, p_token, y_token = tokens
-    sy, rate = await asyncio.gather(
+    sy, rate = await gather(
         Contract.coroutine(sy_token),
         PENDLE_ORACLE.getLpToAssetRate.coroutine(
             token, TWAP_DURATION, block_identifier=block

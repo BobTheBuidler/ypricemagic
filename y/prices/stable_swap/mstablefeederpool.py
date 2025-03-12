@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from typing import Optional
 
 import a_sync
@@ -72,7 +72,7 @@ async def get_price(
     """
     address = await convert.to_address_async(token)
     contract = await Contract.coroutine(address)
-    ratio, masset, scale = await asyncio.gather(
+    ratio, masset, scale = await gather(
         contract.getPrice.coroutine(block_identifier=block),
         contract.mAsset.coroutine(block_identifier=block),
         ERC20(address, asynchronous=True).scale,

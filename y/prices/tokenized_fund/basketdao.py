@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
@@ -67,7 +67,7 @@ async def get_price(
     See Also:
         - :func:`is_basketdao_index` for checking if a token is a BasketDAO token.
     """
-    balances, total_supply = await asyncio.gather(
+    balances, total_supply = await gather(
         Call(address, "getAssetsAndBalances()(address[],uint[])", block_id=block),
         ERC20(address, asynchronous=True).total_supply_readable(block=block),
     )

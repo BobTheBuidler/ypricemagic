@@ -1,4 +1,4 @@
-import asyncio
+from asyncio import gather
 from decimal import Decimal
 from typing import List, Dict
 
@@ -46,7 +46,7 @@ class DieselPool(ContractBase):
 
     async def exchange_rate(self, block: Block) -> Decimal:
         underlying: ERC20
-        pool, underlying = await asyncio.gather(self.__contract__, self.__underlying__)
+        pool, underlying = await gather(self.__contract__, self.__underlying__)
         scale = await underlying.__scale__
         return Decimal(
             await pool.fromDiesel.coroutine(scale, block_identifier=block)
@@ -55,7 +55,7 @@ class DieselPool(ContractBase):
     async def get_price(
         self, block: Block, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Decimal:
-        underlying, exchange_rate = await asyncio.gather(
+        underlying, exchange_rate = await gather(
             self.__underlying__, self.exchange_rate(block, sync=False)
         )
         und_price = await underlying.price(block, skip_cache=skip_cache, sync=False)

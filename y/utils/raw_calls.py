@@ -1,6 +1,6 @@
-import asyncio
 import contextlib
 import logging
+from asyncio import gather
 from typing import Any, Callable, Optional, Union
 
 import a_sync
@@ -300,7 +300,7 @@ async def _balanceOfReadable(
     return_None_on_failure: bool = False,
 ) -> Optional[float]:
 
-    balance, decimals = await asyncio.gather(
+    balance, decimals = await gather(
         balanceOf(
             call_address,
             input_address,

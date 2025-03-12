@@ -1,6 +1,6 @@
-import asyncio
 import logging
 import threading
+from asyncio import gather
 from contextlib import suppress
 from typing import List, Optional, Tuple, Union
 
@@ -206,7 +206,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         token_in = await convert.to_address_async(token_in)
         depth_to_router = dict(
             zip(
-                await asyncio.gather(
+                await gather(
                     *(
                         uniswap.check_liquidity(
                             token_in, block, ignore_pools=ignore_pools, sync=False
@@ -252,7 +252,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             >>> print(liquidity)
         """
         return max(
-            await asyncio.gather(
+            await gather(
                 *(
                     uniswap.check_liquidity(
                         token, block, ignore_pools=ignore_pools, sync=False

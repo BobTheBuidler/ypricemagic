@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from contextlib import suppress
 from decimal import Decimal
 from typing import Dict, List, Optional, Tuple
@@ -68,7 +68,7 @@ async def _calc_out_value(
     See Also:
         - :func:`y.prices.magic.get_price`
     """
-    out_scale, out_price = await asyncio.gather(
+    out_scale, out_price = await gather(
         ERC20(token_out, asynchronous=True).scale,
         magic.get_price(token_out, block, skip_cache=skip_cache, sync=False),
     )
@@ -193,7 +193,7 @@ class BalancerV1Pool(BalancerPool):
             >>> await pool.get_balance("0xabcdefabcdefabcdefabcdefabcdefabcdef")
             Decimal('1000')
         """
-        balance, scale = await asyncio.gather(
+        balance, scale = await gather(
             self.check_liquidity(str(token), block, sync=False),
             ERC20(token, asynchronous=True).scale,
         )

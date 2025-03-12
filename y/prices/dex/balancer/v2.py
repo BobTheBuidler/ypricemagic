@@ -1,5 +1,4 @@
-import asyncio
-from collections import defaultdict
+from asyncio import Task, create_task, gather
 from contextlib import suppress
 from enum import IntEnum
 from logging import DEBUG, getLogger
@@ -326,7 +325,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
             asynchronous=self.asynchronous,
         )
         # lets get this cached into memory now
-        task = asyncio.create_task(pool.tokens(sync=False))
+        task = create_task(pool.tokens(sync=False))
         self.__tasks.append(task)
         task.add_done_callback(self._task_done_callback)
         return pool
@@ -346,7 +345,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         """
         return pool._deploy_block
 
-    def _task_done_callback(self, t: asyncio.Task):
+    def _task_done_callback(self, t: Task):
         """
         Callback function for when a task is completed.
 
@@ -599,7 +598,7 @@ class BalancerV2Pool(BalancerPool):
             token_balances = await get_balances_coro
             weights = self.__weights
         else:
-            token_balances, weights = await asyncio.gather(
+            token_balances, weights = await gather(
                 get_balances_coro, self.weights(block=block, sync=False)
             )
         pool_token_info = list(
@@ -624,7 +623,7 @@ class BalancerV2Pool(BalancerPool):
         if paired_token_balance is None:
             return None
 
-        token_value_in_pool, token_balance_readable = await asyncio.gather(
+        token_value_in_pool, token_balance_readable = await gather(
             paired_token_balance.__value_usd__, token_balance.__readable__
         )
         token_value_in_pool /= paired_token_weight * token_weight

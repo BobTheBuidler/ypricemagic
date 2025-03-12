@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import Task, create_task, gather, sleep
 from collections import defaultdict
 from enum import IntEnum
 from functools import cached_property
@@ -114,7 +114,7 @@ class RegistryEvents(CurveEvents):
 
     def __init__(self, base: _LT):
         super().__init__(base)
-        self._tasks: List["asyncio.Task[EthAddress]"] = []
+        self._tasks: List["Task[EthAddress]"] = []
 
     @property
     def registry(self) -> "Registry":
@@ -128,7 +128,7 @@ class RegistryEvents(CurveEvents):
             except EventLookupError:
                 pool = event["newPool"]
             self._tasks.append(
-                asyncio.create_task(
+                create_task(
                     coro=self._add_pool(pool),
                     name=f"Registry._add_pool for pool {pool}",
                 )
@@ -148,7 +148,7 @@ class RegistryEvents(CurveEvents):
         curve.token_to_pool[lp_token] = pool
 
     async def _set_lock(self, block: int) -> None:
-        await asyncio.gather(*self._tasks)
+        await gather(*self._tasks)
         self._tasks.clear()
         self._lock.set(block)
 
@@ -253,7 +253,7 @@ class Factory(_Loader):
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
         debug_logs = logger.isEnabledFor(logging.DEBUG)
-        await asyncio.gather(
+        await gather(
             *(
                 self.__load_pool(pool, debug_logs)
                 for pool in pool_list
@@ -751,11 +751,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         return a_sync.Event(name="curve")
 
     @cached_property
-    def _task(self) -> asyncio.Task:
+    def _task(self) -> Task:
         logger.debug("creating loader task for %s", self)
-        task = asyncio.create_task(coro=self._load_all(), name=f"{self}._load_all()")
+        task = create_task(coro=self._load_all(), name=f"{self}._load_all()")
 
-        def done_callback(t: asyncio.Task):
+        def done_callback(t: Task):
             if e := t.exception():
                 logger.error("exception while loading %s: %s", self, e)
                 logger.exception(e)
@@ -788,7 +788,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
                 )
             # load metapool and curve v5 factories
             await self.address_provider._load_factories()
-            await asyncio.sleep(600)
+            await sleep(600)
 
 
 try:

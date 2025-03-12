@@ -1,5 +1,5 @@
-import asyncio
 import logging
+from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
@@ -83,7 +83,7 @@ async def get_price(
     token, total_bal, total_supply = await gather_methods(
         address, ("token", "totalToken", "totalSupply"), block=block
     )
-    token_scale, pool_scale = await asyncio.gather(
+    token_scale, pool_scale = await gather(
         ERC20(token, asynchronous=True).scale, ERC20(address, asynchronous=True).scale
     )
     total_bal /= Decimal(token_scale)
