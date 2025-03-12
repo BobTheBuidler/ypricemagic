@@ -282,10 +282,6 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
                 block = self._get_block_for_obj(self._objects[-1])
                 self._checkpoints[block] = len(self._objects)
 
-    def _remove(self, obj: T) -> None:
-        self._objects.remove(obj)
-        self._pruned += 1
-
     async def _load_cache(self, from_block: int) -> int:
         """
         Loads cached logs from disk.
@@ -431,29 +427,37 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         debug_logs = logger.isEnabledFor(DEBUG)
-        yielded = 0
+        yielded = self._pruned
         done_thru = 0
-        if self.is_reusable and self._objects:
-            if block is None:
-                for obj in self._objects:
-                    yield obj
-                    yielded += 1
-                done_thru = self._get_block_for_obj(obj)
-
-            else:
-                checkpoint_block = None
-                for _block in self._checkpoints:
-                    if _block <= block:
-                        checkpoint_block = _block
-                    else:
-                        break
-
-                if checkpoint_block:
-                    checkpoint_index = self._checkpoints[checkpoint_block]
-                    for obj in self._objects[:checkpoint_index]:
+        if self.is_reusable:
+            if self._objects:
+                if block is None:
+                    for obj in self._objects:
                         yield obj
                         yielded += 1
                     done_thru = self._get_block_for_obj(obj)
+
+                else:
+                    checkpoint_block = None
+                    for _block in self._checkpoints:
+                        if _block <= block:
+                            checkpoint_block = _block
+                        else:
+                            break
+
+                    if checkpoint_block:
+                        checkpoint_index = self._checkpoints[checkpoint_block]
+                        for obj in self._objects[:checkpoint_index]:
+                            yield obj
+                            yielded += 1
+                        done_thru = self._get_block_for_obj(obj)
+        else:
+
+            to_prune = 0
+
+            def prune() -> None:
+                self._objects = self._objects[to_prune:]
+                self._pruned += to_prune
 
         while True:
             if block is None or done_thru < block:
@@ -469,11 +473,14 @@ class Filter(_DiskCachedMixin[T, C]):
             if to_yield := self._objects[yielded - self._pruned :]:
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
+                        if not self.is_reusable:
+                            prune()
                         return
-                    if not self.is_reusable:
-                        self._remove(obj)
                     yield obj
                     yielded += 1
+                if not self.is_reusable:
+                    prune()
+                    to_prune = 0
             elif block and done_thru >= block:
                 return
             done_thru = self._lock.value
