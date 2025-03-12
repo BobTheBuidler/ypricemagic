@@ -476,10 +476,10 @@
         <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;aave&quot;</span><span class="p">)</span>
         <span class="n">is_atoken</span> <span class="o">=</span> <span class="nb">any</span><span class="p">(</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-                <span class="o">*</span><span class="p">[</span>
+                <span class="o">*</span><span class="p">(</span>
                     <span class="n">pool</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">atoken_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
                     <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__pools__</span>
-                <span class="p">]</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;is_atoken: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">is_atoken</span><span class="p">)</span>
@@ -563,9 +563,8 @@
         <span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">underlying</span><span class="p">,</span> <span class="n">price_per_share</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-                <span class="n">contract</span><span class="o">.</span><span class="n">ATOKEN</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
-                    <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
-                <span class="p">),</span>  <span class="c1"># NOTE: We can probably cache this without breaking anything</span>
+                <span class="c1"># NOTE: We can probably cache this without breaking anything</span>
+                <span class="n">contract</span><span class="o">.</span><span class="n">ATOKEN</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
                 <span class="nb">getattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">scale</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
             <span class="p">)</span>
         <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>

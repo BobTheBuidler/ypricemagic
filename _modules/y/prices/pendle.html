@@ -177,7 +177,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_tokens</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">))</span>  <span class="c1"># force to string for cache key</span>
     <span class="c1"># NOTE: we might not need this, leave it commented out for now</span>
-    <span class="c1"># names = await asyncio.gather(*[ERC20(t, asynchronous=True).name for t in tokens])</span>
+    <span class="c1"># names = await asyncio.gather(*(ERC20(t, asynchronous=True).name for t in tokens))</span>
     <span class="c1"># if any(&quot;DAI&quot; in name for name in names):</span>
     <span class="c1">#    use_asset = True</span>
     <span class="c1">#    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)</span>

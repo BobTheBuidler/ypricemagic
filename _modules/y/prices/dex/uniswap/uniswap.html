@@ -291,12 +291,12 @@
         <span class="n">depth_to_router</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span>
             <span class="nb">zip</span><span class="p">(</span>
                 <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-                    <span class="o">*</span><span class="p">[</span>
+                    <span class="o">*</span><span class="p">(</span>
                         <span class="n">uniswap</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span>
                             <span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
                         <span class="p">)</span>
                         <span class="k">for</span> <span class="n">uniswap</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span>
-                    <span class="p">]</span>
+                    <span class="p">)</span>
                 <span class="p">),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span><span class="p">,</span>
             <span class="p">)</span>
@@ -340,12 +340,12 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
             <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-                <span class="o">*</span><span class="p">[</span>
+                <span class="o">*</span><span class="p">(</span>
                     <span class="n">uniswap</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span>
                         <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
                     <span class="p">)</span>
                     <span class="k">for</span> <span class="n">uniswap</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">uniswaps</span>
-                <span class="p">]</span>
+                <span class="p">)</span>
             <span class="p">)</span>
         <span class="p">)</span></div>
 </div>

@@ -94,6 +94,7 @@
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
+<span class="n">_GET_TOKEN_INPUTS</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span>
 
 <div class="viewcode-block" id="is_saddle_lp">
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.saddle.is_saddle_lp">[docs]</a>
@@ -230,7 +231,7 @@
     <span class="n">balances</span> <span class="o">=</span> <span class="k">await</span> <span class="n">multicall_same_func_same_contract_different_inputs</span><span class="p">(</span>
         <span class="n">pool</span><span class="p">,</span>
         <span class="s2">&quot;getTokenBalance(uint8)(uint)&quot;</span><span class="p">,</span>
-        <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">))],</span>
+        <span class="n">inputs</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)),</span>
         <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">scales</span><span class="p">,</span> <span class="n">prices</span> <span class="o">=</span> <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
@@ -273,7 +274,7 @@
         <span class="n">multicall_same_func_same_contract_different_inputs</span><span class="p">(</span>
             <span class="n">pool</span><span class="p">,</span>
             <span class="s2">&quot;getToken(uint8)(address)&quot;</span><span class="p">,</span>
-            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="o">*</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)],</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">_GET_TOKEN_INPUTS</span><span class="p">,</span>
             <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
             <span class="n">return_None_on_failure</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>

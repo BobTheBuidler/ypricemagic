@@ -678,10 +678,10 @@
     <span class="c1">#     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)</span>
     <span class="c1"># )</span>
     <span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">[</span>
+        <span class="o">*</span><span class="p">(</span>
             <span class="n">dex</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">dex</span> <span class="ow">in</span> <span class="n">dexes</span>
-        <span class="p">]</span>
+        <span class="p">)</span>
     <span class="p">)</span>
     <span class="n">depth_to_dex</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">liquidity</span><span class="p">,</span> <span class="n">dexes</span><span class="p">))</span>
     <span class="n">dexes_by_depth</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>

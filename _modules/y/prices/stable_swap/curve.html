@@ -369,11 +369,11 @@
         <span class="n">pool_list</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_pools</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-            <span class="o">*</span><span class="p">[</span>
+            <span class="o">*</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__load_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pool_list</span>
                 <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">]</span>
-            <span class="p">]</span>
+            <span class="p">)</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>

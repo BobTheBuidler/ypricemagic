@@ -158,10 +158,10 @@
 
     <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">[</span>
+        <span class="o">*</span><span class="p">(</span>
             <span class="nb">getattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span>
-        <span class="p">],</span>
+        <span class="p">),</span>
         <span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -196,7 +196,7 @@
 <span class="sd">        (&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">[</span><span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="n">method</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">],</span>
+        <span class="o">*</span><span class="p">(</span><span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">[</span><span class="n">method</span><span class="p">],</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">),</span>
         <span class="n">return_exceptions</span><span class="o">=</span><span class="n">return_exceptions</span><span class="p">,</span>
     <span class="p">)</span>
 </pre></div>
