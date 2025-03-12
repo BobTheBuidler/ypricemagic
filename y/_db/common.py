@@ -427,7 +427,7 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
         self._ensure_task()
         debug_logs = logger.isEnabledFor(DEBUG)
-        yielded = 0
+        yielded = self._pruned
         done_thru = 0
         if self.is_reusable:
             if self._objects:
