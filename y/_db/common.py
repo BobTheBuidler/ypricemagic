@@ -282,10 +282,6 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
                 block = self._get_block_for_obj(self._objects[-1])
                 self._checkpoints[block] = len(self._objects)
 
-    def _remove(self, obj: T) -> None:
-        self._objects.remove(obj)
-        self._pruned += 1
-
     async def _load_cache(self, from_block: int) -> int:
         """
         Loads cached logs from disk.
@@ -467,11 +463,14 @@ class Filter(_DiskCachedMixin[T, C]):
                 except TypeError:
                     raise self._exc.with_traceback(self._tb) from None
             if to_yield := self._objects[yielded - self._pruned :]:
+                # prune any objects we're about to yield
+                if not self.is_reusable:
+                    # `to_yield` contains all existing objs
+                    self._objects = []
+                    self._pruned += len(to_yield)
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
                         return
-                    if not self.is_reusable:
-                        self._remove(obj)
                     yield obj
                     yielded += 1
             elif block and done_thru >= block:
