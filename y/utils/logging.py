@@ -117,9 +117,7 @@ def get_price_logger(
 def _noop(*_a, **_k): ...
 
 
-async def _debug_tsk(
-    symbol: Optional[str], logger_ref: "weak_ref[Logger]"
-) -> NoReturn:
+async def _debug_tsk(symbol: Optional[str], logger_ref: "weak_ref[Logger]") -> NoReturn:
     """Prints a log every 1 minute until the creating coro returns."""
     if symbol:
         args = "price still fetching for %s", symbol
