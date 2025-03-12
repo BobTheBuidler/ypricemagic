@@ -444,7 +444,7 @@ class Filter(_DiskCachedMixin[T, C]):
                             checkpoint_block = _block
                         else:
                             break
-    
+
                     if checkpoint_block:
                         checkpoint_index = self._checkpoints[checkpoint_block]
                         for obj in self._objects[:checkpoint_index]:
