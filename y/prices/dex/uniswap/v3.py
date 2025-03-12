@@ -46,22 +46,22 @@ addresses = {
     Network.Mainnet: {
         "factory": UNISWAP_V3_FACTORY,
         "quoter": UNISWAP_V3_QUOTER,
-        "fee_tiers": [3000, 500, 10_000, 100],
+        "fee_tiers": (3000, 500, 10_000, 100),
     },
     Network.Arbitrum: {
         "factory": UNISWAP_V3_FACTORY,
         "quoter": UNISWAP_V3_QUOTER,
-        "fee_tiers": [3000, 500, 10_000],
+        "fee_tiers": (3000, 500, 10_000),
     },
     Network.Optimism: {
         "factory": UNISWAP_V3_FACTORY,
         "quoter": UNISWAP_V3_QUOTER,
-        "fee_tiers": [3000, 500, 10_000, 100],
+        "fee_tiers": (3000, 500, 10_000, 100),
     },
     Network.Base: {
         "factory": "0x33128a8fC17869897dcE68Ed026d694621f6FDfD",
         "quoter": "0x3d4e44Eb1374240CE5F1B871ab261CD16335B76a",  # quoter v2
-        "fee_tiers": [3000, 500, 10_000, 100],
+        "fee_tiers": (3000, 500, 10_000, 100),
     },
 }
 
@@ -71,7 +71,7 @@ forked_deployments = {
             # Velodrome slipstream
             "factory": "0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F",
             "quoter": "0x89D8218ed5fF1e46d8dcd33fb0bbeE3be1621466",
-            "fee_tiers": [3000, 500, 10_000, 100],
+            "fee_tiers": (3000, 500, 10_000, 100),
         }
     ],
     Network.Base: [
@@ -79,7 +79,7 @@ forked_deployments = {
             # Aerodrome slipstream
             "factory": "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A",
             "quoter": "0x254cF9E1E6e233aa1AC962CB9B05b2cfeAaE15b0",
-            "fee_tiers": [3000, 500, 10_000, 100],
+            "fee_tiers": (3000, 500, 10_000, 100),
         },
     ],
 }
