@@ -69,11 +69,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.logging</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">weakref</span>
+<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">StreamHandler</span><span class="p">,</span> <span class="n">getLogger</span><span class="p">,</span> <span class="n">_lock</span>
 <span class="kn">from</span> <span class="nn">types</span> <span class="kn">import</span> <span class="n">MethodType</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">NoReturn</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">weakref</span> <span class="kn">import</span> <span class="n">WeakValueDictionary</span><span class="p">,</span> <span class="n">ref</span> <span class="k">as</span> <span class="n">weak_ref</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
@@ -117,7 +117,7 @@
     <span class="n">address</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">block</span><span class="p">:</span> <span class="nb">int</span>
     <span class="n">key</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span>
-    <span class="n">debug_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;asyncio.Task[None]&quot;</span><span class="p">]</span>
+    <span class="n">debug_task</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Task[None]&quot;</span><span class="p">]</span>
 
 <div class="viewcode-block" id="PriceLogger.close">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.logging.PriceLogger.close">[docs]</a>
@@ -182,7 +182,7 @@
         <span class="k">if</span> <span class="n">start_task</span><span class="p">:</span>
             <span class="c1"># will kill itself when this logger is garbage collected</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug_task</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">create_task</span><span class="p">(</span>
-                <span class="n">coro</span><span class="o">=</span><span class="n">_debug_tsk</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">weakref</span><span class="o">.</span><span class="n">ref</span><span class="p">(</span><span class="n">logger</span><span class="p">)),</span>
+                <span class="n">coro</span><span class="o">=</span><span class="n">_debug_tsk</span><span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">weak_ref</span><span class="p">(</span><span class="n">logger</span><span class="p">)),</span>
                 <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;_debug_tsk(</span><span class="si">{</span><span class="n">symbol</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">logger</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">,</span>
                 <span class="n">log_destroy_pending</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
             <span class="p">)</span>
@@ -200,25 +200,21 @@
 <span class="k">def</span> <span class="nf">_noop</span><span class="p">(</span><span class="o">*</span><span class="n">_a</span><span class="p">,</span> <span class="o">**</span><span class="n">_k</span><span class="p">):</span> <span class="o">...</span>
 
 
-<span class="k">async</span> <span class="k">def</span> <span class="nf">_debug_tsk</span><span class="p">(</span>
-    <span class="n">symbol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">logger_ref</span><span class="p">:</span> <span class="s2">&quot;weakref.ref[Logger]&quot;</span>
-<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">_debug_tsk</span><span class="p">(</span><span class="n">symbol</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">logger_ref</span><span class="p">:</span> <span class="s2">&quot;weak_ref[Logger]&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Prints a log every 1 minute until the creating coro returns.&quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">symbol</span><span class="p">:</span>
         <span class="n">args</span> <span class="o">=</span> <span class="s2">&quot;price still fetching for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">symbol</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;still fetching...&quot;</span><span class="p">,)</span>
     <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
-        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
         <span class="n">logger</span> <span class="o">=</span> <span class="n">logger_ref</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">)</span>
 
 
-<span class="n">_all_price_loggers</span><span class="p">:</span> <span class="s2">&quot;weakref.WeakValueDictionary[str, PriceLogger]&quot;</span> <span class="o">=</span> <span class="p">(</span>
-    <span class="n">weakref</span><span class="o">.</span><span class="n">WeakValueDictionary</span><span class="p">()</span>
-<span class="p">)</span>
+<span class="n">_all_price_loggers</span><span class="p">:</span> <span class="s2">&quot;WeakValueDictionary[str, PriceLogger]&quot;</span> <span class="o">=</span> <span class="n">WeakValueDictionary</span><span class="p">()</span>
 
 
 <span class="n">NETWORK_DESCRIPTOR_FOR_ISSUE_REQ</span> <span class="o">=</span> <span class="p">(</span>

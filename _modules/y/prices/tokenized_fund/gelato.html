@@ -69,8 +69,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.tokenized_fund.gelato</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
@@ -144,7 +144,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
 
-    <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
         <span class="n">raw_call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;token0()&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">raw_call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;token1()&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;address&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">)</span>
@@ -157,7 +157,7 @@
         <span class="n">price0</span><span class="p">,</span>
         <span class="n">price1</span><span class="p">,</span>
         <span class="n">total_supply</span><span class="p">,</span>
-    <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="p">)</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
         <span class="n">raw_call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;gelatoBalance0()&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">raw_call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;gelatoBalance1()&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;int&quot;</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
         <span class="n">ERC20</span><span class="p">(</span><span class="n">token0</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>

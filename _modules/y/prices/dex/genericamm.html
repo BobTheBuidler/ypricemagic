@@ -69,7 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.genericamm</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
+<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
@@ -169,7 +169,7 @@
 <span class="sd">            - :meth:`get_tvl`</span>
 <span class="sd">            - :meth:`ERC20.total_supply_readable`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="n">tvl</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_tvl</span><span class="p">(</span>
                 <span class="n">lp_token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
             <span class="p">),</span>
@@ -243,7 +243,7 @@
 <span class="sd">            - :meth:`get_price`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">lp_token_contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">)</span>
-        <span class="n">tokens</span><span class="p">,</span> <span class="n">reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+        <span class="n">tokens</span><span class="p">,</span> <span class="n">reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_tokens</span><span class="p">(</span><span class="n">lp_token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="n">lp_token_contract</span><span class="o">.</span><span class="n">getReserves</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
         <span class="p">)</span>

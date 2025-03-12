@@ -69,8 +69,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.mooniswap</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
@@ -156,7 +156,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;token0&quot;</span><span class="p">,</span> <span class="s2">&quot;token1&quot;</span><span class="p">))</span>
-    <span class="n">bal0</span><span class="p">,</span> <span class="n">bal1</span><span class="p">,</span> <span class="n">price0</span><span class="p">,</span> <span class="n">price1</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="n">bal0</span><span class="p">,</span> <span class="n">bal1</span><span class="p">,</span> <span class="n">price0</span><span class="p">,</span> <span class="n">price1</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
         <span class="p">(</span>
             <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">get_balance</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">token0</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span>

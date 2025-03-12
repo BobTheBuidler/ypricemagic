@@ -69,9 +69,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.utils.raw_calls</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">asyncio</span>
-<span class="kn">import</span> <span class="nn">contextlib</span>
+<span></span><span class="kn">import</span> <span class="nn">contextlib</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
@@ -386,7 +386,7 @@
     <span class="n">return_None_on_failure</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]:</span>
 
-    <span class="n">balance</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+    <span class="n">balance</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
         <span class="n">balanceOf</span><span class="p">(</span>
             <span class="n">call_address</span><span class="p">,</span>
             <span class="n">input_address</span><span class="p">,</span>
@@ -565,12 +565,12 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    elif type(inputs) in (Set,List,Tuple):</span>
 <span class="sd">        # this doesn&#39;t work right now</span>
-<span class="sd">        inputs = str(concat([method,*[prepare_input(_) for _ in inputs]]))</span>
+<span class="sd">        inputs = str(concat([method,*map(prepare_input, inputs)]))</span>
 <span class="sd">        logger.warning(inputs)</span>
 <span class="sd">        return encode_hex(inputs)</span>
 <span class="sd">    elif type(inputs) == Dict:</span>
 <span class="sd">        # this doesn&#39;t work right now</span>
-<span class="sd">        inputs = str(concat([method,*[prepare_input(_) for _ in inputs.values()]]))</span>
+<span class="sd">        inputs = str(concat([method,*map(prepare_input, inputs.values())]))</span>
 <span class="sd">        logger.warning(inputs)</span>
 <span class="sd">        return encode_hex(inputs)</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
