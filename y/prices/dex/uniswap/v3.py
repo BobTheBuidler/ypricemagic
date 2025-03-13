@@ -393,15 +393,17 @@ class UniswapV3(a_sync.ASyncGenericBase):
         pools = await self.__pools__
 
         # we use a cache here to prevent unnecessary calls to __contains__
-        cache = pools._pools_by_token_cache[
-            str(token)
-        ]  # stringify token for more efficient lookups
+        # stringify token in case type is Contract or EthAddress
+        cache = pools._pools_by_token_cache[str(token)]
         for deploy_block, pool in cache.items():
             if deploy_block > block:
                 return
             yield pool
 
+        last_cached_deploy_block = deploy_block
         async for pool in pools.objects(to_block=block):
+            if pool._deploy_block <= last_cached_deploy_block:
+                continue
             if token in pool:
                 cache[pool._deploy_block] = pool
                 yield pool
