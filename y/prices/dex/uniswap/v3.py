@@ -171,9 +171,8 @@ class UniswapV3Pool(ContractBase):
             raise TokenNotFound(token, self)
         return ERC20(token, asynchronous=self.asynchronous)
 
-    @a_sync.a_sync(
-        ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=10000
-    )  # lets try a semaphore here
+    # DEBUG: lets try a semaphore here
+    @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60, semaphore=10000)
     async def check_liquidity(
         self, token: AnyAddressType, block: Block
     ) -> Optional[int]:
@@ -409,9 +408,15 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 cache[pool._deploy_block].append(pool)
                 yield pool
 
-        # Signal to the cache that has loaded all pools for `token`
-        # thru the deploy block of the most recent pool deployed
-        cache[pool._deploy_block]
+        cached_thru_block, pools = cache.popitem()
+        if pools:
+            cache[cached_thru_block] = pools
+            
+        most_recent_deploy_block = pool._deploy_block
+        if most_recent_deploy_block > cached_thru_block:
+            # Signal to the cache that has loaded all pools for `token`
+            # thru the deploy block of the most recent pool deployed
+            cache[pool._deploy_block]
 
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
