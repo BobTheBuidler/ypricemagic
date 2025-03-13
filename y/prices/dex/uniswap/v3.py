@@ -409,6 +409,11 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 cache[pool._deploy_block].append(pool)
                 yield pool
 
+        if not cache:
+            # Signal to the cache that there are no pools for `token`
+            # thru the deploy block of the most recent pool deployed
+            cache[pool._deploy_block]
+
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_price(
@@ -625,6 +630,8 @@ def _undo_fees(path) -> float:
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     """Represents a collection of Uniswap V3 Pools."""
 
+    _pools_by_token_cache: DefaultDict[Address, Dict[Block, List[UniswapV3Pool]]]
+
     __slots__ = "asynchronous", "_pools_by_token_cache"
 
     def __init__(self, factory: Contract, asynchronous: bool = False):
@@ -643,9 +650,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         super().__init__(
             addresses=[factory.address], topics=[factory.topics["PoolCreated"]]
         )
-        self._pools_by_token_cache: DefaultDict[Address, Dict[Block, UniswapV3Pool]] = (
-            defaultdict(lambda: defaultdict(list))
-        )
+        self._pools_by_token_cache = defaultdict(lambda: defaultdict(list))
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         """
