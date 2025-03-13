@@ -393,12 +393,14 @@ class UniswapV3(a_sync.ASyncGenericBase):
         pools = await self.__pools__
 
         # we use a cache here to prevent unnecessary calls to __contains__
-        cache = pools._pools_by_token_cache[str(token)]  # stringify token for more efficient lookups
+        cache = pools._pools_by_token_cache[
+            str(token)
+        ]  # stringify token for more efficient lookups
         for deploy_block, pool in cache.items():
             if deploy_block > block:
                 return
             yield pool
-            
+
         async for pool in pools.objects(to_block=block):
             if token in pool:
                 cache[pool._deploy_block] = pool
@@ -638,7 +640,9 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         super().__init__(
             addresses=[factory.address], topics=[factory.topics["PoolCreated"]]
         )
-        self._pools_by_token_cache: DefaultDict[Address, Dict[Block, UniswapV3Pool]] = defaultdict(dict)
+        self._pools_by_token_cache: DefaultDict[Address, Dict[Block, UniswapV3Pool]] = (
+            defaultdict(dict)
+        )
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         """
