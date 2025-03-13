@@ -411,7 +411,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         cached_thru_block, pools = cache.popitem()
         if pools:
             cache[cached_thru_block] = pools
-            
+
         most_recent_deploy_block = pool._deploy_block
         if most_recent_deploy_block > cached_thru_block:
             # Signal to the cache that has loaded all pools for `token`
