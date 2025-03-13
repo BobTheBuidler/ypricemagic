@@ -400,9 +400,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 return
             yield pool
 
-        last_cached_deploy_block = deploy_block
+        last_cached_deploy_block = deploy_block if cache else None
         async for pool in pools.objects(to_block=block):
-            if pool._deploy_block <= last_cached_deploy_block:
+            if cache and pool._deploy_block <= last_cached_deploy_block:
                 continue
             if token in pool:
                 cache[pool._deploy_block] = pool
