@@ -409,10 +409,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 cache[pool._deploy_block].append(pool)
                 yield pool
 
-        if not cache:
-            # Signal to the cache that there are no pools for `token`
-            # thru the deploy block of the most recent pool deployed
-            cache[pool._deploy_block]
+        # Signal to the cache that has loaded all pools for `token`
+        # thru the deploy block of the most recent pool deployed
+        cache[pool._deploy_block]
 
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
