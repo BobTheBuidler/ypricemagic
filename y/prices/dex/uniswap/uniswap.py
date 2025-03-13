@@ -16,10 +16,9 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
 from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
-from y.prices.dex.uniswap import v3
+from y.prices.dex.uniswap import v2_forks, v3
 from y.prices.dex.uniswap.v1 import UniswapV1
 from y.prices.dex.uniswap.v2 import NotAUniswapV2Pool, UniswapRouterV2, UniswapV2Pool
-from y.prices.dex.uniswap.v2_forks import UNISWAPS
 from y.prices.dex.uniswap.v3 import UniswapV3, uniswap_v3
 from y.prices.dex.velodrome import VelodromeRouterV2
 from y.utils.logging import _gh_issue_request, get_price_logger
@@ -65,11 +64,11 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         super().__init__()
         self.asynchronous = asynchronous
         self.v2_routers = {}
-        for name in UNISWAPS:
+        for name in v2_forks.UNISWAPS:
             router_cls = _special_routers.get(name, UniswapRouterV2)
             try:
                 self.v2_routers[name] = router_cls(
-                    UNISWAPS[name]["router"], asynchronous=self.asynchronous
+                    v2_forks.UNISWAPS[name]["router"], asynchronous=self.asynchronous
                 )
             except ValueError as e:  # TODO do this better
                 if not contract_not_verified(e):
@@ -102,7 +101,9 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
         if self.v3_forks:
             self.uniswaps.extend(self.v3_forks)
 
-        self.v2_factories = [UNISWAPS[name]["factory"] for name in UNISWAPS]
+        self.v2_factories = [
+            v2_forks.UNISWAPS[name]["factory"] for name in v2_forks.UNISWAPS
+        ]
         self._uid_lock = threading.Lock()
 
     @stuck_coro_debugger
