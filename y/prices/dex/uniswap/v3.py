@@ -400,13 +400,19 @@ class UniswapV3(a_sync.ASyncGenericBase):
             for pool in cached_pools:
                 yield pool
 
-        last_cached_deploy_block = deploy_block if cache else 0
-        async for pool in pools.objects(to_block=block):
-            if pool._deploy_block <= last_cached_deploy_block:
-                continue
-            if token in pool:
-                cache[pool._deploy_block].append(pool)
-                yield pool
+        if cache:
+            last_cached_deploy_block = deploy_block
+            async for pool in pools.objects(to_block=block):
+                if pool._deploy_block <= last_cached_deploy_block:
+                    continue
+                if token in pool:
+                    cache[pool._deploy_block].append(pool)
+                    yield pool
+        else:
+            async for pool in pools.objects(to_block=block):
+                if token in pool:
+                    cache[pool._deploy_block].append(pool)
+                    yield pool
 
         cached_thru_block, pools = cache.popitem()
         if pools:
