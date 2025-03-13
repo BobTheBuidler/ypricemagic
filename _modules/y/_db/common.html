@@ -505,7 +505,7 @@
                 <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">:</span>
                         <span class="k">yield</span> <span class="n">obj</span>
-                        <span class="n">yielded</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">yielded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">)</span>
                     <span class="n">done_thru</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
                 <span class="k">else</span><span class="p">:</span>
@@ -518,9 +518,10 @@
 
                     <span class="k">if</span> <span class="n">checkpoint_block</span><span class="p">:</span>
                         <span class="n">checkpoint_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">[</span><span class="n">checkpoint_block</span><span class="p">]</span>
-                        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[:</span><span class="n">checkpoint_index</span><span class="p">]:</span>
+                        <span class="n">objs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[:</span><span class="n">checkpoint_index</span><span class="p">]</span>
+                        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
                             <span class="k">yield</span> <span class="n">obj</span>
-                            <span class="n">yielded</span> <span class="o">+=</span> <span class="mi">1</span>
+                        <span class="n">yielded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
                         <span class="n">done_thru</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
 
