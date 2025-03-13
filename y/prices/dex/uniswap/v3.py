@@ -90,8 +90,6 @@ FEE_DENOMINATOR = 1_000_000
 class UniswapV3Pool(ContractBase):
     """Represents a Uniswap V3 Pool."""
 
-    __contains_cache__: Dict[Address, Dict[ChecksumAddress, bool]] = {}
-
     __slots__ = "fee", "token0", "token1", "tick_spacing"
 
     def __init__(
@@ -150,15 +148,7 @@ class UniswapV3Pool(ContractBase):
             True
         """
         # force token to string in case it is Contract or EthAddress etc
-        token = str(token)
-        cache_for_token = self.__contains_cache__.get(token, {})
-        cache_value = cache_for_token.get(self.address)
-        if cache_value is None:
-            if not cache_for_token:
-                self.__contains_cache__[token] = {}
-            cache_value = token in (self.token0.address, self.token1.address)
-            self.__contains_cache__[token][self.address] = cache_value
-        return cache_value
+        return str(token) in (self.token0.address, self.token1.address)
 
     def __getitem__(self, token: Address) -> ERC20:
         """
@@ -401,8 +391,17 @@ class UniswapV3(a_sync.ASyncGenericBase):
             ...     print(pool)
         """
         pools = await self.__pools__
+
+        # we use a cache here to prevent unnecessary calls to __contains__
+        cache = pools._pools_by_token_cache[str(token)]  # stringify token for more efficient lookups
+        for deploy_block, pool in cache.items():
+            if deploy_block > block:
+                return
+            yield pool
+            
         async for pool in pools.objects(to_block=block):
             if token in pool:
+                cache[pool._deploy_block] = pool
                 yield pool
 
     @stuck_coro_debugger
@@ -621,7 +620,7 @@ def _undo_fees(path) -> float:
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     """Represents a collection of Uniswap V3 Pools."""
 
-    __slots__ = ("asynchronous",)
+    __slots__ = "asynchronous", "_pools_by_token_cache"
 
     def __init__(self, factory: Contract, asynchronous: bool = False):
         """
@@ -639,6 +638,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         super().__init__(
             addresses=[factory.address], topics=[factory.topics["PoolCreated"]]
         )
+        self._pools_by_token_cache: DefaultDict[Address, Dict[Block, UniswapV3Pool]] = defaultdict(dict)
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         """
