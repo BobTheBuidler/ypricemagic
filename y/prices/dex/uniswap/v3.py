@@ -395,10 +395,10 @@ class UniswapV3(a_sync.ASyncGenericBase):
         # we use a cache here to prevent unnecessary calls to __contains__
         # stringify token in case type is Contract or EthAddress
         cache = pools._pools_by_token_cache[str(token)]
-        for deploy_block, pools in cache.items():
+        for deploy_block, cached_pools in cache.items():
             if deploy_block > block:
                 return
-            for pool in pools:
+            for pool in cached_pools:
                 yield pool
 
         last_cached_deploy_block = deploy_block if cache else 0
