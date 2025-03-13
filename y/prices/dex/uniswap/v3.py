@@ -395,17 +395,18 @@ class UniswapV3(a_sync.ASyncGenericBase):
         # we use a cache here to prevent unnecessary calls to __contains__
         # stringify token in case type is Contract or EthAddress
         cache = pools._pools_by_token_cache[str(token)]
-        for deploy_block, pool in cache.items():
+        for deploy_block, pools in cache.items():
             if deploy_block > block:
                 return
-            yield pool
+            for pool in pools:
+                yield pool
 
         last_cached_deploy_block = deploy_block if cache else 0
         async for pool in pools.objects(to_block=block):
             if pool._deploy_block <= last_cached_deploy_block:
                 continue
             if token in pool:
-                cache[pool._deploy_block] = pool
+                cache[pool._deploy_block].append(pool)
                 yield pool
 
     @stuck_coro_debugger
@@ -643,7 +644,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
             addresses=[factory.address], topics=[factory.topics["PoolCreated"]]
         )
         self._pools_by_token_cache: DefaultDict[Address, Dict[Block, UniswapV3Pool]] = (
-            defaultdict(dict)
+            defaultdict(lambda: defaultdict(list))
         )
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
