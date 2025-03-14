@@ -3,6 +3,7 @@ from asyncio import Task, create_task, get_event_loop, sleep
 from functools import lru_cache
 from logging import DEBUG, getLogger
 from typing import (
+    TYPE_CHECKING,
     Any,
     AsyncIterator,
     Awaitable,
@@ -29,7 +30,7 @@ from a_sync import (
 )
 from async_property import async_property
 from brownie import ZERO_ADDRESS
-from dank_mids import BlockSemaphore, eth
+from dank_mids import BlockSemaphore
 from evmspec.data import Address, HexBytes32
 from hexbytes import HexBytes
 from pony.orm import OptimisticCheckError, TransactionIntegrityError, db_session
@@ -42,6 +43,9 @@ from y._db.exceptions import CacheNotPopulatedError
 from y._decorators import stuck_coro_debugger
 from y.exceptions import reraise_excs_with_extra_context
 from y.utils.middleware import BATCH_SIZE
+
+if TYPE_CHECKING:
+    from y import Block
 
 T = TypeVar("T")
 S = TypeVar("S")
@@ -126,7 +130,7 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
 
 class DiskCache(Generic[S, M], metaclass=ABCMeta):
     @abstractmethod
-    def _set_metadata(self, from_block: int, done_thru: int) -> None:
+    def _set_metadata(self, from_block: "Block", done_thru: "Block") -> None:
         """
         Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
 
@@ -136,7 +140,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def _is_cached_thru(self, from_block: int) -> int:
+    def _is_cached_thru(self, from_block: "Block") -> "Block":
         """
         Returns max cached block for this cache or 0 if not cached.
 
@@ -148,7 +152,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         """
 
     @abstractmethod
-    def _select(self, from_block: int, to_block: int) -> List[S]:
+    def _select(self, from_block: "Block", to_block: "Block") -> List[S]:
         """
         Selects all cached objects from block `from_block` to block `to_block`.
 
@@ -161,7 +165,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         """
 
     @retry_locked
-    def set_metadata(self, from_block: int, done_thru: int) -> None:
+    def set_metadata(self, from_block: "Block", done_thru: "Block") -> None:
         """
         Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
 
@@ -181,7 +185,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
     @db_session
     @retry_locked
-    def select(self, from_block: int, to_block: int) -> List[S]:
+    def select(self, from_block: "Block", to_block: "Block") -> List[S]:
         """
         Selects all cached objects from block `from_block` to block `to_block`.
 
@@ -196,7 +200,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
     @db_session
     @retry_locked
-    def is_cached_thru(self, from_block: int) -> int:
+    def is_cached_thru(self, from_block: "Block") -> "Block":
         """
         Returns max cached block for this cache or 0 if not cached.
 
@@ -210,7 +214,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
     @db_session
     @retry_locked
-    def check_and_select(self, from_block: int, to_block: int) -> List[S]:
+    def check_and_select(self, from_block: "Block", to_block: "Block") -> List[S]:
         """
         Selects all cached objects within a specified block range.
 
@@ -282,7 +286,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
                 block = self._get_block_for_obj(self._objects[-1])
                 self._checkpoints[block] = len(self._objects)
 
-    async def _load_cache(self, from_block: int) -> int:
+    async def _load_cache(self, from_block: "Block") -> "Block":
         """
         Loads cached logs from disk.
 
@@ -366,7 +370,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     def __init__(
         self,
-        from_block: int,
+        from_block: "Block",
         *,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
@@ -399,7 +403,7 @@ class Filter(_DiskCachedMixin[T, C]):
             self._task.cancel()
 
     @abstractmethod
-    async def _fetch_range(self, from_block: int, to_block: int) -> List[T]: ...
+    async def _fetch_range(self, from_block: "Block", to_block: "Block") -> List[T]: ...
 
     @property
     def semaphore(self) -> BlockSemaphore:
@@ -411,7 +415,7 @@ class Filter(_DiskCachedMixin[T, C]):
     def is_asleep(self) -> bool:
         return not self._sleep_fut.done() if self._sleep_fut else False
 
-    def _get_block_for_obj(self, obj: T) -> int:
+    def _get_block_for_obj(self, obj: T) -> "Block":
         """
         Override this as needed for different object types.
 
@@ -424,7 +428,9 @@ class Filter(_DiskCachedMixin[T, C]):
         return obj.blockNumber
 
     @ASyncIterator.wrap
-    async def _objects_thru(self, block: Optional[int]) -> AsyncIterator[T]:
+    async def _objects_thru(
+        self, block: Optional["Block"], from_block: Optional["Block"] = None
+    ) -> AsyncIterator[T]:
         self._ensure_task()
         debug_logs = logger.isEnabledFor(DEBUG)
         yielded = self._pruned
@@ -525,8 +531,8 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @stuck_coro_debugger
     async def _fetch_range_wrapped(
-        self, i: int, range_start: int, range_end: int, debug_logs: bool
-    ) -> List[T]:
+        self, i: int, range_start: "Block", range_end: "Block", debug_logs: bool
+    ) -> List[T]:  # sourcery skip: hoist-similar-statement-from-if
         if debug_logs:
             async with self.semaphore[range_end]:
                 logger._log(
@@ -539,7 +545,7 @@ class Filter(_DiskCachedMixin[T, C]):
             async with self.semaphore[range_end]:
                 return i, range_end, await self._fetch_range(range_start, range_end)
 
-    async def _loop(self, from_block: int) -> NoReturn:
+    async def _loop(self, from_block: "Block") -> NoReturn:
         logger.debug("starting work loop for %s", self)
         if cached_thru := await self._load_cache(from_block):
             self._lock.set(cached_thru)
@@ -550,7 +556,7 @@ class Filter(_DiskCachedMixin[T, C]):
     @eth_retry.auto_retry
     @stuck_coro_debugger
     async def _load_new_objects(
-        self, to_block: Optional[int] = None, start_from_block: Optional[int] = None
+        self, to_block: Optional["Block"] = None, start_from_block: Optional["Block"] = None
     ) -> None:
         SLEEP_TIME = 1
 
@@ -583,7 +589,7 @@ class Filter(_DiskCachedMixin[T, C]):
         await self._load_range(start, end)
 
     @stuck_coro_debugger
-    async def _load_range(self, from_block: int, to_block: int) -> None:
+    async def _load_range(self, from_block: "Block", to_block: "Block") -> None:
         if debug_logs := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "loading block range %s to %s", (from_block, to_block))
         chunks_yielded = 0
@@ -614,7 +620,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     logger._log(DEBUG, "%s loaded thru block %s", (self, end))
 
     @stuck_coro_debugger
-    async def _set_lock(self, block: int) -> None:
+    async def _set_lock(self, block: "Block") -> None:
         """
         Override this if you want to, for things like awaiting for tasks to complete as I do in the curve module.
 
@@ -624,7 +630,7 @@ class Filter(_DiskCachedMixin[T, C]):
         self._lock.set(block)
 
     def _insert_chunk(
-        self, objs: List[T], from_block: int, done_thru: int, debug_logs: bool
+        self, objs: List[T], from_block: "Block", done_thru: "Block", debug_logs: bool
     ) -> None:
 
         if prev_task := self._db_task:
@@ -669,8 +675,8 @@ class Filter(_DiskCachedMixin[T, C]):
     async def __insert_chunk(
         self,
         objs: List[T],
-        from_block: int,
-        done_thru: int,
+        from_block: "Block",
+        done_thru: "Block",
         prev_chunk_task: Optional[Task],
         depth: int,
         debug_logs: bool,
