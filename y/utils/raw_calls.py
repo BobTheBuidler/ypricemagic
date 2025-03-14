@@ -490,9 +490,8 @@ def prepare_input(
     input: Union[
         bytes,  # for bytes input
         int,  # for int input
-        Union[
-            str, Address, EthAddress, brownie.Contract, Contract
-        ],  # for address input
+        # for address input
+        Union[str, Address, EthAddress, brownie.Contract, Contract],
     ],
 ) -> str:
     """

@@ -86,9 +86,7 @@ try:
         @toolcache.cache("disk", cache_dir=cache_path_for_fn)
         @functools.wraps(fn)
         async def diskcache_wrap(*args, **kwargs) -> T:
-            logger.debug(
-                f"fetching {fn.__qualname__}({', '.join(str(a) for a in args)})"
-            )
+            logger.debug("fetching %s(%s)", fn.__qualname__, ', '.join(map(str, args)))
             return await fn(*args, **kwargs)
 
         return diskcache_wrap
