@@ -577,7 +577,7 @@ class LogFilter(Filter[Log, "LogCache"]):
         *,
         addresses=[],
         topics=[],
-        from_block: Optional[int] = None,
+        from_block: Optional[Block] = None,
         chunk_size: int = BATCH_SIZE,
         chunks_per_batch: Optional[int] = None,
         semaphore: Optional[dank_mids.BlockSemaphore] = None,
@@ -637,7 +637,7 @@ class LogFilter(Filter[Log, "LogCache"]):
             self._semaphore = semaphore
         return semaphore
 
-    def logs(self, to_block: Optional[int]) -> a_sync.ASyncIterator[Log]:
+    def logs(self, to_block: Optional[Block]) -> a_sync.ASyncIterator[Log]:
         """
         Get logs up to a given block.
 
@@ -688,7 +688,7 @@ class LogFilter(Filter[Log, "LogCache"]):
         return bulk_insert_wrapped
 
     @async_property
-    async def _from_block(self) -> int:
+    async def _from_block(self) -> Block:
         """
         Get the starting block for fetching logs.
 
@@ -717,7 +717,7 @@ class LogFilter(Filter[Log, "LogCache"]):
                 )
         return self.from_block
 
-    async def _fetch_range(self, range_start: int, range_end: int) -> List[Log]:
+    async def _fetch_range(self, range_start: Block, range_end: Block) -> List[Log]:
         """
         Fetch logs for a given block range.
 
@@ -767,7 +767,7 @@ class Events(LogFilter):
 
     obj_type = _EventItem
 
-    def events(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
+    def events(self, to_block: Block) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get events up to a given block.
 
@@ -801,7 +801,7 @@ class Events(LogFilter):
             await sleep(0)
             self._objects.extend(decoded)
 
-    def _get_block_for_obj(self, obj: _EventItem) -> int:
+    def _get_block_for_obj(self, obj: _EventItem) -> Block:
         """
         Get the block number for a given event.
 
@@ -849,7 +849,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             >>> print(result)
         """
 
-    def objects(self, to_block: int) -> a_sync.ASyncIterator[_EventItem]:
+    def objects(self, to_block: Block) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get an :class:`~a_sync.ASyncIterator` that yields all events up to a given block.
 
@@ -864,7 +864,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             >>> async for event in processed_events.objects(1000100):
             ...     print(event)
         """
-        return self._objects_thru(block=to_block)
+        return self._objects_thru(block=to_block, from_block=from_block)
 
     async def _extend(self, logs: List[Log]) -> None:
         """
