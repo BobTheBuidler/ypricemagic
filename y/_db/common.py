@@ -473,12 +473,12 @@ class Filter(_DiskCachedMixin[T, C]):
                     checkpoint_index = _get_checkpoint_index(block, self._checkpoints)
                     if checkpoint_index is not None:
                         objs = objs[:checkpoint_index]
+                        done_thru = self._get_block_for_obj(objs[-1])
                         if from_block:
                             objs = skip_too_early(objs)
                         for obj in objs:
                             yield obj
                         yielded += len(objs)
-                        done_thru = self._get_block_for_obj(obj)
 
                 elif from_block:
                     skip_too_early(objs)
