@@ -849,7 +849,9 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             >>> print(result)
         """
 
-    def objects(self, to_block: Block) -> a_sync.ASyncIterator[_EventItem]:
+    def objects(
+        self, to_block: Block, from_block: Optional[Block] = None
+    ) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get an :class:`~a_sync.ASyncIterator` that yields all events up to a given block.
 
