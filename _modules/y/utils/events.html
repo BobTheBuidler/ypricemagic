@@ -670,7 +670,7 @@
         <span class="o">*</span><span class="p">,</span>
         <span class="n">addresses</span><span class="o">=</span><span class="p">[],</span>
         <span class="n">topics</span><span class="o">=</span><span class="p">[],</span>
-        <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">chunk_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">BATCH_SIZE</span><span class="p">,</span>
         <span class="n">chunks_per_batch</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">semaphore</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">dank_mids</span><span class="o">.</span><span class="n">BlockSemaphore</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -733,7 +733,7 @@
 
 <div class="viewcode-block" id="LogFilter.logs">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.LogFilter.logs">[docs]</a>
-    <span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">logs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get logs up to a given block.</span>
 
@@ -785,7 +785,7 @@
         <span class="k">return</span> <span class="n">bulk_insert_wrapped</span>
 
     <span class="nd">@async_property</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_from_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_from_block</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Block</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the starting block for fetching logs.</span>
 
@@ -814,7 +814,7 @@
                 <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span>
 
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Fetch logs for a given block range.</span>
 
@@ -869,7 +869,7 @@
 
 <div class="viewcode-block" id="Events.events">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.Events.events">[docs]</a>
-    <span class="k">def</span> <span class="nf">events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">events</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get events up to a given block.</span>
 
@@ -904,7 +904,7 @@
             <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">decoded</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Block</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the block number for a given event.</span>
 
@@ -957,7 +957,7 @@
 
 <div class="viewcode-block" id="ProcessedEvents.objects">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.events.ProcessedEvents.objects">[docs]</a>
-    <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]:</span>
+    <span class="k">def</span> <span class="nf">objects</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">_EventItem</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get an :class:`~a_sync.ASyncIterator` that yields all events up to a given block.</span>
 
@@ -972,7 +972,7 @@
 <span class="sd">            &gt;&gt;&gt; async for event in processed_events.objects(1000100):</span>
 <span class="sd">            ...     print(event)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">to_block</span><span class="p">,</span> <span class="n">from_block</span><span class="o">=</span><span class="n">from_block</span><span class="p">)</span></div>
 
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Log</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
