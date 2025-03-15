@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from asyncio import Task, create_task, get_event_loop, sleep
-from functools import lru_cache
+from itertools import groupby
 from logging import DEBUG, getLogger
 from typing import (
     TYPE_CHECKING,
@@ -9,6 +9,7 @@ from typing import (
     Awaitable,
     Callable,
     Container,
+    Dict,
     Generic,
     List,
     NoReturn,
@@ -436,35 +437,20 @@ class Filter(_DiskCachedMixin[T, C]):
         yielded = self._pruned
         done_thru = 0
         if self.is_reusable:
-            if self._objects:
+            if objs := self._objects:
                 if block is None:
-                    for obj in self._objects:
+                    for obj in objs:
                         yield obj
-                    yielded += len(self._objects)
+                    yielded += len(objs)
                     done_thru = self._get_block_for_obj(obj)
-
-                else:
-                    checkpoint_block = None
-                    for _block in self._checkpoints:
-                        if _block <= block:
-                            checkpoint_block = _block
-                        else:
-                            break
-
-                    if checkpoint_block:
-                        checkpoint_index = self._checkpoints[checkpoint_block]
-                        objs = self._objects[:checkpoint_index]
+                elif self._checkpoints:
+                    checkpoint_index = _get_checkpoint_index(block, self._checkpoints)
+                    if checkpoint_index is not None:
+                        objs = objs[:checkpoint_index]
                         for obj in objs:
                             yield obj
                         yielded += len(objs)
                         done_thru = self._get_block_for_obj(obj)
-        else:
-
-            to_prune = 0
-
-            def prune() -> None:
-                self._objects = self._objects[to_prune:]
-                self._pruned += to_prune
 
         while True:
             if block is None or done_thru < block:
@@ -481,13 +467,12 @@ class Filter(_DiskCachedMixin[T, C]):
                 for obj in to_yield:
                     if block and self._get_block_for_obj(obj) > block:
                         if not self.is_reusable:
-                            prune()
+                            self._prune(yielded - self._pruned)
                         return
                     yield obj
                     yielded += 1
                 if not self.is_reusable:
-                    prune()
-                    to_prune = 0
+                    self._prune(len(to_yield))
             elif block and done_thru >= block:
                 return
             done_thru = self._lock.value
@@ -699,8 +684,12 @@ class Filter(_DiskCachedMixin[T, C]):
                 (self, depth, done_thru),
             )
 
+    def _prune(self, count: int) -> None:
+        self._objects = self._objects[count:]
+        self._pruned += count
 
-def _clean_addresses(addresses) -> Union[str, List[str]]:
+
+def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
     if addresses == ZERO_ADDRESS:
         raise ValueError("Cannot make a LogFilter for the zero address")
     if not addresses:
@@ -712,3 +701,19 @@ def _clean_addresses(addresses) -> Union[str, List[str]]:
             raise ValueError("Cannot make a LogFilter for the zero address")
         return list(map(convert.to_address, addresses))
     return convert.to_address(addresses)
+
+
+def _get_suitable_checkpoint(
+    target_block: "Block", checkpoints: Dict["Block", int]
+) -> Optional["Block"]:
+    block_lt_checkpoint, group = next(groupby(checkpoints, target_block.__lt__))
+    # return None if there are no checkpoints before `target_block`, else
+    # return the most recent checkpoint that is still before `target_block`
+    return None if block_lt_checkpoint is True else tuple(group)[-1]
+
+
+def _get_checkpoint_index(
+    target_block: "Block", checkpoints: Dict["Block", int]
+) -> Optional[int]:
+    checkpoint_block = _get_suitable_checkpoint(target_block, checkpoints)
+    return None if checkpoint_block is None else checkpoints[checkpoint_block]
