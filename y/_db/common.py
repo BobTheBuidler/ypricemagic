@@ -556,7 +556,9 @@ class Filter(_DiskCachedMixin[T, C]):
     @eth_retry.auto_retry
     @stuck_coro_debugger
     async def _load_new_objects(
-        self, to_block: Optional["Block"] = None, start_from_block: Optional["Block"] = None
+        self,
+        to_block: Optional["Block"] = None,
+        start_from_block: Optional["Block"] = None,
     ) -> None:
         SLEEP_TIME = 1
 

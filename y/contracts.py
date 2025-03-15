@@ -599,16 +599,20 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 cls.delete_instance,
                 contract.address,
             )
-
-        elif (
-            loop := get_running_loop()
-        ).time() + cache_ttl > contract._ttl_cache_popper.when():
-            contract._ttl_cache_popper.cancel()
-            contract._ttl_cache_popper = loop.call_later(
-                cache_ttl,
-                cls.delete_instance,
-                contract.address,
-            )
+        else:
+            loop = get_running_loop()
+            pop_at = loop.time() + cache_ttl
+            if pop_at > contract._ttl_cache_popper.when():
+                contract._ttl_cache_popper._when = pop_at
+                # NOTE: keeping this code around, I don't think the current (faster) implementation
+                # will work with uvloop so I might have to implement a try, except here
+                #
+                # contract._ttl_cache_popper.cancel()
+                # contract._ttl_cache_popper = loop.call_later(
+                #     cache_ttl,
+                #     cls.delete_instance,
+                #     contract.address,
+                # )
         return contract
 
     def __init_from_abi__(
