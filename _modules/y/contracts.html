@@ -701,16 +701,20 @@
                 <span class="bp">cls</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">,</span>
                 <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
             <span class="p">)</span>
-
-        <span class="k">elif</span> <span class="p">(</span>
-            <span class="n">loop</span> <span class="o">:=</span> <span class="n">get_running_loop</span><span class="p">()</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">cache_ttl</span> <span class="o">&gt;</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">when</span><span class="p">():</span>
-            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-            <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">call_later</span><span class="p">(</span>
-                <span class="n">cache_ttl</span><span class="p">,</span>
-                <span class="bp">cls</span><span class="o">.</span><span class="n">delete_instance</span><span class="p">,</span>
-                <span class="n">contract</span><span class="o">.</span><span class="n">address</span><span class="p">,</span>
-            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">loop</span> <span class="o">=</span> <span class="n">get_running_loop</span><span class="p">()</span>
+            <span class="n">pop_at</span> <span class="o">=</span> <span class="n">loop</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">+</span> <span class="n">cache_ttl</span>
+            <span class="k">if</span> <span class="n">pop_at</span> <span class="o">&gt;</span> <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">when</span><span class="p">():</span>
+                <span class="n">contract</span><span class="o">.</span><span class="n">_ttl_cache_popper</span><span class="o">.</span><span class="n">_when</span> <span class="o">=</span> <span class="n">pop_at</span>
+                <span class="c1"># NOTE: keeping this code around, I don&#39;t think the current (faster) implementation</span>
+                <span class="c1"># will work with uvloop so I might have to implement a try, except here</span>
+                <span class="c1">#</span>
+                <span class="c1"># contract._ttl_cache_popper.cancel()</span>
+                <span class="c1"># contract._ttl_cache_popper = loop.call_later(</span>
+                <span class="c1">#     cache_ttl,</span>
+                <span class="c1">#     cls.delete_instance,</span>
+                <span class="c1">#     contract.address,</span>
+                <span class="c1"># )</span>
         <span class="k">return</span> <span class="n">contract</span></div>
 
 
