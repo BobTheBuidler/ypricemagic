@@ -73,6 +73,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">a_sync</span>
+<span class="kn">from</span> <span class="nn">dank_mids.exceptions</span> <span class="kn">import</span> <span class="n">Revert</span>
 <span class="kn">from</span> <span class="nn">multicall.call</span> <span class="kn">import</span> <span class="n">Call</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
@@ -143,8 +144,13 @@
     <span class="n">basket_handler</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
         <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">main</span><span class="p">,</span> <span class="s2">&quot;basketHandler()(address)&quot;</span><span class="p">,</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
     <span class="p">)</span>
-    <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="k">await</span> <span class="n">basket_handler</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">low</span> <span class="o">+</span> <span class="n">high</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">low</span><span class="p">,</span> <span class="n">high</span> <span class="o">=</span> <span class="k">await</span> <span class="n">basket_handler</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">Revert</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">low</span> <span class="o">+</span> <span class="n">high</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span>
+
     <span class="n">tokens</span><span class="p">,</span> <span class="o">*</span><span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">basket_handler</span><span class="o">.</span><span class="n">getPrimeBasket</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
     <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">for</span> <span class="n">token</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">]</span>
     <span class="n">balances</span> <span class="o">=</span> <span class="p">[</span>
