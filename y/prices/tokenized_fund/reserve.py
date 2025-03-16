@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import Optional
 
 from a_sync import a_sync
+from dank_mids.exceptions import Revert
 from multicall.call import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -67,8 +68,13 @@ async def get_price(
     basket_handler = await Contract.coroutine(
         await Call(main, "basketHandler()(address)", block_id=block)
     )
-    low, high = await basket_handler.price.coroutine(block_identifier=block)
-    return Decimal(low + high) // 2 / 10**18
+    try:
+        low, high = await basket_handler.price.coroutine(block_identifier=block)
+    except Revert:
+        return None
+    else:
+        return Decimal(low + high) // 2 / 10**18
+
     tokens, *_ = await basket_handler.getPrimeBasket.coroutine(block_identifier=block)
     tokens = [ERC20(token, asynchronous=True) for token in tokens]
     balances = [
