@@ -476,6 +476,12 @@ class UniswapRouterV2(ContractBase):
             brownie.Contract.from_abi(
                 "UniClone Factory [forced]", self.factory, UNIV2_FACTORY_ABI
             )
+        
+        self._supports_factory_helper = CHAINID not in (
+            Network.Mainnet,  # Too many pools for the helper
+            Network.Arbitrum,  # Arbi nodes timeout often while using helper
+            Network.Base,  # Base has too many pools for the helper at this point
+        ) and FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -960,19 +966,6 @@ class UniswapRouterV2(ContractBase):
                 "got deepest pool for %s at %s: %s from helper", token, block, deepest
             )
             return deepest
-
-    @cached_property
-    def _supports_factory_helper(self) -> bool:
-        """returns True if our uniswap helper contract is supported, False if not"""
-        if CHAINID in (
-            Network.Mainnet,  # Too many pools for the helper
-            Network.Arbitrum,  # Arbi nodes timeout often while using helper
-        ):
-            return False
-        if CHAINID == Network.Base and self.label == "uniswap v2":
-            # Way too many pools
-            return False
-        return FACTORY_HELPER and self.label and self.label not in {"zipswap"}
 
     def _smol_brain_path_selector(
         self,
