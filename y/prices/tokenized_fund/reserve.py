@@ -73,7 +73,7 @@ async def get_price(
         return None
     else:
         return Decimal(low + high) // 2 / 10**18
-        
+
     tokens, *_ = await basket_handler.getPrimeBasket.coroutine(block_identifier=block)
     tokens = [ERC20(token, asynchronous=True) for token in tokens]
     balances = [
