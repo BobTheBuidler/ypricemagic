@@ -313,13 +313,12 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
                 checkpoint_indexes = (
                     i * objs_per_chunk for i in range(1, num_checkpoints)
                 )
+                get_block_for_obj = self._get_block_for_obj
                 for index in checkpoint_indexes:
                     obj = self._objects[index]
                     if index < len(self._objects):
                         next_obj = self._objects[index + 1]
-                        while self._get_block_for_obj(obj) == self._get_block_for_obj(
-                            next_obj
-                        ):
+                        while get_block_for_obj(obj) == get_block_for_obj(next_obj):
                             obj = next_obj
                             index += 1
                             try:
@@ -327,7 +326,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
                             except IndexError:
                                 break
 
-                    self._checkpoints[self._get_block_for_obj(obj)] = index
+                    self._checkpoints[get_block_for_obj(obj)] = index
 
             logger.info(
                 "%s loaded %s objects thru block %s from disk",
@@ -436,13 +435,14 @@ class Filter(_DiskCachedMixin[T, C]):
         debug_logs = logger.isEnabledFor(DEBUG)
         yielded = self._pruned
         done_thru = 0
+        get_block_for_obj = self._get_block_for_obj
         if self.is_reusable:
             if objs := self._objects:
                 if block is None:
                     for obj in objs:
                         yield obj
                     yielded += len(objs)
-                    done_thru = self._get_block_for_obj(obj)
+                    done_thru = get_block_for_obj(obj)
                 elif self._checkpoints:
                     checkpoint_index = _get_checkpoint_index(block, self._checkpoints)
                     if checkpoint_index is not None:
@@ -450,7 +450,7 @@ class Filter(_DiskCachedMixin[T, C]):
                         for obj in objs:
                             yield obj
                         yielded += len(objs)
-                        done_thru = self._get_block_for_obj(obj)
+                        done_thru = get_block_for_obj(obj)
 
         while True:
             if block is None or done_thru < block:
@@ -465,7 +465,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     raise self._exc.with_traceback(self._tb) from None
             if to_yield := self._objects[yielded - self._pruned :]:
                 for obj in to_yield:
-                    if block and self._get_block_for_obj(obj) > block:
+                    if block and get_block_for_obj(obj) > block:
                         if not self.is_reusable:
                             self._prune(yielded - self._pruned)
                         return
