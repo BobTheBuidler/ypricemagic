@@ -384,13 +384,12 @@
                 <span class="n">checkpoint_indexes</span> <span class="o">=</span> <span class="p">(</span>
                     <span class="n">i</span> <span class="o">*</span> <span class="n">objs_per_chunk</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_checkpoints</span><span class="p">)</span>
                 <span class="p">)</span>
+                <span class="n">get_block_for_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span>
                 <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">checkpoint_indexes</span><span class="p">:</span>
                     <span class="n">obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
                     <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">):</span>
                         <span class="n">next_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-                        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span>
-                            <span class="n">next_obj</span>
-                        <span class="p">):</span>
+                        <span class="k">while</span> <span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">==</span> <span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">next_obj</span><span class="p">):</span>
                             <span class="n">obj</span> <span class="o">=</span> <span class="n">next_obj</span>
                             <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
                             <span class="k">try</span><span class="p">:</span>
@@ -398,7 +397,7 @@
                             <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
                                 <span class="k">break</span>
 
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">index</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">[</span><span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)]</span> <span class="o">=</span> <span class="n">index</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
                 <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded </span><span class="si">%s</span><span class="s2"> objects thru block </span><span class="si">%s</span><span class="s2"> from disk&quot;</span><span class="p">,</span>
@@ -507,13 +506,14 @@
         <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="n">yielded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span>
         <span class="n">done_thru</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">get_block_for_obj</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_reusable</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">objs</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
                         <span class="k">yield</span> <span class="n">obj</span>
                     <span class="n">yielded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
-                    <span class="n">done_thru</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                    <span class="n">done_thru</span> <span class="o">=</span> <span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
                 <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">:</span>
                     <span class="n">checkpoint_index</span> <span class="o">=</span> <span class="n">_get_checkpoint_index</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_checkpoints</span><span class="p">)</span>
                     <span class="k">if</span> <span class="n">checkpoint_index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -521,7 +521,7 @@
                         <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
                             <span class="k">yield</span> <span class="n">obj</span>
                         <span class="n">yielded</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
-                        <span class="n">done_thru</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+                        <span class="n">done_thru</span> <span class="o">=</span> <span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
 
         <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">done_thru</span> <span class="o">&lt;</span> <span class="n">block</span><span class="p">:</span>
@@ -536,7 +536,7 @@
                     <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
             <span class="k">if</span> <span class="n">to_yield</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">yielded</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span> <span class="p">:]:</span>
                 <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">to_yield</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">block</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">block</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">block</span> <span class="ow">and</span> <span class="n">get_block_for_obj</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">block</span><span class="p">:</span>
                         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_reusable</span><span class="p">:</span>
                             <span class="bp">self</span><span class="o">.</span><span class="n">_prune</span><span class="p">(</span><span class="n">yielded</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span><span class="p">)</span>
                         <span class="k">return</span>

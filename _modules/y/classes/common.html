@@ -683,6 +683,7 @@
     <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="n">_skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="n">_ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">()</span>
+    <span class="n">__logger</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="WeiBalance.__init__">
 <a class="viewcode-back" href="../../../source/y.classes.html#y.WeiBalance.__init__">[docs]</a>
@@ -1097,7 +1098,7 @@
 
     <span class="n">__value_usd__</span><span class="p">:</span> <span class="n">HiddenMethodDescriptor</span><span class="p">[</span><span class="n">Self</span><span class="p">,</span> <span class="n">Decimal</span><span class="p">]</span>
 
-    <span class="nd">@cached_property</span>
+    <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get the logger for the WeiBalance object.</span>
@@ -1109,9 +1110,13 @@
 <span class="sd">            &gt;&gt;&gt; balance = WeiBalance(1000000000000000000, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; logger = balance._logger</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_price_logger</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
-        <span class="p">)</span></div>
+        <span class="n">logger</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span>
+        <span class="k">if</span> <span class="n">logger</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">get_price_logger</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">block</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__logger</span> <span class="o">=</span> <span class="n">logger</span>
+        <span class="k">return</span> <span class="n">logger</span></div>
 
 
 
