@@ -550,7 +550,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     asynchronous: bool = False
     _skip_cache: bool = ENVS.SKIP_CACHE
     _ignore_pools: Tuple[Pool, ...] = ()
-    _logger = None
+    __logger = None
 
     def __init__(
         self,
