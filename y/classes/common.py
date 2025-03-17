@@ -550,6 +550,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
     asynchronous: bool = False
     _skip_cache: bool = ENVS.SKIP_CACHE
     _ignore_pools: Tuple[Pool, ...] = ()
+    __logger = None
 
     def __init__(
         self,
@@ -922,7 +923,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
 
     __value_usd__: HiddenMethodDescriptor[Self, Decimal]
 
-    @cached_property
+    @property
     def _logger(self) -> logging.Logger:
         """
         Get the logger for the WeiBalance object.
@@ -934,9 +935,13 @@ class WeiBalance(a_sync.ASyncGenericBase):
             >>> balance = WeiBalance(1000000000000000000, "0x1234567890abcdef1234567890abcdef12345678")
             >>> logger = balance._logger
         """
-        return logging.get_price_logger(
-            self.token.address, self.block, extra=self.__class__.__name__
-        )
+        logger = self.__logger
+        if logger is None:
+            logger = logging.get_price_logger(
+                self.token.address, self.block, extra=self.__class__.__name__
+            )
+            self.__logger = logger
+        return logger
 
 
 class _Loader(ContractBase):
