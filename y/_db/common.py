@@ -52,6 +52,8 @@ T = TypeVar("T")
 S = TypeVar("S")
 M = TypeVar("M")
 
+Checkpoints = Dict["Block", int]
+
 logger = getLogger(__name__)
 default_filter_threads = PruningThreadPoolExecutor(4)
 """
@@ -240,6 +242,7 @@ C = TypeVar("C", bound=DiskCache)
 
 
 class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
+    _checkpoints: Checkpoints
     __slots__ = "is_reusable", "_cache", "_executor", "_objects", "_pruned"
 
     def __init__(
@@ -704,7 +707,7 @@ def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
 
 
 def _get_suitable_checkpoint(
-    target_block: "Block", checkpoints: Dict["Block", int]
+    target_block: "Block", checkpoints: Checkpoints
 ) -> Optional["Block"]:
     block_lt_checkpoint, group = next(groupby(checkpoints, target_block.__lt__))
     # return None if there are no checkpoints before `target_block`, else
@@ -713,7 +716,7 @@ def _get_suitable_checkpoint(
 
 
 def _get_checkpoint_index(
-    target_block: "Block", checkpoints: Dict["Block", int]
+    target_block: "Block", checkpoints: Checkpoints
 ) -> Optional[int]:
     checkpoint_block = _get_suitable_checkpoint(target_block, checkpoints)
     return None if checkpoint_block is None else checkpoints[checkpoint_block]
