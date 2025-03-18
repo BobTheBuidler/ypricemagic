@@ -75,9 +75,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
                 if not contract_not_verified(e):
                     raise
         self.v1 = (
-            UniswapV1(asynchronous=self.asynchronous)
-            if CONNECTED_TO_MAINNET
-            else None
+            UniswapV1(asynchronous=self.asynchronous) if CONNECTED_TO_MAINNET else None
         )
         self.v3 = (
             UniswapV3(

@@ -28,7 +28,10 @@ def is_creth(token: AnyAddressType) -> bool:
         >>> is_creth("0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd")
         True
     """
-    return CONNECTED_TO_MAINNET and convert.to_address(token) == "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd"
+    return (
+        CONNECTED_TO_MAINNET
+        and convert.to_address(token) == "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd"
+    )
 
 
 @a_sync.a_sync(default="sync")

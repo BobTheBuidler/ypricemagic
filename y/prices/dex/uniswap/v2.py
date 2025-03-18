@@ -21,7 +21,15 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import continue_on_revert, stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import CHAINID, CONNECTED_TO_MAINNET, STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
+from y.constants import (
+    CHAINID,
+    CONNECTED_TO_MAINNET,
+    STABLECOINS,
+    WRAPPED_GAS_COIN,
+    sushi,
+    usdc,
+    weth,
+)
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (
     Address,
@@ -476,12 +484,18 @@ class UniswapRouterV2(ContractBase):
             brownie.Contract.from_abi(
                 "UniClone Factory [forced]", self.factory, UNIV2_FACTORY_ABI
             )
-        
-        self._supports_factory_helper = CHAINID not in (
-            Network.Mainnet,  # Too many pools for the helper
-            Network.Arbitrum,  # Arbi nodes timeout often while using helper
-            Network.Base,  # Base has too many pools for the helper at this point
-        ) and FACTORY_HELPER and self.label and self.label not in {"zipswap"}
+
+        self._supports_factory_helper = (
+            CHAINID
+            not in (
+                Network.Mainnet,  # Too many pools for the helper
+                Network.Arbitrum,  # Arbi nodes timeout often while using helper
+                Network.Base,  # Base has too many pools for the helper at this point
+            )
+            and FACTORY_HELPER
+            and self.label
+            and self.label not in {"zipswap"}
+        )
 
     def __str__(self) -> str:
         return self.__repr__()

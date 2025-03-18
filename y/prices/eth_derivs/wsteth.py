@@ -103,6 +103,7 @@ wsteth = wstEth(asynchronous=True)
 
 _WSTETH_ADDRS = (wsteth.address, wsteth.wrapped_for_curve)
 
+
 def is_wsteth(address: AnyAddressType) -> bool:
     """
     Check if a given address is wstETH or its wrapped version for Curve on Ethereum Mainnet.
