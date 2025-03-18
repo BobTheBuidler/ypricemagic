@@ -91,7 +91,6 @@
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span> <span class="nn">brownie.convert.datatypes</span> <span class="kn">import</span> <span class="n">EthAddress</span>
-<span class="kn">from</span> <span class="nn">brownie.network.contract</span> <span class="kn">import</span> <span class="n">ContractCall</span><span class="p">,</span> <span class="n">ContractTx</span><span class="p">,</span> <span class="n">OverloadedMethod</span>
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
 <span class="kn">from</span> <span class="nn">hexbytes</span> <span class="kn">import</span> <span class="n">HexBytes</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
@@ -102,7 +101,7 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">constants</span><span class="p">,</span> <span class="n">contracts</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span><span class="p">,</span> <span class="n">ContractBase</span><span class="p">,</span> <span class="n">WeiBalance</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span><span class="p">,</span> <span class="n">CONNECTED_TO_MAINNET</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">UsdPrice</span><span class="p">,</span> <span class="n">UsdValue</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotVerified</span><span class="p">,</span> <span class="n">TokenNotFound</span>
@@ -553,7 +552,7 @@
             <span class="k">elif</span> <span class="n">vault</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">BalancerV2Vault</span><span class="p">(</span><span class="n">vault</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both</span>
-        <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">==</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">CONNECTED_TO_MAINNET</span> <span class="ow">and</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">==</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
             <span class="c1"># NOTE: these `CronV1Pool` tokens ARE balancer pools but don&#39;t match the expected pool abi?</span>
             <span class="k">return</span> <span class="n">BalancerV2Vault</span><span class="p">(</span>
                 <span class="s2">&quot;0xBA12222222228d8Ba445958a75a0704d566BF2C8&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span>
@@ -581,7 +580,7 @@
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2"> has no vault&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
         <span class="k">elif</span> <span class="n">poolid</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__id__</span><span class="p">:</span>
             <span class="n">_</span><span class="p">,</span> <span class="n">specialization</span> <span class="o">=</span> <span class="k">await</span> <span class="n">vault</span><span class="o">.</span><span class="n">contract</span><span class="o">.</span><span class="n">getPool</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">poolid</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span> <span class="ow">and</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">==</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">CONNECTED_TO_MAINNET</span> <span class="ow">and</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__build_name__</span> <span class="o">==</span> <span class="s2">&quot;CronV1Pool&quot;</span><span class="p">:</span>
             <span class="c1"># NOTE: these `CronV1Pool` tokens ARE balancer pools but don&#39;t match the expected pool abi?</span>
             <span class="k">return</span> <span class="n">PoolSpecialization</span><span class="o">.</span><span class="n">CronV1Pool</span>
         <span class="k">else</span><span class="p">:</span>

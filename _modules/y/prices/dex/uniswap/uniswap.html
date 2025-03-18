@@ -76,16 +76,16 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
+<span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CONNECTED_TO_MAINNET</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span><span class="p">,</span> <span class="n">Pool</span><span class="p">,</span> <span class="n">UsdPrice</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">NonStandardERC20</span><span class="p">,</span> <span class="n">contract_not_verified</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.solidly</span> <span class="kn">import</span> <span class="n">SolidlyRouter</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap</span> <span class="kn">import</span> <span class="n">v3</span>
 <span class="kn">from</span> <span class="nn">y.prices.dex.uniswap.v1</span> <span class="kn">import</span> <span class="n">UniswapV1</span>
@@ -150,9 +150,7 @@
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">contract_not_verified</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
                     <span class="k">raise</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">UniswapV1</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">chain</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span>
-            <span class="k">else</span> <span class="kc">None</span>
+            <span class="n">UniswapV1</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">if</span> <span class="n">CONNECTED_TO_MAINNET</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">v3</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">UniswapV3</span><span class="p">(</span>

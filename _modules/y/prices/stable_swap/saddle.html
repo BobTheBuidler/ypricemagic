@@ -78,7 +78,7 @@
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
 <span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
-<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CHAINID</span>
+<span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">CONNECTED_TO_MAINNET</span>
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">has_method</span><span class="p">,</span> <span class="n">has_methods</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Address</span><span class="p">,</span>
@@ -88,7 +88,6 @@
     <span class="n">UsdPrice</span><span class="p">,</span>
     <span class="n">UsdValue</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">magic</span>
 <span class="kn">from</span> <span class="nn">y.utils.multicall</span> <span class="kn">import</span> <span class="n">multicall_same_func_same_contract_different_inputs</span>
 
@@ -152,10 +151,9 @@
 <span class="sd">        - :func:`is_saddle_lp`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">token_address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token_address</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Mainnet</span><span class="p">:</span>
-        <span class="k">if</span> <span class="p">(</span>
-            <span class="n">token_address</span> <span class="o">==</span> <span class="s2">&quot;0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368&quot;</span>
-        <span class="p">):</span>  <span class="c1"># saddle aleth doesn&#39;t have swap() function</span>
+    <span class="k">if</span> <span class="n">CONNECTED_TO_MAINNET</span><span class="p">:</span>
+        <span class="c1"># saddle aleth doesn&#39;t have swap() function</span>
+        <span class="k">if</span> <span class="n">token_address</span> <span class="o">==</span> <span class="s2">&quot;0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a&quot;</span>
         <span class="k">elif</span> <span class="n">token_address</span> <span class="o">==</span> <span class="s2">&quot;0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A&quot;</span><span class="p">:</span>  <span class="c1"># saddle d4</span>
             <span class="k">return</span> <span class="s2">&quot;0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6&quot;</span>
