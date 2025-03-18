@@ -1,8 +1,9 @@
-import logging
 from asyncio import Task, create_task, gather, sleep
 from collections import defaultdict
 from enum import IntEnum
 from functools import cached_property
+from itertools import filterfalse
+from logging import DEBUG, getLogger
 from typing import Dict, List, Optional, Tuple, TypeVar
 
 import a_sync
@@ -45,7 +46,7 @@ from y.utils.raw_calls import raw_call
 
 T = TypeVar("T")
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
 ADDRESS_PROVIDER = "0x0000000022D53366457F9d5E68Ec105046FC4383"
@@ -177,8 +178,8 @@ class AddressProvider(_CurveEventsLoader):
 
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
-        if debug_logs := logger.isEnabledFor(logging.DEBUG):
-            logger._log(logging.DEBUG, "loading pools from metapool factories", ())
+        if debug_logs := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "loading pools from metapool factories", ())
         # TODO: remove this once curve adds to address provider
         if CONNECTED_TO_MAINNET:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
@@ -205,9 +206,7 @@ class AddressProvider(_CurveEventsLoader):
             + self.identifiers[Ids.Cryptopool_Factory]
         ):
             if debug_logs:
-                logger._log(
-                    logging.DEBUG, "loading pools from cryptopool factories", ()
-                )
+                logger._log(DEBUG, "loading pools from cryptopool factories", ())
             await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
@@ -254,7 +253,7 @@ class Factory(_Loader):
 
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
-        debug_logs = logger.isEnabledFor(logging.DEBUG)
+        debug_logs = logger.isEnabledFor(DEBUG)
         await gather(
             *(
                 self.__load_pool(pool, debug_logs)
@@ -264,7 +263,7 @@ class Factory(_Loader):
         )
         self._loaded.set()
         if debug_logs:
-            logger._log(logging.DEBUG, "loaded %s pools for %s", (len(pool_list), self))
+            logger._log(DEBUG, "loaded %s pools for %s", (len(pool_list), self))
 
     async def __load_pool(self, pool: Address, debug_logs: bool) -> None:
         factory = await Contract.coroutine(self.address)
@@ -280,7 +279,7 @@ class Factory(_Loader):
         curve.token_to_pool[lp_token] = pool
         curve.factories[factory.address].add(pool)
         if debug_logs:
-            logger._log(logging.DEBUG, "loaded %s pool %s", (self, pool))
+            logger._log(DEBUG, "loaded %s pool %s", (self, pool))
 
 
 class CurvePool(ERC20):
@@ -736,14 +735,11 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
     async def check_liquidity(
         self, token: Address, block: Block, ignore_pools: Tuple[Pool, ...]
     ) -> int:
-        if pools := [
-            pool
-            for pool in (await self.__coin_to_pools__).get(token, [])
-            if pool not in ignore_pools
-        ]:
-            return await CurvePool.check_liquidity.max(
-                pools, token=token, block=block, sync=False
-            )
+        if pools_for_token := (await self.__coin_to_pools__).get(token):
+            if pools := list(filterfalse(ignore_pools.__contains__, pools_for_token)):
+                return await CurvePool.check_liquidity.max(
+                    pools, token=token, block=block, sync=False
+                )
         return 0
 
     @cached_property

@@ -250,11 +250,16 @@ class BalancerV2Vault(ContractBase):
         balances_aiterator = balance_tasks.map(
             self.pools_for_token(token_address, block=block), pop=True
         )
-        async for pool, balance in balances_aiterator.filter(
-            _lookup_balance_from_tuple
-        ).sort(key=_lookup_balance_from_tuple, reverse=True):
-            logger.debug("deepest pool %s balance %s", pool, balance)
-            return pool
+        filtered = balances_aiterator.filter(_lookup_balance_from_tuple)
+        high_to_low = filtered.sort(key=_lookup_balance_from_tuple, reverse=True)
+
+        if logger.isEnabledFor(DEBUG):
+            async for pool, balance in high_to_low:
+                logger._log(DEBUG, "deepest pool %s balance %s", (pool, balance))
+                return pool
+        else:
+            async for pool, balance in high_to_low:
+                return pool
 
 
 class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
