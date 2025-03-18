@@ -1,9 +1,9 @@
-import logging
 import math
 from asyncio import gather
 from collections import defaultdict
 from functools import cached_property, lru_cache
 from itertools import cycle
+from logging import DEBUG, getLogger
 from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
 
 import a_sync
@@ -39,7 +39,7 @@ except ImportError:
 UNISWAP_V3_FACTORY = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
 UNISWAP_V3_QUOTER = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 # same addresses on all networks
 addresses = {
@@ -201,19 +201,28 @@ class UniswapV3Pool(ContractBase):
             >>> pool = UniswapV3Pool(...)
             >>> liquidity = await pool.check_liquidity("0xToken0Address", 1234567)
         """
-        logger.debug("checking %s liquidity for %s at %s", self, token, block)
+        if debug_logs_enabled := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "checking %s liquidity for %s at %s", (self, token, block))
+
         if block < await self.deploy_block(sync=False):
-            logger.debug("block %s prior to %s deploy block", block, self)
+            if debug_logs_enabled:
+                logger._log(DEBUG, "block %s prior to %s deploy block", (block, self))
             return 0
+        
         try:
             liquidity = await self[token].balance_of(self.address, block, sync=False)
         except ContractNotVerified:
-            logger.debug(
-                "%s is not verified and we cannot fetch balance the usual way. returning 0.",
-                token,
-            )
+            if debug_logs_enabled:
+                logger._log(
+                    DEBUG,
+                    "%s is not verified and we cannot fetch balance the usual way. returning 0.",
+                    (token,),
+                )
             return 0
-        logger.debug("%s liquidity for %s at %s: %s", self, token, block, liquidity)
+        
+        if debug_logs_enabled:
+            logger._log(DEBUG, "%s liquidity for %s at %s: %s", (self, token, block, liquidity))
+
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
@@ -483,7 +492,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
             >>> uniswap_v3 = UniswapV3(...)
             >>> liquidity = await uniswap_v3.check_liquidity("0xTokenAddress", 1234567)
         """
-        logger.debug("checking %s liquidity for %s at %s", self, token, block)
+        if debug_logs_enabled := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "checking %s liquidity for %s at %s", (self, token, block))
+        
         if (
             CONNECTED_TO_MAINNET
             and token == "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D"
@@ -493,7 +504,8 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
         quoter = await self.__quoter__
         if block and block < await contract_creation_block_async(quoter):
-            logger.debug("block %s is before %s deploy block", block, quoter)
+            if debug_logs_enabled:
+                logger._log(DEBUG, "block %s is before %s deploy block", (block, quoter))
             return 0
 
         if token == weth.address:
@@ -512,24 +524,36 @@ class UniswapV3(a_sync.ASyncGenericBase):
         pools_for_token: a_sync.ASyncIterator[UniswapV3Pool] = self.pools_for_token(
             token, block
         )
-        async for pool in pools_for_token.filter(filter_fn):
-            # the mapping will start the tasks internally
-            logger.debug("starting token_out_task for %s", pool)
-            token_out_tasks[pool]
+
+        if debug_logs_enabled:
+            async for pool in pools_for_token.filter(filter_fn):
+                # the mapping will start the tasks internally
+                logger._log(DEBUG, "starting token_out_task for %s", (pool,))
+                token_out_tasks[pool]
+        else:
+            async for pool in pools_for_token.filter(filter_fn):
+                token_out_tasks[pool]
+
         if not token_out_tasks:
             return 0
-        logger.debug(
-            "%s token_out_tasks for %s at %s: %s", self, token, block, token_out_tasks
-        )
+
+        if debug_logs_enabled:
+            logger._log(
+                DEBUG, "%s token_out_tasks for %s at %s: %s", (self, token, block, token_out_tasks)
+            )
 
         # Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`
         # We need some spaghetticode here to account for these erroneous liquidity values
         # TODO: Refactor this
         token_out_liquidity: DefaultDict[ERC20, List[int]] = defaultdict(list)
-        async for pool, liquidity in token_out_tasks.map(pop=False):
-            logger.debug("%s liquidity for %s at %s: %s", pool, token, block, liquidity)
-            token_out_liquidity[pool._get_token_out(token)].append(liquidity)
-        logger.debug("%s token_out_liquidity: %s", token, token_out_liquidity)
+        if debug_logs_enabled:
+            async for pool, liquidity in token_out_tasks.map(pop=False):
+                logger._log(DEBUG, "%s liquidity for %s at %s: %s", (pool, token, block, liquidity))
+                token_out_liquidity[pool._get_token_out(token)].append(liquidity)
+            logger._log(DEBUG, "%s token_out_liquidity: %s", (token, token_out_liquidity))
+        else:
+            async for pool, liquidity in token_out_tasks.map(pop=False):
+                token_out_liquidity[pool._get_token_out(token)].append(liquidity)
 
         token_out_min_liquidity = {
             token_out: min(liquidities)
@@ -543,17 +567,20 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 len(token_out_liquidity[token_out]) > 1
                 and liquidity == token_out_min_liquidity[token_out]
             ):
-                logger.debug("ignoring liquidity for %s", pool)
+                if debug_logs_enabled:
+                    logger._log(DEBUG, "ignoring liquidity for %s", (pool,))
             elif token_out == weth and liquidity < 10**19:  # 10 ETH
                 # NOTE: this is totally arbitrary, works for all known cases but eventually will probably cause issues
-                logger.debug("insufficient liquidity for %s", pool)
+                if debug_logs_enabled:
+                    logger._log(DEBUG, "insufficient liquidity for %s", (pool,))
             else:
                 token_in_tasks[pool]
 
         liquidity = (
             await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
         )
-        logger.debug("%s liquidity for %s at %s is %s", self, token, block, liquidity)
+        if debug_logs_enabled:
+            logger._log(DEBUG, "%s liquidity for %s at %s is %s", (self, token, block, liquidity))
         return liquidity
 
     @stuck_coro_debugger

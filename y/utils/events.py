@@ -512,7 +512,7 @@ def _get_logs_no_cache(
                 }
             )
     except Exception as e:
-        errs = [
+        errs = (
             "Service Unavailable for url:",
             "exceed maximum block range",
             "block range is too wide",
@@ -520,8 +520,8 @@ def _get_logs_no_cache(
             "parse error",
             "method handler crashed",
             "Log response size exceeded.",
-        ]
-        if any(err in str(e) for err in errs):
+        )
+        if any(map(str(e).__contains__, errs)):
             logger.debug("your node is having trouble, breaking batch in half")
             batch_size = end - start + 1
             half_of_batch = batch_size // 2

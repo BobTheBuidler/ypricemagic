@@ -1,5 +1,5 @@
-import logging
 from asyncio import as_completed, ensure_future, iscoroutine
+from logging import DEBUG, getLogger
 from typing import Awaitable, Callable, Tuple
 
 import a_sync
@@ -25,7 +25,7 @@ from y.prices.synthetix import synthetix
 from y.prices.tokenized_fund import basketdao, gelato, piedao, reserve, tokensets
 from y.utils.logging import get_price_logger
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 @a_sync.a_sync(default="sync", cache_type="memory")
@@ -61,14 +61,17 @@ async def check_bucket(token: AnyAddressType) -> str:
         logger.debug("returning bucket %s from ydb", bucket)
         return bucket
 
+    debug_logs_enabled = logger.isEnabledFor(DEBUG)
+
     # these require neither calls to the chain nor contract initialization, just string comparisons (pretty sure)
     for bucket, check in string_matchers.items():
         if check(token):
-            logger.debug("%s is %s", token_address, bucket)
+            if debug_logs_enabled:
+                logger._log(DEBUG, "%s is %s", (token_address, bucket))
             db.set_bucket(token, bucket)
             return bucket
-        else:
-            logger.debug("%s is not %s", token_address, bucket)
+        elif debug_logs_enabled:
+            logger._log(DEBUG, "%s is not %s", (token_address, bucket))
 
     # check these first, these just require calls
     futs = [
@@ -88,13 +91,15 @@ async def check_bucket(token: AnyAddressType) -> str:
             continue
 
         if is_member:
-            logger.debug("%s is %s", token_address, bucket)
+            if debug_logs_enabled:
+                logger._log(DEBUG, "%s is %s", (token_address, bucket))
             for fut in futs:
                 fut.cancel()
             db.set_bucket(token, bucket)
             return bucket
         else:
-            logger.debug("%s is not %s", token_address, bucket)
+            if debug_logs_enabled:
+                logger._log(DEBUG, "%s is not %s", (token_address, bucket))
             bucket = None
 
     # TODO: Refactor the below like the above
@@ -127,7 +132,8 @@ async def check_bucket(token: AnyAddressType) -> str:
         bucket = "yearn or yearn-like"
     elif curve and await curve.get_pool(token_address, sync=False):
         bucket = "curve lp"
-    logger.debug("%s bucket is %s", token_address, bucket)
+    if debug_logs_enabled:
+        logger._log(DEBUG, "%s bucket is %s", (token_address, bucket))
     if bucket:
         db.set_bucket(token, bucket)
     return bucket

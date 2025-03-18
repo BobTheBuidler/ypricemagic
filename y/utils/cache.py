@@ -1,7 +1,7 @@
 import functools
-import logging
 import os
 from inspect import iscoroutinefunction
+from logging import DEBUG, getLogger
 
 import a_sync
 import eth_retry
@@ -39,7 +39,7 @@ try:
 
     """User has toolcache, this diskcache decorator will work."""
 
-    logger = logging.getLogger(__name__)
+    logger = getLogger(__name__)
     cache_base_path = f"./cache/{chain.id}/"
 
     def optional_async_diskcache(fn: AnyFn[P, T]) -> AnyFn[P, T]:
@@ -83,13 +83,22 @@ try:
         # Ensure the cache dir exists
         os.makedirs(cache_path_for_fn, exist_ok=True)
 
-        @toolcache.cache("disk", cache_dir=cache_path_for_fn)
-        @functools.wraps(fn)
-        async def diskcache_wrap(*args, **kwargs) -> T:
-            logger.debug("fetching %s(%s)", fn.__qualname__, ", ".join(map(str, args)))
-            return await fn(*args, **kwargs)
+        if logger.isEnabledFor(DEBUG):
+            @toolcache.cache("disk", cache_dir=cache_path_for_fn)
+            @functools.wraps(fn)
+            async def diskcache_wrap_with_debug_logs(*args, **kwargs) -> T:
+                logger.debug("fetching %s(%s)", fn.__qualname__, ", ".join(map(str, args)))
+                return await fn(*args, **kwargs)
+        
+            return diskcache_wrap_with_debug_logs
+        
+        else:
+            @toolcache.cache("disk", cache_dir=cache_path_for_fn)
+            @functools.wraps(fn)
+            async def diskcache_wrap(*args, **kwargs) -> T:
+                return await fn(*args, **kwargs)
 
-        return diskcache_wrap
+            return diskcache_wrap
 
 except ImportError:
 
