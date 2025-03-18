@@ -286,7 +286,7 @@
         <span class="k">if</span> <span class="n">metapool_factories</span> <span class="o">:=</span> <span class="p">[</span>
             <span class="n">Factory</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">factories</span> <span class="ow">in</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="o">.</span><span class="n">get</span><span class="p">,</span> <span class="n">_METAPOOL_FACTORY_IDS</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">factory</span> <span class="ow">in</span> <span class="n">factories</span>
+            <span class="k">for</span> <span class="n">factory</span> <span class="ow">in</span> <span class="n">factories</span> <span class="ow">or</span> <span class="p">()</span>
         <span class="p">]:</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">factory</span><span class="p">,</span> <span class="n">pool_list</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
                 <span class="n">Factory</span><span class="o">.</span><span class="n">read_pools</span><span class="p">,</span> <span class="n">metapool_factories</span>
