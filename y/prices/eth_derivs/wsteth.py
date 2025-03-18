@@ -100,8 +100,8 @@ class wstEth(a_sync.ASyncGenericBase):
 
 wsteth = wstEth(asynchronous=True)
 
-
-_WSTETH_ADDRS = (wsteth.address, wsteth.wrapped_for_curve)
+if CONNECTED_TO_MAINNET:
+    _WSTETH_ADDRS = (wsteth.address, wsteth.wrapped_for_curve)
 
 
 def is_wsteth(address: AnyAddressType) -> bool:
