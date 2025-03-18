@@ -294,7 +294,7 @@ def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
             "UNIQUE constraint failed",
             "duplicate key value violates unique constraint",
         )
-        if any(map((msg:=str(e)).__contains__, constraint_errs)):
+        if any(map((msg := str(e)).__contains__, constraint_errs)):
             logger.debug("%s: %s %s", msg, type.__name__, kwargs)
         else:
             logger.debug(

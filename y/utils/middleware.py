@@ -107,13 +107,16 @@ def getcode_cache_middleware(make_request: Callable, web3: Web3) -> Callable:
         return make_request(method, params)
 
     if logger.isEnabledFor(DEBUG):
+
         @eth_retry.auto_retry
         def middleware(method: str, params: Any) -> Any:
             logger._log(DEBUG, "%s %s", (method, params))
             if should_cache(method, params):
                 return make_request_cached(method, params)
             return make_request(method, params)
+
     else:
+
         @eth_retry.auto_retry
         def middleware(method: str, params: Any) -> Any:
             if should_cache(method, params):

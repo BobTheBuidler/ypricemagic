@@ -253,11 +253,15 @@ class BalancerV2Vault(ContractBase):
         filtered = balances_aiterator.filter(_lookup_balance_from_tuple)
 
         if logger.isEnabledFor(DEBUG):
-            async for pool, balance in filtered.sort(key=_lookup_balance_from_tuple, reverse=True):
+            async for pool, balance in filtered.sort(
+                key=_lookup_balance_from_tuple, reverse=True
+            ):
                 logger._log(DEBUG, "deepest pool %s balance %s", (pool, balance))
                 return pool
         else:
-            async for pool, balance in filtered.sort(key=_lookup_balance_from_tuple, reverse=True):
+            async for pool, balance in filtered.sort(
+                key=_lookup_balance_from_tuple, reverse=True
+            ):
                 return pool
 
 

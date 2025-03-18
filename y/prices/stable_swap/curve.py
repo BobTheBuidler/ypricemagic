@@ -206,9 +206,7 @@ class AddressProvider(_CurveEventsLoader):
             + self.identifiers[Ids.Cryptopool_Factory]
         ):
             if debug_logs:
-                logger._log(
-                    DEBUG, "loading pools from cryptopool factories", ()
-                )
+                logger._log(DEBUG, "loading pools from cryptopool factories", ())
             await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
