@@ -189,7 +189,7 @@ class AddressProvider(_CurveEventsLoader):
         if metapool_factories := [
             Factory(factory, asynchronous=self.asynchronous)
             for factories in map(self.identifiers.get, _METAPOOL_FACTORY_IDS)
-            for factory in factories
+            for factory in factories or ()
         ]:
             async for factory, pool_list in a_sync.map(
                 Factory.read_pools, metapool_factories
