@@ -20,7 +20,6 @@ import a_sync
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
-from brownie.network.contract import ContractCall, ContractTx, OverloadedMethod
 from brownie.network.event import _EventItem
 from hexbytes import HexBytes
 from multicall import Call
@@ -31,7 +30,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import constants, contracts
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import CHAINID
+from y.constants import CHAINID, CONNECTED_TO_MAINNET
 from y.contracts import Contract
 from y.datatypes import Address, AnyAddressType, Block, UsdPrice, UsdValue
 from y.exceptions import ContractNotVerified, TokenNotFound
@@ -439,7 +438,7 @@ class BalancerV2Pool(BalancerPool):
             elif vault:
                 return BalancerV2Vault(vault, asynchronous=True)
         # in earlier web3 versions, we would get `None`. More recently, we get ContractLogicError. This handles both
-        if CHAINID == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+        if CONNECTED_TO_MAINNET and await self.__build_name__ == "CronV1Pool":
             # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi?
             return BalancerV2Vault(
                 "0xBA12222222228d8Ba445958a75a0704d566BF2C8", asynchronous=True
@@ -464,7 +463,7 @@ class BalancerV2Pool(BalancerPool):
             raise ValueError(f"{self} has no vault") from None
         elif poolid := await self.__id__:
             _, specialization = await vault.contract.getPool.coroutine(poolid)
-        elif CHAINID == Network.Mainnet and await self.__build_name__ == "CronV1Pool":
+        elif CONNECTED_TO_MAINNET and await self.__build_name__ == "CronV1Pool":
             # NOTE: these `CronV1Pool` tokens ARE balancer pools but don't match the expected pool abi?
             return PoolSpecialization.CronV1Pool
         else:

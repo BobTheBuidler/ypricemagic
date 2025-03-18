@@ -7,7 +7,7 @@ import a_sync
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
-from y.constants import CHAINID, weth
+from y.constants import CHAINID, CONNECTED_TO_MAINNET, weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices import magic
@@ -101,6 +101,9 @@ class wstEth(a_sync.ASyncGenericBase):
 wsteth = wstEth(asynchronous=True)
 
 
+_WSTETH_ADDRS = (wsteth.address, wsteth.wrapped_for_curve)
+
+
 def is_wsteth(address: AnyAddressType) -> bool:
     """
     Check if a given address is wstETH or its wrapped version for Curve on Ethereum Mainnet.
@@ -125,7 +128,4 @@ def is_wsteth(address: AnyAddressType) -> bool:
     See Also:
         - :class:`wstEth`
     """
-    return CHAINID == Network.Mainnet and convert.to_address(address) in [
-        wsteth.address,
-        wsteth.wrapped_for_curve,
-    ]
+    return CONNECTED_TO_MAINNET and convert.to_address(address) in _WSTETH_ADDRS

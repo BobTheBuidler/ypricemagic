@@ -7,7 +7,7 @@ import a_sync
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
-from y.constants import CHAINID
+from y.constants import CONNECTED_TO_MAINNET
 from y.contracts import has_method, has_methods
 from y.datatypes import (
     Address,
@@ -17,7 +17,6 @@ from y.datatypes import (
     UsdPrice,
     UsdValue,
 )
-from y.networks import Network
 from y.prices import magic
 from y.utils.multicall import multicall_same_func_same_contract_different_inputs
 
@@ -76,10 +75,9 @@ async def get_pool(token_address: AnyAddressType) -> Address:
         - :func:`is_saddle_lp`
     """
     token_address = await convert.to_address_async(token_address)
-    if CHAINID == Network.Mainnet:
-        if (
-            token_address == "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368"
-        ):  # saddle aleth doesn't have swap() function
+    if CONNECTED_TO_MAINNET:
+        # saddle aleth doesn't have swap() function
+        if token_address == "0xc9da65931ABf0Ed1b74Ce5ad8c041C4220940368":
             return "0xa6018520EAACC06C30fF2e1B3ee2c7c22e64196a"
         elif token_address == "0xd48cF4D7FB0824CC8bAe055dF3092584d0a1726A":  # saddle d4
             return "0xC69DDcd4DFeF25D8a793241834d4cc4b3668EAD6"
