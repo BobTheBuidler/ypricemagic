@@ -17,7 +17,7 @@ from y import convert
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase
-from y.constants import CHAINID, usdc, weth
+from y.constants import CHAINID, CONNECTED_TO_MAINNET, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
@@ -485,7 +485,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         """
         logger.debug("checking %s liquidity for %s at %s", self, token, block)
         if (
-            CHAINID == Network.Mainnet
+            CONNECTED_TO_MAINNET
             and token == "0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D"
         ):
             # LQTY, TODO refactor this somehow

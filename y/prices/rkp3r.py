@@ -6,10 +6,9 @@ from typing import Optional
 import a_sync
 
 from y import ENVIRONMENT_VARIABLES as ENVS
-from y.constants import CHAINID
+from y.constants import CONNECTED_TO_MAINNET
 from y.contracts import Contract
 from y.datatypes import Address, Block
-from y.networks import Network
 from y.prices import magic
 
 logger = logging.getLogger(__name__)
@@ -35,7 +34,7 @@ def is_rkp3r(address: Address) -> bool:
         >>> is_rkp3r("0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44")
         False
     """
-    return CHAINID == Network.Mainnet and address == RKP3R
+    return CONNECTED_TO_MAINNET and address == RKP3R
 
 
 @a_sync.a_sync(default="sync")

@@ -21,9 +21,9 @@ The address used to represent the native token (e.g., ETH on Ethereum, AVAX on A
 sushi: Optional[Contract] = None
 """
 A placeholder for the Sushi token contract, which may be set depending on the network.
-"""
+""" 
 
-if CHAINID == Network.Mainnet:
+if CONNECTED_TO_MAINNET := CHAINID == Network.Mainnet:
     weth = Contract("0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2")
     """Wrapped Ether (WETH) contract on Ethereum Mainnet."""
 

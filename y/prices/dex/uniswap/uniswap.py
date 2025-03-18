@@ -5,16 +5,16 @@ from contextlib import suppress
 from typing import List, Optional, Tuple, Union
 
 import a_sync
-from brownie import ZERO_ADDRESS, chain
+from brownie import ZERO_ADDRESS
 from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
+from y.constants import CONNECTED_TO_MAINNET
 from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import NonStandardERC20, contract_not_verified
-from y.networks import Network
 from y.prices.dex.solidly import SolidlyRouter
 from y.prices.dex.uniswap import v3
 from y.prices.dex.uniswap.v1 import UniswapV1
@@ -76,7 +76,7 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
                     raise
         self.v1 = (
             UniswapV1(asynchronous=self.asynchronous)
-            if chain.id == Network.Mainnet
+            if CONNECTED_TO_MAINNET
             else None
         )
         self.v3 = (

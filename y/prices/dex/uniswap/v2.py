@@ -21,7 +21,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._decorators import continue_on_revert, stuck_coro_debugger
 from y.classes.common import ERC20, ContractBase, WeiBalance
-from y.constants import CHAINID, STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
+from y.constants import CHAINID, CONNECTED_TO_MAINNET, STABLECOINS, WRAPPED_GAS_COIN, sushi, usdc, weth
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (
     Address,
@@ -709,7 +709,7 @@ class UniswapRouterV2(ContractBase):
         pools: Dict[UniswapV2Pool, Address]
 
         if (
-            CHAINID == Network.Mainnet
+            CONNECTED_TO_MAINNET
             and token_address == WRAPPED_GAS_COIN
             and self.label == "uniswap v2"
         ):

@@ -8,7 +8,7 @@ from typing_extensions import Self
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import exceptions
 from y._decorators import stuck_coro_debugger
-from y.constants import CHAINID
+from y.constants import CHAINID, CONNECTED_TO_MAINNET
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.prices.dex.balancer._abc import BalancerABC
@@ -188,7 +188,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
         price = None
 
         if (  # NOTE: Only query v2 if block queried > v2 deploy block plus some extra blocks to build up liquidity
-            CHAINID == Network.Mainnet and (not block or block > 12272146 + 100000)
+            CONNECTED_TO_MAINNET and (not block or block > 12272146 + 100000)
         ) or (
             CHAINID == Network.Fantom and (not block or block > 16896080)
         ):  # TODO: refactor this out
@@ -199,7 +199,7 @@ class BalancerMultiplexer(a_sync.ASyncGenericBase):
                 logger.debug("balancer v2 -> $%s", price)
                 return price
 
-        if not price and CHAINID == Network.Mainnet:
+        if not price and CONNECTED_TO_MAINNET:
             v1 = await self.__v1__
             if price := await v1.get_token_price(
                 token_address, block, skip_cache=skip_cache, sync=False

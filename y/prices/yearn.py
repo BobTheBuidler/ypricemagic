@@ -12,7 +12,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
 from y._decorators import stuck_coro_debugger
 from y.classes.common import ERC20
-from y.constants import CHAINID, weth
+from y.constants import CHAINID, CONNECTED_TO_MAINNET, weth
 from y.contracts import Contract, has_method, has_methods, probe
 from y.datatypes import AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
@@ -182,7 +182,7 @@ class YearnInspiredVault(ERC20):
                     asynchronous=self.asynchronous,
                 )
         elif (
-            CHAINID == Network.Mainnet
+            CONNECTED_TO_MAINNET
             and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48"
         ):
             # ynETH yield nest has no method for underlying

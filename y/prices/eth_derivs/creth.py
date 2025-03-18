@@ -7,9 +7,8 @@ import a_sync
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20
-from y.constants import CHAINID, weth
+from y.constants import CONNECTED_TO_MAINNET, weth
 from y.datatypes import AnyAddressType, Block, UsdPrice
-from y.networks import Network
 from y.prices import magic
 from y.utils.raw_calls import raw_call
 
@@ -29,11 +28,7 @@ def is_creth(token: AnyAddressType) -> bool:
         >>> is_creth("0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd")
         True
     """
-    address = convert.to_address(token)
-    return (
-        CHAINID == Network.Mainnet
-        and address == "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd"
-    )
+    return CONNECTED_TO_MAINNET and convert.to_address(token) == "0xcBc1065255cBc3aB41a6868c22d1f1C573AB89fd"
 
 
 @a_sync.a_sync(default="sync")

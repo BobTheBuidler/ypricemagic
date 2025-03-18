@@ -18,7 +18,7 @@ from web3.exceptions import ContractLogicError
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y.classes.common import ERC20, WeiBalance, _EventsLoader, _Loader
-from y.constants import CHAINID
+from y.constants import CHAINID, CONNECTED_TO_MAINNET
 from y.contracts import Contract, contract_creation_block_async
 from y.datatypes import (
     Address,
@@ -79,6 +79,13 @@ class Ids(IntEnum):
     Curve_Tricrypto_Factory = 11
     CurveStableswapFactoryNG = 12
 
+
+_METAPOOL_FACTORY_IDS = (
+    Ids.Metapool_Factory,
+    Ids.crvUSD_Plain_Pools,
+    Ids.Curve_Tricrypto_Factory,
+    Ids.CurveStableswapFactoryNG,
+)
 
 _LT = TypeVar("_LT", bound=_Loader)
 
@@ -173,20 +180,15 @@ class AddressProvider(_CurveEventsLoader):
         if debug_logs := logger.isEnabledFor(logging.DEBUG):
             logger._log(logging.DEBUG, "loading pools from metapool factories", ())
         # TODO: remove this once curve adds to address provider
-        if CHAINID == Network.Mainnet:
+        if CONNECTED_TO_MAINNET:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
                 "0x6A8cbed756804B16E05E741eDaBd5cB544AE21bf"
             ]
 
         if metapool_factories := [
             Factory(factory, asynchronous=self.asynchronous)
-            for i in [
-                Ids.Metapool_Factory,
-                Ids.crvUSD_Plain_Pools,
-                Ids.Curve_Tricrypto_Factory,
-                Ids.CurveStableswapFactoryNG,
-            ]
-            for factory in self.identifiers[i]
+            for factories in map(self.identifiers.get, _METAPOOL_FACTORY_IDS)
+            for factory in factories
         ]:
             async for factory, pool_list in a_sync.map(
                 Factory.read_pools, metapool_factories
