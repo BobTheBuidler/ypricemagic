@@ -601,7 +601,7 @@
                 <span class="p">}</span>
             <span class="p">)</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="n">errs</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">errs</span> <span class="o">=</span> <span class="p">(</span>
             <span class="s2">&quot;Service Unavailable for url:&quot;</span><span class="p">,</span>
             <span class="s2">&quot;exceed maximum block range&quot;</span><span class="p">,</span>
             <span class="s2">&quot;block range is too wide&quot;</span><span class="p">,</span>
@@ -609,8 +609,8 @@
             <span class="s2">&quot;parse error&quot;</span><span class="p">,</span>
             <span class="s2">&quot;method handler crashed&quot;</span><span class="p">,</span>
             <span class="s2">&quot;Log response size exceeded.&quot;</span><span class="p">,</span>
-        <span class="p">]</span>
-        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="n">errs</span><span class="p">):</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">,</span> <span class="n">errs</span><span class="p">)):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;your node is having trouble, breaking batch in half&quot;</span><span class="p">)</span>
             <span class="n">batch_size</span> <span class="o">=</span> <span class="n">end</span> <span class="o">-</span> <span class="n">start</span> <span class="o">+</span> <span class="mi">1</span>
             <span class="n">half_of_batch</span> <span class="o">=</span> <span class="n">batch_size</span> <span class="o">//</span> <span class="mi">2</span>

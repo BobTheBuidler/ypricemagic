@@ -346,11 +346,16 @@
         <span class="n">balances_aiterator</span> <span class="o">=</span> <span class="n">balance_tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">pools_for_token</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">),</span> <span class="n">pop</span><span class="o">=</span><span class="kc">True</span>
         <span class="p">)</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="n">balances_aiterator</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
-            <span class="n">_lookup_balance_from_tuple</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">_lookup_balance_from_tuple</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;deepest pool </span><span class="si">%s</span><span class="s2"> balance </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">balance</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">pool</span></div>
+        <span class="n">filtered</span> <span class="o">=</span> <span class="n">balances_aiterator</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">_lookup_balance_from_tuple</span><span class="p">)</span>
+        <span class="n">high_to_low</span> <span class="o">=</span> <span class="n">filtered</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">key</span><span class="o">=</span><span class="n">_lookup_balance_from_tuple</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="n">high_to_low</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;deepest pool </span><span class="si">%s</span><span class="s2"> balance </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">balance</span><span class="p">))</span>
+                <span class="k">return</span> <span class="n">pool</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">balance</span> <span class="ow">in</span> <span class="n">high_to_low</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">pool</span></div>
 </div>
 
 

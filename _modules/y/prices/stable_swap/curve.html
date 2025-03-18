@@ -69,11 +69,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.stable_swap.curve</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">sleep</span>
+<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Task</span><span class="p">,</span> <span class="n">create_task</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">enum</span> <span class="kn">import</span> <span class="n">IntEnum</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span>
+<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">filterfalse</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">TypeVar</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
@@ -116,7 +117,7 @@
 
 <span class="n">T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;T&quot;</span><span class="p">)</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># curve registry documentation https://curve.readthedocs.io/registry-address-provider.html</span>
 <span class="n">ADDRESS_PROVIDER</span> <span class="o">=</span> <span class="s2">&quot;0x0000000022D53366457F9d5E68Ec105046FC4383&quot;</span>
@@ -274,8 +275,8 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_factories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># factory events are quite useless, so we use a different method</span>
-        <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">,</span> <span class="p">())</span>
+        <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">,</span> <span class="p">())</span>
         <span class="c1"># TODO: remove this once curve adds to address provider</span>
         <span class="k">if</span> <span class="n">CONNECTED_TO_MAINNET</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -302,9 +303,7 @@
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Cryptopool_Factory</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                    <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">,</span> <span class="p">()</span>
-                <span class="p">)</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">,</span> <span class="p">())</span>
             <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Factory</span><span class="p">,</span> <span class="n">identifiers</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">curve</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -369,7 +368,7 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">pool_list</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">read_pools</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+        <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
             <span class="o">*</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">__load_pool</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">)</span>
@@ -379,7 +378,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">))</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">))</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__load_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
@@ -395,7 +394,7 @@
         <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">lp_token</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="n">factory</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">))</span></div>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">))</span></div>
 
 
 
@@ -913,14 +912,11 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="k">if</span> <span class="n">pools</span> <span class="o">:=</span> <span class="p">[</span>
-            <span class="n">pool</span>
-            <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coin_to_pools__</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="p">[])</span>
-            <span class="k">if</span> <span class="n">pool</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ignore_pools</span>
-        <span class="p">]:</span>
-            <span class="k">return</span> <span class="k">await</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
-                <span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">pools_for_token</span> <span class="o">:=</span> <span class="p">(</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__coin_to_pools__</span><span class="p">)</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">pools</span> <span class="o">:=</span> <span class="nb">list</span><span class="p">(</span><span class="n">filterfalse</span><span class="p">(</span><span class="n">ignore_pools</span><span class="o">.</span><span class="fm">__contains__</span><span class="p">,</span> <span class="n">pools_for_token</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="k">await</span> <span class="n">CurvePool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="o">.</span><span class="n">max</span><span class="p">(</span>
+                    <span class="n">pools</span><span class="p">,</span> <span class="n">token</span><span class="o">=</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="mi">0</span></div>
 
 

@@ -69,12 +69,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.uniswap.v3</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">math</span>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">cycle</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">DefaultDict</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
@@ -110,7 +110,7 @@
 <span class="n">UNISWAP_V3_FACTORY</span> <span class="o">=</span> <span class="s2">&quot;0x1F98431c8aD98523631AE4a59f267346ea31F984&quot;</span>
 <span class="n">UNISWAP_V3_QUOTER</span> <span class="o">=</span> <span class="s2">&quot;0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6&quot;</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 <span class="c1"># same addresses on all networks</span>
 <span class="n">addresses</span> <span class="o">=</span> <span class="p">{</span>
@@ -263,11 +263,10 @@
         <span class="k">return</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
 
+    <span class="c1"># DEBUG: lets try a semaphore here</span>
 <div class="viewcode-block" id="UniswapV3Pool.check_liquidity">
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.UniswapV3Pool.check_liquidity">[docs]</a>
-    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span>
-        <span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span> <span class="n">semaphore</span><span class="o">=</span><span class="mi">10000</span>
-    <span class="p">)</span>  <span class="c1"># lets try a semaphore here</span>
+    <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">,</span> <span class="n">semaphore</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
@@ -285,19 +284,32 @@
 <span class="sd">            &gt;&gt;&gt; pool = UniswapV3Pool(...)</span>
 <span class="sd">            &gt;&gt;&gt; liquidity = await pool.check_liquidity(&quot;0xToken0Address&quot;, 1234567)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">deploy_block</span><span class="p">(</span><span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;block </span><span class="si">%s</span><span class="s2"> prior to </span><span class="si">%s</span><span class="s2"> deploy block&quot;</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;block </span><span class="si">%s</span><span class="s2"> prior to </span><span class="si">%s</span><span class="s2"> deploy block&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="bp">self</span><span class="p">))</span>
             <span class="k">return</span> <span class="mi">0</span>
+
         <span class="k">try</span><span class="p">:</span>
             <span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="p">[</span><span class="n">token</span><span class="p">]</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not verified and we cannot fetch balance the usual way. returning 0.&quot;</span><span class="p">,</span>
-                <span class="n">token</span><span class="p">,</span>
-            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not verified and we cannot fetch balance the usual way. returning 0.&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">token</span><span class="p">,),</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="k">return</span> <span class="n">liquidity</span></div>
 
 
@@ -597,7 +609,11 @@
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; liquidity = await uniswap_v3.check_liquidity(&quot;0xTokenAddress&quot;, 1234567)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
+            <span class="p">)</span>
+
         <span class="k">if</span> <span class="p">(</span>
             <span class="n">CONNECTED_TO_MAINNET</span>
             <span class="ow">and</span> <span class="n">token</span> <span class="o">==</span> <span class="s2">&quot;0x6DEA81C8171D0bA574754EF6F8b412F2Ed88c54D&quot;</span>
@@ -607,7 +623,10 @@
 
         <span class="n">quoter</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__quoter__</span>
         <span class="k">if</span> <span class="n">block</span> <span class="ow">and</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">quoter</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;block </span><span class="si">%s</span><span class="s2"> is before </span><span class="si">%s</span><span class="s2"> deploy block&quot;</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">quoter</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;block </span><span class="si">%s</span><span class="s2"> is before </span><span class="si">%s</span><span class="s2"> deploy block&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">quoter</span><span class="p">)</span>
+                <span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">token</span> <span class="o">==</span> <span class="n">weth</span><span class="o">.</span><span class="n">address</span><span class="p">:</span>
@@ -626,24 +645,44 @@
         <span class="n">pools_for_token</span><span class="p">:</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">ASyncIterator</span><span class="p">[</span><span class="n">UniswapV3Pool</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pools_for_token</span><span class="p">(</span>
             <span class="n">token</span><span class="p">,</span> <span class="n">block</span>
         <span class="p">)</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools_for_token</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_fn</span><span class="p">):</span>
-            <span class="c1"># the mapping will start the tasks internally</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;starting token_out_task for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
-            <span class="n">token_out_tasks</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools_for_token</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_fn</span><span class="p">):</span>
+                <span class="c1"># the mapping will start the tasks internally</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;starting token_out_task for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pool</span><span class="p">,))</span>
+                <span class="n">token_out_tasks</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">pools_for_token</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">filter_fn</span><span class="p">):</span>
+                <span class="n">token_out_tasks</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">token_out_tasks</span><span class="p">:</span>
             <span class="k">return</span> <span class="mi">0</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> token_out_tasks for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">token_out_tasks</span>
-        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">DEBUG</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> token_out_tasks for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">token_out_tasks</span><span class="p">),</span>
+            <span class="p">)</span>
 
         <span class="c1"># Since uni v3 liquidity can be provided asymmetrically, the most liquid pool in terms of `token` might not actually be the most liquid pool in terms of `token_out`</span>
         <span class="c1"># We need some spaghetticode here to account for these erroneous liquidity values</span>
         <span class="c1"># TODO: Refactor this</span>
         <span class="n">token_out_liquidity</span><span class="p">:</span> <span class="n">DefaultDict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
-        <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">liquidity</span> <span class="ow">in</span> <span class="n">token_out_tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
-            <span class="n">token_out_liquidity</span><span class="p">[</span><span class="n">pool</span><span class="o">.</span><span class="n">_get_token_out</span><span class="p">(</span><span class="n">token</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">liquidity</span><span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> token_out_liquidity: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">token_out_liquidity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">liquidity</span> <span class="ow">in</span> <span class="n">token_out_tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                    <span class="n">DEBUG</span><span class="p">,</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">),</span>
+                <span class="p">)</span>
+                <span class="n">token_out_liquidity</span><span class="p">[</span><span class="n">pool</span><span class="o">.</span><span class="n">_get_token_out</span><span class="p">(</span><span class="n">token</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">liquidity</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> token_out_liquidity: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">token_out_liquidity</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">liquidity</span> <span class="ow">in</span> <span class="n">token_out_tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+                <span class="n">token_out_liquidity</span><span class="p">[</span><span class="n">pool</span><span class="o">.</span><span class="n">_get_token_out</span><span class="p">(</span><span class="n">token</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">liquidity</span><span class="p">)</span>
 
         <span class="n">token_out_min_liquidity</span> <span class="o">=</span> <span class="p">{</span>
             <span class="n">token_out</span><span class="p">:</span> <span class="nb">min</span><span class="p">(</span><span class="n">liquidities</span><span class="p">)</span>
@@ -657,17 +696,24 @@
                 <span class="nb">len</span><span class="p">(</span><span class="n">token_out_liquidity</span><span class="p">[</span><span class="n">token_out</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span>
                 <span class="ow">and</span> <span class="n">liquidity</span> <span class="o">==</span> <span class="n">token_out_min_liquidity</span><span class="p">[</span><span class="n">token_out</span><span class="p">]</span>
             <span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;ignoring liquidity for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;ignoring liquidity for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pool</span><span class="p">,))</span>
             <span class="k">elif</span> <span class="n">token_out</span> <span class="o">==</span> <span class="n">weth</span> <span class="ow">and</span> <span class="n">liquidity</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">**</span><span class="mi">19</span><span class="p">:</span>  <span class="c1"># 10 ETH</span>
                 <span class="c1"># NOTE: this is totally arbitrary, works for all known cases but eventually will probably cause issues</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;insufficient liquidity for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;insufficient liquidity for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">pool</span><span class="p">,))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">token_in_tasks</span><span class="p">[</span><span class="n">pool</span><span class="p">]</span>
 
         <span class="n">liquidity</span> <span class="o">=</span> <span class="p">(</span>
             <span class="k">await</span> <span class="n">token_in_tasks</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">token_in_tasks</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
+                <span class="n">DEBUG</span><span class="p">,</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">),</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">liquidity</span></div>
 
 
