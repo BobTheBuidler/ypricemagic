@@ -180,8 +180,8 @@
 
 <span class="n">wsteth</span> <span class="o">=</span> <span class="n">wstEth</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-
-<span class="n">_WSTETH_ADDRS</span> <span class="o">=</span> <span class="p">(</span><span class="n">wsteth</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">wsteth</span><span class="o">.</span><span class="n">wrapped_for_curve</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">CONNECTED_TO_MAINNET</span><span class="p">:</span>
+    <span class="n">_WSTETH_ADDRS</span> <span class="o">=</span> <span class="p">(</span><span class="n">wsteth</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">wsteth</span><span class="o">.</span><span class="n">wrapped_for_curve</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="is_wsteth">
