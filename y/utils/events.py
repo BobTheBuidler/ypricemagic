@@ -864,7 +864,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             >>> async for event in processed_events.objects(1000100):
             ...     print(event)
         """
-        return self._objects_thru(block=to_block, from_block=from_block)
+        return self._objects_thru(block=to_block)
 
     async def _extend(self, logs: List[Log]) -> None:
         """
