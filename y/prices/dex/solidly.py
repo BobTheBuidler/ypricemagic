@@ -56,13 +56,14 @@ class SolidlyRouterBase(UniswapRouterV2):
                 amount_in, routes, block_identifier=block
             )
         except Exception as e:
-            strings = [
+            strings = (
                 "INSUFFICIENT_INPUT_AMOUNT",
                 "INSUFFICIENT_LIQUIDITY",
                 "INSUFFICIENT_OUT_LIQUIDITY",
                 "Sequence has incorrect length",
-            ]
-            if not call_reverted(e) and all(s not in str(e) for s in strings):
+                "Call reverted: Integer overflow",
+            )
+            if not call_reverted(e) and not any(str(e).__contains__, strings):
                 raise
 
 
