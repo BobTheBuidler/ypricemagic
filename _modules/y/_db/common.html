@@ -502,9 +502,7 @@
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">blockNumber</span>
 
     <span class="nd">@ASyncIterator</span><span class="o">.</span><span class="n">wrap</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_objects_thru</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">],</span> <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_objects_thru</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_task</span><span class="p">()</span>
         <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="n">yielded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span>
