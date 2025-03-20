@@ -831,9 +831,7 @@ async def has_methods(
         if _func is all:
             return False
         return any(
-            await igather(
-                has_method(address, method, sync=False) for method in methods
-            )
+            await igather(has_method(address, method, sync=False) for method in methods)
         )
 
 

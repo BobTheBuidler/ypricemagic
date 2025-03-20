@@ -83,7 +83,8 @@ async def multicall_same_func_same_contract_different_inputs(
     address = await convert.to_address_async(address)
     results = await igather(
         (
-            Call(address, [method, input], [[input, apply_func]], block_id=block) for input in inputs
+            Call(address, [method, input], [[input, apply_func]], block_id=block)
+            for input in inputs
         ),
         return_exceptions=return_None_on_failure,
     )
