@@ -1,10 +1,10 @@
 import logging
 import threading
-from asyncio import gather
 from contextlib import suppress
 from typing import List, Optional, Tuple, Union
 
 import a_sync
+from a_sync import igather
 from brownie import ZERO_ADDRESS
 from web3.exceptions import ContractLogicError
 
@@ -202,19 +202,13 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             >>> print(routers)
         """
         token_in = await convert.to_address_async(token_in)
-        depth_to_router = dict(
-            zip(
-                await gather(
-                    *(
-                        uniswap.check_liquidity(
-                            token_in, block, ignore_pools=ignore_pools, sync=False
-                        )
-                        for uniswap in self.uniswaps
-                    )
-                ),
-                self.uniswaps,
+        liquidity = await igather(
+            uniswap.check_liquidity(
+                token_in, block, ignore_pools=ignore_pools, sync=False
             )
+            for uniswap in self.uniswaps
         )
+        depth_to_router = dict(zip(liquidity, self.uniswaps))
         return [
             depth_to_router[balance]
             for balance in sorted(depth_to_router, reverse=True)
@@ -250,13 +244,11 @@ class UniswapMultiplexer(a_sync.ASyncGenericSingleton):
             >>> print(liquidity)
         """
         return max(
-            await gather(
-                *(
-                    uniswap.check_liquidity(
-                        token, block, ignore_pools=ignore_pools, sync=False
-                    )
-                    for uniswap in self.uniswaps
+            await igather(
+                uniswap.check_liquidity(
+                    token, block, ignore_pools=ignore_pools, sync=False
                 )
+                for uniswap in self.uniswaps
             )
         )
 

@@ -1,6 +1,5 @@
-import functools
 import logging
-from asyncio import gather
+from functools import wraps
 from typing import (
     Callable,
     Dict,
@@ -15,6 +14,7 @@ from typing import (
 
 import a_sync
 import dank_mids
+from a_sync import igather
 from brownie import ZERO_ADDRESS
 from brownie.exceptions import ContractNotFound
 from typing_extensions import ParamSpec
@@ -247,7 +247,7 @@ def __cache(get_price: Callable[_P, _T]) -> Callable[_P, _T]:
         A wrapped version of the input function with caching functionality.
     """
 
-    @functools.wraps(get_price)
+    @wraps(get_price)
     async def cache_wrap(
         token: AnyAddressType,
         block: Block,
@@ -597,11 +597,8 @@ async def _get_price_from_dexes(
     # dexes_by_depth = dict(
     #     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)
     # )
-    liquidity = await gather(
-        *(
-            dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False)
-            for dex in dexes
-        )
+    liquidity = await igather(
+        dex.check_liquidity(token, block, ignore_pools=ignore_pools, sync=False) for dex in dexes
     )
     depth_to_dex: Dict[int, object] = dict(zip(liquidity, dexes))
     dexes_by_depth: Dict[int, object] = {

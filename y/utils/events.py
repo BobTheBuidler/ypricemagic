@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from asyncio import as_completed, gather, get_event_loop, sleep
+from asyncio import as_completed, get_event_loop, sleep
 from collections import Counter, defaultdict
 from functools import cached_property, wraps
 from importlib.metadata import version
@@ -25,6 +25,7 @@ from typing import (
 import a_sync
 import dank_mids
 import eth_retry
+from a_sync import igather
 from a_sync.executor import _AsyncExecutorMixin
 from async_property import async_property
 from brownie import web3
@@ -181,8 +182,8 @@ async def get_logs_asap(
     if verbose > 0:
         logger.info("fetching %d batches", len(ranges))
 
-    batches = await gather(
-        *(_get_logs_async(address, topics, start, end) for start, end in ranges)
+    batches = await igather(
+        _get_logs_async(address, topics, start, end) for start, end in ranges
     )
     return list(chain(*batches))
 
@@ -883,7 +884,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
 
-            should_include = await gather(*map(self.__include_event, decoded))
+            should_include = await igather(map(self.__include_event, decoded))
 
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)

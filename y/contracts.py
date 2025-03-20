@@ -22,6 +22,7 @@ import a_sync
 import aiohttp
 import dank_mids
 import eth_retry
+from a_sync import igather
 from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
@@ -827,13 +828,11 @@ async def has_methods(
         # Out of gas error implies one or more method is state-changing.
         # If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs
         # If `_func == any` maybe one of the methods will work without "out of gas" error
-        return (
-            False
-            if _func == all
-            else any(
-                await gather(
-                    *(has_method(address, method, sync=False) for method in methods)
-                )
+        if _func is all:
+            return False
+        return any(
+            await igather(
+                has_method(address, method, sync=False) for method in methods
             )
         )
 

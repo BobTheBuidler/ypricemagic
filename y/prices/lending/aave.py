@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import Awaitable, List, Optional, Union
 
 import a_sync
+from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from multicall import Call
@@ -331,11 +332,9 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     async def is_atoken(self, atoken_address: AnyAddressType) -> bool:
         logger = get_price_logger(atoken_address, block=None, extra="aave")
         is_atoken = any(
-            await gather(
-                *(
-                    pool.contains(atoken_address, sync=False)
-                    for pool in await self.__pools__
-                )
+            await igather(
+                pool.contains(atoken_address, sync=False)
+                for pool in await self.__pools__
             )
         )
         logger.debug("is_atoken: %s", is_atoken)

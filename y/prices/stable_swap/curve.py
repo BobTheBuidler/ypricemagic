@@ -1,4 +1,4 @@
-from asyncio import Task, create_task, gather, sleep
+from asyncio import Task, create_task, sleep
 from collections import defaultdict
 from enum import IntEnum
 from functools import cached_property
@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Tuple, TypeVar
 
 import a_sync
 import brownie
+from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
@@ -156,7 +157,7 @@ class RegistryEvents(CurveEvents):
         curve.token_to_pool[lp_token] = pool
 
     async def _set_lock(self, block: int) -> None:
-        await gather(*self._tasks)
+        await igather(self._tasks)
         self._tasks.clear()
         self._lock.set(block)
 
@@ -254,12 +255,10 @@ class Factory(_Loader):
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
         debug_logs = logger.isEnabledFor(DEBUG)
-        await gather(
-            *(
-                self.__load_pool(pool, debug_logs)
-                for pool in pool_list
-                if pool not in curve.factories[self.address]
-            )
+        await igather(
+            self.__load_pool(pool, debug_logs)
+            for pool in pool_list
+            if pool not in curve.factories[self.address]
         )
         self._loaded.set()
         if debug_logs:

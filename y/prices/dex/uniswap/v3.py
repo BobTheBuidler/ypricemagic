@@ -1,5 +1,4 @@
 import math
-from asyncio import gather
 from collections import defaultdict
 from functools import cached_property, lru_cache
 from itertools import cycle
@@ -8,6 +7,7 @@ from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
 
 import a_sync
 import eth_retry
+from a_sync import igather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from eth_typing import ChecksumAddress, HexAddress
@@ -455,8 +455,8 @@ class UniswapV3(a_sync.ASyncGenericBase):
         logger.debug("paths: %s", paths)
 
         amount_in = await ERC20(token, asynchronous=True).scale
-        results = await gather(
-            *(self._quote_exact_input(path, amount_in, block) for path in paths),
+        results = await igather(
+            (self._quote_exact_input(path, amount_in, block) for path in paths),
             return_exceptions=True,
         )
 
