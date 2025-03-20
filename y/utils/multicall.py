@@ -1,11 +1,11 @@
 import contextlib
 import logging
-from asyncio import gather
 from typing import Any, Callable, Iterable, List, Optional, Tuple, Union
 
 import a_sync
 import brownie
 import dank_mids
+from a_sync import igather
 from eth_abi.exceptions import InsufficientDataBytes
 from multicall import Call
 from web3.exceptions import CannotHandleRequest
@@ -62,11 +62,9 @@ async def multicall_same_func_no_input(
 ) -> List[Any]:
 
     addresses = [await convert.to_address_async(address) for address in addresses]
-    results = await gather(
-        *(
-            Call(address, [method], [[address, apply_func]], block_id=block)
-            for address in addresses
-        )
+    results = await igather(
+        Call(address, [method], ((address, apply_func)), block_id=block)
+        for address in addresses
     )
     return [v for call in results for v in call.values()]
 
@@ -83,8 +81,8 @@ async def multicall_same_func_same_contract_different_inputs(
 ) -> List[Any]:
     assert inputs
     address = await convert.to_address_async(address)
-    results = await gather(
-        *(
+    results = await igather(
+        (
             Call(address, [method, input], [[input, apply_func]], block_id=block)
             for input in inputs
         ),

@@ -2,9 +2,9 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from asyncio import gather
 from typing import Any, Iterable, Optional, Tuple
 
+from a_sync import igather
 from multicall import Call
 
 from y._decorators import stuck_coro_debugger
@@ -83,8 +83,8 @@ async def _gather_methods_brownie(
     from y import Contract
 
     contract = await Contract.coroutine(address)
-    return await gather(
-        *(
+    return await igather(
+        (
             getattr(contract, method).coroutine(block_identifier=block)
             for method in methods
         ),
@@ -121,7 +121,7 @@ async def _gather_methods_raw(
         >>> print(results)
         ('Dai Stablecoin', 'DAI', 18)
     """
-    return await gather(
-        *(Call(address, [method], block_id=block) for method in methods),
+    return await igather(
+        (Call(address, [method], block_id=block) for method in methods),
         return_exceptions=return_exceptions,
     )

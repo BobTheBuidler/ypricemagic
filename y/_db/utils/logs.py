@@ -3,7 +3,7 @@ import logging
 from asyncio import gather
 from typing import List, Optional
 
-from a_sync import PruningThreadPoolExecutor, a_sync
+from a_sync import PruningThreadPoolExecutor, a_sync, igather
 from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie.network.event import _EventItem
@@ -78,7 +78,7 @@ async def _prepare_log(log: Log) -> tuple:
     transaction_dbid, address_dbid, topic_dbids = await gather(
         get_hash_dbid(log.transactionHash.hex()),
         get_hash_dbid(log.address),
-        gather(*map(get_topic_dbid, log.topics)),
+        igather(map(get_topic_dbid, log.topics)),
     )
     topics = {
         f"topic{i}": topic_dbid
@@ -145,7 +145,7 @@ async def bulk_insert(
         _bulk_insert,
         DbLog,
         LOG_COLS,
-        await gather(*map(_prepare_log, logs)),
+        await igather(map(_prepare_log, logs)),
         sync=True,
     )
 
