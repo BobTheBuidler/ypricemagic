@@ -367,8 +367,6 @@ class Filter(_DiskCachedMixin[T, C]):
         "_checkpoints",
         "_interval",
         "_lock",
-        "__dict__",
-        "__weakref__",
     )
 
     def __init__(
