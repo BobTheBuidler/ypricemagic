@@ -1,7 +1,7 @@
-from asyncio import gather
 from typing import Optional
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.exceptions import VirtualMachineError
 from typing_extensions import Self
@@ -125,7 +125,7 @@ class Band(a_sync.ASyncGenericSingleton):
             >>> print(price)
             1.0
         """
-        oracle, asset_symbol = await gather(
+        oracle, asset_symbol = await cgather(
             self.__oracle__,
             ERC20(asset, asynchronous=True).symbol,
         )

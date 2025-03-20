@@ -1,8 +1,7 @@
 import logging
-from asyncio import gather
 from typing import Optional
 
-import a_sync
+from a_sync import a_sync, cgather
 
 import y.prices.magic
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -16,7 +15,7 @@ from y.utils.raw_calls import raw_call
 logger = logging.getLogger(__name__)
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
+@a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
 @optional_async_diskcache
 async def is_gelato_pool(token_address: AnyAddressType) -> bool:
     """
@@ -40,7 +39,7 @@ async def is_gelato_pool(token_address: AnyAddressType) -> bool:
     )
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 async def get_price(
     token: AnyAddressType,
     block: Optional[Block] = None,
@@ -68,7 +67,7 @@ async def get_price(
     """
     address = await convert.to_address_async(token)
 
-    token0, token1 = await gather(
+    token0, token1 = await cgather(
         raw_call(address, "token0()", block=block, output="address", sync=False),
         raw_call(address, "token1()", block=block, output="address", sync=False),
     )
@@ -81,7 +80,7 @@ async def get_price(
         price0,
         price1,
         total_supply,
-    ) = await gather(
+    ) = await cgather(
         raw_call(address, "gelatoBalance0()", block=block, output="int", sync=False),
         raw_call(address, "gelatoBalance1()", block=block, output="int", sync=False),
         ERC20(token0, asynchronous=True).scale,

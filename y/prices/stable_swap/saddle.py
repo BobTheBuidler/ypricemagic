@@ -1,8 +1,7 @@
 import logging
-from asyncio import gather
 from typing import List, Optional
 
-import a_sync
+from a_sync import a_sync, cgather
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -25,7 +24,7 @@ logger = logging.getLogger(__name__)
 _GET_TOKEN_INPUTS = tuple(range(8))
 
 
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
+@a_sync(default="sync", cache_type="memory", ram_cache_ttl=5 * 60)
 async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     """
     Determine if a given token is a Saddle LP token.
@@ -53,7 +52,7 @@ async def is_saddle_lp(token_address: AnyAddressType) -> bool:
     )
 
 
-@a_sync.a_sync(default="sync", ram_cache_ttl=ENVS.CACHE_TTL)
+@a_sync(default="sync", ram_cache_ttl=ENVS.CACHE_TTL)
 async def get_pool(token_address: AnyAddressType) -> Address:
     """
     Retrieve the pool address for a given Saddle LP token.
@@ -89,7 +88,7 @@ async def get_pool(token_address: AnyAddressType) -> Address:
     return pool or None
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 async def get_price(
     token_address: AddressOrContract, block: Optional[Block] = None
 ) -> UsdPrice:
@@ -109,14 +108,14 @@ async def get_price(
     See Also:
         - :func:`get_tvl`
     """
-    tvl, total_supply = await gather(
+    tvl, total_supply = await cgather(
         get_tvl(token_address, block, sync=False),
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )
     return UsdPrice(tvl / total_supply)
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 async def get_tvl(
     token_address: AnyAddressType,
     block: Optional[Block] = None,
@@ -141,7 +140,7 @@ async def get_tvl(
         - :func:`get_price`
     """
     tokens: List[ERC20]
-    pool, tokens = await gather(
+    pool, tokens = await cgather(
         get_pool(token_address, sync=False),
         get_tokens(token_address, block, sync=False),
     )
@@ -151,7 +150,7 @@ async def get_tvl(
         inputs=range(len(tokens)),
         sync=False,
     )
-    scales, prices = await a_sync.gather(
+    scales, prices = await cgather(
         ERC20.scale.map(tokens).values(pop=True),
         magic.get_prices(tokens, block, skip_cache=skip_cache, silent=True, sync=False),
     )
@@ -163,7 +162,7 @@ async def get_tvl(
     )
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 async def get_tokens(
     token_address: AnyAddressType, block: Optional[Block] = None
 ) -> List[ERC20]:
@@ -183,7 +182,7 @@ async def get_tokens(
     See Also:
         - :func:`get_pool`
     """
-    pool, response = await gather(
+    pool, response = await cgather(
         get_pool(token_address, sync=False),
         multicall_same_func_same_contract_different_inputs(
             pool,

@@ -1,9 +1,9 @@
-from asyncio import gather
 from decimal import Decimal
 from logging import getLogger
 from typing import Optional, Tuple
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from multicall.call import Call
 from typing_extensions import Self
@@ -77,7 +77,7 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
 
     # Yearn-like contracts can use these formats
     result = any(
-        await gather(
+        await cgather(
             has_methods(
                 token,
                 (
@@ -336,7 +336,7 @@ class YearnInspiredVault(ERC20):
         """
         logger = get_price_logger(self.address, block=None, extra="yearn")
         underlying: ERC20
-        share_price, underlying = await gather(
+        share_price, underlying = await cgather(
             self.share_price(block=block, sync=False), self.__underlying__
         )
         if share_price is None:

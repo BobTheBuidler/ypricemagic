@@ -1,8 +1,8 @@
-from asyncio import gather
 from decimal import Decimal
 from typing import List, Dict
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from typing_extensions import Self
@@ -46,7 +46,7 @@ class DieselPool(ContractBase):
 
     async def exchange_rate(self, block: Block) -> Decimal:
         underlying: ERC20
-        pool, underlying = await gather(self.__contract__, self.__underlying__)
+        pool, underlying = await cgather(self.__contract__, self.__underlying__)
         scale = await underlying.__scale__
         return Decimal(
             await pool.fromDiesel.coroutine(scale, block_identifier=block)
@@ -55,7 +55,7 @@ class DieselPool(ContractBase):
     async def get_price(
         self, block: Block, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Decimal:
-        underlying, exchange_rate = await gather(
+        underlying, exchange_rate = await cgather(
             self.__underlying__, self.exchange_rate(block, sync=False)
         )
         und_price = await underlying.price(block, skip_cache=skip_cache, sync=False)

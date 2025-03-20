@@ -1,9 +1,9 @@
 import logging
-from asyncio import gather
 from typing import Any, Callable, KeysView, List, Optional, Tuple, Union
 
 import a_sync
 import brownie
+from a_sync import cgather
 from brownie.convert.datatypes import EthAddress
 
 from y.contracts import Contract
@@ -149,7 +149,7 @@ async def totalSupplyReadable(
         - :func:`totalSupply`
         - :func:`decimals`
     """
-    token_supplys, token_decimals = await gather(
+    token_supplys, token_decimals = await cgather(
         totalSupply(
             contract_address_or_addresses,
             block=block,

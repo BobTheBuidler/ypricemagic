@@ -1,8 +1,7 @@
 import logging
-from asyncio import gather
 from typing import Optional
 
-import a_sync
+from a_sync import a_sync, cgather
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -34,7 +33,7 @@ def is_creth(token: AnyAddressType) -> bool:
     )
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 async def get_price_creth(
     token: AnyAddressType,
     block: Optional[Block] = None,
@@ -61,7 +60,7 @@ async def get_price_creth(
         - :class:`y.classes.common.ERC20`
     """
     address = await convert.to_address_async(token)
-    total_balance, total_supply, weth_price = await gather(
+    total_balance, total_supply, weth_price = await cgather(
         raw_call(address, "accumulated()", output="int", block=block, sync=False),
         ERC20(address, asynchronous=True).total_supply(block),
         magic.get_price(weth, block, skip_cache=skip_cache, sync=False),

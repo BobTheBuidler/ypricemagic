@@ -1,7 +1,6 @@
-from asyncio import gather, sleep
+from asyncio import sleep
 from contextlib import suppress
 from decimal import Decimal
-from functools import cached_property
 from logging import DEBUG, getLogger
 from typing import AsyncIterator, Dict, List, Optional, Set, Tuple
 
@@ -9,6 +8,7 @@ import a_sync
 import a_sync.exceptions
 import brownie
 import dank_mids
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
@@ -148,7 +148,7 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.aka.property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
-        return await gather(self.__token0__, self.__token1__)
+        return await cgather(self.__token0__, self.__token1__)
 
     __tokens__: HiddenMethodDescriptor[Self, Tuple[ERC20, ERC20]]
 
@@ -375,7 +375,7 @@ class UniswapV2Pool(ERC20):
         """
         try:
             return all(
-                await gather(
+                await cgather(
                     self.reserves(block=block, sync=False),
                     self.total_supply(block, sync=False),
                 )
@@ -558,7 +558,7 @@ class UniswapRouterV2(ContractBase):
                 logger._log(DEBUG, "deepest pool: %s", (deepest_pool,))
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
-            quote, out_scale = await gather(
+            quote, out_scale = await cgather(
                 self.get_quote(amount_in, path, block=block, sync=False),
                 ERC20(path[-1], asynchronous=True).scale,
             )
@@ -589,7 +589,7 @@ class UniswapRouterV2(ContractBase):
         fees = 0.997 ** (len(path) - 1)
         if debug_logs:
             logger._log(DEBUG, "router: %s     path: %s", (self.label, path))
-        quote, out_scale = await gather(
+        quote, out_scale = await cgather(
             self.get_quote(amount_in, path, block=block, sync=False),
             ERC20(path[-1], asynchronous=True).scale,
         )

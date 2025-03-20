@@ -1,9 +1,9 @@
 import logging
-from asyncio import gather
 from decimal import Decimal
 from typing import List, Optional
 
 import a_sync
+from a_sync import cgather
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import ERC20, WeiBalance
@@ -84,7 +84,7 @@ async def get_price(
     i, balances = 0, []
     while True:
         try:
-            coin, balance = await gather(
+            coin, balance = await cgather(
                 minter.coins.coroutine(i, block_identifier=block),
                 minter.balances.coroutine(i, block_identifier=block),
             )
@@ -93,7 +93,7 @@ async def get_price(
             i += 1
         except:
             break
-    tvl, total_supply = await gather(
+    tvl, total_supply = await cgather(
         WeiBalance.value_usd.sum(balances, sync=False),
         ERC20(token_address, asynchronous=True).total_supply_readable(block),
     )

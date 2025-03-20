@@ -1,9 +1,8 @@
 import itertools
 import logging
-from asyncio import gather
 from typing import List, Optional
 
-from a_sync import PruningThreadPoolExecutor, a_sync, igather
+from a_sync import PruningThreadPoolExecutor, a_sync, cgather, igather
 from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie.network.event import _EventItem
@@ -75,7 +74,7 @@ async def _prepare_log(log: Log) -> tuple:
         - :func:`get_topic_dbid`
         - :func:`enc_hook`
     """
-    transaction_dbid, address_dbid, topic_dbids = await gather(
+    transaction_dbid, address_dbid, topic_dbids = await cgather(
         get_hash_dbid(log.transactionHash.hex()),
         get_hash_dbid(log.address),
         igather(map(get_topic_dbid, log.topics)),
@@ -139,7 +138,7 @@ async def bulk_insert(
     )
     del topics
 
-    await gather(blocks_fut, hashes_fut, topics_fut)
+    await cgather(blocks_fut, hashes_fut, topics_fut)
 
     await executor.run(
         _bulk_insert,

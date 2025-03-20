@@ -1,9 +1,9 @@
 import logging
-from asyncio import gather
 from contextlib import suppress
 from typing import Optional, Tuple
 
 import a_sync
+from a_sync import cgather
 from brownie import ZERO_ADDRESS, chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -102,7 +102,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
         See Also:
             - :class:`~y.datatypes.UsdPrice`
         """
-        exchange, usdc_exchange, decimals = await gather(
+        exchange, usdc_exchange, decimals = await cgather(
             self.get_exchange(token_address, sync=False),
             self.get_exchange(usdc, sync=False),
             _decimals(token_address, block, sync=False),

@@ -1,11 +1,11 @@
 import contextlib
 import logging
-from asyncio import gather
 from typing import Any, Callable, Optional, Union
 
 import a_sync
 import brownie
 import dank_mids
+from a_sync import cgather
 from brownie import ZERO_ADDRESS, convert
 from brownie.convert.datatypes import EthAddress
 from eth_utils import encode_hex
@@ -300,7 +300,7 @@ async def _balanceOfReadable(
     return_None_on_failure: bool = False,
 ) -> Optional[float]:
 
-    balance, decimals = await gather(
+    balance, decimals = await cgather(
         balanceOf(
             call_address,
             input_address,

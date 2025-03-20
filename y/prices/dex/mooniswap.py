@@ -1,10 +1,9 @@
 import logging
-from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
-import a_sync
 import dank_mids
+from a_sync import a_sync, cgather
 from brownie import ZERO_ADDRESS, chain
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -29,7 +28,7 @@ else:
     gas_coin = None
 
 
-@a_sync.a_sync(default="sync", ram_cache_ttl=5 * 60)
+@a_sync(default="sync", ram_cache_ttl=5 * 60)
 async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     """
     Check if the given token address is a Mooniswap pool.
@@ -51,7 +50,7 @@ async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     return False if router is None else await router.isPool.coroutine(address)
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 async def get_pool_price(
     token: AnyAddressType,
     block: Optional[Block] = None,
@@ -80,7 +79,7 @@ async def get_pool_price(
     """
     address = await convert.to_address_async(token)
     token0, token1 = await gather_methods(address, ("token0", "token1"))
-    bal0, bal1, price0, price1, total_supply = await gather(
+    bal0, bal1, price0, price1, total_supply = await cgather(
         (
             dank_mids.eth.get_balance(address, block_identifier=block)
             if token0 == ZERO_ADDRESS

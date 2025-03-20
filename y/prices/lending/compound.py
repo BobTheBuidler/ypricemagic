@@ -1,8 +1,8 @@
 import logging
-from asyncio import gather
 from typing import Optional, Tuple
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.exceptions import VirtualMachineError
@@ -104,7 +104,7 @@ class CToken(ERC20):
         """
         if self.troller:
             # We can use the protocol's oracle which will be quick (if it works)
-            underlying_per_ctoken, underlying_price = await gather(
+            underlying_per_ctoken, underlying_price = await cgather(
                 self.underlying_per_ctoken(block=block, asynchronous=True),
                 self.get_underlying_price(block=block, asynchronous=True),
             )
@@ -113,7 +113,7 @@ class CToken(ERC20):
 
         # Or we can just price the underlying token ourselves
         underlying = await self.__underlying__
-        underlying_per_ctoken, underlying_price = await gather(
+        underlying_per_ctoken, underlying_price = await cgather(
             self.underlying_per_ctoken(block=block, asynchronous=True),
             underlying.price(block=block, skip_cache=skip_cache, asynchronous=True),
         )
@@ -160,7 +160,7 @@ class CToken(ERC20):
             - :meth:`exchange_rate`
         """
         underlying: ERC20
-        exchange_rate, decimals, underlying = await gather(
+        exchange_rate, decimals, underlying = await cgather(
             self.exchange_rate(block=block, sync=False),
             self.__decimals__,
             self.__underlying__,
@@ -217,10 +217,10 @@ class CToken(ERC20):
         oracle: Contract
         underlying: ERC20
         # always query the oracle in case it was changed
-        oracle, underlying = await gather(
+        oracle, underlying = await cgather(
             self.troller.oracle(block, asynchronous=True), self.__underlying__
         )
-        price, underlying_decimals = await gather(
+        price, underlying_decimals = await cgather(
             oracle.getUnderlyingPrice.coroutine(self.address, block_identifier=block),
             underlying.__decimals__,
             return_exceptions=True,

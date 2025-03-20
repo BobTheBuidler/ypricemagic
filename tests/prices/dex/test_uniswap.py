@@ -1,6 +1,5 @@
-from asyncio import gather
-
 import pytest
+from a_sync import cgather
 from brownie import chain
 
 from tests.fixtures import async_uni_v1, mutate_addresses
@@ -49,7 +48,7 @@ V2_TOKENS = mutate_addresses(V2_TOKENS)
 @pytest.mark.parametrize("token", V1_TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v1(token, async_uni_v1):
-    price, alt_price = await gather(
+    price, alt_price = await cgather(
         async_uni_v1.get_price(token, None),
         magic.get_price(token, skip_cache=True, sync=False),
     )
@@ -62,7 +61,7 @@ async def test_uniswap_v1(token, async_uni_v1):
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v2(token):
     deepest_router = await uniswap_multiplexer.deepest_router(token, sync=False)
-    price, alt_price = await gather(
+    price, alt_price = await cgather(
         deepest_router.get_price(token, skip_cache=True, sync=False),
         magic.get_price(token, skip_cache=True, sync=False),
     )
@@ -73,7 +72,7 @@ async def test_uniswap_v2(token):
 @pytest.mark.parametrize("token", V2_TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v3(token):
-    price, alt_price = await gather(
+    price, alt_price = await cgather(
         v3.uniswap_v3.get_price(token, skip_cache=True, sync=False),
         magic.get_price(token, skip_cache=True, sync=False),
     )
