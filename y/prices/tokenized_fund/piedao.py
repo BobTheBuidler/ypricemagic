@@ -1,9 +1,9 @@
 import logging
-from asyncio import gather
 from decimal import Decimal
 from typing import List, Optional
 
 import a_sync
+from a_sync import cgather
 from brownie import ZERO_ADDRESS
 from multicall import Call
 
@@ -58,7 +58,7 @@ async def get_price(
         - :func:`get_tvl`
         - :class:`ERC20`
     """
-    tvl, total_supply = await gather(
+    tvl, total_supply = await cgather(
         get_tvl(pie, block, skip_cache=skip_cache),
         ERC20(pie, asynchronous=True).total_supply_readable(block),
     )
@@ -140,7 +140,7 @@ async def get_tvl(
         - :func:`get_tokens`
     """
     tokens: List[ERC20]
-    pool, tokens = await gather(
+    pool, tokens = await cgather(
         get_bpool(pie_address, block), get_tokens(pie_address, block)
     )
     return await a_sync.map(
@@ -163,7 +163,7 @@ async def get_balance(
         >>> get_balance("0xBpoolAddress", ERC20("0xTokenAddress"))
         1000.0
     """
-    balance, scale = await gather(
+    balance, scale = await cgather(
         Call(token.address, ("balanceOf(address)(uint)", bpool), block_id=block),
         token.__scale__,
     )
@@ -195,7 +195,7 @@ async def get_value(
     See Also:
         - :func:`get_balance`
     """
-    balance, price = await gather(
+    balance, price = await cgather(
         get_balance(bpool, token, block),
         token.price(block, skip_cache=skip_cache, sync=False),
     )

@@ -1,7 +1,7 @@
-from asyncio import gather
 from typing import Optional, Tuple
 
 import a_sync
+from a_sync import cgather
 from brownie.exceptions import ContractNotFound
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -88,7 +88,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
             - :meth:`get_tvl`
             - :meth:`ERC20.total_supply_readable`
         """
-        tvl, total_supply = await gather(
+        tvl, total_supply = await cgather(
             self.get_tvl(
                 lp_token_address, block=block, skip_cache=skip_cache, sync=False
             ),
@@ -156,7 +156,7 @@ class GenericAmm(a_sync.ASyncGenericBase):
             - :meth:`get_price`
         """
         lp_token_contract = await Contract.coroutine(lp_token_address)
-        tokens, reserves = await gather(
+        tokens, reserves = await cgather(
             self.get_tokens(lp_token_address, sync=False),
             lp_token_contract.getReserves.coroutine(block_identifier=block),
         )

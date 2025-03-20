@@ -2,7 +2,7 @@ import logging
 import os
 import threading
 import warnings
-from asyncio import Lock, TimerHandle, gather, get_running_loop
+from asyncio import Lock, TimerHandle, get_running_loop
 from collections import defaultdict
 from functools import lru_cache
 from typing import (
@@ -22,7 +22,7 @@ import a_sync
 import aiohttp
 import dank_mids
 import eth_retry
-from a_sync import igather
+from a_sync import cgather, igather
 from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
@@ -1250,7 +1250,7 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
 
     # always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967
     # always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822
-    implementation_eip1967, implementation_eip1822 = await gather(
+    implementation_eip1967, implementation_eip1822 = await cgather(
         _get_storage_at(
             address, int(web3.keccak(text="eip1967.proxy.implementation").hex(), 16) - 1
         ),

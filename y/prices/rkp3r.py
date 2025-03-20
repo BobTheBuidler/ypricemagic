@@ -1,9 +1,9 @@
 import logging
-from asyncio import gather
 from decimal import Decimal
 from typing import Optional
 
 import a_sync
+from a_sync import cgather
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.constants import CONNECTED_TO_MAINNET
@@ -62,7 +62,7 @@ async def get_price(
     See Also:
         - :func:`y.prices.magic.get_price`
     """
-    price, discount = await gather(
+    price, discount = await cgather(
         magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False),
         get_discount(block),
     )

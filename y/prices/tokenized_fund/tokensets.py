@@ -1,9 +1,9 @@
 import logging
-from asyncio import gather
 from decimal import Decimal
 from typing import List, Optional
 
 import a_sync
+from a_sync import cgather
 from multicall import Call
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -36,7 +36,7 @@ async def is_token_set(token: AnyAddressType) -> bool:
         - :func:`y.contracts.has_methods`
     """
     return any(
-        await gather(
+        await cgather(
             has_methods(
                 token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False
             ),
@@ -148,7 +148,7 @@ class TokenSet(ERC20):
         See Also:
             - :class:`WeiBalance`
         """
-        contract, components = await gather(
+        contract, components = await cgather(
             Contract.coroutine(self.address),
             self.components(block=block, sync=False),
         )

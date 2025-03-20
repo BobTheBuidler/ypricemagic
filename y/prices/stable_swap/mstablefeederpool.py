@@ -1,8 +1,8 @@
 import logging
-from asyncio import gather
 from typing import Optional
 
 import a_sync
+from a_sync import cgather
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -72,7 +72,7 @@ async def get_price(
     """
     address = await convert.to_address_async(token)
     contract = await Contract.coroutine(address)
-    ratio, masset, scale = await gather(
+    ratio, masset, scale = await cgather(
         contract.getPrice.coroutine(block_identifier=block),
         contract.mAsset.coroutine(block_identifier=block),
         ERC20(address, asynchronous=True).scale,

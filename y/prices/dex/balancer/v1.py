@@ -1,10 +1,10 @@
 import logging
-from asyncio import gather
 from contextlib import suppress
 from decimal import Decimal
 from typing import Dict, List, Optional, Tuple
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
@@ -68,7 +68,7 @@ async def _calc_out_value(
     See Also:
         - :func:`y.prices.magic.get_price`
     """
-    out_scale, out_price = await gather(
+    out_scale, out_price = await cgather(
         ERC20(token_out, asynchronous=True).scale,
         magic.get_price(token_out, block, skip_cache=skip_cache, sync=False),
     )
@@ -193,7 +193,7 @@ class BalancerV1Pool(BalancerPool):
             >>> await pool.get_balance("0xabcdefabcdefabcdefabcdefabcdefabcdef")
             Decimal('1000')
         """
-        balance, scale = await gather(
+        balance, scale = await cgather(
             self.check_liquidity(str(token), block, sync=False),
             ERC20(token, asynchronous=True).scale,
         )

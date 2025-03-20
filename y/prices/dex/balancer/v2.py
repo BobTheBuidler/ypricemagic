@@ -1,4 +1,4 @@
-from asyncio import Task, create_task, gather
+from asyncio import Task, create_task
 from contextlib import suppress
 from enum import IntEnum
 from logging import DEBUG, getLogger
@@ -17,6 +17,7 @@ from typing import (
 )
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import ZERO_ADDRESS
 from brownie.convert.datatypes import EthAddress
@@ -602,7 +603,7 @@ class BalancerV2Pool(BalancerPool):
             token_balances = await get_balances_coro
             weights = self.__weights
         else:
-            token_balances, weights = await gather(
+            token_balances, weights = await cgather(
                 get_balances_coro, self.weights(block=block, sync=False)
             )
         pool_token_info = list(
@@ -627,7 +628,7 @@ class BalancerV2Pool(BalancerPool):
         if paired_token_balance is None:
             return None
 
-        token_value_in_pool, token_balance_readable = await gather(
+        token_value_in_pool, token_balance_readable = await cgather(
             paired_token_balance.__value_usd__, token_balance.__readable__
         )
         token_value_in_pool /= paired_token_weight * token_weight

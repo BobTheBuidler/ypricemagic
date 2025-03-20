@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from asyncio import Task, create_task, ensure_future, gather, get_event_loop
+from asyncio import Task, create_task, ensure_future, get_event_loop
 from decimal import Decimal
 from functools import cached_property
 from logging import getLogger
@@ -17,6 +17,7 @@ from typing import (
 )
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from a_sync.a_sync.method import ASyncBoundMethod
 from brownie import Contract, chain, web3
@@ -372,7 +373,7 @@ class ERC20(ContractBase):
             >>> await token.total_supply_readable()
             1000.0
         """
-        total_supply, scale = await gather(
+        total_supply, scale = await cgather(
             self.total_supply(block=block, sync=False), self.__scale__
         )
         return total_supply / scale
@@ -400,7 +401,7 @@ class ERC20(ContractBase):
     async def balance_of_readable(
         self, address: AnyAddressType, block: Optional[Block] = None
     ) -> float:
-        balance, scale = await gather(
+        balance, scale = await cgather(
             self.balance_of(address, block=block, asynchronous=True), self.__scale__
         )
         return balance / scale
@@ -916,7 +917,7 @@ class WeiBalance(a_sync.ASyncGenericBase):
         """
         if self.balance == 0:
             return 0
-        balance, price = await gather(self.__readable__, self.__price__)
+        balance, price = await cgather(self.__readable__, self.__price__)
         value = balance * price
         self._logger.debug("balance: %s  price: %s  value: %s", balance, price, value)
         return value

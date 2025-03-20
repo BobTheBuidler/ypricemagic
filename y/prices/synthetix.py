@@ -1,8 +1,8 @@
 import logging
-from asyncio import gather
 from typing import Callable, List, Optional
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from eth_typing import ChecksumAddress, HexStr
 from multicall import Call
@@ -214,7 +214,7 @@ class Synthetix(a_sync.ASyncGenericSingleton):
             - :meth:`get_currency_key`
         """
         token = await convert.to_address_async(token)
-        rates, key = await gather(
+        rates, key = await cgather(
             self.get_address("ExchangeRates", block=block, sync=False),
             self.get_currency_key(token, sync=False),
         )

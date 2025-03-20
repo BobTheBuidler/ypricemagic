@@ -1,7 +1,8 @@
 import abc
-from asyncio import gather
 from decimal import Decimal
 from typing import Optional
+
+from a_sync import cgather
 
 import y.ENVIRONMENT_VARIABLES as ENVS
 from y._decorators import stuck_coro_debugger
@@ -79,7 +80,7 @@ class LiquidityPool(Wrapper):
         See Also:
             - :meth:`get_tvl`
         """
-        tvl, total_supply = await gather(
+        tvl, total_supply = await cgather(
             self.get_tvl(block=block, skip_cache=skip_cache, sync=False),
             self.total_supply_readable(block=block, sync=False),
         )
