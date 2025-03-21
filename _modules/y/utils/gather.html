@@ -85,9 +85,12 @@
 <span class="n">__T0</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;__T0&quot;</span><span class="p">)</span>
 <span class="n">__T1</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;__T1&quot;</span><span class="p">)</span>
 
+
 <div class="viewcode-block" id="gather2">
 <a class="viewcode-back" href="../../../source/y.utils.html#y.utils.gather.gather2">[docs]</a>
-<span class="k">async</span> <span class="k">def</span> <span class="nf">gather2</span><span class="p">(</span><span class="n">first_awaitable</span><span class="p">:</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">__T0</span><span class="p">],</span> <span class="n">second_awaitable</span><span class="p">:</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">__T1</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">__T0</span><span class="p">,</span> <span class="n">__T1</span><span class="p">]:</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">gather2</span><span class="p">(</span>
+    <span class="n">first_awaitable</span><span class="p">:</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">__T0</span><span class="p">],</span> <span class="n">second_awaitable</span><span class="p">:</span> <span class="n">Awaitable</span><span class="p">[</span><span class="n">__T1</span><span class="p">]</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">__T0</span><span class="p">,</span> <span class="n">__T1</span><span class="p">]:</span>
     <span class="n">second_awaitable</span> <span class="o">=</span> <span class="n">ensure_future</span><span class="p">(</span><span class="n">second_awaitable</span><span class="p">)</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">first_awaitable</span><span class="p">,</span> <span class="k">await</span> <span class="n">second_awaitable</span></div>
 

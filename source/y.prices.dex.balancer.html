@@ -1497,10 +1497,13 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.balancer.v2.BalancerEvents._objects_thru">
-<span class="sig-name descname"><span class="pre">_objects_thru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents._objects_thru" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">_objects_thru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents._objects_thru" title="Link to this definition"></a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>)</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -1510,11 +1513,14 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.balancer.v2.BalancerEvents.events">
-<span class="sig-name descname"><span class="pre">events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_block</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents.events" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">events</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents.events" title="Link to this definition"></a></dt>
 <dd><p>Get events up to a given block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a>) – The ending block to fetch events to.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a>) – The ending block to fetch events to.</p></li>
+<li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Yields<span class="colon">:</span></dt>
 <dd class="field-even"><p>A decoded event.</p>
@@ -1570,11 +1576,14 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.balancer.v2.BalancerEvents.objects">
-<span class="sig-name descname"><span class="pre">objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_block</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents.objects" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">objects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">to_block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.balancer.v2.BalancerEvents.objects" title="Link to this definition"></a></dt>
 <dd><p>Get an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.ASyncIterator" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code></a> that yields all events up to a given block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a>) – The ending block to fetch events to.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>to_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a>) – The ending block to fetch events to.</p></li>
+<li><p><strong>from_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>)</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>An <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.ASyncIterator" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code></a> that yields all included events.</p>
