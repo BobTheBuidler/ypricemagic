@@ -97,6 +97,7 @@ __tuplize = lambda x: (x,)
 __get_block_vals = lambda block: (CHAINID, block, "Block")
 __get_block_extended_vals = lambda block: (CHAINID, block, "BlockExtended")
 
+
 async def bulk_insert(
     logs: List[Log], executor: AsyncExecutor = default_filter_threads
 ) -> None:
