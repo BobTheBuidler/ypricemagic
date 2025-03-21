@@ -394,7 +394,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
     ) -> Optional[UsdPrice]:
         contract, scale = await cgather(
             Contract.coroutine(atoken_address),
-            ERC20(atoken_address, asynchronous=True).scale,
+            ERC20._get_scale_for(atoken_address),
         )
         try:
             underlying, price_per_share = await cgather(

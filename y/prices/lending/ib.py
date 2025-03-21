@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Optional
 
 import a_sync
-from a_sync import cgather
+from a_sync import igather
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -83,9 +83,7 @@ async def get_price(
     token, total_bal, total_supply = await gather_methods(
         address, ("token", "totalToken", "totalSupply"), block=block
     )
-    token_scale, pool_scale = await cgather(
-        ERC20(token, asynchronous=True).scale, ERC20(address, asynchronous=True).scale
-    )
+    token_scale, pool_scale = await igather(map(ERC20._get_scale_for, (token, address)))
     total_bal /= Decimal(token_scale)
     total_supply /= Decimal(pool_scale)
     share_price = total_bal / total_supply
