@@ -140,7 +140,7 @@
 <span class="sd">        - :func:`y.prices.magic.get_price`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">out_scale</span><span class="p">,</span> <span class="n">out_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
-        <span class="n">ERC20</span><span class="p">(</span><span class="n">token_out</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
+        <span class="n">ERC20</span><span class="o">.</span><span class="n">_get_scale_for</span><span class="p">(</span><span class="n">token_out</span><span class="p">),</span>
         <span class="n">magic</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="n">token_out</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span><span class="n">total_outout</span> <span class="o">/</span> <span class="n">out_scale</span><span class="p">)</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">out_price</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span>
@@ -279,7 +279,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">balance</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">),</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-            <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>
+            <span class="n">ERC20</span><span class="o">.</span><span class="n">_get_scale_for</span><span class="p">(</span><span class="n">token</span><span class="p">),</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span></div>
 
@@ -417,7 +417,7 @@
 <span class="sd">            &gt;&gt;&gt; await balancer.check_liquidity_against(&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;, &quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
 <span class="sd">            1000</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">amount_in</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_in</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span> <span class="o">*</span> <span class="n">scale</span>
+        <span class="n">amount_in</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="o">.</span><span class="n">_get_scale_for</span><span class="p">(</span><span class="n">token_in</span><span class="p">)</span> <span class="o">*</span> <span class="n">scale</span>
         <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="n">VirtualMachineError</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">):</span>
             <span class="c1"># across various dep versions we get these various excs</span>
             <span class="n">view_split_exact_in</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">exchange_proxy</span><span class="o">.</span><span class="n">viewSplitExactIn</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>

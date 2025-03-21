@@ -74,7 +74,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">igather</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
@@ -159,9 +159,7 @@
     <span class="n">token</span><span class="p">,</span> <span class="n">total_bal</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span>
         <span class="n">address</span><span class="p">,</span> <span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">,</span> <span class="s2">&quot;totalToken&quot;</span><span class="p">,</span> <span class="s2">&quot;totalSupply&quot;</span><span class="p">),</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span>
     <span class="p">)</span>
-    <span class="n">token_scale</span><span class="p">,</span> <span class="n">pool_scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
-        <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">scale</span>
-    <span class="p">)</span>
+    <span class="n">token_scale</span><span class="p">,</span> <span class="n">pool_scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">igather</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">ERC20</span><span class="o">.</span><span class="n">_get_scale_for</span><span class="p">,</span> <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">address</span><span class="p">)))</span>
     <span class="n">total_bal</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">token_scale</span><span class="p">)</span>
     <span class="n">total_supply</span> <span class="o">/=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">pool_scale</span><span class="p">)</span>
     <span class="n">share_price</span> <span class="o">=</span> <span class="n">total_bal</span> <span class="o">/</span> <span class="n">total_supply</span>
