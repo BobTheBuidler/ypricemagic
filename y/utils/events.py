@@ -768,7 +768,9 @@ class Events(LogFilter):
 
     obj_type = _EventItem
 
-    def events(self, to_block: Block) -> a_sync.ASyncIterator[_EventItem]:
+    def events(
+        self, to_block: Block, from_block: Optional[Block] = None
+    ) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get events up to a given block.
 
@@ -783,7 +785,7 @@ class Events(LogFilter):
             >>> async for event in events.events(1000100):
             ...     print(event)
         """
-        return self._objects_thru(block=to_block)
+        return self._objects_thru(block=to_block, from_block=from_block)
 
     async def _extend(self, logs: List[Log]) -> None:
         """
@@ -850,7 +852,9 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             >>> print(result)
         """
 
-    def objects(self, to_block: Block) -> a_sync.ASyncIterator[_EventItem]:
+    def objects(
+        self, to_block: Block, from_block: Optional[Block] = None
+    ) -> a_sync.ASyncIterator[_EventItem]:
         """
         Get an :class:`~a_sync.ASyncIterator` that yields all events up to a given block.
 
