@@ -430,7 +430,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @ASyncIterator.wrap
     async def _objects_thru(
-        self, block: Optional["Block"], from_block: Optional["Block"]
+        self, block: Optional["Block"], from_block: Optional["Block"] = None
     ) -> AsyncIterator[T]:
         self._ensure_task()
         debug_logs = logger.isEnabledFor(DEBUG)
