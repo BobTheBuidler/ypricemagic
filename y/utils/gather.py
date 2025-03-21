@@ -14,7 +14,10 @@ from y._decorators import stuck_coro_debugger
 __T0 = TypeVar("__T0")
 __T1 = TypeVar("__T1")
 
-async def gather2(first_awaitable: Awaitable[__T0], second_awaitable: Awaitable[__T1]) -> Tuple[__T0, __T1]:
+
+async def gather2(
+    first_awaitable: Awaitable[__T0], second_awaitable: Awaitable[__T1]
+) -> Tuple[__T0, __T1]:
     second_awaitable = ensure_future(second_awaitable)
     return await first_awaitable, await second_awaitable
 
