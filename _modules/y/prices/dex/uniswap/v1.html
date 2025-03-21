@@ -70,11 +70,11 @@
              
   <h1>Source code for y.prices.dex.uniswap.v1</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
@@ -183,7 +183,7 @@
 <span class="sd">        See Also:</span>
 <span class="sd">            - :class:`~y.datatypes.UsdPrice`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">exchange</span><span class="p">,</span> <span class="n">usdc_exchange</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+        <span class="n">exchange</span><span class="p">,</span> <span class="n">usdc_exchange</span><span class="p">,</span> <span class="n">decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_exchange</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">get_exchange</span><span class="p">(</span><span class="n">usdc</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="n">_decimals</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>

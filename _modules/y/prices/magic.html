@@ -69,9 +69,8 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.magic</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
@@ -86,6 +85,7 @@
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">igather</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotFound</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">ParamSpec</span>
@@ -327,7 +327,7 @@
 <span class="sd">        A wrapped version of the input function with caching functionality.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">wraps</span><span class="p">(</span><span class="n">get_price</span><span class="p">)</span>
+    <span class="nd">@wraps</span><span class="p">(</span><span class="n">get_price</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">cache_wrap</span><span class="p">(</span>
         <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
         <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
@@ -677,11 +677,9 @@
     <span class="c1"># dexes_by_depth = dict(</span>
     <span class="c1">#     await DexABC.check_liquidity.map(dexes, token=token, block=block, ignore_pools=ignore_pools).items(pop=True).sort(lambda k, v: v)</span>
     <span class="c1"># )</span>
-    <span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">(</span>
-            <span class="n">dex</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">dex</span> <span class="ow">in</span> <span class="n">dexes</span>
-        <span class="p">)</span>
+    <span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="n">igather</span><span class="p">(</span>
+        <span class="n">dex</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">dex</span> <span class="ow">in</span> <span class="n">dexes</span>
     <span class="p">)</span>
     <span class="n">depth_to_dex</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">liquidity</span><span class="p">,</span> <span class="n">dexes</span><span class="p">))</span>
     <span class="n">dexes_by_depth</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>

@@ -70,10 +70,10 @@
              
   <h1>Source code for y.prices.lending.compound</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">VirtualMachineError</span>
@@ -182,7 +182,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">troller</span><span class="p">:</span>
             <span class="c1"># We can use the protocol&#39;s oracle which will be quick (if it works)</span>
-            <span class="n">underlying_per_ctoken</span><span class="p">,</span> <span class="n">underlying_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+            <span class="n">underlying_per_ctoken</span><span class="p">,</span> <span class="n">underlying_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">underlying_per_ctoken</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_underlying_price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="p">)</span>
@@ -191,7 +191,7 @@
 
         <span class="c1"># Or we can just price the underlying token ourselves</span>
         <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span>
-        <span class="n">underlying_per_ctoken</span><span class="p">,</span> <span class="n">underlying_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+        <span class="n">underlying_per_ctoken</span><span class="p">,</span> <span class="n">underlying_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">underlying_per_ctoken</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
             <span class="n">underlying</span><span class="o">.</span><span class="n">price</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
         <span class="p">)</span>
@@ -244,7 +244,7 @@
 <span class="sd">            - :meth:`exchange_rate`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">underlying</span><span class="p">:</span> <span class="n">ERC20</span>
-        <span class="n">exchange_rate</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+        <span class="n">exchange_rate</span><span class="p">,</span> <span class="n">decimals</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">exchange_rate</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__decimals__</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span><span class="p">,</span>
@@ -307,10 +307,10 @@
         <span class="n">oracle</span><span class="p">:</span> <span class="n">Contract</span>
         <span class="n">underlying</span><span class="p">:</span> <span class="n">ERC20</span>
         <span class="c1"># always query the oracle in case it was changed</span>
-        <span class="n">oracle</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+        <span class="n">oracle</span><span class="p">,</span> <span class="n">underlying</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">troller</span><span class="o">.</span><span class="n">oracle</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__underlying__</span>
         <span class="p">)</span>
-        <span class="n">price</span><span class="p">,</span> <span class="n">underlying_decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+        <span class="n">price</span><span class="p">,</span> <span class="n">underlying_decimals</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="n">oracle</span><span class="o">.</span><span class="n">getUnderlyingPrice</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
             <span class="n">underlying</span><span class="o">.</span><span class="n">__decimals__</span><span class="p">,</span>
             <span class="n">return_exceptions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

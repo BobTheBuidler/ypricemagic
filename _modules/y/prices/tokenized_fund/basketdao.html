@@ -69,11 +69,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.tokenized_fund.basketdao</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
-<span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
+<span></span><span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span>
 
-<span class="kn">import</span> <span class="nn">a_sync</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">a_sync</span><span class="p">,</span> <span class="n">cgather</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">ChecksumAddress</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
@@ -85,7 +84,7 @@
 
 <div class="viewcode-block" id="is_basketdao_index">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.basketdao.is_basketdao_index">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_basketdao_index</span><span class="p">(</span><span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if the given token is a BasketDAO token by attempting to call the `getAssetsAndBalances` method.</span>
@@ -118,7 +117,7 @@
 
 <div class="viewcode-block" id="get_price">
 <a class="viewcode-back" href="../../../../source/y.prices.tokenized_fund.html#y.prices.tokenized_fund.basketdao.get_price">[docs]</a>
-<span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
+<span class="nd">@a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
     <span class="n">address</span><span class="p">:</span> <span class="n">ChecksumAddress</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -143,7 +142,7 @@
 <span class="sd">    See Also:</span>
 <span class="sd">        - :func:`is_basketdao_index` for checking if a token is a BasketDAO token.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">balances</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+    <span class="n">balances</span><span class="p">,</span> <span class="n">total_supply</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
         <span class="n">Call</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getAssetsAndBalances()(address[],uint[])&quot;</span><span class="p">,</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
         <span class="n">ERC20</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">),</span>
     <span class="p">)</span>

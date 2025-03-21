@@ -69,8 +69,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.solidly</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">gather</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
 
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">continue_on_revert</span><span class="p">,</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span>
@@ -271,14 +272,14 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
             <span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span> <span class="o">=</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">path</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
             <span class="c1"># Try for a stable pool first and use that if available</span>
-            <span class="n">stable_pool</span><span class="p">,</span> <span class="n">unstable_pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+            <span class="n">stable_pool</span><span class="p">,</span> <span class="n">unstable_pool</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">input_token</span><span class="p">,</span> <span class="n">output_token</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
             <span class="p">)</span>
 
             <span class="k">if</span> <span class="n">stable_pool</span> <span class="ow">and</span> <span class="n">unstable_pool</span><span class="p">:</span>
                 <span class="c1"># We have to find out which of these pools is deepest</span>
-                <span class="n">stable_reserves</span><span class="p">,</span> <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+                <span class="n">stable_reserves</span><span class="p">,</span> <span class="n">unstable_reserves</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
                     <span class="n">stable_pool</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
                     <span class="n">unstable_pool</span><span class="o">.</span><span class="n">reserves</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
                 <span class="p">)</span>

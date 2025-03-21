@@ -73,7 +73,7 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">threading</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Lock</span><span class="p">,</span> <span class="n">TimerHandle</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">get_running_loop</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">Lock</span><span class="p">,</span> <span class="n">TimerHandle</span><span class="p">,</span> <span class="n">get_running_loop</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">lru_cache</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
@@ -93,6 +93,7 @@
 <span class="kn">import</span> <span class="nn">aiohttp</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">import</span> <span class="nn">eth_retry</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span><span class="p">,</span> <span class="n">igather</span>
 <span class="kn">from</span> <span class="nn">aiolimiter</span> <span class="kn">import</span> <span class="n">AsyncLimiter</span>
 <span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">ZERO_ADDRESS</span><span class="p">,</span> <span class="n">chain</span><span class="p">,</span> <span class="n">web3</span>
@@ -951,14 +952,10 @@
         <span class="c1"># Out of gas error implies one or more method is state-changing.</span>
         <span class="c1"># If `_func == all` we return False because `has_methods` is only supposed to work for public view methods with no inputs</span>
         <span class="c1"># If `_func == any` maybe one of the methods will work without &quot;out of gas&quot; error</span>
-        <span class="k">return</span> <span class="p">(</span>
-            <span class="kc">False</span>
-            <span class="k">if</span> <span class="n">_func</span> <span class="o">==</span> <span class="nb">all</span>
-            <span class="k">else</span> <span class="nb">any</span><span class="p">(</span>
-                <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
-                    <span class="o">*</span><span class="p">(</span><span class="n">has_method</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">)</span>
-                <span class="p">)</span>
-            <span class="p">)</span>
+        <span class="k">if</span> <span class="n">_func</span> <span class="ow">is</span> <span class="nb">all</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span>
+            <span class="k">await</span> <span class="n">igather</span><span class="p">(</span><span class="n">has_method</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="n">methods</span><span class="p">)</span>
         <span class="p">)</span></div>
 
 
@@ -1387,7 +1384,7 @@
 
     <span class="c1"># always check for an EIP1967 proxy - https://eips.ethereum.org/EIPS/eip-1967</span>
     <span class="c1"># always check for an EIP1822 proxy - https://eips.ethereum.org/EIPS/eip-1822</span>
-    <span class="n">implementation_eip1967</span><span class="p">,</span> <span class="n">implementation_eip1822</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
+    <span class="n">implementation_eip1967</span><span class="p">,</span> <span class="n">implementation_eip1822</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
         <span class="n">_get_storage_at</span><span class="p">(</span>
             <span class="n">address</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">web3</span><span class="o">.</span><span class="n">keccak</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="s2">&quot;eip1967.proxy.implementation&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">hex</span><span class="p">(),</span> <span class="mi">16</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
         <span class="p">),</span>

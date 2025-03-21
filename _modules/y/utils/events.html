@@ -70,7 +70,7 @@
              
   <h1>Source code for y.utils.events</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">gather</span><span class="p">,</span> <span class="n">get_event_loop</span><span class="p">,</span> <span class="n">sleep</span>
+<span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">as_completed</span><span class="p">,</span> <span class="n">get_event_loop</span><span class="p">,</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span><span class="p">,</span> <span class="n">defaultdict</span>
 <span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">cached_property</span><span class="p">,</span> <span class="n">wraps</span>
 <span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">version</span>
@@ -96,6 +96,7 @@
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">import</span> <span class="nn">dank_mids</span>
 <span class="kn">import</span> <span class="nn">eth_retry</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">igather</span>
 <span class="kn">from</span> <span class="nn">a_sync.executor</span> <span class="kn">import</span> <span class="n">_AsyncExecutorMixin</span>
 <span class="kn">from</span> <span class="nn">async_property</span> <span class="kn">import</span> <span class="n">async_property</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">web3</span>
@@ -257,8 +258,8 @@
     <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;fetching </span><span class="si">%d</span><span class="s2"> batches&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ranges</span><span class="p">))</span>
 
-    <span class="n">batches</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span>
-        <span class="o">*</span><span class="p">(</span><span class="n">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">ranges</span><span class="p">)</span>
+    <span class="n">batches</span> <span class="o">=</span> <span class="k">await</span> <span class="n">igather</span><span class="p">(</span>
+        <span class="n">_get_logs_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">topics</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">ranges</span>
     <span class="p">)</span>
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="n">batches</span><span class="p">))</span></div>
 
@@ -992,7 +993,7 @@
             <span class="c1"># let the event loop run once since the previous and next blocks are potentially blocking</span>
             <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-            <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather</span><span class="p">(</span><span class="o">*</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">,</span> <span class="n">decoded</span><span class="p">))</span>
+            <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">igather</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">,</span> <span class="n">decoded</span><span class="p">))</span>
 
             <span class="c1"># let the event loop run once since the previous and next blocks are potentially blocking</span>
             <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
