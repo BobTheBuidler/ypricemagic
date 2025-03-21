@@ -531,7 +531,7 @@ class UniswapRouterV2(ContractBase):
             return 1
 
         try:
-            amount_in = await ERC20(token_in, asynchronous=True).scale
+            amount_in = await ERC20._get_scale_for(token_in)
         except NonStandardERC20:
             return None
 
@@ -560,7 +560,7 @@ class UniswapRouterV2(ContractBase):
             path = [token_in, paired_with]
             quote, out_scale = await cgather(
                 self.get_quote(amount_in, path, block=block, sync=False),
-                ERC20(path[-1], asynchronous=True).scale,
+                ERC20._get_scale_for(path[-1]),
             )
             if debug_logs:
                 logger._log(DEBUG, "quote: %s", (quote,))
@@ -591,7 +591,7 @@ class UniswapRouterV2(ContractBase):
             logger._log(DEBUG, "router: %s     path: %s", (self.label, path))
         quote, out_scale = await cgather(
             self.get_quote(amount_in, path, block=block, sync=False),
-            ERC20(path[-1], asynchronous=True).scale,
+            ERC20._get_scale_for(path[-1]),
         )
         if quote is not None:
             amount_out = quote[-1] / out_scale

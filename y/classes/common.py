@@ -402,7 +402,7 @@ class ERC20(ContractBase):
         self, address: AnyAddressType, block: Optional[Block] = None
     ) -> float:
         balance, scale = await cgather(
-            self.balance_of(address, block=block, asynchronous=True), self.__scale__
+            self.balance_of(address, block=block, sync=False), self.__scale__
         )
         return balance / scale
 
@@ -446,6 +446,18 @@ class ERC20(ContractBase):
             ignore_pools=ignore_pools,
             sync=False,
         )
+
+    @classmethod
+    async def _get_scale_for(cls, address: AnyAddressType) -> Awaitable[int]:
+        # We use async ERC20 for memory sake since internal objects are
+        # often async and we can avoid duplication 2x a/sync objs
+        token = ERC20(address, asynchronous=True)
+        try:
+            return ERC20.scale.get_cache_value(token)
+        except KeyError:
+            # We'll use __scale__ instead of scale here for the purposes of optimization
+            # We also pass sync kwarg to __scale__ to optimize speed even though async is default
+            return await token.__scale__(sync=False)
 
     async def _symbol(self) -> str:
         """

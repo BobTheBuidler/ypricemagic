@@ -83,8 +83,7 @@ async def get_price(
     ) = await cgather(
         raw_call(address, "gelatoBalance0()", block=block, output="int", sync=False),
         raw_call(address, "gelatoBalance1()", block=block, output="int", sync=False),
-        ERC20(token0, asynchronous=True).scale,
-        ERC20(token1, asynchronous=True).scale,
+        *map(ERC20._get_scale_for, (token0, token1)),
         y.prices.magic.get_price(token0, block, skip_cache=skip_cache, sync=False),
         y.prices.magic.get_price(token1, block, skip_cache=skip_cache, sync=False),
         ERC20(address, asynchronous=True).total_supply_readable(block, sync=False),

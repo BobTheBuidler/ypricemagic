@@ -75,7 +75,7 @@ async def get_price(
     ratio, masset, scale = await cgather(
         contract.getPrice.coroutine(block_identifier=block),
         contract.mAsset.coroutine(block_identifier=block),
-        ERC20(address, asynchronous=True).scale,
+        ERC20._get_scale_for(address),
     )
     ratio = ratio[0] / scale
     underlying_price = await magic.get_price(

@@ -88,7 +88,7 @@ async def get_price(
                 minter.coins.coroutine(i, block_identifier=block),
                 minter.balances.coroutine(i, block_identifier=block),
             )
-            balance /= await ERC20(coin, asynchronous=True).scale
+            balance /= await ERC20._get_scale_for(coin)
             balances.append(WeiBalance(balance, coin, block, skip_cache=skip_cache))
             i += 1
         except:

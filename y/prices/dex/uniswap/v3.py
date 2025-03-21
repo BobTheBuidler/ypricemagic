@@ -454,7 +454,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             ]
         logger.debug("paths: %s", paths)
 
-        amount_in = await ERC20(token, asynchronous=True).scale
+        amount_in = await ERC20._get_scale_for(token)
         results = await igather(
             (self._quote_exact_input(path, amount_in, block) for path in paths),
             return_exceptions=True,

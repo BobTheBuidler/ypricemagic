@@ -69,7 +69,7 @@ async def _calc_out_value(
         - :func:`y.prices.magic.get_price`
     """
     out_scale, out_price = await cgather(
-        ERC20(token_out, asynchronous=True).scale,
+        ERC20._get_scale_for(token_out),
         magic.get_price(token_out, block, skip_cache=skip_cache, sync=False),
     )
     return (total_outout / out_scale) * float(out_price) / scale
@@ -195,7 +195,7 @@ class BalancerV1Pool(BalancerPool):
         """
         balance, scale = await cgather(
             self.check_liquidity(str(token), block, sync=False),
-            ERC20(token, asynchronous=True).scale,
+            ERC20._get_scale_for(token),
         )
         return Decimal(balance) / scale
 
@@ -318,7 +318,7 @@ class BalancerV1(BalancerABC[BalancerV1Pool]):
             >>> await balancer.check_liquidity_against("0xabcdefabcdefabcdefabcdefabcdefabcdef", "0x1234567890abcdef1234567890abcdef12345678")
             1000
         """
-        amount_in = await ERC20(token_in, asynchronous=True).scale * scale
+        amount_in = await ERC20._get_scale_for(token_in) * scale
         with suppress(ValueError, VirtualMachineError, ContractLogicError):
             # across various dep versions we get these various excs
             view_split_exact_in = await self.exchange_proxy.viewSplitExactIn.coroutine(
