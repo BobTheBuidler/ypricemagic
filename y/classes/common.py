@@ -457,7 +457,7 @@ class ERC20(ContractBase):
         except KeyError:
             # We'll use __scale__ instead of scale here for the purposes of optimization
             # We also pass sync kwarg to __scale__ to optimize speed even though async is default
-            return token.__scale__(sync=False)
+            return await token.__scale__(sync=False)
 
     async def _symbol(self) -> str:
         """
