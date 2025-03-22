@@ -146,7 +146,7 @@ class UniswapV2Pool(ERC20):
 
     __factory__: HiddenMethodDescriptor[Self, Address]
 
-    @a_sync.aka.property
+    @a_sync.aka.cached_property
     async def tokens(self) -> Tuple[ERC20, ERC20]:
         return await cgather(self.__token0__, self.__token1__)
 
@@ -206,12 +206,13 @@ class UniswapV2Pool(ERC20):
 
     @a_sync.a_sync(ram_cache_maxsize=None, ram_cache_ttl=ENVS.CACHE_TTL)
     async def get_token_out(self, token_in: Address) -> ERC20:
-        if token_in == (token0 := await self.__token0__):
+        token0, token1 = await self.__tokens__
+        if token_in == token0:
             # these return instantly since theyre already cached
-            return await self.__token1__
-        elif token_in == (token1 := await self.__token1__):
+            return token1
+        elif token_in == token1:
             # these return instantly since theyre already cached
-            return await self.__token0__
+            return token0
         raise TokenNotFound(token_in, [token0, token1]) from None
 
     @stuck_coro_debugger
@@ -248,11 +249,9 @@ class UniswapV2Pool(ERC20):
         if reserves is None:
             return None
 
-        # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
-        #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
-        return (
-            WeiBalance(reserves[0], await self.__token0__, block=block),
-            WeiBalance(reserves[1], await self.__token1__, block=block),
+        return tuple(
+            WeiBalance(balance, token, block=block) 
+            for balance, token in zip(reserves, await self.__tokens__)
         )
 
     @stuck_coro_debugger
@@ -281,9 +280,7 @@ class UniswapV2Pool(ERC20):
         # start these tasks now
         price_tasks: a_sync.TaskMapping[ERC20, UsdPrice]
         price_tasks = ERC20.price.map(
-            # NOTE: using `__token0__` and `__token1__` is faster than `__tokens__` since they're already cached and return instantly
-            #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
-            [await self.__token0__, await self.__token1__],
+            await self.__tokens__,
             block=block,
             return_None_on_failure=True,
             skip_cache=skip_cache,
@@ -669,11 +666,12 @@ class UniswapRouterV2(ContractBase):
     async def all_pools_for(self, token_in: Address) -> Dict[UniswapV2Pool, Address]:
         pool_to_token_out = {}
         for i, pool in enumerate(await self.__pools__):
-            # these will return immediately since the pools are already loaded by this point
-            if token_in == await pool.__token0__:
-                pool_to_token_out[pool] = await pool.__token1__
-            elif token_in == await pool.__token1__:
-                pool_to_token_out[pool] = await pool.__token0__
+            # this will return immediately since the pools are already loaded by this point
+            token0, token1 = await pool.__tokens__
+            if token_in == token0:
+                pool_to_token_out[pool] = token1
+            elif token_in == token1:
+                pool_to_token_out[pool] = token0
             if not i % 10_000:
                 await sleep(0)
         return pool_to_token_out
@@ -706,11 +704,12 @@ class UniswapRouterV2(ContractBase):
         pool_to_token_out = {}
         for p in pools:
             pool = UniswapV2Pool(p, asynchronous=self.asynchronous)
-            # these will return immediately since the pools are already loaded by this point
-            if token_in == await pool.__token0__:
-                pool_to_token_out[pool] = await pool.__token1__
-            elif token_in == await pool.__token1__:
-                pool_to_token_out[pool] = await pool.__token0__
+            # this will return immediately since the pools are already loaded by this point
+            token0, token1 = await pool.__tokens__
+            if token_in == token0:
+                pool_to_token_out[pool] = token1
+            elif token_in == token1:
+                pool_to_token_out[pool] = token0
         return pool_to_token_out
 
     @stuck_coro_debugger
