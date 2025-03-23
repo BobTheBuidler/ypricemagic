@@ -2,6 +2,7 @@ import logging
 from typing import List, Optional
 
 from a_sync import a_sync, cgather
+from web3.middleware.validation import is_not_null
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
@@ -182,7 +183,7 @@ async def get_tokens(
     See Also:
         - :func:`get_pool`
     """
-    pool, response = await cgather(
+    pool, tokens = await cgather(
         get_pool(token_address, sync=False),
         multicall_same_func_same_contract_different_inputs(
             pool,
@@ -193,4 +194,4 @@ async def get_tokens(
             sync=False,
         ),
     )
-    return [ERC20(token) for token in response if token is not None]
+    return list(map(ERC20, filter(is_not_null, tokens)))

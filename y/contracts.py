@@ -820,7 +820,7 @@ async def has_methods(
     address = await convert.to_address_async(address)
     try:
         return _func(
-            [result is not None for result in await gather_methods(address, methods)]
+            result is not None for result in await gather_methods(address, methods)
         )
     except Exception as e:
         if not isinstance(e, ContractLogicError) and not call_reverted(e):
