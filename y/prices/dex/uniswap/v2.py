@@ -1,6 +1,7 @@
 from asyncio import sleep
 from contextlib import suppress
 from decimal import Decimal
+from itertools import chain
 from logging import DEBUG, getLogger
 from typing import Any, AsyncIterator, Dict, List, Optional, Set, Tuple
 
@@ -647,9 +648,9 @@ class UniswapRouterV2(ContractBase):
                 )
                 pools.insert(i, pool)
             logger.debug("Done fetching %s missing pools on %s", to_get, self.label)
-        token0s = UniswapV2Pool.token0.map(pools).values(pop=True)
-        token1s = UniswapV2Pool.token1.map(pools).values(pop=True)
-        tokens = set(await token0s + await token1s)
+
+        tokens = set(chain(*await UniswapV2Pool.tokens.map(pools).values(pop=True)))
+
         logger.info(
             "Loaded %s pools supporting %s tokens on %s",
             len(pools),
