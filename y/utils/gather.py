@@ -19,7 +19,14 @@ async def gather2(
     first_awaitable: Awaitable[__T0], second_awaitable: Awaitable[__T1]
 ) -> Tuple[__T0, __T1]:
     second_awaitable = ensure_future(second_awaitable)
-    return await first_awaitable, await second_awaitable
+    try:
+        first = await first_awaitable
+    except Exception:
+        second_awaitable._Future__log_traceback = False
+        second_awaitable.cancel()
+        raise
+    else:
+        return first, await second_awaitable
 
 
 async def gather_methods(
