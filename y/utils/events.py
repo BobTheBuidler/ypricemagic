@@ -833,7 +833,22 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
     """
 
     def _include_event(self, event: _EventItem) -> Union[bool, Awaitable[bool]]:
-        """Override this to exclude specific events from processing and collection."""
+        """
+        Determine whether to include a given event in this container.
+
+        Override this to exclude specific events from processing and collection.
+
+        Args:
+            event: The event.
+
+        Returns:
+            True if the event should be included, False otherwise.
+
+        Examples:
+            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> include = await processed_events._include_event(event)
+            >>> print(include)
+        """
         return True
 
     @abstractmethod
@@ -889,43 +904,29 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
 
-            should_include = await igather(map(self.__include_event, decoded))
+            should_include = list(map(self._include_event, decoded))
+            awaitables = {
+                i: obj
+                for i, obj in enumerate(should_include)
+                # filter for bool since its more lightweight than isawaitable
+                if not isinstance(obj, bool) and isawaitable(obj)
+            }
+            if awaitables:
+                async for i, should in a_sync.as_completed(awaitables, aiter=True):
+                    should_include[i] = should
 
             # let the event loop run once since the previous and next blocks are potentially blocking
             await sleep(0)
 
             append_processed_event = self._objects.append
             done = 0
-            for event, include in zip(decoded, should_include):
+            for event, include in zip(decoded, map(bool, should_include)):
                 if include:
                     append_processed_event(self._process_event(event))
                 done += 1
-                if done % 100 == 0:
+                if done % 10_000 == 0:
                     # Let the event loop run once in case we've been blocking for too long
                     await sleep(0)
-
-    async def __include_event(self, event: _EventItem) -> bool:
-        """
-        Determine whether to include a given event in this container.
-
-        Args:
-            event: The event.
-
-        Returns:
-            True if the event should be included, False otherwise.
-
-        Examples:
-            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
-            >>> include = await processed_events.__include_event(event)
-            >>> print(include)
-        """
-        # sourcery skip: assign-if-exp
-        include = self._include_event(event)
-        if isinstance(include, bool):
-            return include
-        if isawaitable(include):
-            return bool(await include)
-        return bool(include)
 
     __slots__ = []
 
