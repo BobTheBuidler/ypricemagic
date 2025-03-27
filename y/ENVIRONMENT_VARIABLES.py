@@ -14,7 +14,7 @@ CONTRACT_CACHE_TTL = _envs.create_env(
 CONTRACT_THREADS = _envs.create_env(
     "CONTRACT_THREADS",
     PruningThreadPoolExecutor,
-    default=10,
+    default=6,
     string_converter=int,
     verbose=False,
 )
