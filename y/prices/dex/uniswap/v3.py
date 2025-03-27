@@ -620,7 +620,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
     @eth_retry.auto_retry
     async def _quote_exact_input(
         self, path: Path, amount_in: int, block: int
-    ) -> Optional[int]:
+    ) -> Optional[Decimal]:
         """
         Quote the exact input for a given path and amount.
 
