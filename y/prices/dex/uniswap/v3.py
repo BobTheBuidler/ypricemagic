@@ -649,7 +649,7 @@ def _encode_path(path: Path) -> bytes:
         >>> encoded_path = _encode_path(path)
     """
     types = islice(cycle(("address", "uint24")), len(path))
-    return encode_packed(types, path)
+    return encode_packed(list(types), path)
 
 
 def _undo_fees(path: Path) -> Decimal:
