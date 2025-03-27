@@ -11,15 +11,6 @@ CONTRACT_CACHE_TTL = _envs.create_env(
 )
 """TTL for contract cache, defaults to :obj:`CACHE_TTL` if not set"""
 
-CONTRACT_THREADS = _envs.create_env(
-    "CONTRACT_THREADS",
-    PruningThreadPoolExecutor,
-    default=6,
-    string_converter=int,
-    verbose=False,
-)
-"""The number of threads to use to fetch contract abis"""
-
 GETLOGS_BATCH_SIZE = _envs.create_env("GETLOGS_BATCH_SIZE", int, default=0)
 """Batch size for getlogs operations, 0 will use default as determined by your provider."""
 

@@ -2,7 +2,7 @@ import logging
 from typing import Optional, Tuple
 
 import a_sync
-from a_sync import cgather
+from a_sync import PruningThreadPoolExecutor, cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from brownie.exceptions import VirtualMachineError
@@ -228,7 +228,7 @@ class CToken(ERC20):
         if isinstance(price, Exception):
             # TODO debug why this occurs and refactor. only found on arbitrum cream
             try:
-                price = await ENVS.CONTRACT_THREADS.run(
+                price = await self.__run_sync(
                     oracle.getUnderlyingPrice, self.address, block_identifier=block
                 )
             except VirtualMachineError as e:
@@ -241,6 +241,8 @@ class CToken(ERC20):
                 raise
         price /= 10 ** (36 - underlying_decimals)
         return price
+
+    __run_sync = PruningThreadPoolExecutor(4).run
 
 
 class Comptroller(ContractBase):
