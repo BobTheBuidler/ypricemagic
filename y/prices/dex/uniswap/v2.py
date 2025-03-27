@@ -343,14 +343,7 @@ class UniswapV2Pool(ERC20):
             for balance in reserves:
                 if token == balance.token:
                     liquidity = balance.balance
-                    if debug_logs:
-                        log_debug(
-                            "%s liquidity for %s at %s is %s",
-                            self,
-                            token,
-                            block,
-                            liquidity,
-                        )
+                    log_liquidity(self, token, block, liquidity, debug_logs)
                     return liquidity
             raise TokenNotFound(token, reserves)
         return 0
@@ -943,14 +936,7 @@ class UniswapRouterV2(ContractBase):
                 deepest_pool, liquidity = await self.deepest_pool_for(
                     token, block, ignore_pools=ignore_pools
                 )
-                if debug_logs:
-                    log_debug(
-                        "%s liquidity for %s at %s is %s",
-                        self,
-                        token,
-                        block,
-                        liquidity,
-                    )
+                log_liquidity(self, token, block, liquidity, debug_logs)
                 return liquidity
             except (Revert, ValueError, ContractLogicError) as e:
                 _log_factory_helper_failure(e, token, block, ignore_pools)
@@ -962,14 +948,7 @@ class UniswapRouterV2(ContractBase):
             )
         except a_sync.exceptions.EmptySequenceError:
             liquidity = 0
-        if debug_logs:
-            log_debug(
-                "%s liquidity for %s at %s is %s",
-                self,
-                token,
-                block,
-                liquidity,
-            )
+        log_liquidity(self, token, block, liquidity, debug_logs)
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
@@ -1034,3 +1013,12 @@ def log_debug(msg: str, *args: Any):
 
 
 __log = logger._log
+
+
+def log_liquidity(market, token, block, liquidity, debug_logs: bool = True):
+    if debug_logs:
+        __log(
+            DEBUG,
+            "%s liquidity for %s at %s is %s",
+            (market, token, block, liquidity),
+        )
