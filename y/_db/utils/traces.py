@@ -6,7 +6,7 @@ import dank_mids
 import msgspec.json
 import pony.orm
 from a_sync import AsyncThreadPoolExecutor, PruningThreadPoolExecutor
-from eth_utils import concat
+from eth_utils.toolz import concat
 from evmspec import FilterTrace
 
 from y._db.common import DiskCache, Filter, _clean_addresses

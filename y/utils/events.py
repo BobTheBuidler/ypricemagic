@@ -37,7 +37,7 @@ from brownie.network.event import (
     EventDict,
 )
 from eth_typing import ChecksumAddress
-from eth_utils import concat
+from eth_utils.toolz import concat
 from evmspec import Log
 from msgspec.structs import force_setattr
 from toolz import groupby

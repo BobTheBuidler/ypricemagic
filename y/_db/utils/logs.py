@@ -7,7 +7,7 @@ from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
-from eth_utils import concat
+from eth_utils.toolz import concat
 from evmspec.data import Address, HexBytes32, uint
 from evmspec.structs.log import Topic
 from hexbytes import HexBytes

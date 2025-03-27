@@ -13,7 +13,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
-from eth_utils import concat
+from eth_utils.toolz import concat
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
