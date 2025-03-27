@@ -620,7 +620,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 raise ValueError(
                     f"start {start} is bigger than end {end}, can't do that"
                 )
-            
+
             while end > (current_block := await dank_mids.eth.block_number):
                 logger.warning(
                     "You're trying to query a block range that has not fully completed:\n"
@@ -629,7 +629,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     current_block,
                 )
                 await sleep(5.0)
-                
+
         elif debug_logs:
             while start > (end := await dank_mids.eth.block_number):
                 logger._log(
@@ -646,7 +646,10 @@ class Filter(_DiskCachedMixin[T, C]):
         try:
             await self._load_range(start, end)
         except ValueError as e:
-            if "One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found." in str(e):
+            if (
+                "One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found."
+                in str(e)
+            ):
                 logger.warning("Your rpc might be out of sync, trying again...")
             else:
                 raise

@@ -42,7 +42,6 @@ from brownie.network.contract import (
     _resolve_address,
     _unverified_addresses,
 )
-from brownie.network.state import _get_deployment
 from brownie.typing import AccountsType
 from brownie.utils import color
 from cachetools.func import ttl_cache
@@ -55,6 +54,7 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
+from y._db.brownie import DISCARD_SOURCE_KEYS, _get_deployment
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (
@@ -526,7 +526,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
             raise ContractNotFound(f"{address} is not a contract.") from None
 
         contract = cls.__new__(cls)
-        build, _ = await _get_deployment_from_db(address)
+        build, _ = await _get_deployment(address)
 
         if build:
             async with _contract_locks[address]:
@@ -913,12 +913,6 @@ async def proxy_implementation(
     )
 
 
-_get_deployment_from_db = a_sync.SmartProcessingQueue(
-    lambda address: ENVS.CONTRACT_THREADS.run(_get_deployment, address),
-    num_workers=64,
-)
-
-
 def _squeeze(contract: Contract) -> Contract:
     """
     Reduce the contract size in RAM by removing large data structures from the build.
@@ -931,18 +925,10 @@ def _squeeze(contract: Contract) -> Contract:
         >>> _squeeze(contract)
         <Contract object>
     """
-    for k in [
-        "ast",
-        "bytecode",
-        "coverageMap",
-        "deployedBytecode",
-        "deployedSourceMap",
-        "natspec",
-        "opcodes",
-        "pcMap",
-    ]:
-        if contract._build and k in contract._build.keys():
-            contract._build[k] = {}
+    if build := contract._build:
+        for k in DISCARD_SOURCE_KEYS:
+            if k in build:
+                build[k] = {}
     return contract
 
 
