@@ -623,7 +623,7 @@ class Filter(_DiskCachedMixin[T, C]):
                 raise ValueError(
                     f"start {start} is bigger than end {end}, can't do that"
                 )
-            
+
             while end > (current_block := await dank_mids.eth.block_number):
                 logger.warning(
                     "You're trying to query a block range that has not fully completed:\n"
@@ -632,7 +632,7 @@ class Filter(_DiskCachedMixin[T, C]):
                     current_block,
                 )
                 await sleep(5.0)
-                
+
         elif debug_logs:
             while start > (end := await dank_mids.eth.block_number):
                 logger._log(

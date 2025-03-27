@@ -4,7 +4,16 @@ from decimal import Decimal
 from functools import cached_property, lru_cache
 from itertools import cycle, islice
 from logging import DEBUG, getLogger
-from typing import AsyncIterator, DefaultDict, Dict, Iterable, List, Optional, Tuple, Union
+from typing import (
+    AsyncIterator,
+    DefaultDict,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import a_sync
 import eth_retry
@@ -455,7 +464,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 (token, fee, weth.address, self.fee_tiers[0], usdc.address)
                 for fee in self.fee_tiers
             ]
-        
+
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "paths: %s", (paths,))
 
@@ -628,7 +637,11 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 _encode_path(path), amount_in, block_identifier=block
             )
             # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
-            return (amount if isinstance(amount, int) else amount[0]) / _undo_fees(path) / FEE_DENOMINATOR
+            return (
+                (amount if isinstance(amount, int) else amount[0])
+                / _undo_fees(path)
+                / FEE_DENOMINATOR
+            )
         except Exception as e:
             if not call_reverted(e):
                 raise
