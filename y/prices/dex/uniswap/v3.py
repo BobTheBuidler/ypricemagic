@@ -4,7 +4,7 @@ from decimal import Decimal
 from functools import cached_property, lru_cache
 from itertools import cycle, islice
 from logging import DEBUG, getLogger
-from typing import AsyncIterator, DefaultDict, Dict, Iterable, List, Optional, Tuple, Union
+from typing import AsyncIterator, DefaultDict, Dict, Iterable, List, Literal, Optional, Tuple, Union
 
 import a_sync
 import eth_retry
@@ -24,7 +24,6 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
     ContractNotVerified,
     TokenNotFound,
-    UnsupportedNetwork,
     call_reverted,
 )
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
@@ -87,7 +86,12 @@ forked_deployments = {
     ],
 }
 
-FEE_DENOMINATOR = Decimal(1_000_000)
+_FEE_DENOMINATOR = Decimal(1_000_000)
+
+_PATH_TYPE_STRINGS: Dict[int, Tuple[Literal["address", "uint24"], ...]] = {
+    3: tuple(islice(cycle(("address", "uint24")), 3)),
+    5: tuple(islice(cycle(("address", "uint24")), 5)),
+}
 
 
 class UniswapV3Pool(ContractBase):
@@ -628,7 +632,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 _encode_path(path), amount_in, block_identifier=block
             )
             # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
-            return (amount if isinstance(amount, int) else amount[0]) / _undo_fees(path) / FEE_DENOMINATOR
+            return (amount if isinstance(amount, int) else amount[0]) / _undo_fees(path) / _FEE_DENOMINATOR
         except Exception as e:
             if not call_reverted(e):
                 raise
@@ -648,9 +652,7 @@ def _encode_path(path: Path) -> bytes:
         >>> path = ["0xToken0Address", 3000, "0xToken1Address"]
         >>> encoded_path = _encode_path(path)
     """
-    types = islice(cycle(("address", "uint24")), len(path))
-    return encode_packed(list(types), path)
-
+    return encode_packed(_PATH_TYPE_STRINGS[len(path)], path)
 
 def _undo_fees(path: Path) -> Decimal:
     """
@@ -666,7 +668,7 @@ def _undo_fees(path: Path) -> Decimal:
         >>> path = ["0xToken0Address", 3000, "0xToken1Address"]
         >>> fee_multiplier = _undo_fees(path)
     """
-    fees = (1 - fee / FEE_DENOMINATOR for fee in islice(path, 1, None, 2))
+    fees = (1 - fee / _FEE_DENOMINATOR for fee in islice(path, 1, None, 2))
     return math.prod(fees)
 
 
