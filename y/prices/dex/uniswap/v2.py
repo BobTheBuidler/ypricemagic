@@ -1,7 +1,6 @@
 from asyncio import sleep
 from contextlib import suppress
 from decimal import Decimal
-from itertools import chain
 from logging import DEBUG, getLogger
 from typing import Any, AsyncIterator, Dict, List, Optional, Set, Tuple
 
@@ -14,6 +13,7 @@ from a_sync.a_sync import HiddenMethodDescriptor
 from brownie.network.event import _EventItem
 from dank_mids.exceptions import Revert
 from eth_typing import HexAddress
+from eth_utils.toolz import concat
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -649,7 +649,7 @@ class UniswapRouterV2(ContractBase):
                 pools.insert(i, pool)
             logger.debug("Done fetching %s missing pools on %s", to_get, self.label)
 
-        tokens = set(chain(*await UniswapV2Pool.tokens.map(pools).values(pop=True)))
+        tokens = set(concat(await UniswapV2Pool.tokens.map(pools).values(pop=True)))
 
         logger.info(
             "Loaded %s pools supporting %s tokens on %s",

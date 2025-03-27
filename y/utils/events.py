@@ -4,7 +4,7 @@ from collections import Counter, defaultdict
 from functools import cached_property, wraps
 from importlib.metadata import version
 from inspect import isawaitable
-from itertools import chain, zip_longest
+from itertools import zip_longest
 from logging import getLogger
 from threading import current_thread, main_thread
 from typing import (
@@ -37,6 +37,7 @@ from brownie.network.event import (
     EventDict,
 )
 from eth_typing import ChecksumAddress
+from eth_utils.toolz import concat
 from evmspec import Log
 from msgspec.structs import force_setattr
 from toolz import groupby
@@ -185,7 +186,7 @@ async def get_logs_asap(
     batches = await igather(
         _get_logs_async(address, topics, start, end) for start, end in ranges
     )
-    return list(chain(*batches))
+    return list(concat(batches))
 
 
 async def get_logs_asap_generator(

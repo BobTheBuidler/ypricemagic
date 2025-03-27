@@ -1,5 +1,4 @@
 import logging
-from itertools import chain
 from typing import AsyncIterator, List, Optional
 
 import a_sync
@@ -7,6 +6,7 @@ import dank_mids
 import msgspec.json
 import pony.orm
 from a_sync import AsyncThreadPoolExecutor, PruningThreadPoolExecutor
+from eth_utils.toolz import concat
 from evmspec import FilterTrace
 
 from y._db.common import DiskCache, Filter, _clean_addresses
@@ -364,7 +364,7 @@ class TraceFilter(Filter[dict, TraceCache]):
         except NotImplementedError:
             tasks = a_sync.map(self._trace_block, range(from_block, to_block))
             results = {block: traces async for block, traces in tasks.map()}
-            return list(chain(*(results[i] for i in range(from_block, to_block))))
+            return list(concat(results[i] for i in range(from_block, to_block)))
 
     async def _trace_block(self, block: int) -> List[dict]:
         """Trace a specific block for transactions.

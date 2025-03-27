@@ -1,4 +1,3 @@
-import itertools
 from typing import Iterable, List, Tuple
 
 import numpy as np
@@ -6,6 +5,7 @@ import pytest
 from brownie import Contract as BrownieContract
 from brownie import chain
 from brownie.convert.datatypes import EthAddress
+from eth_utils.toolz import concat
 from y import convert
 from y.classes.common import ERC20
 from y.contracts import Contract, contract_creation_block
@@ -77,7 +77,7 @@ def mutate_address(address: Address) -> Tuple[str, str, str, EthAddress]:
 
 
 def mutate_addresses(addresses: Iterable[Address]):
-    return list(itertools.chain(map(mutate_address, addresses)))
+    return list(concat(map(mutate_address, addresses)))
 
 
 def mutate_contract(
@@ -92,7 +92,7 @@ def mutate_contract(
 
 
 def mutate_contracts(addresses: Iterable[Address]):
-    return list(itertools.chain(map(mutate_contract, addresses)))
+    return list(concat(map(mutate_contract, addresses)))
 
 
 def mutate_token(
@@ -108,7 +108,7 @@ def mutate_token(
 
 
 def mutate_tokens(addresses: Iterable[Address]):
-    return list(itertools.chain(map(mutate_token, addresses)))
+    return list(concat(map(mutate_token, addresses)))
 
 
 @pytest.fixture
