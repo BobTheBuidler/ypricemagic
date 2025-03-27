@@ -7,6 +7,7 @@ from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
+from eth_utils import concat
 from evmspec.data import Address, HexBytes32, uint
 from evmspec.structs.log import Topic
 from hexbytes import HexBytes
@@ -128,7 +129,7 @@ async def bulk_insert(
     hashes_fut = submit(_bulk_insert, Hashes, ("hash",), hashes, sync=True)
     del txhashes, addresses, hashes
 
-    topics = set(itertools.chain(*(log.topics for log in logs)))
+    topics = set(concat(log.topics for log in logs))
     topics_fut = submit(
         _bulk_insert,
         LogTopic,
