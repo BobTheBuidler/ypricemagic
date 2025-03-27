@@ -19,8 +19,8 @@ from y.datatypes import Address
 
 
 SourceKey = Literal[
-    "address", 
-    "alias", 
+    "address",
+    "alias",
     "paths",
     "abi",
     "ast",
@@ -43,7 +43,16 @@ Sources = Dict[SourceKey, Any]
 
 SOURCE_KEYS: Tuple[SourceKey, ...] = SourceKey.__args__
 
-DISCARD_SOURCE_KEYS: Tuple[SourceKey, ...] = "ast", "bytecode", "coverageMap", "deployedBytecode", "deployedSourceMap", "natspec", "opcodes", "pcMap",
+DISCARD_SOURCE_KEYS: Tuple[SourceKey, ...] = (
+    "ast",
+    "bytecode",
+    "coverageMap",
+    "deployedBytecode",
+    "deployedSourceMap",
+    "natspec",
+    "opcodes",
+    "pcMap",
+)
 """
 To keep our Contract objects smaller, we do not load all contract source data. Many are not relevant for our data analysis type use case.
 
@@ -54,7 +63,7 @@ These keys will not be included in y.Contract object build data. If you need the
 class AsyncCursor:
     def __init__(self, filename):
         self._filename = filename
-    
+
     @async_cached_property
     async def connect(self):
         """Establish an async connection to the SQLite database"""
@@ -65,7 +74,9 @@ class AsyncCursor:
         await self.connect
 
         # Convert any dictionaries/lists to JSON strings before inserting
-        values = [dumps(val) if isinstance(val, (dict, list)) else val for val in values]
+        values = [
+            dumps(val) if isinstance(val, (dict, list)) else val for val in values
+        ]
 
         # Prepare the parameter placeholders
         placeholders = ",".join("?" * len(values))
@@ -80,22 +91,28 @@ class AsyncCursor:
         async with self._db.execute(cmd, args) as cursor:
             if row := await cursor.fetchone():
                 # Convert any JSON-serialized columns back to their original data structures
-                return tuple(loads(i) if str(i).startswith(("[", "{")) else i for i in row)
+                return tuple(
+                    loads(i) if str(i).startswith(("[", "{")) else i for i in row
+                )
 
 
 cur = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
 fetchone = SmartProcessingQueue(cur.fetchone, num_workers=32)
+
 
 @lru_cache(maxsize=None)
 def _get_select_statement() -> str:
     try:
         return f"SELECT * FROM chain{CONFIG.active_network['chainid']}"
     except KeyError:
-        raise BrownieEnvironmentError("Functionality not available in local environment") from None
+        raise BrownieEnvironmentError(
+            "Functionality not available in local environment"
+        ) from None
+
 
 async def _get_deployment(
-    address: str = None, 
-    alias: str = None, 
+    address: str = None,
+    alias: str = None,
     skip_source_keys: Container[SourceKey] = DISCARD_SOURCE_KEYS,
 ) -> Tuple[Optional[BuildJson], Optional[Sources]]:
     if address and alias:
@@ -105,7 +122,7 @@ async def _get_deployment(
         where_clause = f" WHERE address='{address}'"
     elif alias:
         where_clause = f" WHERE alias='{alias}'"
-    
+
     try:
         row = await fetchone(_get_select_statement() + where_clause)
     except OperationalError:
@@ -118,7 +135,7 @@ async def _get_deployment(
 
     sources = {
         source_key: await __fetch_source_for_hash(val)
-        for val, source_key in path_map.values() 
+        for val, source_key in path_map.values()
         if source_key not in skip_source_keys
     }
 
@@ -127,6 +144,7 @@ async def _get_deployment(
         build_json["pcMap"] = keymap(int, build_json["pcMap"])
 
     return build_json, sources
+
 
 async def __fetch_source_for_hash(hashval: str) -> Any:
     return (await fetchone("SELECT source FROM sources WHERE hash=?", hashval))[0]
