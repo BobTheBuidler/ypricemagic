@@ -113,7 +113,6 @@
     <span class="n">_resolve_address</span><span class="p">,</span>
     <span class="n">_unverified_addresses</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">from</span> <span class="nn">brownie.network.state</span> <span class="kn">import</span> <span class="n">_get_deployment</span>
 <span class="kn">from</span> <span class="nn">brownie.typing</span> <span class="kn">import</span> <span class="n">AccountsType</span>
 <span class="kn">from</span> <span class="nn">brownie.utils</span> <span class="kn">import</span> <span class="n">color</span>
 <span class="kn">from</span> <span class="nn">cachetools.func</span> <span class="kn">import</span> <span class="n">ttl_cache</span>
@@ -126,6 +125,7 @@
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span> <span class="nn">y._db.brownie</span> <span class="kn">import</span> <span class="n">DISCARD_SOURCE_KEYS</span><span class="p">,</span> <span class="n">_get_deployment</span>
 <span class="kn">from</span> <span class="nn">y._decorators</span> <span class="kn">import</span> <span class="n">stuck_coro_debugger</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">Block</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="p">(</span>
@@ -628,7 +628,7 @@
             <span class="k">raise</span> <span class="n">ContractNotFound</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2"> is not a contract.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
         <span class="n">contract</span> <span class="o">=</span> <span class="bp">cls</span><span class="o">.</span><span class="fm">__new__</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
-        <span class="n">build</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_deployment_from_db</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
+        <span class="n">build</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_get_deployment</span><span class="p">(</span><span class="n">address</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">build</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">with</span> <span class="n">_contract_locks</span><span class="p">[</span><span class="n">address</span><span class="p">]:</span>
@@ -1047,12 +1047,6 @@
 
 
 
-<span class="n">_get_deployment_from_db</span> <span class="o">=</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">SmartProcessingQueue</span><span class="p">(</span>
-    <span class="k">lambda</span> <span class="n">address</span><span class="p">:</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_THREADS</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">_get_deployment</span><span class="p">,</span> <span class="n">address</span><span class="p">),</span>
-    <span class="n">num_workers</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span>
-<span class="p">)</span>
-
-
 <span class="k">def</span> <span class="nf">_squeeze</span><span class="p">(</span><span class="n">contract</span><span class="p">:</span> <span class="n">Contract</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Contract</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Reduce the contract size in RAM by removing large data structures from the build.</span>
@@ -1065,18 +1059,10 @@
 <span class="sd">        &gt;&gt;&gt; _squeeze(contract)</span>
 <span class="sd">        &lt;Contract object&gt;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span>
-        <span class="s2">&quot;ast&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bytecode&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;coverageMap&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;deployedBytecode&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;deployedSourceMap&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;natspec&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;opcodes&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;pcMap&quot;</span><span class="p">,</span>
-    <span class="p">]:</span>
-        <span class="k">if</span> <span class="n">contract</span><span class="o">.</span><span class="n">_build</span> <span class="ow">and</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">contract</span><span class="o">.</span><span class="n">_build</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="n">contract</span><span class="o">.</span><span class="n">_build</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">build</span> <span class="o">:=</span> <span class="n">contract</span><span class="o">.</span><span class="n">_build</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">DISCARD_SOURCE_KEYS</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">build</span><span class="p">:</span>
+                <span class="n">build</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">return</span> <span class="n">contract</span>
 
 

@@ -691,7 +691,7 @@
                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;start </span><span class="si">{</span><span class="n">start</span><span class="si">}</span><span class="s2"> is bigger than end </span><span class="si">{</span><span class="n">end</span><span class="si">}</span><span class="s2">, can&#39;t do that&quot;</span>
                 <span class="p">)</span>
-            
+
             <span class="k">while</span> <span class="n">end</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">current_block</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
                     <span class="s2">&quot;You&#39;re trying to query a block range that has not fully completed:</span><span class="se">\n</span><span class="s2">&quot;</span>
@@ -700,7 +700,7 @@
                     <span class="n">current_block</span><span class="p">,</span>
                 <span class="p">)</span>
                 <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mf">5.0</span><span class="p">)</span>
-                
+
         <span class="k">elif</span> <span class="n">debug_logs</span><span class="p">:</span>
             <span class="k">while</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="p">(</span><span class="n">end</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
@@ -717,7 +717,10 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="k">if</span> <span class="s2">&quot;One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found.&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span>
+                <span class="s2">&quot;One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found.&quot;</span>
+                <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="p">):</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Your rpc might be out of sync, trying again...&quot;</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span>

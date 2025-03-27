@@ -73,7 +73,7 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">,</span> <span class="n">cgather</span>
 <span class="kn">from</span> <span class="nn">a_sync.a_sync</span> <span class="kn">import</span> <span class="n">HiddenMethodDescriptor</span>
 <span class="kn">from</span> <span class="nn">brownie</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">brownie.exceptions</span> <span class="kn">import</span> <span class="n">VirtualMachineError</span>
@@ -318,7 +318,7 @@
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">price</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">):</span>
             <span class="c1"># TODO debug why this occurs and refactor. only found on arbitrum cream</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">CONTRACT_THREADS</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+                <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__run_sync</span><span class="p">(</span>
                     <span class="n">oracle</span><span class="o">.</span><span class="n">getUnderlyingPrice</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
                 <span class="p">)</span>
             <span class="k">except</span> <span class="n">VirtualMachineError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -331,7 +331,9 @@
                 <span class="k">raise</span>
         <span class="n">price</span> <span class="o">/=</span> <span class="mi">10</span> <span class="o">**</span> <span class="p">(</span><span class="mi">36</span> <span class="o">-</span> <span class="n">underlying_decimals</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">price</span></div>
-</div>
+
+
+    <span class="n">__run_sync</span> <span class="o">=</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span><span class="o">.</span><span class="n">run</span></div>
 
 
 
