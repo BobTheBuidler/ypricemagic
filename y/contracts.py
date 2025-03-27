@@ -1099,13 +1099,9 @@ async def _extract_abi_data_async(address: Address):
         async with _block_explorer_api_limiter:
             response = await _fetch_from_explorer_async(address, "getsourcecode", False)
     except ConnectionError as e:
-        if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(
-            e
-        ):
+        if '{"message":"Something went wrong.","result":null,"status":"0"}' in str(e):
             if _CHAINID == Network.xDai:
-                raise ValueError(
-                    "Rate limited by Blockscout. Please try again."
-                ) from e
+                raise ValueError("Rate limited by Blockscout. Please try again.") from e
             if await get_code(address):
                 raise ContractNotVerified(address) from e
             else:

@@ -251,7 +251,7 @@ class UniswapV2Pool(ERC20):
             return None
 
         return tuple(
-            WeiBalance(balance, token, block=block) 
+            WeiBalance(balance, token, block=block)
             for balance, token in zip(reserves, await self.__tokens__)
         )
 
@@ -333,9 +333,7 @@ class UniswapV2Pool(ERC20):
             >>> print(liquidity)
         """
         if debug_logs := logger.isEnabledFor(DEBUG):
-            log_debug(
-                "checking %s liquidity for %s at %s", self, token, block
-            )
+            log_debug("checking %s liquidity for %s at %s", self, token, block)
         if block and block < await self.deploy_block(sync=False):
             if debug_logs:
                 log_debug("block %s is before %s deploy block", block, self)
@@ -348,7 +346,10 @@ class UniswapV2Pool(ERC20):
                     if debug_logs:
                         log_debug(
                             "%s liquidity for %s at %s is %s",
-                            self, token, block, liquidity,
+                            self,
+                            token,
+                            block,
+                            liquidity,
                         )
                     return liquidity
             raise TokenNotFound(token, reserves)
@@ -552,7 +553,7 @@ class UniswapRouterV2(ContractBase):
             )
         ):
             if debug_logs:
-                log_debug( "deepest pool: %s", deepest_pool)
+                log_debug("deepest pool: %s", deepest_pool)
             paired_with = await deepest_pool.get_token_out(token_in, sync=False)
             path = [token_in, paired_with]
             quote, out_scale = await cgather(
@@ -560,7 +561,7 @@ class UniswapRouterV2(ContractBase):
                 ERC20._get_scale_for(path[-1]),
             )
             if debug_logs:
-                log_debug( "quote: %s", quote)
+                log_debug("quote: %s", quote)
             if quote is not None:
                 amount_out = Decimal(quote[-1]) / out_scale
                 fees = Decimal(0.997) ** (len(path) - 1)
@@ -925,15 +926,13 @@ class UniswapRouterV2(ContractBase):
         self, token: Address, block: Block, ignore_pools=[]
     ) -> int:
         if debug_logs := logger.isEnabledFor(DEBUG):
-            log_debug(
-                "checking %s liquidity for %s at %s", self, token, block
-            )
+            log_debug("checking %s liquidity for %s at %s", self, token, block)
         if block and block < await contract_creation_block_async(self.factory):
             if debug_logs:
                 log_debug(
-                    "block %s is before %s deploy block", 
+                    "block %s is before %s deploy block",
                     block,
-                    await contract_creation_block_async(self.factory)
+                    await contract_creation_block_async(self.factory),
                 )
             return 0
         if self._supports_factory_helper and (
@@ -947,7 +946,10 @@ class UniswapRouterV2(ContractBase):
                 if debug_logs:
                     log_debug(
                         "%s liquidity for %s at %s is %s",
-                        self, token, block, liquidity,
+                        self,
+                        token,
+                        block,
+                        liquidity,
                     )
                 return liquidity
             except (Revert, ValueError, ContractLogicError) as e:
@@ -963,7 +965,10 @@ class UniswapRouterV2(ContractBase):
         if debug_logs:
             log_debug(
                 "%s liquidity for %s at %s is %s",
-                self, token, block, liquidity,
+                self,
+                token,
+                block,
+                liquidity,
             )
         return liquidity
 
@@ -1026,5 +1031,6 @@ class UniswapRouterV2(ContractBase):
 
 def log_debug(msg: str, *args: Any):
     __log(DEBUG, msg, args)
+
 
 __log = logger._log
