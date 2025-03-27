@@ -939,7 +939,22 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">bool</span><span class="p">,</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]]:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Override this to exclude specific events from processing and collection.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine whether to include a given event in this container.</span>
+
+<span class="sd">        Override this to exclude specific events from processing and collection.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            event: The event.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the event should be included, False otherwise.</span>
+
+<span class="sd">        Examples:</span>
+<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">            &gt;&gt;&gt; include = await processed_events._include_event(event)</span>
+<span class="sd">            &gt;&gt;&gt; print(include)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">True</span>
 
     <span class="nd">@abstractmethod</span>
@@ -998,43 +1013,29 @@
             <span class="c1"># let the event loop run once since the previous and next blocks are potentially blocking</span>
             <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-            <span class="n">should_include</span> <span class="o">=</span> <span class="k">await</span> <span class="n">igather</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__include_event</span><span class="p">,</span> <span class="n">decoded</span><span class="p">))</span>
+            <span class="n">should_include</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_include_event</span><span class="p">,</span> <span class="n">decoded</span><span class="p">))</span>
+            <span class="n">awaitables</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">i</span><span class="p">:</span> <span class="n">obj</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">obj</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">should_include</span><span class="p">)</span>
+                <span class="c1"># filter for bool since its more lightweight than isawaitable</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="nb">bool</span><span class="p">)</span> <span class="ow">and</span> <span class="n">isawaitable</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+            <span class="p">}</span>
+            <span class="k">if</span> <span class="n">awaitables</span><span class="p">:</span>
+                <span class="k">async</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">should</span> <span class="ow">in</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">as_completed</span><span class="p">(</span><span class="n">awaitables</span><span class="p">,</span> <span class="nb">aiter</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+                    <span class="n">should_include</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">should</span>
 
             <span class="c1"># let the event loop run once since the previous and next blocks are potentially blocking</span>
             <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
             <span class="n">append_processed_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">append</span>
             <span class="n">done</span> <span class="o">=</span> <span class="mi">0</span>
-            <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="n">should_include</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">event</span><span class="p">,</span> <span class="n">include</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">decoded</span><span class="p">,</span> <span class="nb">map</span><span class="p">(</span><span class="nb">bool</span><span class="p">,</span> <span class="n">should_include</span><span class="p">)):</span>
                 <span class="k">if</span> <span class="n">include</span><span class="p">:</span>
                     <span class="n">append_processed_event</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_process_event</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
                 <span class="n">done</span> <span class="o">+=</span> <span class="mi">1</span>
-                <span class="k">if</span> <span class="n">done</span> <span class="o">%</span> <span class="mi">100</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">done</span> <span class="o">%</span> <span class="mi">10_000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="c1"># Let the event loop run once in case we&#39;ve been blocking for too long</span>
                     <span class="k">await</span> <span class="n">sleep</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">__include_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">:</span> <span class="n">_EventItem</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Determine whether to include a given event in this container.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            event: The event.</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            True if the event should be included, False otherwise.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
-<span class="sd">            &gt;&gt;&gt; include = await processed_events.__include_event(event)</span>
-<span class="sd">            &gt;&gt;&gt; print(include)</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># sourcery skip: assign-if-exp</span>
-        <span class="n">include</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_include_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">include</span><span class="p">,</span> <span class="nb">bool</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">include</span>
-        <span class="k">if</span> <span class="n">isawaitable</span><span class="p">(</span><span class="n">include</span><span class="p">):</span>
-            <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="k">await</span> <span class="n">include</span><span class="p">)</span>
-        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="n">include</span><span class="p">)</span>
 
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">[]</span></div>
 

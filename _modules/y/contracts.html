@@ -1233,13 +1233,9 @@
         <span class="k">async</span> <span class="k">with</span> <span class="n">_block_explorer_api_limiter</span><span class="p">:</span>
             <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="n">_fetch_from_explorer_async</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="s2">&quot;getsourcecode&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ConnectionError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">if</span> <span class="s1">&#39;{&quot;message&quot;:&quot;Something went wrong.&quot;,&quot;result&quot;:null,&quot;status&quot;:&quot;0&quot;}&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span>
-            <span class="n">e</span>
-        <span class="p">):</span>
+        <span class="k">if</span> <span class="s1">&#39;{&quot;message&quot;:&quot;Something went wrong.&quot;,&quot;result&quot;:null,&quot;status&quot;:&quot;0&quot;}&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">_CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">xDai</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
-                    <span class="s2">&quot;Rate limited by Blockscout. Please try again.&quot;</span>
-                <span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Rate limited by Blockscout. Please try again.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">if</span> <span class="k">await</span> <span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">):</span>
                 <span class="k">raise</span> <span class="n">ContractNotVerified</span><span class="p">(</span><span class="n">address</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">e</span>
             <span class="k">else</span><span class="p">:</span>
