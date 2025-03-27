@@ -281,7 +281,22 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
         self.asynchronous = asynchronous
         super().__init__(addresses=addresses, topics=topics)
 
-    def _include_event(self, event: _EventItem) -> bool:
+    @staticmethod
+    def _include_event(event: _EventItem) -> bool:
+        """
+        Determine whether to include a given event in this container.
+
+        Args:
+            event: The event.
+
+        Returns:
+            True if the event should be included, False otherwise.
+
+        Examples:
+            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+            >>> include = FeedsFromEvents._include_event(event)
+            >>> print(include)
+        """
         return (
             event["denomination"] == DENOMINATIONS["USD"]
             and event["latestAggregator"] != ZERO_ADDRESS

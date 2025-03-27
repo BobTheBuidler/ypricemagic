@@ -1,9 +1,20 @@
 import math
 from collections import defaultdict
+from decimal import Decimal
 from functools import cached_property, lru_cache
-from itertools import cycle
+from itertools import cycle, islice
 from logging import DEBUG, getLogger
-from typing import AsyncIterator, DefaultDict, Dict, List, Optional, Tuple
+from typing import (
+    AsyncIterator,
+    DefaultDict,
+    Dict,
+    Iterable,
+    List,
+    Literal,
+    Optional,
+    Tuple,
+    Union,
+)
 
 import a_sync
 import eth_retry
@@ -23,7 +34,6 @@ from y.datatypes import Address, AnyAddressType, Block, Pool, UsdPrice
 from y.exceptions import (
     ContractNotVerified,
     TokenNotFound,
-    UnsupportedNetwork,
     call_reverted,
 )
 from y.interfaces.uniswap.quoterv3 import UNIV3_QUOTER_ABI
@@ -40,6 +50,8 @@ UNISWAP_V3_FACTORY = "0x1F98431c8aD98523631AE4a59f267346ea31F984"
 UNISWAP_V3_QUOTER = "0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6"
 
 logger = getLogger(__name__)
+
+Path = Iterable[Union[Address, int]]
 
 # same addresses on all networks
 addresses = {
@@ -84,7 +96,12 @@ forked_deployments = {
     ],
 }
 
-FEE_DENOMINATOR = 1_000_000
+_FEE_DENOMINATOR = Decimal(1_000_000)
+
+_PATH_TYPE_STRINGS: Dict[int, Tuple[Literal["address", "uint24"], ...]] = {
+    3: tuple(islice(cycle(("address", "uint24")), 3)),
+    5: tuple(islice(cycle(("address", "uint24")), 5)),
+}
 
 
 class UniswapV3Pool(ContractBase):
@@ -446,33 +463,30 @@ class UniswapV3(a_sync.ASyncGenericBase):
         if block and block < await contract_creation_block_async(quoter, True):
             return None
 
-        paths = [[token, fee, usdc.address] for fee in self.fee_tiers]
+        paths: List[Path] = [(token, fee, usdc.address) for fee in self.fee_tiers]
         if token != weth:
             paths += [
-                [token, fee, weth.address, self.fee_tiers[0], usdc.address]
+                (token, fee, weth.address, self.fee_tiers[0], usdc.address)
                 for fee in self.fee_tiers
             ]
-        logger.debug("paths: %s", paths)
+
+        if debug_logs_enabled := logger.isEnabledFor(DEBUG):
+            logger._log(DEBUG, "paths: %s", (paths,))
 
         amount_in = await ERC20._get_scale_for(token)
         results = await igather(
-            (self._quote_exact_input(path, amount_in, block) for path in paths),
-            return_exceptions=True,
+            self._quote_exact_input(path, amount_in, block) for path in paths
         )
 
-        for result in results:
-            if isinstance(result, Exception) and not call_reverted(result):
-                raise result.with_traceback(result.__traceback__)
+        if debug_logs_enabled:
+            logger._log(DEBUG, "results: %s", (results,))
 
-        logger.debug("results: %s", results)
+        outputs = filter(None, results)
 
-        outputs = [
-            # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
-            (amount if isinstance(amount, int) else amount[0]) / _undo_fees(path) / 1e6
-            for amount, path in zip(results, paths)
-            if amount and not call_reverted(amount)
-        ]
-        logger.debug("outputs: %s", outputs)
+        if debug_logs_enabled:
+            outputs = list(outputs)
+            logger._log(DEBUG, "outputs: %s", (outputs,))
+
         return UsdPrice(max(outputs)) if outputs else None
 
     @stuck_coro_debugger
@@ -605,8 +619,8 @@ class UniswapV3(a_sync.ASyncGenericBase):
     @stuck_coro_debugger
     @eth_retry.auto_retry
     async def _quote_exact_input(
-        self, path: List[list], amount_in: int, block: int
-    ) -> int:
+        self, path: Path, amount_in: int, block: int
+    ) -> Optional[Decimal]:
         """
         Quote the exact input for a given path and amount.
 
@@ -623,12 +637,22 @@ class UniswapV3(a_sync.ASyncGenericBase):
             >>> output_amount = await uniswap_v3._quote_exact_input(path, 1000, 1234567)
         """
         quoter = await self.__quoter__
-        return await quoter.quoteExactInput.coroutine(
-            _encode_path(path), amount_in, block_identifier=block
-        )
+        try:
+            amount = await quoter.quoteExactInput.coroutine(
+                _encode_path(path), amount_in, block_identifier=block
+            )
+            # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
+            return (
+                (amount if isinstance(amount, int) else amount[0])
+                / _undo_fees(path)
+                / _FEE_DENOMINATOR
+            )
+        except Exception as e:
+            if not call_reverted(e):
+                raise
 
 
-def _encode_path(path) -> bytes:
+def _encode_path(path: Path) -> bytes:
     """
     Encode a path for Uniswap V3.
 
@@ -642,11 +666,10 @@ def _encode_path(path) -> bytes:
         >>> path = ["0xToken0Address", 3000, "0xToken1Address"]
         >>> encoded_path = _encode_path(path)
     """
-    types = [type for _, type in zip(path, cycle(("address", "uint24")))]
-    return encode_packed(types, path)
+    return encode_packed(_PATH_TYPE_STRINGS[len(path)], path)
 
 
-def _undo_fees(path) -> float:
+def _undo_fees(path: Path) -> Decimal:
     """
     Undo the fees for a given path.
 
@@ -660,7 +683,7 @@ def _undo_fees(path) -> float:
         >>> path = ["0xToken0Address", 3000, "0xToken1Address"]
         >>> fee_multiplier = _undo_fees(path)
     """
-    fees = [1 - fee / FEE_DENOMINATOR for fee in path if isinstance(fee, int)]
+    fees = (1 - fee / _FEE_DENOMINATOR for fee in islice(path, 1, None, 2))
     return math.prod(fees)
 
 

@@ -909,7 +909,7 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
                 i: obj
                 for i, obj in enumerate(should_include)
                 # filter for bool since its more lightweight than isawaitable
-                if not isinstance(obj, bool) and isawaitable(obj)
+                if obj is not True and obj is not False and isawaitable(obj)
             }
             if awaitables:
                 async for i, should in a_sync.as_completed(awaitables, aiter=True):
