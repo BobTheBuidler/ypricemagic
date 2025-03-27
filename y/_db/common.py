@@ -581,18 +581,15 @@ class Filter(_DiskCachedMixin[T, C]):
     @stuck_coro_debugger
     async def _fetch_range_wrapped(
         self, i: int, range_start: "Block", range_end: "Block", debug_logs: bool
-    ) -> List[T]:  # sourcery skip: hoist-similar-statement-from-if
-        if debug_logs:
-            async with self.semaphore[range_end]:
+    ) -> List[T]:
+        async with self.semaphore[range_end]:
+            if debug_logs:
                 logger._log(
                     DEBUG,
                     "fetching %s block %s to %s",
                     (self, range_start, range_end),
                 )
-                return i, range_end, await self._fetch_range(range_start, range_end)
-        else:
-            async with self.semaphore[range_end]:
-                return i, range_end, await self._fetch_range(range_start, range_end)
+            return i, range_end, await self._fetch_range(range_start, range_end)
 
     async def _loop(self, from_block: "Block") -> NoReturn:
         logger.debug("starting work loop for %s", self)
@@ -646,7 +643,13 @@ class Filter(_DiskCachedMixin[T, C]):
             while start > (end := await dank_mids.eth.block_number):
                 await sleep(SLEEP_TIME)
 
-        await self._load_range(start, end)
+        try:
+            await self._load_range(start, end)
+        except ValueError as e:
+            if "One of the blocks specified in filter (fromBlock, toBlock or blockHash) cannot be found." in str(e):
+                logger.warning("Your rpc might be out of sync, trying again...")
+            else:
+                raise
 
     @stuck_coro_debugger
     async def _load_range(self, from_block: "Block", to_block: "Block") -> None:
