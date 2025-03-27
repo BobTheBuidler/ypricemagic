@@ -906,7 +906,8 @@ class ProcessedEvents(Events, a_sync.ASyncIterable[T]):
 
             should_include = list(map(self._include_event, decoded))
             awaitables = {
-                i: obj for i, obj in enumerate(should_include) 
+                i: obj
+                for i, obj in enumerate(should_include)
                 # filter for bool since its more lightweight than isawaitable
                 if not isinstance(obj, bool) and isawaitable(obj)
             }
