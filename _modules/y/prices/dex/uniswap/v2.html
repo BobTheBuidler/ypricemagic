@@ -72,7 +72,6 @@
 <span></span><span class="kn">from</span> <span class="nn">asyncio</span> <span class="kn">import</span> <span class="n">sleep</span>
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">chain</span>
 <span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">AsyncIterator</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Set</span><span class="p">,</span> <span class="n">Tuple</span>
 
@@ -85,6 +84,7 @@
 <span class="kn">from</span> <span class="nn">brownie.network.event</span> <span class="kn">import</span> <span class="n">_EventItem</span>
 <span class="kn">from</span> <span class="nn">dank_mids.exceptions</span> <span class="kn">import</span> <span class="n">Revert</span>
 <span class="kn">from</span> <span class="nn">eth_typing</span> <span class="kn">import</span> <span class="n">HexAddress</span>
+<span class="kn">from</span> <span class="nn">eth_utils.toolz</span> <span class="kn">import</span> <span class="n">concat</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
 <span class="kn">from</span> <span class="nn">web3.exceptions</span> <span class="kn">import</span> <span class="n">ContractLogicError</span>
@@ -781,7 +781,7 @@
                 <span class="n">pools</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Done fetching </span><span class="si">%s</span><span class="s2"> missing pools on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">to_get</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label</span><span class="p">)</span>
 
-        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">chain</span><span class="p">(</span><span class="o">*</span><span class="k">await</span> <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">concat</span><span class="p">(</span><span class="k">await</span> <span class="n">UniswapV2Pool</span><span class="o">.</span><span class="n">tokens</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pools</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)))</span>
 
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
             <span class="s2">&quot;Loaded </span><span class="si">%s</span><span class="s2"> pools supporting </span><span class="si">%s</span><span class="s2"> tokens on </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
