@@ -313,6 +313,9 @@ class CompilerError(Exception):
         )
 
 
+_add_deployment = eth_retry.auto_retry(_add_deployment)
+
+
 class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
     """
     A :class:`~dank_mids.Contract` object with several modifications for enhanced functionality.
@@ -616,6 +619,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 # )
         return contract
 
+    @eth_retry.auto_retry
     def __init_from_abi__(
         self, build: Dict, owner: Optional[AccountsType] = None, persist: bool = True
     ) -> None:
