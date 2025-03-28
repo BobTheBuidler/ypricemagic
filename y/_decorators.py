@@ -1,7 +1,7 @@
 from asyncio import create_task, iscoroutinefunction, sleep
 from functools import wraps
 from inspect import isasyncgenfunction
-from logging import DEBUG, Logger, getLogger
+from logging import DEBUG, getLogger
 from time import time
 from typing import (
     AsyncIterator,
@@ -16,6 +16,7 @@ from typing import (
 from a_sync import ASyncGenericBase
 from a_sync.a_sync.method import ASyncBoundMethod
 from a_sync.iter import ASyncGeneratorFunction
+from eth_utils.toolz import valmap
 from typing_extensions import Concatenate, ParamSpec
 
 P = ParamSpec("P")
@@ -175,8 +176,8 @@ async def _stuck_debug_task(
     start = time() - 300
     module = fn.__module__
     name = fn.__name__
-    formatted_args = tuple(str(arg) for arg in args)
-    formatted_kwargs = dict((k, str(v)) for k, v in kwargs.items())
+    formatted_args = tuple(map(str, args))
+    formatted_kwargs = valmap(str, kwargs)
     while True:
         __stuck_coro_logger_log(
             DEBUG,
