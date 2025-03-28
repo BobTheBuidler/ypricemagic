@@ -481,12 +481,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         if debug_logs_enabled:
             logger._log(DEBUG, "results: %s", (results,))
 
-        outputs = filter(None, results)
-
+        outputs = list(filter(None, results))
         if debug_logs_enabled:
-            outputs = list(outputs)
             logger._log(DEBUG, "outputs: %s", (outputs,))
-
         return UsdPrice(max(outputs)) if outputs else None
 
     @stuck_coro_debugger
