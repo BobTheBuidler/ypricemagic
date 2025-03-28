@@ -592,12 +592,9 @@
         <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;results: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">results</span><span class="p">,))</span>
 
-        <span class="n">outputs</span> <span class="o">=</span> <span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">results</span><span class="p">)</span>
-
+        <span class="n">outputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">filter</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">results</span><span class="p">))</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-            <span class="n">outputs</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;outputs: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">outputs</span><span class="p">,))</span>
-
         <span class="k">return</span> <span class="n">UsdPrice</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">outputs</span><span class="p">))</span> <span class="k">if</span> <span class="n">outputs</span> <span class="k">else</span> <span class="kc">None</span></div>
 
 
