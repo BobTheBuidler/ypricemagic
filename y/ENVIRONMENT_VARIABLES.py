@@ -1,4 +1,3 @@
-from a_sync import PruningThreadPoolExecutor
 from typed_envs import EnvVarFactory, create_env
 
 _envs = EnvVarFactory("YPRICEMAGIC")

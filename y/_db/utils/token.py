@@ -3,10 +3,9 @@ import threading
 from functools import lru_cache
 from typing import Dict, Optional, Set
 
-import a_sync
-from a_sync import PruningThreadPoolExecutor
+from a_sync import ProcessingQueue, a_sync, create_task
 from cachetools import TTLCache, cached
-from pony.orm import commit, db_session, select
+from pony.orm import commit, select
 
 from y import constants, convert
 from y._db.decorators import (
@@ -16,6 +15,7 @@ from y._db.decorators import (
 )
 from y._db.entities import Address, Token, insert
 from y._db.exceptions import EEEError
+from y._db.utils.utils import make_executor
 from y._db.utils._ep import _get_get_token
 from y.constants import CHAINID
 from y.datatypes import AnyAddressType
@@ -25,10 +25,11 @@ logger = logging.getLogger(__name__)
 _logger_debug = logger.debug
 
 
-_token_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [token]")
+_token_read_executor = make_executor(1, 4, "ypricemagic db executor [token read]")
+_token_write_executor = make_executor(1, 4, "ypricemagic db executor [token write]")
 
 
-@a_sync.a_sync(default="async", executor=_token_executor)
+@a_sync(default="async", executor=_token_read_executor)
 @db_session_retry_locked
 def get_token(address: str) -> Token:
     """Retrieve or insert a token entity for a given address.
@@ -69,7 +70,7 @@ def get_token(address: str) -> Token:
         )
 
 
-@a_sync.a_sync(default="sync", ram_cache_maxsize=None)
+@a_sync(default="sync", ram_cache_maxsize=None)
 def ensure_token(address: AnyAddressType) -> None:
     """Ensure a token entity exists for a given address.
 
@@ -132,7 +133,7 @@ def get_bucket(address: str) -> Optional[str]:
     return bucket
 
 
-@a_sync.a_sync(default="async", executor=_token_executor)
+@a_sync(default="async", executor=_token_write_executor)
 @db_session_retry_locked
 def _set_bucket(address: str, bucket: str) -> None:
     """Set the bucket for a given token address.
@@ -154,7 +155,7 @@ def _set_bucket(address: str, bucket: str) -> None:
     _logger_debug("updated %s bucket in ydb: %s", address, bucket)
 
 
-set_bucket = a_sync.ProcessingQueue(_set_bucket, num_workers=10, return_data=False)
+set_bucket = ProcessingQueue(_set_bucket, num_workers=10, return_data=False)
 
 
 @a_sync_read_db_session
@@ -203,7 +204,7 @@ def set_symbol(address: str, symbol: str):
         raise ValueError("`symbol` is required")
     if not isinstance(symbol, str):
         raise TypeError(f"`symbol` must be a string. You passed {symbol}")
-    a_sync.create_task(
+    create_task(
         coro=_set_symbol(address, symbol),
         name=f"set_symbol {symbol} for {address}",
         skip_gc_until_done=True,
@@ -256,7 +257,7 @@ def set_name(address: str, name: str) -> None:
         raise ValueError("`name` is required")
     if not isinstance(name, str):
         raise TypeError(f"`name` must be a string. You passed {name}")
-    a_sync.create_task(
+    create_task(
         coro=_set_name(address, name),
         name=f"set_name {name} for {address}",
         skip_gc_until_done=True,
@@ -292,7 +293,7 @@ async def get_decimals(address: str) -> int:
                 raise ValueError(
                     f"Value {d} of attr Token.decimals is greater than the maximum allowed value 2147483647"
                 )
-            a_sync.create_task(
+            create_task(
                 coro=set_decimals(address, d),
                 name=f"set_decimals {address}",
                 skip_gc_until_done=True,
@@ -300,7 +301,7 @@ async def get_decimals(address: str) -> int:
     return d
 
 
-@a_sync.a_sync(default="async", executor=_token_executor)
+@a_sync(default="async", executor=_token_write_executor)
 @db_session_retry_locked
 def set_decimals(address: str, decimals: int) -> None:
     """Set the decimals for a given token address.
@@ -320,7 +321,7 @@ def set_decimals(address: str, decimals: int) -> None:
     _logger_debug("updated %s decimals in ydb: %s", address, decimals)
 
 
-@a_sync.a_sync(default="async", executor=_token_executor)
+@a_sync(default="async", executor=_token_write_executor)
 @db_session_retry_locked
 def _set_symbol(address: str, symbol: str) -> None:
     """Set the symbol for a given token address.
@@ -340,7 +341,7 @@ def _set_symbol(address: str, symbol: str) -> None:
     _logger_debug("updated %s symbol in ydb: %s", address, symbol)
 
 
-@a_sync.a_sync(default="async", executor=_token_executor)
+@a_sync(default="async", executor=_token_write_executor)
 @db_session_retry_locked
 def _set_name(address: str, name: str) -> None:
     """Set the name for a given token address.
