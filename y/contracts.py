@@ -1,10 +1,10 @@
-import logging
-import os
 import threading
 import warnings
 from asyncio import Lock, TimerHandle, get_running_loop
 from collections import defaultdict
 from functools import lru_cache
+from logging import getLogger
+from os import getenv
 from typing import (
     Any,
     Callable,
@@ -18,11 +18,10 @@ from typing import (
 )
 from urllib.parse import urlparse
 
-import a_sync
-import aiohttp
 import dank_mids
 import eth_retry
-from a_sync import cgather, igather
+from a_sync import SmartProcessingQueue, ThreadsafeSemaphore, a_sync, cgather, igather
+from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
@@ -71,7 +70,7 @@ from y.utils.cache import memory
 from y.utils.events import Events
 from y.utils.gather import gather_methods
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 _CHAINID = chain.id
 
@@ -214,10 +213,10 @@ def _get_code(address: str, block: int) -> HexBytes:
     return web3.eth.get_code(address, block)
 
 
-creation_block_semaphore = a_sync.ThreadsafeSemaphore(10)
+creation_block_semaphore = ThreadsafeSemaphore(32)
 
 
-@a_sync.a_sync(cache_type="memory")
+@a_sync(cache_type="memory")
 @stuck_coro_debugger
 @eth_retry.auto_retry
 async def contract_creation_block_async(
@@ -293,10 +292,6 @@ async def contract_creation_block_async(
         db.set_deploy_block(address, hi)
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
-
-
-# this defaultdict prevents congestion in the contracts thread pool
-address_semaphores = defaultdict(lambda: a_sync.ThreadsafeSemaphore(1))
 
 
 class ContractEvents(ContractEvents):
@@ -454,7 +449,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 )
 
     @classmethod
-    @a_sync.a_sync
+    @a_sync
     def from_abi(
         cls,
         name: str,
@@ -768,7 +763,7 @@ def is_contract(address: AnyAddressType) -> bool:
     return web3.eth.get_code(address) not in ("0x", b"")
 
 
-@a_sync.a_sync(default="sync", cache_type="memory")
+@a_sync(default="sync", cache_type="memory")
 async def has_method(
     address: Address, method: str, return_response: bool = False
 ) -> Union[bool, Any]:
@@ -800,7 +795,7 @@ async def has_method(
 
 
 @stuck_coro_debugger
-@a_sync.a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60)
+@a_sync(default="sync", cache_type="memory", ram_cache_ttl=15 * 60)
 async def has_methods(
     address: AnyAddressType,
     methods: Iterable[str],
@@ -873,7 +868,7 @@ async def probe(
     return (method, result) if return_method else result
 
 
-@a_sync.a_sync(default="sync")
+@a_sync(default="sync")
 @stuck_coro_debugger
 async def build_name(
     address: AnyAddressType, return_None_on_failure: bool = False
@@ -1165,7 +1160,7 @@ def _get_explorer_api_key(url, silent) -> Tuple[str, str]:
     )
     if env_key is None:
         return None
-    if api_key := os.getenv(env_key):
+    if api_key := getenv(env_key):
         return api_key
     if not silent:
         warnings.warn(
@@ -1183,7 +1178,7 @@ async def _fetch_explorer_data(url, silent, params):
     if api_key is not None:
         params["apiKey"] = api_key
 
-    async with aiohttp.ClientSession() as session:
+    async with ClientSession() as session:
         if not silent:
             print(
                 f"Fetching source of {color('bright blue')}{params['address']}{color} "
@@ -1273,7 +1268,7 @@ async def _resolve_proxy_async(address) -> Tuple[str, List]:
     return name, abi
 
 
-_resolve_proxy_async = a_sync.SmartProcessingQueue(_resolve_proxy_async, num_workers=8)
+_resolve_proxy_async = SmartProcessingQueue(_resolve_proxy_async, num_workers=8)
 
 
 def _setup_events(contract: Contract) -> None:
