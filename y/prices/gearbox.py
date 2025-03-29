@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import List, Dict
 
 import a_sync
+from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from brownie import chain
 from typing_extensions import Self
@@ -12,7 +13,6 @@ from y.contracts import Contract
 from y.datatypes import Address, Block
 from y.exceptions import UnsupportedNetwork
 from y.networks import Network
-from y.utils import gather2
 from y.utils.cache import a_sync_ttl_cache
 
 registry = "0xA50d4E7D8946a7c90652339CDBd262c375d54D99"
@@ -46,7 +46,7 @@ class DieselPool(ContractBase):
 
     async def exchange_rate(self, block: Block) -> Decimal:
         underlying: ERC20
-        pool, underlying = await gather2(self.__contract__, self.__underlying__)
+        pool, underlying = await cgather(self.__contract__, self.__underlying__)
         scale = await underlying.__scale__
         return Decimal(
             await pool.fromDiesel.coroutine(scale, block_identifier=block)
@@ -55,7 +55,7 @@ class DieselPool(ContractBase):
     async def get_price(
         self, block: Block, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> Decimal:
-        underlying, exchange_rate = await gather2(
+        underlying, exchange_rate = await cgather(
             self.__underlying__, self.exchange_rate(block, sync=False)
         )
         und_price = await underlying.price(block, skip_cache=skip_cache, sync=False)

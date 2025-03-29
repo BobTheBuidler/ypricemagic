@@ -2,24 +2,12 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from asyncio import ensure_future
-from typing import Any, Awaitable, Iterable, Optional, Tuple, TypeVar
+from typing import Any, Iterable, Optional, Tuple
 
 from a_sync import igather
 from multicall import Call
 
 from y._decorators import stuck_coro_debugger
-
-
-__T0 = TypeVar("__T0")
-__T1 = TypeVar("__T1")
-
-
-async def gather2(
-    first_awaitable: Awaitable[__T0], second_awaitable: Awaitable[__T1]
-) -> Tuple[__T0, __T1]:
-    second_awaitable = ensure_future(second_awaitable)
-    return await first_awaitable, await second_awaitable
 
 
 async def gather_methods(
