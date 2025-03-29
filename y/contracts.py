@@ -19,10 +19,10 @@ from typing import (
 from urllib.parse import urlparse
 
 import a_sync
-import aiohttp
 import dank_mids
 import eth_retry
 from a_sync import cgather, igather
+from aiohttp import ClientSession
 from aiolimiter import AsyncLimiter
 from async_lru import alru_cache
 from brownie import ZERO_ADDRESS, chain, web3
@@ -1183,7 +1183,7 @@ async def _fetch_explorer_data(url, silent, params):
     if api_key is not None:
         params["apiKey"] = api_key
 
-    async with aiohttp.ClientSession() as session:
+    async with ClientSession() as session:
         if not silent:
             print(
                 f"Fetching source of {color('bright blue')}{params['address']}{color} "
