@@ -7,6 +7,7 @@ from typing import Dict, Optional, Set
 from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
 from pony.orm import commit, select
 
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_cached,
@@ -21,10 +22,11 @@ logger = getLogger(__name__)
 _logger_debug = logger.debug
 
 
-_block_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [block]")
-_timestamp_executor = PruningThreadPoolExecutor(
-    10, "ypricemagic db executor [timestamp]"
-)
+def make_executor(small: int, big: int, name: Optional[str] = None) -> PruningThreadPoolExecutor:
+    return PruningThreadPoolExecutor(big if ENVS.DB_PROVIDER == "postgres" else small, name)
+
+_block_executor = make_executor(4, 8, "ypricemagic db executor [block]")
+_timestamp_executor = make_executor(1, 4, "ypricemagic db executor [timestamp]")
 
 
 @a_sync_read_db_session
