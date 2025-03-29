@@ -19,11 +19,18 @@ _logger_debug = logger.debug
 
 _get_get_token()
 
-_deploy_block_read_executor = make_executor(2, 4, "ypricemagic db executor [deploy block]")
-_deploy_block_write_executor = make_executor(1, 4, "ypricemagic db executor [deploy block]")
+_deploy_block_read_executor = make_executor(
+    2, 4, "ypricemagic db executor [deploy block]"
+)
+_deploy_block_write_executor = make_executor(
+    1, 4, "ypricemagic db executor [deploy block]"
+)
 
 
-@a_sync(default="async", executor=_deploy_block_read_executor,)
+@a_sync(
+    default="async",
+    executor=_deploy_block_read_executor,
+)
 @db_session_retry_locked
 def get_deploy_block(address: str) -> Optional[int]:
     """Retrieve the deployment block number for a given contract address.

@@ -22,8 +22,13 @@ logger = getLogger(__name__)
 _logger_debug = logger.debug
 
 
-def make_executor(small: int, big: int, name: Optional[str] = None) -> PruningThreadPoolExecutor:
-    return PruningThreadPoolExecutor(big if ENVS.DB_PROVIDER == "postgres" else small, name)
+def make_executor(
+    small: int, big: int, name: Optional[str] = None
+) -> PruningThreadPoolExecutor:
+    return PruningThreadPoolExecutor(
+        big if ENVS.DB_PROVIDER == "postgres" else small, name
+    )
+
 
 _block_executor = make_executor(4, 8, "ypricemagic db executor [block]")
 _timestamp_executor = make_executor(1, 4, "ypricemagic db executor [timestamp]")
