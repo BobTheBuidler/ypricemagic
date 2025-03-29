@@ -284,7 +284,6 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         self.asynchronous = asynchronous
         self.__tasks = []
 
-    @staticmethod
     def _include_event(event: _EventItem) -> Awaitable[bool]:
         """
         Determine whether to include a specific event.
@@ -303,7 +302,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         # NOTE: For some reason the Balancer fork on Fantom lists "0x3e522051A9B1958Aa1e828AC24Afba4a551DF37d"
         #       as a pool, but it is not a contract. This handler will prevent it and future cases from causing problems.
         # NOTE: this isn't really optimized as it still runs semi-synchronously but its better than what was had previously
-        return BalancerEvents.executor.run(contracts.is_contract, event["poolAddress"])
+        return self.executor.run(contracts.is_contract, event["poolAddress"])
 
     def _process_event(self, event: _EventItem) -> "BalancerV2Pool":
         """
