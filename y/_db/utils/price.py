@@ -55,7 +55,9 @@ def get_price(address: ChecksumAddress, block: BlockNumber) -> Optional[Decimal]
 
 
 @retry_locked
-async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
+async def _set_price(
+    address: ChecksumAddress, block: BlockNumber, price: Decimal
+) -> None:
     """
     Set the price of a token at a specific block in the database.
 
@@ -117,6 +119,7 @@ def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> N
         - :func:`ensure_token`
         - :func:`insert`
     """
+
 
 set_price = ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
