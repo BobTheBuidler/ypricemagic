@@ -123,7 +123,7 @@ set_price = ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
 @cached(TTLCache(maxsize=1_000, ttl=5 * 60), lock=threading.Lock())
 @log_result_count("prices", ("block",))
-def known_prices_at_block(number: int) -> Dict[Address, Decimal]:
+def known_prices_at_block(number: BlockNumber) -> Dict[ChecksumAddress, Decimal]:
     """
     Cache and return all known prices at a specific block to minimize database reads.
 
