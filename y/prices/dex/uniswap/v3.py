@@ -638,8 +638,8 @@ class UniswapV3(a_sync.ASyncGenericBase):
             amount = await quoter.quoteExactInput.coroutine(
                 _encode_path(path), amount_in, block_identifier=block
             )
-            # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
             return (
+                # Quoter v2 uses this weird return struct, we must unpack it to get amount out.
                 (amount if isinstance(amount, int) else amount[0])
                 / _undo_fees(path)
                 / _FEE_DENOMINATOR
