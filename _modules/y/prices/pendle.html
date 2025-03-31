@@ -72,7 +72,7 @@
 <span></span><span class="kn">from</span> <span class="nn">decimal</span> <span class="kn">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Tuple</span>
 
-<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">a_sync</span>
+<span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">a_sync</span><span class="p">,</span> <span class="n">cgather</span>
 <span class="kn">from</span> <span class="nn">async_lru</span> <span class="kn">import</span> <span class="n">alru_cache</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">ENVIRONMENT_VARIABLES</span> <span class="k">as</span> <span class="n">ENVS</span>
@@ -80,7 +80,6 @@
 <span class="kn">from</span> <span class="nn">y.contracts</span> <span class="kn">import</span> <span class="n">Contract</span><span class="p">,</span> <span class="n">has_method</span><span class="p">,</span> <span class="n">is_contract</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span>
 <span class="kn">from</span> <span class="nn">y.exceptions</span> <span class="kn">import</span> <span class="n">ContractNotVerified</span>
-<span class="kn">from</span> <span class="nn">y.utils.gather</span> <span class="kn">import</span> <span class="n">gather2</span>
 
 
 <span class="k">try</span><span class="p">:</span>
@@ -188,7 +187,7 @@
     <span class="c1">#    use_asset = False</span>
     <span class="c1">#    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)</span>
     <span class="n">sy_token</span><span class="p">,</span> <span class="n">p_token</span><span class="p">,</span> <span class="n">y_token</span> <span class="o">=</span> <span class="n">tokens</span>
-    <span class="n">sy</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather2</span><span class="p">(</span>
+    <span class="n">sy</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
         <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">sy_token</span><span class="p">),</span>
         <span class="n">PENDLE_ORACLE</span><span class="o">.</span><span class="n">getLpToAssetRate</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
             <span class="n">token</span><span class="p">,</span> <span class="n">TWAP_DURATION</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
