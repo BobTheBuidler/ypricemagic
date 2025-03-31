@@ -11,7 +11,6 @@ from y.classes.common import ERC20, WeiBalance
 from y.contracts import Contract, has_methods
 from y.datatypes import AnyAddressType, Block, UsdPrice
 from y.utils.cache import optional_async_diskcache
-from y.utils.gather import gather2
 
 logger = logging.getLogger(__name__)
 
@@ -37,7 +36,7 @@ async def is_token_set(token: AnyAddressType) -> bool:
         - :func:`y.contracts.has_methods`
     """
     return any(
-        await gather2(
+        await cgather(
             has_methods(
                 token, ("getComponents()(address[])", "naturalUnit()(uint)"), sync=False
             ),
@@ -149,7 +148,7 @@ class TokenSet(ERC20):
         See Also:
             - :class:`WeiBalance`
         """
-        contract, components = await gather2(
+        contract, components = await cgather(
             Contract.coroutine(self.address),
             self.components(block=block, sync=False),
         )
