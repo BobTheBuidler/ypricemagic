@@ -2,7 +2,7 @@ import itertools
 import logging
 from typing import List, Optional
 
-from a_sync import PruningThreadPoolExecutor, a_sync, cgather, igather
+from a_sync import a_sync, cgather, igather
 from a_sync.executor import AsyncExecutor
 from async_lru import alru_cache
 from brownie.network.event import _EventItem
@@ -16,14 +16,13 @@ from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
 from y import convert
-from y._db import entities
-from y._db.common import DiskCache, default_filter_threads, enc_hook
+from y._db.common import DiskCache, default_filter_threads, enc_hook, make_executor
 from y._db.decorators import db_session_cached, db_session_retry_locked, retry_locked
 from y._db.entities import Block, Hashes, LogCacheInfo, LogTopic
 from y._db.entities import Log as DbLog
 from y._db.log import Log
-from y._db.utils.bulk import insert as _bulk_insert
 from y._db.utils._ep import _get_get_block
+from y._db.utils.bulk import insert as _bulk_insert
 from y.constants import CHAINID
 
 logger = logging.getLogger(__name__)
@@ -44,8 +43,8 @@ LOG_COLS = (
 _BLOCK_COLS = "chain", "number"
 _BLOCK_COLS_EXTENDED = "chain", "number", "classtype"
 
-_topic_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [topic]")
-_hash_executor = PruningThreadPoolExecutor(10, "ypricemagic db executor [hash]")
+_topic_executor = make_executor(4, 8, "ypricemagic db executor [topic]")
+_hash_executor = make_executor(4, 8, "ypricemagic db executor [hash]")
 
 _get_log_cache_info = LogCacheInfo.get
 _get_log_topic = LogTopic.get

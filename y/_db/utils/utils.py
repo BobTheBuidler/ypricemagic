@@ -4,10 +4,11 @@ from functools import lru_cache
 from logging import getLogger
 from typing import Dict, Optional, Set
 
-from a_sync import ProcessingQueue, PruningThreadPoolExecutor, a_sync
+from a_sync import ProcessingQueue, a_sync
+from brownie import chain
 from pony.orm import commit, select
 
-from y import ENVIRONMENT_VARIABLES as ENVS
+from y._db.common import make_executor
 from y._db.decorators import (
     a_sync_read_db_session,
     db_session_cached,
@@ -15,19 +16,13 @@ from y._db.decorators import (
     log_result_count,
 )
 from y._db.entities import Block, BlockAtTimestamp, Chain, insert
-from y.constants import CHAINID
 
 
 logger = getLogger(__name__)
 _logger_debug = logger.debug
 
-
-def make_executor(
-    small: int, big: int, name: Optional[str] = None
-) -> PruningThreadPoolExecutor:
-    return PruningThreadPoolExecutor(
-        big if ENVS.DB_PROVIDER == "postgres" else small, name
-    )
+CHAINID = chain.id
+del chain
 
 
 _block_executor = make_executor(4, 8, "ypricemagic db executor [block]")

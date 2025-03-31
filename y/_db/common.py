@@ -39,6 +39,7 @@ from web3.datastructures import AttributeDict
 from web3.middleware.filter import block_ranges
 
 from y import convert
+from y import ENVIRONMENT_VARIABLES as ENVS
 from y._db.decorators import retry_locked
 from y._db.exceptions import CacheNotPopulatedError
 from y._decorators import stuck_coro_debugger
@@ -301,7 +302,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
             The maximum block number loaded from cache.
         """
         logger.debug("checking to see if %s is cached in local db", self)
-        if cached_thru := await _metadata_executor.run(
+        if cached_thru := await _metadata_read_executor.run(
             self.cache.is_cached_thru, from_block
         ):
             logger.info(
@@ -341,12 +342,19 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         return None
 
 
+def make_executor(
+    small: int, big: int, name: Optional[str] = None
+) -> PruningThreadPoolExecutor:
+    return PruningThreadPoolExecutor(
+        big if ENVS.DB_PROVIDER == "postgres" else small, name
+    )
+
+
 _E = TypeVar("_E", bound=AsyncThreadPoolExecutor)
 _MAX_LONG_LONG = 9223372036854775807
 
-_metadata_executor = PruningThreadPoolExecutor(
-    4, thread_name_prefix="ypricemagic Filter metadata"
-)
+_metadata_read_executor = make_executor(2, 3, "ypricemagic Filter read metadata")
+_metadata_write_executor = make_executor(1, 3, "ypricemagic Filter write metadata")
 
 
 class Filter(_DiskCachedMixin[T, C]):
@@ -755,7 +763,7 @@ class Filter(_DiskCachedMixin[T, C]):
             await self.bulk_insert(objs)
         del objs
 
-        await _metadata_executor.run(self.cache.set_metadata, from_block, done_thru)
+        await _metadata_write_executor.run(self.cache.set_metadata, from_block, done_thru)
         if debug_logs:
             logger._log(
                 DEBUG,
