@@ -5,6 +5,7 @@ from typing import Dict, Optional
 
 from a_sync import ProcessingQueue
 from cachetools import TTLCache, cached
+from eth_typing import BlockNumber, ChecksumAddress
 from pony.orm import select
 
 from y import constants
@@ -13,7 +14,6 @@ from y._db.entities import Price, insert
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 from y.constants import CHAINID
-from y.datatypes import Address
 
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ _logger_debug = logger.debug
 
 
 @a_sync_read_db_session
-def get_price(address: str, block: int) -> Optional[Decimal]:
+def get_price(address: ChecksumAddress, block: BlockNumber) -> Optional[Decimal]:
     """
     Retrieve the price of a token at a specific block.
 
@@ -55,7 +55,7 @@ def get_price(address: str, block: int) -> Optional[Decimal]:
 
 
 @retry_locked
-async def _set_price(address: str, block: int, price: Decimal) -> None:
+async def _set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
     """
     Set the price of a token at a specific block in the database.
 
@@ -93,6 +93,30 @@ async def _set_price(address: str, block: int, price: Decimal) -> None:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass
 
+
+def set_price(address: ChecksumAddress, block: BlockNumber, price: Decimal) -> None:
+    """
+    Set the price of a token at a specific block in the database.
+
+    This function ensures the block and token are present in the database and
+    inserts the price information. It handles large numbers by suppressing
+    `InvalidOperation` exceptions.
+
+    This function delegates to a threadpool without waiting for the job to complete.
+
+    Args:
+        address: The address of the token.
+        block: The block number.
+        price: The price of the token.
+
+    Examples:
+        >>> await _set_price("0xTokenAddress", 12345678, Decimal("123.45"))
+
+    See Also:
+        - :func:`ensure_block`
+        - :func:`ensure_token`
+        - :func:`insert`
+    """
 
 set_price = ProcessingQueue(_set_price, num_workers=50, return_data=False)
 
