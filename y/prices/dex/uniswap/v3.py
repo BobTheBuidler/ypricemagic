@@ -405,7 +405,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
             >>> pools = await uniswap_v3.pools
         """
         factory = await self.__factory__
-        if factory.address == "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A":
+        if CHAINID == Network.Base and factory.address == "0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A":
+            return SlipstreamPools(factory, asynchronous=self.asynchronous)
+        elif CHAINID == Network.Optimism and factory.address == "0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F":
             return SlipstreamPools(factory, asynchronous=self.asynchronous)
         return UniV3Pools(factory, asynchronous=self.asynchronous)
 
