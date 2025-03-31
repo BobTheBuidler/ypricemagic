@@ -171,9 +171,12 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x1610e3c85dd44Af31eD7f33a63642012Dca0C5A5",  # mseth
         "0x3E29D3A9316dAB217754d13b28646B76607c5f04",  # aleth
         "0xE405de8F52ba7559f9df3C368500B6E6ae6Cee49",  # seth
+        "0x300d2c875C6fb8Ce4bf5480B4d34b7c9ea8a33A4",  # pxETH
         # btc and btc-like
         "0x298B9B95708152ff6968aafd889c6586e9169f1D",  # sbtc
         "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",  # tbtc
+        # lp tokens
+        "0xd62C9D8a3D4fd98b27CaaEfE3571782a3aF0a737",  # sAMM-USDC/MAI
     ],
     Network.Arbitrum: [
         "0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2",  # crv3crypto
