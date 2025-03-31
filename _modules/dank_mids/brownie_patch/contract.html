@@ -69,8 +69,7 @@
            <div itemprop="articleBody">
              
   <h1>Source code for dank_mids.brownie_patch.contract</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">functools</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Iterator</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">NewType</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">overload</span>
 
 <span class="kn">import</span> <span class="nn">brownie</span>
 <span class="kn">from</span> <span class="nn">brownie.network.contract</span> <span class="kn">import</span> <span class="p">(</span>
@@ -246,10 +245,9 @@
 <span class="sd">        This method sets up lazy initialization for contract methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__method_names__</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">name</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;_name&quot;</span><span class="p">,</span> <span class="s2">&quot;_owner&quot;</span><span class="p">}:</span>
-                <span class="c1"># this is a property defined on _ContractBase and cannot be written to</span>
-                <span class="k">continue</span>
-            <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_ContractMethodPlaceholder</span><span class="p">)</span>
+            <span class="c1"># these are properties defined on _ContractBase and cannot be written to</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">&quot;_name&quot;</span><span class="p">,</span> <span class="s2">&quot;_owner&quot;</span><span class="p">}:</span>
+                <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">_ContractMethodPlaceholder</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Contract.__getattribute__">
 <a class="viewcode-back" href="../../../source/y.html#y.contracts.Contract.__getattribute__">[docs]</a>
@@ -266,17 +264,22 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            The contract method object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">attr</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">attr</span> <span class="o">=</span> <span class="nb">object</span><span class="o">.</span><span class="fm">__getattribute__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Contract &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">&#39; object has no attribute &#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&#39;&quot;</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="nn">e.__cause__</span>
         <span class="k">if</span> <span class="n">attr</span> <span class="ow">is</span> <span class="n">_ContractMethodPlaceholder</span><span class="p">:</span>
             <span class="n">attr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__get_method_object__</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
             <span class="nb">object</span><span class="o">.</span><span class="fm">__setattr__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">attr</span></div>
 
 
-    <span class="nd">@functools</span><span class="o">.</span><span class="n">cached_property</span>
-    <span class="k">def</span> <span class="nf">__method_names__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="o">...</span><span class="p">]:</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">__method_names__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;List of method names defined in the contract ABI.&quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span><span class="p">)</span>
+        <span class="k">yield from</span> <span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">_is_function_abi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">))</span>
 
     <span class="k">def</span> <span class="nf">__get_method_object__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DankContractMethod</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -293,10 +296,10 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">dank_mids</span> <span class="kn">import</span> <span class="n">web3</span>
 
-        <span class="n">overloaded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__method_names__</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="n">overloaded</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__method_names__</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span>
 
-        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;function&quot;</span> <span class="ow">or</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">abi</span> <span class="ow">in</span> <span class="nb">filter</span><span class="p">(</span><span class="n">_is_function_abi</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">abi</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
                 <span class="k">continue</span>
 
             <span class="n">full_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
@@ -316,6 +319,10 @@
             <span class="n">overloaded</span><span class="o">.</span><span class="n">_add_fn</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">overloaded</span>  <span class="c1"># type: ignore [return-value]</span>
+
+
+<span class="k">def</span> <span class="nf">_is_function_abi</span><span class="p">(</span><span class="n">abi</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">abi</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;function&quot;</span>
 
 
 <span class="nd">@overload</span>

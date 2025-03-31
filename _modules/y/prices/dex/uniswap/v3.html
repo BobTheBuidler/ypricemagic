@@ -510,7 +510,15 @@
 <span class="sd">            &gt;&gt;&gt; pools = await uniswap_v3.pools</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
-        <span class="k">if</span> <span class="n">factory</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="s2">&quot;0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Base</span>
+            <span class="ow">and</span> <span class="n">factory</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="s2">&quot;0x5e7BB104d84c7CB9B682AaC2F3d509f5F406809A&quot;</span>
+        <span class="p">):</span>
+            <span class="k">return</span> <span class="n">SlipstreamPools</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="p">(</span>
+            <span class="n">CHAINID</span> <span class="o">==</span> <span class="n">Network</span><span class="o">.</span><span class="n">Optimism</span>
+            <span class="ow">and</span> <span class="n">factory</span><span class="o">.</span><span class="n">address</span> <span class="o">==</span> <span class="s2">&quot;0xCc0bDDB707055e04e497aB22a59c2aF4391cd12F&quot;</span>
+        <span class="p">):</span>
             <span class="k">return</span> <span class="n">SlipstreamPools</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">UniV3Pools</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span></div>
 
@@ -753,8 +761,8 @@
             <span class="n">amount</span> <span class="o">=</span> <span class="k">await</span> <span class="n">quoter</span><span class="o">.</span><span class="n">quoteExactInput</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span>
                 <span class="n">_encode_path</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">amount_in</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
             <span class="p">)</span>
-            <span class="c1"># Quoter v2 uses this weird return struct, we must unpack it to get amount out.</span>
             <span class="k">return</span> <span class="p">(</span>
+                <span class="c1"># Quoter v2 uses this weird return struct, we must unpack it to get amount out.</span>
                 <span class="p">(</span><span class="n">amount</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">amount</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="k">else</span> <span class="n">amount</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
                 <span class="o">/</span> <span class="n">_undo_fees</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
                 <span class="o">/</span> <span class="n">_FEE_DENOMINATOR</span>
