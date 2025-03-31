@@ -284,7 +284,7 @@ class BalancerEvents(ProcessedEvents[Tuple[HexBytes, EthAddress, Block]]):
         self.asynchronous = asynchronous
         self.__tasks = []
 
-    def _include_event(event: _EventItem) -> Awaitable[bool]:
+    def _include_event(self, event: _EventItem) -> Awaitable[bool]:
         """
         Determine whether to include a specific event.
 
