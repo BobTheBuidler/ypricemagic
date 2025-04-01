@@ -116,7 +116,9 @@ class AddressProviderEvents(CurveEvents):
             self.provider.identifiers[Ids(event["id"])].append(event["addr"])
         elif event.name == "AddressModified" and event["new_address"] != ZERO_ADDRESS:
             self.provider.identifiers[Ids(event["id"])].append(event["new_address"])
-        _startup_logger_debug("%s loaded event %s at block %s", self, event, event.block_number)
+        _startup_logger_debug(
+            "%s loaded event %s at block %s", self, event, event.block_number
+        )
         return event
 
 
@@ -147,7 +149,9 @@ class RegistryEvents(CurveEvents):
             curve.registries[event.address].add(pool)
         elif event.name == "PoolRemoved":
             curve.registries[event.address].discard(event["pool"])
-        _startup_logger_debug("%s loaded event %s at block %s", self, event, event.block_number)
+        _startup_logger_debug(
+            "%s loaded event %s at block %s", self, event, event.block_number
+        )
         return event
 
     async def _add_pool(self, pool: Address) -> EthAddress:
@@ -536,7 +540,9 @@ class CurvePool(ERC20):
             return 0
         index = await self.get_coin_index(token, sync=False)
         balance = await self._get_balance(index, block) or 0
-        logger.debug("%s liquidity for %s at block %s is %s", self, token, block, balance)
+        logger.debug(
+            "%s liquidity for %s at block %s is %s", self, token, block, balance
+        )
         return balance
 
 

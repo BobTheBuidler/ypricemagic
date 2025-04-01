@@ -336,10 +336,10 @@ class UniswapV2Pool(ERC20):
             # get symbol cached into memcache to make pool more identifiable in logs
             await self.__symbol__
             log_debug(
-                "checking %s liquidity for %s %s at %s", 
-                repr(self), 
-                await ERC20(token, asynchronous=True).symbol, 
-                token, 
+                "checking %s liquidity for %s %s at %s",
+                repr(self),
+                await ERC20(token, asynchronous=True).symbol,
+                token,
                 block,
             )
         if block and block < await self.deploy_block(sync=False):
@@ -930,10 +930,10 @@ class UniswapRouterV2(ContractBase):
     ) -> int:
         if debug_logs := logger.isEnabledFor(DEBUG):
             log_debug(
-                "checking %s liquidity for %s %s at %s", 
-                self, 
-                await ERC20(token, asynchronous=True).symbol, 
-                token, 
+                "checking %s liquidity for %s %s at %s",
+                self,
+                await ERC20(token, asynchronous=True).symbol,
+                token,
                 block,
             )
         if block and block < await contract_creation_block_async(self.factory):
@@ -1036,5 +1036,11 @@ async def log_liquidity(market, token, block, liquidity, debug_logs: bool = True
         __log(
             DEBUG,
             "%s liquidity for %s %s at %s is %s",
-            (repr(market), await ERC20(token, asynchronous=True).symbol, token, block, liquidity),
+            (
+                repr(market),
+                await ERC20(token, asynchronous=True).symbol,
+                token,
+                block,
+                liquidity,
+            ),
         )

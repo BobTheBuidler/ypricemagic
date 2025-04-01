@@ -629,8 +629,8 @@ async def _get_price_from_dexes(
 
     if debug_logs_enabled:
         log_debug(
-            "no %s %s liquidity found on primary markets", 
-            await ERC20(token, asynchronous=True).symbol, 
+            "no %s %s liquidity found on primary markets",
+            await ERC20(token, asynchronous=True).symbol,
             token,
         )
 

@@ -132,6 +132,7 @@ _BEEFY_METHODS = {
     "BeefyVenusVaultBNB": "wbnb()",
 }
 
+
 class YearnInspiredVault(ERC20):
     """
     Represents a vault token from Yearn or a similar protocol.
@@ -219,9 +220,14 @@ class YearnInspiredVault(ERC20):
             underlying = ERC20(underlying, asynchronous=self.asynchronous)
             if logger.isEnabledFor(DEBUG):
                 logger._log(
-                    DEBUG, 
-                    "%s %s underlying is %s %s", 
-                    (await self.__symbol__, self, await underlying.__symbol__, underlying),
+                    DEBUG,
+                    "%s %s underlying is %s %s",
+                    (
+                        await self.__symbol__,
+                        self,
+                        await underlying.__symbol__,
+                        underlying,
+                    ),
                 )
             return underlying
         raise CantFetchParam(f"underlying for {self}")

@@ -219,9 +219,14 @@ class UniswapV3Pool(ContractBase):
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(
-                DEBUG, 
-                "checking %s liquidity for %s %s at %s", 
-                (repr(self), await ERC20(token, asynchronous=True).symbol, token, block),
+                DEBUG,
+                "checking %s liquidity for %s %s at %s",
+                (
+                    repr(self),
+                    await ERC20(token, asynchronous=True).symbol,
+                    token,
+                    block,
+                ),
             )
 
         if block < await self.deploy_block(sync=False):
@@ -517,8 +522,8 @@ class UniswapV3(a_sync.ASyncGenericBase):
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(
-                DEBUG, 
-                "checking %s liquidity for %s %s at %s", 
+                DEBUG,
+                "checking %s liquidity for %s %s at %s",
                 (self, await ERC20(token, asynchronous=True).symbol, token, block),
             )
 
@@ -786,7 +791,13 @@ async def log_liquidity(market, token, block, liquidity) -> None:
     __logger_log(
         DEBUG,
         "%s liquidity for %s %s at %s: %s",
-        (repr(market), await ERC20(token, asynchronous=True).symbol, token, block, liquidity),
+        (
+            repr(market),
+            await ERC20(token, asynchronous=True).symbol,
+            token,
+            block,
+            liquidity,
+        ),
     )
 
 

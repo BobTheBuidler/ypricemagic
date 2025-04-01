@@ -229,9 +229,11 @@ async def _check_bucket_helper(
         # result = await result
     return bucket, result
 
+
 async def __log_bucket(token, bucket):
     symbol = await ERC20(token, asynchronous=True).symbol
     logger._log(DEBUG, "%s %s bucket is %s", (symbol, token, bucket))
+
 
 async def __log_not_bucket(token, bucket):
     symbol = await ERC20(token, asynchronous=True).symbol
