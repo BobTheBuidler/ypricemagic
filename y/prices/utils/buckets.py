@@ -5,6 +5,7 @@ from typing import Awaitable, Callable, Tuple
 import a_sync
 
 from y import convert
+from y.classes.common import ERC20
 from y.constants import STABLECOINS
 from y.datatypes import Address, AnyAddressType
 from y.prices import convex, one_to_one, pendle, popsicle, rkp3r, solidex, yearn
@@ -67,11 +68,11 @@ async def check_bucket(token: AnyAddressType) -> str:
     for bucket, check in string_matchers.items():
         if check(token):
             if debug_logs_enabled:
-                logger._log(DEBUG, "%s is %s", (token_address, bucket))
+                await __log_bucket(token_address, bucket)
             db.set_bucket(token, bucket)
             return bucket
         elif debug_logs_enabled:
-            logger._log(DEBUG, "%s is not %s", (token_address, bucket))
+            await __log_not_bucket(token_address, bucket)
 
     # check these first, these just require calls
     futs = [
@@ -92,14 +93,14 @@ async def check_bucket(token: AnyAddressType) -> str:
 
         if is_member:
             if debug_logs_enabled:
-                logger._log(DEBUG, "%s is %s", (token_address, bucket))
+                await __log_bucket(token_address, bucket)
             for fut in futs:
                 fut.cancel()
             db.set_bucket(token, bucket)
             return bucket
         else:
             if debug_logs_enabled:
-                logger._log(DEBUG, "%s is not %s", (token_address, bucket))
+                await __log_not_bucket(token_address, bucket)
             bucket = None
 
     # TODO: Refactor the below like the above
@@ -133,7 +134,7 @@ async def check_bucket(token: AnyAddressType) -> str:
     elif curve and await curve.get_pool(token_address, sync=False):
         bucket = "curve lp"
     if debug_logs_enabled:
-        logger._log(DEBUG, "%s bucket is %s", (token_address, bucket))
+        await __log_bucket(token_address, bucket)
     if bucket:
         db.set_bucket(token, bucket)
     return bucket
@@ -227,3 +228,13 @@ async def _check_bucket_helper(
         raise TypeError(f"{bucket} result must be boolean. You passed {result}")
         # result = await result
     return bucket, result
+
+
+async def __log_bucket(token, bucket):
+    symbol = await ERC20(token, asynchronous=True).symbol
+    logger._log(DEBUG, "%s %s bucket is %s", (symbol, token, bucket))
+
+
+async def __log_not_bucket(token, bucket):
+    symbol = await ERC20(token, asynchronous=True).symbol
+    logger._log(DEBUG, "%s %s bucket is not %s", (symbol, token, bucket))

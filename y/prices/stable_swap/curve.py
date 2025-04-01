@@ -525,17 +525,26 @@ class CurvePool(ERC20):
             return UsdValue(price)
         except ValueError as e:
             if str(e).startswith("could not fetch balances "):
+                logger.debug("could not fetch balances for %s", self)
                 return None
             raise
+        except yPriceMagicError as e:
+            if not isinstance(e.exception, PriceError):
+                raise
+            logger.debug("%s in %s", repr(e), self)
+            return None
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
     async def check_liquidity(self, token: Address, block: Block) -> int:
         if block < await contract_creation_block_async(self.address):
+            logger.debug("%s was not deployed at block %s", self, block)
             return 0
         index = await self.get_coin_index(token, sync=False)
-        if balance := await self._get_balance(index, block):
-            return balance
-        return 0
+        balance = await self._get_balance(index, block) or 0
+        logger.debug(
+            "%s liquidity for %s at block %s is %s", self, token, block, balance
+        )
+        return balance
 
 
 class CurveRegistry(a_sync.ASyncGenericSingleton):

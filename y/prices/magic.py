@@ -1,6 +1,7 @@
-import logging
 from functools import wraps
+from logging import DEBUG, Logger, getLogger
 from typing import (
+    Any,
     Callable,
     Dict,
     Iterable,
@@ -50,7 +51,7 @@ from y.utils.logging import get_price_logger
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
 
-cache_logger = logging.getLogger(f"{__name__}.cache")
+cache_logger = getLogger(f"{__name__}.cache")
 
 
 @overload
@@ -347,7 +348,7 @@ async def _get_price(
 async def _exit_early_for_known_tokens(
     token_address: str,
     block: Block,
-    logger: logging.Logger,
+    logger: Logger,
     skip_cache: bool = ENVS.SKIP_CACHE,
     ignore_pools: Tuple[Pool, ...] = (),
 ) -> Optional[UsdPrice]:  # sourcery skip: low-code-quality
@@ -546,7 +547,7 @@ async def _exit_early_for_known_tokens(
 async def _get_price_from_api(
     token: AnyAddressType,
     block: Block,
-    logger: logging.Logger,
+    logger: Logger,
 ):
     """
     Attempt to get the price from the ypricemagic API.
@@ -570,7 +571,7 @@ async def _get_price_from_dexes(
     block: Block,
     ignore_pools,
     skip_cache: bool,
-    logger: logging.Logger,
+    logger: Logger,
 ):
     """
     Attempt to get the price from decentralized exchanges.
@@ -607,34 +608,43 @@ async def _get_price_from_dexes(
         for depth in sorted(depth_to_dex, reverse=True)
         if depth
     }
-    logger.debug("dexes by depth: %s", dexes_by_depth)
+    if debug_logs_enabled := logger.isEnabledFor(DEBUG):
+        log_debug = lambda msg, *args: logger._log(DEBUG, msg, args)
+
+        log_debug("dexes by depth for %s at block %s: %s", token, block, dexes_by_depth)
 
     for dex in dexes_by_depth.values():
-        method = (
-            "get_price_for_underlying"
-            if hasattr(dex, "get_price_for_underlying")
-            else "get_price"
-        )
-        logger.debug("trying %s", dex)
+        method = "get_price"
+        if hasattr(dex, "get_price_for_underlying"):
+            method += "_for_underlying"
+        if debug_logs_enabled:
+            log_debug("trying %s", dex)
         price = await getattr(dex, method)(
             token, block, ignore_pools=ignore_pools, skip_cache=skip_cache, sync=False
         )
-        logger.debug("%s -> %s", dex, price)
+        if debug_logs_enabled:
+            log_debug("%s -> %s", dex, price)
         if price:
             return price
 
-    logger.debug("no %s liquidity found on primary markets", token)
+    if debug_logs_enabled:
+        log_debug(
+            "no %s %s liquidity found on primary markets",
+            await ERC20(token, asynchronous=True).symbol,
+            token,
+        )
 
     # If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.
     if price := await balancer_multiplexer.get_price(
         token, block=block, skip_cache=skip_cache, sync=False
     ):
-        logger.debug("balancer -> %s", price)
+        if debug_logs_enabled:
+            log_debug("balancer -> %s", price)
         return price
 
 
 def _fail_appropriately(
-    logger: logging.Logger,
+    logger: Logger,
     symbol: str,
     fail_to_None: bool,
     silent: bool,
