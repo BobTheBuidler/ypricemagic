@@ -260,6 +260,7 @@ class BlockAtTimestamp(DbEntity):
 
 __write_threads_submit = ydb_write_threads.submit
 
+
 def insert_nowait(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
     # sourcery skip: simplify-boolean-comparison
     __write_threads_submit(exc_wrapper, insert, type, **kwargs, fire_and_forget=True)
@@ -268,9 +269,12 @@ def insert_nowait(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
 __P = ParamSpec("__P")
 __T = TypeVar("__T")
 
-def exc_wrapper(func: Callable[__P, __T], *args: __P.args, **kwargs: __P.kwargs) -> typing_Optional[DbEntity]:
+
+def exc_wrapper(
+    func: Callable[__P, __T], *args: __P.args, **kwargs: __P.kwargs
+) -> typing_Optional[DbEntity]:
     try:
-        return func(*args, **kwargs) 
+        return func(*args, **kwargs)
     except Exception as e:
         logger.exception(e)
 

@@ -89,7 +89,9 @@ async def _set_price(
             token=(CHAINID, address),
             price=Decimal(price),
         )
-        _logger_debug("queued insert %s block %s price to ydb: %s", address, block, price)
+        _logger_debug(
+            "queued insert %s block %s price to ydb: %s", address, block, price
+        )
     except InvalidOperation:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass
