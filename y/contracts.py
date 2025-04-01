@@ -262,10 +262,14 @@ async def contract_creation_block_async(
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
             if await get_code(address, mid):
-                logger_debug("%s already deployed by block %s, checking lower", address, mid)
+                logger_debug(
+                    "%s already deployed by block %s, checking lower", address, mid
+                )
                 hi = mid
             else:
-                logger_debug("%s not yet deployed by block %s, checking higher", address, mid)
+                logger_debug(
+                    "%s not yet deployed by block %s, checking higher", address, mid
+                )
                 lo = mid
         except ValueError as e:
             if "missing trie node" in str(e):

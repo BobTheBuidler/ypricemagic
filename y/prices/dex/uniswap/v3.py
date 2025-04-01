@@ -224,7 +224,9 @@ class UniswapV3Pool(ContractBase):
 
         if block < await self.deploy_block(sync=False):
             if debug_logs_enabled:
-                logger._log(DEBUG, "block %s prior to %s deploy block", (block, repr(self)))
+                logger._log(
+                    DEBUG, "block %s prior to %s deploy block", (block, repr(self))
+                )
             return 0
 
         try:

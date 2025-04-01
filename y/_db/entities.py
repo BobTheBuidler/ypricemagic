@@ -1,10 +1,9 @@
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 from typing import Optional as typing_Optional
 
-import a_sync
 from pony.orm import (
     Database,
     InterfaceError,
@@ -17,6 +16,7 @@ from pony.orm import (
     composite_index,
     db_session,
 )
+from typing_extensions import ParamSpec
 
 from y._db.decorators import retry_locked, ydb_write_threads
 
@@ -258,7 +258,27 @@ class BlockAtTimestamp(DbEntity):
     block = Required(int)
 
 
-@a_sync.a_sync(executor=ydb_write_threads)
+__write_threads_submit = ydb_write_threads.submit
+
+
+def insert_nowait(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
+    # sourcery skip: simplify-boolean-comparison
+    __write_threads_submit(exc_wrapper, insert, type, **kwargs, fire_and_forget=True)
+
+
+__P = ParamSpec("__P")
+__T = TypeVar("__T")
+
+
+def exc_wrapper(
+    func: Callable[__P, __T], *args: __P.args, **kwargs: __P.kwargs
+) -> typing_Optional[DbEntity]:
+    try:
+        return func(*args, **kwargs)
+    except Exception as e:
+        logger.exception(e)
+
+
 @db_session
 @retry_locked
 def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
