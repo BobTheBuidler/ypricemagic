@@ -276,7 +276,7 @@
             <span class="n">ERC20</span><span class="p">(</span><span class="n">reserve_data</span><span class="p">[</span><span class="s2">&quot;aTokenAddress&quot;</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">reserve_data</span> <span class="ow">in</span> <span class="n">reserves_data</span>
         <span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v1 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v1 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">atokens</span></div>
 
 
@@ -310,7 +310,7 @@
                 <span class="n">ERC20</span><span class="p">(</span><span class="n">reserve_data</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">reserve_data</span> <span class="ow">in</span> <span class="n">reserves_data</span>
             <span class="p">]</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v2 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v2 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">atokens</span>
         <span class="k">except</span> <span class="p">(</span>
             <span class="ne">TypeError</span>
@@ -354,7 +354,7 @@
                 <span class="n">ERC20</span><span class="p">(</span><span class="n">reserve_data</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
                 <span class="k">async</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">reserve_data</span> <span class="ow">in</span> <span class="n">reserves_data</span>
             <span class="p">]</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v3 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> v3 atokens for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">atokens</span><span class="p">),</span> <span class="nb">repr</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
             <span class="k">return</span> <span class="n">atokens</span>
         <span class="k">except</span> <span class="p">(</span>
             <span class="ne">TypeError</span>
@@ -416,7 +416,7 @@
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">AaveMarketV1</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">v1_pools</span>
         <span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> v1 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AaveRegistry v1 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
 
 
@@ -429,7 +429,7 @@
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">AaveMarketV2</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">v2_pools</span>
         <span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> v2 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AaveRegistry v2 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
 
 
@@ -442,7 +442,7 @@
         <span class="n">pools</span> <span class="o">=</span> <span class="p">[</span>
             <span class="n">AaveMarketV3</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span> <span class="k">for</span> <span class="n">pool</span> <span class="ow">in</span> <span class="n">v3_pools</span>
         <span class="p">]</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> v3 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;AaveRegistry v3 pools </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">pools</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">pools</span></div>
 
 
