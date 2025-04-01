@@ -1,13 +1,17 @@
-import logging
 import os
+from logging import DEBUG, INFO, StreamHandler, getLogger
 
 from brownie import chain
 
 import y
+from y.prices.stable_swap.curve import startup_logger
 
-y_logger = logging.getLogger("y")
-y_logger.setLevel(logging.DEBUG)
-y_logger.addHandler(logging.StreamHandler())
+y_logger = getLogger("y")
+y_logger.setLevel(DEBUG)
+y_logger.addHandler(StreamHandler())
+startup_logger.setLevel(INFO)
+getLogger("y._db.common").setLevel(INFO)
+getLogger("y._db.utils.logs").setLevel(INFO)
 
 
 def main():

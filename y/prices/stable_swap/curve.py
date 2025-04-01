@@ -4,7 +4,7 @@ from enum import IntEnum
 from functools import cached_property
 from itertools import filterfalse
 from logging import DEBUG, getLogger
-from typing import Dict, List, Optional, Tuple, TypeVar
+from typing import Any, Dict, List, Optional, Tuple, TypeVar
 
 import a_sync
 import brownie
@@ -48,6 +48,8 @@ from y.utils.raw_calls import raw_call
 T = TypeVar("T")
 
 logger = getLogger(__name__)
+startup_logger = logger.getChild("startup")
+_startup_logger_debug = startup_logger.debug
 
 # curve registry documentation https://curve.readthedocs.io/registry-address-provider.html
 ADDRESS_PROVIDER = "0x0000000022D53366457F9d5E68Ec105046FC4383"
@@ -114,7 +116,7 @@ class AddressProviderEvents(CurveEvents):
             self.provider.identifiers[Ids(event["id"])].append(event["addr"])
         elif event.name == "AddressModified" and event["new_address"] != ZERO_ADDRESS:
             self.provider.identifiers[Ids(event["id"])].append(event["new_address"])
-        logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
+        _startup_logger_debug("%s loaded event %s at block %s", self, event, event.block_number)
         return event
 
 
@@ -145,7 +147,7 @@ class RegistryEvents(CurveEvents):
             curve.registries[event.address].add(pool)
         elif event.name == "PoolRemoved":
             curve.registries[event.address].discard(event["pool"])
-        logger.debug("%s loaded event %s at block %s", self, event, event.block_number)
+        _startup_logger_debug("%s loaded event %s at block %s", self, event, event.block_number)
         return event
 
     async def _add_pool(self, pool: Address) -> EthAddress:
@@ -179,8 +181,8 @@ class AddressProvider(_CurveEventsLoader):
 
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
-        if debug_logs := logger.isEnabledFor(DEBUG):
-            logger._log(DEBUG, "loading pools from metapool factories", ())
+        if debug_logs := startup_logger.isEnabledFor(DEBUG):
+            startup_logger_log_debug("loading pools from metapool factories")
         # TODO: remove this once curve adds to address provider
         if CONNECTED_TO_MAINNET:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
@@ -207,11 +209,11 @@ class AddressProvider(_CurveEventsLoader):
             + self.identifiers[Ids.Cryptopool_Factory]
         ):
             if debug_logs:
-                logger._log(DEBUG, "loading pools from cryptopool factories", ())
+                startup_logger_log_debug("loading pools from cryptopool factories")
             await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
-            logger.info(
+            startup_logger.info(
                 "loaded %s pools from %s registries and %s factories",
                 len(curve.token_to_pool),
                 len(curve.registries),
@@ -254,7 +256,7 @@ class Factory(_Loader):
 
     async def _load(self) -> None:
         pool_list = await self.read_pools(sync=False)
-        debug_logs = logger.isEnabledFor(DEBUG)
+        debug_logs = startup_logger.isEnabledFor(DEBUG)
         await igather(
             self.__load_pool(pool, debug_logs)
             for pool in pool_list
@@ -262,7 +264,7 @@ class Factory(_Loader):
         )
         self._loaded.set()
         if debug_logs:
-            logger._log(DEBUG, "loaded %s pools for %s", (len(pool_list), self))
+            startup_logger_log_debug("loaded %s pools for %s", len(pool_list), self)
 
     async def __load_pool(self, pool: Address, debug_logs: bool) -> None:
         factory = await Contract.coroutine(self.address)
@@ -278,7 +280,7 @@ class Factory(_Loader):
         curve.token_to_pool[lp_token] = pool
         curve.factories[factory.address].add(pool)
         if debug_logs:
-            logger._log(DEBUG, "loaded %s pool %s", (self, pool))
+            startup_logger_log_debug("loaded %s pool %s", self, pool)
 
 
 class CurvePool(ERC20):
@@ -749,13 +751,13 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
 
     @cached_property
     def _task(self) -> Task:
-        logger.debug("creating loader task for %s", self)
+        _startup_logger_debug("creating loader task for %s", self)
         task = create_task(coro=self._load_all(), name=f"{self}._load_all()")
 
         def done_callback(t: Task):
             if e := t.exception():
-                logger.error("exception while loading %s: %s", self, e)
-                logger.exception(e)
+                startup_logger.error("exception while loading %s: %s", self, e)
+                startup_logger.exception(e)
                 self.__task = None
                 raise e
 
@@ -764,7 +766,7 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
 
     async def _load_all(self) -> None:
         await self.address_provider
-        logger.debug(
+        _startup_logger_debug(
             "curve address provider events loaded, now loading factories and pools"
         )
         # NOTE: Gnosis chain's address provider fails to provide registry via events. Maybe other chains as well.
@@ -792,3 +794,10 @@ try:
     curve: CurveRegistry = CurveRegistry(asynchronous=True)
 except UnsupportedNetwork:
     curve = set()
+
+
+__startup_logger_log = startup_logger._log
+
+
+def startup_logger_log_debug(msg: str, *args: Any) -> None:
+    __startup_logger_log(DEBUG, msg, args)
