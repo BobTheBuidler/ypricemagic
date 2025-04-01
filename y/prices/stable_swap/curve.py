@@ -117,7 +117,9 @@ class AddressProviderEvents(CurveEvents):
             self.provider.identifiers[Ids(event["id"])].append(event["addr"])
         elif event.name == "AddressModified" and event["new_address"] != ZERO_ADDRESS:
             self.provider.identifiers[Ids(event["id"])].append(event["new_address"])
-        _startup_logger_debug("%s loaded event %s at block %s", self, event, event.block_number)
+        _startup_logger_debug(
+            "%s loaded event %s at block %s", self, event, event.block_number
+        )
         return event
 
 
@@ -148,7 +150,9 @@ class RegistryEvents(CurveEvents):
             curve.registries[event.address].add(pool)
         elif event.name == "PoolRemoved":
             curve.registries[event.address].discard(event["pool"])
-        _startup_logger_debug("%s loaded event %s at block %s", self, event, event.block_number)
+        _startup_logger_debug(
+            "%s loaded event %s at block %s", self, event, event.block_number
+        )
         return event
 
     async def _add_pool(self, pool: Address) -> EthAddress:
@@ -718,15 +722,17 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
         try:
             return await dy.__value_usd__
         except yPriceMagicError as e:
-            logger.debug("%s for %s at block %s", type(e.exception).__name__, token_in, block)
+            logger.debug(
+                "%s for %s at block %s", type(e.exception).__name__, token_in, block
+            )
             if not isinstance(e.exception, PriceError):
                 raise
 
             # try to get price from a different pool
             return await self.get_price_for_underlying(
-                token_in, 
-                block, 
-                ignore_pools=(*ignore_pools, pool), 
+                token_in,
+                block,
+                ignore_pools=(*ignore_pools, pool),
                 skip_cache=skip_cache,
             )
 
