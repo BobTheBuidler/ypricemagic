@@ -76,6 +76,7 @@
 <span class="kn">import</span> <span class="nn">a_sync</span>
 
 <span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">convert</span>
+<span class="kn">from</span> <span class="nn">y.classes.common</span> <span class="kn">import</span> <span class="n">ERC20</span>
 <span class="kn">from</span> <span class="nn">y.constants</span> <span class="kn">import</span> <span class="n">STABLECOINS</span>
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">AnyAddressType</span>
 <span class="kn">from</span> <span class="nn">y.prices</span> <span class="kn">import</span> <span class="n">convex</span><span class="p">,</span> <span class="n">one_to_one</span><span class="p">,</span> <span class="n">pendle</span><span class="p">,</span> <span class="n">popsicle</span><span class="p">,</span> <span class="n">rkp3r</span><span class="p">,</span> <span class="n">solidex</span><span class="p">,</span> <span class="n">yearn</span>
@@ -140,11 +141,11 @@
     <span class="k">for</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">check</span> <span class="ow">in</span> <span class="n">string_matchers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
         <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
+                <span class="k">await</span> <span class="n">__log_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bucket</span>
         <span class="k">elif</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
+            <span class="k">await</span> <span class="n">__log_not_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
 
     <span class="c1"># check these first, these just require calls</span>
     <span class="n">futs</span> <span class="o">=</span> <span class="p">[</span>
@@ -165,14 +166,14 @@
 
         <span class="k">if</span> <span class="n">is_member</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
+                <span class="k">await</span> <span class="n">__log_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">fut</span> <span class="ow">in</span> <span class="n">futs</span><span class="p">:</span>
                 <span class="n">fut</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
             <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bucket</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
+                <span class="k">await</span> <span class="n">__log_not_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="n">bucket</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># TODO: Refactor the below like the above</span>
@@ -206,7 +207,7 @@
     <span class="k">elif</span> <span class="n">curve</span> <span class="ow">and</span> <span class="k">await</span> <span class="n">curve</span><span class="o">.</span><span class="n">get_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">bucket</span> <span class="o">=</span> <span class="s2">&quot;curve lp&quot;</span>
     <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> bucket is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
+        <span class="k">await</span> <span class="n">__log_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bucket</span><span class="p">:</span>
         <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">bucket</span></div>
@@ -301,6 +302,16 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">bucket</span><span class="si">}</span><span class="s2"> result must be boolean. You passed </span><span class="si">{</span><span class="n">result</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="c1"># result = await result</span>
     <span class="k">return</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">result</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">__log_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
+    <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> bucket is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
+
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">__log_not_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">):</span>
+    <span class="n">symbol</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> bucket is not </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">symbol</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">))</span>
 </pre></div>
 
            </div>

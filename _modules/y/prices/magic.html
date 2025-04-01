@@ -69,9 +69,10 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.magic</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">wraps</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">Logger</span><span class="p">,</span> <span class="n">getLogger</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
     <span class="n">Callable</span><span class="p">,</span>
     <span class="n">Dict</span><span class="p">,</span>
     <span class="n">Iterable</span><span class="p">,</span>
@@ -121,7 +122,7 @@
 <span class="n">_P</span> <span class="o">=</span> <span class="n">ParamSpec</span><span class="p">(</span><span class="s2">&quot;_P&quot;</span><span class="p">)</span>
 <span class="n">_T</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;_T&quot;</span><span class="p">)</span>
 
-<span class="n">cache_logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.cache&quot;</span><span class="p">)</span>
+<span class="n">cache_logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">.cache&quot;</span><span class="p">)</span>
 
 
 <span class="nd">@overload</span>
@@ -427,7 +428,7 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_exit_early_for_known_tokens</span><span class="p">(</span>
     <span class="n">token_address</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
     <span class="n">ignore_pools</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Pool</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span> <span class="o">=</span> <span class="p">(),</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>  <span class="c1"># sourcery skip: low-code-quality</span>
@@ -626,7 +627,7 @@
 <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_price_from_api</span><span class="p">(</span>
     <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span>
     <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempt to get the price from the ypricemagic API.</span>
@@ -650,7 +651,7 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">,</span>
     <span class="n">ignore_pools</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
 <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Attempt to get the price from decentralized exchanges.</span>
@@ -687,34 +688,43 @@
         <span class="k">for</span> <span class="n">depth</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">depth_to_dex</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">depth</span>
     <span class="p">}</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;dexes by depth: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dexes_by_depth</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
+        <span class="n">log_debug</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">msg</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+
+        <span class="n">log_debug</span><span class="p">(</span><span class="s2">&quot;dexes by depth for </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">dexes_by_depth</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">dex</span> <span class="ow">in</span> <span class="n">dexes_by_depth</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
-        <span class="n">method</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="s2">&quot;get_price_for_underlying&quot;</span>
-            <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dex</span><span class="p">,</span> <span class="s2">&quot;get_price_for_underlying&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="s2">&quot;get_price&quot;</span>
-        <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;trying </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dex</span><span class="p">)</span>
+        <span class="n">method</span> <span class="o">=</span> <span class="s2">&quot;get_price&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">dex</span><span class="p">,</span> <span class="s2">&quot;get_price_for_underlying&quot;</span><span class="p">):</span>
+            <span class="n">method</span> <span class="o">+=</span> <span class="s2">&quot;_for_underlying&quot;</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">log_debug</span><span class="p">(</span><span class="s2">&quot;trying </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dex</span><span class="p">)</span>
         <span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">dex</span><span class="p">,</span> <span class="n">method</span><span class="p">)(</span>
             <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">ignore_pools</span><span class="o">=</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">log_debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">dex</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">price</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">price</span>
 
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;no </span><span class="si">%s</span><span class="s2"> liquidity found on primary markets&quot;</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+        <span class="n">log_debug</span><span class="p">(</span>
+            <span class="s2">&quot;no </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> liquidity found on primary markets&quot;</span><span class="p">,</span>
+            <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
+            <span class="n">token</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># If price is 0, we can at least try to see if balancer gives us a price. If not, its probably a shitcoin.</span>
     <span class="k">if</span> <span class="n">price</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">balancer_multiplexer</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span>
         <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
     <span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;balancer -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">log_debug</span><span class="p">(</span><span class="s2">&quot;balancer -&gt; </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">price</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">price</span>
 
 
 <span class="k">def</span> <span class="nf">_fail_appropriately</span><span class="p">(</span>
-    <span class="n">logger</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">Logger</span><span class="p">,</span>
+    <span class="n">logger</span><span class="p">:</span> <span class="n">Logger</span><span class="p">,</span>
     <span class="n">symbol</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
     <span class="n">fail_to_None</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="n">silent</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>

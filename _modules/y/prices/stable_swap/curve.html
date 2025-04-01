@@ -107,6 +107,7 @@
     <span class="n">MessedUpBrownieContract</span><span class="p">,</span>
     <span class="n">PriceError</span><span class="p">,</span>
     <span class="n">UnsupportedNetwork</span><span class="p">,</span>
+    <span class="n">yPriceMagicError</span><span class="p">,</span>
     <span class="n">call_reverted</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">y.interfaces.curve.CurveRegistry</span> <span class="kn">import</span> <span class="n">CURVE_REGISTRY_ABI</span>
@@ -198,7 +199,9 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;addr&quot;</span><span class="p">])</span>
         <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;AddressModified&quot;</span> <span class="ow">and</span> <span class="n">event</span><span class="p">[</span><span class="s2">&quot;new_address&quot;</span><span class="p">]</span> <span class="o">!=</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">provider</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;new_address&quot;</span><span class="p">])</span>
-        <span class="n">_startup_logger_debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
+        <span class="n">_startup_logger_debug</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">event</span></div>
 
 
@@ -235,7 +238,9 @@
             <span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;PoolRemoved&quot;</span><span class="p">:</span>
             <span class="n">curve</span><span class="o">.</span><span class="n">registries</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">discard</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s2">&quot;pool&quot;</span><span class="p">])</span>
-        <span class="n">_startup_logger_debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span><span class="p">)</span>
+        <span class="n">_startup_logger_debug</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> loaded event </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">block_number</span>
+        <span class="p">)</span>
         <span class="k">return</span> <span class="n">event</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_add_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EthAddress</span><span class="p">:</span>
@@ -279,7 +284,7 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_factories</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="c1"># factory events are quite useless, so we use a different method</span>
         <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">startup_logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
-            <span class="n">startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">)</span>
+            <span class="n">_startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loading pools from metapool factories&quot;</span><span class="p">)</span>
         <span class="c1"># TODO: remove this once curve adds to address provider</span>
         <span class="k">if</span> <span class="n">CONNECTED_TO_MAINNET</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">CurveStableswapFactoryNG</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
@@ -306,7 +311,7 @@
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">identifiers</span><span class="p">[</span><span class="n">Ids</span><span class="o">.</span><span class="n">Cryptopool_Factory</span><span class="p">]</span>
         <span class="p">):</span>
             <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-                <span class="n">startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">)</span>
+                <span class="n">_startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loading pools from cryptopool factories&quot;</span><span class="p">)</span>
             <span class="k">await</span> <span class="n">a_sync</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">Factory</span><span class="p">,</span> <span class="n">identifiers</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">curve</span><span class="o">.</span><span class="n">_done</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>
@@ -379,7 +384,7 @@
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_loaded</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-            <span class="n">startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="n">_startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pools for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">pool_list</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__load_pool</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
@@ -395,7 +400,7 @@
         <span class="n">curve</span><span class="o">.</span><span class="n">token_to_pool</span><span class="p">[</span><span class="n">lp_token</span><span class="p">]</span> <span class="o">=</span> <span class="n">pool</span>
         <span class="n">curve</span><span class="o">.</span><span class="n">factories</span><span class="p">[</span><span class="n">factory</span><span class="o">.</span><span class="n">address</span><span class="p">]</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pool</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
-            <span class="n">startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span></div>
+            <span class="n">_startup_logger_log_debug</span><span class="p">(</span><span class="s2">&quot;loaded </span><span class="si">%s</span><span class="s2"> pool </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">pool</span><span class="p">)</span></div>
 
 
 
@@ -664,8 +669,14 @@
             <span class="k">return</span> <span class="n">UsdValue</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;could not fetch balances &quot;</span><span class="p">):</span>
+                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;could not fetch balances for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
                 <span class="k">return</span> <span class="kc">None</span>
-            <span class="k">raise</span></div>
+            <span class="k">raise</span>
+        <span class="k">except</span> <span class="n">yPriceMagicError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="p">,</span> <span class="n">PriceError</span><span class="p">):</span>
+                <span class="k">raise</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> in </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">repr</span><span class="p">(</span><span class="n">e</span><span class="p">),</span> <span class="bp">self</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">None</span></div>
 
 
 <div class="viewcode-block" id="CurvePool.check_liquidity">
@@ -673,11 +684,14 @@
     <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">ram_cache_maxsize</span><span class="o">=</span><span class="mi">100_000</span><span class="p">,</span> <span class="n">ram_cache_ttl</span><span class="o">=</span><span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">)</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">check_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Address</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Block</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">):</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> was not deployed at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="n">index</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_coin_index</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">balance</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_balance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">block</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">balance</span>
-        <span class="k">return</span> <span class="mi">0</span></div>
+        <span class="n">balance</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_balance</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span> <span class="ow">or</span> <span class="mi">0</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">balance</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">balance</span></div>
 </div>
 
 
@@ -887,9 +901,20 @@
 
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">dy</span><span class="o">.</span><span class="n">__value_usd__</span>
-        <span class="k">except</span> <span class="n">PriceError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">token_in</span><span class="p">,</span> <span class="n">block</span><span class="p">)</span>
-            <span class="k">return</span> <span class="kc">None</span></div>
+        <span class="k">except</span> <span class="n">yPriceMagicError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> for </span><span class="si">%s</span><span class="s2"> at block </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> <span class="n">token_in</span><span class="p">,</span> <span class="n">block</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">exception</span><span class="p">,</span> <span class="n">PriceError</span><span class="p">):</span>
+                <span class="k">raise</span>
+
+            <span class="c1"># try to get price from a different pool</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_price_for_underlying</span><span class="p">(</span>
+                <span class="n">token_in</span><span class="p">,</span>
+                <span class="n">block</span><span class="p">,</span>
+                <span class="n">ignore_pools</span><span class="o">=</span><span class="p">(</span><span class="o">*</span><span class="n">ignore_pools</span><span class="p">,</span> <span class="n">pool</span><span class="p">),</span>
+                <span class="n">skip_cache</span><span class="o">=</span><span class="n">skip_cache</span><span class="p">,</span>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="CurveRegistry.coin_to_pools">
@@ -978,11 +1003,8 @@
 <span class="n">__startup_logger_log</span> <span class="o">=</span> <span class="n">startup_logger</span><span class="o">.</span><span class="n">_log</span>
 
 
-<div class="viewcode-block" id="startup_logger_log_debug">
-<a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.curve.startup_logger_log_debug">[docs]</a>
-<span class="k">def</span> <span class="nf">startup_logger_log_debug</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">__startup_logger_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
-
+<span class="k">def</span> <span class="nf">_startup_logger_log_debug</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">__startup_logger_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
 </pre></div>
 
            </div>

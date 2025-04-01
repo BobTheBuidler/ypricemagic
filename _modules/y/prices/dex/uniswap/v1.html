@@ -238,7 +238,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
             <span class="n">log_debug</span><span class="p">(</span>
-                <span class="s2">&quot;checking Uniswap v1 liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> ignoring </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;checking Uniswap v1 liquidity for </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> ignoring </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
                 <span class="n">token_address</span><span class="p">,</span>
                 <span class="n">block</span><span class="p">,</span>
                 <span class="n">ignore_pools</span><span class="p">,</span>
@@ -257,7 +258,8 @@
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
             <span class="n">log_debug</span><span class="p">(</span>
-                <span class="s2">&quot;Uniswap v1 liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;Uniswap v1 liquidity for </span><span class="si">%s</span><span class="s2"> </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">symbol</span><span class="p">,</span>
                 <span class="n">token_address</span><span class="p">,</span>
                 <span class="n">block</span><span class="p">,</span>
                 <span class="n">liquidity</span><span class="p">,</span>
