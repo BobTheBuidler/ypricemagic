@@ -240,7 +240,7 @@ class UniswapV3Pool(ContractBase):
 
         if debug_logs_enabled:
             logger._log(
-                DEBUG, "%s liquidity for %s at %s: %s", (self, token, block, liquidity)
+                DEBUG, "%s liquidity for %s at %s: %s", (repr(self), token, block, liquidity)
             )
 
         return liquidity
@@ -579,7 +579,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
                 logger._log(
                     DEBUG,
                     "%s liquidity for %s at %s: %s",
-                    (pool, token, block, liquidity),
+                    (repr(pool), token, block, liquidity),
                 )
                 token_out_liquidity[pool._get_token_out(token)].append(liquidity)
             logger._log(
