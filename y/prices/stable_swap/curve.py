@@ -36,6 +36,7 @@ from y.exceptions import (
     MessedUpBrownieContract,
     PriceError,
     UnsupportedNetwork,
+    yPriceMagicError,
     call_reverted,
 )
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
@@ -716,9 +717,18 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
 
         try:
             return await dy.__value_usd__
-        except PriceError as e:
-            logger.debug("%s for %s at block %s", e.__class__.__name__, token_in, block)
-            return None
+        except yPriceMagicError as e:
+            logger.debug("%s for %s at block %s", type(e.exception).__name__, token_in, block)
+            if not isinstance(e.exception, PriceError):
+                raise
+
+            # try to get price from a different pool
+            return await self.get_price_for_underlying(
+                token_in, 
+                block, 
+                ignore_pools=(*ignore_pools, pool), 
+                skip_cache=skip_cache,
+            )
 
     @a_sync.aka.cached_property
     async def coin_to_pools(self) -> Dict[str, List[CurvePool]]:
