@@ -780,11 +780,13 @@ forks = [
     for fork in forked_deployments.get(CHAINID, [])
 ]
 
+
 def log_liquidity(pool, token, block, liquidity) -> None:
     __logger_log(
         DEBUG,
         "%s liquidity for %s at %s: %s",
         (repr(pool), token, block, liquidity),
     )
+
 
 __logger_log = logger._log
