@@ -333,7 +333,7 @@ class UniswapV2Pool(ERC20):
             >>> print(liquidity)
         """
         if debug_logs := logger.isEnabledFor(DEBUG):
-            log_debug("checking %s liquidity for %s at %s", self, token, block)
+            log_debug("checking %s liquidity for %s at %s", repr(self), token, block)
         if block and block < await self.deploy_block(sync=False):
             if debug_logs:
                 log_debug("block %s is before %s deploy block", block, self)

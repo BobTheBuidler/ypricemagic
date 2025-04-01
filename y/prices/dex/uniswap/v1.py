@@ -154,8 +154,7 @@ class UniswapV1(a_sync.ASyncGenericBase):
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             log_debug(
-                "checking %s liquidity for %s at %s ignoring %s",
-                self,
+                "checking Uniswap v1 liquidity for %s at %s ignoring %s",
                 token_address,
                 block,
                 ignore_pools,

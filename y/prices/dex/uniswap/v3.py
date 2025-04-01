@@ -219,12 +219,12 @@ class UniswapV3Pool(ContractBase):
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(
-                DEBUG, "checking %s liquidity for %s at %s", (self, token, block)
+                DEBUG, "checking %s liquidity for %s at %s", (repr(self), token, block)
             )
 
         if block < await self.deploy_block(sync=False):
             if debug_logs_enabled:
-                logger._log(DEBUG, "block %s prior to %s deploy block", (block, self))
+                logger._log(DEBUG, "block %s prior to %s deploy block", (block, repr(self)))
             return 0
 
         try:
