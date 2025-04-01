@@ -341,10 +341,14 @@
         <span class="c1"># TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">if</span> <span class="k">await</span> <span class="n">get_code</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">mid</span><span class="p">):</span>
-                <span class="n">logger_debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> already deployed by block </span><span class="si">%s</span><span class="s2">, checking lower&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">mid</span><span class="p">)</span>
+                <span class="n">logger_debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> already deployed by block </span><span class="si">%s</span><span class="s2">, checking lower&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">mid</span>
+                <span class="p">)</span>
                 <span class="n">hi</span> <span class="o">=</span> <span class="n">mid</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">logger_debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not yet deployed by block </span><span class="si">%s</span><span class="s2">, checking higher&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">mid</span><span class="p">)</span>
+                <span class="n">logger_debug</span><span class="p">(</span>
+                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> not yet deployed by block </span><span class="si">%s</span><span class="s2">, checking higher&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">mid</span>
+                <span class="p">)</span>
                 <span class="n">lo</span> <span class="o">=</span> <span class="n">mid</span>
         <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;missing trie node&quot;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">):</span>
