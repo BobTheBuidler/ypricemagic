@@ -69,9 +69,9 @@
            <div itemprop="articleBody">
              
   <h1>Source code for y.prices.dex.uniswap.v1</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
+<span></span><span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">suppress</span>
+<span class="kn">from</span> <span class="nn">logging</span> <span class="kn">import</span> <span class="n">DEBUG</span><span class="p">,</span> <span class="n">getLogger</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
 
 <span class="kn">import</span> <span class="nn">a_sync</span>
 <span class="kn">from</span> <span class="nn">a_sync</span> <span class="kn">import</span> <span class="n">cgather</span>
@@ -91,7 +91,7 @@
 <span class="kn">from</span> <span class="nn">y.networks</span> <span class="kn">import</span> <span class="n">Network</span>
 <span class="kn">from</span> <span class="nn">y.utils.raw_calls</span> <span class="kn">import</span> <span class="n">_decimals</span>
 
-<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="UniswapV1">
@@ -236,29 +236,46 @@
 <span class="sd">        See Also:</span>
 <span class="sd">            - :class:`~y.classes.common.ERC20`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> ignoring </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">token_address</span><span class="p">,</span>
-            <span class="n">block</span><span class="p">,</span>
-            <span class="n">ignore_pools</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
+            <span class="n">log_debug</span><span class="p">(</span>
+                <span class="s2">&quot;checking </span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> ignoring </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="bp">self</span><span class="p">,</span>
+                <span class="n">token_address</span><span class="p">,</span>
+                <span class="n">block</span><span class="p">,</span>
+                <span class="n">ignore_pools</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="n">exchange</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_exchange</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">exchange</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">exchange</span> <span class="ow">in</span> <span class="n">ignore_pools</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;no </span><span class="si">%s</span><span class="s2"> exchange found for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                <span class="n">log_debug</span><span class="p">(</span><span class="s2">&quot;no Uniswap v1 exchange found for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">token_address</span><span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="k">if</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">exchange</span><span class="p">):</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;block </span><span class="si">%s</span><span class="s2"> prior to </span><span class="si">%s</span><span class="s2"> deploy block&quot;</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">exchange</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+                <span class="n">log_debug</span><span class="p">(</span><span class="s2">&quot;block </span><span class="si">%s</span><span class="s2"> prior to </span><span class="si">%s</span><span class="s2"> deploy block&quot;</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">exchange</span><span class="p">)</span>
             <span class="k">return</span> <span class="mi">0</span>
         <span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="n">ERC20</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span>
             <span class="n">exchange</span><span class="p">,</span> <span class="n">block</span>
         <span class="p">)</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
-            <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">,</span> <span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
+            <span class="n">log_debug</span><span class="p">(</span>
+                <span class="s2">&quot;Uniswap v1 liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">token_address</span><span class="p">,</span>
+                <span class="n">block</span><span class="p">,</span>
+                <span class="n">liquidity</span><span class="p">,</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">liquidity</span></div>
 </div>
 
+
+
+<div class="viewcode-block" id="log_debug">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v1.log_debug">[docs]</a>
+<span class="k">def</span> <span class="nf">log_debug</span><span class="p">(</span><span class="n">msg</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">__logger_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span></div>
+
+
+
+<span class="n">__logger_log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">_log</span>
 </pre></div>
 
            </div>

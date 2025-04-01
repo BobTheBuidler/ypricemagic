@@ -834,7 +834,9 @@
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">bulk_insert</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
         <span class="k">del</span> <span class="n">objs</span>
 
-        <span class="k">await</span> <span class="n">_metadata_write_executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">,</span> <span class="n">from_block</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">)</span>
+        <span class="k">await</span> <span class="n">_metadata_write_executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">cache</span><span class="o">.</span><span class="n">set_metadata</span><span class="p">,</span> <span class="n">from_block</span><span class="p">,</span> <span class="n">done_thru</span>
+        <span class="p">)</span>
         <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="n">DEBUG</span><span class="p">,</span>

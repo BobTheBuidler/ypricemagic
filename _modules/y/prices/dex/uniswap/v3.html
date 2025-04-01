@@ -323,10 +323,7 @@
             <span class="k">return</span> <span class="mi">0</span>
 
         <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
-            <span class="p">)</span>
-
+            <span class="n">log_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">liquidity</span></div>
 
 
@@ -690,11 +687,7 @@
         <span class="n">token_out_liquidity</span><span class="p">:</span> <span class="n">DefaultDict</span><span class="p">[</span><span class="n">ERC20</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
             <span class="k">async</span> <span class="k">for</span> <span class="n">pool</span><span class="p">,</span> <span class="n">liquidity</span> <span class="ow">in</span> <span class="n">token_out_tasks</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
-                <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                    <span class="n">DEBUG</span><span class="p">,</span>
-                    <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                    <span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">),</span>
-                <span class="p">)</span>
+                <span class="n">log_liquidity</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
                 <span class="n">token_out_liquidity</span><span class="p">[</span><span class="n">pool</span><span class="o">.</span><span class="n">_get_token_out</span><span class="p">(</span><span class="n">token</span><span class="p">)]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">liquidity</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
                 <span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> token_out_liquidity: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">token_out_liquidity</span><span class="p">)</span>
@@ -728,11 +721,7 @@
             <span class="k">await</span> <span class="n">token_in_tasks</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span> <span class="k">if</span> <span class="n">token_in_tasks</span> <span class="k">else</span> <span class="mi">0</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
-            <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
-                <span class="n">DEBUG</span><span class="p">,</span>
-                <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2"> is </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">),</span>
-            <span class="p">)</span>
+            <span class="n">log_liquidity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">liquidity</span></div>
 
 
@@ -910,6 +899,20 @@
     <span class="n">UniswapV3</span><span class="p">(</span><span class="n">fork</span><span class="p">[</span><span class="s2">&quot;factory&quot;</span><span class="p">],</span> <span class="n">fork</span><span class="p">[</span><span class="s2">&quot;quoter&quot;</span><span class="p">],</span> <span class="n">fork</span><span class="p">[</span><span class="s2">&quot;fee_tiers&quot;</span><span class="p">],</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">fork</span> <span class="ow">in</span> <span class="n">forked_deployments</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">CHAINID</span><span class="p">,</span> <span class="p">[])</span>
 <span class="p">]</span>
+
+
+<div class="viewcode-block" id="log_liquidity">
+<a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.log_liquidity">[docs]</a>
+<span class="k">def</span> <span class="nf">log_liquidity</span><span class="p">(</span><span class="n">market</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">__logger_log</span><span class="p">(</span>
+        <span class="n">DEBUG</span><span class="p">,</span>
+        <span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> liquidity for </span><span class="si">%s</span><span class="s2"> at </span><span class="si">%s</span><span class="s2">: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">market</span><span class="p">),</span> <span class="n">token</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">liquidity</span><span class="p">),</span>
+    <span class="p">)</span></div>
+
+
+
+<span class="n">__logger_log</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">_log</span>
 </pre></div>
 
            </div>
