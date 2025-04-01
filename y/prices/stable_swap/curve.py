@@ -36,6 +36,7 @@ from y.exceptions import (
     MessedUpBrownieContract,
     PriceError,
     UnsupportedNetwork,
+    yPriceMagicError,
     call_reverted,
 )
 from y.interfaces.curve.CurveRegistry import CURVE_REGISTRY_ABI
@@ -186,7 +187,7 @@ class AddressProvider(_CurveEventsLoader):
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
         if debug_logs := startup_logger.isEnabledFor(DEBUG):
-            startup_logger_log_debug("loading pools from metapool factories")
+            _startup_logger_log_debug("loading pools from metapool factories")
         # TODO: remove this once curve adds to address provider
         if CONNECTED_TO_MAINNET:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
@@ -213,7 +214,7 @@ class AddressProvider(_CurveEventsLoader):
             + self.identifiers[Ids.Cryptopool_Factory]
         ):
             if debug_logs:
-                startup_logger_log_debug("loading pools from cryptopool factories")
+                _startup_logger_log_debug("loading pools from cryptopool factories")
             await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
@@ -268,7 +269,7 @@ class Factory(_Loader):
         )
         self._loaded.set()
         if debug_logs:
-            startup_logger_log_debug("loaded %s pools for %s", len(pool_list), self)
+            _startup_logger_log_debug("loaded %s pools for %s", len(pool_list), self)
 
     async def __load_pool(self, pool: Address, debug_logs: bool) -> None:
         factory = await Contract.coroutine(self.address)
@@ -284,7 +285,7 @@ class Factory(_Loader):
         curve.token_to_pool[lp_token] = pool
         curve.factories[factory.address].add(pool)
         if debug_logs:
-            startup_logger_log_debug("loaded %s pool %s", self, pool)
+            _startup_logger_log_debug("loaded %s pool %s", self, pool)
 
 
 class CurvePool(ERC20):
@@ -729,9 +730,20 @@ class CurveRegistry(a_sync.ASyncGenericSingleton):
 
         try:
             return await dy.__value_usd__
-        except PriceError as e:
-            logger.debug("%s for %s at block %s", e.__class__.__name__, token_in, block)
-            return None
+        except yPriceMagicError as e:
+            logger.debug(
+                "%s for %s at block %s", type(e.exception).__name__, token_in, block
+            )
+            if not isinstance(e.exception, PriceError):
+                raise
+
+            # try to get price from a different pool
+            return await self.get_price_for_underlying(
+                token_in,
+                block,
+                ignore_pools=(*ignore_pools, pool),
+                skip_cache=skip_cache,
+            )
 
     @a_sync.aka.cached_property
     async def coin_to_pools(self) -> Dict[str, List[CurvePool]]:
@@ -812,5 +824,5 @@ except UnsupportedNetwork:
 __startup_logger_log = startup_logger._log
 
 
-def startup_logger_log_debug(msg: str, *args: Any) -> None:
+def _startup_logger_log_debug(msg: str, *args: Any) -> None:
     __startup_logger_log(DEBUG, msg, args)
