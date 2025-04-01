@@ -239,12 +239,7 @@ class UniswapV3Pool(ContractBase):
             return 0
 
         if debug_logs_enabled:
-            logger._log(
-                DEBUG,
-                "%s liquidity for %s at %s: %s",
-                (repr(self), token, block, liquidity),
-            )
-
+            log_liquidity(self, token, block, liquidity)
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
@@ -781,11 +776,11 @@ forks = [
 ]
 
 
-def log_liquidity(pool, token, block, liquidity) -> None:
+def log_liquidity(market, token, block, liquidity) -> None:
     __logger_log(
         DEBUG,
         "%s liquidity for %s at %s: %s",
-        (repr(pool), token, block, liquidity),
+        (repr(market), token, block, liquidity),
     )
 
 
