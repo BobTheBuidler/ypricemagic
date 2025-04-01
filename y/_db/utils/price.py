@@ -88,7 +88,7 @@ async def _set_price(
             block=(CHAINID, block),
             token=(CHAINID, address),
             price=Decimal(price),
-            sync=False,
+            fire_and_forget=True,
         )
         _logger_debug("inserted %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:

@@ -14,7 +14,7 @@ from y._db.decorators import (
     db_session_retry_locked,
     log_result_count,
 )
-from y._db.entities import Address, Token, insert
+from y._db.entities import Address, Token, insert_sync
 from y._db.exceptions import EEEError
 from y._db.utils._ep import _get_get_token
 from y.constants import CHAINID
@@ -64,7 +64,7 @@ def get_token(address: str) -> Token:
                 return entity
             entity.delete()
             commit()
-        return insert(type=Token, chain=CHAINID, address=address) or Token.get(
+        return insert_sync(type=Token, chain=CHAINID, address=address) or Token.get(
             chain=CHAINID, address=address
         )
 

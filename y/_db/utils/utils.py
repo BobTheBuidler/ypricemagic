@@ -15,7 +15,7 @@ from y._db.decorators import (
     db_session_retry_locked,
     log_result_count,
 )
-from y._db.entities import Block, BlockAtTimestamp, Chain, insert
+from y._db.entities import Block, BlockAtTimestamp, Chain, insert_sync
 
 
 logger = getLogger(__name__)
@@ -46,7 +46,7 @@ def get_chain() -> Chain:
         - :class:`Chain`
         - :func:`insert`
     """
-    return Chain.get(id=CHAINID) or insert(type=Chain, id=CHAINID) or Chain[CHAINID]
+    return Chain.get(id=CHAINID) or insert_sync(type=Chain, id=CHAINID) or Chain[CHAINID]
 
 
 @lru_cache
@@ -87,7 +87,7 @@ def get_block(number: int) -> Block:
     """
     if block := Block.get(chain=CHAINID, number=number):
         return block
-    return insert(type=Block, chain=CHAINID, number=number) or get_block(
+    return insert_sync(type=Block, chain=CHAINID, number=number) or get_block(
         number, sync=True
     )
 
@@ -242,7 +242,7 @@ def _set_block_at_timestamp(timestamp: datetime, block: int) -> None:
     See Also:
         - :class:`BlockAtTimestamp`
     """
-    insert(BlockAtTimestamp, chainid=CHAINID, timestamp=timestamp, block=block)
+    insert_sync(BlockAtTimestamp, chainid=CHAINID, timestamp=timestamp, block=block)
     _logger_debug("inserted block %s for %s", block, timestamp)
 
 

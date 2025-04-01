@@ -258,10 +258,23 @@ class BlockAtTimestamp(DbEntity):
     block = Required(int)
 
 
-@a_sync.a_sync(executor=ydb_write_threads)
+async def insert(type: DbEntity, fire_and_forget: bool = False, **kwargs: Any) -> typing_Optional[DbEntity]:
+    # sourcery skip: simplify-boolean-comparison
+    job = ydb_write_threads.submit(insert_sync, type, **kwargs, fire_and_forget=fire_and_forget)
+    if fire_and_forget is False:
+        await ydb_write_threads.submit(insert_sync, type, **kwargs)
+    else:
+        def exc_wrapper(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
+            try:
+                return insert_sync(type, **kwargs) 
+            except Exception as e:
+                logger.exception(e)
+        
+        ydb_write_threads.submit(exc_wrapper, type, **kwargs, fire_and_forget=True)
+
 @db_session
 @retry_locked
-def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
+def insert_sync(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
     """Inserts a new entity into the database with retry logic.
 
     This function attempts to insert a new entity of the specified type into the database.
