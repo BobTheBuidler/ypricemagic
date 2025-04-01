@@ -96,7 +96,7 @@ class ContractBase(a_sync.ASyncGenericBase, metaclass=ChecksumASyncSingletonMeta
         return f"{self.address}"
 
     def __repr__(self) -> str:
-        return f"<{self.__class__.__name__} '{self.address}'"
+        return f"<{self.__class__.__name__} '{self.address}'>"
 
     def __eq__(self, __o: object) -> bool:
         # Skip checksumming if applicable, its computationally expensive

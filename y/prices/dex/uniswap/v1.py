@@ -1,6 +1,6 @@
-import logging
 from contextlib import suppress
-from typing import Optional, Tuple
+from logging import DEBUG, getLogger
+from typing import Any, Optional, Tuple
 
 import a_sync
 from a_sync import cgather
@@ -20,7 +20,7 @@ from y.exceptions import (
 from y.networks import Network
 from y.utils.raw_calls import _decimals
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 
 class UniswapV1(a_sync.ASyncGenericBase):
@@ -152,24 +152,38 @@ class UniswapV1(a_sync.ASyncGenericBase):
         See Also:
             - :class:`~y.classes.common.ERC20`
         """
-        logger.debug(
-            "checking %s liquidity for %s at %s ignoring %s",
-            self,
-            token_address,
-            block,
-            ignore_pools,
-        )
+        if debug_logs_enabled := logger.isEnabledFor(DEBUG):
+            log_debug(
+                "checking %s liquidity for %s at %s ignoring %s",
+                self,
+                token_address,
+                block,
+                ignore_pools,
+            )
         exchange = await self.get_exchange(token_address, sync=False)
         if exchange is None or exchange in ignore_pools:
-            logger.debug("no %s exchange found for %s", self, token_address)
+            if debug_logs_enabled:
+                log_debug("no Uniswap v1 exchange found for %s", token_address)
             return 0
         if block < await contract_creation_block_async(exchange):
-            logger.debug("block %s prior to %s deploy block", block, exchange)
+            if debug_logs_enabled:
+                log_debug("block %s prior to %s deploy block", block, exchange)
             return 0
         liquidity = await ERC20(token_address, asynchronous=True).balance_of(
             exchange, block
         )
-        logger.debug(
-            "%s liquidity for %s at %s is %s", self, token_address, block, liquidity
-        )
+        if debug_logs_enabled:
+            log_debug(
+                "Uniswap v1 liquidity for %s at %s is %s",
+                token_address,
+                block,
+                liquidity,
+            )
         return liquidity
+
+
+def log_debug(msg: str, *args: Any) -> None:
+    __logger_log(DEBUG, msg, args)
+
+
+__logger_log = logger._log

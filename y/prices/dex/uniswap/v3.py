@@ -239,10 +239,7 @@ class UniswapV3Pool(ContractBase):
             return 0
 
         if debug_logs_enabled:
-            logger._log(
-                DEBUG, "%s liquidity for %s at %s: %s", (self, token, block, liquidity)
-            )
-
+            log_liquidity(self, token, block, liquidity)
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
@@ -576,11 +573,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
         token_out_liquidity: DefaultDict[ERC20, List[int]] = defaultdict(list)
         if debug_logs_enabled:
             async for pool, liquidity in token_out_tasks.map(pop=False):
-                logger._log(
-                    DEBUG,
-                    "%s liquidity for %s at %s: %s",
-                    (pool, token, block, liquidity),
-                )
+                log_liquidity(pool, token, block, liquidity)
                 token_out_liquidity[pool._get_token_out(token)].append(liquidity)
             logger._log(
                 DEBUG, "%s token_out_liquidity: %s", (token, token_out_liquidity)
@@ -614,11 +607,7 @@ class UniswapV3(a_sync.ASyncGenericBase):
             await token_in_tasks.max(pop=True, sync=False) if token_in_tasks else 0
         )
         if debug_logs_enabled:
-            logger._log(
-                DEBUG,
-                "%s liquidity for %s at %s is %s",
-                (self, token, block, liquidity),
-            )
+            log_liquidity(self, token, block, liquidity)
         return liquidity
 
     @stuck_coro_debugger
@@ -785,3 +774,14 @@ forks = [
     UniswapV3(fork["factory"], fork["quoter"], fork["fee_tiers"], asynchronous=True)
     for fork in forked_deployments.get(CHAINID, [])
 ]
+
+
+def log_liquidity(market, token, block, liquidity) -> None:
+    __logger_log(
+        DEBUG,
+        "%s liquidity for %s at %s: %s",
+        (repr(market), token, block, liquidity),
+    )
+
+
+__logger_log = logger._log

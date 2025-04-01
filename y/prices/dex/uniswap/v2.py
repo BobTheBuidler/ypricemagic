@@ -1020,5 +1020,5 @@ def log_liquidity(market, token, block, liquidity, debug_logs: bool = True):
         __log(
             DEBUG,
             "%s liquidity for %s at %s is %s",
-            (market, token, block, liquidity),
+            (repr(market), token, block, liquidity),
         )
