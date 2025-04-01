@@ -71,6 +71,7 @@ from y.utils.events import Events
 from y.utils.gather import gather_methods
 
 logger = getLogger(__name__)
+logger_debug = logger.debug
 
 _CHAINID = chain.id
 
@@ -155,7 +156,7 @@ def contract_creation_block(
         1234567
     """
     address = convert.to_address(address)
-    logger.debug("contract creation block %s", address)
+    logger_debug("contract creation block %s", address)
     height = chain.height
 
     if height == 0:
@@ -196,10 +197,10 @@ def contract_creation_block(
             address,
             Network.name(),
         )
-        logger.debug("contract creation block %s -> 0", address)
+        logger_debug("contract creation block %s -> 0", address)
         return 0
     if hi != height:
-        logger.debug("contract creation block %s -> %s", address, hi)
+        logger_debug("contract creation block %s -> %s", address, hi)
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
 
@@ -245,7 +246,7 @@ async def contract_creation_block_async(
     if deploy_block := await db.get_deploy_block(address):
         return deploy_block
 
-    logger.debug(f"contract creation block {address}")
+    logger_debug("contract creation block %s", address)
     height = await dank_mids.eth.block_number
 
     if height == 0:
@@ -261,8 +262,10 @@ async def contract_creation_block_async(
         # TODO rewrite this so we can get deploy blocks for some contracts deployed on correct side of barrier
         try:
             if await get_code(address, mid):
+                logger_debug("%s already deployed by block %s, checking lower", address, mid)
                 hi = mid
             else:
+                logger_debug("%s not yet deployed by block %s, checking higher", address, mid)
                 lo = mid
         except ValueError as e:
             if "missing trie node" in str(e):
@@ -285,10 +288,10 @@ async def contract_creation_block_async(
         logger.warning(
             f"could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)"
         )
-        logger.debug(f"contract creation block {address} -> 0")
+        logger_debug(f"contract creation block {address} -> 0")
         return 0
     if hi != height:
-        logger.debug(f"contract creation block {address} -> {hi}")
+        logger_debug(f"contract creation block {address} -> {hi}")
         db.set_deploy_block(address, hi)
         return hi
     raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
@@ -408,7 +411,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 raise CompilerError from None
             raise
         except ValueError as e:
-            logger.debug(f"{e}")
+            logger_debug(f"{e}")
             if not str(e).startswith("Unknown contract address: "):
                 raise
         else:  # Nice, we got it from the db.
@@ -846,14 +849,14 @@ async def probe(
     results = await gather_methods(
         address, methods, block=block, return_exceptions=True
     )
-    logger.debug("probe results: %s", results)
+    logger_debug("probe results: %s", results)
     results = [
         (method, result)
         for method, result in zip(methods, results)
         if not isinstance(result, Exception) and result is not None
     ]
     if len(results) not in [1, 0]:
-        logger.debug("multiple results: %s", results)
+        logger_debug("multiple results: %s", results)
         if len(results) != 2 or results[0][1] != results[1][1]:
             raise AssertionError(
                 f"`probe` returned multiple results for {address}: {results}. Must debug"
@@ -861,7 +864,7 @@ async def probe(
         method = results[0][0], results[1][0]
         result = results[0][1]
         results = [(method, result)]
-        logger.debug("final results: %s", results)
+        logger_debug("final results: %s", results)
     method, result = results[0] if len(results) == 1 else (None, None)
     if method:
         assert result is not None

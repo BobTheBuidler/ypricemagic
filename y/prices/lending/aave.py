@@ -183,7 +183,7 @@ class AaveMarketV1(AaveMarketBase):
             ERC20(reserve_data["aTokenAddress"], asynchronous=self.asynchronous)
             async for _, reserve_data in reserves_data
         ]
-        logger.info("loaded %s v1 atokens for %s", len(atokens), self)
+        logger.info("loaded %s v1 atokens for %s", len(atokens), repr(self))
         return atokens
 
     @a_sync.a_sync(ram_cache_maxsize=256)
@@ -208,7 +208,7 @@ class AaveMarketV2(AaveMarketBase):
                 ERC20(reserve_data[7], asynchronous=self.asynchronous)
                 async for _, reserve_data in reserves_data
             ]
-            logger.info("loaded %s v2 atokens for %s", len(atokens), self)
+            logger.info("loaded %s v2 atokens for %s", len(atokens), repr(self))
             return atokens
         except (
             TypeError
@@ -240,7 +240,7 @@ class AaveMarketV3(AaveMarketBase):
                 ERC20(reserve_data[8], asynchronous=self.asynchronous)
                 async for _, reserve_data in reserves_data
             ]
-            logger.info("loaded %s v3 atokens for %s", len(atokens), self)
+            logger.info("loaded %s v3 atokens for %s", len(atokens), repr(self))
             return atokens
         except (
             TypeError
@@ -287,7 +287,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         pools = [
             AaveMarketV1(pool, asynchronous=self.asynchronous) for pool in v1_pools
         ]
-        logger.debug("%s v1 pools %s", self, pools)
+        logger.debug("AaveRegistry v1 pools %s", pools)
         return pools
 
     __pools_v1__: HiddenMethodDescriptor[Self, List[AaveMarketV1]]
@@ -297,7 +297,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         pools = [
             AaveMarketV2(pool, asynchronous=self.asynchronous) for pool in v2_pools
         ]
-        logger.debug("%s v2 pools %s", self, pools)
+        logger.debug("AaveRegistry v2 pools %s", pools)
         return pools
 
     __pools_v2__: HiddenMethodDescriptor[Self, List[AaveMarketV2]]
@@ -307,7 +307,7 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         pools = [
             AaveMarketV3(pool, asynchronous=self.asynchronous) for pool in v3_pools
         ]
-        logger.debug("%s v3 pools %s", self, pools)
+        logger.debug("AaveRegistry v3 pools %s", pools)
         return pools
 
     __pools_v3__: HiddenMethodDescriptor[Self, List[AaveMarketV3]]
