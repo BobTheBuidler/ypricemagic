@@ -154,7 +154,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             log_debug(
-                "checking Uniswap v1 liquidity for %s at %s ignoring %s",
+                "checking Uniswap v1 liquidity for %s %s at %s ignoring %s",
+                await ERC20(token_address, asynchronous=True).symbol,
                 token_address,
                 block,
                 ignore_pools,
@@ -173,7 +174,8 @@ class UniswapV1(a_sync.ASyncGenericBase):
         )
         if debug_logs_enabled:
             log_debug(
-                "Uniswap v1 liquidity for %s at %s is %s",
+                "Uniswap v1 liquidity for %s %s at %s is %s",
+                await ERC20(token_address, asynchronous=True).symbol,
                 token_address,
                 block,
                 liquidity,

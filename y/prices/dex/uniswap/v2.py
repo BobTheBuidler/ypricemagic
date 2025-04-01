@@ -333,7 +333,15 @@ class UniswapV2Pool(ERC20):
             >>> print(liquidity)
         """
         if debug_logs := logger.isEnabledFor(DEBUG):
-            log_debug("checking %s liquidity for %s at %s", repr(self), token, block)
+            # get symbol cached into memcache to make pool more identifiable in logs
+            await self.__symbol__
+            log_debug(
+                "checking %s liquidity for %s %s at %s", 
+                repr(self), 
+                await ERC20(token, asynchronous=True).symbol, 
+                token, 
+                block,
+            )
         if block and block < await self.deploy_block(sync=False):
             if debug_logs:
                 log_debug("block %s is before %s deploy block", block, self)
@@ -343,7 +351,7 @@ class UniswapV2Pool(ERC20):
             for balance in reserves:
                 if token == balance.token:
                     liquidity = balance.balance
-                    log_liquidity(self, token, block, liquidity, debug_logs)
+                    await log_liquidity(self, token, block, liquidity, debug_logs)
                     return liquidity
             raise TokenNotFound(token, reserves)
         return 0
@@ -794,12 +802,14 @@ class UniswapRouterV2(ContractBase):
                 _log_factory_helper_failure(e, token_address, block, _ignore_pools)
 
         pools = self.pools_for_token(token_address, block, _ignore_pools=_ignore_pools)
-        logger.debug(
-            "checking %s liquidity at block %s for pools %s",
-            token_address,
-            block,
-            pools,
-        )
+        if logger.isEnabledFor(DEBUG):
+            log_debug(
+                "checking %s %s liquidity at block %s for pools %s",
+                await ERC20(token_address, asynchronous=True).symbol,
+                token_address,
+                block,
+                pools,
+            )
 
         deepest_pool: UniswapV2Pool
         async for deepest_pool in (
@@ -919,7 +929,13 @@ class UniswapRouterV2(ContractBase):
         self, token: Address, block: Block, ignore_pools=[]
     ) -> int:
         if debug_logs := logger.isEnabledFor(DEBUG):
-            log_debug("checking %s liquidity for %s at %s", self, token, block)
+            log_debug(
+                "checking %s liquidity for %s %s at %s", 
+                self, 
+                await ERC20(token, asynchronous=True).symbol, 
+                token, 
+                block,
+            )
         if block and block < await contract_creation_block_async(self.factory):
             if debug_logs:
                 log_debug(
@@ -936,7 +952,7 @@ class UniswapRouterV2(ContractBase):
                 deepest_pool, liquidity = await self.deepest_pool_for(
                     token, block, ignore_pools=ignore_pools
                 )
-                log_liquidity(self, token, block, liquidity, debug_logs)
+                await log_liquidity(self, token, block, liquidity, debug_logs)
                 return liquidity
             except (Revert, ValueError, ContractLogicError) as e:
                 _log_factory_helper_failure(e, token, block, ignore_pools)
@@ -948,7 +964,7 @@ class UniswapRouterV2(ContractBase):
             )
         except a_sync.exceptions.EmptySequenceError:
             liquidity = 0
-        log_liquidity(self, token, block, liquidity, debug_logs)
+        await log_liquidity(self, token, block, liquidity, debug_logs)
         return liquidity
 
     @a_sync.a_sync(ram_cache_maxsize=100_000, ram_cache_ttl=60 * 60)
@@ -1015,10 +1031,10 @@ def log_debug(msg: str, *args: Any):
 __log = logger._log
 
 
-def log_liquidity(market, token, block, liquidity, debug_logs: bool = True):
+async def log_liquidity(market, token, block, liquidity, debug_logs: bool = True):
     if debug_logs:
         __log(
             DEBUG,
-            "%s liquidity for %s at %s is %s",
-            (repr(market), token, block, liquidity),
+            "%s liquidity for %s %s at %s is %s",
+            (repr(market), await ERC20(token, asynchronous=True).symbol, token, block, liquidity),
         )

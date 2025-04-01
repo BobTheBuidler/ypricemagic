@@ -1,5 +1,5 @@
 from decimal import Decimal
-from logging import getLogger
+from logging import DEBUG, getLogger
 from typing import Optional, Tuple
 
 import a_sync
@@ -127,6 +127,11 @@ async def get_price(
     )
 
 
+_BEEFY_METHODS = {
+    "BeefyVaultV6Matic": "wmatic()",
+    "BeefyVenusVaultBNB": "wbnb()",
+}
+
 class YearnInspiredVault(ERC20):
     """
     Represents a vault token from Yearn or a similar protocol.
@@ -175,12 +180,10 @@ class YearnInspiredVault(ERC20):
         # special cases
         if CHAINID == Network.Arbitrum:
             if self.address == "0x57c7E0D43C05bCe429ce030132Ca40F6FA5839d7":
-                return ERC20(
-                    await raw_call(
-                        self.address, "usdl()", output="address", sync=False
-                    ),
-                    asynchronous=self.asynchronous,
+                underlying = await raw_call(
+                    self.address, "usdl()", output="address", sync=False
                 )
+                return ERC20(underlying, asynchronous=self.asynchronous)
         elif (
             CONNECTED_TO_MAINNET
             and self.address == "0x09db87A538BD693E9d08544577d5cCfAA6373A48"
@@ -192,18 +195,14 @@ class YearnInspiredVault(ERC20):
             underlying = await probe(self.address, underlying_methods)
         except AssertionError:
             # special handler for some strange beefy vaults
-            if not (
-                method := {
-                    "BeefyVaultV6Matic": "wmatic()",
-                    "BeefyVenusVaultBNB": "wbnb()",
-                }.get(await self.__build_name__)
-            ):
+            beefy_method = _BEEFY_METHODS.get(await self.__build_name__)
+            if beefy_method is None:
                 raise
             underlying = await raw_call(
-                self.address, method, output="address", sync=False
+                self.address, beefy_method, output="address", sync=False
             )
 
-        if not underlying:
+        if underlying is None:
             # certain reaper vaults
             lend_platform = await self.has_method(
                 "lendPlatform()(address)", return_response=True, sync=False
@@ -216,8 +215,15 @@ class YearnInspiredVault(ERC20):
                     sync=False,
                 )
 
-        if underlying:
-            return ERC20(underlying, asynchronous=self.asynchronous)
+        if underlying is not None:
+            underlying = ERC20(underlying, asynchronous=self.asynchronous)
+            if logger.isEnabledFor(DEBUG):
+                logger._log(
+                    DEBUG, 
+                    "%s %s underlying is %s %s", 
+                    (await self.__symbol__, self, await underlying.__symbol__, underlying),
+                )
+            return underlying
         raise CantFetchParam(f"underlying for {self}")
 
     __underlying__: HiddenMethodDescriptor[Self, ERC20]
