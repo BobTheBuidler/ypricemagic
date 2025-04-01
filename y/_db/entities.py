@@ -1,10 +1,9 @@
 import logging
 from datetime import datetime
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable, TypeVar
 from typing import Optional as typing_Optional
 
-import a_sync
 from pony.orm import (
     Database,
     InterfaceError,
@@ -17,6 +16,7 @@ from pony.orm import (
     composite_index,
     db_session,
 )
+from typing_extensions import ParamSpec
 
 from y._db.decorators import retry_locked, ydb_write_threads
 
@@ -258,23 +258,26 @@ class BlockAtTimestamp(DbEntity):
     block = Required(int)
 
 
-async def insert(type: DbEntity, fire_and_forget: bool = False, **kwargs: Any) -> typing_Optional[DbEntity]:
+__write_threads_submit = ydb_write_threads.submit
+
+def insert_nowait(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
     # sourcery skip: simplify-boolean-comparison
-    job = ydb_write_threads.submit(insert_sync, type, **kwargs, fire_and_forget=fire_and_forget)
-    if fire_and_forget is False:
-        await ydb_write_threads.submit(insert_sync, type, **kwargs)
-    else:
-        def exc_wrapper(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
-            try:
-                return insert_sync(type, **kwargs) 
-            except Exception as e:
-                logger.exception(e)
-        
-        ydb_write_threads.submit(exc_wrapper, type, **kwargs, fire_and_forget=True)
+    __write_threads_submit(exc_wrapper, insert, type, **kwargs, fire_and_forget=True)
+
+
+__P = ParamSpec("__P")
+__T = TypeVar("__T")
+
+def exc_wrapper(func: Callable[__P, __T], *args: __P.args, **kwargs: __P.kwargs) -> typing_Optional[DbEntity]:
+    try:
+        return func(*args, **kwargs) 
+    except Exception as e:
+        logger.exception(e)
+
 
 @db_session
 @retry_locked
-def insert_sync(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
+def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
     """Inserts a new entity into the database with retry logic.
 
     This function attempts to insert a new entity of the specified type into the database.

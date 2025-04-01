@@ -10,7 +10,7 @@ from pony.orm import select
 
 from y import constants
 from y._db.decorators import a_sync_read_db_session, log_result_count, retry_locked
-from y._db.entities import Price, insert
+from y._db.entities import Price, insert_nowait
 from y._db.utils.token import ensure_token
 from y._db.utils.utils import ensure_block
 from y.constants import CHAINID
@@ -83,14 +83,13 @@ async def _set_price(
         address = constants.WRAPPED_GAS_COIN
     await ensure_token(str(address), sync=False)  # force to string for cache key
     try:
-        await insert(
+        insert_nowait(
             type=Price,
             block=(CHAINID, block),
             token=(CHAINID, address),
             price=Decimal(price),
-            fire_and_forget=True,
         )
-        _logger_debug("inserted %s block %s price to ydb: %s", address, block, price)
+        _logger_debug("queued insert %s block %s price to ydb: %s", address, block, price)
     except InvalidOperation:
         # happens with really big numbers sometimes. nbd, we can just skip the cache in this case.
         pass

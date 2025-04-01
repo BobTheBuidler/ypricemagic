@@ -180,18 +180,19 @@ def insert(
     See Also:
         - :func:`execute`
     """
+    provider_name = db.provider_name
     entity_name = entity_type.__name__.lower()
-    data = ",".join(build_row(i, db.provider_name) for i in items)
-    if db.provider_name == "sqlite":
+    data = ",".join(build_row(i, provider_name) for i in items)
+    if provider_name == "sqlite":
         execute(
             f'insert or ignore into {entity_name} ({",".join(columns)}) values {data}',
             db=db,
         )
-    elif db.provider_name == "postgres":
+    elif provider_name == "postgres":
         execute(
             f'insert into {entity_name} ({",".join(columns)}) values {data} on conflict do nothing',
             db=db,
         )
     else:
-        raise NotImplementedError(db.provider_name)
+        raise NotImplementedError(provider_name)
     _logger_debug("inserted %s %ss to ydb", len(items), entity_name)

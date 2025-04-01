@@ -11,7 +11,7 @@ from evmspec import FilterTrace
 
 from y._db.common import DiskCache, Filter, _clean_addresses
 from y._db.decorators import db_session_retry_locked
-from y._db.entities import Chain, Trace, TraceCacheInfo, insert_sync
+from y._db.entities import Chain, Trace, TraceCacheInfo, insert
 from y._db.utils._ep import _get_get_block
 from y.utils.middleware import BATCH_SIZE
 
@@ -48,7 +48,7 @@ def insert_trace(trace: FilterTrace) -> None:
             kwargs["from_address"] = dct["from"]
         if "to" in dct:
             kwargs["to_address"] = dct["to"]
-    insert_sync(type=Trace, **kwargs)
+    insert(type=Trace, **kwargs)
 
 
 class TraceCache(DiskCache[dict, TraceCacheInfo]):
