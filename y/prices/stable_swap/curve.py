@@ -187,7 +187,7 @@ class AddressProvider(_CurveEventsLoader):
     async def _load_factories(self) -> None:
         # factory events are quite useless, so we use a different method
         if debug_logs := startup_logger.isEnabledFor(DEBUG):
-            startup_logger_log_debug("loading pools from metapool factories")
+            _startup_logger_log_debug("loading pools from metapool factories")
         # TODO: remove this once curve adds to address provider
         if CONNECTED_TO_MAINNET:
             self.identifiers[Ids.CurveStableswapFactoryNG] = [
@@ -214,7 +214,7 @@ class AddressProvider(_CurveEventsLoader):
             + self.identifiers[Ids.Cryptopool_Factory]
         ):
             if debug_logs:
-                startup_logger_log_debug("loading pools from cryptopool factories")
+                _startup_logger_log_debug("loading pools from cryptopool factories")
             await a_sync.map(Factory, identifiers, asynchronous=self.asynchronous)
 
         if not curve._done.is_set():
@@ -269,7 +269,7 @@ class Factory(_Loader):
         )
         self._loaded.set()
         if debug_logs:
-            startup_logger_log_debug("loaded %s pools for %s", len(pool_list), self)
+            _startup_logger_log_debug("loaded %s pools for %s", len(pool_list), self)
 
     async def __load_pool(self, pool: Address, debug_logs: bool) -> None:
         factory = await Contract.coroutine(self.address)
@@ -285,7 +285,7 @@ class Factory(_Loader):
         curve.token_to_pool[lp_token] = pool
         curve.factories[factory.address].add(pool)
         if debug_logs:
-            startup_logger_log_debug("loaded %s pool %s", self, pool)
+            _startup_logger_log_debug("loaded %s pool %s", self, pool)
 
 
 class CurvePool(ERC20):
@@ -815,5 +815,5 @@ except UnsupportedNetwork:
 __startup_logger_log = startup_logger._log
 
 
-def startup_logger_log_debug(msg: str, *args: Any) -> None:
+def _startup_logger_log_debug(msg: str, *args: Any) -> None:
     __startup_logger_log(DEBUG, msg, args)
