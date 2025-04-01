@@ -174,12 +174,16 @@ class UniswapV1(a_sync.ASyncGenericBase):
         )
         if debug_logs_enabled:
             log_debug(
-                "Uniswap v1 liquidity for %s at %s is %s", token_address, block, liquidity
+                "Uniswap v1 liquidity for %s at %s is %s",
+                token_address,
+                block,
+                liquidity,
             )
         return liquidity
 
 
 def log_debug(msg: str, *args: Any) -> None:
     __logger_log(DEBUG, msg, args)
+
 
 __logger_log = logger._log

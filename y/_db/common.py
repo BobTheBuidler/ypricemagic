@@ -763,7 +763,9 @@ class Filter(_DiskCachedMixin[T, C]):
             await self.bulk_insert(objs)
         del objs
 
-        await _metadata_write_executor.run(self.cache.set_metadata, from_block, done_thru)
+        await _metadata_write_executor.run(
+            self.cache.set_metadata, from_block, done_thru
+        )
         if debug_logs:
             logger._log(
                 DEBUG,
