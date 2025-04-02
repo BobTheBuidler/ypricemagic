@@ -64,7 +64,7 @@ class SolidlyRouterBase(UniswapRouterV2):
                 "Sequence has incorrect length",
                 "Call reverted: Integer overflow",
             )
-            if not call_reverted(e) and not any(str(e).__contains__, strings):
+            if not call_reverted(e) and not any(map(str(e).__contains__, strings)):
                 raise
 
 
