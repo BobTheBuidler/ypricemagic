@@ -177,6 +177,7 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x6c84a8f1c29108F47a79964b5Fe888D4f4D0dE40",  # tbtc
         # lp tokens
         "0xd62C9D8a3D4fd98b27CaaEfE3571782a3aF0a737",  # sAMM-USDC/MAI
+        "0x6C5019D345Ec05004A7E7B0623A91a0D9B8D590d",  # sAMM-USDC/DOLA
     ],
     Network.Arbitrum: [
         "0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2",  # crv3crypto
