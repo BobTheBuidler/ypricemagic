@@ -334,13 +334,15 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span>
+        <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span>
+        <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">executor</span>
 
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
+        <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span>
+        <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
@@ -573,12 +575,9 @@
                 <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_asleep</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">_wakeup</span><span class="p">()</span>
                 <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">done_thru</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="p">:</span>
-                <span class="c1"># create a new duplicate exc instead of building a massive traceback on the original</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="p">)(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="o">.</span><span class="n">args</span><span class="p">)</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span>
-                <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
-                    <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="o">.</span><span class="n">with_traceback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="c1"># raise it</span>
+                <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span>
             <span class="k">if</span> <span class="n">to_yield</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">yielded</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span> <span class="p">:]:</span>
                 <span class="k">if</span> <span class="n">from_block</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">reached_from_block</span><span class="p">:</span>
                     <span class="n">objs</span> <span class="o">=</span> <span class="n">skip_too_early</span><span class="p">(</span><span class="n">to_yield</span><span class="p">)</span>
@@ -644,10 +643,10 @@
             <span class="kn">import</span> <span class="nn">traceback</span>
 
             <span class="n">logger</span><span class="o">.</span><span class="n">exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="n">e</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_tb</span> <span class="o">=</span> <span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span> <span class="o">=</span> <span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_exc</span><span class="o">.</span><span class="n">set_exception</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
             <span class="c1"># no need to hold vars in memory</span>
-            <span class="n">traceback</span><span class="o">.</span><span class="n">clear_frames</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_tb</span><span class="p">)</span>
+            <span class="n">traceback</span><span class="o">.</span><span class="n">clear_frames</span><span class="p">(</span><span class="n">e</span><span class="o">.</span><span class="n">__traceback__</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">_MAX_LONG_LONG</span><span class="p">)</span>
             <span class="k">raise</span>
 
