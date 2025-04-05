@@ -1,7 +1,7 @@
 from decimal import Decimal
 from typing import Tuple
 
-from a_sync import a_sync, cgather
+from a_sync import a_sync
 from async_lru import alru_cache
 
 from y import ENVIRONMENT_VARIABLES as ENVS
@@ -9,6 +9,7 @@ from y.classes.common import ERC20
 from y.contracts import Contract, has_method, is_contract
 from y.datatypes import Address, Block
 from y.exceptions import ContractNotVerified
+from y.utils.gather import gather2
 
 
 try:
@@ -108,7 +109,7 @@ async def get_lp_price(
     #    use_asset = False
     #    rate = await PENDLE_ORACLE.getLpToAssetRate.coroutine(token, twap_duration, block_identifier=block)
     sy_token, p_token, y_token = tokens
-    sy, rate = await cgather(
+    sy, rate = await gather2(
         Contract.coroutine(sy_token),
         PENDLE_ORACLE.getLpToAssetRate.coroutine(
             token, TWAP_DURATION, block_identifier=block

@@ -18,6 +18,7 @@ from y.contracts import Contract
 from y.datatypes import Address, AddressOrContract, AnyAddressType, Block, UsdPrice
 from y.networks import Network
 from y.utils import hasall
+from y.utils.gather import gather2
 from y.utils.logging import get_price_logger
 from y.utils.raw_calls import raw_call
 
@@ -392,12 +393,12 @@ class AaveRegistry(a_sync.ASyncGenericSingleton):
         block: Optional[Block] = None,
         skip_cache: bool = ENVS.SKIP_CACHE,
     ) -> Optional[UsdPrice]:
-        contract, scale = await cgather(
+        contract, scale = await gather2(
             Contract.coroutine(atoken_address),
             ERC20._get_scale_for(atoken_address),
         )
         try:
-            underlying, price_per_share = await cgather(
+            underlying, price_per_share = await gather2(
                 # NOTE: We can probably cache this without breaking anything
                 contract.ATOKEN.coroutine(block_identifier=block),
                 getattr(contract, method).coroutine(scale, block_identifier=block),

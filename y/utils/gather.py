@@ -2,7 +2,8 @@
 Utility functions for gathering method results asynchronously.
 """
 
-from typing import Any, Iterable, Optional, Tuple
+from asyncio import ensure_future
+from typing import Any, Awaitable, Iterable, Optional, Tuple, TypeVar
 
 from a_sync import igather
 from multicall import Call
