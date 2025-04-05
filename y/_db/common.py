@@ -263,13 +263,15 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 
     @property
     def executor(self) -> AsyncThreadPoolExecutor:
-        if self._executor is None:
-            self._executor = AsyncThreadPoolExecutor(1)
-        return self._executor
+        executor = self._executor
+        if executor is None:
+            executor = self._executor = AsyncThreadPoolExecutor(1)
+        return executor
 
     def __del__(self) -> None:
-        if self._executor:
-            self._executor.shutdown()
+        executor = self._executor
+        if executor is not None:
+            executor.shutdown()
 
     @property
     @abstractmethod
@@ -502,12 +504,9 @@ class Filter(_DiskCachedMixin[T, C]):
                 if self.is_asleep:
                     self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
-            if self._exc:
-                # create a new duplicate exc instead of building a massive traceback on the original
-                try:
-                    raise type(self._exc)(*self._exc.args).with_traceback(self._tb)
-                except TypeError:
-                    raise self._exc.with_traceback(self._tb) from None
+            if self._exc is not None:
+                # raise it
+                await self._exc
             if to_yield := self._objects[yielded - self._pruned :]:
                 if from_block and not reached_from_block:
                     objs = skip_too_early(to_yield)
@@ -573,10 +572,10 @@ class Filter(_DiskCachedMixin[T, C]):
             import traceback
 
             logger.exception(e)
-            self._exc = e
-            self._tb = e.__traceback__
+            self._exc = get_event_loop().create_future()
+            self._exc.set_exception(e)
             # no need to hold vars in memory
-            traceback.clear_frames(self._tb)
+            traceback.clear_frames(e.__traceback__)
             self._lock.set(_MAX_LONG_LONG)
             raise
 
