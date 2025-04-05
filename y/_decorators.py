@@ -1,26 +1,18 @@
-from asyncio import create_task, iscoroutinefunction, sleep
-from functools import wraps
-from inspect import isasyncgenfunction
-from logging import DEBUG, getLogger
-from time import time
-from typing import (
-    AsyncIterator,
-    Awaitable,
-    Callable,
-    NoReturn,
-    TypeVar,
-    Union,
-    overload,
-)
+from asyncio import iscoroutinefunction
+from functools import partial, wraps
+from logging import getLogger
+from typing import Callable, TypeVar, Union
 
-from a_sync import ASyncGenericBase
-from a_sync.a_sync.method import ASyncBoundMethod
-from a_sync.iter import ASyncGeneratorFunction
-from eth_utils.toolz import valmap
-from typing_extensions import Concatenate, ParamSpec
+from a_sync import debugging
+from typing_extensions import ParamSpec
+
 
 P = ParamSpec("P")
 T = TypeVar("T")
+
+
+stuck_coro_logger = getLogger("y.stuck?")
+stuck_coro_debugger = partial(debugging.stuck_coro_debugger, logger=stuck_coro_logger)
 
 
 def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
@@ -84,110 +76,3 @@ def continue_on_revert(func: Callable[P, T]) -> Callable[P, T]:
     else:
         raise NotImplementedError(f"Unable to decorate {func}")
     return continue_on_revert_wrap
-
-
-B = TypeVar("B", bound=ASyncGenericBase)
-
-
-stuck_coro_logger = getLogger("y.stuck?")
-__stuck_coro_logger_is_enabled_for = stuck_coro_logger.isEnabledFor
-__stuck_coro_logger_log = stuck_coro_logger._log
-
-
-@overload
-def stuck_coro_debugger(
-    fn: Callable[Concatenate[B, P], AsyncIterator[T]],
-) -> ASyncGeneratorFunction[P, T]: ...
-
-
-@overload
-def stuck_coro_debugger(
-    fn: Callable[Concatenate[B, P], Awaitable[T]],
-) -> ASyncBoundMethod[B, P, T]: ...
-
-
-@overload
-def stuck_coro_debugger(
-    fn: Callable[Concatenate[B, P], T],
-) -> ASyncBoundMethod[B, P, T]: ...
-
-
-@overload
-def stuck_coro_debugger(
-    fn: Callable[P, AsyncIterator[T]],
-) -> Callable[P, AsyncIterator[T]]: ...
-
-
-@overload
-def stuck_coro_debugger(fn: Callable[P, Awaitable[T]]) -> Callable[P, Awaitable[T]]: ...
-
-
-def stuck_coro_debugger(fn):
-    if isasyncgenfunction(fn):
-
-        @wraps(fn)
-        async def stuck_async_gen_wrap(
-            *args: P.args, **kwargs: P.kwargs
-        ) -> AsyncIterator[T]:
-            aiterator = fn(*args, **kwargs)
-
-            if not __stuck_coro_logger_is_enabled_for(DEBUG):
-                async for thing in aiterator:
-                    yield thing
-                return
-
-            task = create_task(
-                coro=_stuck_debug_task(fn, args, kwargs),
-                name="_stuck_debug_task",
-            )
-            try:
-                async for thing in aiterator:
-                    yield thing
-            finally:
-                task.cancel()
-
-        return stuck_async_gen_wrap
-    else:
-
-        @wraps(fn)
-        async def stuck_coro_wrap(*args: P.args, **kwargs: P.kwargs) -> T:
-            if not __stuck_coro_logger_is_enabled_for(DEBUG):
-                return await fn(*args, **kwargs)
-
-            task = create_task(
-                coro=_stuck_debug_task(fn, args, kwargs),
-                name="_stuck_debug_task",
-            )
-            try:
-                retval = await fn(*args, **kwargs)
-            finally:
-                task.cancel()
-            return retval
-
-        return stuck_coro_wrap
-
-
-async def _stuck_debug_task(
-    fn: Callable[P, T], *args: P.args, **kwargs: P.kwargs
-) -> NoReturn:
-    # sleep early so fast-running coros can exit early
-    await sleep(300)
-
-    start = time() - 300
-    module = fn.__module__
-    name = fn.__name__
-    formatted_args = tuple(map(str, args))
-    formatted_kwargs = valmap(str, kwargs)
-    while True:
-        __stuck_coro_logger_log(
-            DEBUG,
-            "%s.%s still executing after %sm with args %s kwargs %s",
-            (
-                module,
-                name,
-                round((time() - start) / 60, 2),
-                formatted_args,
-                formatted_kwargs,
-            ),
-        )
-        await sleep(300)
