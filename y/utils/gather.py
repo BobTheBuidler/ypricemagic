@@ -11,6 +11,25 @@ from multicall import Call
 from y._decorators import stuck_coro_debugger
 
 
+__T0 = TypeVar("__T0")
+__T1 = TypeVar("__T1")
+
+
+async def gather2(
+    first_awaitable: Awaitable[__T0], second_awaitable: Awaitable[__T1]
+) -> Tuple[__T0, __T1]:
+    second_awaitable = ensure_future(second_awaitable)
+    try:
+        first = await first_awaitable
+    except Exception:
+        if not second_awaitable.cancel() and not second_awaitable.cancelled():
+            # mark the exception retrieved if there is one
+            second_awaitable.exception()
+        raise
+    else:
+        return first, await second_awaitable
+
+
 async def gather_methods(
     address: str,
     methods: Iterable[str],
