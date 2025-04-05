@@ -743,7 +743,7 @@ class Filter(_DiskCachedMixin[T, C]):
             # garbage collected so there is no need to log the "destroy pending task" message.
             self._task._log_destroy_pending = False
         if self._task.done() and (e := self._task.exception()):
-            await self._task
+            raise e.with_traceback(e.__traceback__)
 
     async def __insert_chunk(
         self,
