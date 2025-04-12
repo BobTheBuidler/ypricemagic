@@ -69,7 +69,7 @@ async def check_bucket(token: AnyAddressType) -> str:
         if check(token):
             if debug_logs_enabled:
                 await __log_bucket(token_address, bucket)
-            db.set_bucket(token, bucket)
+            db.set_bucket(token_address, bucket)
             return bucket
         elif debug_logs_enabled:
             await __log_not_bucket(token_address, bucket)
@@ -96,7 +96,7 @@ async def check_bucket(token: AnyAddressType) -> str:
                 await __log_bucket(token_address, bucket)
             for fut in futs:
                 fut.cancel()
-            db.set_bucket(token, bucket)
+            db.set_bucket(token_address, bucket)
             return bucket
         else:
             if debug_logs_enabled:
@@ -136,7 +136,7 @@ async def check_bucket(token: AnyAddressType) -> str:
     if debug_logs_enabled:
         await __log_bucket(token_address, bucket)
     if bucket:
-        db.set_bucket(token, bucket)
+        db.set_bucket(token_address, bucket)
     return bucket
 
 
