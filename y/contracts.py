@@ -53,7 +53,7 @@ from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
-from y._db.brownie import DISCARD_SOURCE_KEYS, _get_deployment
+from y._db.brownie import DISCARD_SOURCE_KEYS, sqlite_lock, _get_deployment
 from y._decorators import stuck_coro_debugger
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (
@@ -540,8 +540,9 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                     return cache_value
 
                 # nope, continue
-                contract.__init_from_abi__(build, owner=owner, persist=False)
-                contract.__post_init__(cache_ttl)
+                async with sqlite_lock:
+                    contract.__init_from_abi__(build, owner=owner, persist=False)
+                    contract.__post_init__(cache_ttl)
 
         elif not CONFIG.active_network.get("explorer"):
             raise ValueError(f"Unknown contract address: '{address}'")
@@ -575,14 +576,15 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                         return cache_value
 
                     # nope, continue
-                    build = {
-                        "abi": abi,
-                        "address": address,
-                        "contractName": name,
-                        "type": "contract",
-                    }
-                    contract.__init_from_abi__(build, owner=owner, persist=persist)
-                    contract.__post_init__(cache_ttl)
+                    async with sqlite_lock:
+                        build = {
+                            "abi": abi,
+                            "address": address,
+                            "contractName": name,
+                            "type": "contract",
+                        }
+                        contract.__init_from_abi__(build, owner=owner, persist=persist)
+                        contract.__post_init__(cache_ttl)
 
         # Cache manually since we aren't calling init
         cls[address] = contract
