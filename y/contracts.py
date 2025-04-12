@@ -542,7 +542,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                 # nope, continue
                 async with sqlite_lock:
                     contract.__init_from_abi__(build, owner=owner, persist=False)
-                    contract.__post_init__(cache_ttl)
+                contract.__post_init__(cache_ttl)
 
         elif not CONFIG.active_network.get("explorer"):
             raise ValueError(f"Unknown contract address: '{address}'")
@@ -584,7 +584,7 @@ class Contract(dank_mids.Contract, metaclass=ChecksumAddressSingletonMeta):
                             "type": "contract",
                         }
                         contract.__init_from_abi__(build, owner=owner, persist=persist)
-                        contract.__post_init__(cache_ttl)
+                    contract.__post_init__(cache_ttl)
 
         # Cache manually since we aren't calling init
         cls[address] = contract
