@@ -142,7 +142,7 @@
         <span class="k">if</span> <span class="n">check</span><span class="p">(</span><span class="n">token</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
                 <span class="k">await</span> <span class="n">__log_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bucket</span>
         <span class="k">elif</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">__log_not_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
@@ -169,7 +169,7 @@
                 <span class="k">await</span> <span class="n">__log_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">fut</span> <span class="ow">in</span> <span class="n">futs</span><span class="p">:</span>
                 <span class="n">fut</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-            <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
+            <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">bucket</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
@@ -209,7 +209,7 @@
     <span class="k">if</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">__log_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">bucket</span><span class="p">:</span>
-        <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">set_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">bucket</span></div>
 
 
