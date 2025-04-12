@@ -60,6 +60,8 @@ These keys will not be included in y.Contract object build data. If you need the
 """
 
 
+sqlite_lock = Lock()
+
 class AsyncCursor:
     def __init__(self, filename):
         self._filename = filename
@@ -67,7 +69,8 @@ class AsyncCursor:
     @async_cached_property
     async def connect(self):
         """Establish an async connection to the SQLite database"""
-        self._db = await aiosqlite.connect(self._filename, isolation_level=None)
+        async with sqlite_lock:
+            self._db = await aiosqlite.connect(self._filename, isolation_level=None)
 
     async def insert(self, table, *values):
         raise NotImplementedError
@@ -88,12 +91,13 @@ class AsyncCursor:
 
     async def fetchone(self, cmd: str, *args) -> Optional[Tuple]:
         await self.connect
-        async with self._db.execute(cmd, args) as cursor:
-            if row := await cursor.fetchone():
-                # Convert any JSON-serialized columns back to their original data structures
-                return tuple(
-                    loads(i) if str(i).startswith(("[", "{")) else i for i in row
-                )
+        async with sqlite_lock:
+            async with self._db.execute(cmd, args) as cursor:
+                if row := await cursor.fetchone():
+                    # Convert any JSON-serialized columns back to their original data structures
+                    return tuple(
+                        loads(i) if str(i).startswith(("[", "{")) else i for i in row
+                    )
 
 
 cur = AsyncCursor(_get_data_folder().joinpath("deployments.db"))
