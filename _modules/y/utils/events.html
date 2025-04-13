@@ -468,7 +468,7 @@
 
 <span class="n">get_logs_semaphore</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span>
     <span class="k">lambda</span><span class="p">:</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">BlockSemaphore</span><span class="p">(</span>
-        <span class="n">ENVS</span><span class="o">.</span><span class="n">GETLOGS_DOP</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">(</span><span class="n">ENVS</span><span class="o">.</span><span class="n">GETLOGS_DOP</span><span class="p">),</span>
         <span class="c1"># We need to do this in case users use the sync api in a multithread context</span>
         <span class="n">name</span><span class="o">=</span><span class="s2">&quot;y.get_logs&quot;</span>
         <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;&quot;</span> <span class="k">if</span> <span class="n">current_thread</span><span class="p">()</span> <span class="o">==</span> <span class="n">main_thread</span><span class="p">()</span> <span class="k">else</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">current_thread</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
