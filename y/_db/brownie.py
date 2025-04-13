@@ -62,6 +62,7 @@ These keys will not be included in y.Contract object build data. If you need the
 
 sqlite_lock = Lock()
 
+
 class AsyncCursor:
     def __init__(self, filename):
         self._filename = filename
