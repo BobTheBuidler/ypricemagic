@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 from typing import TYPE_CHECKING, Any, Callable, TypeVar
 from typing import Optional as typing_Optional
 
@@ -309,6 +309,9 @@ def insert(type: DbEntity, **kwargs: Any) -> typing_Optional[DbEntity]:
                 return entity
             except InterfaceError as e:
                 logger.debug("%s while inserting %s", e, type.__name__)
+            except InvalidOperation as e:
+                e.args = *e.args, type, kwargs
+                raise
     except TransactionIntegrityError as e:
         constraint_errs = (
             "UNIQUE constraint failed",
