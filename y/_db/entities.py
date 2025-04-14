@@ -275,6 +275,8 @@ def exc_wrapper(
 ) -> typing_Optional[DbEntity]:
     try:
         return func(*args, **kwargs)
+    except InvalidOperation:
+        pass
     except Exception as e:
         logger.exception(e)
 
