@@ -30,7 +30,6 @@ def is_rkp3r(address: Address) -> bool:
     Examples:
         >>> is_rkp3r("0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9")
         True
-
         >>> is_rkp3r("0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44")
         False
     """
@@ -42,13 +41,15 @@ async def get_price(
     address: Address, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
 ) -> Decimal:
     """
-    Get the price of the KP3R token and apply a discount to calculate the RKP3R token price.
+    Get the discounted price of the RKP3R token based on the underlying KP3R token price.
 
-    This function retrieves the price of the KP3R token and applies a discount
-    specific to the RKP3R token.
+    Note that the supplied ``address`` parameter is provided only for interface consistency and is ignored.
+    The function always uses the constant KP3R address to retrieve the price via 
+    :func:`~y.prices.magic.get_price` and then applies a discount (obtained via 
+    :func:`~y.prices.rkp3r.get_discount`) to compute the final RKP3R price.
 
     Args:
-        address: The address of the token.
+        address: Ignored. Provided solely for interface consistency.
         block: The block number to query the price at.
         skip_cache: Whether to skip the cache when retrieving the price.
 
@@ -56,11 +57,19 @@ async def get_price(
         The discounted price of the RKP3R token.
 
     Examples:
-        >>> await get_price("0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9")
+        >>> # Example when using the RKP3R address (address parameter is ignored)
+        >>> price = await get_price("0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9")
+        >>> print(price)
+        Decimal('123.45')
+        >>> 
+        >>> # Example when using any other token address (it is ignored in the calculation)
+        >>> price = await get_price("0xSomeOtherAddress")
+        >>> print(price)
         Decimal('123.45')
 
     See Also:
-        - :func:`y.prices.magic.get_price`
+        - :func:`~y.prices.magic.get_price`
+        - :func:`~y.prices.rkp3r.get_discount`
     """
     price, discount = await cgather(
         magic.get_price(KP3R, block=block, skip_cache=skip_cache, sync=False),
@@ -71,20 +80,23 @@ async def get_price(
 
 async def get_discount(block: Optional[Block] = None) -> Decimal:
     """
-    Retrieve the discount for the RKP3R token from the contract.
+    Retrieve the discount percentage for the RKP3R token from its contract.
+
+    This function queries the discount value stored in the RKP3R token contract at the specified block.
 
     Args:
-        block: The block number to query the discount at.
+        block: The block number at which to query the discount.
 
     Returns:
         The discount as a percentage.
 
     Examples:
-        >>> await get_discount()
+        >>> discount = await get_discount()
+        >>> print(discount)
         Decimal('5.0')
 
     See Also:
-        - :class:`y.contracts.Contract`
+        - :class:`~y.contracts.Contract`
     """
     rkp3r = await Contract.coroutine(RKP3R)
     discount = Decimal(await rkp3r.discount.coroutine(block_identifier=block))
