@@ -19,8 +19,9 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
 
     The differentiation between synchronous and asynchronous contexts is achieved by using the
     `__a_sync_instance_will_be_sync__` method to determine the context during instance creation.
-    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict` keyed by the context
-    (synchronous or asynchronous). This ensures that separate instances are created for each context.
+    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict`
+    keyed by the context (synchronous or asynchronous). This ensures that separate instances are created
+    for each context.
 
     Examples:
         >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
@@ -68,7 +69,7 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
         in a synchronous or asynchronous context. The address is checksummed to ensure consistency.
 
         Note:
-            This will only work if you init your objects using a kwarg not a positional arg.
+            This will only work if you initialize your objects using a keyword argument, not a positional argument.
             TODO: Make it work with positional args.
 
         Args:
@@ -77,17 +78,31 @@ class ChecksumASyncSingletonMeta(ASyncMeta, Generic[T]):
             **kwargs: Additional keyword arguments for instance creation.
 
         Raises:
-            AssertionError: If the instance's asynchronous state does not match the expected state.
+            RuntimeError: If the instance's asynchronous attribute does not match the expected context.
 
         Examples:
-            >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
-            ...     def __init__(self, address, asynchronous=False):
-            ...         self.address = address
-            ...         self.asynchronous = asynchronous
-            ...
-            >>> instance1 = MySingleton('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', asynchronous=True)
-            >>> instance2 = MySingleton('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', asynchronous=True)
-            >>> assert instance1 is instance2
+            Correct usage:
+                >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
+                ...     def __init__(self, address, asynchronous=False):
+                ...         self.address = address
+                ...         self.asynchronous = asynchronous
+                ...
+                >>> instance1 = MySingleton('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', asynchronous=True)
+                >>> instance2 = MySingleton('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', asynchronous=True)
+                >>> assert instance1 is instance2
+
+            Incorrect initialization:
+                >>> class MySingleton(metaclass=ChecksumASyncSingletonMeta):
+                ...     def __init__(self, address, asynchronous=False):
+                ...         self.address = address
+                ...         self.asynchronous = asynchronous
+                ...
+                >>> try:
+                ...     # Incorrectly initialized using a positional argument for asynchronous flag.
+                ...     MySingleton('0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb', True)
+                ... except RuntimeError as e:
+                ...     print(e)
+                <RuntimeError: You must initialize your objects with 'asynchronous' specified as a kwarg, not a positional arg. ...>
 
         See Also:
             - :class:`~checksum_dict.ChecksumAddressDict`
