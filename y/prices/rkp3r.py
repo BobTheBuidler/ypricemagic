@@ -44,8 +44,8 @@ async def get_price(
     Get the discounted price of the RKP3R token based on the underlying KP3R token price.
 
     Note that the supplied ``address`` parameter is provided only for interface consistency and is ignored.
-    The function always uses the constant KP3R address to retrieve the price via 
-    :func:`~y.prices.magic.get_price` and then applies a discount (obtained via 
+    The function always uses the constant KP3R address to retrieve the price via
+    :func:`~y.prices.magic.get_price` and then applies a discount (obtained via
     :func:`~y.prices.rkp3r.get_discount`) to compute the final RKP3R price.
 
     Args:
@@ -61,7 +61,7 @@ async def get_price(
         >>> price = await get_price("0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9")
         >>> print(price)
         Decimal('123.45')
-        >>> 
+        >>>
         >>> # Example when using any other token address (it is ignored in the calculation)
         >>> price = await get_price("0xSomeOtherAddress")
         >>> print(price)
