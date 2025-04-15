@@ -113,13 +113,14 @@
 block (optional): The block number to query. Defaults to None (latest).
 skip_cache (optional): Whether to bypass the disk cache. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ENVS.SKIP_CACHE</span></code>.</p>
 </dd>
-<dt>Raises:</dt><dd><p>PriceError: If unable to fetch the price.</p>
-</dd>
 <dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x0ac58Df435D3dC9F6e079B2C5F358A4b7e861B69&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
 <span class="go">1.05</span>
 </pre></div>
 </div>
+</dd>
+<dt>Notes:</dt><dd><p>This function does not explicitly raise any exceptions such as a PriceError.
+Underlying errors during asset data retrieval will propagate, so callers should handle exceptions as needed.</p>
 </dd>
 <dt>See Also:</dt><dd><ul class="simple">
 <li><p><a class="reference internal" href="#y.prices.tokenized_fund.basketdao.is_basketdao_index" title="y.prices.tokenized_fund.basketdao.is_basketdao_index"><code class="xref py py-func docutils literal notranslate"><span class="pre">is_basketdao_index()</span></code></a> for checking if a token is a BasketDAO token.</p></li>
@@ -158,8 +159,8 @@ skip_cache (optional): Whether to bypass the disk cache. Defaults to <code class
 </pre></div>
 </div>
 </dd>
-<dt>Raises:</dt><dd><p>ContractLogicError: If the contract logic fails during the call.
-ValueError: If the call returns an unexpected value.</p>
+<dt>Notes:</dt><dd><p>Any exceptions (e.g. <code class="xref py py-exc docutils literal notranslate"><span class="pre">ContractLogicError</span></code> or <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.13)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a>) encountered during the call are caught,
+causing the function to return False.</p>
 </dd>
 <dt>See Also:</dt><dd><ul class="simple">
 <li><p><a class="reference internal" href="#y.prices.tokenized_fund.basketdao.get_price" title="y.prices.tokenized_fund.basketdao.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a> for fetching the price of a BasketDAO token.</p></li>

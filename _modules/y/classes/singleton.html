@@ -92,8 +92,9 @@
 
 <span class="sd">    The differentiation between synchronous and asynchronous contexts is achieved by using the</span>
 <span class="sd">    `__a_sync_instance_will_be_sync__` method to determine the context during instance creation.</span>
-<span class="sd">    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict` keyed by the context</span>
-<span class="sd">    (synchronous or asynchronous). This ensures that separate instances are created for each context.</span>
+<span class="sd">    Instances are stored in `cls.__instances`, which is a `DefaultDict` of `ChecksumAddressDict`</span>
+<span class="sd">    keyed by the context (synchronous or asynchronous). This ensures that separate instances are created</span>
+<span class="sd">    for each context.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; class MySingleton(metaclass=ChecksumASyncSingletonMeta):</span>
@@ -146,7 +147,7 @@
 <span class="sd">        in a synchronous or asynchronous context. The address is checksummed to ensure consistency.</span>
 
 <span class="sd">        Note:</span>
-<span class="sd">            This will only work if you init your objects using a kwarg not a positional arg.</span>
+<span class="sd">            This will only work if you initialize your objects using a keyword argument, not a positional argument.</span>
 <span class="sd">            TODO: Make it work with positional args.</span>
 
 <span class="sd">        Args:</span>
@@ -155,17 +156,31 @@
 <span class="sd">            **kwargs: Additional keyword arguments for instance creation.</span>
 
 <span class="sd">        Raises:</span>
-<span class="sd">            AssertionError: If the instance&#39;s asynchronous state does not match the expected state.</span>
+<span class="sd">            RuntimeError: If the instance&#39;s asynchronous attribute does not match the expected context.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; class MySingleton(metaclass=ChecksumASyncSingletonMeta):</span>
-<span class="sd">            ...     def __init__(self, address, asynchronous=False):</span>
-<span class="sd">            ...         self.address = address</span>
-<span class="sd">            ...         self.asynchronous = asynchronous</span>
-<span class="sd">            ...</span>
-<span class="sd">            &gt;&gt;&gt; instance1 = MySingleton(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, asynchronous=True)</span>
-<span class="sd">            &gt;&gt;&gt; instance2 = MySingleton(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, asynchronous=True)</span>
-<span class="sd">            &gt;&gt;&gt; assert instance1 is instance2</span>
+<span class="sd">            Correct usage:</span>
+<span class="sd">                &gt;&gt;&gt; class MySingleton(metaclass=ChecksumASyncSingletonMeta):</span>
+<span class="sd">                ...     def __init__(self, address, asynchronous=False):</span>
+<span class="sd">                ...         self.address = address</span>
+<span class="sd">                ...         self.asynchronous = asynchronous</span>
+<span class="sd">                ...</span>
+<span class="sd">                &gt;&gt;&gt; instance1 = MySingleton(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, asynchronous=True)</span>
+<span class="sd">                &gt;&gt;&gt; instance2 = MySingleton(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, asynchronous=True)</span>
+<span class="sd">                &gt;&gt;&gt; assert instance1 is instance2</span>
+
+<span class="sd">            Incorrect initialization:</span>
+<span class="sd">                &gt;&gt;&gt; class MySingleton(metaclass=ChecksumASyncSingletonMeta):</span>
+<span class="sd">                ...     def __init__(self, address, asynchronous=False):</span>
+<span class="sd">                ...         self.address = address</span>
+<span class="sd">                ...         self.asynchronous = asynchronous</span>
+<span class="sd">                ...</span>
+<span class="sd">                &gt;&gt;&gt; try:</span>
+<span class="sd">                ...     # Incorrectly initialized using a positional argument for asynchronous flag.</span>
+<span class="sd">                ...     MySingleton(&#39;0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb&#39;, True)</span>
+<span class="sd">                ... except RuntimeError as e:</span>
+<span class="sd">                ...     print(e)</span>
+<span class="sd">                &lt;RuntimeError: You must initialize your objects with &#39;asynchronous&#39; specified as a kwarg, not a positional arg. ...&gt;</span>
 
 <span class="sd">        See Also:</span>
 <span class="sd">            - :class:`~checksum_dict.ChecksumAddressDict`</span>

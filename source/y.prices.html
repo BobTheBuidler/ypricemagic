@@ -1057,6 +1057,10 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.chainlink.Chainlink.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Chainlink.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Chainlink.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize the Chainlink class.</p>
+<p>The Chainlink class aggregates Chainlink price feeds for various tokens.
+This constructor automatically creates Feed objects by inverting the FEEDS mapping,
+calling Feed(feed_address, asset_address). The FEEDS mapping is defined so that keys represent
+the asset addresses and values represent the corresponding feed addresses.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to use asynchronous operations.</p>
@@ -1068,8 +1072,10 @@ owner: The owner class of the property.</p>
 <dd class="field-odd"><p>None</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
+<p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">chainlink</span> <span class="o">=</span> <span class="n">Chainlink</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">chainlink</span><span class="p">)</span>
+<span class="go">&lt;Chainlink ...&gt;</span>
 </pre></div>
 </div>
 </dd></dl>
@@ -1079,15 +1085,25 @@ owner: The owner class of the property.</p>
 <span class="sig-name descname"><span class="pre">get_feed</span></span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Chainlink.get_feed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Chainlink.get_feed" title="Link to this definition"></a></dt>
 <dd><p>Get the feed for a specific asset.</p>
 <blockquote>
-<div><dl>
-<dt>Args:</dt><dd><p>asset: The address of the asset.</p>
+<div><p>The method converts the supplied asset address to an instance of <a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><code class="xref py py-class docutils literal notranslate"><span class="pre">ERC20</span></code></a>
+before performing the equality comparison. This allows a consistent lookup despite different input types.
+Please pass the token’s address (e.g., “0xAssetAddress”).</p>
+<dl>
+<dt>Args:</dt><dd><p>asset: The address of the asset token.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">get_feed</span><span class="p">(</span><span class="s2">&quot;0xAsset&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">feed</span><span class="p">)</span>
+<dt>Example:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">get_feed</span><span class="p">(</span><span class="s2">&quot;0xAssetAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">feed</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Found feed:&quot;</span><span class="p">,</span> <span class="n">feed</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Feed not found.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
-<dt>Returns:</dt><dd><p>The feed for the specified asset, or None if not found.</p>
+<dt>Returns:</dt><dd><p>The Feed object corresponding to the specified asset, or None if not found.</p>
+</dd>
+<dt>See Also:</dt><dd><ul class="simple">
+<li><p><a class="reference internal" href="#y.prices.chainlink.Chainlink.has_feed" title="y.prices.chainlink.Chainlink.has_feed"><code class="xref py py-meth docutils literal notranslate"><span class="pre">has_feed()</span></code></a></p></li>
+</ul>
 </dd>
 </dl>
 </div></blockquote>
@@ -1106,21 +1122,25 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.chainlink.Chainlink.get_price">
 <span class="sig-name descname"><span class="pre">get_price</span></span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Chainlink.get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Chainlink.get_price" title="Link to this definition"></a></dt>
 <dd><p>Get the price of an asset at a specific block.</p>
-<p>If the block is not specified, it uses the latest block.</p>
+<p>If the block is not specified, the latest block is used.
+Note that the asset parameter is converted to a string (for caching purposes) after being processed as an ERC20 instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>asset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the asset.</p></li>
-<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number to get the price for.</p></li>
+<li><p><strong>asset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the asset token.</p></li>
+<li><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number to query the price at.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xAsset&quot;</span><span class="p">,</span> <span class="mi">12345678</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xAssetAddress&quot;</span><span class="p">,</span> <span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Price at block 12345678: </span><span class="si">{</span><span class="n">price</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Price could not be retrieved.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1149,17 +1169,19 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.chainlink.Chainlink.has_feed">
 <span class="sig-name descname"><span class="pre">has_feed</span></span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Chainlink.has_feed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Chainlink.has_feed" title="Link to this definition"></a></dt>
 <dd><p>Check if a feed exists for a specific asset.</p>
+<p>The supplied asset address is converted internally to an <a class="reference internal" href="y.classes.html#y.classes.common.ERC20" title="y.classes.common.ERC20"><code class="xref py py-class docutils literal notranslate"><span class="pre">ERC20</span></code></a> instance
+before comparing to the stored feeds.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>asset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the asset.</p>
+<dd class="field-odd"><p><strong>asset</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The address of the asset token.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">has_feed</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">has_feed</span><span class="p">(</span><span class="s2">&quot;0xAsset&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">has_feed</span><span class="p">)</span>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">exists</span> <span class="o">=</span> <span class="k">await</span> <span class="n">chainlink</span><span class="o">.</span><span class="n">has_feed</span><span class="p">(</span><span class="s2">&quot;0xAssetAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Feed exists:&quot;</span><span class="p">,</span> <span class="n">exists</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1181,6 +1203,19 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.chainlink.Feed">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.chainlink.</span></span><span class="sig-name descname"><span class="pre">Feed</span></span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Feed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Feed" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Represents a Chainlink price feed for a specific asset.</p>
+<p>This class encapsulates the information required to query a Chainlink feed.
+When initializing a Feed object, the first parameter should be the feed contract address
+and the second parameter should be the underlying asset address. Note that in the context of the
+<a class="reference internal" href="#y.prices.chainlink.Chainlink" title="y.prices.chainlink.Chainlink"><code class="xref py py-class docutils literal notranslate"><span class="pre">Chainlink</span></code></a> class, the internal FEEDS mapping holds keys as asset addresses
+and values as feed addresses; however, Feed instances are created with the feed address as the first argument.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Given a mapping entry: {asset_address: feed_address}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">Feed</span><span class="p">(</span><span class="s2">&quot;0xFeedAddress&quot;</span><span class="p">,</span> <span class="s2">&quot;0xAssetAddress&quot;</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">feed</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="mi">1234567</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+</pre></div>
+</div>
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.chainlink.Feed.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">address</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">asynchronous</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Feed.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Feed.__init__" title="Link to this definition"></a></dt>
@@ -1210,7 +1245,7 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.chainlink.Feed.get_price">
 <em class="property"><span class="pre">async</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/chainlink.html#Feed.get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.chainlink.Feed.get_price" title="Link to this definition"></a></dt>
 <dd><p>Get the price of the asset at a specific block.</p>
-<p>If the feed is stale, it returns None.</p>
+<p>If the feed is stale, returns None.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The block number to get the price for.</p>
@@ -1219,23 +1254,21 @@ owner: The owner class of the property.</p>
 <dd class="field-even"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
 </dd>
 </dl>
-<p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">Feed</span><span class="p">(</span><span class="s2">&quot;0xAddress&quot;</span><span class="p">,</span> <span class="s2">&quot;0xAsset&quot;</span><span class="p">)</span>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">feed</span> <span class="o">=</span> <span class="n">Feed</span><span class="p">(</span><span class="s2">&quot;0xFeedAddr&quot;</span><span class="p">,</span> <span class="s2">&quot;0xAssetAddr&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">feed</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="mi">12345678</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">if</span> <span class="n">price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Price: </span><span class="si">{</span><span class="n">price</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="gp">... </span><span class="k">else</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Feed is stale.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The price of the asset in USD, or None if the feed is stale.</p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><em>UsdPrice</em></a> | None</p>
-</dd>
-</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#y.prices.chainlink.Chainlink.get_price" title="y.prices.chainlink.Chainlink.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a></p></li>
+</ul>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -2591,10 +2624,11 @@ skip_cache (optional): Whether to skip the cache when fetching TVL. Defaults to 
 <dl class="py function">
 <dt class="sig sig-object py" id="y.prices.rkp3r.get_discount">
 <em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.rkp3r.</span></span><span class="sig-name descname"><span class="pre">get_discount</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/rkp3r.html#get_discount"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.rkp3r.get_discount" title="Link to this definition"></a></dt>
-<dd><p>Retrieve the discount for the RKP3R token from the contract.</p>
+<dd><p>Retrieve the discount percentage for the RKP3R token from its contract.</p>
+<p>This function queries the discount value stored in the RKP3R token contract at the specified block.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number to query the discount at.</p>
+<dd class="field-odd"><p><strong>block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><em>BlockNumber</em></a><em> | </em><em>None</em>) – The block number at which to query the discount.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The discount as a percentage.</p>
@@ -2604,14 +2638,15 @@ skip_cache (optional): Whether to skip the cache when fetching TVL. Defaults to 
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_discount</span><span class="p">()</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">discount</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_discount</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">discount</span><span class="p">)</span>
 <span class="go">Decimal(&#39;5.0&#39;)</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">y.contracts.Contract</span></code></a></p></li>
+<li><p><a class="reference internal" href="y.html#y.contracts.Contract" title="y.contracts.Contract"><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></a></p></li>
 </ul>
 </div>
 </dd></dl>
@@ -2620,23 +2655,33 @@ skip_cache (optional): Whether to skip the cache when fetching TVL. Defaults to 
 <dt class="sig sig-object py" id="y.prices.rkp3r.get_price">
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.rkp3r.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">address:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/decimal.html#decimal.Decimal" title="(in Python v3.13)"><span class="pre">decimal.Decimal</span></a></span></span><a class="reference internal" href="../_modules/y/prices/rkp3r.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.rkp3r.get_price" title="Link to this definition"></a></dt>
 <dd><blockquote>
-<div><p>Get the price of the KP3R token and apply a discount to calculate the RKP3R token price.</p>
-<p>This function retrieves the price of the KP3R token and applies a discount
-specific to the RKP3R token.</p>
+<div><p>Get the discounted price of the RKP3R token based on the underlying KP3R token price.</p>
+<p>Note that the supplied <code class="docutils literal notranslate"><span class="pre">address</span></code> parameter is provided only for interface consistency and is ignored.
+The function always uses the constant KP3R address to retrieve the price via
+<a class="reference internal" href="#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a> and then applies a discount (obtained via
+<a class="reference internal" href="#y.prices.rkp3r.get_discount" title="y.prices.rkp3r.get_discount"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_discount()</span></code></a>) to compute the final RKP3R price.</p>
 <dl>
-<dt>Args:</dt><dd><p>address: The address of the token.
+<dt>Args:</dt><dd><p>address: Ignored. Provided solely for interface consistency.
 block: The block number to query the price at.
 skip_cache: Whether to skip the cache when retrieving the price.</p>
 </dd>
 <dt>Returns:</dt><dd><p>The discounted price of the RKP3R token.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9&quot;</span><span class="p">)</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Example when using the RKP3R address (address parameter is ignored)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+<span class="go">Decimal(&#39;123.45&#39;)</span>
+<span class="gp">&gt;&gt;&gt;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Example when using any other token address (it is ignored in the calculation)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xSomeOtherAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
 <span class="go">Decimal(&#39;123.45&#39;)</span>
 </pre></div>
 </div>
 </dd>
 <dt>See Also:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a></p></li>
+<li><p><a class="reference internal" href="#y.prices.rkp3r.get_discount" title="y.prices.rkp3r.get_discount"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_discount()</span></code></a></p></li>
 </ul>
 </dd>
 </dl>
@@ -2674,9 +2719,7 @@ skip_cache: Whether to skip the cache when retrieving the price.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_rkp3r</span><span class="p">(</span><span class="s2">&quot;0xEdB67Ee1B171c4eC66E6c10EC43EDBbA20FaE8e9&quot;</span><span class="p">)</span>
 <span class="go">True</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_rkp3r</span><span class="p">(</span><span class="s2">&quot;0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_rkp3r</span><span class="p">(</span><span class="s2">&quot;0x1cEB5cB57C4D4E2b2433641b95Dd330A33185A44&quot;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>

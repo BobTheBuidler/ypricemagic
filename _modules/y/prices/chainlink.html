@@ -254,6 +254,22 @@
 <div class="viewcode-block" id="Feed">
 <a class="viewcode-back" href="../../../source/y.prices.html#y.prices.chainlink.Feed">[docs]</a>
 <span class="k">class</span> <span class="nc">Feed</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Chainlink price feed for a specific asset.</span>
+
+<span class="sd">    This class encapsulates the information required to query a Chainlink feed.</span>
+<span class="sd">    When initializing a Feed object, the first parameter should be the feed contract address</span>
+<span class="sd">    and the second parameter should be the underlying asset address. Note that in the context of the</span>
+<span class="sd">    :class:`~y.prices.chainlink.Chainlink` class, the internal FEEDS mapping holds keys as asset addresses</span>
+<span class="sd">    and values as feed addresses; however, Feed instances are created with the feed address as the first argument.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        &gt;&gt;&gt; # Given a mapping entry: {asset_address: feed_address}</span>
+<span class="sd">        &gt;&gt;&gt; feed = Feed(&quot;0xFeedAddress&quot;, &quot;0xAssetAddress&quot;, asynchronous=True)</span>
+<span class="sd">        &gt;&gt;&gt; price = await feed.get_price(1234567)</span>
+<span class="sd">        &gt;&gt;&gt; print(price)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="p">(</span>
         <span class="s2">&quot;address&quot;</span><span class="p">,</span>
         <span class="s2">&quot;asset&quot;</span><span class="p">,</span>
@@ -313,18 +329,21 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of the asset at a specific block.</span>
 
-<span class="sd">        If the feed is stale, it returns None.</span>
+<span class="sd">        If the feed is stale, returns None.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            block: The block number to get the price for.</span>
 
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; feed = Feed(&quot;0xAddress&quot;, &quot;0xAsset&quot;)</span>
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; feed = Feed(&quot;0xFeedAddr&quot;, &quot;0xAssetAddr&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; price = await feed.get_price(12345678)</span>
-<span class="sd">            &gt;&gt;&gt; print(price)</span>
+<span class="sd">            &gt;&gt;&gt; if price is not None:</span>
+<span class="sd">            ...     print(f&quot;Price: {price}&quot;)</span>
+<span class="sd">            ... else:</span>
+<span class="sd">            ...     print(&quot;Feed is stale.&quot;)</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            The price of the asset in USD, or None if the feed is stale.</span>
+<span class="sd">        See Also:</span>
+<span class="sd">            - :func:`~y.prices.chainlink.Chainlink.get_price`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stale_thru_block</span> <span class="o">&gt;</span> <span class="n">block</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> is stale, must fetch price from elsewhere&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
@@ -380,13 +399,12 @@
 <span class="sd">        Args:</span>
 <span class="sd">            event: The event.</span>
 
-<span class="sd">        Returns:</span>
-<span class="sd">            True if the event should be included, False otherwise.</span>
-
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; processed_events = ProcessedEvents(addresses=[&quot;0x1234...&quot;], topics=[&quot;0x5678...&quot;])</span>
+<span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; include = FeedsFromEvents._include_event(event)</span>
 <span class="sd">            &gt;&gt;&gt; print(include)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the event should be included, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="n">event</span><span class="p">[</span><span class="s2">&quot;denomination&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">DENOMINATIONS</span><span class="p">[</span><span class="s2">&quot;USD&quot;</span><span class="p">]</span>
@@ -414,14 +432,21 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">asynchronous</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Chainlink class.</span>
 
+<span class="sd">        The Chainlink class aggregates Chainlink price feeds for various tokens.</span>
+<span class="sd">        This constructor automatically creates Feed objects by inverting the FEEDS mapping,</span>
+<span class="sd">        calling Feed(feed_address, asset_address). The FEEDS mapping is defined so that keys represent</span>
+<span class="sd">        the asset addresses and values represent the corresponding feed addresses.</span>
+
 <span class="sd">        Args:</span>
 <span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
 
 <span class="sd">        Raises:</span>
 <span class="sd">            UnsupportedNetwork: If Chainlink is not supported on the current network.</span>
 
-<span class="sd">        Examples:</span>
+<span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; chainlink = Chainlink(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; print(chainlink)</span>
+<span class="sd">            &lt;Chainlink ...&gt;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
@@ -447,12 +472,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Yield feeds up to a specific block.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            block: The block number to yield feeds up to.</span>
+<span class="sd">            block: The block number up to which feeds are yielded.</span>
 
-<span class="sd">        Yields:</span>
-<span class="sd">            Feeds available up to the specified block.</span>
-
-<span class="sd">        Examples:</span>
+<span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; async for feed in chainlink._feeds_thru_block(12345678):</span>
 <span class="sd">            ...     print(feed)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -468,15 +490,25 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Feed</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the feed for a specific asset.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            asset: The address of the asset.</span>
+<span class="sd">        The method converts the supplied asset address to an instance of :class:`~y.classes.common.ERC20`</span>
+<span class="sd">        before performing the equality comparison. This allows a consistent lookup despite different input types.</span>
+<span class="sd">        Please pass the token&#39;s address (e.g., &quot;0xAssetAddress&quot;).</span>
 
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; feed = await chainlink.get_feed(&quot;0xAsset&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(feed)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            asset: The address of the asset token.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; feed = await chainlink.get_feed(&quot;0xAssetAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; if feed:</span>
+<span class="sd">            ...     print(&quot;Found feed:&quot;, feed)</span>
+<span class="sd">            ... else:</span>
+<span class="sd">            ...     print(&quot;Feed not found.&quot;)</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The feed for the specified asset, or None if not found.</span>
+<span class="sd">            The Feed object corresponding to the specified asset, or None if not found.</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`~y.prices.chainlink.Chainlink.has_feed`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">asset</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">asset</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">feed</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feeds_thru_block</span><span class="p">(</span><span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">):</span>
@@ -489,17 +521,20 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">has_feed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if a feed exists for a specific asset.</span>
 
-<span class="sd">        Args:</span>
-<span class="sd">            asset: The address of the asset.</span>
+<span class="sd">        The supplied asset address is converted internally to an :class:`~y.classes.common.ERC20` instance</span>
+<span class="sd">        before comparing to the stored feeds.</span>
 
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; has_feed = await chainlink.has_feed(&quot;0xAsset&quot;)</span>
-<span class="sd">            &gt;&gt;&gt; print(has_feed)</span>
+<span class="sd">        Args:</span>
+<span class="sd">            asset: The address of the asset token.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; exists = await chainlink.has_feed(&quot;0xAssetAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(&quot;Feed exists:&quot;, exists)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            True if a feed exists for the specified asset, False otherwise.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># NOTE: we avoid using `get_feed` here so we don&#39;t needlessly fill the cache with Nones</span>
+        <span class="c1"># NOTE: We avoid using `get_feed` to prevent filling the cache with Nones unnecessarily</span>
         <span class="n">asset</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">asset</span><span class="p">)</span>
         <span class="k">async</span> <span class="k">for</span> <span class="n">feed</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_feeds_thru_block</span><span class="p">(</span><span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span><span class="p">):</span>
             <span class="k">if</span> <span class="n">asset</span> <span class="o">==</span> <span class="n">feed</span><span class="o">.</span><span class="n">asset</span><span class="p">:</span>
@@ -516,21 +551,25 @@
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of an asset at a specific block.</span>
 
-<span class="sd">        If the block is not specified, it uses the latest block.</span>
+<span class="sd">        If the block is not specified, the latest block is used.</span>
+<span class="sd">        Note that the asset parameter is converted to a string (for caching purposes) after being processed as an ERC20 instance.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            asset: The address of the asset.</span>
-<span class="sd">            block: The block number to get the price for.</span>
+<span class="sd">            asset: The address of the asset token.</span>
+<span class="sd">            block: The block number to query the price at.</span>
 
-<span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; price = await chainlink.get_price(&quot;0xAsset&quot;, 12345678)</span>
-<span class="sd">            &gt;&gt;&gt; print(price)</span>
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; price = await chainlink.get_price(&quot;0xAssetAddress&quot;, 12345678)</span>
+<span class="sd">            &gt;&gt;&gt; if price is not None:</span>
+<span class="sd">            ...     print(f&quot;Price at block 12345678: {price}&quot;)</span>
+<span class="sd">            ... else:</span>
+<span class="sd">            ...     print(&quot;Price could not be retrieved.&quot;)</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The price of the asset in USD, or None if the price cannot be fetched.</span>
 
 <span class="sd">        See Also:</span>
-<span class="sd">            - :meth:`get_feed`</span>
+<span class="sd">            - :meth:`~y.prices.chainlink.Chainlink.get_feed`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">block</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">block</span> <span class="o">=</span> <span class="k">await</span> <span class="n">dank_mids</span><span class="o">.</span><span class="n">eth</span><span class="o">.</span><span class="n">block_number</span>
