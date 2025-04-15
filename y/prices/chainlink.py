@@ -181,6 +181,22 @@ ONE_DAY = 24 * 60 * 60
 
 
 class Feed:
+    """
+    Represents a Chainlink price feed for a specific asset.
+
+    This class encapsulates the information required to query a Chainlink feed.
+    When initializing a Feed object, the first parameter should be the feed contract address
+    and the second parameter should be the underlying asset address. Note that in the context of the
+    :class:`~y.prices.chainlink.Chainlink` class, the internal FEEDS mapping holds keys as asset addresses
+    and values as feed addresses; however, Feed instances are created with the feed address as the first argument.
+
+    Example:
+        >>> # Given a mapping entry: {asset_address: feed_address}
+        >>> feed = Feed("0xFeedAddress", "0xAssetAddress", asynchronous=True)
+        >>> price = await feed.get_price(1234567)
+        >>> print(price)
+    """
+
     __slots__ = (
         "address",
         "asset",
@@ -229,18 +245,21 @@ class Feed:
     async def get_price(self, block: int) -> Optional[UsdPrice]:
         """Get the price of the asset at a specific block.
 
-        If the feed is stale, it returns None.
+        If the feed is stale, returns None.
 
         Args:
             block: The block number to get the price for.
 
-        Examples:
-            >>> feed = Feed("0xAddress", "0xAsset")
+        Example:
+            >>> feed = Feed("0xFeedAddr", "0xAssetAddr")
             >>> price = await feed.get_price(12345678)
-            >>> print(price)
+            >>> if price is not None:
+            ...     print(f"Price: {price}")
+            ... else:
+            ...     print("Feed is stale.")
 
-        Returns:
-            The price of the asset in USD, or None if the feed is stale.
+        See Also:
+            - :func:`~y.prices.chainlink.Chainlink.get_price`
         """
         if self._stale_thru_block and self._stale_thru_block > block:
             logger.debug("%s is stale, must fetch price from elsewhere", self)
@@ -289,13 +308,12 @@ class FeedsFromEvents(ProcessedEvents[Feed]):
         Args:
             event: The event.
 
-        Returns:
-            True if the event should be included, False otherwise.
-
-        Examples:
-            >>> processed_events = ProcessedEvents(addresses=["0x1234..."], topics=["0x5678..."])
+        Example:
             >>> include = FeedsFromEvents._include_event(event)
             >>> print(include)
+
+        Returns:
+            True if the event should be included, False otherwise.
         """
         return (
             event["denomination"] == DENOMINATIONS["USD"]
@@ -318,14 +336,21 @@ class Chainlink(a_sync.ASyncGenericBase):
     def __init__(self, *, asynchronous: bool = True) -> None:
         """Initialize the Chainlink class.
 
+        The Chainlink class aggregates Chainlink price feeds for various tokens.
+        This constructor automatically creates Feed objects by inverting the FEEDS mapping,
+        calling Feed(feed_address, asset_address). The FEEDS mapping is defined so that keys represent
+        the asset addresses and values represent the corresponding feed addresses.
+
         Args:
             asynchronous: Whether to use asynchronous operations.
 
         Raises:
             UnsupportedNetwork: If Chainlink is not supported on the current network.
 
-        Examples:
+        Example:
             >>> chainlink = Chainlink(asynchronous=True)
+            >>> print(chainlink)
+            <Chainlink ...>
         """
         super().__init__()
         self.asynchronous = asynchronous
@@ -350,12 +375,9 @@ class Chainlink(a_sync.ASyncGenericBase):
         """Yield feeds up to a specific block.
 
         Args:
-            block: The block number to yield feeds up to.
+            block: The block number up to which feeds are yielded.
 
-        Yields:
-            Feeds available up to the specified block.
-
-        Examples:
+        Example:
             >>> async for feed in chainlink._feeds_thru_block(12345678):
             ...     print(feed)
         """
@@ -369,15 +391,25 @@ class Chainlink(a_sync.ASyncGenericBase):
     async def get_feed(self, asset: Address) -> Optional[Feed]:
         """Get the feed for a specific asset.
 
-        Args:
-            asset: The address of the asset.
+        The method converts the supplied asset address to an instance of :class:`~y.classes.common.ERC20`
+        before performing the equality comparison. This allows a consistent lookup despite different input types.
+        Please pass the token's address (e.g., "0xAssetAddress").
 
-        Examples:
-            >>> feed = await chainlink.get_feed("0xAsset")
-            >>> print(feed)
+        Args:
+            asset: The address of the asset token.
+
+        Example:
+            >>> feed = await chainlink.get_feed("0xAssetAddress")
+            >>> if feed:
+            ...     print("Found feed:", feed)
+            ... else:
+            ...     print("Feed not found.")
 
         Returns:
-            The feed for the specified asset, or None if not found.
+            The Feed object corresponding to the specified asset, or None if not found.
+
+        See Also:
+            - :meth:`~y.prices.chainlink.Chainlink.has_feed`
         """
         asset = await convert.to_address_async(asset)
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
@@ -387,17 +419,20 @@ class Chainlink(a_sync.ASyncGenericBase):
     async def has_feed(self, asset: AnyAddressType) -> bool:
         """Check if a feed exists for a specific asset.
 
-        Args:
-            asset: The address of the asset.
+        The supplied asset address is converted internally to an :class:`~y.classes.common.ERC20` instance
+        before comparing to the stored feeds.
 
-        Examples:
-            >>> has_feed = await chainlink.has_feed("0xAsset")
-            >>> print(has_feed)
+        Args:
+            asset: The address of the asset token.
+
+        Example:
+            >>> exists = await chainlink.has_feed("0xAssetAddress")
+            >>> print("Feed exists:", exists)
 
         Returns:
             True if a feed exists for the specified asset, False otherwise.
         """
-        # NOTE: we avoid using `get_feed` here so we don't needlessly fill the cache with Nones
+        # NOTE: We avoid using `get_feed` to prevent filling the cache with Nones unnecessarily
         asset = convert.to_address(asset)
         async for feed in self._feeds_thru_block(await dank_mids.eth.block_number):
             if asset == feed.asset:
@@ -411,21 +446,25 @@ class Chainlink(a_sync.ASyncGenericBase):
     ) -> Optional[UsdPrice]:
         """Get the price of an asset at a specific block.
 
-        If the block is not specified, it uses the latest block.
+        If the block is not specified, the latest block is used.
+        Note that the asset parameter is converted to a string (for caching purposes) after being processed as an ERC20 instance.
 
         Args:
-            asset: The address of the asset.
-            block: The block number to get the price for.
+            asset: The address of the asset token.
+            block: The block number to query the price at.
 
-        Examples:
-            >>> price = await chainlink.get_price("0xAsset", 12345678)
-            >>> print(price)
+        Example:
+            >>> price = await chainlink.get_price("0xAssetAddress", 12345678)
+            >>> if price is not None:
+            ...     print(f"Price at block 12345678: {price}")
+            ... else:
+            ...     print("Price could not be retrieved.")
 
         Returns:
             The price of the asset in USD, or None if the price cannot be fetched.
 
         See Also:
-            - :meth:`get_feed`
+            - :meth:`~y.prices.chainlink.Chainlink.get_feed`
         """
         if block is None:
             block = await dank_mids.eth.block_number
