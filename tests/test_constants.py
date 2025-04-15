@@ -10,12 +10,13 @@ STABLECOINS = STABLECOINS.keys()
 # TODO Implement this after implementing non-stable stables to validate tokens' spots in `STABLECOINS`.
 @pytest.mark.parametrize("token", STABLECOINS)
 def test_stablecoins(token):
-    """
-    Placeholder test for stablecoin prices.
+    """Placeholder test for stablecoin prices.
 
-    This test is intended to validate that the price of each stablecoin in the `STABLECOINS` list is $1.
-    However, it is currently a placeholder and not fully implemented. The test will iterate over a set
-    of blocks for each stablecoin contract and assert that the price is $1.
+    This test iterates over a series of blocks for each stablecoin token provided in
+    :data:`y.constants.STABLECOINS` and asserts that the price is exactly equal to 1.
+    This strict equality is required for the current implementation of stable tokens.
+    In a future revision, when non-stable stables are implemented, tolerances for
+    rounding and scaling issues may be introduced.
 
     Args:
         token: The stablecoin token address to be tested.
