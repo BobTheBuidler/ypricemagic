@@ -33,18 +33,25 @@ async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     """
     Check if the given token address is a Mooniswap pool.
 
+    This function converts the token address and uses the router contract's
+    `isPool` method to determine if the token is a Mooniswap pool. Note that
+    if the active chain does not configure the Mooniswap router (i.e. chain IDs
+    other than 1 and 56), the function always returns False.
+
     Args:
         token: The address of the token to check.
 
     Returns:
-        True if the token is a Mooniswap pool, False otherwise.
+        True if the token is a Mooniswap pool and the router is configured; otherwise, False.
 
     Examples:
         >>> is_mooniswap_pool("0x1234567890abcdef1234567890abcdef12345678")
         True
-
         >>> is_mooniswap_pool("0xabcdefabcdefabcdefabcdefabcdefabcdef")
         False
+
+    See Also:
+        :func:`~y.prices.magic.get_price`
     """
     address = await convert.to_address_async(token)
     return False if router is None else await router.isPool.coroutine(address)
@@ -59,23 +66,32 @@ async def get_pool_price(
     """
     Get the price of the given Mooniswap pool token.
 
+    This function retrieves the underlying token addresses with the pool's
+    `token0` and `token1` methods, and then obtains the corresponding token balances
+    and USD prices via asynchronous calls. It computes the total USD value of the pool
+    by multiplying each token balance with its USD price, sums these values, and divides
+    by the total supply of pool tokens. Although the return type is declared as
+    UsdPrice, the function returns a Decimal value.
+
     Args:
         token: The address of the pool token.
-        block (optional): The block number to get the price at. Defaults to latest block.
-        skip_cache (optional): Whether to skip the cache. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        block: The block number at which to retrieve the data. Defaults to the latest block.
+        skip_cache: Whether to skip using the cache for price retrieval. Defaults to :obj:`ENVS.SKIP_CACHE`.
 
     Returns:
-        The price of the pool token in USD as a :class:`~y.datatypes.UsdPrice`.
+        The computed USD price of the pool token as a Decimal. Note that this differs from the
+        documented UsdPrice type.
 
     Examples:
-        >>> get_pool_price("0x1234567890abcdef1234567890abcdef12345678")
-        UsdPrice('1.2345')
-
-        >>> get_pool_price("0xabcdefabcdefabcdefabcdefabcdefabcdef", block=12345678)
-        UsdPrice('0.9876')
+        >>> price = get_pool_price("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(price)
+        1.2345
+        >>> price = get_pool_price("0xabcdefabcdefabcdefabcdefabcdefabcdef", block=12345678)
+        >>> print(price)
+        0.9876
 
     See Also:
-        - :func:`y.prices.magic.get_price`
+        :func:`~y.prices.magic.get_price`
     """
     address = await convert.to_address_async(token)
     token0, token1 = await gather_methods(address, ("token0", "token1"))
