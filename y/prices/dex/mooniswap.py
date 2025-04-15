@@ -33,9 +33,9 @@ async def is_mooniswap_pool(token: AnyAddressType) -> bool:
     """
     Check if the given token address is a Mooniswap pool.
 
-    This function converts the token address and uses the router contract's 
-    `isPool` method to determine if the token is a Mooniswap pool. Note that 
-    if the active chain does not configure the Mooniswap router (i.e. chain IDs 
+    This function converts the token address and uses the router contract's
+    `isPool` method to determine if the token is a Mooniswap pool. Note that
+    if the active chain does not configure the Mooniswap router (i.e. chain IDs
     other than 1 and 56), the function always returns False.
 
     Args:
@@ -66,11 +66,11 @@ async def get_pool_price(
     """
     Get the price of the given Mooniswap pool token.
 
-    This function retrieves the underlying token addresses with the pool's 
-    `token0` and `token1` methods, and then obtains the corresponding token balances 
-    and USD prices via asynchronous calls. It computes the total USD value of the pool 
-    by multiplying each token balance with its USD price, sums these values, and divides 
-    by the total supply of pool tokens. Although the return type is declared as 
+    This function retrieves the underlying token addresses with the pool's
+    `token0` and `token1` methods, and then obtains the corresponding token balances
+    and USD prices via asynchronous calls. It computes the total USD value of the pool
+    by multiplying each token balance with its USD price, sums these values, and divides
+    by the total supply of pool tokens. Although the return type is declared as
     UsdPrice, the function returns a Decimal value.
 
     Args:
@@ -79,7 +79,7 @@ async def get_pool_price(
         skip_cache: Whether to skip using the cache for price retrieval. Defaults to :obj:`ENVS.SKIP_CACHE`.
 
     Returns:
-        The computed USD price of the pool token as a Decimal. Note that this differs from the 
+        The computed USD price of the pool token as a Decimal. Note that this differs from the
         documented UsdPrice type.
 
     Examples:
