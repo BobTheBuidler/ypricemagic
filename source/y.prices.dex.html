@@ -724,25 +724,30 @@
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.dex.mooniswap.</span></span><span class="sig-name descname"><span class="pre">get_pool_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract,</span> <span class="pre">int],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a></span></span><a class="reference internal" href="../_modules/y/prices/dex/mooniswap.html#get_pool_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.dex.mooniswap.get_pool_price" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get the price of the given Mooniswap pool token.</p>
+<p>This function retrieves the underlying token addresses with the pool’s
+<cite>token0</cite> and <cite>token1</cite> methods, and then obtains the corresponding token balances
+and USD prices via asynchronous calls. It computes the total USD value of the pool
+by multiplying each token balance with its USD price, sums these values, and divides
+by the total supply of pool tokens. Although the return type is declared as
+UsdPrice, the function returns a Decimal value.</p>
 <dl>
 <dt>Args:</dt><dd><p>token: The address of the pool token.
-block (optional): The block number to get the price at. Defaults to latest block.
-skip_cache (optional): Whether to skip the cache. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ENVS.SKIP_CACHE</span></code>.</p>
+block: The block number at which to retrieve the data. Defaults to the latest block.
+skip_cache: Whether to skip using the cache for price retrieval. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ENVS.SKIP_CACHE</span></code>.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The price of the pool token in USD as a <a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><code class="xref py py-class docutils literal notranslate"><span class="pre">UsdPrice</span></code></a>.</p>
+<dt>Returns:</dt><dd><p>The computed USD price of the pool token as a Decimal. Note that this differs from the
+documented UsdPrice type.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_pool_price</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
-<span class="go">UsdPrice(&#39;1.2345&#39;)</span>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="n">get_pool_price</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+<span class="go">1.2345</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="n">get_pool_price</span><span class="p">(</span><span class="s2">&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+<span class="go">0.9876</span>
 </pre></div>
 </div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">get_pool_price</span><span class="p">(</span><span class="s2">&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
-<span class="go">UsdPrice(&#39;0.9876&#39;)</span>
-</pre></div>
-</div>
 </dd>
-<dt>See Also:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p></li>
-</ul>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -766,19 +771,23 @@ skip_cache (optional): Whether to skip the cache. Defaults to <code class="xref 
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.dex.mooniswap.</span></span><span class="sig-name descname"><span class="pre">is_mooniswap_pool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/y/prices/dex/mooniswap.html#is_mooniswap_pool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.dex.mooniswap.is_mooniswap_pool" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Check if the given token address is a Mooniswap pool.</p>
+<p>This function converts the token address and uses the router contract’s
+<cite>isPool</cite> method to determine if the token is a Mooniswap pool. Note that
+if the active chain does not configure the Mooniswap router (i.e. chain IDs
+other than 1 and 56), the function always returns False.</p>
 <dl>
 <dt>Args:</dt><dd><p>token: The address of the token to check.</p>
 </dd>
-<dt>Returns:</dt><dd><p>True if the token is a Mooniswap pool, False otherwise.</p>
+<dt>Returns:</dt><dd><p>True if the token is a Mooniswap pool and the router is configured; otherwise, False.</p>
 </dd>
 <dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_mooniswap_pool</span><span class="p">(</span><span class="s2">&quot;0x1234567890abcdef1234567890abcdef12345678&quot;</span><span class="p">)</span>
 <span class="go">True</span>
-</pre></div>
-</div>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_mooniswap_pool</span><span class="p">(</span><span class="s2">&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_mooniswap_pool</span><span class="p">(</span><span class="s2">&quot;0xabcdefabcdefabcdefabcdefabcdefabcdef&quot;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
