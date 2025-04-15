@@ -27,9 +27,9 @@ async def is_basketdao_index(address: ChecksumAddress) -> bool:
         >>> print(is_bd)
         True
 
-    Raises:
-        ContractLogicError: If the contract logic fails during the call.
-        ValueError: If the call returns an unexpected value.
+    Notes:
+        Any exceptions (e.g. :exc:`ContractLogicError` or :exc:`ValueError`) encountered during the call are caught,
+        causing the function to return False.
 
     See Also:
         - :func:`get_price` for fetching the price of a BasketDAO token.
@@ -55,13 +55,14 @@ async def get_price(
         block (optional): The block number to query. Defaults to None (latest).
         skip_cache (optional): Whether to bypass the disk cache. Defaults to :obj:`ENVS.SKIP_CACHE`.
 
-    Raises:
-        PriceError: If unable to fetch the price.
-
     Example:
         >>> price = get_price("0x0ac58Df435D3dC9F6e079B2C5F358A4b7e861B69")
         >>> print(price)
         1.05
+
+    Notes:
+        This function does not explicitly raise any exceptions such as a PriceError.
+        Underlying errors during asset data retrieval will propagate, so callers should handle exceptions as needed.
 
     See Also:
         - :func:`is_basketdao_index` for checking if a token is a BasketDAO token.
