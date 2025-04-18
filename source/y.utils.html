@@ -2173,42 +2173,52 @@ TypeError: If an invalid output type is specified.</p>
 </section>
 <section id="module-y.utils">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-y.utils" title="Link to this heading"></a></h2>
-<p>This module provides utility functions for the ypricemagic library.</p>
-<p>The utilities include caching, attribute checking, and method gathering functionalities
-that are used throughout the library to enhance performance and ensure code reliability.</p>
+<p>Provides utility functions for the ypricemagic library.</p>
+<p>This module includes functions for caching, attribute checking, and gathering results from multiple contract method calls. These utilities are used throughout the library to enhance performance and ensure code reliability.</p>
 <dl class="simple">
 <dt>Imported Functions:</dt><dd><ul class="simple">
 <li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.cache.a_sync_ttl_cache()</span></code>: Provides a caching mechanism with a time-to-live (TTL) feature.</p></li>
 <li><p><a class="reference internal" href="#y.utils.checks.hasall" title="y.utils.checks.hasall"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.checks.hasall()</span></code></a>: Checks if an object has all specified attributes.</p></li>
-<li><p><a class="reference internal" href="#y.utils.gather.gather_methods" title="y.utils.gather.gather_methods"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.gather.gather_methods()</span></code></a>: Gathers methods from a class or module.</p></li>
+<li><p><a class="reference internal" href="#y.utils.gather.gather_methods" title="y.utils.gather.gather_methods"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.gather.gather_methods()</span></code></a>: Asynchronously gathers results by calling multiple contract method signatures on a given contract address.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<p>Using the caching utility:
-&gt;&gt;&gt; from y.utils.cache import a_sync_ttl_cache
-&gt;&gt;&gt; &#64;a_sync_ttl_cache
-… def expensive_function(x):
-…     return x * x
-&gt;&gt;&gt; result = expensive_function(4)</p>
-<p>Checking for attributes:
-&gt;&gt;&gt; from y.utils.checks import hasall
-&gt;&gt;&gt; class MyClass:
-…     attr1 = 1
-…     attr2 = 2
-&gt;&gt;&gt; obj = MyClass()
-&gt;&gt;&gt; hasall(obj, [‘attr1’, ‘attr2’])
-True</p>
-<p>Gathering methods:
-&gt;&gt;&gt; from y.utils.gather import gather_methods
-&gt;&gt;&gt; methods = gather_methods(MyClass)
-&gt;&gt;&gt; print(methods)</p>
+<dl>
+<dt>Using the caching utility:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">a_sync_ttl_cache</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nd">@a_sync_ttl_cache</span>
+<span class="gp">... </span><span class="k">def</span> <span class="nf">expensive_function</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">return</span> <span class="n">x</span> <span class="o">*</span> <span class="n">x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">expensive_function</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>Checking for attributes:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.checks</span> <span class="kn">import</span> <span class="n">hasall</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">MyClass</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">attr1</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="gp">... </span>    <span class="n">attr2</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">obj</span> <span class="o">=</span> <span class="n">MyClass</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">hasall</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;attr1&#39;</span><span class="p">,</span> <span class="s1">&#39;attr2&#39;</span><span class="p">])</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd>
+<dt>Gathering contract method results:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y.utils.gather</span> <span class="kn">import</span> <span class="n">gather_methods</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">contract_address</span> <span class="o">=</span> <span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span>  <span class="c1"># Example contract address</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">methods</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name()&quot;</span><span class="p">,</span> <span class="s2">&quot;symbol()&quot;</span><span class="p">,</span> <span class="s2">&quot;decimals()&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">gather_methods</span><span class="p">(</span><span class="n">contract_address</span><span class="p">,</span> <span class="n">methods</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="go">(&#39;Dai Stablecoin&#39;, &#39;DAI&#39;, 18)</span>
+</pre></div>
+</div>
+</dd>
+</dl>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
 <ul class="simple">
-<li><p><a class="reference internal" href="#module-y.utils.cache" title="y.utils.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.cache</span></code></a>: For caching utilities.</p></li>
-<li><p><a class="reference internal" href="#module-y.utils.checks" title="y.utils.checks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.checks</span></code></a>: For attribute checking utilities.</p></li>
-<li><p><a class="reference internal" href="#module-y.utils.gather" title="y.utils.gather"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.gather</span></code></a>: For method gathering utilities.</p></li>
+<li><p><a class="reference internal" href="#module-y.utils.cache" title="y.utils.cache"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.cache</span></code></a> for caching utilities.</p></li>
+<li><p><a class="reference internal" href="#module-y.utils.checks" title="y.utils.checks"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.checks</span></code></a> for attribute checking utilities.</p></li>
+<li><p><a class="reference internal" href="#module-y.utils.gather" title="y.utils.gather"><code class="xref py py-mod docutils literal notranslate"><span class="pre">y.utils.gather</span></code></a> for gathering results from multiple contract method calls.</p></li>
 </ul>
 </div>
 </section>
