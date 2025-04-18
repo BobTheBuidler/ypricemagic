@@ -89,23 +89,34 @@
 <a class="viewcode-back" href="../../../../source/y.prices.stable_swap.html#y.prices.stable_swap.froyo.is_froyo">[docs]</a>
 <span class="k">def</span> <span class="nf">is_froyo</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if a given token is the Froyo token on the Fantom network.</span>
+<span class="sd">    Checks if the given token is the Froyo token on the Fantom network.</span>
+
+<span class="sd">    This function converts the input token into a normalized address and then verifies that:</span>
+<span class="sd">      - The active chain ID equals that of the Fantom network.</span>
+<span class="sd">      - The normalized token address matches &quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      The Froyo token used for identification in this function is hard-coded as</span>
+<span class="sd">      &quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot; even though the module-level constant POOL is set to</span>
+<span class="sd">      &quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot;. Refer to :func:`~y.convert.to_address` and</span>
+<span class="sd">      :class:`~y.networks.Network` for more details.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        token: The token address to check.</span>
+<span class="sd">        token: An Ethereum address (any valid representation) to check.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        True if the token is the Froyo token on Fantom, False otherwise.</span>
+<span class="sd">        True if the active network is Fantom and the token matches &quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;, False otherwise.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; is_froyo(&quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;)</span>
 <span class="sd">        True</span>
+<span class="sd">        &gt;&gt;&gt; is_froyo(&quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot;)</span>
+<span class="sd">        False</span>
 <span class="sd">        &gt;&gt;&gt; is_froyo(&quot;0x0000000000000000000000000000000000000000&quot;)</span>
 <span class="sd">        False</span>
 
 <span class="sd">    See Also:</span>
-<span class="sd">        - :func:`y.convert.to_address` for address conversion.</span>
-<span class="sd">        - :class:`y.networks.Network` for network identification.</span>
+<span class="sd">        :func:`~y.convert.to_address`, :class:`~y.networks.Network`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">address</span> <span class="o">=</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="k">return</span> <span class="p">(</span>
@@ -122,28 +133,34 @@
     <span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">UsdPrice</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the USD price of the Froyo pool token on the Fantom network.</span>
+<span class="sd">    Retrieves the USD price of the Froyo pool token on the Fantom network.</span>
 
-<span class="sd">    This function retrieves the virtual price of the Froyo pool token if the provided</span>
-<span class="sd">    token address matches the Froyo pool address on the Fantom network. The price is</span>
-<span class="sd">    returned as a :class:`y.datatypes.UsdPrice` object.</span>
+<span class="sd">    This asynchronous function uses a raw call to fetch the virtual price of the token,</span>
+<span class="sd">    but only if the provided token matches the Froyo pool token defined by the module-level constant POOL,</span>
+<span class="sd">    which is &quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot;. If the token does not match, the function</span>
+<span class="sd">    returns None.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">      Only a token address matching &quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot; will yield a price.</span>
+<span class="sd">      See also :func:`~y.utils.raw_calls.raw_call` and :class:`~y.datatypes.UsdPrice` for further details.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        token: The token address to get the price for.</span>
-<span class="sd">        block: The block number to query the price at, defaults to the latest block.</span>
+<span class="sd">        token: The Ethereum address of the Froyo pool token.</span>
+<span class="sd">        block: An optional block number at which to query the price; if omitted, the latest block is used.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The USD price of the Froyo pool token, or None if the token is not the Froyo pool.</span>
+<span class="sd">        The USD price as a UsdPrice object if the token matches the expected address, otherwise None.</span>
 
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot;)</span>
 <span class="sd">        UsdPrice(1.23456789)</span>
+<span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;)</span>
+<span class="sd">        None</span>
 <span class="sd">        &gt;&gt;&gt; await get_price(&quot;0x0000000000000000000000000000000000000000&quot;)</span>
 <span class="sd">        None</span>
 
 <span class="sd">    See Also:</span>
-<span class="sd">        - :func:`y.utils.raw_calls.raw_call` for making raw contract calls.</span>
-<span class="sd">        - :class:`y.datatypes.UsdPrice` for the price representation.</span>
+<span class="sd">        :func:`~y.utils.raw_calls.raw_call`, :class:`~y.datatypes.UsdPrice`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">token</span> <span class="o">!=</span> <span class="n">POOL</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>

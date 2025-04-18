@@ -106,26 +106,56 @@
 <dl class="py a_sync_function">
 <dt class="sig sig-object py" id="y.prices.utils.buckets.check_bucket">
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.utils.buckets.</span></span><span class="sig-name descname"><span class="pre">check_bucket</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/y/prices/utils/buckets.html#check_bucket"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.utils.buckets.check_bucket" title="Link to this definition"></a></dt>
-<dd><blockquote>
-<div><p>Determine the category or ‘bucket’ of a given token.</p>
-<p>This function attempts to classify a token into a specific category based on its characteristics.
-It first checks the database for a cached bucket using <code class="xref py py-func docutils literal notranslate"><span class="pre">y._db.utils.token.get_bucket()</span></code>.
-If not found, it performs a series of checks that may involve string comparisons, calls to the blockchain,
-and contract initializations. The determined bucket is then stored using <code class="xref py py-func docutils literal notranslate"><span class="pre">db.set_bucket()</span></code>.</p>
+<dd><p>Determine and return the category or “bucket” of a given token.</p>
+<blockquote>
+<div><p>This function classifies a token by performing a set of tests in the following order:</p>
+<ol class="arabic simple">
+<li><p>It first attempts to retrieve a cached bucket from the database via
+<code class="xref py py-func docutils literal notranslate"><span class="pre">y._db.utils.token.get_bucket()</span></code>.</p></li>
+<li><p>Next, it applies simple string-based comparisons defined in the <code class="docutils literal notranslate"><span class="pre">string_matchers</span></code>
+dictionary.</p></li>
+<li><p>If no bucket is determined, it concurrently executes a set of asynchronous “calls-only”
+tests for further classification. The function will return immediately once any of these
+tests confirms the token’s membership in a bucket.</p></li>
+<li><p>If none of the concurrent tests succeed, it falls back to a series of sequential asynchronous
+checks that involve both contract initializations and blockchain calls.</p></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The fallback sequential tests are executed in order. However, the first two fallback checks
+(for “solidex” and “uni or uni-like lp”) are evaluated independently; as a result, if both
+conditions return true, the latter bucket (“uni or uni-like lp”) will overwrite the earlier
+assignment from “solidex”.</p>
+</div>
+<p>The final determined bucket is stored in the database using <code class="xref py py-func docutils literal notranslate"><span class="pre">db.set_bucket()</span></code>.</p>
 <dl>
 <dt>Args:</dt><dd><p>token: The token address to classify.</p>
 </dd>
-<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
+<dt>Examples:</dt><dd><dl>
+<dt>Basic usage with a stable USD token:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
-<span class="go">&#39;stable usd&#39;</span>
+<span class="go">stable usd</span>
 </pre></div>
 </div>
 </dd>
-<dt>See Also:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="y.html#y.convert.to_address_async" title="y.convert.to_address_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.convert.to_address_async()</span></code></a></p></li>
-<li><p><a class="reference internal" href="y.utils.html#y.utils.logging.get_price_logger" title="y.utils.logging.get_price_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.logging.get_price_logger()</span></code></a></p></li>
-<li><p><code class="xref py py-func docutils literal notranslate"><span class="pre">_check_bucket_helper()</span></code></p></li>
-</ul>
+<dt>Example triggering a concurrent asynchronous test:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0xSomeLPTokenAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+<span class="go">popsicle</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+<p>Example where multiple fallback conditions are met (note that if both “solidex” and
+“uni or uni-like lp” tests pass, the latter overwrites the former):</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bucket</span> <span class="o">=</span> <span class="n">check_bucket</span><span class="p">(</span><span class="s2">&quot;0xAnotherTokenAddress&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">bucket</span><span class="p">)</span>
+<span class="go">uni or uni-like lp</span>
+</pre></div>
+</div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="y.html#y.convert.to_address_async" title="y.convert.to_address_async"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.convert.to_address_async()</span></code></a>
+<a class="reference internal" href="y.utils.html#y.utils.logging.get_price_logger" title="y.utils.logging.get_price_logger"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.logging.get_price_logger()</span></code></a>
+<code class="xref py py-func docutils literal notranslate"><span class="pre">_check_bucket_helper()</span></code> (Helper used for asynchronous bucket checks)</p>
 </dd>
 </dl>
 </div></blockquote>

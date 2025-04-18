@@ -135,10 +135,14 @@
     <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the price of a TokenSet in USD.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Get the USD price of a TokenSet.</span>
 
-<span class="sd">    This function retrieves the price of a TokenSet by creating an instance of the</span>
-<span class="sd">    :class:`TokenSet` class and calling its `get_price` method.</span>
+<span class="sd">    This function retrieves the price of a TokenSet by instantiating a :class:`TokenSet`</span>
+<span class="sd">    and invoking its :meth:`get_price` method. The computation method depends on the available</span>
+<span class="sd">    contract methods: if the underlying contract has a ``getUnits`` method, the price is calculated</span>
+<span class="sd">    as the total USD value of its components divided by the total supply. Otherwise, if the contract</span>
+<span class="sd">    has a ``getTotalComponentRealUnits`` method, the price is computed as the direct sum of the USD</span>
+<span class="sd">    values of its components.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        token: The address of the TokenSet.</span>
@@ -146,7 +150,8 @@
 <span class="sd">        skip_cache: If True, skip using the cache while fetching price data.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; price = get_price(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print(price)</span>
 <span class="sd">        UsdPrice(123.45)</span>
 
 <span class="sd">    See Also:</span>
@@ -217,9 +222,9 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the balances of the components in the TokenSet.</span>
 
 <span class="sd">        This method retrieves the balances of the components in the TokenSet by first</span>
-<span class="sd">        checking if the contract has the `getUnits` method. If `getUnits` is available,</span>
+<span class="sd">        checking if the contract has the ``getUnits`` method. If ``getUnits`` is available,</span>
 <span class="sd">        it is used to determine the balances. If not, and if the contract has the</span>
-<span class="sd">        `getTotalComponentRealUnits` method, it falls back to using that method.</span>
+<span class="sd">        ``getTotalComponentRealUnits`` method, it falls back to using that method.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            block: The block number to query. Defaults to the latest block.</span>
@@ -262,10 +267,15 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_price</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UsdPrice</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the price of the TokenSet in USD.</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the USD price of the TokenSet.</span>
 
-<span class="sd">        This method calculates the price of the TokenSet by summing the USD values</span>
-<span class="sd">        of its components and dividing by the total supply.</span>
+<span class="sd">        This method computes the price of the TokenSet using one of two approaches depending on</span>
+<span class="sd">        the underlying contract&#39;s available methods:</span>
+<span class="sd">        1. If the contract has a ``getUnits`` method: The price is calculated by fetching the balances of</span>
+<span class="sd">           the components, converting them to their USD values, summing these values to obtain the total</span>
+<span class="sd">           value (TVL), and then dividing the TVL by the total supply of the TokenSet.</span>
+<span class="sd">        2. If the contract has a ``getTotalComponentRealUnits`` method: The price is computed as the direct sum</span>
+<span class="sd">           of the USD values of its components without normalization by the total supply.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            block: The block number to query. Defaults to the latest block.</span>
@@ -274,6 +284,13 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; tokenset = TokenSet(&quot;0x1234567890abcdef1234567890abcdef12345678&quot;)</span>
 <span class="sd">            &gt;&gt;&gt; price = tokenset.get_price()</span>
+<span class="sd">            &gt;&gt;&gt; print(price)</span>
+<span class="sd">            UsdPrice(123.45)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :func:`y.contracts.Contract`</span>
+<span class="sd">            - :meth:`balances`</span>
+<span class="sd">            - :meth:`total_supply_readable`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">total_supply</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">total_supply_readable</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>

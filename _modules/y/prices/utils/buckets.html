@@ -104,26 +104,52 @@
 <a class="viewcode-back" href="../../../../source/y.prices.utils.html#y.check_bucket">[docs]</a>
 <span class="nd">@a_sync</span><span class="o">.</span><span class="n">a_sync</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="s2">&quot;sync&quot;</span><span class="p">,</span> <span class="n">cache_type</span><span class="o">=</span><span class="s2">&quot;memory&quot;</span><span class="p">)</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">check_bucket</span><span class="p">(</span><span class="n">token</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Determine the category or &#39;bucket&#39; of a given token.</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Determine and return the category or &quot;bucket&quot; of a given token.</span>
 
-<span class="sd">    This function attempts to classify a token into a specific category based on its characteristics.</span>
-<span class="sd">    It first checks the database for a cached bucket using :func:`y._db.utils.token.get_bucket`.</span>
-<span class="sd">    If not found, it performs a series of checks that may involve string comparisons, calls to the blockchain,</span>
-<span class="sd">    and contract initializations. The determined bucket is then stored using :func:`db.set_bucket`.</span>
+<span class="sd">    This function classifies a token by performing a set of tests in the following order:</span>
+
+<span class="sd">    1. It first attempts to retrieve a cached bucket from the database via</span>
+<span class="sd">       :func:`y._db.utils.token.get_bucket`.</span>
+<span class="sd">    2. Next, it applies simple string-based comparisons defined in the ``string_matchers``</span>
+<span class="sd">       dictionary.</span>
+<span class="sd">    3. If no bucket is determined, it concurrently executes a set of asynchronous &quot;calls-only&quot;</span>
+<span class="sd">       tests for further classification. The function will return immediately once any of these</span>
+<span class="sd">       tests confirms the token’s membership in a bucket.</span>
+<span class="sd">    4. If none of the concurrent tests succeed, it falls back to a series of sequential asynchronous</span>
+<span class="sd">       checks that involve both contract initializations and blockchain calls.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">       The fallback sequential tests are executed in order. However, the first two fallback checks</span>
+<span class="sd">       (for &quot;solidex&quot; and &quot;uni or uni-like lp&quot;) are evaluated independently; as a result, if both</span>
+<span class="sd">       conditions return true, the latter bucket (&quot;uni or uni-like lp&quot;) will overwrite the earlier</span>
+<span class="sd">       assignment from &quot;solidex&quot;.</span>
+
+<span class="sd">    The final determined bucket is stored in the database using :func:`db.set_bucket`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        token: The token address to classify.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; bucket = check_bucket(&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;)</span>
-<span class="sd">        &gt;&gt;&gt; print(bucket)</span>
-<span class="sd">        &#39;stable usd&#39;</span>
+<span class="sd">        Basic usage with a stable USD token:</span>
+<span class="sd">            &gt;&gt;&gt; bucket = check_bucket(&quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(bucket)</span>
+<span class="sd">            stable usd</span>
+
+<span class="sd">        Example triggering a concurrent asynchronous test:</span>
+<span class="sd">            &gt;&gt;&gt; bucket = check_bucket(&quot;0xSomeLPTokenAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(bucket)</span>
+<span class="sd">            popsicle</span>
+
+<span class="sd">        Example where multiple fallback conditions are met (note that if both &quot;solidex&quot; and</span>
+<span class="sd">        &quot;uni or uni-like lp&quot; tests pass, the latter overwrites the former):</span>
+<span class="sd">            &gt;&gt;&gt; bucket = check_bucket(&quot;0xAnotherTokenAddress&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print(bucket)</span>
+<span class="sd">            uni or uni-like lp</span>
 
 <span class="sd">    See Also:</span>
-<span class="sd">        - :func:`y.convert.to_address_async`</span>
-<span class="sd">        - :func:`y.utils.logging.get_price_logger`</span>
-<span class="sd">        - :func:`_check_bucket_helper`</span>
+<span class="sd">        :func:`y.convert.to_address_async`</span>
+<span class="sd">        :func:`y.utils.logging.get_price_logger`</span>
+<span class="sd">        :func:`_check_bucket_helper` (Helper used for asynchronous bucket checks)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">token_address</span> <span class="o">=</span> <span class="k">await</span> <span class="n">convert</span><span class="o">.</span><span class="n">to_address_async</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
     <span class="n">logger</span> <span class="o">=</span> <span class="n">get_price_logger</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">extra</span><span class="o">=</span><span class="s2">&quot;buckets&quot;</span><span class="p">)</span>
@@ -147,7 +173,7 @@
         <span class="k">elif</span> <span class="n">debug_logs_enabled</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">__log_not_bucket</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">bucket</span><span class="p">)</span>
 
-    <span class="c1"># check these first, these just require calls</span>
+    <span class="c1"># Check these first, these tests involve asynchronous eth_calls and are launched concurrently.</span>
     <span class="n">futs</span> <span class="o">=</span> <span class="p">[</span>
         <span class="n">ensure_future</span><span class="p">(</span><span class="n">_check_bucket_helper</span><span class="p">(</span><span class="n">bucket</span><span class="p">,</span> <span class="n">check</span><span class="p">,</span> <span class="n">token_address</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">bucket</span><span class="p">,</span> <span class="n">check</span> <span class="ow">in</span> <span class="n">calls_only</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
@@ -177,7 +203,7 @@
             <span class="n">bucket</span> <span class="o">=</span> <span class="kc">None</span>
 
     <span class="c1"># TODO: Refactor the below like the above</span>
-    <span class="c1"># these require both calls and contract initializations</span>
+    <span class="c1"># these require both calls and contract initializations; they are checked sequentially.</span>
     <span class="k">if</span> <span class="k">await</span> <span class="n">solidex</span><span class="o">.</span><span class="n">is_solidex_deposit</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="n">bucket</span> <span class="o">=</span> <span class="s2">&quot;solidex&quot;</span>
     <span class="k">if</span> <span class="k">await</span> <span class="n">uniswap_multiplexer</span><span class="o">.</span><span class="n">is_uniswap_pool</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -275,7 +301,12 @@
     <span class="n">bucket</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">check</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">Address</span><span class="p">],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="nb">bool</span><span class="p">]],</span> <span class="n">address</span><span class="p">:</span> <span class="n">Address</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bool</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Helper function to check if a token belongs to a specific bucket.</span>
+<span class="sd">    Asynchronously check if a token belongs to a specified bucket.</span>
+
+<span class="sd">    This helper function is designed to be executed concurrently as part of the</span>
+<span class="sd">    &quot;calls-only&quot; checks in :func:`check_bucket`. It invokes a callable that returns</span>
+<span class="sd">    a boolean indicating whether the token meets the criterion for the specified bucket.</span>
+<span class="sd">    If the result is not immediately boolean, it awaits the result further.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        bucket: The name of the bucket to check.</span>
@@ -283,9 +314,11 @@
 <span class="sd">        address: The address of the token to check.</span>
 
 <span class="sd">    Examples:</span>
-<span class="sd">        &gt;&gt;&gt; result = await _check_bucket_helper(&quot;stable usd&quot;, lambda x: x in STABLECOINS, &quot;0x6B175474E89094C44Da98b954EedeAC495271d0F&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; async def dummy_check(addr):</span>
+<span class="sd">        ...     return addr.startswith(&quot;0x&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; result = await _check_bucket_helper(&quot;dummy&quot;, dummy_check, &quot;0x123&quot;)</span>
 <span class="sd">        &gt;&gt;&gt; print(result)</span>
-<span class="sd">        (&#39;stable usd&#39;, True)</span>
+<span class="sd">        (&#39;dummy&#39;, True)</span>
 
 <span class="sd">    See Also:</span>
 <span class="sd">        - :func:`check_bucket`</span>

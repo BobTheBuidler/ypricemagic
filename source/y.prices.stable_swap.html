@@ -3460,27 +3460,30 @@ associated with an EPS rewards pool.</p>
 <dt class="sig sig-object py" id="y.prices.stable_swap.froyo.get_price">
 <em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.froyo.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><span class="pre">hexbytes.main.HexBytes</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">AnyAddress</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><span class="pre">brownie.convert.datatypes.EthAddress</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><span class="pre">brownie.network.contract.Contract</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><span class="pre">int</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.BlockNumber" title="(in eth-typing v5.2)"><span class="pre">eth_typing.evm.BlockNumber</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">NoneType</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/froyo.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.froyo.get_price" title="Link to this definition"></a></dt>
 <dd><blockquote>
-<div><p>Get the USD price of the Froyo pool token on the Fantom network.</p>
-<p>This function retrieves the virtual price of the Froyo pool token if the provided
-token address matches the Froyo pool address on the Fantom network. The price is
-returned as a <a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><code class="xref py py-class docutils literal notranslate"><span class="pre">y.datatypes.UsdPrice</span></code></a> object.</p>
+<div><p>Retrieves the USD price of the Froyo pool token on the Fantom network.</p>
+<p>This asynchronous function uses a raw call to fetch the virtual price of the token,
+but only if the provided token matches the Froyo pool token defined by the module-level constant POOL,
+which is “0x83E5f18Da720119fF363cF63417628eB0e9fd523”. If the token does not match, the function
+returns None.</p>
 <dl>
-<dt>Args:</dt><dd><p>token: The token address to get the price for.
-block: The block number to query the price at, defaults to the latest block.</p>
+<dt>Note:</dt><dd><p>Only a token address matching “0x83E5f18Da720119fF363cF63417628eB0e9fd523” will yield a price.
+See also <a class="reference internal" href="y.utils.html#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">raw_call()</span></code></a> and <a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><code class="xref py py-class docutils literal notranslate"><span class="pre">UsdPrice</span></code></a> for further details.</p>
 </dd>
-<dt>Returns:</dt><dd><p>The USD price of the Froyo pool token, or None if the token is not the Froyo pool.</p>
+<dt>Args:</dt><dd><p>token: The Ethereum address of the Froyo pool token.
+block: An optional block number at which to query the price; if omitted, the latest block is used.</p>
+</dd>
+<dt>Returns:</dt><dd><p>The USD price as a UsdPrice object if the token matches the expected address, otherwise None.</p>
 </dd>
 <dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot;</span><span class="p">)</span>
 <span class="go">UsdPrice(1.23456789)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;</span><span class="p">)</span>
+<span class="go">None</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">await</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x0000000000000000000000000000000000000000&quot;</span><span class="p">)</span>
 <span class="go">None</span>
 </pre></div>
 </div>
 </dd>
-<dt>See Also:</dt><dd><ul class="simple">
-<li><p><a class="reference internal" href="y.utils.html#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.utils.raw_calls.raw_call()</span></code></a> for making raw contract calls.</p></li>
-<li><p><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><code class="xref py py-class docutils literal notranslate"><span class="pre">y.datatypes.UsdPrice</span></code></a> for the price representation.</p></li>
-</ul>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="y.utils.html#y.utils.raw_calls.raw_call" title="y.utils.raw_calls.raw_call"><code class="xref py py-func docutils literal notranslate"><span class="pre">raw_call()</span></code></a>, <a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><code class="xref py py-class docutils literal notranslate"><span class="pre">UsdPrice</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -3501,13 +3504,27 @@ block: The block number to query the price at, defaults to the latest block.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="y.prices.stable_swap.froyo.is_froyo">
 <span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.froyo.</span></span><span class="sig-name descname"><span class="pre">is_froyo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/stable_swap/froyo.html#is_froyo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.froyo.is_froyo" title="Link to this definition"></a></dt>
-<dd><p>Check if a given token is the Froyo token on the Fantom network.</p>
+<dd><p>Checks if the given token is the Froyo token on the Fantom network.</p>
+<dl class="simple">
+<dt>This function converts the input token into a normalized address and then verifies that:</dt><dd><ul class="simple">
+<li><p>The active chain ID equals that of the Fantom network.</p></li>
+<li><p>The normalized token address matches “0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3”.</p></li>
+</ul>
+</dd>
+</dl>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The Froyo token used for identification in this function is hard-coded as
+“0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3” even though the module-level constant POOL is set to
+“0x83E5f18Da720119fF363cF63417628eB0e9fd523”. Refer to <a class="reference internal" href="y.html#y.convert.to_address" title="y.convert.to_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_address()</span></code></a> and
+<a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a> for more details.</p>
+</div>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – The token address to check.</p>
+<dd class="field-odd"><p><strong>token</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em> | </em><a class="reference external" href="https://hexbytes.readthedocs.io/en/stable/hexbytes.html#hexbytes.main.HexBytes" title="(in HexBytes v1.3)"><em>HexBytes</em></a><em> | </em><a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.AnyAddress" title="(in eth-typing v5.2)"><em>AnyAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-convert.html#brownie.convert.datatypes.EthAddress" title="(in Brownie v1.20.3)"><em>EthAddress</em></a><em> | </em><a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.contract.Contract" title="(in Brownie v1.20.3)"><em>Contract</em></a><em> | </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – An Ethereum address (any valid representation) to check.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the token is the Froyo token on Fantom, False otherwise.</p>
+<dd class="field-even"><p>True if the active network is Fantom and the token matches “0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3”, False otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
@@ -3516,16 +3533,15 @@ block: The block number to query the price at, defaults to the latest block.</p>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">is_froyo</span><span class="p">(</span><span class="s2">&quot;0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3&quot;</span><span class="p">)</span>
 <span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">is_froyo</span><span class="p">(</span><span class="s2">&quot;0x83E5f18Da720119fF363cF63417628eB0e9fd523&quot;</span><span class="p">)</span>
+<span class="go">False</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">is_froyo</span><span class="p">(</span><span class="s2">&quot;0x0000000000000000000000000000000000000000&quot;</span><span class="p">)</span>
 <span class="go">False</span>
 </pre></div>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<ul class="simple">
-<li><p><a class="reference internal" href="y.html#y.convert.to_address" title="y.convert.to_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.convert.to_address()</span></code></a> for address conversion.</p></li>
-<li><p><a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">y.networks.Network</span></code></a> for network identification.</p></li>
-</ul>
+<p><a class="reference internal" href="y.html#y.convert.to_address" title="y.convert.to_address"><code class="xref py py-func docutils literal notranslate"><span class="pre">to_address()</span></code></a>, <a class="reference internal" href="y.html#y.networks.Network" title="y.networks.Network"><code class="xref py py-class docutils literal notranslate"><span class="pre">Network</span></code></a></p>
 </div>
 </dd></dl>
 
