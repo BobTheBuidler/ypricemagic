@@ -165,6 +165,9 @@ class UniswapV3Pool(ContractBase):
             >>> pool = UniswapV3Pool(...)
             >>> "0xToken0Address" in pool
             True
+
+        See Also:
+            :func:`__getitem__`
         """
         # force token to string in case it is Contract or EthAddress etc
         token = str(token)
@@ -193,6 +196,9 @@ class UniswapV3Pool(ContractBase):
         Examples:
             >>> pool = UniswapV3Pool(...)
             >>> token = pool["0xToken0Address"]
+
+        See Also:
+            :func:`__contains__`
         """
         if token not in self:
             raise TokenNotFound(token, self)
@@ -216,6 +222,9 @@ class UniswapV3Pool(ContractBase):
         Examples:
             >>> pool = UniswapV3Pool(...)
             >>> liquidity = await pool.check_liquidity("0xToken0Address", 1234567)
+
+        See Also:
+            :func:`_check_liquidity_token_out`
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(
@@ -268,6 +277,9 @@ class UniswapV3Pool(ContractBase):
         Examples:
             >>> pool = UniswapV3Pool(...)
             >>> liquidity = await pool._check_liquidity_token_out("0xToken0Address", 1234567)
+
+        See Also:
+            :func:`check_liquidity`
         """
         return await self.check_liquidity(
             self._get_token_out(token_in), block=block, sync=False
@@ -290,6 +302,9 @@ class UniswapV3Pool(ContractBase):
         Examples:
             >>> pool = UniswapV3Pool(...)
             >>> token_out = pool._get_token_out(token_in)
+
+        See Also:
+            :func:`__contains__`
         """
         if token_in == self.token0:
             return self.token1
@@ -312,13 +327,17 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Initialize a UniswapV3 instance.
 
         Args:
+            factory: The address of the Uniswap V3 factory.
+            quoter: The address of the Uniswap V3 quoter.
+            fee_tiers: The fee tiers supported by Uniswap V3.
             asynchronous: Whether to use asynchronous operations.
 
-        Raises:
-            UnsupportedNetwork: If Uniswap V3 is not supported on the current network.
-
         Examples:
-            >>> uniswap_v3 = UniswapV3(asynchronous=True)
+            >>> uniswap_v3 = UniswapV3(factory, quoter, fee_tiers=[3000, 500, 10000, 100],
+            ...                           asynchronous=True)
+
+        See Also:
+            :class:`~a_sync.ASyncGenericBase`
         """
         super().__init__()
         self.asynchronous = asynchronous
@@ -333,18 +352,24 @@ class UniswapV3(a_sync.ASyncGenericBase):
 
     def __contains__(self, asset) -> bool:
         """
-        Check if an asset is part of the Uniswap V3 protocol.
+        Check if Uniswap V3 pricing functionality is available on the current network.
+
+        This method verifies if the current chain ID is among the networks with defined
+        internal addresses for Uniswap V3 operations.
 
         Args:
-            asset: The asset to check.
+            asset: Unused parameter.
 
         Returns:
-            True if the asset is part of the protocol, False otherwise.
+            True if the current network is supported (i.e. CHAINID is in the internal addresses mapping), otherwise False.
 
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
-            >>> "0xAssetAddress" in uniswap_v3
+            >>> "unused_value" in uniswap_v3
             True
+
+        See Also:
+            :func:`__getitem__`
         """
         return CHAINID in addresses
 
@@ -373,6 +398,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
             >>> factory_contract = await uniswap_v3.factory
+
+        See Also:
+            :class:`Contract`
         """
         return await Contract.coroutine(self._factory)
 
@@ -389,6 +417,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
             >>> quoter_contract = await uniswap_v3.quoter
+
+        See Also:
+            :class:`Contract`
         """
         try:
             return await Contract.coroutine(self._quoter)
@@ -409,6 +440,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
             >>> pools = await uniswap_v3.pools
+
+        See Also:
+            :class:`UniV3Pools`, :class:`SlipstreamPools`
         """
         factory = await self.__factory__
         if (
@@ -472,6 +506,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
             >>> price = await uniswap_v3.get_price("0xTokenAddress", 1234567)
+
+        See Also:
+            :func:`y.prices.magic.get_price`
         """
         quoter = await self.__quoter__
         if block and block < await contract_creation_block_async(quoter, True):
@@ -519,6 +556,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
             >>> liquidity = await uniswap_v3.check_liquidity("0xTokenAddress", 1234567)
+
+        See Also:
+            :meth:`y.prices.market.get_price`
         """
         if debug_logs_enabled := logger.isEnabledFor(DEBUG):
             logger._log(
@@ -640,6 +680,9 @@ class UniswapV3(a_sync.ASyncGenericBase):
         Examples:
             >>> uniswap_v3 = UniswapV3(...)
             >>> output_amount = await uniswap_v3._quote_exact_input(path, 1000, 1234567)
+
+        See Also:
+            :func:`_undo_fees`
         """
         quoter = await self.__quoter__
         try:
@@ -670,6 +713,9 @@ def _encode_path(path: Path) -> bytes:
     Examples:
         >>> path = ["0xToken0Address", 3000, "0xToken1Address"]
         >>> encoded_path = _encode_path(path)
+
+    See Also:
+        :func:`encode_packed`
     """
     return encode_packed(_PATH_TYPE_STRINGS[len(path)], path)
 
@@ -708,6 +754,9 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         Examples:
             >>> factory_contract = Contract(...)
             >>> pools = UniV3Pools(factory_contract, asynchronous=True)
+
+        See Also:
+            :class:`SlipstreamPools`
         """
         self.asynchronous = asynchronous
         super().__init__(
@@ -718,15 +767,22 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         """
         Process a PoolCreated event and return a UniswapV3Pool instance.
 
+        The PoolCreated event is expected to have values in the order:
+          token0, token1, fee, tick_spacing, pool_address
+
         Args:
-            event: The PoolCreated event.
+            event: The PoolCreated event from which to create the pool instance.
 
         Returns:
-            A UniswapV3Pool instance.
+            A :class:`~y.prices.dex.uniswap.v3.UniswapV3Pool` instance.
 
         Examples:
-            >>> pools = UniV3Pools(...)
+            >>> pools = UniV3Pools(factory_contract, asynchronous=True)
             >>> pool = pools._process_event(event)
+            >>> pool.address  # displays the pool address
+
+        See Also:
+            :class:`~y.prices.dex.uniswap.v3.UniswapV3Pool`
         """
         token0, token1, fee, tick_spacing, pool = event.values()
         return UniswapV3Pool(
@@ -747,7 +803,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
             obj: The UniswapV3Pool object.
 
         Returns:
-            The block number.
+            The deploy block number of the pool.
 
         Examples:
             >>> pools = UniV3Pools(...)
