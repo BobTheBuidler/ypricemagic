@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import logging
 from typing import List, Optional, Set, Tuple
 
