@@ -37,8 +37,8 @@ def get_deploy_block(address: str) -> Optional[int]:
 
     This function first examines the cached deploy block numbers via
     :func:`known_deploy_blocks`. If a deploy block is found there, it returns it.
-    Otherwise, it retrieves the token instance using :func:`_get_get_token` in 
-    synchronous mode and checks its stored deploy block. If a deploy block is present 
+    Otherwise, it retrieves the token instance using :func:`_get_get_token` in
+    synchronous mode and checks its stored deploy block. If a deploy block is present
     on the token, its block number is returned. If no deploy block is found, the function
     logs that the deploy block is not cached and returns None without attempting to fetch
     it from the blockchain.
@@ -120,7 +120,7 @@ def known_deploy_blocks() -> Dict[Address, Block]:
     """Cache and return all known contract deploy blocks for this chain.
 
     This function minimizes database reads by caching the result for one hour.
-    The cache is built by selecting all contract entities on the current chain 
+    The cache is built by selecting all contract entities on the current chain
     where a deploy block is recorded.
 
     Examples:
