@@ -119,7 +119,7 @@ def dec_hook(typ: Type[T], obj: bytes) -> T:
     Note:
         Currently only supports decoding of :class:`HexBytes` objects.
 
-    Examples:
+    Example:
         >>> from hexbytes import HexBytes
         >>> dec_hook(HexBytes, b'1234')
         HexBytes('0x1234')
@@ -136,11 +136,17 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
     @abstractmethod
     def _set_metadata(self, from_block: "Block", done_thru: "Block") -> None:
         """
-        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
+        Update cache metadata to indicate that the cache is populated from block `from_block` to block `done_thru`.
 
         Args:
             from_block: The starting block number.
-            done_thru: The ending block number.
+            done_thru: The ending block number indicating that the cache is populated up to this block.
+
+        Example:
+            >>> disk_cache._set_metadata(100, 200)
+
+        See Also:
+            - :meth:`set_metadata`
         """
 
     @abstractmethod
@@ -171,11 +177,18 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
     @retry_locked
     def set_metadata(self, from_block: "Block", done_thru: "Block") -> None:
         """
-        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.
+        Update cache metadata to indicate that the cache is populated from block `from_block` to block `done_thru`.
 
         Args:
             from_block: The starting block number.
-            done_thru: The ending block number.
+            done_thru: The ending block number up to which the cache is populated.
+
+        Example:
+            >>> cache.set_metadata(100, 200)
+
+        See Also:
+            - :meth:`_set_metadata`
+            - :class:`CacheNotPopulatedError`
         """
         try:
             with db_session:
@@ -231,6 +244,16 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
         Raises:
             CacheNotPopulatedError: If the cache is not fully populated.
+
+        Example:
+            >>> try:
+            ...     data = cache.check_and_select(100, 200)
+            ... except CacheNotPopulatedError:
+            ...     print("Cache incomplete")
+
+        See Also:
+            - :meth:`set_metadata`
+            - :meth:`select`
         """
         if self.is_cached_thru(from_block) >= to_block:
             return self.select(from_block, to_block)
@@ -277,15 +300,39 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
     @abstractmethod
     def insert_to_db(self) -> Callable[[T], None]: ...
 
-    # abc.abstractproperty
-    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]: ...
+    def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
+        """
+        Function to bulk insert a list of objects into the database.
+
+        This property must be overridden in subclasses to provide the desired bulk insertion logic.
+        The implementation should return a callable that accepts a list of objects (List[T])
+        and returns an awaitable.
+
+        Example:
+            >>> async def my_bulk_insert(objs):
+            ...     # perform custom bulk insert operations here
+            ...     pass
+            >>> class MyFilter(_DiskCachedMixin):
+            ...     @property
+            ...     def bulk_insert(self) -> Callable[[List[T]], Awaitable[None]]:
+            ...         return my_bulk_insert
+
+        See Also:
+            - :meth:`_load_cache`
+        """
 
     async def _extend(self, objs: Container[T]) -> None:
         """
         Override this to pre-process objects before storing.
 
         Args:
-            objs: The objects to extend the list with.
+            objs ("Container[T]"): The objects to extend the list with.
+
+        Example:
+            >>> await instance._extend([obj1, obj2])
+
+        See Also:
+            - :meth:`_load_cache`
         """
         if objs:
             self._objects.extend(objs)
@@ -301,7 +348,17 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
             from_block: The starting block number.
 
         Returns:
-            The maximum block number loaded from cache.
+            The maximum block number loaded from cache, or None if no cached data is available.
+
+        Example:
+            >>> cached_thru = await instance._load_cache(100)
+            >>> if cached_thru is None:
+            ...     print("No cached data available")
+            ... else:
+            ...     print(f"Cache loaded through block {cached_thru}")
+
+        See Also:
+            - :meth:`_extend`
         """
         logger.debug("checking to see if %s is cached in local db", self)
         if cached_thru := await _metadata_read_executor.run(
@@ -435,6 +492,9 @@ class Filter(_DiskCachedMixin[T, C]):
 
         Returns:
             The block number of the object.
+
+        Example:
+            >>> block = instance._get_block_for_obj(some_obj)
         """
         return obj.blockNumber
 
@@ -582,6 +642,12 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _fetch(self) -> NoReturn:
         """
         Override this if you want.
+
+        Example:
+            >>> await instance._fetch()
+
+        See Also:
+            - :meth:`_loop`
         """
         await self._loop(self.from_block)
 
@@ -699,6 +765,12 @@ class Filter(_DiskCachedMixin[T, C]):
 
         Args:
             block: The block number to set the lock to.
+
+        Example:
+            >>> await instance._set_lock(150)
+
+        See Also:
+            - :meth:`_load_new_objects`
         """
         self._lock.set(block)
 
