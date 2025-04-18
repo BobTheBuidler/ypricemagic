@@ -11,6 +11,7 @@ from y.contracts import Contract, has_methods
 from y.datatypes import Address, Block
 from y.utils.cache import optional_async_diskcache
 
+
 METHODS = "main()(address)", "issuanceAvailable()(uint)", "redemptionAvailable()(uint)"
 
 
@@ -18,7 +19,7 @@ METHODS = "main()(address)", "issuanceAvailable()(uint)", "redemptionAvailable()
 @optional_async_diskcache
 async def is_rtoken(token_address: Address) -> bool:
     """
-    Check if the given token is a Reserve Protocol R-token.
+    Determine whether a given token is a Reserve Protocol R-token.
 
     Args:
         token_address: The address of the token to check.
@@ -28,9 +29,12 @@ async def is_rtoken(token_address: Address) -> bool:
 
     Example:
         >>> address = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"  # USDC (not an R-token)
-        >>> is_r = is_rtoken(address)
-        >>> print(is_r)
+        >>> result = is_rtoken(address)
+        >>> print(result)
         False
+
+    See Also:
+        :func:`~y.prices.tokenized_fund.reserve.get_price`
     """
     return await has_methods(token_address, METHODS, sync=False)
 
@@ -42,25 +46,39 @@ async def get_price(
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> Decimal:
     """
-    Get the price of a Reserve Protocol R-token in USD.
+    Retrieve the USD price of a Reserve Protocol R-token.
+
+    This function obtains the basket handler associated with the R-token by calling its
+    "main" and "basketHandler" methods. It then calls the basket handler's price method to retrieve a
+    low and a high price value. The function computes the integer average of these two price values and scales
+    the result by 1e18 to convert it to a USD price. If the call to the basket handler's price method reverts,
+    the function returns None instead of raising an exception.
 
     Args:
         token_address: The address of the R-token.
-        block (optional): The block number to query. Defaults to None (latest).
-        skip_cache (optional): Whether to skip cache. Defaults to :obj:`ENVS.SKIP_CACHE`.
+        block: The block number to query. Defaults to the latest block if not specified.
+        skip_cache: If True, skip using the cache. Defaults to :attr:`~y.ENVIRONMENT_VARIABLES.SKIP_CACHE`.
 
     Returns:
-        The price of the R-token in USD.
+        The USD price of the R-token as computed from the basket handler, or None if the price cannot
+        be determined due to a remote call failure (i.e. a :class:`~dank_mids.exceptions.Revert`).
 
     Raises:
         TypeError: If the token is not a valid R-token.
-        Exception: If unable to calculate the price.
 
     Example:
         >>> address = "0xaCeeD87BD5754c3d714F3Bd43a9B7B0C9250ab0D"  # RSV token
         >>> price = await get_price(address, sync=False)
+        >>> if price is None:
+        ...     print("Price calculation failed due to a Revert exception")
+        ... else:
+        ...     print(f"Calculated price: {price}")
+        >>> # In a synchronous context:
+        >>> price = get_price(address)
         >>> print(price)
-        1.00
+
+    See Also:
+        :func:`~y.prices.tokenized_fund.reserve.is_rtoken`
     """
     main = await Call(token_address, "main()(address)", block_id=block)
     if main is None:
