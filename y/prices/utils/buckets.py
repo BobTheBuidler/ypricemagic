@@ -31,26 +31,52 @@ logger = getLogger(__name__)
 
 @a_sync.a_sync(default="sync", cache_type="memory")
 async def check_bucket(token: AnyAddressType) -> str:
-    """
-    Determine the category or 'bucket' of a given token.
+    """Determine and return the category or "bucket" of a given token.
 
-    This function attempts to classify a token into a specific category based on its characteristics.
-    It first checks the database for a cached bucket using :func:`y._db.utils.token.get_bucket`.
-    If not found, it performs a series of checks that may involve string comparisons, calls to the blockchain,
-    and contract initializations. The determined bucket is then stored using :func:`db.set_bucket`.
+    This function classifies a token by performing a set of tests in the following order:
+
+    1. It first attempts to retrieve a cached bucket from the database via
+       :func:`y._db.utils.token.get_bucket`.
+    2. Next, it applies simple string-based comparisons defined in the ``string_matchers``
+       dictionary.
+    3. If no bucket is determined, it concurrently executes a set of asynchronous "calls-only"
+       tests for further classification. The function will return immediately once any of these
+       tests confirms the token’s membership in a bucket.
+    4. If none of the concurrent tests succeed, it falls back to a series of sequential asynchronous
+       checks that involve both contract initializations and blockchain calls.
+
+    .. note::
+       The fallback sequential tests are executed in order. However, the first two fallback checks
+       (for "solidex" and "uni or uni-like lp") are evaluated independently; as a result, if both
+       conditions return true, the latter bucket ("uni or uni-like lp") will overwrite the earlier
+       assignment from "solidex".
+
+    The final determined bucket is stored in the database using :func:`db.set_bucket`.
 
     Args:
         token: The token address to classify.
 
     Examples:
-        >>> bucket = check_bucket("0x6B175474E89094C44Da98b954EedeAC495271d0F")
-        >>> print(bucket)
-        'stable usd'
+        Basic usage with a stable USD token:
+            >>> bucket = check_bucket("0x6B175474E89094C44Da98b954EedeAC495271d0F")
+            >>> print(bucket)
+            stable usd
+
+        Example triggering a concurrent asynchronous test:
+            >>> bucket = check_bucket("0xSomeLPTokenAddress")
+            >>> print(bucket)
+            popsicle
+
+        Example where multiple fallback conditions are met (note that if both "solidex" and
+        "uni or uni-like lp" tests pass, the latter overwrites the former):
+            >>> bucket = check_bucket("0xAnotherTokenAddress")
+            >>> print(bucket)
+            uni or uni-like lp
 
     See Also:
-        - :func:`y.convert.to_address_async`
-        - :func:`y.utils.logging.get_price_logger`
-        - :func:`_check_bucket_helper`
+        :func:`y.convert.to_address_async`
+        :func:`y.utils.logging.get_price_logger`
+        :func:`_check_bucket_helper` (Helper used for asynchronous bucket checks)
     """
     token_address = await convert.to_address_async(token)
     logger = get_price_logger(token_address, block=None, extra="buckets")
@@ -74,7 +100,7 @@ async def check_bucket(token: AnyAddressType) -> str:
         elif debug_logs_enabled:
             await __log_not_bucket(token_address, bucket)
 
-    # check these first, these just require calls
+    # Check these first, these tests involve asynchronous eth_calls and are launched concurrently.
     futs = [
         ensure_future(_check_bucket_helper(bucket, check, token_address))
         for bucket, check in calls_only.items()
@@ -104,7 +130,7 @@ async def check_bucket(token: AnyAddressType) -> str:
             bucket = None
 
     # TODO: Refactor the below like the above
-    # these require both calls and contract initializations
+    # these require both calls and contract initializations; they are checked sequentially.
     if await solidex.is_solidex_deposit(token_address, sync=False):
         bucket = "solidex"
     if await uniswap_multiplexer.is_uniswap_pool(token_address, sync=False):
@@ -201,7 +227,12 @@ async def _check_bucket_helper(
     bucket: str, check: Callable[[Address], Awaitable[bool]], address: Address
 ) -> Tuple[str, bool]:
     """
-    Helper function to check if a token belongs to a specific bucket.
+    Asynchronously check if a token belongs to a specified bucket.
+
+    This helper function is designed to be executed concurrently as part of the
+    "calls-only" checks in :func:`check_bucket`. It invokes a callable that returns
+    a boolean indicating whether the token meets the criterion for the specified bucket.
+    If the result is not immediately boolean, it awaits the result further.
 
     Args:
         bucket: The name of the bucket to check.
@@ -209,9 +240,11 @@ async def _check_bucket_helper(
         address: The address of the token to check.
 
     Examples:
-        >>> result = await _check_bucket_helper("stable usd", lambda x: x in STABLECOINS, "0x6B175474E89094C44Da98b954EedeAC495271d0F")
+        >>> async def dummy_check(addr):
+        ...     return addr.startswith("0x")
+        >>> result = await _check_bucket_helper("dummy", dummy_check, "0x123")
         >>> print(result)
-        ('stable usd', True)
+        ('dummy', True)
 
     See Also:
         - :func:`check_bucket`
