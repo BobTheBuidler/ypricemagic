@@ -59,10 +59,14 @@ async def get_price(
     block: Optional[Block] = None,
     skip_cache: bool = ENVS.SKIP_CACHE,
 ) -> UsdPrice:
-    """Get the price of a TokenSet in USD.
+    """Get the USD price of a TokenSet.
 
-    This function retrieves the price of a TokenSet by creating an instance of the
-    :class:`TokenSet` class and calling its `get_price` method.
+    This function retrieves the price of a TokenSet by instantiating a :class:`TokenSet`
+    and invoking its :meth:`get_price` method. The computation method depends on the available
+    contract methods: if the underlying contract has a ``getUnits`` method, the price is calculated
+    as the total USD value of its components divided by the total supply. Otherwise, if the contract
+    has a ``getTotalComponentRealUnits`` method, the price is computed as the direct sum of the USD
+    values of its components.
 
     Args:
         token: The address of the TokenSet.
@@ -70,7 +74,8 @@ async def get_price(
         skip_cache: If True, skip using the cache while fetching price data.
 
     Examples:
-        >>> get_price("0x1234567890abcdef1234567890abcdef12345678")
+        >>> price = get_price("0x1234567890abcdef1234567890abcdef12345678")
+        >>> print(price)
         UsdPrice(123.45)
 
     See Also:
@@ -130,9 +135,9 @@ class TokenSet(ERC20):
         """Get the balances of the components in the TokenSet.
 
         This method retrieves the balances of the components in the TokenSet by first
-        checking if the contract has the `getUnits` method. If `getUnits` is available,
+        checking if the contract has the ``getUnits`` method. If ``getUnits`` is available,
         it is used to determine the balances. If not, and if the contract has the
-        `getTotalComponentRealUnits` method, it falls back to using that method.
+        ``getTotalComponentRealUnits`` method, it falls back to using that method.
 
         Args:
             block: The block number to query. Defaults to the latest block.
@@ -172,10 +177,15 @@ class TokenSet(ERC20):
     async def get_price(
         self, block: Optional[Block] = None, skip_cache: bool = ENVS.SKIP_CACHE
     ) -> UsdPrice:
-        """Get the price of the TokenSet in USD.
+        """Get the USD price of the TokenSet.
 
-        This method calculates the price of the TokenSet by summing the USD values
-        of its components and dividing by the total supply.
+        This method computes the price of the TokenSet using one of two approaches depending on
+        the underlying contract's available methods:
+        1. If the contract has a ``getUnits`` method: The price is calculated by fetching the balances of
+           the components, converting them to their USD values, summing these values to obtain the total 
+           value (TVL), and then dividing the TVL by the total supply of the TokenSet.
+        2. If the contract has a ``getTotalComponentRealUnits`` method: The price is computed as the direct sum 
+           of the USD values of its components without normalization by the total supply.
 
         Args:
             block: The block number to query. Defaults to the latest block.
@@ -184,6 +194,13 @@ class TokenSet(ERC20):
         Examples:
             >>> tokenset = TokenSet("0x1234567890abcdef1234567890abcdef12345678")
             >>> price = tokenset.get_price()
+            >>> print(price)
+            UsdPrice(123.45)
+
+        See Also:
+            - :func:`y.contracts.Contract`
+            - :meth:`balances`
+            - :meth:`total_supply_readable`
         """
         total_supply = Decimal(
             await self.total_supply_readable(block=block, sync=False)
