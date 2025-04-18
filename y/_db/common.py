@@ -144,10 +144,11 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
         Example:
             >>> disk_cache._set_metadata(100, 200)
-            
+
         See Also:
             - :meth:`set_metadata`
         """
+
     @abstractmethod
     def _is_cached_thru(self, from_block: "Block") -> "Block":
         """
@@ -159,6 +160,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         Returns:
             The maximum cached block number.
         """
+
     @abstractmethod
     def _select(self, from_block: "Block", to_block: "Block") -> List[S]:
         """
@@ -171,6 +173,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
         Returns:
             A list of cached objects.
         """
+
     @retry_locked
     def set_metadata(self, from_block: "Block", done_thru: "Block") -> None:
         """
@@ -182,7 +185,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
 
         Example:
             >>> cache.set_metadata(100, 200)
-            
+
         See Also:
             - :meth:`_set_metadata`
             - :class:`CacheNotPopulatedError`
@@ -247,7 +250,7 @@ class DiskCache(Generic[S, M], metaclass=ABCMeta):
             ...     data = cache.check_and_select(100, 200)
             ... except CacheNotPopulatedError:
             ...     print("Cache incomplete")
-            
+
         See Also:
             - :meth:`set_metadata`
             - :meth:`select`
@@ -317,6 +320,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         See Also:
             - :meth:`_load_cache`
         """
+
     async def _extend(self, objs: Container[T]) -> None:
         """
         Override this to pre-process objects before storing.
@@ -326,7 +330,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 
         Example:
             >>> await instance._extend([obj1, obj2])
-            
+
         See Also:
             - :meth:`_load_cache`
         """
@@ -352,7 +356,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
             ...     print("No cached data available")
             ... else:
             ...     print(f"Cache loaded through block {cached_thru}")
-            
+
         See Also:
             - :meth:`_extend`
         """
@@ -641,7 +645,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
         Example:
             >>> await instance._fetch()
-            
+
         See Also:
             - :meth:`_loop`
         """
@@ -764,7 +768,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
         Example:
             >>> await instance._set_lock(150)
-            
+
         See Also:
             - :meth:`_load_new_objects`
         """
