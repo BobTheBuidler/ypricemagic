@@ -4,6 +4,7 @@ from y.prices import magic
 
 from tests.fixtures import blocks_for_contract
 
+
 @pytest.mark.parametrize("token", STABLECOINS)
 def test_stablecoins(token):
     """Placeholder test for stablecoin prices.
