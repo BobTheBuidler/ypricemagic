@@ -50,6 +50,7 @@ from y.utils.logging import get_price_logger
 
 _P = ParamSpec("_P")
 _T = TypeVar("_T")
+_TAddress = TypeVar("_TAddress", bound=AnyAddressType)
 
 cache_logger = getLogger(f"{__name__}.cache")
 
@@ -202,34 +203,34 @@ async def get_prices(
 
 @overload
 def map_prices(
-    token_addresses: Iterable[AnyAddressType],
+    token_addresses: Iterable[_TAddress],
     block: Block,
     *,
     fail_to_None: Literal[True],
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]: ...
+) -> a_sync.TaskMapping[_TAddress, Optional[UsdPrice]]: ...
 
 
 @overload
 def map_prices(
-    token_addresses: Iterable[AnyAddressType],
+    token_addresses: Iterable[_TAddress],
     block: Block,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, UsdPrice]: ...
+) -> a_sync.TaskMapping[_TAddress, UsdPrice]: ...
 
 
 def map_prices(
-    token_addresses: Iterable[AnyAddressType],
+    token_addresses: Iterable[_TAddress],
     block: Block,
     *,
     fail_to_None: bool = False,
     skip_cache: bool = ENVS.SKIP_CACHE,
     silent: bool = False,
-) -> a_sync.TaskMapping[AnyAddressType, Optional[UsdPrice]]:
+) -> a_sync.TaskMapping[_TAddress, Optional[UsdPrice]]:
     """
     Map token addresses to their prices asynchronously.
 
