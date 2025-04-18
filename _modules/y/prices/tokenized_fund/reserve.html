@@ -82,6 +82,7 @@
 <span class="kn">from</span> <span class="nn">y.datatypes</span> <span class="kn">import</span> <span class="n">Address</span><span class="p">,</span> <span class="n">Block</span>
 <span class="kn">from</span> <span class="nn">y.utils.cache</span> <span class="kn">import</span> <span class="n">optional_async_diskcache</span>
 
+
 <span class="n">METHODS</span> <span class="o">=</span> <span class="s2">&quot;main()(address)&quot;</span><span class="p">,</span> <span class="s2">&quot;issuanceAvailable()(uint)&quot;</span><span class="p">,</span> <span class="s2">&quot;redemptionAvailable()(uint)&quot;</span>
 
 
@@ -91,7 +92,7 @@
 <span class="nd">@optional_async_diskcache</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">is_rtoken</span><span class="p">(</span><span class="n">token_address</span><span class="p">:</span> <span class="n">Address</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Check if the given token is a Reserve Protocol R-token.</span>
+<span class="sd">    Determine whether a given token is a Reserve Protocol R-token.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        token_address: The address of the token to check.</span>
@@ -101,9 +102,12 @@
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; address = &quot;0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&quot;  # USDC (not an R-token)</span>
-<span class="sd">        &gt;&gt;&gt; is_r = is_rtoken(address)</span>
-<span class="sd">        &gt;&gt;&gt; print(is_r)</span>
+<span class="sd">        &gt;&gt;&gt; result = is_rtoken(address)</span>
+<span class="sd">        &gt;&gt;&gt; print(result)</span>
 <span class="sd">        False</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :func:`~y.prices.tokenized_fund.reserve.get_price`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="k">await</span> <span class="n">has_methods</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="n">METHODS</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
@@ -118,25 +122,39 @@
     <span class="n">skip_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">SKIP_CACHE</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the price of a Reserve Protocol R-token in USD.</span>
+<span class="sd">    Retrieve the USD price of a Reserve Protocol R-token.</span>
+
+<span class="sd">    This function obtains the basket handler associated with the R-token by calling its</span>
+<span class="sd">    &quot;main&quot; and &quot;basketHandler&quot; methods. It then calls the basket handler&#39;s price method to retrieve a</span>
+<span class="sd">    low and a high price value. The function computes the integer average of these two price values and scales</span>
+<span class="sd">    the result by 1e18 to convert it to a USD price. If the call to the basket handler&#39;s price method reverts,</span>
+<span class="sd">    the function returns None instead of raising an exception.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        token_address: The address of the R-token.</span>
-<span class="sd">        block (optional): The block number to query. Defaults to None (latest).</span>
-<span class="sd">        skip_cache (optional): Whether to skip cache. Defaults to :obj:`ENVS.SKIP_CACHE`.</span>
+<span class="sd">        block: The block number to query. Defaults to the latest block if not specified.</span>
+<span class="sd">        skip_cache: If True, skip using the cache. Defaults to :attr:`~y.ENVIRONMENT_VARIABLES.SKIP_CACHE`.</span>
 
 <span class="sd">    Returns:</span>
-<span class="sd">        The price of the R-token in USD.</span>
+<span class="sd">        The USD price of the R-token as computed from the basket handler, or None if the price cannot</span>
+<span class="sd">        be determined due to a remote call failure (i.e. a :class:`~dank_mids.exceptions.Revert`).</span>
 
 <span class="sd">    Raises:</span>
 <span class="sd">        TypeError: If the token is not a valid R-token.</span>
-<span class="sd">        Exception: If unable to calculate the price.</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; address = &quot;0xaCeeD87BD5754c3d714F3Bd43a9B7B0C9250ab0D&quot;  # RSV token</span>
 <span class="sd">        &gt;&gt;&gt; price = await get_price(address, sync=False)</span>
+<span class="sd">        &gt;&gt;&gt; if price is None:</span>
+<span class="sd">        ...     print(&quot;Price calculation failed due to a Revert exception&quot;)</span>
+<span class="sd">        ... else:</span>
+<span class="sd">        ...     print(f&quot;Calculated price: {price}&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; # In a synchronous context:</span>
+<span class="sd">        &gt;&gt;&gt; price = get_price(address)</span>
 <span class="sd">        &gt;&gt;&gt; print(price)</span>
-<span class="sd">        1.00</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :func:`~y.prices.tokenized_fund.reserve.is_rtoken`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">main</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Call</span><span class="p">(</span><span class="n">token_address</span><span class="p">,</span> <span class="s2">&quot;main()(address)&quot;</span><span class="p">,</span> <span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">main</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
