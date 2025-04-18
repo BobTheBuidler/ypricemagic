@@ -47,14 +47,14 @@ def blocks_for_contract(address: Address, count: int = 5) -> List[Block]:
         count: Number of blocks to generate; default is 5.
 
     Returns:
-        A list of block numbers where the first number is computed as 
+        A list of block numbers where the first number is computed as
         contract_creation_block(address) + 10,000 and the remaining numbers are evenly spaced up to the current block height.
 
     Examples:
         Suppose that :func:`~y.contracts.contract_creation_block` returns 1000 and the current block height is 20000.
         Then the first block is 1000 + 10000 = 11000.
         With count=3, one possible output is:
-        
+
         >>> blocks = blocks_for_contract("0x123", count=3)
         >>> blocks
         [11000, 15500, 20000]
