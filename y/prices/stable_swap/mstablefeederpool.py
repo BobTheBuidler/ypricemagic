@@ -20,7 +20,7 @@ async def is_mstable_feeder_pool(address: AnyAddressType) -> bool:
     Check if a given address is an mStable Feeder Pool.
 
     This function verifies that the contract at the specified address
-    implements the methods required for an mStable Feeder Pool, 
+    implements the methods required for an mStable Feeder Pool,
     specifically ``getPrice()((uint,uint))`` and ``mAsset()(address)``.
 
     Args:
