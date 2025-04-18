@@ -243,6 +243,9 @@
 <span class="sd">            &gt;&gt;&gt; pool = UniswapV3Pool(...)</span>
 <span class="sd">            &gt;&gt;&gt; &quot;0xToken0Address&quot; in pool</span>
 <span class="sd">            True</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`__getitem__`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># force token to string in case it is Contract or EthAddress etc</span>
         <span class="n">token</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
@@ -274,6 +277,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; pool = UniswapV3Pool(...)</span>
 <span class="sd">            &gt;&gt;&gt; token = pool[&quot;0xToken0Address&quot;]</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`__contains__`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">token</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TokenNotFound</span><span class="p">(</span><span class="n">token</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
@@ -300,6 +306,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; pool = UniswapV3Pool(...)</span>
 <span class="sd">            &gt;&gt;&gt; liquidity = await pool.check_liquidity(&quot;0xToken0Address&quot;, 1234567)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`_check_liquidity_token_out`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
@@ -355,6 +364,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; pool = UniswapV3Pool(...)</span>
 <span class="sd">            &gt;&gt;&gt; liquidity = await pool._check_liquidity_token_out(&quot;0xToken0Address&quot;, 1234567)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`check_liquidity`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_token_out</span><span class="p">(</span><span class="n">token_in</span><span class="p">),</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span>
@@ -378,6 +390,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; pool = UniswapV3Pool(...)</span>
 <span class="sd">            &gt;&gt;&gt; token_out = pool._get_token_out(token_in)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`__contains__`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">token_in</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">token0</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">token1</span>
@@ -405,13 +420,17 @@
 <span class="sd">        Initialize a UniswapV3 instance.</span>
 
 <span class="sd">        Args:</span>
+<span class="sd">            factory: The address of the Uniswap V3 factory.</span>
+<span class="sd">            quoter: The address of the Uniswap V3 quoter.</span>
+<span class="sd">            fee_tiers: The fee tiers supported by Uniswap V3.</span>
 <span class="sd">            asynchronous: Whether to use asynchronous operations.</span>
 
-<span class="sd">        Raises:</span>
-<span class="sd">            UnsupportedNetwork: If Uniswap V3 is not supported on the current network.</span>
-
 <span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(asynchronous=True)</span>
+<span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(factory, quoter, fee_tiers=[3000, 500, 10000, 100],</span>
+<span class="sd">            ...                           asynchronous=True)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :class:`~a_sync.ASyncGenericBase`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
@@ -429,18 +448,24 @@
 <a class="viewcode-back" href="../../../../../source/y.prices.dex.uniswap.html#y.prices.dex.uniswap.v3.UniswapV3.__contains__">[docs]</a>
     <span class="k">def</span> <span class="fm">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Check if an asset is part of the Uniswap V3 protocol.</span>
+<span class="sd">        Check if Uniswap V3 pricing functionality is available on the current network.</span>
+
+<span class="sd">        This method verifies if the current chain ID is among the networks with defined</span>
+<span class="sd">        internal addresses for Uniswap V3 operations.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            asset: The asset to check.</span>
+<span class="sd">            asset: Unused parameter.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            True if the asset is part of the protocol, False otherwise.</span>
+<span class="sd">            True if the current network is supported (i.e. CHAINID is in the internal addresses mapping), otherwise False.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
-<span class="sd">            &gt;&gt;&gt; &quot;0xAssetAddress&quot; in uniswap_v3</span>
+<span class="sd">            &gt;&gt;&gt; &quot;unused_value&quot; in uniswap_v3</span>
 <span class="sd">            True</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`__getitem__`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">CHAINID</span> <span class="ow">in</span> <span class="n">addresses</span></div>
 
@@ -472,6 +497,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; factory_contract = await uniswap_v3.factory</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :class:`Contract`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_factory</span><span class="p">)</span></div>
 
@@ -491,6 +519,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; quoter_contract = await uniswap_v3.quoter</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :class:`Contract`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_quoter</span><span class="p">)</span>
@@ -514,6 +545,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; pools = await uniswap_v3.pools</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :class:`UniV3Pools`, :class:`SlipstreamPools`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">factory</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__factory__</span>
         <span class="k">if</span> <span class="p">(</span>
@@ -583,6 +617,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; price = await uniswap_v3.get_price(&quot;0xTokenAddress&quot;, 1234567)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`y.prices.magic.get_price`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">quoter</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__quoter__</span>
         <span class="k">if</span> <span class="n">block</span> <span class="ow">and</span> <span class="n">block</span> <span class="o">&lt;</span> <span class="k">await</span> <span class="n">contract_creation_block_async</span><span class="p">(</span><span class="n">quoter</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
@@ -633,6 +670,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; liquidity = await uniswap_v3.check_liquidity(&quot;0xTokenAddress&quot;, 1234567)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :meth:`y.prices.market.get_price`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">debug_logs_enabled</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
@@ -755,6 +795,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; uniswap_v3 = UniswapV3(...)</span>
 <span class="sd">            &gt;&gt;&gt; output_amount = await uniswap_v3._quote_exact_input(path, 1000, 1234567)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :func:`_undo_fees`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">quoter</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__quoter__</span>
         <span class="k">try</span><span class="p">:</span>
@@ -786,6 +829,9 @@
 <span class="sd">    Examples:</span>
 <span class="sd">        &gt;&gt;&gt; path = [&quot;0xToken0Address&quot;, 3000, &quot;0xToken1Address&quot;]</span>
 <span class="sd">        &gt;&gt;&gt; encoded_path = _encode_path(path)</span>
+
+<span class="sd">    See Also:</span>
+<span class="sd">        :func:`encode_packed`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">encode_packed</span><span class="p">(</span><span class="n">_PATH_TYPE_STRINGS</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">path</span><span class="p">)],</span> <span class="n">path</span><span class="p">)</span>
 
@@ -828,6 +874,9 @@
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; factory_contract = Contract(...)</span>
 <span class="sd">            &gt;&gt;&gt; pools = UniV3Pools(factory_contract, asynchronous=True)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :class:`SlipstreamPools`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">asynchronous</span> <span class="o">=</span> <span class="n">asynchronous</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
@@ -839,15 +888,22 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Process a PoolCreated event and return a UniswapV3Pool instance.</span>
 
+<span class="sd">        The PoolCreated event is expected to have values in the order:</span>
+<span class="sd">          token0, token1, fee, tick_spacing, pool_address</span>
+
 <span class="sd">        Args:</span>
-<span class="sd">            event: The PoolCreated event.</span>
+<span class="sd">            event: The PoolCreated event from which to create the pool instance.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            A UniswapV3Pool instance.</span>
+<span class="sd">            A :class:`~y.prices.dex.uniswap.v3.UniswapV3Pool` instance.</span>
 
 <span class="sd">        Examples:</span>
-<span class="sd">            &gt;&gt;&gt; pools = UniV3Pools(...)</span>
+<span class="sd">            &gt;&gt;&gt; pools = UniV3Pools(factory_contract, asynchronous=True)</span>
 <span class="sd">            &gt;&gt;&gt; pool = pools._process_event(event)</span>
+<span class="sd">            &gt;&gt;&gt; pool.address  # displays the pool address</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            :class:`~y.prices.dex.uniswap.v3.UniswapV3Pool`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">token0</span><span class="p">,</span> <span class="n">token1</span><span class="p">,</span> <span class="n">fee</span><span class="p">,</span> <span class="n">tick_spacing</span><span class="p">,</span> <span class="n">pool</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">UniswapV3Pool</span><span class="p">(</span>
@@ -868,7 +924,7 @@
 <span class="sd">            obj: The UniswapV3Pool object.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The block number.</span>
+<span class="sd">            The deploy block number of the pool.</span>
 
 <span class="sd">        Examples:</span>
 <span class="sd">            &gt;&gt;&gt; pools = UniV3Pools(...)</span>

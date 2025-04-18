@@ -2256,6 +2256,10 @@ of the two tokens in the pool.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pools</span> <span class="o">=</span> <span class="n">UniV3Pools</span><span class="p">(</span><span class="n">factory_contract</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.prices.dex.uniswap.v3.SlipstreamPools" title="y.prices.dex.uniswap.v3.SlipstreamPools"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlipstreamPools</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2576,6 +2580,10 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pools</span> <span class="o">=</span> <span class="n">UniV3Pools</span><span class="p">(</span><span class="n">factory_contract</span><span class="p">,</span> <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.prices.dex.uniswap.v3.SlipstreamPools" title="y.prices.dex.uniswap.v3.SlipstreamPools"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlipstreamPools</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py method">
@@ -2844,13 +2852,15 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniswapV3.__contains__">
 <span class="sig-name descname"><span class="pre">__contains__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">asset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/y/prices/dex/uniswap/v3.html#UniswapV3.__contains__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniswapV3.__contains__" title="Link to this definition"></a></dt>
-<dd><p>Check if an asset is part of the Uniswap V3 protocol.</p>
+<dd><p>Check if Uniswap V3 pricing functionality is available on the current network.</p>
+<p>This method verifies if the current chain ID is among the networks with defined
+internal addresses for Uniswap V3 operations.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>asset</strong> – The asset to check.</p>
+<dd class="field-odd"><p><strong>asset</strong> – Unused parameter.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the asset is part of the protocol, False otherwise.</p>
+<dd class="field-even"><p>True if the current network is supported (i.e. CHAINID is in the internal addresses mapping), otherwise False.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)">bool</a></p>
@@ -2858,9 +2868,13 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </dl>
 <p class="rubric">Examples</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uniswap_v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;0xAssetAddress&quot;</span> <span class="ow">in</span> <span class="n">uniswap_v3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;unused_value&quot;</span> <span class="ow">in</span> <span class="n">uniswap_v3</span>
 <span class="go">True</span>
 </pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-func docutils literal notranslate"><span class="pre">__getitem__()</span></code></p>
 </div>
 </dd></dl>
 
@@ -2871,22 +2885,24 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
+<li><p><strong>factory</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.HexAddress" title="(in eth-typing v5.2)"><em>HexAddress</em></a>) – The address of the Uniswap V3 factory.</p></li>
+<li><p><strong>quoter</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.HexAddress" title="(in eth-typing v5.2)"><em>HexAddress</em></a>) – The address of the Uniswap V3 quoter.</p></li>
+<li><p><strong>fee_tiers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>) – The fee tiers supported by Uniswap V3.</p></li>
 <li><p><strong>asynchronous</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to use asynchronous operations.</p></li>
-<li><p><strong>factory</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.HexAddress" title="(in eth-typing v5.2)"><em>HexAddress</em></a>)</p></li>
-<li><p><strong>quoter</strong> (<a class="reference external" href="https://eth-typing.readthedocs.io/en/stable/eth_typing.html#eth_typing.evm.HexAddress" title="(in eth-typing v5.2)"><em>HexAddress</em></a>)</p></li>
-<li><p><strong>fee_tiers</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><em>List</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a><em>]</em>)</p></li>
 </ul>
 </dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference internal" href="y.html#y.exceptions.UnsupportedNetwork" title="y.exceptions.UnsupportedNetwork"><strong>UnsupportedNetwork</strong></a> – If Uniswap V3 is not supported on the current network.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>None</p>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
-<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uniswap_v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uniswap_v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="n">factory</span><span class="p">,</span> <span class="n">quoter</span><span class="p">,</span> <span class="n">fee_tiers</span><span class="o">=</span><span class="p">[</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">500</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+<span class="gp">... </span>                          <span class="n">asynchronous</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/index.html#a_sync.ASyncGenericBase" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncGenericBase</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -3068,6 +3084,8 @@ ignore_pools: Pools to ignore.</p>
 </pre></div>
 </div>
 </dd>
+<dt>See Also:</dt><dd><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">y.prices.market.get_price()</span></code></p>
+</dd>
 </dl>
 </div></blockquote>
 <p>Since <cite>check_liquidity</cite> is an <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.a_sync.html#a_sync.a_sync.function.ASyncFunctionAsyncDefault" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFunctionAsyncDefault</span></code></a>, you can optionally pass <cite>sync=True</cite> or <cite>asynchronous=False</cite> to force it to run synchronously and return a value. Without either kwarg, it will return a coroutine for you to await.</p>
@@ -3099,6 +3117,10 @@ ignore_pools: Pools to ignore.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">factory_contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">uniswap_v3</span><span class="o">.</span><span class="n">factory</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3118,6 +3140,8 @@ skip_cache: Whether to skip cache (unused).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">uniswap_v3</span><span class="o">.</span><span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0xTokenAddress&quot;</span><span class="p">,</span> <span class="mi">1234567</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="y.prices.html#y.prices.magic.get_price" title="y.prices.magic.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">y.prices.magic.get_price()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -3167,6 +3191,10 @@ skip_cache: Whether to skip cache (unused).</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">pools</span> <span class="o">=</span> <span class="k">await</span> <span class="n">uniswap_v3</span><span class="o">.</span><span class="n">pools</span>
 </pre></div>
 </div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniV3Pools" title="y.prices.dex.uniswap.v3.UniV3Pools"><code class="xref py py-class docutils literal notranslate"><span class="pre">UniV3Pools</span></code></a>, <a class="reference internal" href="#y.prices.dex.uniswap.v3.SlipstreamPools" title="y.prices.dex.uniswap.v3.SlipstreamPools"><code class="xref py py-class docutils literal notranslate"><span class="pre">SlipstreamPools</span></code></a></p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
@@ -3182,6 +3210,10 @@ skip_cache: Whether to skip cache (unused).</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">uniswap_v3</span> <span class="o">=</span> <span class="n">UniswapV3</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">quoter_contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">uniswap_v3</span><span class="o">.</span><span class="n">quoter</span>
 </pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><code class="xref py py-class docutils literal notranslate"><span class="pre">Contract</span></code></p>
 </div>
 </dd></dl>
 
@@ -3207,6 +3239,8 @@ block: The block number to check liquidity at.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">_check_liquidity_token_out</span><span class="p">(</span><span class="s2">&quot;0xToken0Address&quot;</span><span class="p">,</span> <span class="mi">1234567</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.check_liquidity" title="y.prices.dex.uniswap.v3.UniswapV3Pool.check_liquidity"><code class="xref py py-func docutils literal notranslate"><span class="pre">check_liquidity()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -3244,6 +3278,10 @@ block: The block number to check liquidity at.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;0xToken0Address&quot;</span> <span class="ow">in</span> <span class="n">pool</span>
 <span class="go">True</span>
 </pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__getitem__" title="y.prices.dex.uniswap.v3.UniswapV3Pool.__getitem__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -3283,6 +3321,10 @@ block: The block number to check liquidity at.</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">pool</span> <span class="o">=</span> <span class="n">UniswapV3Pool</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">token</span> <span class="o">=</span> <span class="n">pool</span><span class="p">[</span><span class="s2">&quot;0xToken0Address&quot;</span><span class="p">]</span>
 </pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool.__contains__" title="y.prices.dex.uniswap.v3.UniswapV3Pool.__contains__"><code class="xref py py-func docutils literal notranslate"><span class="pre">__contains__()</span></code></a></p>
 </div>
 </dd></dl>
 
@@ -3426,6 +3468,8 @@ block: The block number to check liquidity at.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">liquidity</span> <span class="o">=</span> <span class="k">await</span> <span class="n">pool</span><span class="o">.</span><span class="n">check_liquidity</span><span class="p">(</span><span class="s2">&quot;0xToken0Address&quot;</span><span class="p">,</span> <span class="mi">1234567</span><span class="p">)</span>
 </pre></div>
 </div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="#y.prices.dex.uniswap.v3.UniswapV3Pool._check_liquidity_token_out" title="y.prices.dex.uniswap.v3.UniswapV3Pool._check_liquidity_token_out"><code class="xref py py-func docutils literal notranslate"><span class="pre">_check_liquidity_token_out()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>

@@ -190,7 +190,7 @@
 <span class="sd">    Note:</span>
 <span class="sd">        Currently only supports decoding of :class:`HexBytes` objects.</span>
 
-<span class="sd">    Examples:</span>
+<span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from hexbytes import HexBytes</span>
 <span class="sd">        &gt;&gt;&gt; dec_hook(HexBytes, b&#39;1234&#39;)</span>
 <span class="sd">        HexBytes(&#39;0x1234&#39;)</span>
@@ -207,11 +207,17 @@
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">_set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.</span>
+<span class="sd">        Update cache metadata to indicate that the cache is populated from block `from_block` to block `done_thru`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            from_block: The starting block number.</span>
-<span class="sd">            done_thru: The ending block number.</span>
+<span class="sd">            done_thru: The ending block number indicating that the cache is populated up to this block.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; disk_cache._set_metadata(100, 200)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`set_metadata`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@abstractmethod</span>
@@ -242,11 +248,18 @@
     <span class="nd">@retry_locked</span>
     <span class="k">def</span> <span class="nf">set_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Updates the cache metadata to indicate the cache is populated from block `from_block` to block `to_block`.</span>
+<span class="sd">        Update cache metadata to indicate that the cache is populated from block `from_block` to block `done_thru`.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            from_block: The starting block number.</span>
-<span class="sd">            done_thru: The ending block number.</span>
+<span class="sd">            done_thru: The ending block number up to which the cache is populated.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; cache.set_metadata(100, 200)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`_set_metadata`</span>
+<span class="sd">            - :class:`CacheNotPopulatedError`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">with</span> <span class="n">db_session</span><span class="p">:</span>
@@ -302,6 +315,16 @@
 
 <span class="sd">        Raises:</span>
 <span class="sd">            CacheNotPopulatedError: If the cache is not fully populated.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; try:</span>
+<span class="sd">            ...     data = cache.check_and_select(100, 200)</span>
+<span class="sd">            ... except CacheNotPopulatedError:</span>
+<span class="sd">            ...     print(&quot;Cache incomplete&quot;)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`set_metadata`</span>
+<span class="sd">            - :meth:`select`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_cached_thru</span><span class="p">(</span><span class="n">from_block</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">to_block</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">)</span>
@@ -348,15 +371,39 @@
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span> <span class="nf">insert_to_db</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">T</span><span class="p">],</span> <span class="kc">None</span><span class="p">]:</span> <span class="o">...</span>
 
-    <span class="c1"># abc.abstractproperty</span>
-    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span> <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">bulk_insert</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[[</span><span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]],</span> <span class="n">Awaitable</span><span class="p">[</span><span class="kc">None</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to bulk insert a list of objects into the database.</span>
+
+<span class="sd">        This property must be overridden in subclasses to provide the desired bulk insertion logic.</span>
+<span class="sd">        The implementation should return a callable that accepts a list of objects (List[T])</span>
+<span class="sd">        and returns an awaitable.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; async def my_bulk_insert(objs):</span>
+<span class="sd">            ...     # perform custom bulk insert operations here</span>
+<span class="sd">            ...     pass</span>
+<span class="sd">            &gt;&gt;&gt; class MyFilter(_DiskCachedMixin):</span>
+<span class="sd">            ...     @property</span>
+<span class="sd">            ...     def bulk_insert(self) -&gt; Callable[[List[T]], Awaitable[None]]:</span>
+<span class="sd">            ...         return my_bulk_insert</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`_load_cache`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_extend</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">:</span> <span class="n">Container</span><span class="p">[</span><span class="n">T</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override this to pre-process objects before storing.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            objs: The objects to extend the list with.</span>
+<span class="sd">            objs (&quot;Container[T]&quot;): The objects to extend the list with.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; await instance._extend([obj1, obj2])</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`_load_cache`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">objs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">objs</span><span class="p">)</span>
@@ -372,7 +419,17 @@
 <span class="sd">            from_block: The starting block number.</span>
 
 <span class="sd">        Returns:</span>
-<span class="sd">            The maximum block number loaded from cache.</span>
+<span class="sd">            The maximum block number loaded from cache, or None if no cached data is available.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; cached_thru = await instance._load_cache(100)</span>
+<span class="sd">            &gt;&gt;&gt; if cached_thru is None:</span>
+<span class="sd">            ...     print(&quot;No cached data available&quot;)</span>
+<span class="sd">            ... else:</span>
+<span class="sd">            ...     print(f&quot;Cache loaded through block {cached_thru}&quot;)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`_extend`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;checking to see if </span><span class="si">%s</span><span class="s2"> is cached in local db&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cached_thru</span> <span class="o">:=</span> <span class="k">await</span> <span class="n">_metadata_read_executor</span><span class="o">.</span><span class="n">run</span><span class="p">(</span>
@@ -506,6 +563,9 @@
 
 <span class="sd">        Returns:</span>
 <span class="sd">            The block number of the object.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; block = instance._get_block_for_obj(some_obj)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">obj</span><span class="o">.</span><span class="n">blockNumber</span>
 
@@ -653,6 +713,12 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Override this if you want.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; await instance._fetch()</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`_loop`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_loop</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">from_block</span><span class="p">)</span>
 
@@ -770,6 +836,12 @@
 
 <span class="sd">        Args:</span>
 <span class="sd">            block: The block number to set the lock to.</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            &gt;&gt;&gt; await instance._set_lock(150)</span>
+
+<span class="sd">        See Also:</span>
+<span class="sd">            - :meth:`_load_new_objects`</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
 

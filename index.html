@@ -84,25 +84,28 @@ I’ve collected the most interesting components of the library here for your co
 <dd><blockquote>
 <div><p>Get the price of a token in USD.</p>
 <dl>
-<dt>Args:</dt><dd><p>token_address: The address of the token to price.
+<dt>Args:</dt><dd><p>token_address: The address of the token to price. The function accepts hexadecimal strings, Brownie Contract objects, and integers as shorthand for addresses.
 block (optional): The block number at which to get the price. If None, uses the latest block.
-fail_to_None (optional): If True, return None instead of raising a <code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code> on failure. Default False.
+fail_to_None (optional): If True, return None instead of raising a <code class="xref py py-class docutils literal notranslate"><span class="pre">yPriceMagicError</span></code> on failure. Defaults to False.
 skip_cache (optional): If True, bypass the cache and fetch the price directly. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ENVS.SKIP_CACHE</span></code>.
 ignore_pools (optional): A tuple of pool addresses to ignore when fetching the price.
-silent (optional): If True, suppress error logging. Default False.</p>
+silent: If True, suppress error logging. Defaults to False.</p>
 </dd>
 <dt>Returns:</dt><dd><p>The price of the token in USD, or None if the price couldn’t be determined and fail_to_None is True.</p>
 </dd>
 <dt>Raises:</dt><dd><p>yPriceMagicError: If the price couldn’t be determined and fail_to_None is False.</p>
 </dd>
-<dt>Note:</dt><dd><p>Don’t pass an int like <cite>123</cite> into <cite>token_address</cite> please, that’s just silly.
-- ypricemagic accepts ints to allow you to pass <cite>y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)</cite></p>
-<blockquote>
-<div><p>so you can save yourself some keystrokes while testing in a console</p>
-</div></blockquote>
-<ul class="simple">
-<li><p>(as opposed to <cite>y.get_price(“0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e”)</cite>)</p></li>
-</ul>
+<dt>Note:</dt><dd><p>ypricemagic accepts integers as valid token_address values for convenience.
+For example, you can use <code class="samp docutils literal notranslate"><span class="pre">y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)</span></code> to save keystrokes
+while testing in an interactive console.</p>
+</dd>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">get_price</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">price</span> <span class="o">=</span> <span class="n">get_price</span><span class="p">(</span><span class="s2">&quot;0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e&quot;</span><span class="p">,</span> <span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">price</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="source/y.html#y.get_prices" title="y.get_prices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_prices()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -152,15 +155,24 @@ silent (optional): If True, suppress error logging. Default False.</p>
 <span class="sig-prename descclassname"><span class="pre">y.</span></span><span class="sig-name descname"><span class="pre">get_prices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">token_addresses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><span class="pre">AnyAddressType</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Block</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fail_to_None</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip_cache</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">ENVS.SKIP_CACHE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">silent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="source/y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">UsdPrice</span></a><span class="p"><span class="pre">]</span></span></span></span></dt>
 <dd><blockquote>
 <div><p>Get prices for multiple tokens in USD.</p>
-<p>You should use this function over <a class="reference internal" href="source/y.html#y.get_price" title="y.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a> where possible, it is better optimized for parallel execution.</p>
-<dl class="simple">
+<p>This function is optimized for parallel execution and should be preferred over
+<a class="reference internal" href="source/y.html#y.get_price" title="y.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a> when querying prices in bulk.</p>
+<dl>
 <dt>Args:</dt><dd><p>token_addresses: An iterable of token addresses to price.
-block (optional): The block number at which to get the prices. Defaults to the latest block.
-fail_to_None (optional): If True, return None for tokens whose price couldn’t be determined. Default False.
+block (optional): The block number at which to get the prices. If None, defaults to the latest block.
+fail_to_None (optional): If True, return None for tokens whose price couldn’t be determined. Defaults to False.
 skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ENVS.SKIP_CACHE</span></code>.
-silent (optional): If True, suppress progress bar and error logging. This kwarg is not currently implemented.</p>
+silent (optional): If True, suppress error logging and any progress indicators. Defaults to False.</p>
 </dd>
-<dt>Returns:</dt><dd><p>A list of token prices in USD, in the same order as the input token_addresses.</p>
+<dt>Returns:</dt><dd><p>A list of token prices in USD, in the same order as the input <code class="samp docutils literal notranslate"><span class="pre">token_addresses</span></code>.</p>
+</dd>
+<dt>Examples:</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">get_prices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">prices</span> <span class="o">=</span> <span class="n">get_prices</span><span class="p">([</span><span class="s2">&quot;0x123...&quot;</span><span class="p">,</span> <span class="s2">&quot;0x456...&quot;</span><span class="p">],</span> <span class="n">block</span><span class="o">=</span><span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd>
+<dt>See Also:</dt><dd><p><a class="reference internal" href="source/y.html#y.get_price" title="y.get_price"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_price()</span></code></a> and <a class="reference internal" href="source/y.html#y.map_prices" title="y.map_prices"><code class="xref py py-func docutils literal notranslate"><span class="pre">map_prices()</span></code></a></p>
 </dd>
 </dl>
 </div></blockquote>
@@ -177,16 +189,28 @@ silent (optional): If True, suppress progress bar and error logging. This kwarg 
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>token_addresses</strong> – An iterable of token addresses to price.</p></li>
-<li><p><strong>block</strong> (<em>optional</em>) – The block number at which to get the prices. Defaults to latest block.</p></li>
-<li><p><strong>fail_to_None</strong> (<em>optional</em>) – If True, map to None for tokens whose price couldn’t be determined. Default False.</p></li>
+<li><p><strong>block</strong> (<em>optional</em>) – The block number at which to get the prices.</p></li>
+<li><p><strong>fail_to_None</strong> (<em>optional</em>) – If True, map tokens whose price couldn’t be determined to None. Defaults to False.</p></li>
 <li><p><strong>skip_cache</strong> (<em>optional</em>) – If True, bypass the cache and fetch prices directly. Defaults to <code class="xref py py-obj docutils literal notranslate"><span class="pre">ENVS.SKIP_CACHE</span></code>.</p></li>
-<li><p><strong>silent</strong> (<em>optional</em>) – If True, suppress error logging. Default False.</p></li>
+<li><p><strong>silent</strong> (<em>optional</em>) – If True, suppress error logging. Defaults to False.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.TaskMapping" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">a_sync.TaskMapping</span></code></a> object mapping token addresses to their prices.</p>
+<dd class="field-even"><p>A <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.TaskMapping" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">TaskMapping</span></code></a> object mapping token addresses to their USD prices.</p>
 </dd>
 </dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">y</span> <span class="kn">import</span> <span class="n">map_prices</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">task_map</span> <span class="o">=</span> <span class="n">map_prices</span><span class="p">([</span><span class="s2">&quot;0xabc...&quot;</span><span class="p">,</span> <span class="s2">&quot;0xdef...&quot;</span><span class="p">],</span> <span class="mi">12345678</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">results</span> <span class="o">=</span> <span class="k">await</span> <span class="n">task_map</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">pop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">results</span><span class="p">)</span>
+<span class="go">[1.234, 2.345]</span>
+</pre></div>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="source/y.html#y.get_prices" title="y.get_prices"><code class="xref py py-func docutils literal notranslate"><span class="pre">get_prices()</span></code></a></p>
+</div>
 </dd></dl>
 
 <p>There are some powerful tools for interacting with deployed contracts in the <cite>contracts</cite> module.</p>
