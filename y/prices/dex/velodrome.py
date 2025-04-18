@@ -311,7 +311,8 @@ class VelodromeRouterV2(SolidlyRouterBase):
                     #       it also creates 2 fewer tasks and 1 fewer future than `__tokens__` since there is no use of `asyncio.gather`.
                     if (
                         await stable_pool.__token0__ == await unstable_pool.__token0__
-                        and await stable_pool.__token1__ == await unstable_pool.__token1__
+                        and await stable_pool.__token1__
+                        == await unstable_pool.__token1__
                     ):
                         stable_reserve = stable_reserves[0]
                         unstable_reserve = unstable_reserves[0]
