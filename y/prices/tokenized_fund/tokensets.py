@@ -182,9 +182,9 @@ class TokenSet(ERC20):
         This method computes the price of the TokenSet using one of two approaches depending on
         the underlying contract's available methods:
         1. If the contract has a ``getUnits`` method: The price is calculated by fetching the balances of
-           the components, converting them to their USD values, summing these values to obtain the total 
+           the components, converting them to their USD values, summing these values to obtain the total
            value (TVL), and then dividing the TVL by the total supply of the TokenSet.
-        2. If the contract has a ``getTotalComponentRealUnits`` method: The price is computed as the direct sum 
+        2. If the contract has a ``getTotalComponentRealUnits`` method: The price is computed as the direct sum
            of the USD values of its components without normalization by the total supply.
 
         Args:
