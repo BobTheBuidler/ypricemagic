@@ -23,9 +23,9 @@ def is_froyo(token: AnyAddressType) -> bool:
       - The normalized token address matches "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3".
 
     Note:
-      The Froyo token used for identification in this function is hard-coded as 
-      "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3" even though the module-level constant POOL is set to 
-      "0x83E5f18Da720119fF363cF63417628eB0e9fd523". Refer to :func:`~y.convert.to_address` and 
+      The Froyo token used for identification in this function is hard-coded as
+      "0x4f85Bbf3B0265DCEd4Ec72ebD0358ccCf190F1B3" even though the module-level constant POOL is set to
+      "0x83E5f18Da720119fF363cF63417628eB0e9fd523". Refer to :func:`~y.convert.to_address` and
       :class:`~y.networks.Network` for more details.
 
     Args:
