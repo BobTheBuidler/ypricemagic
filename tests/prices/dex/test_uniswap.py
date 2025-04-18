@@ -1,3 +1,13 @@
+"""Tests for Uniswap price fetching functions.
+
+This module contains asynchronous tests for verifying price retrieval via the Uniswap multiplexer
+across different Uniswap versions (V1, V2, and V3). In particular, note that for Uniswap V2 the test now uses
+the primary router determined via liquidity depth via :meth:`~y.prices.dex.uniswap.uniswap.UniswapMultiplexer.routers_by_depth`.
+
+See Also:
+    :class:`~y.prices.dex.uniswap.uniswap.UniswapMultiplexer`
+"""
+
 import pytest
 from a_sync import cgather
 from brownie import chain
@@ -48,6 +58,19 @@ V2_TOKENS = mutate_addresses(V2_TOKENS)
 @pytest.mark.parametrize("token", V1_TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v1(token, async_uni_v1):
+    """Test Uniswap V1 price fetching.
+
+    This test concurrently retrieves the price using an asynchronous Uniswap V1 caller and the generic
+    :func:`~y.prices.magic.get_price` function. It verifies that the prices obtained from both methods are
+    consistent within a 5% relative tolerance.
+
+    Args:
+        token: The token address to query.
+        async_uni_v1: Fixture providing an asynchronous Uniswap V1 instance.
+
+    See Also:
+        :meth:`~y.prices.dex.uniswap.uniswap.UniswapMultiplexer.get_price`
+    """
     price, alt_price = await cgather(
         async_uni_v1.get_price(token, None),
         magic.get_price(token, skip_cache=True, sync=False),
@@ -60,6 +83,19 @@ async def test_uniswap_v1(token, async_uni_v1):
 @pytest.mark.parametrize("token", V2_TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v2(token):
+    """Test Uniswap V2 price fetching.
+
+    This test retrieves the list of routers sorted by liquidity depth for the provided token by calling
+    :meth:`~y.prices.dex.uniswap.uniswap.UniswapMultiplexer.routers_by_depth`, and then concurrently fetches
+    price data from the selected router and from the generic :func:`~y.prices.magic.get_price` function.
+    The test verifies that the prices obtained are consistent within a 5% relative tolerance.
+
+    Args:
+        token: The token address to query.
+
+    See Also:
+        :meth:`~y.prices.dex.uniswap.uniswap.UniswapMultiplexer.routers_by_depth`
+    """
     deepest_router = await uniswap_multiplexer.deepest_router(token, sync=False)
     price, alt_price = await cgather(
         deepest_router.get_price(token, skip_cache=True, sync=False),
@@ -72,6 +108,18 @@ async def test_uniswap_v2(token):
 @pytest.mark.parametrize("token", V2_TOKENS)
 @pytest.mark.asyncio_cooperative
 async def test_uniswap_v3(token):
+    """Test Uniswap V3 price fetching.
+
+    This test concurrently retrieves pricing data using the Uniswap V3 router and the generic
+    :func:`~y.prices.magic.get_price` function. It ensures that the price returned by the Uniswap V3 router
+    is within a 5% relative tolerance of the price obtained from the magic fetch.
+
+    Args:
+        token: The token address to query.
+
+    See Also:
+        :meth:`~y.prices.dex.uniswap.v3.uniswap_v3.get_price`
+    """
     price, alt_price = await cgather(
         v3.uniswap_v3.get_price(token, skip_cache=True, sync=False),
         magic.get_price(token, skip_cache=True, sync=False),
