@@ -33,20 +33,30 @@ _deploy_block_write_executor = make_executor(
 )
 @db_session_retry_locked
 def get_deploy_block(address: str) -> Optional[int]:
-    """Retrieve the deployment block number for a given contract address.
+    """Retrieve the cached deployment block number for a given contract address.
 
-    This function first checks a cache for the deployment block number. If not found,
-    it fetches the information from the blockchain.
+    This function first examines the cached deploy block numbers via
+    :func:`known_deploy_blocks`. If a deploy block is found there, it returns it.
+    Otherwise, it retrieves the token instance using :func:`_get_get_token` in 
+    synchronous mode and checks its stored deploy block. If a deploy block is present 
+    on the token, its block number is returned. If no deploy block is found, the function
+    logs that the deploy block is not cached and returns None without attempting to fetch
+    it from the blockchain.
 
     Args:
         address: The contract address as a string.
 
     Examples:
         >>> deploy_block = get_deploy_block("0x1234567890abcdef1234567890abcdef12345678")
-        >>> print(deploy_block)
+        >>> if deploy_block is not None:
+        ...     print("Deployment occurred at block", deploy_block)
+        ... else:
+        ...     print("Deployment block not available in cache.")
 
     See Also:
         - :func:`_set_deploy_block`
+        - :func:`known_deploy_blocks`
+        - :func:`_get_get_token`
     """
     if deploy_block := known_deploy_blocks().pop(address, None):
         _logger_debug("%s deploy block from cache: %s", address, deploy_block)
@@ -70,6 +80,9 @@ def _set_deploy_block(address: str, deploy_block: int) -> None:
         address: The contract address as a string.
         deploy_block: The block number where the contract was deployed.
 
+    Examples:
+        >>> _set_deploy_block("0x1234567890abcdef1234567890abcdef12345678", 12345678)
+
     See Also:
         - :func:`set_deploy_block`
     """
@@ -88,6 +101,9 @@ def set_deploy_block(address: str, deploy_block: int) -> None:
         address: The contract address as a string.
         deploy_block: The block number where the contract was deployed.
 
+    Examples:
+        >>> set_deploy_block("0x1234567890abcdef1234567890abcdef12345678", 12345678)
+
     See Also:
         - :func:`_set_deploy_block`
     """
@@ -104,10 +120,13 @@ def known_deploy_blocks() -> Dict[Address, Block]:
     """Cache and return all known contract deploy blocks for this chain.
 
     This function minimizes database reads by caching the result for one hour.
+    The cache is built by selecting all contract entities on the current chain 
+    where a deploy block is recorded.
 
     Examples:
         >>> deploy_blocks = known_deploy_blocks()
-        >>> print(deploy_blocks)
+        >>> for addr, block in deploy_blocks.items():
+        ...     print(f"Contract at {addr} was deployed at block {block}")
 
     See Also:
         - :func:`get_deploy_block`
