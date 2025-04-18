@@ -92,12 +92,12 @@ async def get_price(
     Get the price of a token in USD.
 
     Args:
-        token_address: The address of the token to price.
+        token_address: The address of the token to price. The function accepts hexadecimal strings, Brownie Contract objects, and integers as shorthand for addresses.
         block (optional): The block number at which to get the price. If None, uses the latest block.
-        fail_to_None (optional): If True, return None instead of raising a :class:`~yPriceMagicError` on failure. Default False.
+        fail_to_None (optional): If True, return None instead of raising a :class:`~yPriceMagicError` on failure. Defaults to False.
         skip_cache (optional): If True, bypass the cache and fetch the price directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
         ignore_pools (optional): A tuple of pool addresses to ignore when fetching the price.
-        silent (optional): If True, suppress error logging. Default False.
+        silent: If True, suppress error logging. Defaults to False.
 
     Returns:
         The price of the token in USD, or None if the price couldn't be determined and fail_to_None is True.
@@ -106,10 +106,17 @@ async def get_price(
         yPriceMagicError: If the price couldn't be determined and fail_to_None is False.
 
     Note:
-        Don't pass an int like `123` into `token_address` please, that's just silly.
-        - ypricemagic accepts ints to allow you to pass `y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)`
-            so you can save yourself some keystrokes while testing in a console
-        - (as opposed to `y.get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e")`)
+        ypricemagic accepts integers as valid token_address values for convenience.
+        For example, you can use :samp:`y.get_price(0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e)` to save keystrokes
+        while testing in an interactive console.
+
+    Examples:
+        >>> from y import get_price
+        >>> price = get_price("0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e", 12345678)
+        >>> print(price)
+
+    See Also:
+        :func:`get_prices`
     """
     block = int(block or await dank_mids.eth.block_number)
     token_address = await convert.to_address_async(token_address)
@@ -163,17 +170,26 @@ async def get_prices(
     """
     Get prices for multiple tokens in USD.
 
-    You should use this function over :func:`get_price` where possible, it is better optimized for parallel execution.
+    This function is optimized for parallel execution and should be preferred over
+    :func:`get_price` when querying prices in bulk.
 
     Args:
         token_addresses: An iterable of token addresses to price.
-        block (optional): The block number at which to get the prices. Defaults to the latest block.
-        fail_to_None (optional): If True, return None for tokens whose price couldn't be determined. Default False.
+        block (optional): The block number at which to get the prices. If None, defaults to the latest block.
+        fail_to_None (optional): If True, return None for tokens whose price couldn't be determined. Defaults to False.
         skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
-        silent (optional): If True, suppress progress bar and error logging. This kwarg is not currently implemented.
+        silent (optional): If True, suppress error logging and any progress indicators. Defaults to False.
 
     Returns:
-        A list of token prices in USD, in the same order as the input token_addresses.
+        A list of token prices in USD, in the same order as the input :samp:`token_addresses`.
+
+    Examples:
+        >>> from y import get_prices
+        >>> prices = get_prices(["0x123...", "0x456..."], block=12345678)
+        >>> print(prices)
+
+    See Also:
+        :func:`get_price` and :func:`map_prices`
     """
     return await map_prices(
         token_addresses,
@@ -219,13 +235,23 @@ def map_prices(
 
     Args:
         token_addresses: An iterable of token addresses to price.
-        block (optional): The block number at which to get the prices. Defaults to latest block.
-        fail_to_None (optional): If True, map to None for tokens whose price couldn't be determined. Default False.
+        block (optional): The block number at which to get the prices.
+        fail_to_None (optional): If True, map tokens whose price couldn't be determined to None. Defaults to False.
         skip_cache (optional): If True, bypass the cache and fetch prices directly. Defaults to :obj:`ENVS.SKIP_CACHE`.
-        silent (optional): If True, suppress error logging. Default False.
+        silent (optional): If True, suppress error logging. Defaults to False.
 
     Returns:
-        An :class:`a_sync.TaskMapping` object mapping token addresses to their prices.
+        A :class:`~a_sync.TaskMapping` object mapping token addresses to their USD prices.
+
+    Examples:
+        >>> from y import map_prices
+        >>> task_map = map_prices(["0xabc...", "0xdef..."], 12345678)
+        >>> results = await task_map.values(pop=True)
+        >>> print(results)
+        [1.234, 2.345]
+
+    See Also:
+        :func:`get_prices`
     """
     return a_sync.map(
         get_price,
