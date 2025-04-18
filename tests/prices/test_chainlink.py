@@ -120,16 +120,13 @@ FEEDS = list(feeds)
 @pytest.mark.asyncio_cooperative
 async def test_chainlink_get_feed(token):
     """
-    Test `chainlink.get_feed` with both lowercase address and checksum address.
+    Test ``chainlink.get_feed`` with both lowercase and checksum addresses.
 
-    This test ensures that the `chainlink.get_feed` function returns a valid feed
-    address that is not the zero address for a given token.
+    This test verifies that ``chainlink.get_feed`` returns a valid Feed object by
+    asserting that the returned object is not equal to ZERO_ADDRESS.
 
-    Args:
-        token: The token address to test.
-
-    Raises:
-        AssertionError: If no feed is available for the token.
+    See Also:
+        :func:`y.prices.chainlink.chainlink.get_feed`
     """
     assert (
         await chainlink.get_feed(token, sync=False) != ZERO_ADDRESS
@@ -142,18 +139,15 @@ async def test_chainlink_latest(token):
     """
     Test the latest price availability for a token using Chainlink.
 
-    This test checks if the latest price for a given token is available using
-    Chainlink. If the price is not available, it verifies the feed's latest
-    timestamp and skips the test if the feed is stale. Otherwise, it asserts
-    that the feed's contract aggregator is the zero address, indicating no
-    current price is available.
+    This test checks whether ``chainlink.get_price(token)`` returns a valid price.
+    If no price is returned, it retrieves the corresponding Feed object from
+    ``chainlink.get_feed(token)`` and checks its latest timestamp. If the timestamp
+    indicates that the feed is stale (i.e. more than 24 hours old relative to the current time),
+    the test is skipped. Otherwise, it asserts that the associated feed's contract's
+    aggregator property is the zero address, thereby indicating that no current price is provided.
 
-    Args:
-        token: The token address to test.
-
-    Raises:
-        AttributeError: If there is an issue accessing the feed's contract
-            aggregator.
+    See Also:
+        :func:`y.prices.chainlink.chainlink.get_feed`
     """
     if not await chainlink.get_price(token):
         feed = await chainlink.get_feed(token)
@@ -173,21 +167,18 @@ async def test_chainlink_latest(token):
 @pytest.mark.asyncio_cooperative
 async def test_chainlink_before_registry(token):
     """
-    Test Chainlink price retrieval before the registry was available.
+    Test Chainlink price retrieval for a token at a block prior to the availability
+    of the Chainlink registry.
 
-    This test checks if a price can be retrieved for a given token at a block
-    before the Chainlink registry was available. If the feed was deployed after
-    the test block, the test is skipped. If the price is not available, it
-    verifies the feed's latest timestamp and skips the test if the feed is
-    stale. Otherwise, it asserts that the feed's contract aggregator is the
-    zero address, indicating no price is available before the registry.
+    This test verifies that a price retrieval attempt using ``chainlink.get_price``
+    at a historical block (set to 12800000) either returns a valid price or, if not,
+    examines the Feed object. If the feed was deployed after the test block, the test
+    is skipped. Otherwise, if no price is returned and the feed is not stale, it asserts
+    that the feed's contract aggregator property equals the zero address, indicating
+    that no price is available before the registry.
 
-    Args:
-        token: The token address to test.
-
-    Raises:
-        AttributeError: If there is an issue accessing the feed's contract
-            aggregator.
+    See Also:
+        :func:`y.prices.chainlink.chainlink.get_price`
     """
     test_block = 12800000
     assert chainlink.asynchronous is True
@@ -212,10 +203,13 @@ async def test_chainlink_before_registry(token):
 @pytest.mark.asyncio_cooperative
 async def test_chainlink_nonexistent():
     """
-    Test Chainlink feed and price retrieval for a nonexistent token.
+    Test Chainlink Feed and price retrieval for a nonexistent token.
 
-    This test checks that attempting to retrieve a feed or price for a
-    nonexistent token (zero address) returns None.
+    This test verifies that attempting to retrieve a Feed or price using a nonexistent
+    token (the zero address) correctly returns None.
+
+    See Also:
+        :func:`y.prices.chainlink.chainlink.get_feed`
     """
     assert await chainlink.get_feed(ZERO_ADDRESS, sync=False) is None
     assert await chainlink.get_price(ZERO_ADDRESS, sync=False) is None
@@ -227,8 +221,11 @@ async def test_chainlink_before_feed():
     """
     Test Chainlink price retrieval one block before a feed is deployed.
 
-    This test checks that attempting to retrieve a price for a token one block
-    before its Chainlink feed is deployed returns None.
+    This test checks that querying the price for a token (e.g., YFI) one block prior to
+    its associated Chainlink Feed deployment returns None.
+
+    See Also:
+        :func:`y.prices.chainlink.chainlink.get_price`
     """
     # try to fetch yfi price one block before feed is deployed
     assert (
