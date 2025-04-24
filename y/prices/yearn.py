@@ -353,9 +353,12 @@ class YearnInspiredVault(ERC20):
         """
         logger = get_price_logger(self.address, block=None, extra="yearn")
         underlying: ERC20
-        share_price, underlying = await cgather(
-            self.share_price(block=block, sync=False), self.__underlying__
-        )
+        try:
+            share_price, underlying = await cgather(
+                self.share_price(block=block, sync=False), self.__underlying__
+            )
+        except CantFetchParam:
+            return None
         if share_price is None:
             return None
         logger.debug("%s share price at block %s: %s", self, block, share_price)
