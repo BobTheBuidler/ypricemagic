@@ -7,6 +7,7 @@ from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
 from multicall.call import Call
 from typing_extensions import Self
+from web3.exceptions import ContractLogicError
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y import Network
