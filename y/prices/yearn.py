@@ -274,9 +274,12 @@ class YearnInspiredVault(ERC20):
             # this is for element vaults and other 'scaled' share price functions. probe fails because method requires input
             try:
                 contract = await Contract.coroutine(self.address)
+            except ContractNotVerified:
+                pass
+            else:
                 for method in ("convertToAssets", "getSharesToUnderlying"):
-                    if hasattr(contract, method):
-                        contract_call = getattr(contract, method)
+                    if contract_call := getattr(contract, method, None):
+
                         scale = await self.__scale__
 
                         class call:
@@ -289,11 +292,12 @@ class YearnInspiredVault(ERC20):
                                     scale, block_identifier=block_id
                                 )
 
-                        share_price = await call.coroutine(block_id=block)
-                        self._get_share_price = call
-
-            except ContractNotVerified:
-                pass
+                        try:
+                            share_price = await call.coroutine(block_id=block)
+                        except ContractLogicError:
+                            pass
+                        else:
+                            self._get_share_price = call
 
         if share_price is not None:
             if (
