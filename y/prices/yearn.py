@@ -279,7 +279,7 @@ class YearnInspiredVault(ERC20):
             else:
                 for method in ("convertToAssets", "getSharesToUnderlying"):
                     if contract_call := getattr(contract, method, None):
-                        
+
                         scale = await self.__scale__
 
                         class call:
