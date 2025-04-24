@@ -314,7 +314,7 @@
 
             <span class="c1"># special logic to handle function overloading</span>
             <span class="k">elif</span> <span class="n">overloaded</span> <span class="ow">is</span> <span class="kc">True</span><span class="p">:</span>
-                <span class="n">overloaded</span> <span class="o">=</span> <span class="n">DankOverloadedMethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">full_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">)</span>
+                <span class="n">overloaded</span> <span class="o">=</span> <span class="n">DankOverloadedMethod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">,</span> <span class="n">full_name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_owner</span><span class="p">)</span>  <span class="c1"># type: ignore [call-arg]</span>
 
             <span class="n">overloaded</span><span class="o">.</span><span class="n">_add_fn</span><span class="p">(</span><span class="n">abi</span><span class="p">,</span> <span class="n">natspec</span><span class="p">)</span>
 

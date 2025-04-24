@@ -358,9 +358,12 @@
             <span class="c1"># this is for element vaults and other &#39;scaled&#39; share price functions. probe fails because method requires input</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">contract</span> <span class="o">=</span> <span class="k">await</span> <span class="n">Contract</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
+                <span class="k">pass</span>
+            <span class="k">else</span><span class="p">:</span>
                 <span class="k">for</span> <span class="n">method</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;convertToAssets&quot;</span><span class="p">,</span> <span class="s2">&quot;getSharesToUnderlying&quot;</span><span class="p">):</span>
-                    <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">):</span>
-                        <span class="n">contract_call</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">contract_call</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">contract</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+
                         <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span>
 
                         <span class="k">class</span> <span class="nc">call</span><span class="p">:</span>
@@ -373,11 +376,12 @@
                                     <span class="n">scale</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block_id</span>
                                 <span class="p">)</span>
 
-                        <span class="n">share_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">_get_share_price</span> <span class="o">=</span> <span class="n">call</span>
-
-            <span class="k">except</span> <span class="n">ContractNotVerified</span><span class="p">:</span>
-                <span class="k">pass</span>
+                        <span class="k">try</span><span class="p">:</span>
+                            <span class="n">share_price</span> <span class="o">=</span> <span class="k">await</span> <span class="n">call</span><span class="o">.</span><span class="n">coroutine</span><span class="p">(</span><span class="n">block_id</span><span class="o">=</span><span class="n">block</span><span class="p">)</span>
+                        <span class="k">except</span> <span class="n">ContractLogicError</span><span class="p">:</span>
+                            <span class="k">pass</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">_get_share_price</span> <span class="o">=</span> <span class="n">call</span>
 
         <span class="k">if</span> <span class="n">share_price</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="p">(</span>
