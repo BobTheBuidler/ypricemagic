@@ -337,7 +337,14 @@ def _set_symbol(address: str, symbol: str) -> None:
     """
     get_token = _get_get_token()
     get_token(address, sync=True).symbol = symbol
-    _logger_debug("updated %s symbol in ydb: %s", address, symbol)
+    try:
+        commit()
+    except ValueError as e:
+        # NOTE: This can happen when you scrape stuff at scale, we can ignore
+        if "A string literal cannot contain NUL (0x00) characters." not in str(e):
+            raise
+    else:
+        _logger_debug("updated %s symbol in ydb: %s", address, symbol)
 
 
 @a_sync.a_sync(default="async", executor=_token_executor)
