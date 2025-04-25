@@ -539,13 +539,6 @@ class Filter(_DiskCachedMixin[T, C]):
             self._semaphore = BlockSemaphore(self._chunks_per_batch)
         return self._semaphore
 
-    @property
-    def is_asleep(self) -> bool:
-        """
-        Indicates whether the filter is currently sleeping (awaiting new data).
-        """
-        return False if self._sleep_fut is None else not self._sleep_fut.done()
-
     def _get_block_for_obj(self, obj: T) -> "Block":
         """
         Override this as needed for different object types.
@@ -634,8 +627,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
         while True:
             if block is None or done_thru < block:
-                if self.is_asleep:
-                    self._wakeup()
+                self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
             if self._exc is not None:
                 # raise it
@@ -700,8 +692,9 @@ class Filter(_DiskCachedMixin[T, C]):
 
     def _wakeup(self) -> None:
         """Wake up the Filter to query logs from blocks not yet loaded into memory."""
-        self._sleep_fut.set_result(None)
-        del self._sleep_fut
+        if self._sleep_fut is not None:
+            self._sleep_fut.set_result(None)
+            del self._sleep_fut
 
     async def __fetch(self) -> NoReturn:
         """
