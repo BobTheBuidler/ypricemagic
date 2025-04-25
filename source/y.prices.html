@@ -562,7 +562,6 @@
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.executor"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.executor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.from_block"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.from_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.insert_to_db</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.is_asleep</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.is_reusable</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.materialized"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.materialized</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.AddressProviderEvents.provider"><code class="docutils literal notranslate"><span class="pre">AddressProviderEvents.provider</span></code></a></li>
@@ -592,7 +591,6 @@
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.executor"><code class="docutils literal notranslate"><span class="pre">CurveEvents.executor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.from_block"><code class="docutils literal notranslate"><span class="pre">CurveEvents.from_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">CurveEvents.insert_to_db</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">CurveEvents.is_asleep</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">CurveEvents.is_reusable</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.materialized"><code class="docutils literal notranslate"><span class="pre">CurveEvents.materialized</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.CurveEvents.semaphore"><code class="docutils literal notranslate"><span class="pre">CurveEvents.semaphore</span></code></a></li>
@@ -759,7 +757,6 @@
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.executor"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.executor</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.from_block"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.from_block</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.insert_to_db"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.insert_to_db</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.is_asleep"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.is_asleep</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.is_reusable"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.is_reusable</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.materialized"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.materialized</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.prices.stable_swap.html#y.prices.stable_swap.curve.RegistryEvents.registry"><code class="docutils literal notranslate"><span class="pre">RegistryEvents.registry</span></code></a></li>
@@ -1603,12 +1600,6 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#NotImplementedError" title="(in Python v3.13)"><strong>NotImplementedError</strong></a> – If this method is not implemented in the subclass.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py property">
-<dt class="sig sig-object py" id="y.prices.chainlink.FeedsFromEvents.is_asleep">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_asleep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.chainlink.FeedsFromEvents.is_asleep" title="Link to this definition"></a></dt>
-<dd><p>Indicates whether the filter is currently sleeping (awaiting new data).</p>
 </dd></dl>
 
 <dl class="py attribute">
