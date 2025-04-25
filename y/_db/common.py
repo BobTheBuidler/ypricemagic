@@ -620,7 +620,7 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _sleep(self) -> None:
         """
         Put the filter to sleep until :meth:`~_wakeup` is called.
-        
+
         The Filter will not make any rpc requests while sleeping.
         """
         if self._sleep_fut is None or self._sleep_fut.done():
@@ -650,7 +650,7 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _fetch(self) -> NoReturn:
         """
         The function that defines the logic that populates the Filter.
-        
+
         Override this if you want.
 
         Example:
