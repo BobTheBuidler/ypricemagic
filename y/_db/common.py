@@ -481,7 +481,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @property
     def is_asleep(self) -> bool:
-        return not self._sleep_fut.done() if self._sleep_fut else False
+        return False if self._sleep_fut is None else not self._sleep_fut.done()
 
     def _get_block_for_obj(self, obj: T) -> "Block":
         """
@@ -618,14 +618,22 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @async_property
     async def _sleep(self) -> None:
+        """
+        Put the filter to sleep until :meth:`~_wakeup` is called.
+
+        The Filter will not make any rpc requests while sleeping.
+        """
         if self._sleep_fut is None or self._sleep_fut.done():
             self._sleep_fut = get_event_loop().create_future()
         await self._sleep_fut
 
     def _wakeup(self) -> None:
+        """Wake up the Filter to query logs from blocks not yet loaded into memory."""
         self._sleep_fut.set_result(None)
+        del self._sleep_fut
 
     async def __fetch(self) -> NoReturn:
+        """The main coroutine that runs the Filter."""
         try:
             await self._fetch()
         except Exception as e:
@@ -641,6 +649,8 @@ class Filter(_DiskCachedMixin[T, C]):
 
     async def _fetch(self) -> NoReturn:
         """
+        The function that defines the logic that populates the Filter.
+
         Override this if you want.
 
         Example:
