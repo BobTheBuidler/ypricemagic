@@ -481,7 +481,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @property
     def is_asleep(self) -> bool:
-        return not self._sleep_fut.done() if self._sleep_fut else False
+        return False if self._sleep_fut is None else not self._sleep_fut.done()
 
     def _get_block_for_obj(self, obj: T) -> "Block":
         """
@@ -624,6 +624,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     def _wakeup(self) -> None:
         self._sleep_fut.set_result(None)
+        del self._sleep_fut
 
     async def __fetch(self) -> NoReturn:
         try:
