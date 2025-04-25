@@ -552,7 +552,7 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_asleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-        <span class="k">return</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">done</span><span class="p">()</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="k">else</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -689,14 +689,22 @@
 
     <span class="nd">@async_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Put the filter to sleep until :meth:`~_wakeup` is called.</span>
+
+<span class="sd">        The Filter will not make any rpc requests while sleeping.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="o">=</span> <span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
         <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span>
 
     <span class="k">def</span> <span class="nf">_wakeup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Wake up the Filter to query logs from blocks not yet loaded into memory.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">set_result</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;The main coroutine that runs the Filter.&quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -712,6 +720,8 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The function that defines the logic that populates the Filter.</span>
+
 <span class="sd">        Override this if you want.</span>
 
 <span class="sd">        Example:</span>
