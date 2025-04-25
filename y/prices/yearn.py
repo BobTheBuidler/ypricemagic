@@ -5,6 +5,7 @@ from typing import Optional, Tuple
 import a_sync
 from a_sync import cgather
 from a_sync.a_sync import HiddenMethodDescriptor
+from dank_mids.exceptions import Revert
 from multicall.call import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -104,14 +105,12 @@ async def is_yearn_vault(token: AnyAddressType) -> bool:
         except (ContractNotVerified, MessedUpBrownieContract):
             pass
         else:
-            result = any(
-                [
-                    hasattr(contract, "pricePerShare"),
-                    hasattr(contract, "getPricePerShare"),
-                    hasattr(contract, "getPricePerFullShare"),
-                    hasattr(contract, "getSharesToUnderlying"),
-                    hasattr(contract, "convertToAssets"),
-                ]
+            result = (
+                hasattr(contract, "pricePerShare")
+                or hasattr(contract, "getPricePerShare")
+                or hasattr(contract, "getPricePerFullShare")
+                or hasattr(contract, "getSharesToUnderlying")
+                or hasattr(contract, "convertToAssets")
             )
     return result
 
@@ -295,7 +294,7 @@ class YearnInspiredVault(ERC20):
 
                         try:
                             share_price = await call.coroutine(block_id=block)
-                        except ContractLogicError:
+                        except (ContractLogicError, Revert):
                             pass
                         else:
                             self._get_share_price = call
