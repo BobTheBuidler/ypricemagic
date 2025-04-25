@@ -337,6 +337,10 @@
 
 
 <span class="k">class</span> <span class="nc">_DiskCachedMixin</span><span class="p">(</span><span class="n">ASyncIterable</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">Generic</span><span class="p">[</span><span class="n">T</span><span class="p">,</span> <span class="n">C</span><span class="p">],</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">ABCMeta</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Mixin that provides asynchronous features for data caches stored on disk.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">_checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span>
     <span class="vm">__slots__</span> <span class="o">=</span> <span class="s2">&quot;is_reusable&quot;</span><span class="p">,</span> <span class="s2">&quot;_cache&quot;</span><span class="p">,</span> <span class="s2">&quot;_executor&quot;</span><span class="p">,</span> <span class="s2">&quot;_objects&quot;</span><span class="p">,</span> <span class="s2">&quot;_pruned&quot;</span>
 
@@ -345,6 +349,13 @@
         <span class="n">executor</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AsyncThreadPoolExecutor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">is_reusable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the mixin.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            executor: Optional executor to use for I/O operations.</span>
+<span class="sd">            is_reusable: Whether data should be kept in memory for reuse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">is_reusable</span> <span class="o">=</span> <span class="n">is_reusable</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cache</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">executor</span>
@@ -353,16 +364,25 @@
 
     <span class="nd">@property</span>
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">C</span><span class="p">:</span> <span class="o">...</span>
+    <span class="k">def</span> <span class="nf">cache</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">C</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the associated cache object, which must be defined in subclasses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">executor</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the executor used for disk operations, creating one if necessary.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span>
         <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span> <span class="o">=</span> <span class="n">AsyncThreadPoolExecutor</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">executor</span>
 
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Shutdown the executor on deletion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">executor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_executor</span>
         <span class="k">if</span> <span class="n">executor</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">executor</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span>
@@ -475,6 +495,17 @@
 <span class="k">def</span> <span class="nf">make_executor</span><span class="p">(</span>
     <span class="n">small</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">big</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">name</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a thread pool executor that prunes completed tasks.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        small: Size of the pool if using a non-postgres DB.</span>
+<span class="sd">        big: Size of the pool if using a postgres DB.</span>
+<span class="sd">        name: Optional name for the executor.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A PruningThreadPoolExecutor instance based on the environment configuration.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PruningThreadPoolExecutor</span><span class="p">(</span>
         <span class="n">big</span> <span class="k">if</span> <span class="n">ENVS</span><span class="o">.</span><span class="n">DB_PROVIDER</span> <span class="o">==</span> <span class="s2">&quot;postgres&quot;</span> <span class="k">else</span> <span class="n">small</span><span class="p">,</span> <span class="n">name</span>
     <span class="p">)</span>
@@ -519,6 +550,19 @@
         <span class="n">is_reusable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the Filter, specifying blocks, concurrency, and caching parameters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: Earliest block from which data should be retrieved.</span>
+<span class="sd">            chunk_size: Size of each chunk to retrieve in a single RPC call.</span>
+<span class="sd">            chunks_per_batch: How many chunks to load per batch (optional).</span>
+<span class="sd">            sleep_time: Time (in seconds) to sleep between reloads when following chain head.</span>
+<span class="sd">            semaphore: Block-based semaphore to limit concurrency.</span>
+<span class="sd">            executor: Executor for disk-related tasks.</span>
+<span class="sd">            is_reusable: Keeps data in memory if True; data is pruned when False.</span>
+<span class="sd">            verbose: Enable debug-like progress logging if True.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">from_block</span> <span class="o">=</span> <span class="n">from_block</span>
         <span class="k">if</span> <span class="n">chunk_size</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_size</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_chunk_size</span> <span class="o">=</span> <span class="n">chunk_size</span>
@@ -535,14 +579,30 @@
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">executor</span><span class="o">=</span><span class="n">executor</span><span class="p">,</span> <span class="n">is_reusable</span><span class="o">=</span><span class="n">is_reusable</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an async iterator over the stored objects, yielding new ones as they are fetched.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects_thru</span><span class="p">(</span><span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="fm">__aiter__</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="fm">__del__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Cancels any pending fetch task upon deletion.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span> <span class="o">...</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Fetches data for a given range of blocks from an on-chain or remote provider.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: Lower bound of the block range.</span>
+<span class="sd">            to_block: Upper bound of the block range.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of objects for that block range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">semaphore</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BlockSemaphore</span><span class="p">:</span>
@@ -552,6 +612,9 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">is_asleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Indicates whether the filter is currently sleeping (awaiting new data).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="kc">False</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">done</span><span class="p">()</span>
 
     <span class="k">def</span> <span class="nf">_get_block_for_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">:</span> <span class="n">T</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Block&quot;</span><span class="p">:</span>
@@ -573,6 +636,16 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_objects_thru</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">],</span> <span class="n">from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">AsyncIterator</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates objects up to a specified block, or indefinitely if none is given.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            block: Maximum block number to generate objects. If None, yields continuously.</span>
+<span class="sd">            from_block: Minimum block from which to start yielding objects. Only valid if reusable.</span>
+
+<span class="sd">        Yields:</span>
+<span class="sd">            Objects that fall within the requested block range, if any.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_ensure_task</span><span class="p">()</span>
         <span class="n">debug_logs</span> <span class="o">=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">)</span>
         <span class="n">yielded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span>
@@ -690,9 +763,7 @@
     <span class="nd">@async_property</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_sleep</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Put the filter to sleep until :meth:`~_wakeup` is called.</span>
-
-<span class="sd">        The Filter will not make any rpc requests while sleeping.</span>
+<span class="sd">        Puts the Filter into a sleep state until `_wakeup` is called. No new requests will be made.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span> <span class="o">=</span> <span class="n">get_event_loop</span><span class="p">()</span><span class="o">.</span><span class="n">create_future</span><span class="p">()</span>
@@ -704,7 +775,9 @@
         <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sleep_fut</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">__fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;The main coroutine that runs the Filter.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Main coroutine that continuously runs the internal fetch loop.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch</span><span class="p">()</span>
         <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -720,9 +793,7 @@
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        The function that defines the logic that populates the Filter.</span>
-
-<span class="sd">        Override this if you want.</span>
+<span class="sd">        Defines the main logic for populating the Filter with data. Subclasses can override if needed.</span>
 
 <span class="sd">        Example:</span>
 <span class="sd">            &gt;&gt;&gt; await instance._fetch()</span>
@@ -736,6 +807,18 @@
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_fetch_range_wrapped</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">range_start</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">range_end</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wraps the _fetch_range call with concurrency control.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            i: Index of the chunk or range segment.</span>
+<span class="sd">            range_start: Lower bound of this block range.</span>
+<span class="sd">            range_end: Upper bound of this block range.</span>
+<span class="sd">            debug_logs: Whether debug logging is enabled.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A tuple containing the index, the ending block, and the fetched objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">async</span> <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">semaphore</span><span class="p">[</span><span class="n">range_end</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">debug_logs</span><span class="p">:</span>
                 <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span>
@@ -746,6 +829,12 @@
             <span class="k">return</span> <span class="n">i</span><span class="p">,</span> <span class="n">range_end</span><span class="p">,</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fetch_range</span><span class="p">(</span><span class="n">range_start</span><span class="p">,</span> <span class="n">range_end</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">NoReturn</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Work loop that continually fetches new data, loads from cache if available, then sleeps.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: Earliest block from which to begin loading data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;starting work loop for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">cached_thru</span> <span class="o">:=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_load_cache</span><span class="p">(</span><span class="n">from_block</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_lock</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">cached_thru</span><span class="p">)</span>
@@ -760,6 +849,13 @@
         <span class="n">to_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">start_from_block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Asynchronously loads new objects from your RPC, up to an optionally-specified end block.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            to_block: Specific block to stop at. If None, load up to the current chain head.</span>
+<span class="sd">            start_from_block: Block to start from if no prior data is cached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">SLEEP_TIME</span> <span class="o">=</span> <span class="mi">1</span>
 
         <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
@@ -810,6 +906,13 @@
 
     <span class="nd">@stuck_coro_debugger</span>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_load_range</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">to_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads a particular block range in chunks, respecting concurrency limits.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            from_block: Lower bound of the block range.</span>
+<span class="sd">            to_block: Upper bound of the block range.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">debug_logs</span> <span class="o">:=</span> <span class="n">logger</span><span class="o">.</span><span class="n">isEnabledFor</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">):</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">_log</span><span class="p">(</span><span class="n">DEBUG</span><span class="p">,</span> <span class="s2">&quot;loading block range </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">from_block</span><span class="p">,</span> <span class="n">to_block</span><span class="p">))</span>
         <span class="n">chunks_yielded</span> <span class="o">=</span> <span class="mi">0</span>
@@ -858,7 +961,15 @@
     <span class="k">def</span> <span class="nf">_insert_chunk</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">objs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">T</span><span class="p">],</span> <span class="n">from_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">done_thru</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Queues the insertion of a chunk of objects into the database, and sets metadata.</span>
 
+<span class="sd">        Args:</span>
+<span class="sd">            objs: List of objects to be inserted.</span>
+<span class="sd">            from_block: Earliest block in the current overall range.</span>
+<span class="sd">            done_thru: Block number up to which this chunk completes.</span>
+<span class="sd">            debug_logs: Whether debug logging is active.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">prev_task</span> <span class="o">:=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_db_task</span><span class="p">:</span>
             <span class="k">if</span> <span class="n">prev_task</span><span class="o">.</span><span class="n">done</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">e</span> <span class="o">:=</span> <span class="n">prev_task</span><span class="o">.</span><span class="n">exception</span><span class="p">():</span>
@@ -889,6 +1000,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_db_task</span> <span class="o">=</span> <span class="n">task</span>
 
     <span class="k">def</span> <span class="nf">_ensure_task</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ensures there is a main fetch task running in the background. If not, creates it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;creating task for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_task</span> <span class="o">=</span> <span class="n">create_task</span><span class="p">(</span><span class="n">coro</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">__fetch</span><span class="p">(),</span> <span class="n">name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="si">}</span><span class="s2">.__fetch&quot;</span><span class="p">)</span>
@@ -907,6 +1021,17 @@
         <span class="n">depth</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">debug_logs</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Inserts the previously fetched chunk into the database, waits on prior tasks if needed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            objs: List of objects to insert.</span>
+<span class="sd">            from_block: Earliest block for the entire fetch range.</span>
+<span class="sd">            done_thru: Ending block for this chunk.</span>
+<span class="sd">            prev_chunk_task: Task that inserted previous chunk, if any.</span>
+<span class="sd">            depth: Relative ordering of this chunk within the entire fetch.</span>
+<span class="sd">            debug_logs: Whether debug logs are active.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">prev_chunk_task</span><span class="p">:</span>
             <span class="k">await</span> <span class="n">prev_chunk_task</span>
         <span class="k">del</span> <span class="n">prev_chunk_task</span>
@@ -926,11 +1051,29 @@
             <span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_prune</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">count</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Removes a specified number of objects from the beginning of the in-memory list.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            count: Number of objects to remove.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_objects</span><span class="p">[</span><span class="n">count</span><span class="p">:]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_pruned</span> <span class="o">+=</span> <span class="n">count</span>
 
 
 <span class="k">def</span> <span class="nf">_clean_addresses</span><span class="p">(</span><span class="n">addresses</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Converts addresses into a standardized format, raising an error if the zero address is encountered.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        addresses: Single or multiple addresses to clean.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Cleaned addresses in a consistent string format or a list of such strings.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: If the zero address is encountered or if input is invalid.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">addresses</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Cannot make a LogFilter for the zero address&quot;</span><span class="p">)</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">addresses</span><span class="p">:</span>
@@ -947,15 +1090,33 @@
 <span class="k">def</span> <span class="nf">_get_suitable_checkpoint</span><span class="p">(</span>
     <span class="n">target_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="s2">&quot;Block&quot;</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Finds a suitable checkpoint block that is less than or equal to a target block.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target_block: The block number used as a reference.</span>
+<span class="sd">        checkpoints: Dictionary of block -&gt; index.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Most recent checkpoint block before or equal to the target block, or None if none exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">block_lt_checkpoint</span><span class="p">,</span> <span class="n">group</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">groupby</span><span class="p">(</span><span class="n">checkpoints</span><span class="p">,</span> <span class="n">target_block</span><span class="o">.</span><span class="fm">__lt__</span><span class="p">))</span>
-    <span class="c1"># return None if there are no checkpoints before `target_block`, else</span>
-    <span class="c1"># return the most recent checkpoint that is still before `target_block`</span>
     <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">block_lt_checkpoint</span> <span class="ow">is</span> <span class="kc">True</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">group</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
 
 <span class="k">def</span> <span class="nf">_get_checkpoint_index</span><span class="p">(</span>
     <span class="n">target_block</span><span class="p">:</span> <span class="s2">&quot;Block&quot;</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">:</span> <span class="n">Checkpoints</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Retrieves the index for a checkpoint that is less than or equal to a given block.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        target_block: The block number reference.</span>
+<span class="sd">        checkpoints: Dictionary of block -&gt; index.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        The index of the checkpoint, or None if no suitable checkpoint exists.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">checkpoint_block</span> <span class="o">=</span> <span class="n">_get_suitable_checkpoint</span><span class="p">(</span><span class="n">target_block</span><span class="p">,</span> <span class="n">checkpoints</span><span class="p">)</span>
     <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">checkpoint_block</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">checkpoints</span><span class="p">[</span><span class="n">checkpoint_block</span><span class="p">]</span>
 </pre></div>

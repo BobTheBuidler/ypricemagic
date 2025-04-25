@@ -444,8 +444,8 @@ ignore_pools: A tuple of pools to ignore when checking liquidity.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__aiter__" title="Link to this definition"></a></dt>
-<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _DiskCachedMixin.</p>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.__aiter__" title="Link to this definition"></a></dt>
+<dd><p>Returns an async iterator over the stored objects, yielding new ones as they are fetched.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -515,15 +515,19 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents._objects_thru">
 <span class="sig-name descname"><span class="pre">_objects_thru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents._objects_thru" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Generates objects up to a specified block, or indefinitely if none is given.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>) – Maximum block number to generate objects. If None, yields continuously.</p></li>
+<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>) – Minimum block from which to start yielding objects. Only valid if reusable.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Objects that fall within the requested block range, if any.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -705,12 +709,14 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.cache">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LogCache</span></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.cache" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the associated cache object, which must be defined in subclasses.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.executor">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.executor.AsyncThreadPoolExecutor" title="(in ez-a-sync)"><span class="pre">AsyncThreadPoolExecutor</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.executor" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the executor used for disk operations, creating one if necessary.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.from_block">
@@ -731,7 +737,8 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.is_asleep">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_asleep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v2.PoolsFromEvents.is_asleep" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Indicates whether the filter is currently sleeping (awaiting new data).</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v2.PoolsFromEvents.is_reusable">
@@ -2219,8 +2226,8 @@ of the two tokens in the pool.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.__aiter__" title="Link to this definition"></a></dt>
-<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _DiskCachedMixin.</p>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.__aiter__" title="Link to this definition"></a></dt>
+<dd><p>Returns an async iterator over the stored objects, yielding new ones as they are fetched.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -2283,15 +2290,19 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools._objects_thru">
 <span class="sig-name descname"><span class="pre">_objects_thru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools._objects_thru" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Generates objects up to a specified block, or indefinitely if none is given.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>) – Maximum block number to generate objects. If None, yields continuously.</p></li>
+<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>) – Minimum block from which to start yielding objects. Only valid if reusable.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Objects that fall within the requested block range, if any.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2455,12 +2466,14 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.cache">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LogCache</span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.cache" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the associated cache object, which must be defined in subclasses.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.executor">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.executor.AsyncThreadPoolExecutor" title="(in ez-a-sync)"><span class="pre">AsyncThreadPoolExecutor</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.executor" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the executor used for disk operations, creating one if necessary.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.from_block">
@@ -2481,7 +2494,8 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.is_asleep">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_asleep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.SlipstreamPools.is_asleep" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Indicates whether the filter is currently sleeping (awaiting new data).</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.SlipstreamPools.is_reusable">
@@ -2543,8 +2557,8 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.__aiter__">
-<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">AsyncIterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.__aiter__" title="Link to this definition"></a></dt>
-<dd><p>Return an async iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _DiskCachedMixin.</p>
+<span class="sig-name descname"><span class="pre">__aiter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.__aiter__" title="Link to this definition"></a></dt>
+<dd><p>Returns an async iterator over the stored objects, yielding new ones as they are fetched.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
@@ -2607,15 +2621,19 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools._objects_thru">
 <span class="sig-name descname"><span class="pre">_objects_thru</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_block</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools._objects_thru" title="Link to this definition"></a></dt>
-<dd><dl class="field-list simple">
+<dd><p>Generates objects up to a specified block, or indefinitely if none is given.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>)</p></li>
+<li><p><strong>block</strong> (<em>Block</em><em> | </em><em>None</em>) – Maximum block number to generate objects. If None, yields continuously.</p></li>
+<li><p><strong>from_block</strong> (<em>Block</em><em> | </em><em>None</em>) – Minimum block from which to start yielding objects. Only valid if reusable.</p></li>
 </ul>
 </dd>
-<dt class="field-even">Return type<span class="colon">:</span></dt>
-<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p>Objects that fall within the requested block range, if any.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.AsyncIterator" title="(in Python v3.13)"><em>AsyncIterator</em></a>[<em>T</em>]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -2779,12 +2797,14 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.cache">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cache</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">LogCache</span></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.cache" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the associated cache object, which must be defined in subclasses.</p>
+</dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.executor">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">executor</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.executor.AsyncThreadPoolExecutor" title="(in ez-a-sync)"><span class="pre">AsyncThreadPoolExecutor</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.executor" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Returns the executor used for disk operations, creating one if necessary.</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.from_block">
@@ -2805,7 +2825,8 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py property">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.is_asleep">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_asleep</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><a class="headerlink" href="#y.prices.dex.uniswap.v3.UniV3Pools.is_asleep" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Indicates whether the filter is currently sleeping (awaiting new data).</p>
+</dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.dex.uniswap.v3.UniV3Pools.is_reusable">
