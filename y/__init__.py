@@ -60,6 +60,7 @@ from y.time import (
     get_block_timestamp,
     get_block_timestamp_async,
 )
+from y.utils.events import Events
 from y.utils.logging import enable_debug_logging
 from y.utils.middleware import setup_getcode_cache_middleware, setup_geth_poa_middleware
 from y.utils.multicall import fetch_multicall
@@ -82,6 +83,8 @@ __all__ = [
     "check_bucket",
     # erc20
     "ERC20",
+    # events filter
+    "Events",
     # contract stuff
     "Contract",
     "contract_creation_block",
