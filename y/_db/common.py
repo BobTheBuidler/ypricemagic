@@ -628,7 +628,7 @@ class Filter(_DiskCachedMixin[T, C]):
         await self._sleep_fut
 
     def _wakeup(self) -> None:
-        """Wake up the Filter to fetch a new block range not yet loaded."""
+        """Wake up the Filter to query logs from blocks not yet loaded into memory."""
         self._sleep_fut.set_result(None)
         del self._sleep_fut
 
