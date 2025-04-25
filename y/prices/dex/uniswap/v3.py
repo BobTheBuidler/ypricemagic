@@ -107,8 +107,6 @@ _PATH_TYPE_STRINGS: Dict[int, Tuple[Literal["address", "uint24"], ...]] = {
 class UniswapV3Pool(ContractBase):
     """Represents a Uniswap V3 Pool."""
 
-    __contains_cache__: Dict[Address, Dict[ChecksumAddress, bool]] = {}
-
     __slots__ = "fee", "token0", "token1", "tick_spacing"
 
     def __init__(
@@ -170,15 +168,7 @@ class UniswapV3Pool(ContractBase):
             :func:`__getitem__`
         """
         # force token to string in case it is Contract or EthAddress etc
-        token = str(token)
-        cache_for_token = self.__contains_cache__.get(token, {})
-        cache_value = cache_for_token.get(self.address)
-        if cache_value is None:
-            if not cache_for_token:
-                self.__contains_cache__[token] = {}
-            cache_value = token in (self.token0.address, self.token1.address)
-            self.__contains_cache__[token][self.address] = cache_value
-        return cache_value
+        return str(token) in (self.token0.address, self.token1.address)
 
     def __getitem__(self, token: Address) -> ERC20:
         """
@@ -478,9 +468,51 @@ class UniswapV3(a_sync.ASyncGenericBase):
             ...     print(pool)
         """
         pools = await self.__pools__
-        async for pool in pools.objects(to_block=block):
-            if token in pool:
-                yield pool
+
+        # we use a cache here to prevent unnecessary calls to __contains__
+        # stringify token in case type is Contract or EthAddress
+        if cache := pools._pools_by_token_cache[str(token)]:
+            for deploy_block, cached_pools in cache.items():
+                if deploy_block > block:
+                    return
+                for pool in cached_pools:
+                    yield pool
+
+            if deploy_block == block:
+                # we got all for `block` and dont need to bother checking
+                return
+            async for pool in pools.objects(
+                to_block=block, from_block=deploy_block + 1
+            ):
+                if token in pool:
+                    cache[pool._deploy_block].append(pool)
+                    yield pool
+        else:
+            async for pool in pools.objects(to_block=block):
+                if token in pool:
+                    cache[pool._deploy_block].append(pool)
+                    yield pool
+
+        try:
+            most_recent_deploy_block = pool._deploy_block
+        except NameError:
+            return
+
+        if cache:
+            cached_thru_block, pools = cache.popitem()
+            if most_recent_deploy_block > cached_thru_block:
+                # Signal to the cache that has loaded all pools for `token`
+                # thru the deploy block of the most recent pool deployed
+                cache[most_recent_deploy_block]
+                # If the item wasn't a placeholder, put it back
+                if pools:
+                    cache[cached_thru_block] = pools
+            else:
+                cache[cached_thru_block] = pools
+        else:
+            # Signal to the cache that has loaded all pools for `token`
+            # thru the deploy block of the most recent pool deployed
+            cache[most_recent_deploy_block]
 
     @stuck_coro_debugger
     @a_sync.a_sync(cache_type="memory", ram_cache_ttl=ENVS.CACHE_TTL)
@@ -741,7 +773,9 @@ def _undo_fees(path: Path) -> Decimal:
 class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
     """Represents a collection of Uniswap V3 Pools."""
 
-    __slots__ = ("asynchronous",)
+    _pools_by_token_cache: DefaultDict[Address, Dict[Block, List[UniswapV3Pool]]]
+
+    __slots__ = "asynchronous", "_pools_by_token_cache"
 
     def __init__(self, factory: Contract, asynchronous: bool = False):
         """
@@ -762,6 +796,7 @@ class UniV3Pools(ProcessedEvents[UniswapV3Pool]):
         super().__init__(
             addresses=[factory.address], topics=[factory.topics["PoolCreated"]]
         )
+        self._pools_by_token_cache = defaultdict(lambda: defaultdict(list))
 
     def _process_event(self, event: _EventItem) -> UniswapV3Pool:
         """
