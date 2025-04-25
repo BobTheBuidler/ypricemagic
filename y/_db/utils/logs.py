@@ -1,6 +1,6 @@
-import itertools
-import logging
-from typing import List, Optional
+from itertools import chain, zip_longest
+from logging import getLogger
+from typing import Iterator, List, Optional
 
 from a_sync import a_sync, cgather, igather
 from a_sync.executor import AsyncExecutor
@@ -8,7 +8,7 @@ from async_lru import alru_cache
 from brownie.network.event import _EventItem
 from eth_typing import HexStr
 from eth_utils.toolz import concat
-from evmspec.data import Address, HexBytes32, uint
+from evmspec.data import Address, BlockNumber, HexBytes32, uint
 from evmspec.structs.log import Topic
 from hexbytes import HexBytes
 from msgspec import json, ValidationError
@@ -25,7 +25,7 @@ from y._db.utils._ep import _get_get_block
 from y._db.utils.bulk import insert as _bulk_insert
 from y.constants import CHAINID
 
-logger = logging.getLogger(__name__)
+logger = getLogger(__name__)
 
 LOG_COLS = (
     "block_chain",
@@ -79,23 +79,23 @@ async def _prepare_log(log: Log) -> tuple:
         get_hash_dbid(log.address),
         igather(map(get_topic_dbid, log.topics)),
     )
-    topics = {
-        f"topic{i}": topic_dbid
-        for i, topic_dbid in itertools.zip_longest(range(4), topic_dbids)
-    }
     params = {
         "block_chain": CHAINID,
         "block_number": log.blockNumber,
         "transaction": transaction_dbid,
         "log_index": log.logIndex,
         "address": address_dbid,
-        **topics,
+        **zip_longest(("topic0", "topic1", "topic2", "topic3"), topic_dbids),
         "raw": json.encode(Log(**log), enc_hook=enc_hook),
     }
     return tuple(params.values())
 
 
 _check_using_extended_db = lambda: "eth_portfolio" in _get_get_block().__module__
+__tuplize = lambda x: (x,)
+
+__get_block_vals = lambda block: (CHAINID, block, "Block")
+__get_block_extended_vals = lambda block: (CHAINID, block, "BlockExtended")
 
 
 async def bulk_insert(
@@ -108,23 +108,18 @@ async def bulk_insert(
 
     # handle a conflict with eth-portfolio's extended db
     if _check_using_extended_db():
-        blocks = tuple(
-            (CHAINID, block, "BlockExtended")
-            for block in {log.blockNumber for log in logs}
-        )
+        blocks = tuple(map(__get_block_extended_vals, __unique_blocks(logs)))
         blocks_fut = submit(
             _bulk_insert, Block, _BLOCK_COLS_EXTENDED, blocks, sync=True
         )
     else:
-        blocks = tuple((CHAINID, block) for block in {log.blockNumber for log in logs})
+        blocks = tuple(map(__get_block_vals, __unique_blocks(logs)))
         blocks_fut = submit(_bulk_insert, Block, _BLOCK_COLS, blocks, sync=True)
     del blocks
 
-    txhashes = (txhash.hex() for txhash in {log.transactionHash for log in logs})
+    txhashes = map(HexBytes32.hex, {log.transactionHash for log in logs})
     addresses = {log.address for log in logs}
-    hashes = tuple(
-        (_remove_0x_prefix(hash),) for hash in itertools.chain(txhashes, addresses)
-    )
+    hashes = tuple(map(__tuplize, map(_remove_0x_prefix, chain(txhashes, addresses))))
     hashes_fut = submit(_bulk_insert, Hashes, ("hash",), hashes, sync=True)
     del txhashes, addresses, hashes
 
@@ -147,6 +142,10 @@ async def bulk_insert(
         await igather(map(_prepare_log, logs)),
         sync=True,
     )
+
+
+def __unique_blocks(logs: List[Log]) -> Iterator[BlockNumber]:
+    yield from {log.blockNumber for log in logs}
 
 
 @a_sync(default="async", executor=_topic_executor, ram_cache_maxsize=None)
