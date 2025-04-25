@@ -266,6 +266,10 @@ C = TypeVar("C", bound=DiskCache)
 
 
 class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
+    """
+    Mixin that provides asynchronous features for data caches stored on disk.
+    """
+
     _checkpoints: Checkpoints
     __slots__ = "is_reusable", "_cache", "_executor", "_objects", "_pruned"
 
@@ -274,6 +278,13 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         executor: Optional[AsyncThreadPoolExecutor] = None,
         is_reusable: bool = True,
     ):
+        """
+        Initializes the mixin.
+
+        Args:
+            executor: Optional executor to use for I/O operations.
+            is_reusable: Whether data should be kept in memory for reuse.
+        """
         self.is_reusable = is_reusable
         self._cache = None
         self._executor = executor
@@ -282,16 +293,25 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 
     @property
     @abstractmethod
-    def cache(self) -> C: ...
+    def cache(self) -> C:
+        """
+        Returns the associated cache object, which must be defined in subclasses.
+        """
 
     @property
     def executor(self) -> AsyncThreadPoolExecutor:
+        """
+        Returns the executor used for disk operations, creating one if necessary.
+        """
         executor = self._executor
         if executor is None:
             executor = self._executor = AsyncThreadPoolExecutor(1)
         return executor
 
     def __del__(self) -> None:
+        """
+        Shutdown the executor on deletion.
+        """
         executor = self._executor
         if executor is not None:
             executor.shutdown()
@@ -404,6 +424,17 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
 def make_executor(
     small: int, big: int, name: Optional[str] = None
 ) -> PruningThreadPoolExecutor:
+    """
+    Creates a thread pool executor that prunes completed tasks.
+
+    Args:
+        small: Size of the pool if using a non-postgres DB.
+        big: Size of the pool if using a postgres DB.
+        name: Optional name for the executor.
+
+    Returns:
+        A PruningThreadPoolExecutor instance based on the environment configuration.
+    """
     return PruningThreadPoolExecutor(
         big if ENVS.DB_PROVIDER == "postgres" else small, name
     )
@@ -448,6 +479,19 @@ class Filter(_DiskCachedMixin[T, C]):
         is_reusable: bool = True,
         verbose: bool = False,
     ):
+        """
+        Initializes the Filter, specifying blocks, concurrency, and caching parameters.
+
+        Args:
+            from_block: Earliest block from which data should be retrieved.
+            chunk_size: Size of each chunk to retrieve in a single RPC call.
+            chunks_per_batch: How many chunks to load per batch (optional).
+            sleep_time: Time (in seconds) to sleep between reloads when following chain head.
+            semaphore: Block-based semaphore to limit concurrency.
+            executor: Executor for disk-related tasks.
+            is_reusable: Keeps data in memory if True; data is pruned when False.
+            verbose: Enable debug-like progress logging if True.
+        """
         self.from_block = from_block
         if chunk_size != self._chunk_size:
             self._chunk_size = chunk_size
@@ -464,14 +508,30 @@ class Filter(_DiskCachedMixin[T, C]):
         super().__init__(executor=executor, is_reusable=is_reusable)
 
     def __aiter__(self) -> AsyncIterator[T]:
+        """
+        Returns an async iterator over the stored objects, yielding new ones as they are fetched.
+        """
         return self._objects_thru(block=None).__aiter__()
 
     def __del__(self) -> None:
+        """
+        Cancels any pending fetch task upon deletion.
+        """
         if self._task and not self._task.done():
             self._task.cancel()
 
     @abstractmethod
-    async def _fetch_range(self, from_block: "Block", to_block: "Block") -> List[T]: ...
+    async def _fetch_range(self, from_block: "Block", to_block: "Block") -> List[T]:
+        """
+        Fetches data for a given range of blocks from an on-chain or remote provider.
+
+        Args:
+            from_block: Lower bound of the block range.
+            to_block: Upper bound of the block range.
+
+        Returns:
+            List of objects for that block range.
+        """
 
     @property
     def semaphore(self) -> BlockSemaphore:
@@ -481,6 +541,9 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @property
     def is_asleep(self) -> bool:
+        """
+        Indicates whether the filter is currently sleeping (awaiting new data).
+        """
         return False if self._sleep_fut is None else not self._sleep_fut.done()
 
     def _get_block_for_obj(self, obj: T) -> "Block":
@@ -502,6 +565,16 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _objects_thru(
         self, block: Optional["Block"], from_block: Optional["Block"] = None
     ) -> AsyncIterator[T]:
+        """
+        Generates objects up to a specified block, or indefinitely if none is given.
+
+        Args:
+            block: Maximum block number to generate objects. If None, yields continuously.
+            from_block: Minimum block from which to start yielding objects. Only valid if reusable.
+
+        Yields:
+            Objects that fall within the requested block range, if any.
+        """
         self._ensure_task()
         debug_logs = logger.isEnabledFor(DEBUG)
         yielded = self._pruned
@@ -619,9 +692,7 @@ class Filter(_DiskCachedMixin[T, C]):
     @async_property
     async def _sleep(self) -> None:
         """
-        Put the filter to sleep until :meth:`~_wakeup` is called.
-
-        The Filter will not make any rpc requests while sleeping.
+        Puts the Filter into a sleep state until `_wakeup` is called. No new requests will be made.
         """
         if self._sleep_fut is None or self._sleep_fut.done():
             self._sleep_fut = get_event_loop().create_future()
@@ -633,7 +704,9 @@ class Filter(_DiskCachedMixin[T, C]):
         del self._sleep_fut
 
     async def __fetch(self) -> NoReturn:
-        """The main coroutine that runs the Filter."""
+        """
+        Main coroutine that continuously runs the internal fetch loop.
+        """
         try:
             await self._fetch()
         except Exception as e:
@@ -649,9 +722,7 @@ class Filter(_DiskCachedMixin[T, C]):
 
     async def _fetch(self) -> NoReturn:
         """
-        The function that defines the logic that populates the Filter.
-
-        Override this if you want.
+        Defines the main logic for populating the Filter with data. Subclasses can override if needed.
 
         Example:
             >>> await instance._fetch()
@@ -665,6 +736,18 @@ class Filter(_DiskCachedMixin[T, C]):
     async def _fetch_range_wrapped(
         self, i: int, range_start: "Block", range_end: "Block", debug_logs: bool
     ) -> List[T]:
+        """
+        Wraps the _fetch_range call with concurrency control.
+
+        Args:
+            i: Index of the chunk or range segment.
+            range_start: Lower bound of this block range.
+            range_end: Upper bound of this block range.
+            debug_logs: Whether debug logging is enabled.
+
+        Returns:
+            A tuple containing the index, the ending block, and the fetched objects.
+        """
         async with self.semaphore[range_end]:
             if debug_logs:
                 logger._log(
@@ -675,6 +758,12 @@ class Filter(_DiskCachedMixin[T, C]):
             return i, range_end, await self._fetch_range(range_start, range_end)
 
     async def _loop(self, from_block: "Block") -> NoReturn:
+        """
+        Work loop that continually fetches new data, loads from cache if available, then sleeps.
+
+        Args:
+            from_block: Earliest block from which to begin loading data.
+        """
         logger.debug("starting work loop for %s", self)
         if cached_thru := await self._load_cache(from_block):
             self._lock.set(cached_thru)
@@ -689,6 +778,13 @@ class Filter(_DiskCachedMixin[T, C]):
         to_block: Optional["Block"] = None,
         start_from_block: Optional["Block"] = None,
     ) -> None:
+        """
+        Asynchronously loads new objects from your RPC, up to an optionally-specified end block.
+
+        Args:
+            to_block: Specific block to stop at. If None, load up to the current chain head.
+            start_from_block: Block to start from if no prior data is cached.
+        """
         SLEEP_TIME = 1
 
         if debug_logs := logger.isEnabledFor(DEBUG):
@@ -739,6 +835,13 @@ class Filter(_DiskCachedMixin[T, C]):
 
     @stuck_coro_debugger
     async def _load_range(self, from_block: "Block", to_block: "Block") -> None:
+        """
+        Loads a particular block range in chunks, respecting concurrency limits.
+
+        Args:
+            from_block: Lower bound of the block range.
+            to_block: Upper bound of the block range.
+        """
         if debug_logs := logger.isEnabledFor(DEBUG):
             logger._log(DEBUG, "loading block range %s to %s", (from_block, to_block))
         chunks_yielded = 0
@@ -787,7 +890,15 @@ class Filter(_DiskCachedMixin[T, C]):
     def _insert_chunk(
         self, objs: List[T], from_block: "Block", done_thru: "Block", debug_logs: bool
     ) -> None:
+        """
+        Queues the insertion of a chunk of objects into the database, and sets metadata.
 
+        Args:
+            objs: List of objects to be inserted.
+            from_block: Earliest block in the current overall range.
+            done_thru: Block number up to which this chunk completes.
+            debug_logs: Whether debug logging is active.
+        """
         if prev_task := self._db_task:
             if prev_task.done():
                 if e := prev_task.exception():
@@ -818,6 +929,9 @@ class Filter(_DiskCachedMixin[T, C]):
         self._db_task = task
 
     def _ensure_task(self) -> None:
+        """
+        Ensures there is a main fetch task running in the background. If not, creates it.
+        """
         if self._task is None:
             logger.debug("creating task for %s", self)
             self._task = create_task(coro=self.__fetch(), name=f"{self}.__fetch")
@@ -836,6 +950,17 @@ class Filter(_DiskCachedMixin[T, C]):
         depth: int,
         debug_logs: bool,
     ) -> None:
+        """
+        Inserts the previously fetched chunk into the database, waits on prior tasks if needed.
+
+        Args:
+            objs: List of objects to insert.
+            from_block: Earliest block for the entire fetch range.
+            done_thru: Ending block for this chunk.
+            prev_chunk_task: Task that inserted previous chunk, if any.
+            depth: Relative ordering of this chunk within the entire fetch.
+            debug_logs: Whether debug logs are active.
+        """
         if prev_chunk_task:
             await prev_chunk_task
         del prev_chunk_task
@@ -855,11 +980,29 @@ class Filter(_DiskCachedMixin[T, C]):
             )
 
     def _prune(self, count: int) -> None:
+        """
+        Removes a specified number of objects from the beginning of the in-memory list.
+
+        Args:
+            count: Number of objects to remove.
+        """
         self._objects = self._objects[count:]
         self._pruned += count
 
 
 def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
+    """
+    Converts addresses into a standardized format, raising an error if the zero address is encountered.
+
+    Args:
+        addresses: Single or multiple addresses to clean.
+
+    Returns:
+        Cleaned addresses in a consistent string format or a list of such strings.
+
+    Raises:
+        ValueError: If the zero address is encountered or if input is invalid.
+    """
     if addresses == ZERO_ADDRESS:
         raise ValueError("Cannot make a LogFilter for the zero address")
     if not addresses:
@@ -876,14 +1019,32 @@ def _clean_addresses(addresses: Union[list, tuple]) -> Union[str, List[str]]:
 def _get_suitable_checkpoint(
     target_block: "Block", checkpoints: Checkpoints
 ) -> Optional["Block"]:
+    """
+    Finds a suitable checkpoint block that is less than or equal to a target block.
+
+    Args:
+        target_block: The block number used as a reference.
+        checkpoints: Dictionary of block -> index.
+
+    Returns:
+        Most recent checkpoint block before or equal to the target block, or None if none exist.
+    """
     block_lt_checkpoint, group = next(groupby(checkpoints, target_block.__lt__))
-    # return None if there are no checkpoints before `target_block`, else
-    # return the most recent checkpoint that is still before `target_block`
     return None if block_lt_checkpoint is True else tuple(group)[-1]
 
 
 def _get_checkpoint_index(
     target_block: "Block", checkpoints: Checkpoints
 ) -> Optional[int]:
+    """
+    Retrieves the index for a checkpoint that is less than or equal to a given block.
+
+    Args:
+        target_block: The block number reference.
+        checkpoints: Dictionary of block -> index.
+
+    Returns:
+        The index of the checkpoint, or None if no suitable checkpoint exists.
+    """
     checkpoint_block = _get_suitable_checkpoint(target_block, checkpoints)
     return None if checkpoint_block is None else checkpoints[checkpoint_block]
