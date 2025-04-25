@@ -289,6 +289,7 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         self._cache = None
         self._executor = executor
         self._objects: List[T] = []
+        self._blocks: List["Block"] = []
         self._pruned = 0
 
     @property
@@ -356,9 +357,9 @@ class _DiskCachedMixin(ASyncIterable[T], Generic[T, C], metaclass=ABCMeta):
         """
         if objs:
             self._objects.extend(objs)
+            self._blocks.extend(map(self._get_block_for_obj, objs))
             if self.is_reusable:
-                block = self._get_block_for_obj(self._objects[-1])
-                self._checkpoints[block] = len(self._objects)
+                self._checkpoints[self._blocks[-1]] = len(self._objects)
 
     async def _load_cache(self, from_block: "Block") -> "Block":
         """
@@ -639,22 +640,25 @@ class Filter(_DiskCachedMixin[T, C]):
                         for obj in objs:
                             yield obj
                     else:
-                        for obj in objs:
-                            if get_block_for_obj(obj) > block:
+                        for obj, obj_block in zip(
+                            objs, self._blocks[yielded - self._pruned :]
+                        ):
+                            if obj_block > block:
                                 return
                             yield obj
                     yielded += len(objs)
 
                 elif block:
+                    zipped = zip(to_yield, self._blocks[yielded - self._pruned :])
                     if self.is_reusable:
-                        for obj in to_yield:
-                            if get_block_for_obj(obj) > block:
+                        for obj, obj_block in zipped:
+                            if obj_block > block:
                                 return
                             yield obj
                         yielded += len(to_yield)
                     else:
-                        for obj in to_yield:
-                            if get_block_for_obj(obj) > block:
+                        for obj, obj_block in zipped:
+                            if obj_block > block:
                                 self._prune(yielded - self._pruned)
                                 return
                             yield obj
@@ -980,6 +984,7 @@ class Filter(_DiskCachedMixin[T, C]):
             count: Number of objects to remove.
         """
         self._objects = self._objects[count:]
+        self._blocks = self._blocks[count:]
         self._pruned += count
 
 
