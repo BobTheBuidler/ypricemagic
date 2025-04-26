@@ -1,7 +1,11 @@
+from pathlib import Path
 from setuptools import find_packages, setup
 
 with open("requirements.txt", "r") as f:
     requirements = list(map(str.strip, f.read().split("\n")))[:-1]
+
+this_directory = Path(__file__).parent
+long_description = (this_directory / "README.md").read_text()
 
 setup(
     name="ypricemagic",
@@ -13,6 +17,8 @@ setup(
         "version_scheme": "python-simplified-semver",
     },
     description="Use this tool to extract historical on-chain price data from an archive node. Shoutout to @bantg and @nymmrx for their awesome work on yearn-exporter that made this library possible.",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     author="BobTheBuidler",
     author_email="bobthebuidlerdefi@gmail.com",
     url="https://github.com/BobTheBuidler/ypricemagic",
