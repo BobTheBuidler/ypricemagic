@@ -18,7 +18,7 @@ setup(
     },
     description="Use this tool to extract historical on-chain price data from an archive node. Shoutout to @bantg and @nymmrx for their awesome work on yearn-exporter that made this library possible.",
     long_description=long_description,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     author="BobTheBuidler",
     author_email="bobthebuidlerdefi@gmail.com",
     url="https://github.com/BobTheBuidler/ypricemagic",
