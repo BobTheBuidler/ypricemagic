@@ -3,7 +3,7 @@ from typing import Optional, Set
 
 import a_sync
 import brownie.convert
-import checksum_dict._key
+import checksum_dict._utils
 import dank_mids.brownie_patch.call
 import eth_event.main
 import eth_utils
@@ -230,7 +230,7 @@ def _monkey_patch_dependencies():
     brownie.convert.to_address = to_address
 
     # this monkey patches checksum_dict's checksumming with our lru_cache
-    checksum_dict._key.to_checksum_address = to_address
+    checksum_dict._utils.to_checksum_address = to_address
 
     # this monkey patches the dank_mids brownie patch's checksums with our lru_cache
     dank_mids.brownie_patch.call.to_checksum_address = to_address
