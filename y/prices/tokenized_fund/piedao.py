@@ -83,12 +83,14 @@ async def get_tokens(
         [ERC20('0xTokenAddress1'), ERC20('0xTokenAddress2')]
 
     Note:
-        This function retrieves token addresses using a multicall and then creates :class:`ERC20` instances from those addresses.
+        This function retrieves token addresses using a :class:`multicall.Call` and then creates :class:`ERC20` instances from those addresses.
+
+    See Also:
+        - :class:`ERC20`
     """
-    return [
-        ERC20(t)
-        for t in await Call(pie_address, "getTokens()(address[])", block_id=block)
-    ]
+    return list(
+        map(ERC20, await Call(pie_address, "getTokens()(address[])", block_id=block))
+    )
 
 
 async def get_bpool(pie_address: Address, block: Optional[Block] = None) -> Address:
