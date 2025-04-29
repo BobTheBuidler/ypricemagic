@@ -265,17 +265,21 @@ async def balanceOf(
         # using the verified non standard abi as a fallback
         try:
             contract = await Contract.coroutine(call_address)
-            return await contract.balanceOf.coroutine(
-                input_address, block_identifier=block
-            )
-        except AttributeError as e:
-            if "has no attribute 'balanceOf'" not in str(e):
-                raise
-            # we got a response from the chain but brownie can't find `balanceOf` method,
-            # maybe our cached contract definition is messed up. let's repull it
-            balance = brownie.Contract.from_explorer(call_address).balanceOf(
-                input_address, block_identifier=block
-            )
+        except ContractNotVerified:
+            pass
+        else:
+            try:
+                return await contract.balanceOf.coroutine(
+                    input_address, block_identifier=block
+                )
+            except AttributeError as e:
+                if "has no attribute 'balanceOf'" not in str(e):
+                    raise
+                # we got a response from the chain but brownie can't find `balanceOf` method,
+                # maybe our cached contract definition is messed up. let's repull it
+                balance = brownie.Contract.from_explorer(call_address).balanceOf(
+                    input_address, block_identifier=block
+                )
 
     if balance is not None:
         return balance
