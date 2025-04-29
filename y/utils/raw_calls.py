@@ -250,7 +250,7 @@ async def balanceOf(
     # method 1
     # NOTE: this will almost always work, you will rarely proceed to further methods
     try:
-        balance = await raw_call(
+        return await raw_call(
             call_address,
             "balanceOf(address)",
             block=block,
@@ -278,12 +278,9 @@ async def balanceOf(
                 # we got a response from the chain but brownie can't find `balanceOf` method,
                 # maybe our cached contract definition is messed up. let's repull it
                 with suppress(AttributeError):
-                    balance = brownie.Contract.from_explorer(call_address).balanceOf(
+                    return brownie.Contract.from_explorer(call_address).balanceOf(
                         input_address, block_identifier=block
                     )
-
-    if balance is not None:
-        return balance
 
     # we've failed to fetch
     if return_None_on_failure:
