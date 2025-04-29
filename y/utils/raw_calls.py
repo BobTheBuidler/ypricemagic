@@ -1,6 +1,6 @@
 import logging
 from contextlib import suppress
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable, Final, Optional, Set, Union
 
 import a_sync
 import brownie
@@ -239,6 +239,9 @@ async def _totalSupply(
     )
 
 
+_BALANCEOF_FAILURES: Final[Set[AddressOrContract]] = set()
+
+
 @a_sync.a_sync(default="sync")
 async def balanceOf(
     call_address: AddressOrContract,
@@ -246,41 +249,46 @@ async def balanceOf(
     block: Optional[Block] = None,
     return_None_on_failure: bool = False,
 ) -> Optional[int]:
-
-    # method 1
-    # NOTE: this will almost always work, you will rarely proceed to further methods
-    try:
-        return await raw_call(
-            call_address,
-            "balanceOf(address)",
-            block=block,
-            inputs=input_address,
-            output="int",
-            return_None_on_failure=True,
-            sync=False,
-        )
-    except OverflowError:
-        # OverflowError means the call didn't revert, but we can't decode it correctly
-        # the contract might not comply with standards, so we can possibly fetch balanceOf
-        # using the verified non standard abi as a fallback
+    if call_address not in _BALANCEOF_FAILURES:
+        # method 1
+        # NOTE: this will almost always work, you will rarely proceed to further methods
         try:
-            contract = await Contract.coroutine(call_address)
-        except ContractNotVerified:
-            pass
-        else:
+            return await raw_call(
+                call_address,
+                "balanceOf(address)",
+                block=block,
+                inputs=input_address,
+                output="int",
+                return_None_on_failure=True,
+                sync=False,
+            )
+        except OverflowError:
+            # OverflowError means the call didn't revert, but we can't decode it correctly
+            # the contract might not comply with standards, so we can possibly fetch balanceOf
+            # using the verified non standard abi as a fallback
             try:
-                return await contract.balanceOf.coroutine(
-                    input_address, block_identifier=block
-                )
-            except AttributeError as e:
-                if "has no attribute 'balanceOf'" not in str(e):
-                    raise
-                # we got a response from the chain but brownie can't find `balanceOf` method,
-                # maybe our cached contract definition is messed up. let's repull it
-                with suppress(AttributeError):
-                    return brownie.Contract.from_explorer(call_address).balanceOf(
+                contract = await Contract.coroutine(call_address)
+            except ContractNotVerified:
+                pass
+            else:
+                try:
+                    return await contract.balanceOf.coroutine(
                         input_address, block_identifier=block
                     )
+                except AttributeError as e:
+                    # we got a response from the chain but brownie can't find `balanceOf` method,
+                    # maybe our cached contract definition is messed up. let's repull it
+                    try:
+                        contract = brownie.Contract.from_explorer(call_address)
+                    except ValueError:
+                        pass
+                    else:
+                        try:
+                            return contract.balanceOf(
+                                input_address, block_identifier=block
+                            )
+                        except AttributeError:
+                            _BALANCEOF_FAILURES.add(call_address)
 
     # we've failed to fetch
     if return_None_on_failure:
