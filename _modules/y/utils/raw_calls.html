@@ -335,7 +335,7 @@
     <span class="c1"># method 1</span>
     <span class="c1"># NOTE: this will almost always work, you will rarely proceed to further methods</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="n">balance</span> <span class="o">=</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
+        <span class="k">return</span> <span class="k">await</span> <span class="n">raw_call</span><span class="p">(</span>
             <span class="n">call_address</span><span class="p">,</span>
             <span class="s2">&quot;balanceOf(address)&quot;</span><span class="p">,</span>
             <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span>
@@ -363,12 +363,9 @@
                 <span class="c1"># we got a response from the chain but brownie can&#39;t find `balanceOf` method,</span>
                 <span class="c1"># maybe our cached contract definition is messed up. let&#39;s repull it</span>
                 <span class="k">with</span> <span class="n">suppress</span><span class="p">(</span><span class="ne">AttributeError</span><span class="p">):</span>
-                    <span class="n">balance</span> <span class="o">=</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">from_explorer</span><span class="p">(</span><span class="n">call_address</span><span class="p">)</span><span class="o">.</span><span class="n">balanceOf</span><span class="p">(</span>
+                    <span class="k">return</span> <span class="n">brownie</span><span class="o">.</span><span class="n">Contract</span><span class="o">.</span><span class="n">from_explorer</span><span class="p">(</span><span class="n">call_address</span><span class="p">)</span><span class="o">.</span><span class="n">balanceOf</span><span class="p">(</span>
                         <span class="n">input_address</span><span class="p">,</span> <span class="n">block_identifier</span><span class="o">=</span><span class="n">block</span>
                     <span class="p">)</span>
-
-    <span class="k">if</span> <span class="n">balance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">balance</span>
 
     <span class="c1"># we&#39;ve failed to fetch</span>
     <span class="k">if</span> <span class="n">return_None_on_failure</span><span class="p">:</span>
