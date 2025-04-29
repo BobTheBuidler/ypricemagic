@@ -239,7 +239,7 @@ async def _totalSupply(
     )
 
 
-_BALANCE_OF_FAILURES: Final[Set[AddressOrContract]] = set()
+_BALANCEOF_FAILURES: Final[Set[AddressOrContract]] = set()
 
 
 @a_sync.a_sync(default="sync")
@@ -249,7 +249,7 @@ async def balanceOf(
     block: Optional[Block] = None,
     return_None_on_failure: bool = False,
 ) -> Optional[int]:
-    if call_address not in _BALANCE_OF_FAILURES:
+    if call_address not in _BALANCEOF_FAILURES:
         # method 1
         # NOTE: this will almost always work, you will rarely proceed to further methods
         try:
@@ -288,7 +288,7 @@ async def balanceOf(
                                 input_address, block_identifier=block
                             )
                         except AttributeError:
-                            _BALANCE_OF_FAILURES.add(call_address)
+                            _BALANCEOF_FAILURES.add(call_address)
 
     # we've failed to fetch
     if return_None_on_failure:
