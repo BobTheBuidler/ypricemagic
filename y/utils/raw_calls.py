@@ -1,5 +1,5 @@
-import contextlib
 import logging
+from contextlib import suppress
 from typing import Any, Callable, Optional, Union
 
 import a_sync
@@ -95,7 +95,7 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method,
             # maybe our cached contract definition is messed up. let's repull it
-            with contextlib.suppress(AttributeError):
+            with suppress(AttributeError):
                 decimals = brownie.Contract.from_explorer(contract_address).decimals(
                     block_identifier=block
                 )
@@ -128,7 +128,7 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method,
             # maybe our cached contract definition is messed up. let's repull it
-            with contextlib.suppress(AttributeError):
+            with suppress(AttributeError):
                 decimals = brownie.Contract.from_explorer(contract_address).DECIMALS(
                     block_identifier=block
                 )
@@ -161,7 +161,7 @@ async def _decimals(
                 raise
             # we got a response from the chain but brownie can't find `DECIMALS` method,
             # maybe our cached contract definition is messed up. let's repull it
-            with contextlib.suppress(AttributeError):
+            with suppress(AttributeError):
                 decimals = brownie.Contract.from_explorer(contract_address).getDecimals(
                     block_identifier=block
                 )
@@ -220,7 +220,7 @@ async def _totalSupply(
                 raise
             # we got a response from the chain but brownie can't find `totalSupply` method,
             # maybe our cached contract definition is messed up. let's repull it
-            with contextlib.suppress(AttributeError):
+            with suppress(AttributeError):
                 total_supply = brownie.Contract.from_explorer(
                     contract_address
                 ).totalSupply(block_identifier=block)
@@ -265,17 +265,22 @@ async def balanceOf(
         # using the verified non standard abi as a fallback
         try:
             contract = await Contract.coroutine(call_address)
-            return await contract.balanceOf.coroutine(
-                input_address, block_identifier=block
-            )
-        except AttributeError as e:
-            if "has no attribute 'balanceOf'" not in str(e):
-                raise
-            # we got a response from the chain but brownie can't find `balanceOf` method,
-            # maybe our cached contract definition is messed up. let's repull it
-            balance = brownie.Contract.from_explorer(call_address).balanceOf(
-                input_address, block_identifier=block
-            )
+        except ContractNotVerified:
+            pass
+        else:
+            try:
+                return await contract.balanceOf.coroutine(
+                    input_address, block_identifier=block
+                )
+            except AttributeError as e:
+                if "has no attribute 'balanceOf'" not in str(e):
+                    raise
+                # we got a response from the chain but brownie can't find `balanceOf` method,
+                # maybe our cached contract definition is messed up. let's repull it
+                with suppress(AttributeError):
+                    balance = brownie.Contract.from_explorer(call_address).balanceOf(
+                        input_address, block_identifier=block
+                    )
 
     if balance is not None:
         return balance
