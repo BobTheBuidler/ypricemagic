@@ -413,16 +413,22 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.curve.</span></span><span class="sig-name descname"><span class="pre">AddressProviderEvents</span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/curve.html#AddressProviderEvents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents" title="y.prices.stable_swap.curve.CurveEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurveEvents</span></code></a></p>
-<p>When awaited, a list of all <a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_EventItem</span></code></a> will be returned.</p>
+<p>When awaited, a list of all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects will be returned.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_object</span> <span class="o">=</span> <span class="n">AddressProviderEvents</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">all_contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_object</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_EventItem</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.__origin__">
+<span class="sig-name descname"><span class="pre">__origin__</span></span><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.__origin__" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterable" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code></a></p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.obj_type">
 <span class="sig-name descname"><span class="pre">obj_type</span></span><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.obj_type" title="Link to this definition"></a></dt>
@@ -481,8 +487,8 @@ owner: The owner class of the property.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.__iter__" title="Link to this definition"></a></dt>
-<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _DiskCachedMixin.</p>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.__iter__" title="Link to this definition"></a></dt>
+<dd><p>Return an iterator that yields {obj} from the {cls}.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Synchronous iteration leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code>, which uses <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop.run_until_complete()</span></code> to fetch items.
@@ -490,11 +496,6 @@ owner: The owner class of the property.</p>
 <p>If you encounter a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a>, you are likely working in an async codebase
 and should consider asynchronous iteration using <a class="reference internal" href="#y.prices.stable_swap.curve.AddressProviderEvents.__aiter__" title="y.prices.stable_swap.curve.AddressProviderEvents.__aiter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__aiter__()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__anext__()</span></code> instead.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Iterator[T]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -532,7 +533,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>A decoded event.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[_EventItem][<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -546,13 +547,13 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.filter">
 <span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ViewFn</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.filter" title="Link to this definition"></a></dt>
-<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the _ASyncView based on a function.</p>
+<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterator[T] based on a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>function</strong> (<em>ViewFn</em><em>[</em><em>T</em><em>]</em>) – A function that returns a boolean that indicates if an item should be included in the filtered result. Can be sync or async.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _ASyncView.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterator[T].</p>
 </dd>
 </dl>
 </dd></dl>
@@ -569,7 +570,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>A raw log.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<em>Log</em>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[Log][<em>Log</em>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -595,7 +596,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>An <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.ASyncIterator" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code></a> that yields all included events.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[_EventItem][<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -609,7 +610,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.sort">
 <span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SortKey</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.sort" title="Link to this definition"></a></dt>
-<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the _ASyncView.</p>
+<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterator[T].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -618,7 +619,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this _ASyncView, but sorted.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this ASyncIterator[T], but sorted.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -636,6 +637,11 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.__args__">
+<span class="sig-name descname"><span class="pre">__args__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(~T,)</span></em><a class="headerlink" href="#y.prices.stable_swap.curve.AddressProviderEvents.__args__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.AddressProviderEvents.__pyx_vtable__">
@@ -741,17 +747,23 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py class">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.curve.</span></span><span class="sig-name descname"><span class="pre">CurveEvents</span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/curve.html#CurveEvents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents" title="y.utils.events.ProcessedEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessedEvents</span></code></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_EventItem</span></code></a>]</p>
-<p>When awaited, a list of all <a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_EventItem</span></code></a> will be returned.</p>
+<dd><p>Bases: <a class="reference internal" href="y.utils.html#y.utils.events.ProcessedEvents" title="y.utils.events.ProcessedEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">ProcessedEvents</span></code></a></p>
+<p>When awaited, a list of all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects will be returned.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_object</span> <span class="o">=</span> <span class="n">CurveEvents</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">all_contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_object</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_EventItem</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.__origin__">
+<span class="sig-name descname"><span class="pre">__origin__</span></span><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.__origin__" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterable" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code></a></p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.obj_type">
 <span class="sig-name descname"><span class="pre">obj_type</span></span><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.obj_type" title="Link to this definition"></a></dt>
@@ -810,8 +822,8 @@ and should consider asynchronous iteration using <a class="reference internal" h
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.__iter__" title="Link to this definition"></a></dt>
-<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _DiskCachedMixin.</p>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.__iter__" title="Link to this definition"></a></dt>
+<dd><p>Return an iterator that yields {obj} from the {cls}.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Synchronous iteration leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code>, which uses <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop.run_until_complete()</span></code> to fetch items.
@@ -819,11 +831,6 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <p>If you encounter a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a>, you are likely working in an async codebase
 and should consider asynchronous iteration using <a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents.__aiter__" title="y.prices.stable_swap.curve.CurveEvents.__aiter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__aiter__()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__anext__()</span></code> instead.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Iterator[T]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -861,7 +868,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>A decoded event.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[_EventItem][<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -875,13 +882,13 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.filter">
 <span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ViewFn</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.filter" title="Link to this definition"></a></dt>
-<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the _ASyncView based on a function.</p>
+<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterator[T] based on a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>function</strong> (<em>ViewFn</em><em>[</em><em>T</em><em>]</em>) – A function that returns a boolean that indicates if an item should be included in the filtered result. Can be sync or async.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _ASyncView.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterator[T].</p>
 </dd>
 </dl>
 </dd></dl>
@@ -898,7 +905,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>A raw log.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<em>Log</em>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[Log][<em>Log</em>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -924,7 +931,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>An <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.ASyncIterator" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code></a> that yields all included events.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[_EventItem][<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -938,7 +945,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.sort">
 <span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SortKey</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.sort" title="Link to this definition"></a></dt>
-<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the _ASyncView.</p>
+<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterator[T].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -947,7 +954,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this _ASyncView, but sorted.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this ASyncIterator[T], but sorted.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -965,6 +972,11 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.__args__">
+<span class="sig-name descname"><span class="pre">__args__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(~T,)</span></em><a class="headerlink" href="#y.prices.stable_swap.curve.CurveEvents.__args__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.CurveEvents.__pyx_vtable__">
@@ -3040,16 +3052,22 @@ owner: The owner class of the property.</p>
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.curve.</span></span><span class="sig-name descname"><span class="pre">RegistryEvents</span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/curve.html#RegistryEvents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#y.prices.stable_swap.curve.CurveEvents" title="y.prices.stable_swap.curve.CurveEvents"><code class="xref py py-class docutils literal notranslate"><span class="pre">CurveEvents</span></code></a></p>
-<p>When awaited, a list of all <a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><code class="xref py py-class docutils literal notranslate"><span class="pre">_EventItem</span></code></a> will be returned.</p>
+<p>When awaited, a list of all <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects will be returned.</p>
 <p class="rubric">Example</p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">my_object</span> <span class="o">=</span> <span class="n">RegistryEvents</span><span class="p">(</span><span class="o">...</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">all_contents</span> <span class="o">=</span> <span class="k">await</span> <span class="n">my_object</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
 <span class="go">True</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_EventItem</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="n">all_contents</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">T</span><span class="p">)</span>
 <span class="go">True</span>
 </pre></div>
 </div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.__origin__">
+<span class="sig-name descname"><span class="pre">__origin__</span></span><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.__origin__" title="Link to this definition"></a></dt>
+<dd><p>alias of <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterable" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterable</span></code></a></p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.obj_type">
 <span class="sig-name descname"><span class="pre">obj_type</span></span><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.obj_type" title="Link to this definition"></a></dt>
@@ -3108,8 +3126,8 @@ owner: The owner class of the property.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.__iter__">
-<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.__iter__" title="Link to this definition"></a></dt>
-<dd><p>Return an iterator that yields <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _DiskCachedMixin.</p>
+<span class="sig-name descname"><span class="pre">__iter__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.__iter__" title="Link to this definition"></a></dt>
+<dd><p>Return an iterator that yields {obj} from the {cls}.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Synchronous iteration leverages <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code>, which uses <code class="xref py py-meth docutils literal notranslate"><span class="pre">asyncio.BaseEventLoop.run_until_complete()</span></code> to fetch items.
@@ -3117,11 +3135,6 @@ owner: The owner class of the property.</p>
 <p>If you encounter a <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.exceptions.SyncModeInAsyncContextError" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">SyncModeInAsyncContextError</span></code></a>, you are likely working in an async codebase
 and should consider asynchronous iteration using <a class="reference internal" href="#y.prices.stable_swap.curve.RegistryEvents.__aiter__" title="y.prices.stable_swap.curve.RegistryEvents.__aiter__"><code class="xref py py-meth docutils literal notranslate"><span class="pre">__aiter__()</span></code></a> and <code class="xref py py-meth docutils literal notranslate"><span class="pre">__anext__()</span></code> instead.</p>
 </div>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Iterator[T]</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -3159,7 +3172,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>A decoded event.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[_EventItem][<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -3173,13 +3186,13 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.filter">
 <span class="sig-name descname"><span class="pre">filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ViewFn</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.filter" title="Link to this definition"></a></dt>
-<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the _ASyncView based on a function.</p>
+<dd><p>Filters the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterator[T] based on a function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>function</strong> (<em>ViewFn</em><em>[</em><em>T</em><em>]</em>) – A function that returns a boolean that indicates if an item should be included in the filtered result. Can be sync or async.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the _ASyncView.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncFilter</span></code> that yields the filtered <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects from the ASyncIterator[T].</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3196,7 +3209,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>A raw log.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<em>Log</em>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[Log][<em>Log</em>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -3222,7 +3235,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dd class="field-even"><p>An <a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.ASyncIterator" title="(in ez-a-sync)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncIterator</span></code></a> that yields all included events.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://bobthebuidler.github.io/ez-a-sync/source/a_sync.html#a_sync.iter.ASyncIterator" title="(in ez-a-sync)"><em>ASyncIterator</em></a>[_EventItem][<a class="reference external" href="https://eth-brownie.readthedocs.io/en/stable/api-network.html#brownie.network.event._EventItem" title="(in Brownie v1.20.3)"><em>_EventItem</em></a>]</p>
 </dd>
 </dl>
 <p class="rubric">Examples</p>
@@ -3236,7 +3249,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <dl class="py method">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.sort">
 <span class="sig-name descname"><span class="pre">sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SortKey</span><span class="p"><span class="pre">[</span></span><span class="pre">T</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.sort" title="Link to this definition"></a></dt>
-<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the _ASyncView.</p>
+<dd><p>Sort the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded by the ASyncIterator[T].</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -3245,7 +3258,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this _ASyncView, but sorted.</p>
+<dd class="field-even"><p>An instance of <code class="xref py py-class docutils literal notranslate"><span class="pre">ASyncSorter</span></code> that will yield the <code class="xref py py-obj docutils literal notranslate"><span class="pre">T</span></code> objects yielded from this ASyncIterator[T], but sorted.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -3263,6 +3276,11 @@ and should consider asynchronous iteration using <a class="reference internal" h
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.__args__">
+<span class="sig-name descname"><span class="pre">__args__</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(~T,)</span></em><a class="headerlink" href="#y.prices.stable_swap.curve.RegistryEvents.__args__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="y.prices.stable_swap.curve.RegistryEvents.__pyx_vtable__">
@@ -3382,7 +3400,7 @@ and should consider asynchronous iteration using <a class="reference internal" h
 <span id="y-prices-stable-swap-ellipsis-module"></span><h2>y.prices.stable_swap.ellipsis module<a class="headerlink" href="#module-y.prices.stable_swap.ellipsis" title="Link to this heading"></a></h2>
 <dl class="py a_sync_function">
 <dt class="sig sig-object py" id="y.prices.stable_swap.ellipsis.get_price">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.ellipsis.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token_address:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/ellipsis.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.ellipsis.get_price" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.ellipsis.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token_address:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">EnvironmentVariable[bool](name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">default_value=False,</span> <span class="pre">using_default=True])</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/ellipsis.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.ellipsis.get_price" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get the USD price of a token at a specific block.</p>
 <p>This function calculates the price of a token in USD by determining the
@@ -3553,7 +3571,7 @@ block: An optional block number at which to query the price; if omitted, the lat
 <span id="y-prices-stable-swap-mstablefeederpool-module"></span><h2>y.prices.stable_swap.mstablefeederpool module<a class="headerlink" href="#module-y.prices.stable_swap.mstablefeederpool" title="Link to this heading"></a></h2>
 <dl class="py a_sync_function">
 <dt class="sig sig-object py" id="y.prices.stable_swap.mstablefeederpool.get_price">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.mstablefeederpool.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract,</span> <span class="pre">int],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/mstablefeederpool.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.mstablefeederpool.get_price" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.mstablefeederpool.</span></span><span class="sig-name descname"><span class="pre">get_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract,</span> <span class="pre">int],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">EnvironmentVariable[bool](name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">default_value=False,</span> <span class="pre">using_default=True])</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdPrice" title="y.datatypes.UsdPrice"><span class="pre">y.datatypes.UsdPrice</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/mstablefeederpool.html#get_price"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.mstablefeederpool.get_price" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Get the price of an mStable Feeder Pool token in USD.</p>
 <p>This function calculates the price of a given mStable Feeder Pool token by
@@ -3737,7 +3755,7 @@ block: The block number to query. Defaults to the latest block.</p>
 
 <dl class="py a_sync_function">
 <dt class="sig sig-object py" id="y.prices.stable_swap.saddle.get_tvl">
-<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.saddle.</span></span><span class="sig-name descname"><span class="pre">get_tvl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token_address:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract,</span> <span class="pre">int],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">&lt;EnvironmentVariable[name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">type=bool,</span> <span class="pre">default_value=False,</span> <span class="pre">current_value=False,</span> <span class="pre">using_default=True]&gt;</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdValue" title="y.datatypes.UsdValue"><span class="pre">y.datatypes.UsdValue</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/saddle.html#get_tvl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.saddle.get_tvl" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">ASyncFunction</span></em><span class="sig-prename descclassname"><span class="pre">y.prices.stable_swap.saddle.</span></span><span class="sig-name descname"><span class="pre">get_tvl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">token_address:</span> <span class="pre">Union[str,</span> <span class="pre">hexbytes.main.HexBytes,</span> <span class="pre">~AnyAddress,</span> <span class="pre">brownie.convert.datatypes.EthAddress,</span> <span class="pre">brownie.network.contract.Contract,</span> <span class="pre">int],</span> <span class="pre">block:</span> <span class="pre">Union[int,</span> <span class="pre">eth_typing.evm.BlockNumber,</span> <span class="pre">NoneType]</span> <span class="pre">=</span> <span class="pre">None,</span> <span class="pre">skip_cache:</span> <span class="pre">bool</span> <span class="pre">=</span> <span class="pre">EnvironmentVariable[bool](name=`YPRICEMAGIC_SKIP_CACHE`,</span> <span class="pre">default_value=False,</span> <span class="pre">using_default=True])</span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="y.html#y.datatypes.UsdValue" title="y.datatypes.UsdValue"><span class="pre">y.datatypes.UsdValue</span></a></span></span><a class="reference internal" href="../_modules/y/prices/stable_swap/saddle.html#get_tvl"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#y.prices.stable_swap.saddle.get_tvl" title="Link to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Calculate the total value locked (TVL) in a Saddle LP token pool.</p>
 <p>This function retrieves the pool and tokens concurrently, then uses multicall to get the balances.
