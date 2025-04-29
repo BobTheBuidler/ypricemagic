@@ -241,6 +241,7 @@ async def _totalSupply(
 
 _BALANCE_OF_FAILURES: Final[Set[AddressOrContract]] = set()
 
+
 @a_sync.a_sync(default="sync")
 async def balanceOf(
     call_address: AddressOrContract,
@@ -283,7 +284,9 @@ async def balanceOf(
                         pass
                     else:
                         try:
-                            return contract.balanceOf(input_address, block_identifier=block)
+                            return contract.balanceOf(
+                                input_address, block_identifier=block
+                            )
                         except AttributeError:
                             _BALANCE_OF_FAILURES.add(call_address)
 
