@@ -2,7 +2,7 @@ aiosqlite
 bobs_lazy_logging==0.0.4
 cchecksum>=0.0.3
 checksum_dict>=2.1.2,<3
-dank_mids>=4.20.118
+dank_mids>=4.20.133
 eth-brownie>=1.19.3,<1.21
 eth_retry>=0.2.1
 evmspec>=0.1.0
@@ -13,3 +13,4 @@ multicall>=0.8.2
 pony
 pony-stubs
 python-dateutil
+typed-envs>=0.1.0,<0.2
