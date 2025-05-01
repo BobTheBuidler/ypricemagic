@@ -400,11 +400,11 @@ class ERC20(ContractBase):
 
     async def balance_of_readable(
         self, address: AnyAddressType, block: Optional[Block] = None
-    ) -> float:
+    ) -> Decimal:
         balance, scale = await cgather(
             self.balance_of(address, block=block, sync=False), self.__scale__
         )
-        return balance / scale
+        return Decimal(balance) / scale
 
     async def price(
         self,
