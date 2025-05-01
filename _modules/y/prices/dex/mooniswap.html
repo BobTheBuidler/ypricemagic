@@ -196,13 +196,12 @@
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">token0</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
-        <span class="n">bal0</span> <span class="o">/=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span>
+        <span class="n">bal0</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">bal0</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span>
     <span class="k">elif</span> <span class="n">token1</span> <span class="o">==</span> <span class="n">ZERO_ADDRESS</span><span class="p">:</span>
-        <span class="n">bal1</span> <span class="o">/=</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span>
+        <span class="n">bal1</span> <span class="o">=</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">bal1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="o">**</span><span class="mi">18</span>
 
-    <span class="n">totalVal</span> <span class="o">=</span> <span class="n">bal0</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">price0</span><span class="p">)</span> <span class="o">+</span> <span class="n">bal1</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">price1</span><span class="p">)</span>
-    <span class="n">price</span> <span class="o">=</span> <span class="n">totalVal</span> <span class="o">/</span> <span class="n">total_supply</span>
-    <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">price</span><span class="p">)</span></div>
+    <span class="n">totalVal</span> <span class="o">=</span> <span class="n">bal0</span> <span class="o">*</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">price0</span><span class="p">)</span> <span class="o">+</span> <span class="n">bal1</span> <span class="o">*</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">price1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">totalVal</span> <span class="o">/</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">total_supply</span><span class="p">)</span></div>
 
 </pre></div>
 

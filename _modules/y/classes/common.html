@@ -526,11 +526,11 @@
 <a class="viewcode-back" href="../../../source/y.classes.html#y.ERC20.balance_of_readable">[docs]</a>
     <span class="k">async</span> <span class="k">def</span> <span class="nf">balance_of_readable</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">:</span> <span class="n">AnyAddressType</span><span class="p">,</span> <span class="n">block</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Block</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decimal</span><span class="p">:</span>
         <span class="n">balance</span><span class="p">,</span> <span class="n">scale</span> <span class="o">=</span> <span class="k">await</span> <span class="n">cgather</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">balance_of</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">sync</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__scale__</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="n">balance</span> <span class="o">/</span> <span class="n">scale</span></div>
+        <span class="k">return</span> <span class="n">Decimal</span><span class="p">(</span><span class="n">balance</span><span class="p">)</span> <span class="o">/</span> <span class="n">scale</span></div>
 
 
 <div class="viewcode-block" id="ERC20.price">
