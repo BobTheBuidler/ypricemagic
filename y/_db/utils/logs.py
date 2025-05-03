@@ -53,6 +53,25 @@ _get_hash = Hashes.get
 
 _encode = Encoder().encode
 _encode_log = Encoder(enc_hook=enc_hook).encode
+
+
+def _decode_hook_unsafe(typ, obj):
+    """This decode hook does NOT ensure addresses are checksummed. They must be stored that way."""
+    try:
+        if issubclass(typ, uint):
+            if isinstance(obj, int):
+                return int.__new__(typ, obj)
+            elif isinstance(obj, str):
+                return typ(obj, 16)
+        elif issubclass(typ, HexBytes):
+            return typ(obj)
+        elif typ is Address:
+            return str.__new__(Address, obj)
+    except (TypeError, ValueError, ValidationError) as e:
+        raise Exception(e, typ, obj) from e
+    raise NotImplementedError(typ, obj)
+
+
 _decode_log = Decoder(type=Log, dec_hook=_decode_hook_unsafe).decode
 
 
@@ -406,23 +425,6 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
 
         topics = [_remove_0x_prefix(HexBytes32(v).strip()) for v in topic_or_topics]
         return (log for log in generator if getattr(log, topic_id).topic in topics)
-
-
-def _decode_hook_unsafe(typ, obj):
-    """This decode hook does NOT ensure addresses are checksummed. They must be stored that way."""
-    try:
-        if issubclass(typ, uint):
-            if isinstance(obj, int):
-                return typ(obj)
-            elif isinstance(obj, str):
-                return typ.fromhex(obj)
-        elif issubclass(typ, HexBytes):
-            return typ(obj)
-        elif typ is Address:
-            return str.__new__(Address, obj)
-    except (TypeError, ValueError, ValidationError) as e:
-        raise Exception(e, typ, obj) from e
-    raise NotImplementedError(typ, obj)
 
 
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
