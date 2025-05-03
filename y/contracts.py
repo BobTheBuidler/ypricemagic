@@ -46,7 +46,7 @@ from brownie.utils import color
 from cachetools.func import ttl_cache
 from checksum_dict import ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
-from msgspec.json import decode
+from msgspec.json import Decoder
 from multicall import Call
 from typing_extensions import Self
 from web3.exceptions import ContractLogicError
@@ -77,6 +77,7 @@ _CHAINID = chain.id
 
 _brownie_deployments_db_lock = threading.Lock()
 _contract_locks = defaultdict(Lock)
+_decode_abi = Decoder(type=Dict[str, Any]).decode
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -993,7 +994,7 @@ def _extract_abi_data(address: Address):
             f"Contract source code not verified: {address}"
         ) from None
     name = data["ContractName"]
-    abi = decode(data["ABI"])
+    abi = _decode_abi(data["ABI"])
     implementation = data.get("Implementation")
     return name, abi, implementation
 
@@ -1123,7 +1124,7 @@ async def _extract_abi_data_async(address: Address):
             f"Contract source code not verified: {address}"
         ) from None
     name = data["ContractName"]
-    abi = decode(data["ABI"])
+    abi = _decode_abi(data["ABI"])
     implementation = data.get("Implementation")
     return name, abi, implementation
 
