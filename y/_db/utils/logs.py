@@ -296,7 +296,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
         logger.warning("executing select query for %s", self)
         try:
             return [
-                json.decode(log.raw, type=Log, dec_hook=_decode_hook)
+                json.decode(log.raw, type=Log, dec_hook=_decode_hook_unsafe)
                 for log in self._get_query(from_block, to_block)
             ]
         except ValidationError:
@@ -304,7 +304,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             for log in self._get_query(from_block, to_block):
                 try:
                     results.append(
-                        json.decode(log.raw, type=Log, dec_hook=_decode_hook)
+                        json.decode(log.raw, type=Log, dec_hook=_decode_hook_unsafe)
                     )
                 except ValidationError as e:
                     raise ValueError(e, json.decode(log.raw)) from e
@@ -410,7 +410,8 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
         return (log for log in generator if getattr(log, topic_id).topic in topics)
 
 
-def _decode_hook(typ, obj):
+def _decode_hook_unsafe(typ, obj):
+    """This decode hook does NOT ensure addresses are checksummed. They must be stored that way."""
     try:
         if issubclass(typ, uint):
             if isinstance(obj, int):
@@ -420,7 +421,7 @@ def _decode_hook(typ, obj):
         elif issubclass(typ, HexBytes):
             return typ(obj)
         elif typ is Address:
-            return Address.checksum(obj)
+            return str.__new__(Address, obj)
     except (TypeError, ValueError, ValidationError) as e:
         raise Exception(e, typ, obj) from e
     raise NotImplementedError(typ, obj)
