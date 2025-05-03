@@ -11,7 +11,8 @@ from eth_utils.toolz import concat
 from evmspec.data import Address, HexBytes32, uint
 from evmspec.structs.log import Topic
 from hexbytes import HexBytes
-from msgspec import json, ValidationError
+from msgspec import ValidationError
+from msgspec.json import Decoder, Encoder, decode
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
@@ -49,6 +50,29 @@ _hash_executor = make_executor(4, 8, "ypricemagic db executor [hash]")
 _get_log_cache_info = LogCacheInfo.get
 _get_log_topic = LogTopic.get
 _get_hash = Hashes.get
+
+_encode = Encoder().encode
+_encode_log = Encoder(enc_hook=enc_hook).encode
+
+
+def _decode_hook_unsafe(typ, obj):
+    """This decode hook does NOT ensure addresses are checksummed. They must be stored that way."""
+    try:
+        if issubclass(typ, uint):
+            if isinstance(obj, int):
+                return int.__new__(typ, obj)
+            elif isinstance(obj, str):
+                return typ(obj, 16)
+        elif issubclass(typ, HexBytes):
+            return typ(obj)
+        elif typ is Address:
+            return str.__new__(Address, obj)
+    except (TypeError, ValueError, ValidationError) as e:
+        raise Exception(e, typ, obj) from e
+    raise NotImplementedError(typ, obj)
+
+
+_decode_log = Decoder(type=Log, dec_hook=_decode_hook_unsafe).decode
 
 
 async def _prepare_log(log: Log) -> tuple:
@@ -90,7 +114,7 @@ async def _prepare_log(log: Log) -> tuple:
         "log_index": log.logIndex,
         "address": address_dbid,
         **topics,
-        "raw": json.encode(Log(**log), enc_hook=enc_hook),
+        "raw": _encode_log(Log(**log)),
     }
     return tuple(params.values())
 
@@ -178,9 +202,8 @@ def _get_hash_dbid(hexstr: HexStr) -> int:
 
 def get_decoded(log: Log) -> Optional[_EventItem]:
     # TODO: load these in bulk
-    if decoded := DbLog[
-        CHAINID, log.block_number, log.transaction_hash, log.log_index
-    ].decoded:
+    log = DbLog[CHAINID, log.block_number, log.transaction_hash, log.log_index]
+    if decoded := log.decoded:
         return _EventItem(
             decoded["name"], decoded["address"], decoded["event_data"], decoded["pos"]
         )
@@ -189,9 +212,8 @@ def get_decoded(log: Log) -> Optional[_EventItem]:
 @db_session
 @retry_locked
 def set_decoded(log: Log, decoded: _EventItem) -> None:
-    DbLog[CHAINID, log.block_number, log.transaction_hash, log.log_index].decoded = (
-        decoded
-    )
+    log = DbLog[CHAINID, log.block_number, log.transaction_hash, log.log_index]
+    log.decoded = decoded
 
 
 page_size = 100
@@ -240,7 +262,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             info := _get_log_cache_info(
                 chain=chain,
                 address="None",
-                topics=json.encode([self.topic0]),
+                topics=_encode([self.topic0]),
             )
         ):
             return info
@@ -249,7 +271,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             info := _get_log_cache_info(
                 chain=chain,
                 address="None",
-                topics=json.encode(self.topics),
+                topics=_encode(self.topics),
             )
         ):
             return info
@@ -264,24 +286,22 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
                 infos = [
                     # If we cached all logs for this address...
                     _get_log_cache_info(
-                        chain=chain, address=self.addresses, topics=json.encode(None)
+                        chain=chain, address=self.addresses, topics=_encode(None)
                     )
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
                         chain=chain,
                         address=self.addresses,
-                        topics=json.encode(self.topics),
+                        topics=_encode(self.topics),
                     )
                 ]
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    _get_log_cache_info(
-                        chain=chain, address=addr, topics=json.encode(None)
-                    )
+                    _get_log_cache_info(chain=chain, address=addr, topics=_encode(None))
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
-                        chain=chain, address=addr, topics=json.encode(self.topics)
+                        chain=chain, address=addr, topics=_encode(self.topics)
                     )
                     for addr in self.addresses
                 ]
@@ -296,18 +316,15 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
         logger.warning("executing select query for %s", self)
         try:
             return [
-                json.decode(log.raw, type=Log, dec_hook=_decode_hook_unsafe)
-                for log in self._get_query(from_block, to_block)
+                _decode_log(log.raw) for log in self._get_query(from_block, to_block)
             ]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
                 try:
-                    results.append(
-                        json.decode(log.raw, type=Log, dec_hook=_decode_hook_unsafe)
-                    )
+                    results.append(_decode_log(log.raw))
                 except ValidationError as e:
-                    raise ValueError(e, json.decode(log.raw)) from e
+                    raise ValueError(e, decode(log.raw)) from e
             return results
 
     def _get_query(self, from_block: int, to_block: int) -> Query:
@@ -338,7 +355,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
         from y._db.utils import utils as db
 
         chain = db.get_chain(sync=True)
-        encoded_topics = json.encode(self.topics or None)
+        encoded_topics = _encode(self.topics or None)
         should_commit = False
         if self.addresses:
             addresses = self.addresses
@@ -408,23 +425,6 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
 
         topics = [_remove_0x_prefix(HexBytes32(v).strip()) for v in topic_or_topics]
         return (log for log in generator if getattr(log, topic_id).topic in topics)
-
-
-def _decode_hook_unsafe(typ, obj):
-    """This decode hook does NOT ensure addresses are checksummed. They must be stored that way."""
-    try:
-        if issubclass(typ, uint):
-            if isinstance(obj, int):
-                return typ(obj)
-            elif isinstance(obj, str):
-                return typ.fromhex(obj)
-        elif issubclass(typ, HexBytes):
-            return typ(obj)
-        elif typ is Address:
-            return str.__new__(Address, obj)
-    except (TypeError, ValueError, ValidationError) as e:
-        raise Exception(e, typ, obj) from e
-    raise NotImplementedError(typ, obj)
 
 
 def _remove_0x_prefix(string: str) -> str:  # sourcery skip: str-prefix-suffix
