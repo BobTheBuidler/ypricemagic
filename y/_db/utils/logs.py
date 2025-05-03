@@ -279,9 +279,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    _get_log_cache_info(
-                        chain=chain, address=addr, topics=_encode(None)
-                    )
+                    _get_log_cache_info(chain=chain, address=addr, topics=_encode(None))
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
                         chain=chain, address=addr, topics=_encode(self.topics)
@@ -298,7 +296,9 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
     def _select(self, from_block: int, to_block: int) -> List[Log]:
         logger.warning("executing select query for %s", self)
         try:
-            return [_decode_log(log.raw) for log in self._get_query(from_block, to_block)]
+            return [
+                _decode_log(log.raw) for log in self._get_query(from_block, to_block)
+            ]
         except ValidationError:
             results = []
             for log in self._get_query(from_block, to_block):
