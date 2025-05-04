@@ -798,7 +798,10 @@ async def has_method(
         if not return_response and (
             isinstance(e, ContractLogicError)
             or call_reverted(e)
-            or any(err in str(e) for err in ("invalid jump destination", "EVM error: InvalidJump"))
+            or any(
+                err in str(e)
+                for err in ("invalid jump destination", "EVM error: InvalidJump")
+            )
         ):
             return False
         raise
