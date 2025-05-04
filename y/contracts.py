@@ -46,6 +46,7 @@ from brownie.utils import color
 from cachetools.func import ttl_cache
 from checksum_dict import ChecksumAddressSingletonMeta
 from hexbytes import HexBytes
+from msgspec import ValidationError
 from msgspec.json import Decoder
 from multicall import Call
 from typing_extensions import Self
