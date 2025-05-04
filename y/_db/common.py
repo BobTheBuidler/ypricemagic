@@ -632,7 +632,9 @@ class Filter(_DiskCachedMixin[T, C]):
                 await self._lock.wait_for(done_thru + 1)
             if self._exc is not None:
                 # raise a copy of it so multiple waiters don't destroy the traceback
-                raise deepcopy(self._exc).with_traceback(deepcopy(self._exc.__traceback__))
+                raise deepcopy(self._exc).with_traceback(
+                    deepcopy(self._exc.__traceback__)
+                )
             if to_yield := self._objects[yielded - self._pruned :]:
                 if from_block and not reached_from_block:
                     objs = skip_too_early(to_yield)
