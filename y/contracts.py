@@ -77,7 +77,7 @@ _CHAINID = chain.id
 
 _brownie_deployments_db_lock = threading.Lock()
 _contract_locks = defaultdict(Lock)
-_decode_abi = Decoder(type=Dict[str, Any]).decode
+_decode_abi = Decoder(type=List[Dict[str, Any]]).decode
 
 # These tokens have trouble when resolving the implementation via the chain.
 FORCE_IMPLEMENTATION = {
@@ -798,7 +798,10 @@ async def has_method(
         if not return_response and (
             isinstance(e, ContractLogicError)
             or call_reverted(e)
-            or any(err in str(e) for err in ("invalid jump destination", "EVM error: InvalidJump"))
+            or any(
+                err in str(e)
+                for err in ("invalid jump destination", "EVM error: InvalidJump")
+            )
         ):
             return False
         raise
@@ -994,7 +997,10 @@ def _extract_abi_data(address: Address):
             f"Contract source code not verified: {address}"
         ) from None
     name = data["ContractName"]
-    abi = _decode_abi(data["ABI"])
+    try:
+        abi = _decode_abi(data["ABI"])
+    except ValidationError as e:
+        raise ValueError(e, data["ABI"]) from e
     implementation = data.get("Implementation")
     return name, abi, implementation
 
@@ -1124,7 +1130,10 @@ async def _extract_abi_data_async(address: Address):
             f"Contract source code not verified: {address}"
         ) from None
     name = data["ContractName"]
-    abi = _decode_abi(data["ABI"])
+    try:
+        abi = _decode_abi(data["ABI"])
+    except ValidationError as e:
+        raise ValueError(e, data["ABI"]) from e
     implementation = data.get("Implementation")
     return name, abi, implementation
 
