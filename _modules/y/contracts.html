@@ -117,6 +117,7 @@
 <span class="kn">from</span> <span class="nn">cachetools.func</span> <span class="kn">import</span> <span class="n">ttl_cache</span>
 <span class="kn">from</span> <span class="nn">checksum_dict</span> <span class="kn">import</span> <span class="n">ChecksumAddressSingletonMeta</span>
 <span class="kn">from</span> <span class="nn">hexbytes</span> <span class="kn">import</span> <span class="n">HexBytes</span>
+<span class="kn">from</span> <span class="nn">msgspec</span> <span class="kn">import</span> <span class="n">ValidationError</span>
 <span class="kn">from</span> <span class="nn">msgspec.json</span> <span class="kn">import</span> <span class="n">Decoder</span>
 <span class="kn">from</span> <span class="nn">multicall</span> <span class="kn">import</span> <span class="n">Call</span>
 <span class="kn">from</span> <span class="nn">typing_extensions</span> <span class="kn">import</span> <span class="n">Self</span>
@@ -148,7 +149,7 @@
 
 <span class="n">_brownie_deployments_db_lock</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
 <span class="n">_contract_locks</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="n">Lock</span><span class="p">)</span>
-<span class="n">_decode_abi</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">])</span><span class="o">.</span><span class="n">decode</span>
+<span class="n">_decode_abi</span> <span class="o">=</span> <span class="n">Decoder</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]])</span><span class="o">.</span><span class="n">decode</span>
 
 <span class="c1"># These tokens have trouble when resolving the implementation via the chain.</span>
 <span class="n">FORCE_IMPLEMENTATION</span> <span class="o">=</span> <span class="p">{</span>
@@ -919,7 +920,10 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">return_response</span> <span class="ow">and</span> <span class="p">(</span>
             <span class="nb">isinstance</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">ContractLogicError</span><span class="p">)</span>
             <span class="ow">or</span> <span class="n">call_reverted</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
-            <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span><span class="n">err</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span> <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;invalid jump destination&quot;</span><span class="p">,</span> <span class="s2">&quot;EVM error: InvalidJump&quot;</span><span class="p">))</span>
+            <span class="ow">or</span> <span class="nb">any</span><span class="p">(</span>
+                <span class="n">err</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">err</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;invalid jump destination&quot;</span><span class="p">,</span> <span class="s2">&quot;EVM error: InvalidJump&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="p">):</span>
             <span class="k">return</span> <span class="kc">False</span>
         <span class="k">raise</span></div>
@@ -1128,7 +1132,10 @@
             <span class="sa">f</span><span class="s2">&quot;Contract source code not verified: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ContractName&quot;</span><span class="p">]</span>
-    <span class="n">abi</span> <span class="o">=</span> <span class="n">_decode_abi</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="n">_decode_abi</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span> <span class="kn">from</span> <span class="nn">e</span>
     <span class="n">implementation</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Implementation&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">implementation</span>
 
@@ -1258,7 +1265,10 @@
             <span class="sa">f</span><span class="s2">&quot;Contract source code not verified: </span><span class="si">{</span><span class="n">address</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ContractName&quot;</span><span class="p">]</span>
-    <span class="n">abi</span> <span class="o">=</span> <span class="n">_decode_abi</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">abi</span> <span class="o">=</span> <span class="n">_decode_abi</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span>
+    <span class="k">except</span> <span class="n">ValidationError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ABI&quot;</span><span class="p">])</span> <span class="kn">from</span> <span class="nn">e</span>
     <span class="n">implementation</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Implementation&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">name</span><span class="p">,</span> <span class="n">abi</span><span class="p">,</span> <span class="n">implementation</span>
 
