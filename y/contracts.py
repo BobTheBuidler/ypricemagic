@@ -795,7 +795,6 @@ async def has_method(
         response = await Call(address, [method])
         return False if response is None else response if return_response else True
     except Exception as e:
-        invalid_jump = 
         if not return_response and (
             isinstance(e, ContractLogicError)
             or call_reverted(e)
