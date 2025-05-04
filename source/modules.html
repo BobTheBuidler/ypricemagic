@@ -90,9 +90,9 @@
 <li class="toctree-l3"><a class="reference internal" href="y.interfaces.html">y.interfaces package</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#y-interfaces-erc20-module">y.interfaces.ERC20 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#y-interfaces-multicall2-module">y.interfaces.multicall2 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#module-contents">Module contents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#module-y.interfaces.ERC20">y.interfaces.ERC20 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#module-y.interfaces.multicall2">y.interfaces.multicall2 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.interfaces.html#module-y.interfaces">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="y.prices.html">y.prices package</a><ul>
@@ -119,13 +119,13 @@
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.checks">y.utils.checks module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.client">y.utils.client module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.dank_mids">y.utils.dank_mids module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y-utils-events-module">y.utils.events module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.events">y.utils.events module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y-utils-fakes-module">y.utils.fakes module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.gather">y.utils.gather module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.logging">y.utils.logging module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y-utils-middleware-module">y.utils.middleware module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.middleware">y.utils.middleware module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#y-utils-multicall-module">y.utils.multicall module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="y.utils.html#y-utils-raw-calls-module">y.utils.raw_calls module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils.raw_calls">y.utils.raw_calls module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="y.utils.html#module-y.utils">Module contents</a></li>
 </ul>
 </li>
@@ -149,7 +149,62 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#y-constants-module">y.constants module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="y.html#y-contracts-module">y.contracts module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="y.html#module-y.contracts">y.contracts module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.CompilerError"><code class="docutils literal notranslate"><span class="pre">CompilerError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.CompilerError.__init__"><code class="docutils literal notranslate"><span class="pre">CompilerError.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.Contract"><code class="docutils literal notranslate"><span class="pre">Contract</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__eq__"><code class="docutils literal notranslate"><span class="pre">Contract.__eq__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__getattribute__"><code class="docutils literal notranslate"><span class="pre">Contract.__getattribute__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__init__"><code class="docutils literal notranslate"><span class="pre">Contract.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__post_init__"><code class="docutils literal notranslate"><span class="pre">Contract.__post_init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.__str__"><code class="docutils literal notranslate"><span class="pre">Contract.__str__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.balance"><code class="docutils literal notranslate"><span class="pre">Contract.balance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.build_name"><code class="docutils literal notranslate"><span class="pre">Contract.build_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.coroutine"><code class="docutils literal notranslate"><span class="pre">Contract.coroutine()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.decode_input"><code class="docutils literal notranslate"><span class="pre">Contract.decode_input()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.from_abi"><code class="docutils literal notranslate"><span class="pre">Contract.from_abi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.from_ethpm"><code class="docutils literal notranslate"><span class="pre">Contract.from_ethpm()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.from_explorer"><code class="docutils literal notranslate"><span class="pre">Contract.from_explorer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.get_code"><code class="docutils literal notranslate"><span class="pre">Contract.get_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.get_method"><code class="docutils literal notranslate"><span class="pre">Contract.get_method()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.get_method_object"><code class="docutils literal notranslate"><span class="pre">Contract.get_method_object()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.get_solc_version"><code class="docutils literal notranslate"><span class="pre">Contract.get_solc_version()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.has_method"><code class="docutils literal notranslate"><span class="pre">Contract.has_method()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.has_methods"><code class="docutils literal notranslate"><span class="pre">Contract.has_methods()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.info"><code class="docutils literal notranslate"><span class="pre">Contract.info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.remove_deployment"><code class="docutils literal notranslate"><span class="pre">Contract.remove_deployment()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.set_alias"><code class="docutils literal notranslate"><span class="pre">Contract.set_alias()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.abi"><code class="docutils literal notranslate"><span class="pre">Contract.abi</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.alias"><code class="docutils literal notranslate"><span class="pre">Contract.alias</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.events"><code class="docutils literal notranslate"><span class="pre">Contract.events</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.signatures"><code class="docutils literal notranslate"><span class="pre">Contract.signatures</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.topics"><code class="docutils literal notranslate"><span class="pre">Contract.topics</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.Contract.verified"><code class="docutils literal notranslate"><span class="pre">Contract.verified</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.ContractEvents"><code class="docutils literal notranslate"><span class="pre">ContractEvents</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.__getattr__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__getattr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.__getitem__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__getitem__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.__hasattr__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__hasattr__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.__init__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.__iter__"><code class="docutils literal notranslate"><span class="pre">ContractEvents.__iter__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.get_sequence"><code class="docutils literal notranslate"><span class="pre">ContractEvents.get_sequence()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.listen"><code class="docutils literal notranslate"><span class="pre">ContractEvents.listen()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="y.html#y.contracts.ContractEvents.subscribe"><code class="docutils literal notranslate"><span class="pre">ContractEvents.subscribe()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.Contract_erc20"><code class="docutils literal notranslate"><span class="pre">Contract_erc20()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.Contract_with_erc20_fallback"><code class="docutils literal notranslate"><span class="pre">Contract_with_erc20_fallback()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.build_name"><code class="docutils literal notranslate"><span class="pre">build_name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.contract_creation_block_async"><code class="docutils literal notranslate"><span class="pre">contract_creation_block_async</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.has_method"><code class="docutils literal notranslate"><span class="pre">has_method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.has_methods"><code class="docutils literal notranslate"><span class="pre">has_methods()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.probe"><code class="docutils literal notranslate"><span class="pre">probe()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="y.html#y.contracts.proxy_implementation"><code class="docutils literal notranslate"><span class="pre">proxy_implementation()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="y.html#module-y.convert">y.convert module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.convert.checksum"><code class="docutils literal notranslate"><span class="pre">checksum()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="y.html#y.convert.to_address"><code class="docutils literal notranslate"><span class="pre">to_address()</span></code></a></li>
