@@ -1,5 +1,6 @@
 from abc import ABCMeta, abstractmethod
 from asyncio import Task, create_task, get_event_loop, sleep
+from copy import deepcopy
 from itertools import dropwhile, groupby
 from logging import DEBUG, getLogger
 from typing import (
@@ -630,8 +631,8 @@ class Filter(_DiskCachedMixin[T, C]):
                 self._wakeup()
                 await self._lock.wait_for(done_thru + 1)
             if self._exc is not None:
-                # raise it
-                await self._exc
+                # raise a copy of it so multiple waiters don't destroy the traceback
+                raise deepcopy(self._exc).with_traceback(self._exc.__traceback__)
             if to_yield := self._objects[yielded - self._pruned :]:
                 if from_block and not reached_from_block:
                     objs = skip_too_early(to_yield)
@@ -706,10 +707,8 @@ class Filter(_DiskCachedMixin[T, C]):
             import traceback
 
             logger.exception(e)
-            self._exc = get_event_loop().create_future()
-            self._exc.set_exception(e)
+            self._exc = e
             # no need to hold vars in memory
-            traceback.clear_frames(e.__traceback__)
             self._lock.set(_MAX_LONG_LONG)
             raise
 
@@ -932,7 +931,8 @@ class Filter(_DiskCachedMixin[T, C]):
             # garbage collected so there is no need to log the "destroy pending task" message.
             self._task._log_destroy_pending = False
         if self._task.done() and (e := self._task.exception()):
-            raise e.with_traceback(e.__traceback__)
+            # copy the exc so the traceback doesn't get destroyed by other waiters
+            raise deepcopy(e).with_traceback(e.__traceback__)
 
     async def __insert_chunk(
         self,
