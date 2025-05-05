@@ -1,5 +1,5 @@
 import logging
-from typing import Any, Iterable
+from typing import Any, Iterable, Sequence
 from pony.orm import Database, DatabaseError, commit
 
 from a_sync import a_sync
@@ -7,7 +7,7 @@ from a_sync import a_sync
 from y._db import entities
 from y._db.common import make_executor
 from y._db.decorators import db_session_retry_locked, retry_locked
-from y._db.utils.stringify import build_rows
+from y._db.utils.stringify import build_query
 
 
 logger = logging.getLogger(__name__)
@@ -66,8 +66,8 @@ def execute(sql: str, *, db: Database = entities.db) -> None:
 @db_session_retry_locked
 def insert(
     entity_type: entities.db.Entity,
-    columns: Iterable[str],
-    items: Iterable[Iterable[Any]],
+    columns: Sequence[str],
+    items: Sequence[Iterable[Any]],
     *,
     db: Database = entities.db,
 ) -> None:
@@ -97,19 +97,7 @@ def insert(
     See Also:
         - :func:`execute`
     """
-    provider_name = db.provider_name
     entity_name = entity_type.__name__.lower()
-    data = build_rows(provider_name, items)
-    if provider_name == "sqlite":
-        execute(
-            f'insert or ignore into {entity_name} ({",".join(columns)}) values {data}',
-            db=db,
-        )
-    elif provider_name == "postgres":
-        execute(
-            f'insert into {entity_name} ({",".join(columns)}) values {data} on conflict do nothing',
-            db=db,
-        )
-    else:
-        raise NotImplementedError(provider_name)
+    sql = build_query(db.provider_name, entity_name, columns, items)
+    execute(sql, db=db)
     _logger_debug("inserted %s %ss to ydb", len(items), entity_name)

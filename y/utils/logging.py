@@ -1,7 +1,7 @@
 from asyncio import Task, sleep
 from logging import DEBUG, Logger, StreamHandler, getLogger, _lock
 from types import MethodType
-from typing import List, NoReturn, Optional, Tuple, TypeVar, Union
+from typing import Final, List, NoReturn, Optional, Tuple, TypeVar, Union, final
 from weakref import WeakValueDictionary, ref as weak_ref
 
 import a_sync
@@ -9,16 +9,19 @@ from brownie import chain
 from lazy_logging import LazyLoggerFactory
 from typing_extensions import ParamSpec
 
-from y.constants import NETWORK_NAME
 from y.datatypes import AnyAddressType, Block
 from y.networks import Network
+
 
 T = TypeVar("T")
 P = ParamSpec("P")
 
-yLazyLogger = LazyLoggerFactory("YPRICEMAGIC")
 
-logger = getLogger(__name__)
+NETWORK_NAME: Final = Network.name()
+yLazyLogger: Final = LazyLoggerFactory("YPRICEMAGIC")
+
+
+logger: Final = getLogger(__name__)
 
 
 def enable_debug_logging(logger: str = "y") -> None:
@@ -37,6 +40,7 @@ def enable_debug_logging(logger: str = "y") -> None:
         logger.addHandler(StreamHandler())
 
 
+@final
 class PriceLogger(Logger):
     enabled: bool
     address: str
@@ -132,10 +136,12 @@ async def _debug_tsk(symbol: Optional[str], logger_ref: "weak_ref[Logger]") -> N
         logger.debug(*args)
 
 
-_all_price_loggers: "WeakValueDictionary[str, PriceLogger]" = WeakValueDictionary()
+_all_price_loggers: Final["WeakValueDictionary[str, PriceLogger]"] = (
+    WeakValueDictionary()
+)
 
 
-NETWORK_DESCRIPTOR_FOR_ISSUE_REQ = (
+NETWORK_DESCRIPTOR_FOR_ISSUE_REQ: Final = (
     f"name ({NETWORK_NAME})" if NETWORK_NAME else f"chainid ({chain.id})"
 )
 

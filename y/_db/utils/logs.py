@@ -11,8 +11,7 @@ from eth_utils.toolz import concat
 from evmspec.data import Address, HexBytes32, uint
 from evmspec.structs.log import Topic
 from hexbytes import HexBytes
-from msgspec import ValidationError
-from msgspec.json import Decoder, Encoder, decode
+from msgspec import DecodeError, ValidationError, json, msgpack
 from pony.orm import commit, db_session, select
 from pony.orm.core import Query
 
@@ -51,8 +50,8 @@ _get_log_cache_info = LogCacheInfo.get
 _get_log_topic = LogTopic.get
 _get_hash = Hashes.get
 
-_encode = Encoder().encode
-_encode_log = Encoder(enc_hook=enc_hook).encode
+_encode_generic = json.Encoder().encode
+_encode_log = json.Encoder(enc_hook=enc_hook).encode
 
 
 def _decode_hook_unsafe(typ, obj):
@@ -66,13 +65,32 @@ def _decode_hook_unsafe(typ, obj):
         elif issubclass(typ, HexBytes):
             return typ(obj)
         elif typ is Address:
-            return str.__new__(Address, obj)
+            # We have to put the 0x back on since we remove it for db storage.
+            # The safe decode hook does that for us but the unsafe hook skips all validation.
+            return str.__new__(Address, f"0x{obj}")
     except (TypeError, ValueError, ValidationError) as e:
         raise Exception(e, typ, obj) from e
     raise NotImplementedError(typ, obj)
 
 
-_decode_log = Decoder(type=Log, dec_hook=_decode_hook_unsafe).decode
+_json_decode_log = json.Decoder(type=Log, dec_hook=_decode_hook_unsafe).decode
+_msgpack_decode_log = msgpack.Decoder(type=Log, dec_hook=_decode_hook_unsafe).decode
+
+
+def _decode_log(data: bytes) -> Log:
+    try:
+        # more recent versions of ypm store the logs in messagepack format
+        return _msgpack_decode_log(data)
+    except DecodeError:
+        # but ypm can still work with logs stored in the legacy json format
+        log = _json_decode_log(data)
+        # we just update them to the new format silently
+        tx_hash_dbid = _get_hash(hash=log.transactionHash.hex()[2:]).dbid
+        DbLog[CHAINID, log.blockNumber, tx_hash_dbid, log.logIndex].raw = _encode_log(
+            log
+        )
+        # and you're good to go
+        return log
 
 
 async def _prepare_log(log: Log) -> tuple:
@@ -262,7 +280,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             info := _get_log_cache_info(
                 chain=chain,
                 address="None",
-                topics=_encode([self.topic0]),
+                topics=_encode_generic([self.topic0]),
             )
         ):
             return info
@@ -271,7 +289,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
             info := _get_log_cache_info(
                 chain=chain,
                 address="None",
-                topics=_encode(self.topics),
+                topics=_encode_generic(self.topics),
             )
         ):
             return info
@@ -286,22 +304,26 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
                 infos = [
                     # If we cached all logs for this address...
                     _get_log_cache_info(
-                        chain=chain, address=self.addresses, topics=_encode(None)
+                        chain=chain,
+                        address=self.addresses,
+                        topics=_encode_generic(None),
                     )
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
                         chain=chain,
                         address=self.addresses,
-                        topics=_encode(self.topics),
+                        topics=_encode_generic(self.topics),
                     )
                 ]
             else:
                 infos = [
                     # If we cached all logs for this address...
-                    _get_log_cache_info(chain=chain, address=addr, topics=_encode(None))
+                    _get_log_cache_info(
+                        chain=chain, address=addr, topics=_encode_generic(None)
+                    )
                     # ... or we cached all logs for these specific topics for this address
                     or _get_log_cache_info(
-                        chain=chain, address=addr, topics=_encode(self.topics)
+                        chain=chain, address=addr, topics=_encode_generic(self.topics)
                     )
                     for addr in self.addresses
                 ]
@@ -313,7 +335,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
         return 0
 
     def _select(self, from_block: int, to_block: int) -> List[Log]:
-        logger.warning("executing select query for %s", self)
+        logger.info("executing select query for %s", self)
         try:
             return [
                 _decode_log(log.raw) for log in self._get_query(from_block, to_block)
@@ -324,7 +346,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
                 try:
                     results.append(_decode_log(log.raw))
                 except ValidationError as e:
-                    raise ValueError(e, decode(log.raw)) from e
+                    raise ValueError(e, json.decode(log.raw)) from e
             return results
 
     def _get_query(self, from_block: int, to_block: int) -> Query:
@@ -355,7 +377,7 @@ class LogCache(DiskCache[Log, LogCacheInfo]):
         from y._db.utils import utils as db
 
         chain = db.get_chain(sync=True)
-        encoded_topics = _encode(self.topics or None)
+        encoded_topics = _encode_generic(self.topics or None)
         should_commit = False
         if self.addresses:
             addresses = self.addresses

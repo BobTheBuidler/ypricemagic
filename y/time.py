@@ -2,7 +2,7 @@ import asyncio
 import datetime
 import logging
 import time
-from typing import NewType, Union
+from typing import Final, NewType, Union, final
 
 import dank_mids
 import eth_retry
@@ -15,7 +15,6 @@ try:
 except ImportError:
     from dank_mids._config import GANACHE_FORK
 
-from y.constants import NETWORK_NAME
 from y.exceptions import NodeNotSynced
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache, memory
@@ -26,12 +25,16 @@ from y.utils.logging import yLazyLogger
 UnixTimestamp = NewType("UnixTimestamp", int)
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 
-logger = logging.getLogger(__name__)
-log_debug = logger.debug
 
-_CHAINID = chain.id
+NETWORK_NAME: Final = Network.name()
+_CHAINID: Final = chain.id
 
 
+logger: Final = logging.getLogger(__name__)
+log_debug: Final = logger.debug
+
+
+@final
 class NoBlockFound(Exception):
     """
     Raised when no block is found for a specified timestamp because the timestamp is in the future.
