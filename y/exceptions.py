@@ -28,7 +28,13 @@ class yPriceMagicError(ValueError):
     Exceptions while calculating prices.
     """
 
-    def __init__(self, exc: Exception, token_address: ChecksumAddress, block: Optional[BlockNumber], symbol: str):
+    def __init__(
+        self,
+        exc: Exception,
+        token_address: ChecksumAddress,
+        block: Optional[BlockNumber],
+        symbol: str,
+    ):
         self.token: Final = token_address
         """
         The token that caused the error.
