@@ -50,7 +50,7 @@ from y.exceptions import (
     PriceError,
     UnsupportedNetwork,
 )
-from y import exceptions
+from y import exceptions, monkey_patches
 from y.networks import Network
 from y.prices import magic
 from y.prices.magic import get_price, get_prices, map_prices
@@ -68,7 +68,7 @@ from y.utils.raw_calls import balanceOf, raw_call
 
 setup_getcode_cache_middleware()
 
-convert._monkey_patch_dependencies()
+monkey_patches.monkey_patch_checksum_cache()
 
 if chain.id == Network.Optimism:
     setup_geth_poa_middleware()
@@ -114,6 +114,8 @@ __all__ = [
     "get_block_at_timestamp",
     "get_block_timestamp",
     "get_block_timestamp_async",
+    # monkey patches,
+    "monkey_patches",
 ]
 
 with suppress(ModuleNotFoundError):

@@ -15,6 +15,7 @@ try:
 except ImportError:
     from dank_mids._config import GANACHE_FORK
 
+from y.constants import NETWORK_NAME
 from y.exceptions import NodeNotSynced
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache, memory
@@ -26,6 +27,7 @@ UnixTimestamp = NewType("UnixTimestamp", int)
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 
 logger = logging.getLogger(__name__)
+log_debug = logger.debug
 
 _CHAINID = chain.id
 
@@ -151,18 +153,18 @@ def last_block_on_date(date: Union[str, datetime.date]) -> int:
     lo, hi = 0, height
     while hi - lo > 1:
         mid = lo + (hi - lo) // 2
-        logger.debug("block: %s", str(mid))
+        log_debug("block: %s", str(mid))
         mid_ts = get_block_timestamp(mid)
         mid_date = datetime.date.fromtimestamp(mid_ts)
-        logger.debug("mid: %s", mid_date)
-        logger.debug(date)
+        log_debug("mid: %s", mid_date)
+        log_debug(date)
         if mid_date > date:
             hi = mid
         else:
             lo = mid
     hi = hi - 1
     block = hi if hi != height else None
-    logger.debug("last %s block on date %s -> %s", Network.name(), date, block)
+    log_debug("last %s block on date %s -> %s", NETWORK_NAME, date, block)
     return block
 
 
@@ -258,8 +260,8 @@ def closest_block_after_timestamp(
             time.sleep(0.2)
     check_node()
     block = _closest_block_after_timestamp_cached(timestamp)
-    logger.debug(
-        "closest %s block after timestamp %s -> %s", Network.name(), timestamp, block
+    log_debug(
+        "closest %s block after timestamp %s -> %s", NETWORK_NAME, timestamp, block
     )
     return block
 

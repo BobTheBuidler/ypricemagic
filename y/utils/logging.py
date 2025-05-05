@@ -135,7 +135,9 @@ async def _debug_tsk(symbol: Optional[str], logger_ref: "weak_ref[Logger]") -> N
 _all_price_loggers: "WeakValueDictionary[str, PriceLogger]" = WeakValueDictionary()
 
 
-NETWORK_DESCRIPTOR_FOR_ISSUE_REQ = f"name ({NETWORK_NAME})" if NETWORK_NAME else f"chainid ({chain.id})"
+NETWORK_DESCRIPTOR_FOR_ISSUE_REQ = (
+    f"name ({NETWORK_NAME})" if NETWORK_NAME else f"chainid ({chain.id})"
+)
 
 
 def _gh_issue_request(
