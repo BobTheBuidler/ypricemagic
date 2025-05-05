@@ -1,6 +1,9 @@
 from pathlib import Path
 from setuptools import find_packages, setup
 
+from mypyc.build import mypycify
+
+
 with open("requirements.txt", "r") as f:
     requirements = list(map(str.strip, f.read().split("\n")))[:-1]
 
@@ -28,4 +31,14 @@ setup(
         "setuptools_scm",
     ],
     package_data={"y": ["py.typed"]},
+    include_package_data=True,
+    ext_modules=mypycify(
+        [
+            "y/_db/utils/stringify.py",
+            "--strict",
+            "--pretty",
+            "--install-types",
+        ]
+    ),
+    zip_safe=False,
 )
