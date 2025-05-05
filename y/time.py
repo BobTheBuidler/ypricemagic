@@ -15,7 +15,6 @@ try:
 except ImportError:
     from dank_mids._config import GANACHE_FORK
 
-from y.constants import NETWORK_NAME
 from y.exceptions import NodeNotSynced
 from y.networks import Network
 from y.utils.cache import a_sync_ttl_cache, memory
@@ -27,6 +26,7 @@ UnixTimestamp = NewType("UnixTimestamp", int)
 Timestamp = Union[UnixTimestamp, datetime.datetime]
 
 
+NETWORK_NAME: Final = Network.name()
 _CHAINID: Final = chain.id
 
 
