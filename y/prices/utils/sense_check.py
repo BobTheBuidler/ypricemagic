@@ -10,12 +10,14 @@ this requires modifying the source code, which may not be ideal for all users.
 """
 
 import logging
-from typing import Optional
+from decimal import Decimal
+from typing import Final, Optional, Set, Union
 
 import a_sync
+from eth_typing import BlockNumber, ChecksumAddress
 
 from y.classes.common import ERC20
-from y.constants import CHAINID, wbtc, weth
+from y.constants import CHAINID, NETWORK_NAME, wbtc, weth
 from y.contracts import Contract
 from y.exceptions import NonStandardERC20
 from y.networks import Network
@@ -25,16 +27,17 @@ from y.prices.stable_swap.curve import CurvePool
 from y.prices.utils import check_bucket
 from y.prices.yearn import YearnInspiredVault
 
-logger = logging.getLogger(__name__)
+logger: Final = logging.getLogger(__name__)
 
 # This module is far from perfect, but provides an acceptable way to validate some of the prices returned by `get_price`
 
-acceptable_all_chains = [
+acceptable_all_chains: Final[Set[ChecksumAddress]] = {
     weth.address,
     wbtc.address,
-]
-ACCEPTABLE_HIGH_PRICES = {
-    Network.Mainnet: [
+}
+
+ACCEPTABLE_HIGH_PRICES: Final[Set[ChecksumAddress]] = {
+    Network.Mainnet: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
         "0x7f39C581F595B53c5cb19bD0b3f8dA6c935E2Ca0",  # wsteth
@@ -136,16 +139,16 @@ ACCEPTABLE_HIGH_PRICES = {
         "0xD70240Dd62F4ea9a6A2416e0073D72139489d2AA",  # glyph
         "0x114f1388fAB456c4bA31B1850b244Eedcd024136",  # coolcats
         "0xEA47B64e1BFCCb773A0420247C0aa0a3C1D2E5C5",  # bayc
-    ],
-    Network.BinanceSmartChain: [
+    },
+    Network.BinanceSmartChain: {
         # eth and eth-like
         "0x8d0e18c97e5dd8ee2b539ae8cd3a3654df5d79e5",  # bweth
         "0xbfF4a34A4644a113E8200D7F1D79b3555f723AfE",  # ibeth
         # btc and btc-like
         "0x7130d2A12B9BCbFAe4f2634d864A1Ee1Ce3Ead9c",  # btcb
         "0x08FC9Ba2cAc74742177e0afC3dC8Aed6961c24e7",  # ibbtcb
-    ],
-    Network.Fantom: [
+    },
+    Network.Fantom: {
         # eth and eth-like
         "0xBDC8fd437C489Ca3c6DA3B5a336D11532a532303",  # anyeth
         # btc and btc-like
@@ -155,14 +158,14 @@ ACCEPTABLE_HIGH_PRICES = {
         "0x29b0Da86e484E1C0029B56e817912d778aC0EC69",  # yfi
         "0xf43Cc235E686d7BC513F53Fbffb61F760c3a1882",  # elite
         "0x58e57cA18B7A47112b877E31929798Cd3D703b0f",  # crv3crypto
-    ],
-    Network.Avalanche: [
+    },
+    Network.Avalanche: {
         # btc and btc-like
         "0xDBf31dF14B66535aF65AaC99C32e9eA844e14501",  # renbtc
         # other
         "0xd6070ae98b8069de6B494332d1A1a81B6179D960",  # bifi
-    ],
-    Network.Optimism: [
+    },
+    Network.Optimism: {
         # eth and eth-like
         "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",  # eth
         "0x9Bcef72be871e61ED4fBbc7630889beE758eb81D",  # reth
@@ -179,11 +182,11 @@ ACCEPTABLE_HIGH_PRICES = {
         # lp tokens
         "0xd62C9D8a3D4fd98b27CaaEfE3571782a3aF0a737",  # sAMM-USDC/MAI
         "0x6C5019D345Ec05004A7E7B0623A91a0D9B8D590d",  # sAMM-USDC/DOLA
-    ],
-    Network.Arbitrum: [
+    },
+    Network.Arbitrum: {
         "0x8e0B8c8BB9db49a46697F3a5Bb8A308e744821D2",  # crv3crypto
-    ],
-    Network.Base: [
+    },
+    Network.Base: {
         # eth and eth-like
         "0x2Ae3F1Ec7F1F5012CFEab0185bfc7aa3cf0DEc22",  # cbeth
         "0xc1CBa3fCea344f92D9239c08C0568f6F2F0ee452",  # wsteth
@@ -192,15 +195,15 @@ ACCEPTABLE_HIGH_PRICES = {
         # btc and btc-like
         "0x236aa50979D5f3De3Bd1Eeb40E81137F22ab794b",  # tbtc
         "0xcb327b99ff831bf8223cced12b1338ff3aa322ff",  # bsdETH
-    ],
-}.get(CHAINID, []) + acceptable_all_chains
+    },
+}.get(CHAINID, []) | acceptable_all_chains
 """
 List of tokens addresses for which high prices are acceptable.
 Nothing will be logged for tokens in this list.
 """
 
 
-async def sense_check(token_address: str, block: Optional[int], price: float):
+async def sense_check(token_address: ChecksumAddress, block: Optional[BlockNumber], price: Union[float, Decimal]):
     """
     Performs a sense check on the given token price and logs a warning if it is unexpectedly high.
 
@@ -239,15 +242,14 @@ async def sense_check(token_address: str, block: Optional[int], price: float):
 
     # proceed with sense check
     price_readable = round(price, 4)
-    network = Network.name(CHAINID)
     try:
         symbol = await ERC20(token_address, asynchronous=True).symbol
         logger.warning(
-            f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {network} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
+            f"unusually high price (${price_readable}) returned for {symbol} {token_address} on {NETWORK_NAME} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
         )
     except NonStandardERC20:
         logger.warning(
-            f"unusually high price (${price_readable}) returned for {token_address} on {network} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
+            f"unusually high price (${price_readable}) returned for {token_address} on {NETWORK_NAME} block {block}. This does not necessarily mean that the price is wrong, but you may want to validate the price for yourself before proceeding."
         )
 
 
