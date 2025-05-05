@@ -13,7 +13,13 @@ try:
     from mypyc.build import mypycify
 
     ext_modules = mypycify(
-        ["y/_db/utils/stringify.py", "y/convert.py", "--strict", "--pretty", "--install-types"]
+        [
+            "y/_db/utils/stringify.py",
+            "y/convert.py",
+            "--strict",
+            "--pretty",
+            "--install-types",
+        ]
     )
 except ImportError:
     ext_modules = []
