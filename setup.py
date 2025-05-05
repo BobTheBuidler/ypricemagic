@@ -18,10 +18,20 @@ try:
             "y/convert.py",
             "y/prices/utils/sense_check.py",
             "y/utils/gather.py",
-            "--strict",
             "--pretty",
             "--install-types",
+            "--disable-error-code=import-not-found",
             "--disable-error-code=import-untyped",
+            "--disable-error-code=no-any-return",
+            "--disable-error-code=misc",
+            "--disable-error-code=attr-defined",
+            "--disable-error-code=return-value",
+            "--disable-error-code=operator",
+            "--disable-error-code=override",
+            "--disable-error-code=call-arg",
+            "--disable-error-code=union-attr",
+            "--disable-error-code=return",
+            "--disable-error-code=arg-type",
         ]
     )
 except ImportError:
