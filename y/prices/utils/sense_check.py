@@ -203,7 +203,11 @@ Nothing will be logged for tokens in this list.
 """
 
 
-async def sense_check(token_address: ChecksumAddress, block: Optional[BlockNumber], price: Union[float, Decimal]):
+async def sense_check(
+    token_address: ChecksumAddress,
+    block: Optional[BlockNumber],
+    price: Union[float, Decimal],
+):
     """
     Performs a sense check on the given token price and logs a warning if it is unexpectedly high.
 

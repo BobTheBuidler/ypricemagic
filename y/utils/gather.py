@@ -49,7 +49,7 @@ async def gather_methods(
         ('Dai Stablecoin', 'DAI', 18)
     """
     methods = tuple(methods)
-    if "(" in methods[0]:        
+    if "(" in methods[0]:
         return await _gather_methods_raw(
             address, methods, block=block, return_exceptions=return_exceptions
         )
