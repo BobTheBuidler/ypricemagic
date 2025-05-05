@@ -25,9 +25,9 @@ from async_lru import alru_cache
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.classes.common import UsdPrice
-from y.constants import CHAINID
+from y.constants import CHAINID, NETWORK_NAME
 from y.datatypes import Address, Block
-from y.networks import Network
+
 
 logger = logging.getLogger(__name__)
 
@@ -198,7 +198,7 @@ async def chain_supported(chainid: int) -> bool:
     """
     if chainid in await get_chains():
         return True
-    logger.info("ypriceAPI does not support %s at this time.", Network.name())
+    logger.info("ypriceAPI does not support %s at this time.", NETWORK_NAME)
     return False
 
 

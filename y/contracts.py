@@ -56,6 +56,7 @@ from y import ENVIRONMENT_VARIABLES as ENVS
 from y import convert
 from y._db.brownie import DISCARD_SOURCE_KEYS, sqlite_lock, _get_deployment
 from y._decorators import stuck_coro_debugger
+from y.constants import NETWORK_NAME
 from y.datatypes import Address, AnyAddressType, Block
 from y.exceptions import (
     ContractNotVerified,
@@ -197,14 +198,14 @@ def contract_creation_block(
         logger.warning(
             "could not determine creation block for %s on %s (deployed prior to barrier)",
             address,
-            Network.name(),
+            NETWORK_NAME,
         )
         logger_debug("contract creation block %s -> 0", address)
         return 0
     if hi != height:
         logger_debug("contract creation block %s -> %s", address, hi)
         return hi
-    raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
+    raise ValueError(f"Unable to find deploy block for {address} on {NETWORK_NAME}")
 
 
 get_code = eth_retry.auto_retry(dank_mids.eth.get_code)
@@ -292,7 +293,7 @@ async def contract_creation_block_async(
             lo = mid
     if hi == lo + 1 == barrier + 1 and when_no_history_return_0:
         logger.warning(
-            f"could not determine creation block for {address} on {Network.name()} (deployed prior to barrier)"
+            f"could not determine creation block for {address} on {NETWORK_NAME} (deployed prior to barrier)"
         )
         logger_debug(f"contract creation block {address} -> 0")
         return 0
@@ -300,7 +301,7 @@ async def contract_creation_block_async(
         logger_debug(f"contract creation block {address} -> {hi}")
         db.set_deploy_block(address, hi)
         return hi
-    raise ValueError(f"Unable to find deploy block for {address} on {Network.name()}")
+    raise ValueError(f"Unable to find deploy block for {address} on {NETWORK_NAME}")
 
 
 class ContractEvents(ContractEvents):
