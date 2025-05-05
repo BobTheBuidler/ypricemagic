@@ -4,7 +4,7 @@ from typing import Final, Optional, Set
 import a_sync
 import cchecksum
 import hexbytes
-from eth_typing import ChecksumAddress, HexAddress
+from eth_typing import AnyAddress, ChecksumAddress, HexAddress
 
 from y import ENVIRONMENT_VARIABLES as ENVS
 from y.datatypes import AnyAddressType
@@ -15,8 +15,8 @@ HexBytes: Final = hexbytes.HexBytes
 to_checksum_address: Final = cchecksum.to_checksum_address
 
 
-@lru_cache(maxsize=ENVS.CHECKSUM_CACHE_MAXSIZE)
-def checksum(address: AnyAddressType) -> ChecksumAddress:
+@lru_cache(maxsize=ENVS.CHECKSUM_CACHE_MAXSIZE)  # type: ignore [call-overload]
+def checksum(address: AnyAddress) -> ChecksumAddress:
     """Convert an address to its checksummed format.
 
     This function uses the `to_checksum_address` function to convert an Ethereum address
@@ -41,7 +41,7 @@ def checksum(address: AnyAddressType) -> ChecksumAddress:
     try:
         return to_checksum_address(address)
     except ValueError:
-        raise ValueError(f"'{address}' is not a valid ETH address") from None
+        raise ValueError(f"{repr(address)} is not a valid ETH address") from None
 
 
 def to_address(address: AnyAddressType) -> ChecksumAddress:
@@ -68,11 +68,11 @@ def to_address(address: AnyAddressType) -> ChecksumAddress:
     if checksummed := __get_checksum_from_cache(address):
         return checksummed
     checksummed = checksum(address)
-    __cache_if_is_checksummed(address, checksummed)
-    return checksummed
+    __cache_if_is_checksummed(address, checksummed)  # type: ignore [arg-type]
+    return checksummed  # type: ignore [return-value]
 
 
-_checksum_thread = a_sync.ThreadPoolExecutor(1)
+_checksum_thread: Final = a_sync.ThreadPoolExecutor(1)
 
 
 async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
@@ -100,12 +100,12 @@ async def to_address_async(address: AnyAddressType) -> ChecksumAddress:
     if checksummed := __get_checksum_from_cache(address):
         return checksummed
     checksummed = await _checksum_thread.run(checksum, address)
-    __cache_if_is_checksummed(address, checksummed)
-    return checksummed
+    __cache_if_is_checksummed(address, checksummed)  # type: ignore [arg-type]
+    return checksummed  # type: ignore [return-value]
 
 
-_is_checksummed: Set[HexAddress] = set()
-_is_not_checksummed: Set[HexAddress] = set()
+_is_checksummed: Final[Set[HexAddress]] = set()
+_is_not_checksummed: Final[Set[HexAddress]] = set()
 
 
 def __get_checksum_from_cache(address: AnyAddressType) -> Optional[ChecksumAddress]:
@@ -125,11 +125,13 @@ def __get_checksum_from_cache(address: AnyAddressType) -> Optional[ChecksumAddre
         - :func:`checksum` for the checksumming process.
     """
     if address in _is_checksummed:
-        return address
+        return address  # type: ignore [return-value]
     elif address in _is_not_checksummed:
         # The checksum value is already in the lru-cache, there
         # is no reason to dispatch this function call to a thread.
         return checksum(address)
+    else:
+        return None
 
 
 def __cache_if_is_checksummed(
@@ -176,17 +178,17 @@ def __normalize_input_to_string(address: AnyAddressType) -> HexAddress:
     """
     address_type = type(address)
     if address_type is str:
-        return address
+        return address  # type: ignore [return-value]
     elif issubclass(address_type, bytes):
         return (
-            address.hex()
+            address.hex()  # type: ignore [union-attr, return-value]
             if address_type.__name__ == "HexBytes"
             else HexBytes(address).hex()
         )
     elif address_type is int:
-        return _int_to_address(address)
+        return _int_to_address(address)  # type: ignore [arg-type]
     else:
-        return str(address)
+        return str(address)  # type: ignore [return-value]
 
 
 def _int_to_address(int_address: int) -> HexAddress:
@@ -207,4 +209,4 @@ def _int_to_address(int_address: int) -> HexAddress:
     """
     hex_value = HexBytes(int_address).hex()[2:]
     padding = "0" * (40 - len(hex_value))
-    return f"0x{padding}{hex_value}"
+    return f"0x{padding}{hex_value}"  # type: ignore [return-value]
