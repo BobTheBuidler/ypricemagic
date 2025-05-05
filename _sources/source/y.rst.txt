@@ -63,6 +63,14 @@ y.exceptions module
    :undoc-members:
    :show-inheritance:
 
+y.monkey\_patches module
+------------------------
+
+.. automodule:: y.monkey_patches
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 y.networks module
 -----------------
 
