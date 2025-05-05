@@ -1,11 +1,22 @@
 from pathlib import Path
 from setuptools import find_packages, setup
 
+
 with open("requirements.txt", "r") as f:
     requirements = list(map(str.strip, f.read().split("\n")))[:-1]
 
 this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
+
+
+try:
+    from mypyc.build import mypycify
+
+    ext_modules = mypycify(
+        ["y/_db/utils/stringify.py", "--strict", "--pretty", "--install-types"]
+    )
+except ImportError:
+    ext_modules = []
 
 setup(
     name="ypricemagic",
@@ -28,6 +39,9 @@ setup(
         "setuptools_scm",
     ],
     package_data={"y": ["py.typed"]},
+    include_package_data=True,
+    ext_modules=ext_modules,
+    zip_safe=False,
     classifiers=[
         "Intended Audience :: Developers",
         "Programming Language :: Python :: 3",
