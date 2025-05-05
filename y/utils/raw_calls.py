@@ -8,8 +8,9 @@ import dank_mids
 from a_sync import cgather
 from brownie import ZERO_ADDRESS, convert
 from brownie.convert.datatypes import EthAddress
-from eth_utils import encode_hex
-from eth_utils import function_signature_to_4byte_selector as fourbyte
+from dank_mids._eth_utils import encode_hex
+from dank_mids.helpers import lru_cache_lite_nonull
+from eth_utils import function_signature_to_4byte_selector
 
 from y.contracts import Contract, proxy_implementation
 from y.convert import to_address, to_address_async
@@ -24,11 +25,15 @@ from y.exceptions import (
 from y.networks import Network
 from y.utils.logging import yLazyLogger
 
-logger = logging.getLogger(__name__)
+
+logger: Final = logging.getLogger(__name__)
 
 """
 We use raw calls for commonly used functions because its much faster than using brownie Contracts
 """
+
+
+fourbyte: Final = lru_cache_lite_nonull(function_signature_to_4byte_selector)
 
 
 # yLazyLogger(logger)
