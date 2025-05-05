@@ -17,6 +17,7 @@ try:
             "y/_db/utils/stringify.py",
             "y/convert.py",
             "y/prices/utils/sense_check.py",
+            "y/utils/gather.py",
             "--strict",
             "--pretty",
             "--install-types",
